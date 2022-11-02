@@ -1,7 +1,7 @@
 import { Box, Stack, Text } from '@/design-system';
 import React from 'react';
 import { GenericCard } from './GenericCard';
-import { CardColorway } from './constants';
+import { CardColorway } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
 
 interface ActionCardProps {

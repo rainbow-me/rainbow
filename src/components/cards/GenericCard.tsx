@@ -10,8 +10,10 @@ import ConditionalWrap from 'conditional-wrap';
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
 export const SquareCardHeight = (deviceUtils.dimensions.width - 60) / 2;
 
+type CardType = 'square' | 'stretch';
+
 interface GenericCardProps {
-  type: 'square' | 'stretch';
+  type: CardType;
   gradient?: string[];
   children: React.ReactNode;
   onPress?: () => void;

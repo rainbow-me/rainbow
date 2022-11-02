@@ -15,7 +15,7 @@ import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { LearnCard } from '../cards/LearnCard';
-import { learnCards } from '../cards/constants';
+import { learnCards } from '../cards/utils/constants';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();

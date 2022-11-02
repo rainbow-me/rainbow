@@ -1,7 +1,8 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback } from 'react';
 import { GenericCard } from './GenericCard';
-import { getLearnCardColorway, LearnCardDetails } from './constants';
+import { getLearnCardColorway } from './utils/constants';
+import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
