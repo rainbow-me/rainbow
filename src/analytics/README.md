@@ -6,18 +6,18 @@ Our Segment wrapper.
 import { analyticsV2 } from '@/analytics';
 
 analyticsV2.identify({
-    ...userProperties,
-})
+  ...userProperties,
+});
 
-analyticsV2.track(analyticsV2.event.applicationDidMount)
+analyticsV2.track(analyticsV2.event.applicationDidMount);
 analyticsV2.track(analyticsV2.event.appStateChange, {
-    category: 'app state',
-    label: 'foo',
-})
+  category: 'app state',
+  label: 'foo',
+});
 
 analyticsV2.screen(Routes.SWAPS_PROMO_SHEET, {
-    ...metadata,
-})
+  ...metadata,
+});
 ```
 
 ## Events
@@ -54,8 +54,8 @@ key, and the event name (following the convention above) as the value.
 
 ```typescript
 export const event = {
-    swapsUserFormSubmitted: 'swaps.user_form.submitted',
-}
+  swapsUserFormSubmitted: 'swaps.user_form.submitted',
+};
 ```
 
 You'll also need to define the payload for the event on the `EventProperties` type. If your event doesn't have a payload, use `undefined` as its value. See the file for examples.
@@ -68,9 +68,9 @@ the naming conventions we've evolved to use e.g.:
 
 ```typescript
 export const event = {
-    // value stays the same
-    financeSwapsFormUserSubmitted: 'swaps.user_form.submitted',
-}
+  // value stays the same
+  financeSwapsFormUserSubmitted: 'swaps.user_form.submitted',
+};
 ```
 
 Also consider if we might just double-emit during a transition period. In this
