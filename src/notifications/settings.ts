@@ -437,7 +437,6 @@ export function toggleGroupNotifications(
   relationship: NotificationRelationshipType,
   enableNotifications: boolean
 ): Promise<void[][] | void[]> {
-  return Promise.reject();
   if (enableNotifications) {
     return Promise.all(
       // loop through all owned wallets, loop through their topics, subscribe to enabled topics
