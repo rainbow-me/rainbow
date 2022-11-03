@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { ChainId } from '@rainbow-me/swaps';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
@@ -51,7 +52,8 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
-import DiscoverSearchInput from '@/components/discover-sheet/DiscoverSearchInput';
+import tokenSectionTypes from '@/helpers/tokenSectionTypes';
+import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -268,7 +270,9 @@ export default function CurrencySelectModal() {
               ...unswappableAsset,
               disabled: true,
             })),
-            title: TokenSectionTypes.unswappableTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
+            ),
             key: 'unswappableAssets',
           });
         }
@@ -293,7 +297,9 @@ export default function CurrencySelectModal() {
               ...unswappableAsset,
               disabled: true,
             })),
-            title: TokenSectionTypes.unswappableTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
+            ),
             key: 'unswappableAssets',
           });
         }

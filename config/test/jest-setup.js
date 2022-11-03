@@ -2,6 +2,9 @@
 // needed to set up global translations
 import '../../src/languages';
 
+global.ios = false;
+global.android = false;
+
 jest.mock('@/env', () => ({
   IS_DEV: false,
   IS_TEST: true,
