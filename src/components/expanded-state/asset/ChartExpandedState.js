@@ -58,6 +58,7 @@ import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
+import { toLower } from 'lodash';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -209,7 +210,7 @@ export default function ChartExpandedState({ asset }) {
 
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
-    assetWithPrice.address = assetWithPrice.mainnet_address;
+    assetWithPrice.address = toLower(assetWithPrice.mainnet_address);
   }
 
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
