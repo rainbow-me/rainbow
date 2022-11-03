@@ -1,10 +1,7 @@
 import React from 'react';
 import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
-import { DPICard } from '../cards/DPICard';
 import ENSCreateProfileCard from './ENSCreateProfileCard';
-import { ENSSearchCard } from '../cards/ENSSearchCard';
-import { GasCard } from './GasCard';
 import Lists from './ListsSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
@@ -15,7 +12,7 @@ import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { LearnCard } from '../cards/LearnCard';
 import { learnCards } from '../cards/utils/constants';
-import { ActionCard } from '../cards/ActionCard';
+import { ActionCard, DPICard, ENSSearchCard, GasCard } from '../cards';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();

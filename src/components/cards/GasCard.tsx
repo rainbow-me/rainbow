@@ -22,7 +22,7 @@ import {
 import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
-import { GenericCard, SQUARE_CARD_SIZE } from '../cards/GenericCard';
+import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -108,7 +108,7 @@ export const GasCard = () => {
     opacity.value = 0;
     scale.value = 0;
     container.value = withSequence(
-      withSpring(1.1, containerConfig),
+      withSpring(1.04, containerConfig),
       withSpring(1, pulseConfig)
     );
     opacity.value = withSequence(
@@ -172,7 +172,7 @@ export const GasCard = () => {
       opacity.value = 0;
       scale.value = 0;
       container.value = withSequence(
-        withSpring(1.1, containerConfig),
+        withSpring(1.04, containerConfig),
         withSpring(1, pulseConfig)
       );
       opacity.value = withSequence(
