@@ -10,15 +10,10 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import useExperimentalFlag, {
-  PROFILES,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
-import {
-  isENSAddressFormat,
-  isValidDomainFormat,
-} from '@/helpers/validators';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
@@ -162,19 +157,13 @@ const ContactRow = (
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
     address,
   ]);
-
-  const emojiAvatar = profilesEnabled
-    ? emoji
-    : avatar || nickname || label || ensName;
+  const emojiAvatar = avatar || emoji || nickname || label;
 
   const colorIndex = useMemo(
     () => (address ? addressHashedColorIndex(address) : 0),
     [address]
   );
-
-  const bgColor = profilesEnabled
-    ? colors.avatarBackgrounds[colorIndex || 0]
-    : color;
+  const bgColor = color ?? colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ButtonPressAnimation

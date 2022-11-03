@@ -9,23 +9,23 @@ export function BackgroundDemo() {
   const { backgroundColors } = useColorMode();
 
   return (
-    <>
-      {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[])
-        .sort()
-        .map(color => (
+    <Box background="surfacePrimary">
+      {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(
+        color => (
           <Box background={color} key={color}>
-            <Inset space="19px">
+            <Inset space="20px">
               <Stack space="10px">
-                <Text color="primary" weight="bold">
+                <Text color="label" size="17pt" weight="bold">
                   {color}
                 </Text>
-                <Text color="secondary50" weight="bold">
+                <Text color="labelSecondary" size="17pt" weight="bold">
                   {color}
                 </Text>
               </Stack>
             </Inset>
           </Box>
-        ))}
-    </>
+        )
+      )}
+    </Box>
   );
 }

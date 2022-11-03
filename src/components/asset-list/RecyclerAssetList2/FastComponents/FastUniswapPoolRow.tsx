@@ -48,14 +48,20 @@ export default React.memo(function UniswapCoinRow({
             </View>
             <View style={sx.innerContainer}>
               <View style={sx.row}>
-                <Text numberOfLines={1} size="16px" weight="regular">
+                <Text
+                  numberOfLines={1}
+                  color="primary (Deprecated)"
+                  size="16px / 22px (Deprecated)"
+                  weight="semibold"
+                >
                   {item.tokenNames}
                 </Text>
               </View>
               <View style={[sx.row, sx.bottom]}>
                 <Text
                   color={{ custom: item.theme.colors.blueGreyDark50 }}
-                  size="14px"
+                  size="14px / 19px (Deprecated)"
+                  weight="medium"
                 >
                   {item.symbol}
                 </Text>

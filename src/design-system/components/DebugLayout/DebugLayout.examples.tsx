@@ -9,7 +9,9 @@ export const basicUsage: Example = {
   Example: () =>
     source(
       <DebugLayout>
-        <Text>Debug</Text>
+        <Text color="label" size="17pt">
+          Debug
+        </Text>
       </DebugLayout>
     ),
 };

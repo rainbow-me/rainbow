@@ -2,6 +2,8 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
+const android = device.getPlatform() === 'android';
+
 describe('New Wallet flow', () => {
   it('should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
@@ -10,7 +12,7 @@ describe('New Wallet flow', () => {
   it('go to the wallet screen after pressing "Get a new wallet" button', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('new-wallet-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -33,11 +35,11 @@ describe('New Wallet flow', () => {
   });
 
   it('should show "No transactions yet" in the activity list', async () => {
-    if (device.getPlatform() === 'android') {
-      await Helpers.waitAndTap('navbar-profile-button');
+    if (android) {
+      await Helpers.waitAndTap('activity-button');
       await Helpers.checkIfElementByTextIsVisible('No transactions yet');
     } else {
-      await Helpers.waitAndTap('navbar-profile-button');
+      await Helpers.waitAndTap('activity-button');
       await Helpers.checkForElementByLabel('no-transactions-yet-label');
     }
   });

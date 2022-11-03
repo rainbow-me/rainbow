@@ -29,6 +29,7 @@ export default function ConfirmExchangeButton({
   tradeDetails,
   type = ExchangeModalTypes.swap,
   isSufficientBalance,
+  isBridgeSwap,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -125,6 +126,8 @@ export default function ConfirmExchangeButton({
   } else if (isSwapDetailsRoute) {
     if (isSwapSubmitting) {
       label = lang.t('button.confirm_exchange.submitting');
+    } else if (isBridgeSwap) {
+      label = `${lang.t('button.confirm_exchange.bridge')}`;
     } else {
       label = isHighPriceImpact
         ? lang.t('button.confirm_exchange.swap_anyway')
@@ -141,7 +144,7 @@ export default function ConfirmExchangeButton({
   }
 
   const handleExplainer = useCallback(() => {
-    android && Keyboard.dismiss();
+    Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, {
       inputCurrency,
       outputCurrency,

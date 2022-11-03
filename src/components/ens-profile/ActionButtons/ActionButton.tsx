@@ -29,9 +29,9 @@ export default function ActionButton({
   variant = 'solid',
   testID,
 }: ActionButtonProps) {
-  const appleBlue = useForegroundColor('action');
-  const divider100 = useForegroundColor('divider100');
-  const shadow = useForegroundColor('shadow');
+  const appleBlue = useForegroundColor('action (Deprecated)');
+  const divider100 = useForegroundColor('divider100 (Deprecated)');
+  const shadow = useForegroundColor('shadowFar');
 
   const shadowColor = useForegroundColor({
     custom: {
@@ -46,15 +46,15 @@ export default function ActionButton({
       <AccentColorProvider color={shadowColor}>
         <Box
           alignItems="center"
-          background="action"
+          background="action (Deprecated)"
           borderRadius={18}
           height="36px"
           justifyContent="center"
           {...(variant === 'solid' && {
-            shadow: '30px light accent',
+            shadow: '30px light accent (Deprecated)',
           })}
           {...(variant === 'outlined' && {
-            background: 'body',
+            background: 'body (Deprecated)',
             shadow: undefined,
             style: {
               borderColor: divider100,
@@ -71,8 +71,12 @@ export default function ActionButton({
             {(typeof icon === 'string' || children) && (
               <Text
                 align="center"
-                color={variant === 'outlined' ? 'secondary80' : 'primary'}
-                size="15px"
+                color={
+                  variant === 'outlined'
+                    ? 'secondary80 (Deprecated)'
+                    : 'primary (Deprecated)'
+                }
+                size="15px / 21px (Deprecated)"
                 weight="heavy"
               >
                 {icon || children}

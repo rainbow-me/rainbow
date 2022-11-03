@@ -21,13 +21,18 @@ import {
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
-import {
-  emitAssetRequest,
-  emitChartsRequest,
-} from '@/redux/explorer';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
+
+// initial research into refactoring deep links
+//                         eip      native deeplink  rainbow.me profiles
+type supportedProtocols = 'ethereum:' | 'rainbow:' | 'https';
+//                      walletconnect - expanded states - tophat updates
+type supportedActions = 'wc' | 'token' | 'update-ios' | 'update-android';
+// deeplink actions fall under 'host', http, native deeplink,
+// EIP needs more research, cant get them to link on sim
 
 export default async function handleDeeplink(
   url: any,
@@ -42,8 +47,11 @@ export default async function handleDeeplink(
   const urlObj = new URL(url);
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
-  } else if (urlObj.protocol === 'https:') {
-    const action = urlObj.pathname.split('/')[1];
+  } else if (urlObj.protocol === 'https:' || urlObj.protocol === 'rainbow:') {
+    const action =
+      urlObj.protocol === 'https:'
+        ? urlObj.pathname.split('/')[1]
+        : urlObj.host;
     switch (action) {
       case 'wc': {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
@@ -57,17 +65,7 @@ export default async function handleDeeplink(
         const { addr } = qs.parse(urlObj.query?.substring(1));
         const address = (addr as string)?.toLowerCase() ?? '';
         if (address && address.length > 0) {
-          // @ts-expect-error FIXME: Property 'assets' does not exist on type...
-          const { assets: allAssets, genericAssets } = store.getState().data;
-          const asset =
-            Object.values(genericAssets).find(
-              (asset: any) => address === asset.address.toLowerCase()
-            ) ||
-            (address !== ETH_ADDRESS &&
-              allAssets.find(
-                (asset: any) => address === asset.address.toLowerCase()
-              ));
-
+          const asset = ethereumUtils.getAssetFromAllAssets(address);
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
           if (initialRoute !== Routes.WELCOME_SCREEN) {

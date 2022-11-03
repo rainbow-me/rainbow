@@ -37,7 +37,7 @@ export default function SwapDetailsSlippageMessage({
     <Column align="center" {...props}>
       <Container>
         <Row align="center">
-          <Heading color={priceImpactColor}>
+          <Heading color={priceImpactColor} weight="heavy">
             {lang.t('expanded_state.swap.losing')}{' '}
           </Heading>
           <Heading

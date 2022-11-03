@@ -15,8 +15,8 @@ import {
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';
 
-export const UNIQUE_TOKENS_LIMIT_PER_PAGE: number = 50;
-export const UNIQUE_TOKENS_LIMIT_TOTAL: number = 2000;
+export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
+export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 // limiting our opensea api requests to 10/sec so we don't max out
 const queue = new PQueue({ interval: 1000, intervalCap: 10 });
@@ -58,11 +58,10 @@ export const apiGetAccountUniqueTokens = async (
           timeout: 10000, // 10 secs
         })
     );
-    return isPolygon
-      ? parseAccountUniqueTokensPolygon(data)
-      : parseAccountUniqueTokens(data);
+
+    return parseAccountUniqueTokens(data);
   } catch (error: any) {
-    //opensea gives us an error if the account has no tokens on the network, we want to ignore this error
+    // opensea gives us an error if the account has no tokens on the network, we want to ignore this error
     if (
       error.responseBody[0]?.includes('does not exist for chain identifier')
     ) {

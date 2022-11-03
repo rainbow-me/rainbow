@@ -47,7 +47,7 @@ target 'Rainbow' do
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
-  pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
+  pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
 
   pod 'Shimmer'
   use_native_modules!

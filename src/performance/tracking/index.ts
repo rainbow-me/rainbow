@@ -1,4 +1,3 @@
-// @ts-ignore
 import { IS_TESTING, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';

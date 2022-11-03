@@ -14,15 +14,12 @@ import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
 import { analytics } from '@/analytics';
-import {
-  useAccountSettings,
-  useDimensions,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import config from '@/model/config';
 
 const ContainerWidth = 261;
 
@@ -159,7 +156,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
           {...position.coverAsObject}
           backgroundColor={backgroundColor}
           borderRadius={25}
-          shadows={shadows[backgroundColor]}
+          shadows={shadows?.[backgroundColor] || []}
           {...(android && {
             height: 80,
             width: isVeryNarrowPhone ? 95 : 100,
@@ -195,6 +192,12 @@ const AddFundsInterstitial = ({ network }) => {
         captureMessage('Damaged wallet preventing add cash');
         return;
       }
+
+      if (!config.wyre_enabled) {
+        navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
+        return;
+      }
+
       if (ios) {
         navigate(Routes.ADD_CASH_FLOW, {
           params: !isNaN(amount) ? { amount } : null,

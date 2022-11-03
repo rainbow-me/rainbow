@@ -1,8 +1,11 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchRegistration } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { queryClient } from '@/react-query/queryClient';
-import { QueryConfig, UseQueryData } from '@/react-query/types';
+import {
+  queryClient,
+  QueryConfigDeprecated,
+  UseQueryData,
+} from '@/react-query';
 
 export const ensRegistrantQueryKey = (name: string) => ['ens-registrant', name];
 
@@ -28,7 +31,7 @@ export async function prefetchENSRegistrant(name: string) {
 
 export default function useENSRegistrant(
   name: string,
-  config?: QueryConfig<typeof fetchENSRegistrant>
+  config?: QueryConfigDeprecated<typeof fetchENSRegistrant>
 ) {
   return useQuery<UseQueryData<typeof fetchENSRegistrant>>(
     ensRegistrantQueryKey(name),

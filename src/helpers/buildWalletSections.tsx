@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { compact, groupBy, property } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
@@ -16,14 +15,8 @@ import {
   buildUniqueTokenList,
 } from './assets';
 import networkTypes from './networkTypes';
-import {
-  add,
-  convertAmountToNativeDisplay,
-  flattenDeep,
-  multiply,
-} from './utilities';
+import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
-import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 
 const LOADING_ASSETS_PLACEHOLDER = [
@@ -216,7 +209,7 @@ const withBriefBalanceSavingsSection = (
   network: any
 ) => {
   let totalUnderlyingNativeValue = '0';
-  for (let saving of savings) {
+  for (const saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
     totalUnderlyingNativeValue = add(
       totalUnderlyingNativeValue,
@@ -395,78 +388,54 @@ const withBriefBalanceSection = (
 
   return [
     {
-      type: 'ASSETS_HEADER',
-      uid: 'assets-header',
+      type: 'PROFILE_STICKY_HEADER',
+      uid: 'assets-profile-header-compact',
       value: totalValue,
     },
     {
-      type: 'ASSETS_HEADER_SPACE_AFTER',
-      uid: 'assets-header-space-after',
+      type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
+      uid: 'profile-avatar-space-before',
+    },
+    {
+      type: 'PROFILE_AVATAR_ROW',
+      uid: 'profile-avatar',
+    },
+    {
+      type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
+      uid: 'profile-avatar-space-after',
+    },
+    {
+      type: 'PROFILE_NAME_ROW',
+      uid: 'profile-name',
+    },
+    {
+      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+      uid: 'profile-name-space-after',
+    },
+    {
+      type: 'PROFILE_BALANCE_ROW',
+      uid: 'profile-balance',
+      value: totalValue,
+    },
+    {
+      type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
+      uid: 'profile-balance-space-after',
+    },
+    {
+      type: 'PROFILE_ACTION_BUTTONS_ROW',
+      uid: 'profile-action-buttons',
+      value: totalValue,
+    },
+    {
+      type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+      uid: 'profile-action-buttons-space-after',
+      value: totalValue,
     },
     ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
   ];
 };
 
-let isPreloadComplete = false;
-const largeFamilyThreshold = 4;
-const jumboFamilyThreshold = largeFamilyThreshold * 2;
-const minTopFoldThreshold = 10;
-
-const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
-  const isLargeFamily = family.tokens.length > largeFamilyThreshold;
-  const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
-  const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
-
-  return family.tokens.map((token: any, rowIndex: any) => {
-    let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
-
-    if (isTopFold && isLargeFamily) {
-      if (rowIndex <= largeFamilyThreshold) {
-        priority = ImgixImage.priority.high;
-      } else if (isJumboFamily) {
-        const isMedium =
-          rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
-        // @ts-expect-error ts-migrate(2322) FIXME: Type '"normal" | "low"' is not assignable to type ... Remove this comment to see the full error message
-        priority = ImgixImage.priority[isMedium ? 'normal' : 'low'];
-      } else {
-        priority = ImgixImage.priority.normal;
-      }
-    }
-
-    const images = token.map(({ image_url, uniqueId }: any) => {
-      if (!image_url) return null;
-      return {
-        id: uniqueId,
-        priority,
-        uri: image_url,
-      };
-    });
-
-    return images.length ? images : null;
-  });
-};
-
-const sortImagesToPreload = (images: any) => {
-  const filtered = compact(flattenDeep(images));
-  const grouped = groupBy(filtered, property('priority'));
-  return [
-    ...(grouped?.high ?? []),
-    ...(grouped?.normal ?? []),
-    ...(grouped?.low ?? []),
-  ];
-};
-
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
-  // TODO preload elsewhere?
-  if (!isPreloadComplete) {
-    const imagesToPreload = sortImagesToPreload(
-      data.map(buildImagesToPreloadArray)
-    );
-    isPreloadComplete = !!imagesToPreload.length;
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(false | "" | 0 | null | undefin... Remove this comment to see the full error message
-    ImgixImage.preload(imagesToPreload, 200);
-  }
-
   return {
     collectibles: true,
     data,

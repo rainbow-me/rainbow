@@ -1,9 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -16,11 +15,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { DefaultTokenLists } from '../references/';
-import {
-  useAccountSettings,
-  useDimensions,
-  useUserLists,
-} from '@/hooks';
+import { useAccountSettings, useDimensions, useUserLists } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -70,7 +65,7 @@ export default function AddTokenSheet() {
   const { height: deviceHeight } = useDimensions();
   const { network } = useAccountSettings();
   const { favorites, lists, updateList } = useUserLists();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const {
     params: { item, isL2 },
   } = useRoute();
@@ -96,7 +91,6 @@ export default function AddTokenSheet() {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <StatusBar barStyle="light-content" />}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet

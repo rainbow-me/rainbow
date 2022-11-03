@@ -21,7 +21,6 @@ import { Contract } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking, NativeModules } from 'react-native';
-// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
@@ -111,7 +110,7 @@ const getNativeAssetForNetwork = async (
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
-  let differentWallet =
+  const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
@@ -162,6 +161,15 @@ const getAsset = (
 ) => {
   const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
+};
+
+const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
+  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
+  const accountAsset = store.getState().data?.accountAssetsData?.[
+    loweredUniqueId
+  ];
+  const genericAsset = store.getState().data?.genericAssets?.[loweredUniqueId];
+  return accountAsset ?? genericAsset;
 };
 
 const getAccountAsset = (
@@ -269,7 +277,7 @@ const formatGenericAsset = (
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);
-  let amount = ethAsset?.balance?.amount ?? 0;
+  const amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
 
@@ -425,6 +433,7 @@ export const daysFromTheFirstTx = (address: EthereumAddress) => {
     }
   });
 };
+
 /**
  * @desc Checks if a an address has previous transactions
  * @param  {String} address
@@ -435,16 +444,21 @@ const hasPreviousTransactions = (
 ): Promise<boolean> => {
   return new Promise(async resolve => {
     try {
-      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
+      const url = `https://aha.rainbow.me/?address=${address}`;
       const response = await fetch(url);
-      const parsedResponse = await response.json();
-      // Timeout needed to avoid the 5 requests / second rate limit of etherscan API
-      setTimeout(() => {
-        if (parsedResponse.status !== '0' && parsedResponse.result.length > 0) {
-          resolve(true);
-        }
+
+      if (!response.ok) {
         resolve(false);
-      }, 260);
+        return;
+      }
+
+      const parsedResponse: {
+        data: {
+          addresses: Record<string, boolean>;
+        };
+      } = await response.json();
+
+      resolve(parsedResponse?.data?.addresses[address.toLowerCase()] === true);
     } catch (e) {
       resolve(false);
     }
@@ -757,6 +771,7 @@ export default {
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
   formatGenericAsset,
+  getAssetFromAllAssets,
   getAccountAsset,
   getAsset,
   getAssetPrice,

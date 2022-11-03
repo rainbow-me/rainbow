@@ -91,9 +91,17 @@ export default function SourcePicker({ onSelect, currentSource }) {
           paddingVertical="12px"
           testID="swap-settings-routes-label"
         >
-          <Text size="16px" weight="bold">
+          <Text
+            color="primary (Deprecated)"
+            size="16px / 22px (Deprecated)"
+            weight="bold"
+          >
             {lang.t('exchange.source_picker')}
-            <Text color="secondary30" size="16px" weight="bold">
+            <Text
+              color="secondary30 (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
               {' 􀅵'}
             </Text>
           </Text>
@@ -107,11 +115,11 @@ export default function SourcePicker({ onSelect, currentSource }) {
           onPressMenuItem={handleOnPressMenuItem}
         >
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={40}
             paddingHorizontal="10px"
             paddingVertical="6px"
-            shadow="21px light"
+            shadow="21px light (Deprecated)"
             // shadow clipped on android by ButtonPressAnimation.android.tsx inside <ContextMenuButton>
           >
             <Inline alignVertical="center" horizontalSpace="4px">
@@ -125,7 +133,8 @@ export default function SourcePicker({ onSelect, currentSource }) {
                 width={20}
               />
               <Text
-                size="18px"
+                color="primary (Deprecated)"
+                size="18px / 27px (Deprecated)"
                 testID={`swap-settings-routes-current-${currentSource}`}
                 weight="bold"
               >

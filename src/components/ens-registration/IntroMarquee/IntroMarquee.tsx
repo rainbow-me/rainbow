@@ -6,7 +6,7 @@ import { Box, Stack, Text } from '@/design-system';
 import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
-import { queryClient } from '@/react-query/queryClient';
+import { queryClient } from '@/react-query';
 import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
 
@@ -111,17 +111,17 @@ function ENSAvatarPlaceholder({
         <Stack alignHorizontal="center" space={{ custom: 13 }}>
           <Box
             as={ImgixImage}
-            background="body"
+            background="body (Deprecated)"
             borderRadius={80}
             height={{ custom: 80 }}
-            shadow="15px light"
+            shadow="15px light (Deprecated)"
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
           />
           <Text
             align="center"
-            color="secondary50"
-            size="12px"
+            color="secondary50 (Deprecated)"
+            size="12px / 14px (Deprecated)"
             weight="semibold"
           >
             {name}

@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
 import * as Helpers from './helpers';
@@ -22,6 +21,8 @@ const RAINBOW_WALLET_NAME = 'rainbowwallet.eth';
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const RECORD_BIO = 'my bio';
 const RECORD_NAME = 'random';
+const RECORD_CONTENTHASH =
+  'ipfs://QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4';
 const RECORD_TWITTER = 'twitter123';
 const RECORD_EMAIL = 'abc@abc.com';
 const RECORD_INSTAGRAM = 'insta123';
@@ -37,6 +38,9 @@ const RECORD_URL = 'abc123.com';
 const EIP155_FORMATTED_AVATAR_RECORD =
   'eip155:1/erc721:0x06012c8cf97bead5deae237070f9587f8e7a266d/1368227';
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
+
+const ios = device.getPlatform() === 'ios';
+const android = device.getPlatform() === 'android';
 
 const address = (address, start, finish) =>
   [
@@ -73,11 +77,13 @@ const getRecords = async ensName => {
     publicResolverABI,
     provider
   );
+  const resolver = await provider.getResolver(ensName);
   const hashName = hash(ensName);
   const [
     avatar,
+    contenthash,
     description,
-    displayName,
+    name,
     url,
     twitter,
     email,
@@ -89,8 +95,9 @@ const getRecords = async ensName => {
     reddit,
   ] = await Promise.all([
     publicResolver.text(hashName, 'avatar'),
+    resolver.getContentHash(ensName),
     publicResolver.text(hashName, 'description'),
-    publicResolver.text(hashName, 'me.rainbow.displayName'),
+    publicResolver.text(hashName, 'name'),
     publicResolver.text(hashName, 'url'),
     publicResolver.text(hashName, 'com.twitter'),
     publicResolver.text(hashName, 'email'),
@@ -103,12 +110,13 @@ const getRecords = async ensName => {
   ]);
   return {
     avatar,
+    contenthash,
     description,
     discord,
-    displayName,
     email,
     github,
     instagram,
+    name,
     reddit,
     snapchat,
     telegram,
@@ -150,11 +158,8 @@ const validatePrimaryName = async name => {
 };
 
 beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  await exec(
-    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-  );
+  await Helpers.startHardhat();
+  await Helpers.startIosSimulator();
 });
 
 describe('Register ENS Flow', () => {
@@ -186,7 +191,7 @@ describe('Register ENS Flow', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
-    if (device.getPlatform() === 'android') {
+    if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
       // Set the pin
       await Helpers.authenticatePin('1234');
@@ -201,30 +206,9 @@ describe('Register ENS Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-  });
-
-  it('Should navigate to Settings Sheet after tapping Settings Button', async () => {
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-  });
-
-  it('Should navigate to Developer Settings after tapping Developer Section', async () => {
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.checkIfVisible('developer-settings-sheet');
-  });
-
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.swipe('developer-settings-sheet', 'up', 'slow');
-    await Helpers.waitAndTap('hardhat-section');
+    await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
-  });
-
-  it('Should navigate to the Wallet screen after swiping left', async () => {
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
@@ -239,13 +223,12 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
+    device.getPlatform() === 'android' && (await Helpers.delay(2000));
     await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
 
   it('Should be able to press a profile and continue to the ENS search screen', async () => {
-    await Helpers.swipe('ens-names-marquee', 'left', 'slow');
-    await Helpers.swipe('ens-names-marquee', 'right', 'slow');
     await Helpers.waitAndTap(
       'ens-intro-sheet-search-new-name-button-action-button'
     );
@@ -259,11 +242,11 @@ describe('Register ENS Flow', () => {
 
   it('Should be able to type a name that has special characters', async () => {
     await Helpers.checkIfVisible('ens-search-input');
-    await Helpers.typeText('ens-search-input', '‘invalidname', false);
+    await Helpers.typeText('ens-search-input', '/invalidname', false);
     await Helpers.waitAndTap('ens-search-clear-button');
     await Helpers.typeText('ens-search-input', '&&&ivalidname', false);
     await Helpers.waitAndTap('ens-search-clear-button');
-    await Helpers.typeText('ens-search-input', '‘invalidname‘', false);
+    await Helpers.typeText('ens-search-input', '/invalidname/', false);
     await Helpers.waitAndTap('ens-search-clear-button');
   });
 
@@ -281,20 +264,23 @@ describe('Register ENS Flow', () => {
   it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
-    await Helpers.checkIfVisible('ens-text-record-me.rainbow.displayName');
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      RECORD_NAME,
-      false
-    );
-    await Helpers.tapByText('Got it');
+    await Helpers.checkIfVisible('ens-text-record-name');
+    if (android) {
+      await Helpers.waitAndTap('ens-text-record-name');
+      await Helpers.tapByText('Got it');
+    }
+    await Helpers.typeText('ens-text-record-name', RECORD_NAME, false);
+    if (ios) {
+      await Helpers.tapByText('Got it');
+    }
     await Helpers.checkIfVisible('ens-text-record-description');
     await Helpers.typeText('ens-text-record-description', RECORD_BIO, false);
-    await Helpers.clearField('ens-text-record-me.rainbow.displayName');
+    await Helpers.clearField('ens-text-record-name');
     await Helpers.waitAndTap('use-select-image-avatar');
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
+    await Helpers.delay(2000);
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
   });
 
@@ -307,56 +293,73 @@ describe('Register ENS Flow', () => {
   it('Should go to review registration and start it', async () => {
     await Helpers.delay(2000);
     await Helpers.checkIfVisible(`ens-transaction-action-COMMIT`);
-    await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
-    await Helpers.delay(1000);
-    await Helpers.checkIfVisible(
-      `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
-    );
+    if (ios) {
+      await Helpers.waitAndTap(`ens-transaction-action-COMMIT`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-COMMIT');
+    }
+    await Helpers.delay(3000);
+    if (android) {
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
+    await Helpers.delay(2000);
+    if (ios) {
+      await Helpers.checkIfVisible(
+        `ens-confirm-register-label-WAIT_ENS_COMMITMENT`
+      );
+    }
     await Helpers.delay(65000);
   });
 
   it('Should see confirm registration screen', async () => {
     await Helpers.checkIfVisible(`ens-transaction-action-REGISTER`);
-    await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
+    if (ios) {
+      await Helpers.waitAndTap(`ens-transaction-action-REGISTER`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-REGISTER');
+      await Helpers.delay(2000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
-  it('Should confirm that the name is not available anymore', async () => {
-    const ensAvailable = await nameIsAvailable(RANDOM_NAME);
-    if (ensAvailable) throw new Error('ENS name is available');
-  });
+  if (ios) {
+    // TODO
+    it('Should confirm that the name is not available anymore', async () => {
+      const ensAvailable = await nameIsAvailable(RANDOM_NAME);
+      if (ensAvailable) throw new Error('ENS name is available');
+    });
 
-  it('Should confirm that the bio record is set', async () => {
-    const { description, displayName, avatar } = await getRecords(
-      RANDOM_NAME_ETH
-    );
-    if (description !== RECORD_BIO) throw new Error('ENS description is wrong');
-    if (displayName === RECORD_NAME)
-      throw new Error('ENS displayName is wrong');
-    if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
-      throw new Error('ENS avatar is wrong');
-  });
+    it('Should confirm that the bio record is set', async () => {
+      const { description, name, avatar } = await getRecords(RANDOM_NAME_ETH);
+      if (description !== RECORD_BIO)
+        throw new Error('ENS description is wrong');
+      if (name === RECORD_NAME) throw new Error('ENS name is wrong');
+      if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
+        throw new Error('ENS avatar is wrong');
+    });
 
-  it('Should confirm RANDOM_NAME is primary name', async () => {
-    await validatePrimaryName(RANDOM_NAME_ETH);
-  });
+    it('Should confirm RANDOM_NAME is primary name', async () => {
+      await validatePrimaryName(RANDOM_NAME_ETH);
+    });
+  }
 
   it('Should check new wallet name is the new ENS on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RANDOM_NAME_ETH}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${RANDOM_NAME_ETH}`);
+    await Helpers.checkIfExists(`profile-name-${RANDOM_NAME_ETH}`);
+    await Helpers.tap(`profile-name-${RANDOM_NAME_ETH}`);
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.tapByText(`${RANDOM_NAME_ETH}`);
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RANDOM_NAME_ETH}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -376,10 +379,18 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should use rainbowtestwallet.eth as primary name', async () => {
+    await Helpers.delay(2000);
     await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
-    await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
+    if (ios) {
+      await Helpers.waitAndTap(`ens-transaction-action-SET_NAME`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-SET_NAME');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm rainbowtestwallet.eth is primary name', async () => {
@@ -389,15 +400,13 @@ describe('Register ENS Flow', () => {
   it('Should check wallet name is the new ENS set as primary on profile screen and change wallet screen', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
-    await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${RAINBOW_TEST_WALLET_NAME}`
-    );
+    await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET_NAME}`);
     await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.tapByText(RAINBOW_TEST_WALLET_NAME);
+    await Helpers.tapAtPoint('profile-screen', { x: 210, y: 185 });
     await Helpers.checkIfVisible(
       `change-wallet-address-row-label-${RAINBOW_TEST_WALLET_NAME}`
     );
-    await Helpers.swipe('change-wallet-sheet-title', 'down', 'slow');
+    await Helpers.swipe('change-wallet-sheet-title', 'down', 'fast');
   });
 
   it('Should open the View Profile Sheet after tapping "View Profile"', async () => {
@@ -405,9 +414,11 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfExistsByText('View Profile');
     await Helpers.tapByText('View Profile');
     await Helpers.checkIfExists('profile-sheet');
+    await Helpers.delay(2000);
     await Helpers.checkIfExistsByText('rainbowtestwallet.eth');
     await Helpers.checkIfExistsByText('Test 2');
     await Helpers.swipe('profile-sheet', 'down');
+    await Helpers.delay(1000);
   });
 
   it('Should open the Edit Profile Sheet after tapping "Edit Profile"', async () => {
@@ -438,39 +449,14 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('ens-selectable-attribute-keywords');
     await Helpers.waitAndTap('ens-selectable-attribute-ltc');
     await Helpers.waitAndTap('ens-selectable-attribute-doge');
-    await Helpers.waitAndTap('ens-selectable-attribute-content');
+    await Helpers.waitAndTap('ens-selectable-attribute-contenthash');
 
     // Dismiss the bottom attribute sheet
     await Helpers.swipe('ens-additional-records-sheet', 'down');
-
-    // Validate that the fields are there
-    await Helpers.checkIfExistsByText('Website');
-    await Helpers.checkIfExistsByText('Twitter');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Email');
-    await Helpers.checkIfExistsByText('Instagram');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Discord');
-    await Helpers.checkIfExistsByText('GitHub');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Bitcoin');
-    await Helpers.checkIfExistsByText('Snapchat');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Telegram');
-    await Helpers.checkIfExistsByText('Reddit');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Pronouns');
-    await Helpers.checkIfExistsByText('Notice');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Keywords');
-    await Helpers.checkIfExistsByText('Litecoin');
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.checkIfExistsByText('Dogecoin');
-    await Helpers.checkIfExistsByText('Content');
-    await Helpers.swipe('ens-edit-records-sheet', 'down');
   });
 
   it('Should fill & validate the fields', async () => {
+    await Helpers.delay(2000);
     // Fill "Website" field
     await Helpers.checkIfVisible('ens-text-record-url');
     await Helpers.typeText('ens-text-record-url', 'abc', false);
@@ -507,6 +493,15 @@ describe('Register ENS Flow', () => {
     await Helpers.delay(1000);
     await Helpers.checkIfNotVisible('ens-text-record-email-error');
 
+    if (android) {
+      await Helpers.swipe(
+        'ens-edit-records-sheet',
+        'up',
+        'slow',
+        0.15,
+        ios ? 0.15 : 0.3
+      );
+    }
     // Fill "Instagram" field
     await Helpers.typeText(
       'ens-text-record-com.instagram',
@@ -514,7 +509,13 @@ describe('Register ENS Flow', () => {
       false
     );
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? 0.15 : 0.3
+    );
 
     // Fill "Discord" field
     await Helpers.typeText(
@@ -536,7 +537,13 @@ describe('Register ENS Flow', () => {
     // Fill "GitHub" field
     await Helpers.typeText('ens-text-record-com.github', RECORD_GITHUB, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
   });
 
   it('Should fill & validate the fields 2', async () => {
@@ -552,8 +559,16 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-BTC-error');
+  });
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+  it('Should fill & validate the fields 3', async () => {
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
 
     // Fill "Snapchat" field
     await Helpers.typeText(
@@ -562,6 +577,10 @@ describe('Register ENS Flow', () => {
       false
     );
 
+    if (!ios) {
+      await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.3, 0.3);
+    }
+
     // Fill "Telegram" field
     await Helpers.typeText(
       'ens-text-record-org.telegram',
@@ -569,7 +588,13 @@ describe('Register ENS Flow', () => {
       false
     );
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
 
     // Fill "Reddit" field
     await Helpers.typeText('ens-text-record-com.reddit', RECORD_REDDIT, false);
@@ -577,7 +602,13 @@ describe('Register ENS Flow', () => {
     // Fill "Pronouns" field
     await Helpers.typeText('ens-text-record-pronouns', RECORD_PRONOUNS, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
 
     // Fill "Notice" field
     await Helpers.typeText('ens-text-record-notice', RECORD_NOTICE, false);
@@ -585,9 +616,23 @@ describe('Register ENS Flow', () => {
     // Fill "Keywords" field
     await Helpers.typeText('ens-text-record-keywords', RECORD_KEYWORDS, false);
 
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
-    await Helpers.swipe('ens-edit-records-sheet', 'up', 'slow', 0.15);
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
+    await Helpers.swipe(
+      'ens-edit-records-sheet',
+      'up',
+      'slow',
+      0.15,
+      ios ? undefined : 0.3
+    );
+  });
 
+  it('Should fill & validate the fields 4', async () => {
     // Fill "Litecoin" field
     await Helpers.typeText('ens-text-record-LTC', 'MGx', false);
     await Helpers.waitAndTap('ens-text-record-LTC-error');
@@ -600,6 +645,23 @@ describe('Register ENS Flow', () => {
     );
     await Helpers.delay(3000);
     await Helpers.checkIfNotVisible('ens-text-record-LTC-error');
+
+    // Fill "Content" field
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(0, 3),
+      false
+    );
+    await Helpers.waitAndTap('ens-text-record-contenthash-error');
+    await Helpers.checkIfElementByTextToExist('Invalid content hash');
+    await Helpers.tapByText('OK');
+    await Helpers.typeText(
+      'ens-text-record-contenthash',
+      RECORD_CONTENTHASH.slice(3),
+      false
+    );
+    await Helpers.delay(3000);
+    await Helpers.checkIfNotVisible('ens-text-record-contenthash-error');
   });
 
   it('Should unselect a field', async () => {
@@ -610,11 +672,7 @@ describe('Register ENS Flow', () => {
   });
 
   it('Should update a field', async () => {
-    await Helpers.typeText(
-      'ens-text-record-me.rainbow.displayName',
-      ' Guy',
-      false
-    );
+    await Helpers.typeText('ens-text-record-name', ' Guy', false);
     await Helpers.waitAndTap('hide-keyboard-button');
   });
 
@@ -622,40 +680,53 @@ describe('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
     await Helpers.checkIfVisible(`ens-transaction-action-EDIT`);
-    await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
+    if (ios) {
+      await Helpers.waitAndTap(`ens-transaction-action-EDIT`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-EDIT');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
-  it('Should confirm the update was successful', async () => {
-    const {
-      description,
-      discord,
-      email,
-      github,
-      instagram,
-      reddit,
-      snapchat,
-      telegram,
-      twitter,
-      url,
-    } = await getRecords(RAINBOW_TEST_WALLET_NAME);
-    if (description) throw new Error('description should be empty');
-    if (discord !== RECORD_DISCORD)
-      throw new Error('discord is incorrect.', discord);
-    if (email !== RECORD_EMAIL) throw new Error('email is incorrect.', email);
-    if (github !== RECORD_GITHUB)
-      throw new Error('github is incorrect.', github);
-    if (instagram !== RECORD_INSTAGRAM)
-      throw new Error('instagram is incorrect.', instagram);
-    if (reddit !== RECORD_REDDIT)
-      throw new Error('reddit is incorrect.', reddit);
-    if (snapchat !== RECORD_SNAPCHAT)
-      throw new Error('snapchat is incorrect.', snapchat);
-    if (telegram !== RECORD_TELEGRAM)
-      throw new Error('telegram is incorrect.', telegram);
-    if (twitter !== RECORD_TWITTER)
-      throw new Error('twitter is incorrect.', twitter);
-    if (url !== RECORD_URL) throw new Error('url is incorrect.', url);
-  });
+  if (ios) {
+    // TODO
+    it('Should confirm the update was successful', async () => {
+      const {
+        contenthash,
+        description,
+        discord,
+        email,
+        github,
+        instagram,
+        reddit,
+        snapchat,
+        telegram,
+        twitter,
+        url,
+      } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+      if (description) throw new Error('description should be empty');
+      if (discord !== RECORD_DISCORD)
+        throw new Error('discord is incorrect.', discord);
+      if (email !== RECORD_EMAIL) throw new Error('email is incorrect.', email);
+      if (github !== RECORD_GITHUB)
+        throw new Error('github is incorrect.', github);
+      if (instagram !== RECORD_INSTAGRAM)
+        throw new Error('instagram is incorrect.', instagram);
+      if (reddit !== RECORD_REDDIT)
+        throw new Error('reddit is incorrect.', reddit);
+      if (snapchat !== RECORD_SNAPCHAT)
+        throw new Error('snapchat is incorrect.', snapchat);
+      if (telegram !== RECORD_TELEGRAM)
+        throw new Error('telegram is incorrect.', telegram);
+      if (twitter !== RECORD_TWITTER)
+        throw new Error('twitter is incorrect.', twitter);
+      if (url !== RECORD_URL) throw new Error('url is incorrect.', url);
+      if (contenthash !== RECORD_CONTENTHASH)
+        throw new Error('contenthash is incorrect.', contenthash);
+    });
+  }
 
   it('Should navigate to the Wallet screen to renew', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -670,7 +741,14 @@ describe('Register ENS Flow', () => {
   it('Should renew rainbowtestwallet.eth', async () => {
     await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
-    await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+    if (ios) {
+      await Helpers.waitAndTap(`ens-transaction-action-RENEW`);
+    } else {
+      await Helpers.tapAndLongPress('ens-transaction-action-RENEW');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should navigate to the Wallet screen to send ENS from renew tx', async () => {
@@ -699,12 +777,19 @@ describe('Register ENS Flow', () => {
     await Helpers.waitAndTap('clear-records');
     await Helpers.waitAndTap('set-address');
     await Helpers.waitAndTap('transfer-control');
-    await Helpers.tapAndLongPress('send-confirmation-button');
+    if (ios) {
+      await Helpers.waitAndTap(`send-confirmation-button`);
+    } else {
+      await Helpers.tapAndLongPress('send-confirmation-button');
+      await Helpers.delay(1000);
+      await Helpers.checkIfVisible('pin-authentication-screen');
+      await Helpers.authenticatePin('1234');
+    }
   });
 
   it('Should confirm the ENS was sent correctly', async () => {
     await Helpers.delay(1000);
-    const { displayName } = await getRecords(RAINBOW_TEST_WALLET_NAME);
+    const { name } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
       RAINBOW_TEST_WALLET_NAME
     );
@@ -713,27 +798,30 @@ describe('Register ENS Flow', () => {
       throw new Error('Resolved address is wrong');
     if (primaryName !== RAINBOW_WALLET_NAME)
       throw new Error('Resolved primary name is wrong');
-    if (displayName) throw new Error('me.rainbow.displayName name is wrong');
+    if (name) throw new Error('name is wrong');
     if (owner !== RAINBOW_WALLET_ADDRESS)
       throw new Error('Owner not set correctly');
   });
 
   it('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
+    const WALLET_ROW_TRUNCATED_ADDRESS = address(
+      RAINBOW_TEST_WALLET_ADDRESS,
+      6,
+      4
+    );
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.checkIfExists(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
+    await Helpers.waitAndTap(`profile-name-sticky-${TRUNCATED_ADDRESS}`);
     await Helpers.checkIfVisible(
-      `wallet-screen-account-name-${TRUNCATED_ADDRESS}`
-    );
-    await Helpers.waitAndTap(`wallet-screen-account-name-${TRUNCATED_ADDRESS}`);
-    await Helpers.checkIfVisible(
-      `change-wallet-address-row-address-${RAINBOW_TEST_WALLET_ADDRESS}`
+      `change-wallet-address-row-label-${WALLET_ROW_TRUNCATED_ADDRESS}`
     );
   });
 
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:8545)');
+    await Helpers.killHardhat();
   });
 });

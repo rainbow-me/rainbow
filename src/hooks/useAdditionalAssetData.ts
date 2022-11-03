@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import { EthereumAddress } from '@/entities';
@@ -7,10 +7,13 @@ import { getAdditionalAssetData } from '@/handlers/dispersion';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
+import { implementation } from '@/entities/dispersion';
+import { Network } from '@/helpers';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,
-  tokenPrice = 0
+  tokenPrice = 0,
+  chainId = 1
 ): {
   description?: string;
   loading: boolean;
@@ -18,11 +21,11 @@ export default function useAdditionalAssetData(
   totalLiquidity: string | null;
   marketCap: string | null;
   links: Record<string, string[]>;
-  networks: Record<string, { address: EthereumAddress; decimals: number }>;
+  networks: Record<string, implementation>;
 } {
   const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
   const { data } = useQuery(['additionalAssetData', address], () =>
-    getAdditionalAssetData(address)
+    getAdditionalAssetData(address, chainId)
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(

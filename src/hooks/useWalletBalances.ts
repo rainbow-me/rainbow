@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
+import { useQuery } from '@tanstack/react-query';
 import { isEmpty, keys } from 'lodash';
 import { useCallback } from 'react';
-import { useQuery } from 'react-query';
 import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
@@ -10,7 +10,7 @@ import {
 import { web3Provider } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
-import { queryClient } from '@/react-query/queryClient';
+import { queryClient } from '@/react-query';
 import { balanceCheckerContractAbi } from '@/references';
 import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';
@@ -62,7 +62,7 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
 
   const resultFromStorage = queryClient.getQueryData<{
     [address: string]: string;
-  }>(WALLET_BALANCES_FROM_STORAGE);
+  }>([WALLET_BALANCES_FROM_STORAGE]);
 
   if (isEmpty(data) && !isEmpty(resultFromStorage)) {
     return resultFromStorage;

@@ -18,9 +18,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
-  useENSAddress,
   useENSAvatar,
-  useENSFirstTransactionTimestamp,
   useExternalWalletSectionsData,
   usePersistentDominantColorFromImage,
 } from '@/hooks';
@@ -28,6 +26,8 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
+import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
+import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -44,9 +44,9 @@ export default function ProfileSheet() {
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
-  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress(
-    ensName
-  );
+  const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({
+    name: ensName,
+  });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName);
 
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
@@ -54,7 +54,7 @@ export default function ProfileSheet() {
   // Prefetch first transaction timestamp unless already fetched for intro marquee
   const {
     isSuccess: hasFirstTxTimestampFetched,
-  } = useENSFirstTransactionTimestamp(name, { enabled: !isPreview });
+  } = useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
   const {
@@ -102,15 +102,14 @@ export default function ProfileSheet() {
   return (
     <AndroidWrapper>
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
-        <StatusBar barStyle="light-content" />
         <AccentColorProvider color={accentColor}>
-          <Box background="body" testID="profile-sheet">
+          <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview &&
               (!isAddressSuccess ||
                 !hasListFetched ||
                 !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px">
+                <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
@@ -145,10 +144,10 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
 
 function PlaceholderList() {
   return (
-    <Inset horizontal="19px">
+    <Inset horizontal="19px (Deprecated)">
       <Box height="full">
         <Skeleton animated>
-          <Stack space="15px">
+          <Stack space="15px (Deprecated)">
             <PlaceholderRow />
             <PlaceholderRow />
             <PlaceholderRow />
@@ -167,13 +166,13 @@ function PlaceholderRow() {
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 30 }}
             width={{ custom: 30 }}
           />
           <Box
-            background="body"
+            background="body (Deprecated)"
             borderRadius={15}
             height={{ custom: 20 }}
             width={{ custom: 200 }}

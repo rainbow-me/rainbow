@@ -30,12 +30,16 @@ const docs: DocsType = {
             <>
               <Box padding="24px" style={{ backgroundColor: 'black' }}>
                 <ColorModeProvider value="dark">
-                  <Text>Hi Mom!</Text>
+                  <Text color="label" size="17pt">
+                    Hi Mom!
+                  </Text>
                 </ColorModeProvider>
               </Box>
               <Box padding="24px" style={{ backgroundColor: 'white' }}>
                 <ColorModeProvider value="light">
-                  <Text>Hi Rainbow!</Text>
+                  <Text color="label" size="17pt">
+                    Hi Rainbow!
+                  </Text>
                 </ColorModeProvider>
               </Box>
             </>

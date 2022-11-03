@@ -1,7 +1,7 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
@@ -11,8 +11,12 @@ import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { navbarHeight } from '../navbar/Navbar';
 
-const Container = styled(Column)(position.sizeAsObject('100%'));
+const Container = styled(Column)({
+  ...position.sizeAsObject('100%'),
+  paddingTop: navbarHeight,
+});
 
 const EmptyAssetList = ({
   descendingOpacity,
@@ -23,7 +27,7 @@ const EmptyAssetList = ({
   title,
   ...props
 }) => {
-  const { bottom: bottomInset } = useSafeArea();
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const interstitialOffset = useMemo(() => {
     let offset = bottomInset + FabWrapperBottomPosition;
@@ -44,7 +48,11 @@ const EmptyAssetList = ({
         <ScrollView
           contentContainerStyle={{ height: '100%' }}
           refreshControl={
-            <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
+            <RefreshControl
+              onRefresh={refresh}
+              progressViewOffset={navbarHeight + 16}
+              refreshing={isRefreshing}
+            />
           }
         >
           {children}

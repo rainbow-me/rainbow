@@ -7,12 +7,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
-import {
-  Box,
-  Cover,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import {
@@ -150,7 +145,7 @@ const RegistrationCover = ({
     return (
       <Box height="126px">
         <Skeleton animated>
-          <Box background="body" height="126px" />
+          <Box background="body (Deprecated)" height="126px" />
         </Skeleton>
       </Box>
     );
@@ -185,7 +180,12 @@ const RegistrationCover = ({
               })}
         >
           {(!coverUrl || isUploading || isLoadingImage) && (
-            <Text align="center" color="accent" size="18px" weight="heavy">
+            <Text
+              align="center"
+              color="accent"
+              size="18px / 27px (Deprecated)"
+              weight="heavy"
+            >
               􀣵{' '}
               {isUploading || isLoadingImage
                 ? lang.t('profiles.create.uploading')

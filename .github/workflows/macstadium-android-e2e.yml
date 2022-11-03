@@ -1,0 +1,56 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Android e2e tests
+
+# Controls when the workflow will run
+on: [pull_request, workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "android-e2e"
+  android-e2e:
+    if: startsWith(github.head_ref, 'android-ci')
+    # The type of runner that the job will run on
+    runs-on: ["self-hosted", "ci-5"]
+    # Cancel current builds if there's a newer commit on the same branch
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+      - name: Set up ENV vars & scripts
+        run: |
+          # read local env vars
+          source ~/.bashrc
+          # fetch env vars
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          # unpack dotenv
+          mv rainbow-env/android/app/google-services.json android/app
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          # run CI scripts
+          eval $CI_SCRIPTS
+          # tweak dotenv for e2e
+          sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          # set up password
+          cp android/keystores/debug.keystore android/keystores/rainbow-key.keystore
+          sed -i -e "s:rainbow-alias:androiddebugkey:g" android/app/build.gradle
+          export RAINBOW_KEY_ANDROID_PASSWORD=android
+      - name: Install deps via Yarn
+        run: yarn setup-ci
+
+      - name: Rebuild detox cache
+        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+
+      - name: Build the app in Release mode
+        run: ./node_modules/.bin/detox build --configuration android.emu.release
+
+      - name: Run Android e2e tests
+        run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit
+

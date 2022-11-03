@@ -24,8 +24,17 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
+import useAccountAsset from './useAccountAsset';
+import { ETH_ADDRESS } from '@/references';
+import { isZero } from '@/helpers/utilities';
+import { IS_IOS } from '@/env';
 
-export default () => {
+type UseOnAvatarPressProps = {
+  /** Is the avatar selection being used on the wallet or transaction screen? */
+  screenType?: 'wallet' | 'transaction';
+};
+
+export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
@@ -37,6 +46,8 @@ export default () => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const accountAsset = useAccountAsset(ETH_ADDRESS);
+
   const profileEnabled = Boolean(accountENS);
 
   const { isOwner } = useENSOwner(accountENS, {
@@ -106,11 +117,16 @@ export default () => {
   );
 
   const onAvatarPickEmoji = useCallback(() => {
-    navigate(Routes.AVATAR_BUILDER, {
-      initialAccountColor: accountColor,
-      initialAccountName: accountName,
-    });
-  }, [accountColor, accountName, navigate]);
+    navigate(
+      screenType === 'wallet'
+        ? Routes.AVATAR_BUILDER_WALLET
+        : Routes.AVATAR_BUILDER,
+      {
+        initialAccountColor: accountColor,
+        initialAccountName: accountName,
+      }
+    );
+  }, [accountColor, accountName, navigate, screenType]);
 
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({
@@ -155,185 +171,151 @@ export default () => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
+  const isZeroETH = isZero(accountAsset.balance.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {
-      if (buttonIndex === 0) {
-        if (isENSProfile) {
-          if (!isReadOnly) {
-            onAvatarEditProfile();
-          } else {
-            onAvatarViewProfile();
-          }
+      if (isENSProfile) {
+        if (isReadOnly || isZeroETH) {
+          if (buttonIndex === 0) onAvatarViewProfile();
+          if (buttonIndex === 1) onAvatarChooseImage();
+          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         } else {
-          if (!isReadOnly) {
-            onAvatarCreateProfile();
-          } else {
-            onAvatarChooseImage();
-          }
+          if (buttonIndex === 0) onAvatarEditProfile();
+          if (buttonIndex === 1) onAvatarViewProfile();
+          if (buttonIndex === 2) onAvatarChooseImage();
+          if (buttonIndex === 3) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         }
-      } else if (buttonIndex === 1) {
-        if (isENSProfile) {
-          if (!isReadOnly) {
-            onAvatarViewProfile();
-          } else {
-            if (!hasENSAvatar) {
-              onAvatarChooseImage();
-            }
-          }
+      } else {
+        if (isReadOnly || isZeroETH) {
+          if (buttonIndex === 0) onAvatarChooseImage();
+          if (buttonIndex === 1) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         } else {
-          if (!isReadOnly) {
-            onAvatarChooseImage();
-          } else {
-            if (!accountImage) {
-              if (ios) {
-                onAvatarPickEmoji();
-              } else {
-                setNextEmoji();
-              }
-            } else {
-              onAvatarRemovePhoto();
-            }
-          }
-        }
-      } else if (buttonIndex === 2) {
-        if (!hasENSAvatar) {
-          if (isENSProfile) {
-            if (!isReadOnly) {
-              onAvatarChooseImage();
-            } else {
-              if (!accountImage) {
-                if (ios) {
-                  onAvatarPickEmoji();
-                } else {
-                  setNextEmoji();
-                }
-              } else {
-                onAvatarRemovePhoto();
-              }
-            }
-          } else {
-            if (!isReadOnly) {
-              if (!accountImage) {
-                if (ios) {
-                  onAvatarPickEmoji();
-                } else {
-                  setNextEmoji();
-                }
-              } else {
-                onAvatarRemovePhoto();
-              }
-            }
-          }
-        }
-      } else if (buttonIndex === 3) {
-        if (!hasENSAvatar && !isReadOnly) {
-          if (!accountImage) {
-            if (ios) {
-              onAvatarPickEmoji();
-            } else {
-              setNextEmoji();
-            }
-          } else {
-            onAvatarRemovePhoto();
-          }
+          if (buttonIndex === 0) onAvatarCreateProfile();
+          if (buttonIndex === 1) onAvatarChooseImage();
+          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
         }
       }
     },
     [
-      accountImage,
-      hasENSAvatar,
       isENSProfile,
       isReadOnly,
+      isZeroETH,
       onAvatarChooseImage,
       onAvatarCreateProfile,
       onAvatarEditProfile,
       onAvatarPickEmoji,
-      onAvatarRemovePhoto,
       onAvatarViewProfile,
       setNextEmoji,
     ]
   );
 
-  const avatarActionSheetOptions = (hasENSAvatar
-    ? [
-        !isReadOnly && lang.t('profiles.profile_avatar.edit_profile'),
-        lang.t('profiles.profile_avatar.view_profile'),
-      ]
-    : [
-        isENSProfile &&
-          !isReadOnly &&
-          lang.t('profiles.profile_avatar.edit_profile'),
-        isENSProfile && lang.t('profiles.profile_avatar.view_profile'),
-        !isENSProfile &&
-          !isReadOnly &&
-          lang.t('profiles.profile_avatar.create_profile'),
-        lang.t('profiles.profile_avatar.choose_from_library'),
-        !accountImage
-          ? ios
-            ? lang.t('profiles.profile_avatar.pick_emoji')
-            : lang.t('profiles.profile_avatar.shuffle_emoji')
-          : lang.t('profiles.profile_avatar.remove_photo'),
-      ]
-  )
-    .filter(option => Boolean(option))
+  const avatarContextMenuConfig = {
+    menuTitle: '',
+    menuItems: [
+      isENSProfile &&
+        !isReadOnly &&
+        !isZeroETH && {
+          actionKey: 'editProfile',
+          actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: ios ? 'pencil.circle' : null,
+          },
+        },
+      isENSProfile && {
+        actionKey: 'viewProfile',
+        actionTitle: lang.t('profiles.profile_avatar.view_profile'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: ios ? 'person.crop.circle' : null,
+        },
+      },
+      !isENSProfile &&
+        !isReadOnly &&
+        !isZeroETH && {
+          actionKey: 'createProfile',
+          actionTitle: lang.t('profiles.profile_avatar.create_profile'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: ios ? 'person.crop.circle' : null,
+          },
+        },
+      {
+        actionKey: 'chooseFromLibrary',
+        actionTitle: lang.t('profiles.profile_avatar.choose_from_library'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: ios ? 'photo.on.rectangle.angled' : null,
+        },
+      },
+      !accountImage
+        ? ios
+          ? {
+              actionKey: 'pickEmoji',
+              actionTitle: lang.t('profiles.profile_avatar.pick_emoji'),
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'face.smiling',
+              },
+            }
+          : {
+              actionKey: 'shuffleEmoji',
+              actionTitle: lang.t('profiles.profile_avatar.shuffle_emoji'),
+            }
+        : {
+            actionKey: 'removePhoto',
+            actionTitle: lang.t('profiles.profile_avatar.remove_photo'),
+          },
+    ].filter(x => x),
+  };
+
+  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
+    .map(item => item.actionTitle)
     .concat(ios ? ['Cancel'] : []);
 
-  const onAvatarPress = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: avatarActionSheetOptions.length - 1,
-        destructiveButtonIndex:
-          !hasENSAvatar && accountImage
-            ? avatarActionSheetOptions.length - 2
-            : undefined,
-        options: avatarActionSheetOptions,
-      },
-      (buttonIndex: number) => callback(buttonIndex)
-    );
-  }, [avatarActionSheetOptions, hasENSAvatar, accountImage, callback]);
+  const onAvatarPressProfile = useCallback(() => {
+    navigate(Routes.PROFILE_SHEET, {
+      address: accountENS,
+      fromRoute: 'ProfileAvatar',
+    });
+  }, [accountENS, navigate]);
 
-  const avatarOptions = useMemo(
-    () => [
-      {
-        id: 'newimage',
-        label: 'Choose from Library',
-        uiImage: 'photo',
-      },
-      ...(!accountImage
-        ? [
-            {
-              id: 'newemoji',
-              label: 'Pick an Emoji',
-              uiImage: 'face.smiling',
-            },
-          ]
-        : []),
-      ...(accountImage
-        ? [
-            {
-              id: 'removeimage',
-              label: 'Remove Photo',
-              uiImage: 'trash',
-            },
-          ]
-        : []),
-      {
-        id: 'webprofile',
-        label: 'View Web Profile',
-        uiImage: 'safari',
-      },
-    ],
-    [accountImage]
-  );
+  const onAvatarPress = useCallback(() => {
+    if (hasENSAvatar && accountENS) {
+      onAvatarPressProfile();
+    } else {
+      showActionSheetWithOptions(
+        {
+          cancelButtonIndex: avatarActionSheetOptions.length - 1,
+          destructiveButtonIndex:
+            !hasENSAvatar && accountImage
+              ? avatarActionSheetOptions.length - 2
+              : undefined,
+          options: avatarActionSheetOptions,
+        },
+        (buttonIndex: number) => callback(buttonIndex)
+      );
+    }
+  }, [
+    hasENSAvatar,
+    accountENS,
+    onAvatarPressProfile,
+    avatarActionSheetOptions,
+    accountImage,
+    callback,
+  ]);
 
   return {
+    avatarContextMenuConfig,
     avatarActionSheetOptions,
-    avatarOptions,
+    hasENSProfile: hasENSAvatar && accountENS,
     onAvatarChooseImage,
     onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
+    onAvatarPressProfile:
+      hasENSAvatar && accountENS ? onAvatarPressProfile : undefined,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
     onSelectionCallback: callback,

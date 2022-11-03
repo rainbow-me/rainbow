@@ -1,15 +1,16 @@
-import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { useNavigation } from '../navigation/Navigation';
+
+import { useNavigation } from '@/navigation/Navigation';
 import { CampaignKey } from '@/campaigns/campaignChecks';
-import { PromoSheet } from '@/components/promos';
+import { PromoSheet } from '@/components/PromoSheet';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
-import SwapsPromoBackground from '@rainbow-me/assets/swapsPromoBackground.png';
-import SwapsPromoHeader from '@rainbow-me/assets/swapsPromoHeader.png';
-import { delay } from '@rainbow-me/helpers/utilities';
-import Routes from '@rainbow-me/routes';
-import { useTheme } from '@rainbow-me/theme';
+import SwapsPromoBackground from '@/assets/swapsPromoBackground.png';
+import SwapsPromoHeader from '@/assets/swapsPromoHeader.png';
+import { delay } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import * as i18n from '@/languages';
 
 const HEADER_HEIGHT = 285;
 const HEADER_WIDTH = 390;
@@ -21,6 +22,7 @@ export default function SwapsPromoSheet() {
     shouldUpdate: false,
     type: ExchangeModalTypes.swap,
   });
+  const translations = i18n.l.promos.swaps_launch;
 
   const navigateToSwaps = useCallback(() => {
     goBack();
@@ -30,7 +32,7 @@ export default function SwapsPromoSheet() {
         params: {
           fromDiscover: true,
           onSelectCurrency: updateInputCurrency,
-          title: lang.t('swap.modal_types.swap'),
+          title: i18n.t(i18n.l.swap.modal_types.swap),
           type: CurrencySelectionTypes.input,
         },
         screen: Routes.CURRENCY_SELECT_SCREEN,
@@ -46,12 +48,37 @@ export default function SwapsPromoSheet() {
       campaignKey={CampaignKey.swapsLaunch}
       headerImage={SwapsPromoHeader}
       headerImageAspectRatio={HEADER_WIDTH / HEADER_HEIGHT}
-      icon1="􀖅"
-      icon2="􀯮"
-      icon3="􀙨"
-      iconGradient={colors.gradients.swapPurpleTintToSwapPurple}
-      onPress={navigateToSwaps}
       sheetHandleColor={colors.whiteLabel}
+      header={i18n.t(translations.header)}
+      subHeader={i18n.t(translations.subheader)}
+      primaryButtonProps={{
+        label: i18n.t(translations.primary_button),
+        onPress: navigateToSwaps,
+      }}
+      secondaryButtonProps={{
+        label: i18n.t(translations.secondary_button),
+        onPress: goBack,
+      }}
+      items={[
+        {
+          title: i18n.t(translations.info_row_1.title),
+          description: i18n.t(translations.info_row_1.description),
+          icon: '􀖅',
+          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+        },
+        {
+          title: i18n.t(translations.info_row_2.title),
+          description: i18n.t(translations.info_row_2.description),
+          icon: '􀯮',
+          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+        },
+        {
+          title: i18n.t(translations.info_row_3.title),
+          description: i18n.t(translations.info_row_3.description),
+          icon: '􀙨',
+          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+        },
+      ]}
     />
   );
 }

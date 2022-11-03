@@ -4,10 +4,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
 import { ParsedAddressAsset } from '@/entities';
-import {
-  getLiquidity,
-  saveLiquidity,
-} from '@/handlers/localstorage/uniswap';
+import { getLiquidity, saveLiquidity } from '@/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 

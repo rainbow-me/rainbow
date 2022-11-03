@@ -150,6 +150,32 @@ export const settingsSheetConfig = {
   }),
 };
 
+export const qrScannerConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      scrollEnabled: true,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
+export const pairHardwareWalletNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.2,
+    }),
+  }),
+};
+
 export const registerENSNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -456,7 +482,7 @@ export const settingsOptions = colors => ({
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
-    backgroundColor: 'transparent',
+    backgroundColor: ios ? colors.cardBackdrop : 'transparent',
     elevation: 0,
     height: 60,
     shadowColor: 'transparent',

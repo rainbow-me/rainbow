@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, StatusBar } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { ChainBadge, CoinIcon } from '../components/coin-icon';
+import { Linking } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ChainBadge, CoinIcon, DashedWrapper } from '../components/coin-icon';
 import {
   Centered,
   Column,
@@ -18,6 +18,7 @@ import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
@@ -27,8 +28,16 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  gasUtils,
+  getTokenMetadata,
+} from '@/utils';
 import { cloudPlatformAccountName } from '@/utils/platform';
+import { useTheme } from '@/theme';
+import { isL2Network } from '@/handlers/web3';
+import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -52,12 +61,13 @@ const getBodyTextPropsWithColor = colors =>
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   align: 'center',
   alignItems: 'center',
-  color: color || colors.appleBlue,
+  color: color ?? colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
 }))({
-  ...padding.object(android ? 5 : 8, 12),
-  borderColor: ({ theme: { colors }, color }) => colors.alpha(color, 0.06),
+  ...padding.object(IS_ANDROID ? 5 : 8, 12),
+  borderColor: ({ theme: { colors }, color }) =>
+    colors.alpha(color ?? colors.appleBlue, 0.06),
   borderRadius: 20,
   borderWidth: 2,
   height: 40,
@@ -118,6 +128,24 @@ const SmolAppIcon = () => {
         style={{
           width: 64,
           height: 64,
+        }}
+      />
+    </Box>
+  );
+};
+
+const TheMergeIcon = () => {
+  return (
+    <Box
+      style={{
+        marginVertical: 10,
+      }}
+    >
+      <ImgixImage
+        source={TheMergePng}
+        style={{
+          width: 53,
+          height: 50,
         }}
       />
     </Box>
@@ -219,20 +247,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
-      textColor: 'optimismRed',
-      bgColor: 'optimismRed06',
-      onPress: (navigate, goBack, handleClose) => () => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
+      textColor: colors?.optimismRed,
+      bgColor: colors?.optimismRed06,
     },
   },
   smol_app_icon: {
@@ -242,37 +258,46 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
-      textColor: 'smolPurple',
-      bgColor: 'smolPurple06',
-      onPress: (navigate, goBack, handleClose) => () => {
-        if (handleClose) handleClose();
-        if (goBack) goBack();
-        setTimeout(() => {
-          navigate(Routes.SETTINGS_SHEET);
-          setTimeout(() => {
-            navigate(Routes.SETTINGS_SHEET, {
-              screen: 'AppIconSection',
-            });
-          }, 300);
-        }, 300);
-      },
+      textColor: colors?.smolPurple,
+      bgColor: colors?.smolPurple06,
     },
   },
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
-      ? lang.t('explain.output_disabled.title', {
-          inputToken: params?.inputToken,
-        })
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isCrosschainSwap ? 'title_crosschain' : 'title'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          }
+        )
       : lang.t('explain.output_disabled.title_empty'),
-    text: lang.t('explain.output_disabled.text', {
-      network: networkInfo[params?.network]?.name,
-      inputToken: params?.inputToken,
-      outputToken: params?.outputToken,
-    }),
-    logo: (
+
+    text: params?.isCrosschainSwap
+      ? lang.t(
+          `explain.output_disabled.${
+            params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'
+          }`,
+          {
+            inputToken: params?.inputToken,
+            outputToken: params?.outputToken,
+            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+            toNetwork: networkInfo[params?.toNetwork]?.name,
+          }
+        )
+      : lang.t('explain.output_disabled.text', {
+          fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          inputToken: params?.inputToken,
+          outputToken: params?.outputToken,
+        }),
+    logo: !isL2Network(params?.fromNetwork) ? (
+      <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
+    ) : (
       <ChainBadge
-        assetType={params?.network}
+        assetType={params?.fromNetwork}
         marginBottom={8}
         position="relative"
         size="large"
@@ -387,7 +412,8 @@ export const explainers = (params, colors) => ({
     emoji: '⚠️',
     button: {
       label: lang.t('button.continue'),
-      bgColor: colors?.blueGreyDark80,
+      bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+      textColor: colors?.blueGreyDark80,
     },
     secondaryButton: {
       label: lang.t('button.go_back_lowercase'),
@@ -489,7 +515,12 @@ export const explainers = (params, colors) => ({
   swapResetInputs: {
     button: {
       label: `Continue with ${networkInfo[params?.network]?.name}`,
-      bgColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.06),
+      textColor:
+        colors?.networkColors[params?.network] &&
+        colors?.networkColors?.[params?.network],
     },
     emoji: '🔐',
     extraHeight: -90,
@@ -531,11 +562,38 @@ export const explainers = (params, colors) => ({
       </Text>
     ),
   },
+  noRouteFound: {
+    extraHeight: -90,
+    emoji: '🚧',
+    title: lang.t('explain.no_route_found.title'),
+    stillCurious: (
+      <>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment1')}
+        </Text>
+        <Text {...getBodyTextPropsWithColor(colors)}>
+          {lang.t('explain.no_route_found.fragment2')}
+        </Text>
+      </>
+    ),
+  },
   noQuote: {
     extraHeight: -90,
     emoji: '🏦',
     title: lang.t('explain.no_quote.title'),
     text: lang.t('explain.no_quote.text'),
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+        <DoubleChevron />
+        <CoinIcon size={40} {...params?.outputCurrency} />
+      </RowWithMargins>
+    ),
+  },
+  crossChainGas: {
+    extraHeight: 20,
+    title: lang.t('explain.cross_chain_swap.title'),
+    text: lang.t('explain.cross_chain_swap.text'),
     logo: (
       <RowWithMargins justify="center" margin={35} marginBottom={10}>
         <CoinIcon size={40} {...params?.inputCurrency} />
@@ -604,7 +662,8 @@ export const explainers = (params, colors) => ({
     extraHeight: 40,
     button: {
       label: lang.t('explain.go_to_hop_with_icon.text'),
-      bgColor: colors?.blueGreyDark80,
+      bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
+      textColor: colors?.blueGreyDark80,
     },
     secondaryButton: {
       label: lang.t('button.go_back_lowercase'),
@@ -722,11 +781,176 @@ export const explainers = (params, colors) => ({
     text: lang.t('explain.slippage.text'),
     title: lang.t('explain.slippage.title'),
   },
+  wyre_degradation: {
+    logo: <TheMergeIcon />,
+    extraHeight: deviceUtils.isSmallPhone ? 121 : 76,
+    text: lang.t('explain.wyre_degradation.text'),
+    title: lang.t('explain.wyre_degradation.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
+        </Text>
+        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
+      </Text>
+    ),
+  },
+  swap_refuel_add: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
+  swap_refuel_deduct: {
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_deduct.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_deduct.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.no_thanks'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('explain.swap_refuel_deduct.button', {
+        networkName: params?.networkName,
+        gasToken: params?.gasToken,
+      }),
+      textColor: colors?.networkColors[params?.network],
+      bgColor:
+        colors?.networkColors[params?.network] &&
+        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      onPress: params?.onRefuel,
+    },
+  },
+  swap_refuel_notice: {
+    extraHeight: 50,
+    logo: (
+      <DashedWrapper
+        size={50}
+        childXPosition={10}
+        colors={[
+          colors?.networkColors[params?.network],
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
+            colors?.appleBlue,
+        ]}
+      >
+        <CoinIcon
+          address={params?.nativeAsset?.mainnet_address}
+          symbol={params?.nativeAsset?.symbol}
+          type={params?.nativeAsset?.type}
+          size={30}
+          badgeSize="tiny"
+          badgeXPosition={-4}
+          badgeYPosition={1}
+        />
+      </DashedWrapper>
+    ),
+    title: lang.t('explain.swap_refuel_notice.title', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    text: lang.t('explain.swap_refuel_notice.text', {
+      networkName: params?.networkName,
+      gasToken: params?.gasToken,
+    }),
+    button: {
+      label: lang.t('button.go_back'),
+      textColor: 'blueGreyDark60',
+      bgColor: colors?.transparent,
+      onPress: params?.onContinue,
+    },
+    secondaryButton: {
+      label: lang.t('button.proceed_anyway'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.alpha(colors?.appleBlue, 0.05),
+      onPress: params?.onProceed,
+    },
+  },
 });
 
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
   const { params } = useRoute();
   const type = params.type;
 
@@ -766,6 +990,29 @@ const ExplainSheet = () => {
 
   const buttons = useMemo(() => {
     const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
+    const onSecondaryPress = e => {
+      if (explainSheetConfig?.readMoreLink) {
+        return handleReadMore(e);
+      }
+      if (explainSheetConfig.secondaryButton?.onPress) {
+        return explainSheetConfig.secondaryButton.onPress(
+          navigate,
+          goBack,
+          handleClose
+        );
+      }
+
+      return goBack(e);
+    };
+
+    const onPrimaryPress = e => {
+      if (explainSheetConfig.button?.onPress) {
+        return explainSheetConfig.button.onPress(navigate, goBack, handleClose);
+      }
+
+      handleClose(e);
+    };
+
     const secondaryButton = (explainSheetConfig?.readMoreLink ||
       explainSheetConfig?.secondaryButton?.label) && (
       <Column
@@ -782,7 +1029,7 @@ const ExplainSheet = () => {
             explainSheetConfig.secondaryButton?.label ||
             lang.t('explain.read_more')
           }
-          onPress={explainSheetConfig?.readMoreLink ? handleReadMore : goBack}
+          onPress={onSecondaryPress}
           size="big"
           textColor={
             explainSheetConfig.secondaryButton?.textColor ??
@@ -795,21 +1042,16 @@ const ExplainSheet = () => {
     const accentCta = (
       <SheetActionButton
         color={
-          colors[explainSheetConfig.button?.bgColor] ||
+          explainSheetConfig.button?.bgColor ||
           colors.alpha(colors.appleBlue, 0.04)
         }
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
-        onPress={
-          explainSheetConfig.button?.onPress
-            ? explainSheetConfig.button.onPress(navigate, goBack, handleClose)
-            : handleClose
-        }
+        onPress={onPrimaryPress}
         size="big"
-        textColor={
-          colors[explainSheetConfig.button?.textColor] || colors.appleBlue
-        }
+        textColor={explainSheetConfig.button?.textColor ?? colors.appleBlue}
         weight="heavy"
+        testID={'explainer-sheet-accent'}
       />
     );
     const buttonArray = [secondaryButton, accentCta];
@@ -820,6 +1062,7 @@ const ExplainSheet = () => {
   }, [
     colors,
     explainSheetConfig.button,
+    explainSheetConfig.secondaryButton,
     explainSheetConfig?.readMoreLink,
     explainSheetConfig.secondaryButton?.bgColor,
     explainSheetConfig.secondaryButton?.label,
@@ -833,8 +1076,6 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <StatusBar barStyle="light-content" />}
-
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={sheetHeight}

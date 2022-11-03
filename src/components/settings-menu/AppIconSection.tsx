@@ -14,6 +14,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import { analytics } from '@/analytics';
 
 type AppIcon = {
   accentColor?: string;
@@ -41,17 +42,17 @@ type LockedAppIcon = AppIcon & {
   unlock_key: string;
 };
 
-const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
+export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
   optimism: {
     accentColor: 'optimismRed',
-    key: 'optimism',
+    key: OptimismIcon.key,
     name: 'Optimism',
     source: AppIconOptimism,
     unlock_key: OptimismIcon.unlockKey,
   },
   smol: {
     accentColor: 'smolPurple',
-    key: 'smol',
+    key: SmolIcon.key,
     name: 'SMOL',
     source: AppIconSmol,
     unlock_key: SmolIcon.unlockKey,
@@ -67,6 +68,7 @@ const AppIconSection = () => {
   const onSelectIcon = useCallback(
     icon => {
       Logger.log('onSelectIcon', icon);
+      analytics.track('Set App Icon', { appIcon: icon });
       settingsChangeAppIcon(icon);
     },
     [settingsChangeAppIcon]

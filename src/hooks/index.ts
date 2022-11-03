@@ -40,7 +40,6 @@ export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useENSLocalTransactions } from './useENSLocalTransactions';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';
-export { default as useENSAddress, prefetchENSAddress } from './useENSAddress';
 export { default as useENSAvatar, prefetchENSAvatar } from './useENSAvatar';
 export { default as useENSCover, prefetchENSCover } from './useENSCover';
 export { default as useENSProfile, prefetchENSProfile } from './useENSProfile';
@@ -73,7 +72,6 @@ export { default as useExpandedStateNavigation } from './useExpandedStateNavigat
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
 export { default as useFetchHiddenTokens } from './useFetchHiddenTokens';
 export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';
-export { default as useENSFirstTransactionTimestamp } from './useENSFirstTransactionTimestamp';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';
@@ -131,6 +129,7 @@ export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBala
 export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useSwapDerivedValues } from './useSwapDerivedValues';
+export { default as useSwapRefuel } from './useSwapRefuel';
 export { default as useTimeout } from './useTimeout';
 export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
@@ -160,7 +159,6 @@ export { default as useCurrentNonce } from './useCurrentNonce';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
-export { default as useAsyncEffect } from './useAsyncEffect';
 export {
   default as useHardwareBack,
   useHardwareBackOnFocus,
@@ -170,3 +168,4 @@ export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
+export { useSwappableUserAssets } from './useSwappableUserAssets';

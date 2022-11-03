@@ -8,10 +8,7 @@ import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/as
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@/design-system';
-import {
-  useAccountAsset,
-  useCoinListFinishEditingOptions,
-} from '@/hooks';
+import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 
@@ -112,6 +109,7 @@ const MemoizedBalanceCoinRow = React.memo(
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: item,
           fromDiscover: true,
+          isFromWalletScreen: true,
           longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
@@ -153,12 +151,22 @@ const MemoizedBalanceCoinRow = React.memo(
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
                 <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} size="16px">
+                  <Text
+                    numberOfLines={1}
+                    color="primary (Deprecated)"
+                    size="16px / 22px (Deprecated)"
+                    weight="semibold"
+                  >
                     {item.name}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px">
+                <Text
+                  align="right"
+                  color={{ custom: valueColor }}
+                  size="16px / 22px (Deprecated)"
+                  weight="medium"
+                >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
                 </Text>
@@ -169,13 +177,19 @@ const MemoizedBalanceCoinRow = React.memo(
                   <Text
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
-                    size="14px"
+                    size="14px / 19px (Deprecated)"
+                    weight="medium"
                   >
                     {nativeDisplay ?? ''}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: changeColor }} size="14px">
+                <Text
+                  align="right"
+                  color={{ custom: changeColor }}
+                  size="14px / 19px (Deprecated)"
+                  weight="medium"
+                >
                   {percentageChangeDisplay}
                 </Text>
               </View>

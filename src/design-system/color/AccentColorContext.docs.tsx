@@ -24,7 +24,9 @@ const docs: DocsType = {
         Example={() =>
           source(
             <AccentColorProvider color="#ff0000">
-              <Text color="accent">Hi Mom!</Text>
+              <Text color="accent" size="17pt">
+                Hi Mom!
+              </Text>
             </AccentColorProvider>
           )
         }
@@ -40,8 +42,10 @@ const docs: DocsType = {
         Example={() =>
           source(
             <AccentColorProvider color="#ff0000">
-              <Box background="accent" padding="19px">
-                <Text>This text will be inverted automatically.</Text>
+              <Box background="accent" padding="19px (Deprecated)">
+                <Text color="label" size="17pt">
+                  This text will be inverted automatically.
+                </Text>
               </Box>
             </AccentColorProvider>
           )

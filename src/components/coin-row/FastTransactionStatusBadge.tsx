@@ -96,6 +96,19 @@ const StatusProps = {
       marginTop: ios ? -3 : -5,
     },
   },
+  [TransactionStatusTypes.bridged]: {
+    name: 'bridge',
+    style: {
+      left: -0.9,
+      marginTop: -2.5,
+      marginBottom: -4,
+      marginRight: 0,
+    },
+  },
+  [TransactionStatusTypes.bridging]: {
+    marginRight: 4,
+    marginTop: ios ? 1 : 0,
+  },
   [TransactionStatusTypes.withdrawing]: {
     marginRight: 4,
   },
@@ -133,15 +146,19 @@ export default React.memo(function FastTransactionStatusBadge({
   style?: StyleProp<ViewStyle>;
 }) {
   const isSwapping = status === TransactionStatusTypes.swapping;
+  const isBridging = status === TransactionStatusTypes.bridging;
 
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
   if (pending) {
-    if (isSwapping) {
+    if (isSwapping || isBridging) {
       statusColor = colors.swapPurple;
     } else {
       statusColor = colors.appleBlue;
     }
-  } else if (status === TransactionStatusTypes.swapped) {
+  } else if (
+    status === TransactionStatusTypes.swapped ||
+    status === TransactionStatusTypes.bridged
+  ) {
     statusColor = colors.swapPurple;
   }
 
@@ -151,7 +168,7 @@ export default React.memo(function FastTransactionStatusBadge({
     <View style={[sx.row, style]}>
       {pending && (
         <Spinner
-          color={isSwapping ? colors.swapPurple : colors.appleBlue}
+          color={statusColor}
           size={12}
           style={{ marginTop: ios ? 0 : -2 }}
         />
@@ -159,7 +176,11 @@ export default React.memo(function FastTransactionStatusBadge({
       {showIcon && (
         <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
       )}
-      <Text color={{ custom: statusColor }} size="14px" weight="semibold">
+      <Text
+        color={{ custom: statusColor }}
+        size="14px / 19px (Deprecated)"
+        weight="semibold"
+      >
         {title}
       </Text>
     </View>

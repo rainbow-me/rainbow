@@ -23,10 +23,7 @@ import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
-import {
-  getProviderForNetwork,
-  web3SetHttpProvider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
 import networkTypes, { Network } from '@/helpers/networkTypes';
@@ -51,6 +48,12 @@ import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import {
+  addDefaultNotificationGroupSettings,
+  removeNotificationSettingsForWallet,
+  useAllNotificationSettingsFromStorage,
+} from '@/notifications/settings';
+import { IS_DEV } from '@/env';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -61,6 +64,7 @@ const DevSection = () => {
     testnetsEnabled,
     settingsChangeTestnetsEnabled,
   } = useAccountSettings();
+  const { notificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const resetAccountState = useResetAccountState();
@@ -124,10 +128,6 @@ const DevSection = () => {
       )?.[0];
       if (resultString) Alert.alert(resultString);
     }
-  }, [navigate]);
-
-  const navToDevNotifications = useCallback(() => {
-    navigate('DevNotificationsSection');
   }, [navigate]);
 
   const checkAlert = useCallback(async () => {
@@ -201,10 +201,34 @@ const DevSection = () => {
     testnetsEnabled,
   ]);
 
+  const clearAllNotificationSettings = useCallback(async () => {
+    // loop through notification settings and unsubscribe all wallets
+    // from firebase first or we’re gonna keep getting them even after
+    // clearing storage and before changing settings
+    if (notificationSettings.length > 0) {
+      notificationSettings.forEach(wallet => {
+        removeNotificationSettingsForWallet(wallet.address);
+      });
+    }
+  }, [notificationSettings]);
+
   const clearLocalStorage = useCallback(async () => {
+    clearAllNotificationSettings();
     await AsyncStorage.clear();
     clearAllStorages();
-  }, []);
+    addDefaultNotificationGroupSettings();
+  }, [clearAllNotificationSettings]);
+
+  const clearMMKVStorage = useCallback(async () => {
+    clearAllNotificationSettings();
+    clearAllStorages();
+    addDefaultNotificationGroupSettings();
+  }, [clearAllNotificationSettings]);
+
+  // TODO: Remove after finishing work on APP-27
+  const navigateToTransactionDetailsPlayground = () => {
+    navigate('TransactionDetailsPlayground');
+  };
 
   return (
     <MenuContainer testID="developer-settings-sheet">
@@ -243,7 +267,7 @@ const DevSection = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={AsyncStorage.clear}
+              onPress={async () => await AsyncStorage.clear()}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -253,7 +277,7 @@ const DevSection = () => {
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={clearAllStorages}
+              onPress={clearMMKVStorage}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -355,18 +379,6 @@ const DevSection = () => {
               }
             />
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔔" isEmoji />}
-              onPress={navToDevNotifications}
-              size={52}
-              testID="notifications-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.notifications_debug')}
-                />
-              }
-            />
-
-            <MenuItem
               leftComponent={<MenuItem.TextIcon icon="⏩" isEmoji />}
               onPress={syncCodepush}
               rightComponent={
@@ -377,6 +389,15 @@ const DevSection = () => {
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush')}
                 />
+              }
+            />
+            {/* TODO: Remove after finishing work on APP-27*/}
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🛝" isEmoji />}
+              onPress={navigateToTransactionDetailsPlayground}
+              size={52}
+              titleComponent={
+                <MenuItem.Title text={'Transaction Details Playground'} />
               }
             />
           </Menu>

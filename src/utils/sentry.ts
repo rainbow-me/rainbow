@@ -23,8 +23,20 @@ const addNavBreadcrumb = (prevRoute: any, nextRoute: any, data: any) =>
     message: `From ${prevRoute} to ${nextRoute}`,
   });
 
+/**
+ * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+ */
 export default {
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   addDataBreadcrumb,
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   addInfoBreadcrumb,
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   addNavBreadcrumb,
 };

@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
@@ -18,13 +19,15 @@ import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
-import RestoreSheet from '../screens/RestoreSheet';
+import { RestoreSheet } from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsSheet from '../screens/SettingsSheet';
+import SettingsSheet, {
+  CUSTOM_MARGIN_TOP_ANDROID,
+} from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
@@ -63,7 +66,10 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
+import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import QRScannerScreen from '@/screens/QRScannerScreen';
+import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -277,6 +283,10 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
+      <BSStack.Screen
+        component={QRScannerScreen}
+        name={Routes.QR_SCANNER_SCREEN}
+      />
       {profilesEnabled && (
         <>
           <BSStack.Screen
@@ -290,6 +300,10 @@ function BSNavigator() {
           <BSStack.Screen
             component={RegisterENSNavigator}
             name={Routes.REGISTER_ENS_NAVIGATOR}
+          />
+          <BSStack.Screen
+            component={PairHardwareWalletNavigator}
+            name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
           />
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
@@ -354,7 +368,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
-        options={{ ...bottomSheetPreset, height: '97%' }}
+        options={{
+          ...bottomSheetPreset,
+          height:
+            deviceUtils.dimensions.height +
+            CUSTOM_MARGIN_TOP_ANDROID -
+            StatusBar.currentHeight,
+        }}
       />
     </BSStack.Navigator>
   );

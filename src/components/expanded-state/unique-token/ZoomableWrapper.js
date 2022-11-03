@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -18,6 +18,7 @@ import Animated, {
 import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
+import { StatusBarHelper } from '@/helpers';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -101,7 +102,7 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  let { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
   if (!hideStatusBar) {
@@ -146,11 +147,12 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
+    StatusBarHelper.setLightContent();
     if (hideStatusBar) {
       if (isZoomed) {
-        StatusBar.setHidden(true);
+        StatusBarHelper.setHidden(true);
       } else {
-        StatusBar.setHidden(false);
+        StatusBarHelper.setHidden(false);
       }
     }
   }, [hideStatusBar, isZoomed]);

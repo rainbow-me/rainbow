@@ -1,24 +1,18 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, isEmpty, keys } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
-import {
-  DiscoverHeaderButton,
-  Header,
-  ProfileHeaderButton,
-  ScanHeaderButton,
-} from '../components/header';
-import { Page, RowWithMargins } from '../components/layout';
+import { Page } from '../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import networkInfo from '@/helpers/networkInfo';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { Box, Inline } from '@/design-system';
 import {
   useAccountEmptyState,
   useAccountSettings,
@@ -33,7 +27,6 @@ import {
   useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
-  useWallets,
   useWalletSectionsData,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -42,13 +35,21 @@ import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import { atom, useRecoilValue } from 'recoil';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { analytics } from '@/analytics';
+
+export const addressCopiedToastAtom = atom({
+  default: false,
+  key: 'addressCopiedToast',
+});
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
   pointerEvents: isVisible ? 'none' : 'auto',
 }))({
   elevation: 1,
-  paddingTop: 5,
   zIndex: 1,
 });
 
@@ -70,9 +71,12 @@ export default function WalletScreen() {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
-  const { isReadOnlyWallet } = useWallets();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const {
+    network: currentNetwork,
+    accountAddress,
+    appIcon,
+  } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -82,6 +86,7 @@ export default function WalletScreen() {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const insets = useSafeAreaInsets();
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
@@ -231,37 +236,58 @@ export default function WalletScreen() {
     }
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
-  // Show the exchange fab only for supported networks
-  // (mainnet)
-  const fabs = useMemo(
-    () =>
-      [
-        !!networkInfo[currentNetwork]?.exchange_enabled && ExchangeFab,
-        SendFab,
-      ].filter(e => !!e),
-    [currentNetwork]
-  );
+  // track current app icon
+  useEffect(() => {
+    analytics.identify(undefined, { appIcon });
+  }, [appIcon]);
+
+  const { navigate } = useNavigation();
+
+  const handlePressActivity = useCallback(() => {
+    navigate(Routes.PROFILE_SCREEN);
+  }, [navigate]);
+
+  const handlePressQRScanner = useCallback(() => {
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
+
+  const handlePressDiscover = useCallback(() => {
+    navigate(Routes.DISCOVER_SCREEN);
+  }, [navigate]);
+
+  const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
 
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
   return (
     <WalletPage testID="wallet-screen">
-      <FabWrapper
-        disabled={isAccountEmpty || !!params?.emptyWallet}
-        fabs={fabs}
-        isCoinListEdited={isCoinListEdited}
-        isReadOnlyWallet={isReadOnlyWallet}
+      <HeaderOpacityToggler isVisible={isCoinListEdited}>
+        <Navbar
+          hasStatusBarInset
+          leftComponent={
+            <Navbar.Item onPress={handlePressActivity} testID="activity-button">
+              <Navbar.TextIcon icon="􀐫" />
+            </Navbar.Item>
+          }
+          rightComponent={
+            <Inline space={{ custom: 17 }}>
+              <Navbar.Item onPress={handlePressQRScanner}>
+                <Navbar.TextIcon icon="􀎹" />
+              </Navbar.Item>
+              <Navbar.Item
+                onPress={handlePressDiscover}
+                testID="discover-button"
+              >
+                <Navbar.TextIcon icon="􀎬" />
+              </Navbar.Item>
+            </Inline>
+          }
+        />
+      </HeaderOpacityToggler>
+      <Box
+        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
       >
-        <HeaderOpacityToggler isVisible={isCoinListEdited}>
-          <Header justify="space-between">
-            <ProfileHeaderButton />
-            <RowWithMargins margin={10}>
-              <DiscoverHeaderButton />
-              <ScanHeaderButton />
-            </RowWithMargins>
-          </Header>
-        </HeaderOpacityToggler>
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
@@ -270,7 +296,14 @@ export default function WalletScreen() {
           network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
         />
-      </FabWrapper>
+      </Box>
+      <ToastPositionContainer>
+        <Toast
+          isVisible={isAddressCopiedToastActive}
+          text="􀁣 Address Copied"
+          testID="address-copied-toast"
+        />
+      </ToastPositionContainer>
     </WalletPage>
   );
 }

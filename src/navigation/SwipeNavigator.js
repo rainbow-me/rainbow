@@ -2,9 +2,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useMemo, useState } from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
-import { web3Provider } from '../handlers/web3';
+import { web3Provider } from '@/handlers/web3';
+import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -37,9 +37,9 @@ export function SwipeNavigator() {
         <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
         <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} />
         <Swipe.Screen
-          component={QRScannerScreen}
+          component={DiscoverScreen}
+          name={Routes.DISCOVER_SCREEN}
           initialParams={params}
-          name={Routes.QR_SCANNER_SCREEN}
         />
       </Swipe.Navigator>
       <TestnetToast network={network} web3Provider={web3Provider} />

@@ -1,9 +1,8 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
-import { default as DefaultTokenListsSource } from './default-token-lists.json';
+import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
-export { default as polygonAllowList } from './polygon-allowlist.json';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
@@ -24,9 +23,9 @@ export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
-export { default as migratedTokens } from './migratedTokens.json';
+export { default as migratedTokens } from './migratedTokens';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
-export { default as shitcoins } from './shitcoins.json';
+export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
@@ -96,6 +95,7 @@ export const SUSD_ADDRESS = '0x57ab1ec28d129707052df4df418d58a2d46d5f51';
 export const GUSD_ADDRESS = '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd';
 export const SOCKS_ADDRESS = '0x23b608675a2b2fb1890d3abbd85c5775c51691d5';
 export const WBTC_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
+export const DOG_ADDRESS = '0xbaac2b4491727d78d2b78815144570b9f2fe8899';
 
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =

@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
+import { IS_TESTING } from 'react-native-dotenv';
 import React, {
   Fragment,
   useCallback,
@@ -146,7 +147,12 @@ const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+    <Text
+      color="secondary40 (Deprecated)"
+      size="14px / 19px (Deprecated)"
+      weight="semibold"
+      {...props}
+    >
       {children}
     </Text>
   );
@@ -158,10 +164,10 @@ const WalletText = ({ balanceTooLow, children }) => {
       color={
         balanceTooLow
           ? { custom: lightModeThemeColors.avatarColor[7] }
-          : 'secondary80'
+          : 'secondary80 (Deprecated)'
       }
       numberOfLines={1}
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight={balanceTooLow ? 'bold' : 'semibold'}
     >
       {children}
@@ -460,7 +466,11 @@ export default function TransactionConfirmationScreen() {
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
-    if (isFocused && (!peerId || !walletConnector)) {
+    if (
+      isFocused &&
+      (!peerId || !walletConnector) &&
+      (ios || IS_TESTING !== 'true')
+    ) {
       Alert.alert(
         lang.t('wallet.transaction.alert.connection_expired'),
         lang.t('wallet.transaction.alert.please_go_back_and_reconnect'),
@@ -1101,9 +1111,9 @@ export default function TransactionConfirmationScreen() {
                   <Row marginBottom={android ? 16 : 8} marginHorizontal={32}>
                     <Text
                       align="center"
-                      color="secondary80"
+                      color="secondary80 (Deprecated)"
                       numberOfLines={1}
-                      size="18px"
+                      size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
                       {isAuthenticated ? dappName : formattedDappUrl}
@@ -1116,8 +1126,12 @@ export default function TransactionConfirmationScreen() {
                 >
                   <Text
                     align="center"
-                    color={methodName ? 'primary' : { custom: 'transparent' }}
-                    size="18px"
+                    color={
+                      methodName
+                        ? 'primary (Deprecated)'
+                        : { custom: 'transparent' }
+                    }
+                    size="18px / 27px (Deprecated)"
                     weight="heavy"
                   >
                     {methodName ||

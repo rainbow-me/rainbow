@@ -32,23 +32,13 @@ import useExperimentalFlag, {
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
-import {
-  isCustomBuild,
-  setOriginalDeploymentKey,
-} from '@/handlers/fedora';
+import { isCustomBuild, setOriginalDeploymentKey } from '@/handlers/fedora';
 import networkInfo from '@/helpers/networkInfo';
 import WalletTypes from '@/helpers/walletTypes';
-import {
-  useAccountSettings,
-  useSendFeedback,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
-import {
-  AppleReviewAddress,
-  REVIEW_DONE_KEY,
-} from '@/utils/reviewAlert';
+import { AppleReviewAddress, REVIEW_DONE_KEY } from '@/utils/reviewAlert';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -236,7 +226,7 @@ const SettingsSection = ({
   );
 
   return (
-    <MenuContainer>
+    <MenuContainer testID="settings-menu-container">
       <Menu>
         {canBeBackedUp && (
           <MenuItem
@@ -377,22 +367,18 @@ const SettingsSection = ({
             }
           />
         )}
-        {ios && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? AppIconIconDark : AppIconIcon}
-              />
-            }
-            onPress={onPressAppIcon}
-            size={60}
-            testID="app-icon-section"
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.app_icon')} />
-            }
-          />
-        )}
+        <MenuItem
+          hasRightArrow
+          leftComponent={
+            <MenuItem.ImageIcon
+              source={isDarkMode ? AppIconIconDark : AppIconIcon}
+            />
+          }
+          onPress={onPressAppIcon}
+          size={60}
+          testID="app-icon-section"
+          titleComponent={<MenuItem.Title text={lang.t('settings.app_icon')} />}
+        />
       </Menu>
       <Menu>
         <MenuItem

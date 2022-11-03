@@ -6,44 +6,52 @@ import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
+import { ChainId, SwapType } from '@rainbow-me/swaps';
+import { SwapMetadata } from '@/raps/common';
 
 export interface RainbowTransaction {
-  address: string;
-  balance: {
+  address?: string;
+  balance?: {
     amount: string;
     display: string;
   } | null;
   dappName?: string; // for walletconnect
   data?: string; // for pending tx
-  description: string | null;
+  description?: string | null;
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;
   maxFeePerGas?: BigNumberish;
   maxPriorityFeePerGas?: BigNumberish;
-  hash: string | null;
-  minedAt: number | null;
-  name: string | null;
-  native: {
+  hash?: string | null;
+  minedAt?: number | null;
+  name?: string | null;
+  native?: {
     amount: string;
     display: string;
   };
   network?: Network;
-  nonce: number | null;
-  pending: boolean;
+  nonce?: number | null;
+  pending?: boolean;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
-  status: TransactionStatus;
-  symbol: string | null;
+  status?: TransactionStatus;
+  swap?: {
+    type: SwapType;
+    toChainId: ChainId;
+    fromChainId: ChainId;
+    isBridge: boolean;
+  };
+  symbol?: string | null;
   timestamp?: number; // for purchases
-  title: string;
+  title?: string;
   to: EthereumAddress | null;
   transferId?: string; // for purchases
   txTo?: EthereumAddress | null;
-  type: TransactionType;
+  type?: TransactionType;
   value?: BigNumberish; // for pending tx
 }
 
@@ -72,6 +80,13 @@ export interface NewTransaction {
   type?: TransactionType;
   value?: BigNumberish;
   txTo?: EthereumAddress | null;
+  swap?: {
+    type: SwapType;
+    fromChainId: ChainId;
+    toChainId: ChainId;
+    isBridge: boolean;
+  };
+  meta?: SwapMetadata;
 }
 
 export interface NewTransactionOrAddCashTransaction
@@ -89,3 +104,8 @@ export interface NewTransactionOrAddCashTransaction
     | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
     | null;
 }
+
+export type MinimalTransactionDetails = Pick<
+  RainbowTransaction,
+  'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'pending' | 'to' | 'status'
+>;

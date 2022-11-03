@@ -43,7 +43,11 @@ export default function AppVersionStamp() {
       onPress={handleVersionPress}
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
     >
-      <Text color="secondary30" size="14px" weight="bold">
+      <Text
+        color="secondary30 (Deprecated)"
+        size="14px / 19px (Deprecated)"
+        weight="bold"
+      >
         {FEDORA_BRANCH
           ? FEDORA_BRANCH
           : showCodePushVersion

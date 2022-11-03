@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'react-query';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
 import { analytics } from '@/analytics';
@@ -39,9 +39,8 @@ export default function useTrackENSProfile() {
       const ens = walletNames[addresses[i]];
       if (ens) {
         const { records } = await fetchENSRecords(ens);
-        const registrations = await fetchAccountDomains(addresses[i]);
-        data.numberOfENSOwned +=
-          registrations?.data?.account?.registrations?.length || 0;
+        const domains = await fetchAccountDomains(addresses[i]);
+        data.numberOfENSOwned += domains?.account?.registrations?.length || 0;
         data.numberOfENSWithAvatarOrCoverSet +=
           records?.avatar || records?.header ? 1 : 0;
 

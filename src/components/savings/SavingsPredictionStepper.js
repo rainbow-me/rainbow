@@ -3,10 +3,7 @@ import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
-import {
-  calculateEarningsInDays,
-  isSymbolStablecoin,
-} from '@/helpers/savings';
+import { calculateEarningsInDays, isSymbolStablecoin } from '@/helpers/savings';
 import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,

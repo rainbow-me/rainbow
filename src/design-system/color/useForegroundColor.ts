@@ -4,29 +4,47 @@ import { ColorModeContext } from './ColorMode';
 import {
   ContextualColorValue,
   ForegroundColor,
+  getDefaultAccentColorForColorMode,
   getValueForColorMode,
 } from './palettes';
 
-export type CustomColor = {
-  custom: string | ContextualColorValue<string>;
+export type CustomColor<Value extends string = string> = {
+  custom: Value | ContextualColorValue<Value>;
 };
+
+type ForegroundColorOrAccent = ForegroundColor | 'accent';
 
 /**
  * @description Given an array of colors, resolves the foreground color for the current color mode.
  */
 export function useForegroundColors(
-  colors: (ForegroundColor | 'accent' | CustomColor)[]
+  colors: (
+    | ForegroundColorOrAccent
+    | ContextualColorValue<ForegroundColorOrAccent>
+    | CustomColor
+  )[]
 ): string[] {
   const { colorMode, foregroundColors } = useContext(ColorModeContext);
   const accentColor = useContext(AccentColorContext);
 
   return colors.map(color => {
     if (color === 'accent') {
-      return accentColor.color;
+      return accentColor
+        ? accentColor.color
+        : getDefaultAccentColorForColorMode(colorMode).color;
     }
 
     if (typeof color === 'object') {
-      return getValueForColorMode(color.custom, colorMode);
+      if ('custom' in color) {
+        return getValueForColorMode(color.custom, colorMode);
+      }
+
+      const colorForColorMode = getValueForColorMode(color, colorMode);
+
+      return colorForColorMode === 'accent'
+        ? accentColor?.color ??
+            getDefaultAccentColorForColorMode(colorMode).color
+        : foregroundColors[colorForColorMode];
     }
 
     return foregroundColors[color];

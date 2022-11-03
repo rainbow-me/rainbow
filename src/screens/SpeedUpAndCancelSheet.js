@@ -43,7 +43,7 @@ import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { getTitle } from '@/parsers';
+import { getTitle, parseGasParamsForTransaction } from '@/parsers';
 import { dataUpdateTransaction } from '@/redux/data';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
@@ -161,11 +161,10 @@ export default function SpeedUpAndCancelSheet() {
   const isL2 = isL2Network(tx.network);
 
   const getNewTransactionGasParams = useCallback(() => {
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
     if (txType === GasFeeTypes.eip1559) {
-      const rawMaxPriorityFeePerGas =
-        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
-      const rawMaxFeePerGas =
-        selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+      const rawMaxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
+      const rawMaxFeePerGas = gasParams.maxFeePerGas;
 
       const maxPriorityFeePerGas = greaterThan(
         rawMaxPriorityFeePerGas,
@@ -179,7 +178,7 @@ export default function SpeedUpAndCancelSheet() {
         : toHex(minMaxFeePerGas);
       return { maxFeePerGas, maxPriorityFeePerGas };
     } else {
-      const rawGasPrice = selectedGasFee?.gasFeeParams?.gasPrice?.amount;
+      const rawGasPrice = gasParams.gasPrice;
       return {
         gasPrice: greaterThan(rawGasPrice, minGasPrice)
           ? toHex(rawGasPrice)

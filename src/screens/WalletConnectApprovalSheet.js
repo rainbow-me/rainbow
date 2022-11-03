@@ -66,9 +66,9 @@ const AvatarWrapper = styled(Column)({
 const LabelText = ({ children, ...props }) => {
   return (
     <Text
-      color="primary"
+      color="primary (Deprecated)"
       numberOfLines={1}
-      size="18px"
+      size="18px / 27px (Deprecated)"
       weight="bold"
       {...props}
     >
@@ -79,7 +79,12 @@ const LabelText = ({ children, ...props }) => {
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text color="secondary40" size="14px" weight="semibold" {...props}>
+    <Text
+      color="secondary40 (Deprecated)"
+      size="14px / 19px (Deprecated)"
+      weight="semibold"
+      {...props}
+    >
       {children}
     </Text>
   );
@@ -318,9 +323,9 @@ export default function WalletConnectApprovalSheet() {
                 <Row justify="center" marginBottom={12}>
                   <Text
                     align="center"
-                    color="primary"
+                    color="primary (Deprecated)"
                     numberOfLines={1}
-                    size="23px"
+                    size="23px / 27px (Deprecated)"
                     weight="heavy"
                   >
                     {dappName}
@@ -328,8 +333,8 @@ export default function WalletConnectApprovalSheet() {
                 </Row>
                 <Text
                   align="center"
-                  color="secondary60"
-                  size="23px"
+                  color="secondary60 (Deprecated)"
+                  size="23px / 27px (Deprecated)"
                   weight="semibold"
                 >
                   {type === WalletConnectApprovalSheetType.connect
@@ -341,7 +346,11 @@ export default function WalletConnectApprovalSheet() {
               </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
-              <Text color="action" size="18px" weight="heavy">
+              <Text
+                color="action (Deprecated)"
+                size="18px / 27px (Deprecated)"
+                weight="heavy"
+              >
                 {formattedDappUrl}
               </Text>
             </Row>

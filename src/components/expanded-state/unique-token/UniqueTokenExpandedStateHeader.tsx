@@ -31,11 +31,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import {
-  ethereumUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 
@@ -45,6 +41,8 @@ const AssetActionsEnum = {
   etherscan: 'etherscan',
   hide: 'hide',
   rainbowWeb: 'rainbowWeb',
+  opensea: 'opensea',
+  looksrare: 'looksrare',
 } as const;
 
 const getAssetActions = (network: Network) =>
@@ -92,6 +90,22 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'eye',
+      },
+    },
+    [AssetActionsEnum.opensea]: {
+      actionKey: AssetActionsEnum.opensea,
+      actionTitle: 'OpenSea',
+      icon: {
+        iconType: 'ASSET',
+        iconValue: 'opensea',
+      },
+    },
+    [AssetActionsEnum.looksrare]: {
+      actionKey: AssetActionsEnum.looksrare,
+      actionTitle: 'LooksRare',
+      icon: {
+        iconType: 'ASSET',
+        iconValue: 'looksrare',
       },
     },
   } as const);
@@ -267,17 +281,6 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(isSupportedOnRainbowWeb
-          ? [
-              {
-                ...AssetActions[AssetActionsEnum.rainbowWeb],
-                discoverabilityTitle: 'rainbow.me',
-              },
-            ]
-          : []),
-        {
-          ...AssetActions[AssetActionsEnum.etherscan],
-        },
         ...(isPhotoDownloadAvailable
           ? [
               {
@@ -290,6 +293,27 @@ const UniqueTokenExpandedStateHeader = ({
           discoverabilityTitle:
             asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
+        ...(isSupportedOnRainbowWeb
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.rainbowWeb],
+                discoverabilityTitle: 'rainbow.me',
+              },
+            ]
+          : []),
+        {
+          ...AssetActions[AssetActionsEnum.etherscan],
+        },
+        ...(asset.network === Network.mainnet
+          ? [
+              {
+                menuTitle: lang.t(
+                  'expanded_state.unique_expanded.view_on_marketplace'
+                ),
+                menuItems: [AssetActions.opensea, AssetActions.looksrare],
+              },
+            ]
+          : []),
       ],
       menuTitle: '',
     };
@@ -337,6 +361,14 @@ const UniqueTokenExpandedStateHeader = ({
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
+      } else if (actionKey === AssetActionsEnum.opensea) {
+        Linking.openURL(
+          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
+        );
+      } else if (actionKey === AssetActionsEnum.looksrare) {
+        Linking.openURL(
+          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
+        );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -507,13 +539,18 @@ const UniqueTokenExpandedStateHeader = ({
     goBack,
   ]);
 
-  const overflowMenuHitSlop: Space = '15px';
-  const familyNameHitSlop: Space = '19px';
+  const overflowMenuHitSlop: Space = '15px (Deprecated)';
+  const familyNameHitSlop: Space = '19px (Deprecated)';
 
   return (
-    <Stack space="15px">
+    <Stack space="15px (Deprecated)">
       <Columns space="24px">
-        <Heading containsEmoji size="23px" weight="heavy">
+        <Heading
+          containsEmoji
+          color="primary (Deprecated)"
+          size="23px / 27px (Deprecated)"
+          weight="heavy"
+        >
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
@@ -528,7 +565,11 @@ const UniqueTokenExpandedStateHeader = ({
             >
               <ButtonPressAnimation scaleTo={0.75}>
                 <Inset space={overflowMenuHitSlop}>
-                  <Text color="accent" size="23px" weight="heavy">
+                  <Text
+                    color="accent"
+                    size="23px / 27px (Deprecated)"
+                    weight="heavy"
+                  >
                     􀍡
                   </Text>
                 </Inset>
@@ -562,11 +603,20 @@ const UniqueTokenExpandedStateHeader = ({
                         maxWidth: deviceWidth - paddingHorizontal * 6,
                       }}
                     >
-                      <Text color="secondary50" numberOfLines={1} weight="bold">
+                      <Text
+                        color="secondary50 (Deprecated)"
+                        numberOfLines={1}
+                        size="16px / 22px (Deprecated)"
+                        weight="bold"
+                      >
                         {asset.familyName}
                       </Text>
                     </View>
-                    <Text color="secondary50" weight="bold">
+                    <Text
+                      color="secondary50 (Deprecated)"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
                       􀆊
                     </Text>
                   </Inline>

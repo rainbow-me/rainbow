@@ -6,10 +6,7 @@ import {
   removeLocalRequest,
   saveLocalRequests,
 } from '@/handlers/localstorage/walletconnectRequests';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '@/helpers/dappNameHandler';
+import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@/utils';
@@ -224,7 +221,7 @@ export const addRequestToApprove = (
  * @param topic The client ID to filter for.
  * @returns The matching requests.
  */
-export const requestsForTopic = (topic: string) => (
+export const requestsForTopic = (topic: string | undefined) => (
   dispatch: unknown,
   getState: AppGetState
 ): RequestData[] => {

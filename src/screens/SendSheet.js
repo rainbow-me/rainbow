@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -79,11 +79,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import {
-  deviceUtils,
-  ethereumUtils,
-  getUniqueTokenType,
-} from '@/utils';
+import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -436,7 +432,9 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomain(debouncedRecipient);
+      const isValid = await checkIsValidAddressOrDomainFormat(
+        debouncedRecipient
+      );
       if (isValid) {
         realAddress = await resolveNameOrAddress(debouncedRecipient);
         setToAddress(realAddress);
@@ -540,6 +538,9 @@ export default function SendSheet(props) {
           clearRecords,
           name: ensName,
           records: {
+            ...(ensProfile?.data?.contenthash
+              ? { contenthash: ensProfile?.data?.contenthash }
+              : {}),
             ...(ensProfile?.data?.records || {}),
             ...(ensProfile?.data?.coinAddresses || {}),
           },
@@ -618,6 +619,7 @@ export default function SendSheet(props) {
       dispatch,
       ensName,
       ensProfile?.data?.coinAddresses,
+      ensProfile?.data?.contenthash,
       ensProfile?.data?.records,
       gasLimit,
       getNextNonce,
@@ -940,7 +942,6 @@ export default function SendSheet(props) {
 
   return (
     <Container testID="send-sheet">
-      {ios && <StatusBar barStyle="light-content" />}
       <SheetContainer>
         <SendHeader
           contacts={contacts}
