@@ -11,10 +11,10 @@ import { useTheme } from '@/theme';
 
 export const LEARN_CARD_HEIGHT = 184;
 
-interface LearnCardProps {
+type LearnCardProps = {
   cardDetails: LearnCardDetails;
   type: 'square' | 'stretch';
-}
+};
 
 export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { navigate } = useNavigation();

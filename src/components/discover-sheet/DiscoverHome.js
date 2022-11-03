@@ -1,7 +1,7 @@
 import React from 'react';
 import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
-import DPICard from './DPICard';
+import { DPICard } from '../cards/DPICard';
 import ENSCreateProfileCard from './ENSCreateProfileCard';
 import ENSSearchCard from './ENSSearchCard';
 import GasCard from './GasCard';
@@ -48,6 +48,16 @@ export default function DiscoverHome() {
             <Stack space={{ custom: 21 }}>
               <TopMoversSection />
               <PulseIndex />
+              <Inset horizontal="20px">
+                <Stack space="20px">
+                  <DPICard />
+                  <LearnCard cardDetails={learnCards[0]} type="stretch" />
+                  <Inline space="20px">
+                    <LearnCard cardDetails={learnCards[1]} type="square" />
+                    <LearnCard cardDetails={learnCards[2]} type="square" />
+                  </Inline>
+                </Stack>
+              </Inset>
             </Stack>
           )}
           <Stack space="30px (Deprecated)">

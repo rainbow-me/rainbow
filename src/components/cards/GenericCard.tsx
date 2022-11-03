@@ -12,17 +12,19 @@ export const SQUARE_CARD_HEIGHT = (deviceUtils.dimensions.width - 60) / 2;
 
 type CardType = 'square' | 'stretch';
 
-interface GenericCardProps {
+type GenericCardProps = {
   type: CardType;
   gradient?: string[];
+  disabled?: boolean;
   children: React.ReactNode;
   onPress?: () => void;
   color?: string;
   testID?: string;
-}
+};
 
 export const GenericCard = ({
   children,
+  disabled = false,
   type,
   gradient = ['transparent', 'transparent'],
   onPress,
@@ -34,6 +36,7 @@ export const GenericCard = ({
     wrap={(children: React.ReactNode) => (
       <ButtonPressAnimation
         onPress={onPress}
+        disabled={disabled}
         scaleTo={0.96}
         overflowMargin={50}
       >
