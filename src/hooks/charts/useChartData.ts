@@ -46,13 +46,19 @@ export default function useChartData(asset: any, secondStore: any) {
     params: { chartType = DEFAULT_CHART_TYPE },
   } = useRoute();
   const { address, price: priceObject } = asset;
+  const lowercaseAddress = address.toLowerCase();
 
   const { value: price } = priceObject || {};
 
   const { chart, chartsForAsset, fetchingCharts } = useSelector(
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(state: never) => { chart: any; ... Remove this comment to see the full error message
     useCallbackOne(
-      state => chartSelector(state, { address, chartType, secondStore }),
+      state =>
+        chartSelector(state, {
+          address: lowercaseAddress,
+          chartType,
+          secondStore,
+        }),
       [address, secondStore, chartType]
     ),
     isEqual
@@ -60,20 +66,20 @@ export default function useChartData(asset: any, secondStore: any) {
 
   useEffect(() => {
     async function fetchDays() {
-      const days = await daysFromTheFirstTx(asset.address);
+      const days = await daysFromTheFirstTx(lowercaseAddress);
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
       setDaysFromFirstTx(days);
     }
-    if (asset.address) {
+    if (lowercaseAddress) {
       fetchDays();
     }
-  }, [asset]);
+  }, [asset, lowercaseAddress]);
 
   useEffect(() => {
     if (!disableCharts) {
-      dispatch(emitChartsRequest(address, chartType));
+      dispatch(emitChartsRequest(lowercaseAddress, chartType));
     }
-  }, [address, chartType, dispatch]);
+  }, [address, chartType, dispatch, lowercaseAddress]);
 
   const updateChartType = useCallback(
     type => {
