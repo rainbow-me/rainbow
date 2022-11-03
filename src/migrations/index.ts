@@ -84,7 +84,7 @@ export async function runMigrations(migrations: Migration[]) {
     } else {
       logger.debug(
         `Already migrated`,
-        { migration: name },
+        { migration: migration.name },
         MIGRATIONS_DEBUG_CONTEXT
       );
     }
