@@ -50,6 +50,7 @@ export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheck
   }
 
   logger.debug(`Notifications promo: activating`);
+
   NotificationsPromoCampaign.action();
 
   return GenericCampaignCheckResponse.activated;

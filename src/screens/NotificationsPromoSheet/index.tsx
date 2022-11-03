@@ -109,19 +109,19 @@ export function NotificationsPromoSheetInner({
           title: i18n.t(TRANSLATIONS.info_row_1.title),
           description: i18n.t(TRANSLATIONS.info_row_1.title),
           icon: '􀖅',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+          gradient: colors.gradients.appleBlueTintToAppleBlue,
         },
         {
           title: i18n.t(TRANSLATIONS.info_row_2.title),
           description: i18n.t(TRANSLATIONS.info_row_2.description),
           icon: '􀯮',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+          gradient: colors.gradients.appleBlueTintToAppleBlue,
         },
         {
           title: i18n.t(TRANSLATIONS.info_row_3.title),
           description: i18n.t(TRANSLATIONS.info_row_3.description),
           icon: '􀙨',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
+          gradient: colors.gradients.appleBlueTintToAppleBlue,
         },
       ]}
     />
