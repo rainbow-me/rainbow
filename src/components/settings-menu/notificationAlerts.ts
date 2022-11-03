@@ -8,3 +8,10 @@ export function showNotificationSubscriptionErrorAlert() {
     [{ text: 'OK' }]
   );
 }
+export function showOfflineAlert() {
+  Alert.alert(
+    lang.t('settings.notifications_section.error_alert_title'),
+    lang.t('settings.notifications_section.offline_alert_content'),
+    [{ text: 'OK' }]
+  );
+}

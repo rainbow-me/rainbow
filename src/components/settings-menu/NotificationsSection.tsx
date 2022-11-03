@@ -31,7 +31,11 @@ import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
 import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
-import { showNotificationSubscriptionErrorAlert } from '@/components/settings-menu/notificationAlerts';
+import {
+  showNotificationSubscriptionErrorAlert,
+  showOfflineAlert,
+} from '@/components/settings-menu/notificationAlerts';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 type WalletRowProps = {
   ens: string;
@@ -185,6 +189,7 @@ const NotificationsSection = () => {
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
   const { wallets, walletNames } = useWallets();
+  const { isConnected } = useNetInfo();
 
   const {
     ownerEnabled: storedOwnerEnabled,
@@ -240,6 +245,10 @@ const NotificationsSection = () => {
   const disabledInSystem = permissionStatus === RESULTS.BLOCKED;
 
   const toggleAllOwnedNotifications = useCallback(() => {
+    if (!isConnected) {
+      showOfflineAlert();
+      return;
+    }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettings(NotificationRelationship.OWNER, !storedOwnerEnabled)
       .then(() => {
@@ -255,6 +264,10 @@ const NotificationsSection = () => {
   }, [storedOwnerEnabled, updateGroupSettings]);
 
   const toggleAllWatchedNotifications = useCallback(() => {
+    if (!isConnected) {
+      showOfflineAlert();
+      return;
+    }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettings(NotificationRelationship.WATCHER, !storedWatcherEnabled)
       .then(() => {

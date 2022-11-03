@@ -21,7 +21,11 @@ import {
   useWalletGroupNotificationSettings,
 } from '@/notifications/settings';
 import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
-import { showNotificationSubscriptionErrorAlert } from '@/components/settings-menu/notificationAlerts';
+import {
+  showNotificationSubscriptionErrorAlert,
+  showOfflineAlert,
+} from '@/components/settings-menu/notificationAlerts';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 type RouteParams = {
   WalletNotificationsSettings: {
@@ -36,6 +40,7 @@ const WalletNotificationsSettings = () => {
   >();
   const { address } = route.params;
   const { notifications, updateSettings } = useNotificationSettings(address);
+  const { isConnected } = useNetInfo();
 
   const {
     lastOwnedWalletEnabled,
@@ -89,6 +94,10 @@ const WalletNotificationsSettings = () => {
   ] = useState<NotificationTopicType | null>(null);
 
   const toggleAllowNotifications = useCallback(() => {
+    if (!isConnected) {
+      showOfflineAlert();
+      return;
+    }
     setAllState(prev => ({ status: !prev.status, loading: true }));
     toggleGroupNotifications(
       [notifications],
@@ -124,6 +133,10 @@ const WalletNotificationsSettings = () => {
 
   const toggleTopic = useCallback(
     (topic: NotificationTopicType) => {
+      if (!isConnected) {
+        showOfflineAlert();
+        return;
+      }
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
       toggleTopicForWallet(
