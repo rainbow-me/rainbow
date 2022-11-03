@@ -1,6 +1,7 @@
 import React from 'react';
 import { AccentColorProvider, Box, Text } from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
+import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 
 const ORB_SIZE = 36;
 
@@ -11,13 +12,21 @@ type IconOrbProps = {
   shadowColor?: ShadowColor;
   icon: string;
   loaded?: boolean;
+  textSize?: TextSize;
+  textWeight?: TextWeight;
+  borderColor?: string;
+  borderWidth?: number;
 };
 
 export const IconOrb = ({
+  borderColor,
+  borderWidth,
   color,
   icon,
   loaded = true,
   shadowColor,
+  textSize = '17pt',
+  textWeight = 'bold',
 }: IconOrbProps) => {
   if (loaded) {
     return (
@@ -26,6 +35,7 @@ export const IconOrb = ({
           <Box
             width={{ custom: ORB_SIZE }}
             height={{ custom: ORB_SIZE }}
+            style={{ borderColor, borderWidth }}
             borderRadius={ORB_SIZE / 2}
             background="accent"
             alignItems="center"
@@ -34,8 +44,8 @@ export const IconOrb = ({
           >
             <Text
               containsEmoji
-              size="17pt"
-              weight="bold"
+              size={textSize}
+              weight={textWeight}
               align="center"
               color="label"
             >
@@ -46,6 +56,7 @@ export const IconOrb = ({
           <Box
             width={{ custom: ORB_SIZE }}
             height={{ custom: ORB_SIZE }}
+            style={{ borderColor, borderWidth }}
             borderRadius={ORB_SIZE / 2}
             background="accent"
             alignItems="center"
@@ -53,8 +64,8 @@ export const IconOrb = ({
           >
             <Text
               containsEmoji
-              size="17pt"
-              weight="bold"
+              size={textSize}
+              weight={textWeight}
               align="center"
               color="label"
             >

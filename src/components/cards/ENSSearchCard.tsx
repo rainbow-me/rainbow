@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -20,6 +19,7 @@ import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { GenericCard } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
+import * as i18n from '@/languages';
 
 const springConfig = {
   damping: 20,
@@ -78,11 +78,14 @@ export const ENSSearchCard = () => {
     };
   }, [pendingRegistrations]);
 
+  const translations = i18n.l.cards.ens_search;
+
   return (
     <GenericCard
-      gradient={['#0E76FD', '#61B5FF']}
+      gradient={[globalColors.blue60, '#61B5FF']}
       onPress={handlePress}
       testID="ens-register-name-banner"
+      color={globalColors.blue60}
       type="square"
     >
       <ColorModeProvider value="darkTinted">
@@ -93,9 +96,13 @@ export const ENSSearchCard = () => {
         >
           <Box as={Animated.View} style={pendingBadgeStyle}>
             <IconOrb
-              color="#5FA9EE"
+              borderColor={globalColors.blue10}
+              borderWidth={2.5}
+              color={globalColors.blue50}
               icon={pendingRegistrations?.length.toString()}
               shadowColor="shadow"
+              textSize="20pt"
+              textWeight="heavy"
             />
           </Box>
           <Box as={Animated.View} position="absolute" style={searchIconStyle}>
@@ -111,10 +118,10 @@ export const ENSSearchCard = () => {
               size="13pt"
               weight="bold"
             >
-              {lang.t('discover.ens_search.mini_title')}
+              {i18n.t(translations.mini_title)}
             </Text>
             <Text color="label" size="20pt" weight="heavy">
-              {lang.t('discover.ens_search.title')}
+              {i18n.t(translations.title)}
             </Text>
           </Stack>
         </Box>

@@ -3,8 +3,7 @@ import useExperimentalFlag, { PROFILES } from '../../config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
 import { DPICard } from '../cards/DPICard';
 import ENSCreateProfileCard from './ENSCreateProfileCard';
-import ENSSearchCard from './ENSSearchCard';
-import { ENSSearchCard as X } from '../cards/ENSSearchCard';
+import { ENSSearchCard } from '../cards/ENSSearchCard';
 import GasCard from './GasCard';
 import Lists from './ListsSection';
 import TopMoversSection from './TopMoversSection';
@@ -48,8 +47,8 @@ export default function DiscoverHome() {
               <Stack space="20px">
                 <TopMoversSection />
                 <Inline space="20px">
-                  <X />
-                  <X />
+                  <ENSSearchCard />
+                  <ENSSearchCard />
                 </Inline>
                 <DPICard />
                 <LearnCard cardDetails={learnCards[0]} type="stretch" />
