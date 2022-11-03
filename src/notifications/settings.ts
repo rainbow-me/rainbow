@@ -373,11 +373,10 @@ export const useWalletGroupNotificationSettings = () => {
         [type]: enabled,
       };
       const newSettings = { ...existingGroupSettings, ...options };
-      console.log(JSON.stringify(newSettings, null, 2));
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      const onSuccess = () => {
+      const updatedStore = () => {
         notificationSettingsStorage.set(
           WALLET_GROUPS_STORAGE_KEY,
           JSON.stringify(newSettings)
@@ -389,13 +388,13 @@ export const useWalletGroupNotificationSettings = () => {
           ownedWallets,
           NotificationRelationship.OWNER,
           newOwnerEnabled
-        ).then(onSuccess);
+        ).then(updatedStore);
       } else if (newWatcherEnabled !== watcherEnabled) {
         return toggleGroupNotifications(
           watchedWallets,
           NotificationRelationship.WATCHER,
           newWatcherEnabled
-        ).then(onSuccess);
+        ).then(updatedStore);
       }
       return Promise.resolve();
     },

@@ -81,13 +81,13 @@ const WalletNotificationsSettings = () => {
     loading: false,
     status: notificationsEnabled,
   });
-  const setAllLoading = (loading: boolean) =>
-    setAllState(prev => ({ ...prev, loading }));
 
   const [topicState, setTopicState] = useState({ ...notifications.topics });
   const toggleStateForTopic = (topic: NotificationTopicType) =>
     setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
 
+  // We allow only one subscription in progress
+  // this states controls which we are currently updating
   const [
     topicSubscriptionInProgress,
     setTopicSubscriptionInProgress,
@@ -116,7 +116,7 @@ const WalletNotificationsSettings = () => {
         updateSettings({
           enabled: !notificationsEnabled,
         });
-        setAllLoading(false);
+        setAllState(prev => ({ ...prev, loading: false }));
       })
       .catch(() => {
         showNotificationSubscriptionErrorAlert();
