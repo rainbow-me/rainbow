@@ -35,15 +35,31 @@ export async function runMigration({ name, migrate, defer }: Migration) {
 
   if (handler) {
     try {
-      logger.debug(`Migrating ${name}`, {}, MIGRATIONS_DEBUG_CONTEXT);
+      logger.debug(
+        `Migrating`,
+        {
+          migration: name,
+        },
+        MIGRATIONS_DEBUG_CONTEXT
+      );
       await handler();
       storage.set([name], new Date().toUTCString());
-      logger.debug(`Migrating ${name} complete`, {}, MIGRATIONS_DEBUG_CONTEXT);
+      logger.debug(
+        `Migrating complete`,
+        {
+          migration: name,
+        },
+        MIGRATIONS_DEBUG_CONTEXT
+      );
     } catch (e) {
-      logger.error(new RainbowError(`Migration ${name} failed`));
+      logger.error(new RainbowError(`Migration failed`), {
+        migration: name,
+      });
     }
   } else {
-    logger.error(new RainbowError(`Migration ${name} had no handler`));
+    logger.error(new RainbowError(`Migration had no handler`), {
+      migration: name,
+    });
   }
 }
 
@@ -51,6 +67,8 @@ export async function runMigration({ name, migrate, defer }: Migration) {
  * @private Only exported for testing
  */
 export async function runMigrations(migrations: Migration[]) {
+  const ranMigrations = [];
+
   for (const migration of migrations) {
     const migratedAt = storage.get([migration.name]);
     const isDeferable = Boolean(migration.defer);
@@ -61,14 +79,20 @@ export async function runMigrations(migrations: Migration[]) {
       } else {
         await runMigration(migration);
       }
+
+      ranMigrations.push(migration.name);
     } else {
       logger.debug(
-        `Already migrated ${migration.name}`,
-        {},
+        `Already migrated`,
+        { migration: name },
         MIGRATIONS_DEBUG_CONTEXT
       );
     }
   }
+
+  logger.info(`Ran or scheduled migrations`, {
+    migrations: ranMigrations,
+  });
 }
 
 /**
