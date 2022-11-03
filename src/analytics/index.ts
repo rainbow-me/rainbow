@@ -60,9 +60,8 @@ export class Analytics {
     params?: EventProperties[T]
   ) {
     if (this.disabled) return;
-    const category = this.getTrackingEventCategory(event);
     const metadata = this.getDefaultMetadata();
-    this.client.track(event, { ...params, category, ...metadata });
+    this.client.track(event, { ...params, ...metadata });
   }
 
   private getDefaultMetadata() {
@@ -94,7 +93,7 @@ export class Analytics {
    */
   enable() {
     logger.debug(`Analytics tracking enabled`);
-    this.track(event.generic.analyticsTrackingEnabled);
+    this.track(event.analyticsTrackingEnabled);
     this.disabled = false;
   }
 
@@ -103,17 +102,8 @@ export class Analytics {
    */
   disable() {
     logger.debug(`Analytics tracking disabled`);
-    this.track(event.generic.analyticsTrackingDisabled);
+    this.track(event.analyticsTrackingDisabled);
     this.disabled = true;
-  }
-
-  getTrackingEventCategory<T extends keyof EventProperties>(ev: T) {
-    for (const category of Object.keys(event)) {
-      // @ts-expect-error We know the index type of `event`
-      for (const e of Object.values(event[category])) {
-        if (e === ev) return category;
-      }
-    }
   }
 }
 

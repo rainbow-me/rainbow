@@ -145,7 +145,7 @@ class OldApp extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
-    analyticsV2.track(analyticsV2.event.generic.applicationDidMount);
+    analyticsV2.track(analyticsV2.event.applicationDidMount);
   }
 
   componentDidUpdate(prevProps) {
@@ -196,7 +196,7 @@ class OldApp extends Component {
     }
     this.setState({ appState: nextAppState });
 
-    analyticsV2.track(analyticsV2.event.generic.appStateChange, {
+    analyticsV2.track(analyticsV2.event.appStateChange, {
       category: 'app state',
       label: nextAppState,
     });
@@ -322,7 +322,7 @@ function Root() {
         } = Dimensions.get('screen');
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
-        analyticsV2.track(analyticsV2.event.generic.firstAppOpen);
+        analyticsV2.track(analyticsV2.event.firstAppOpen);
       }
 
       /**
