@@ -12,14 +12,14 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 
 const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { card, displayType, category, url },
+    params: { card, displayType, category, url, fromScreen },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -29,27 +29,28 @@ export default function LearnWebViewScreen() {
 
   useEffect(
     () => () => {
-      analytics.track('Learn card opened', {
+      analyticsV2.track(analyticsV2.event.card.learn.openedCard, {
         durationSeconds: (Date.now() - startTime.current) / 1000,
         url,
         card,
         category,
         displayType,
+        fromScreen,
       });
       return;
     },
-    [card, category, displayType, url]
+    [card, category, displayType, fromScreen, url]
   );
 
   const onPressShare = useCallback(async () => {
     await Share.share({ url });
-    analytics.track('Learn card web view share modal opened', {
+    analyticsV2.track(analyticsV2.event.card.learn.openedShare, {
       url,
       category,
       card,
-      displayType,
+      durationSeconds: (Date.now() - startTime.current) / 1000,
     });
-  }, [card, category, displayType, url]);
+  }, [card, category, url]);
 
   const renderHeader = () => (
     <Box

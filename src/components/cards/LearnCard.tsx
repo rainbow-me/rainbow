@@ -8,6 +8,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
+import { useRoute } from '@react-navigation/native';
 
 export const LEARN_CARD_HEIGHT = 184;
 
@@ -20,6 +21,7 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
   const { category, emoji, url, key } = cardDetails;
+  const { name: routeName } = useRoute();
   const {
     gradient,
     shadowColor,
@@ -34,8 +36,9 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
       category,
       url,
       displayType: type,
+      fromScreen: routeName,
     });
-  }, [category, key, navigate, type, url]);
+  }, [category, key, navigate, routeName, type, url]);
 
   const translations = i18n.l.cards.learn;
 

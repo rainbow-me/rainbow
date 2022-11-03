@@ -1,3 +1,6 @@
+import { CardType } from '@/components/cards/GenericCard';
+import { LearnCardKey } from '@/components/cards/utils/types';
+
 /**
  * Uncategorized events
  */
@@ -21,16 +24,27 @@ export const swapEvent = {
 } as const;
 
 /**
+ * Events relevant to cards
+ */
+export const cardEvent = {
+  learn: {
+    openedCard: 'Opened Learn card',
+    openedShare: 'Opened Learn article share modal',
+  },
+} as const;
+
+/**
  * A union of all event names. Use this when firing events via
  * `analytics.track`
  */
 export const event = {
   generic: genericEvent,
   swap: swapEvent,
+  card: cardEvent,
 } as const;
 
 /**
- * Properties corresponding to our uncategorized event enum `GenericEvent`
+ * Properties corresponding to our uncategorized event object `genericEvent`
  */
 type GenericEventProperties = {
   // old
@@ -51,7 +65,7 @@ type GenericEventProperties = {
 };
 
 /**
- * Properties corresponding to our swaps event enum `GenericEvent`
+ * Properties corresponding to our swaps event object `swapEvent`
  */
 type SwapEventProperties = {
   [event.swap.submittedSwap]: {
@@ -62,6 +76,28 @@ type SwapEventProperties = {
 };
 
 /**
+ * Properties corresponding to our swaps event object `cardEvent`
+ */
+type CardEventProperties = {
+  [event.card.learn.openedCard]: {
+    card: LearnCardKey;
+    category: string;
+    url: string;
+    durationSeconds: number;
+    displayType: CardType;
+    fromScreen: string;
+  };
+  [event.card.learn.openedShare]: {
+    card: LearnCardKey;
+    category: string;
+    url: string;
+    durationSeconds: number;
+  };
+};
+
+/**
  * A union of all event properties, used by `analytics.track`
  */
-export type EventProperties = GenericEventProperties & SwapEventProperties;
+export type EventProperties = GenericEventProperties &
+  SwapEventProperties &
+  CardEventProperties;
