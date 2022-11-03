@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Switch } from 'react-native';
+import { Switch } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -129,6 +129,7 @@ const WalletNotificationsSettings = () => {
     notificationsEnabled,
     notifications,
     updateSectionSettings,
+    isConnected,
   ]);
 
   const toggleTopic = useCallback(
@@ -161,7 +162,7 @@ const WalletNotificationsSettings = () => {
           setTopicSubscriptionInProgress(null);
         });
     },
-    [notifications, updateSettings]
+    [notifications, updateSettings, isConnected]
   );
 
   const animatedStyle = useAnimatedStyle(

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { ActivityIndicator, Linking, Switch } from 'react-native';
+import { Linking, Switch } from 'react-native';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import Menu from './components/Menu';
@@ -261,7 +261,7 @@ const NotificationsSection = () => {
         showNotificationSubscriptionErrorAlert();
         setOwnedState(prev => ({ status: !prev.status, loading: false }));
       });
-  }, [storedOwnerEnabled, updateGroupSettings]);
+  }, [storedOwnerEnabled, updateGroupSettings, isConnected]);
 
   const toggleAllWatchedNotifications = useCallback(() => {
     if (!isConnected) {
@@ -280,7 +280,7 @@ const NotificationsSection = () => {
         showNotificationSubscriptionErrorAlert();
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
-  }, [updateGroupSettings, storedWatcherEnabled]);
+  }, [updateGroupSettings, storedWatcherEnabled, isConnected]);
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
