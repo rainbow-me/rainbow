@@ -1,3 +1,5 @@
+import { InteractionManager } from 'react-native';
+
 import { Storage } from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
@@ -28,25 +30,43 @@ const migrations: Migration[] = [deleteImgixMMKVCache()];
 /**
  * @private Only exported for testing
  */
+export async function runMigration({ name, migrate, defer }: Migration) {
+  const handler = migrate || defer;
+
+  if (handler) {
+    try {
+      logger.debug(`Migrating ${name}`, {}, MIGRATIONS_DEBUG_CONTEXT);
+      await handler();
+      storage.set([name], new Date().toUTCString());
+      logger.debug(`Migrating ${name} complete`, {}, MIGRATIONS_DEBUG_CONTEXT);
+    } catch (e) {
+      logger.error(new RainbowError(`Migration ${name} failed`));
+    }
+  } else {
+    logger.error(new RainbowError(`Migration ${name} had no handler`));
+  }
+}
+
+/**
+ * @private Only exported for testing
+ */
 export async function runMigrations(migrations: Migration[]) {
-  for (const { name, migrate } of migrations) {
-    const migratedAt = storage.get([name]);
+  for (const migration of migrations) {
+    const migratedAt = storage.get([migration.name]);
+    const isDeferable = Boolean(migration.defer);
 
     if (!migratedAt) {
-      try {
-        logger.debug(`Migrating ${name}`, {}, MIGRATIONS_DEBUG_CONTEXT);
-        await migrate();
-        storage.set([name], new Date().toUTCString());
-        logger.debug(
-          `Migrating ${name} complete`,
-          {},
-          MIGRATIONS_DEBUG_CONTEXT
-        );
-      } catch (e) {
-        logger.error(new RainbowError(`Migration ${name} failed`));
+      if (isDeferable) {
+        InteractionManager.runAfterInteractions(() => runMigration(migration));
+      } else {
+        await runMigration(migration);
       }
     } else {
-      logger.debug(`Already migrated ${name}`, {}, MIGRATIONS_DEBUG_CONTEXT);
+      logger.debug(
+        `Already migrated ${migration.name}`,
+        {},
+        MIGRATIONS_DEBUG_CONTEXT
+      );
     }
   }
 }

@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native';
 import { describe, test, expect } from '@jest/globals';
 import { MMKV } from 'react-native-mmkv';
 
@@ -7,6 +8,12 @@ import {
   MigrationName,
   MIGRATIONS_STORAGE_ID,
 } from '@/migrations/types';
+
+jest.mock('react-native', () => ({
+  InteractionManager: {
+    runAfterInteractions: jest.fn(),
+  },
+}));
 
 describe(`@/migrations`, () => {
   const storage = new MMKV({ id: MIGRATIONS_STORAGE_ID });
@@ -33,6 +40,18 @@ describe(`@/migrations`, () => {
     expect(storage.getString(fooMigrationName)).toEqual(
       JSON.stringify({ data: currDate })
     );
+  });
+
+  test(`deferable migration is set up`, async () => {
+    const deferMigrationName = 'migration_defer' as MigrationName;
+    const deferMigration: Migration = {
+      name: deferMigrationName,
+      async defer() {},
+    };
+
+    await runMigrations([deferMigration]);
+
+    expect(InteractionManager.runAfterInteractions).toHaveBeenCalled();
   });
 
   test(`migration that throws exits and does not mark as complete`, async () => {

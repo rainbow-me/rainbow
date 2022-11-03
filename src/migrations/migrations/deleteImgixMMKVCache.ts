@@ -7,7 +7,7 @@ const IMGIX_STORAGE_ID = 'IMGIX_CACHE';
 export function deleteImgixMMKVCache(): Migration {
   return {
     name: MigrationName.deleteImgixMMKVCache,
-    async migrate() {
+    async defer() {
       const storage = new MMKV({ id: IMGIX_STORAGE_ID });
       storage.clearAll();
     },
