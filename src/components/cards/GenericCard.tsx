@@ -4,11 +4,10 @@ import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { globalColors } from '@/design-system/color/palettes';
 import { deviceUtils } from '@/utils';
-import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
-export const SQUARE_CARD_HEIGHT = (deviceUtils.dimensions.width - 60) / 2;
+export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
 
 type CardType = 'square' | 'stretch';
 
@@ -51,16 +50,15 @@ export const GenericCard = ({
         colors={gradient}
         end={{ x: 1, y: 0 }}
         start={{ x: 0, y: 0.5 }}
-        width={type === 'square' ? { custom: SQUARE_CARD_HEIGHT } : 'full'}
+        width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
         height={
           type === 'square'
             ? {
-                custom: SQUARE_CARD_HEIGHT,
+                custom: SQUARE_CARD_SIZE,
               }
             : undefined
         }
         borderRadius={20}
-        style={{ flex: IS_IOS ? 0 : undefined }}
         shadow={color ? '18px accent' : '18px'}
         padding="20px"
         testID={testID}

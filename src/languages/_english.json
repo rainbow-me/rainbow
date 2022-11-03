@@ -307,6 +307,16 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "receive": {
         "receive_assets": "Receive assets",
         "copy_address": "Copy Address",
@@ -372,16 +382,6 @@
       "ens_create_profile": {
         "title": "Create your ENS profile",
         "body": "Replace your wallet address with a profile owned entirely by you."
-      },
-      "gas": {
-        "average": "Average",
-        "gwei": "Gwei",
-        "high": "High",
-        "loading": "Loading…",
-        "low": "Low",
-        "network_fees": "Network fees",
-        "surging": "Surging",
-        "very_low": "Very low"
       },
       "lists": {
         "lists_title": "Lists",

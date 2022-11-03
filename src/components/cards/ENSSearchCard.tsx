@@ -82,10 +82,10 @@ export const ENSSearchCard = () => {
 
   return (
     <GenericCard
+      color={globalColors.blue60}
       gradient={[globalColors.blue60, '#61B5FF']}
       onPress={handlePress}
       testID="ens-register-name-banner"
-      color={globalColors.blue60}
       type="square"
     >
       <ColorModeProvider value="darkTinted">

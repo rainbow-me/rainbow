@@ -46,6 +46,7 @@ export const DPICard = () => {
   return (
     <GenericCard
       gradient={['#6D58F5', '#A970FF']}
+      color="#8D65FA"
       onPress={handlePress}
       testID="dpi-button"
       type="stretch"

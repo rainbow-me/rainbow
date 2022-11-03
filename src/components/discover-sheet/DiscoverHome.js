@@ -4,7 +4,7 @@ import BottomSpacer from './BottomSpacer';
 import { DPICard } from '../cards/DPICard';
 import ENSCreateProfileCard from './ENSCreateProfileCard';
 import { ENSSearchCard } from '../cards/ENSSearchCard';
-import GasCard from './GasCard';
+import { GasCard } from './GasCard';
 import Lists from './ListsSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
@@ -47,7 +47,7 @@ export default function DiscoverHome() {
               <Stack space="20px">
                 <TopMoversSection />
                 <Inline space="20px">
-                  <ENSSearchCard />
+                  <GasCard />
                   <ENSSearchCard />
                 </Inline>
                 <DPICard />
