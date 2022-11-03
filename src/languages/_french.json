@@ -306,6 +306,10 @@
         "mini_title": "ENS :)",
         "title": "Register a .eth name :)"
       },
+      "ens_create_profile": {
+        "title": "Create your ENS profile :)",
+        "body": "Replace your wallet address with a profile owned entirely by you. :)"
+      },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",

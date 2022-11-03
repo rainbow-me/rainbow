@@ -10,6 +10,7 @@ import {
   ColorModeProvider,
   Column,
   Columns,
+  globalColors,
   Stack,
   Text,
 } from '@/design-system';
@@ -17,14 +18,13 @@ import { useAccountSettings } from '@/hooks';
 import store from '@/redux/store';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { GenericCard } from './GenericCard';
+import { ORB_SIZE } from './reusables/IconOrb';
 
 export const DPICard = () => {
   const { nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(
@@ -44,14 +44,14 @@ export const DPICard = () => {
   }, [nativeCurrency, navigate]);
 
   return (
-    <GenericCard
-      gradient={['#6D58F5', '#A970FF']}
-      color="#8D65FA"
-      onPress={handlePress}
-      testID="dpi-button"
-      type="stretch"
-    >
-      <ColorModeProvider value="darkTinted">
+    <ColorModeProvider value="darkTinted">
+      <GenericCard
+        gradient={['#6D58F5', '#A970FF']}
+        color="#8D65FA"
+        onPress={handlePress}
+        testID="dpi-button"
+        type="stretch"
+      >
         <Stack space="36px">
           <Columns space="20px">
             <Column>
@@ -68,9 +68,9 @@ export const DPICard = () => {
               {/* @ts-expect-error JavaScript component */}
               <CoinIcon
                 address={DPI_ADDRESS}
-                forcedShadowColor={colors.shadowBlack}
+                forcedShadowColor={globalColors.grey100}
                 shadowOpacity={0.1}
-                size={36}
+                size={ORB_SIZE}
                 symbol="DPI"
               />
             </Column>
@@ -95,7 +95,7 @@ export const DPICard = () => {
             </Box>
           </ButtonPressAnimation>
         </Stack>
-      </ColorModeProvider>
-    </GenericCard>
+      </GenericCard>
+    </ColorModeProvider>
   );
 };

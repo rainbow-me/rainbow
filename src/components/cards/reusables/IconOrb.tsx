@@ -3,7 +3,7 @@ import { AccentColorProvider, Box, Text } from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 
-const ORB_SIZE = 36;
+export const ORB_SIZE = 36;
 
 type ShadowColor = 'accent' | 'shadow';
 

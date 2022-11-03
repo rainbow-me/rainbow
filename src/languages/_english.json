@@ -303,6 +303,10 @@
           "web3": "What is Web3?"
         }
       },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
       "ens_search": {
         "mini_title": "ENS",
         "title": "Register a .eth name"
@@ -378,10 +382,6 @@
         "title": "DeFi Pulse Index",
         "body": "All the top decentralized finance\ntokens in one. Track the industry.",
         "view": "View"
-      },
-      "ens_create_profile": {
-        "title": "Create your ENS profile",
-        "body": "Replace your wallet address with a profile owned entirely by you."
       },
       "lists": {
         "lists_title": "Lists",
