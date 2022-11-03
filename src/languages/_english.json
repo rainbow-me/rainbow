@@ -270,6 +270,29 @@
       "hidden": "Hidden"
     },
     "cards": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title": "Register a .eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
       "learn": {
         "learn": "Learn",
         "cards": {
@@ -302,24 +325,6 @@
           "blockchains": "Blockchains and Fees",
           "web3": "What is Web3?"
         }
-      },
-      "ens_create_profile": {
-        "title": "Create your ENS profile",
-        "body": "Replace your wallet address with a profile owned entirely by you."
-      },
-      "ens_search": {
-        "mini_title": "ENS",
-        "title": "Register a .eth name"
-      },
-      "gas": {
-        "average": "Average",
-        "gwei": "Gwei",
-        "high": "High",
-        "loading": "Loading…",
-        "low": "Low",
-        "network_fees": "Network fees",
-        "surging": "Surging",
-        "very_low": "Very low"
       },
       "receive": {
         "receive_assets": "Receive assets",
@@ -378,11 +383,6 @@
       "sync_codepush": "Sync codepush"
     },
     "discover": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "All the top decentralized finance\ntokens in one. Track the industry.",
-        "view": "View"
-      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"

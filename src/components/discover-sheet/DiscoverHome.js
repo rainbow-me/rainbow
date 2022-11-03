@@ -10,7 +10,7 @@ import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { LearnCard } from '../cards/LearnCard';
-import { learnCards } from '../cards/utils/constants';
+import { getCardColorways, learnCards } from '../cards/utils/constants';
 import {
   ActionCard,
   DPICard,
@@ -56,7 +56,12 @@ export default function DiscoverHome() {
                 <DPICard />
                 <LearnCard cardDetails={learnCards[0]} type="stretch" />
                 <Inline space="20px">
-                  <LearnCard cardDetails={learnCards[1]} type="square" />
+                  <ActionCard
+                    colorway="green"
+                    sfSymbolIcon="􀅼"
+                    title="Buy Crypto with Cash"
+                    onPress={() => {}}
+                  />
                   <LearnCard cardDetails={learnCards[2]} type="square" />
                 </Inline>
               </Stack>

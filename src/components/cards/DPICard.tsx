@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
@@ -43,6 +43,8 @@ export const DPICard = () => {
     });
   }, [nativeCurrency, navigate]);
 
+  const translations = i18n.l.cards.dpi;
+
   return (
     <ColorModeProvider value="darkTinted">
       <GenericCard
@@ -57,10 +59,10 @@ export const DPICard = () => {
             <Column>
               <Stack space="16px">
                 <Text size="22pt" weight="heavy" color="label">
-                  {lang.t('discover.dpi.title')}
+                  {i18n.t(translations.title)}
                 </Text>
                 <Text size="15pt" weight="semibold" color="labelSecondary">
-                  {lang.t('discover.dpi.body')}
+                  {i18n.t(translations.body)}
                 </Text>
               </Stack>
             </Column>
@@ -90,7 +92,7 @@ export const DPICard = () => {
               shadow="18px"
             >
               <Text color="label" containsEmoji size="15pt" weight="bold">
-                {`􀦌 ${lang.t('discover.dpi.view')}`}
+                {`􀦌 ${i18n.t(translations.view)}`}
               </Text>
             </Box>
           </ButtonPressAnimation>

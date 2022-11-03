@@ -1,11 +1,13 @@
 import { Box, Stack, Text } from '@/design-system';
 import React from 'react';
 import { GenericCard } from './GenericCard';
-import { CardColorway } from './utils/types';
+import { CardColor } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
+import { getCardColorways } from './utils/constants';
+import { useTheme } from '@/theme';
 
 interface ActionCardProps {
-  colorway: CardColorway;
+  colorway: CardColor;
   sfSymbolIcon: string;
   onPress: () => void;
   title: string;
@@ -17,7 +19,15 @@ export const ActionCard = ({
   onPress,
   title,
 }: ActionCardProps) => {
-  const { gradient, shadowColor, orbColorDark, primaryTextColor } = colorway;
+  const { isDarkMode } = useTheme();
+  const cardColorways = getCardColorways(isDarkMode);
+  const {
+    gradient,
+    shadowColor,
+    orbColorDark,
+    primaryTextColor,
+  } = cardColorways[colorway];
+
   return (
     <GenericCard
       type="square"
@@ -29,7 +39,7 @@ export const ActionCard = ({
         <IconOrb
           color={orbColorDark}
           icon={sfSymbolIcon}
-          shadowColor="shadow"
+          shadowColor="accent"
         />
         <Stack space="10px">
           <Text color={{ custom: primaryTextColor }} size="20pt" weight="heavy">
