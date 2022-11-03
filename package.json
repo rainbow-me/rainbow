@@ -371,7 +371,6 @@
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
     "**/terser": "5.14.2",
-    "**/xmldom": "github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e",
     "**/xmlhttprequest-ssl": "1.6.2",
     "**/y18n": "5.0.5",
     "**/yargs-parser": "20.2.5",
@@ -401,7 +400,8 @@
     "**/undici": "5.8.2",
     "**/vm2": "3.9.11",
     "**/d3-color": "3.1.0",
-    "**/minimatch": "3.0.5"
+    "**/minimatch": "3.0.5",
+    "**/@xmldom/xmldom": "0.7.7"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

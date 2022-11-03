@@ -4254,9 +4254,10 @@
   dependencies:
     tslib "^1.9.3"
 
-"@xmldom/xmldom@~0.7.0":
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.7.5.tgz#09fa51e356d07d0be200642b0e4f91d8e6dd408d"
+"@xmldom/xmldom@0.7.7", "@xmldom/xmldom@~0.7.0":
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.7.7.tgz#16bd8a4e5c953018b8168e5d0a7d26b117cd7fa9"
+  integrity sha512-RwEdIYho2kjbSZ7fpvhkHy5wk1Y3x0O6e/EHL3/SoiAfFWH+yhV2/XZQvsBoAeGRNFwgScJS/gRZv+uIwoj7yA==
 
 "@yarnpkg/lockfile@^1.0.0", "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
@@ -17700,10 +17701,6 @@ xmldoc@^1.1.2:
   resolved "https://registry.yarnpkg.com/xmldoc/-/xmldoc-1.1.2.tgz#6666e029fe25470d599cd30e23ff0d1ed50466d7"
   dependencies:
     sax "^1.2.1"
-
-"xmldom@github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e":
-  version "0.7.0"
-  resolved "https://codeload.github.com/xmldom/xmldom/tar.gz/c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
 xmlhttprequest-ssl@1.6.2, xmlhttprequest-ssl@~2.0.0:
   version "1.6.2"

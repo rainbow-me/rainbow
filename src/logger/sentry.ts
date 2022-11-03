@@ -3,6 +3,7 @@ import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
 import { IS_PROD } from '@/env';
+import { logger, RainbowError } from '@/logger';
 
 /**
  * We need to disable React Navigation instrumentation for E2E tests because
@@ -27,14 +28,18 @@ export const defaultOptions = {
 };
 
 export async function initSentry() {
-  if (!IS_PROD) return;
+  try {
+    const dist = `${VersionNumber.buildVersion}`; // MUST BE A STRING
+    const release = `${VersionNumber.appVersion} (${dist})`; // MUST BE A STRING
 
-  const dist = VersionNumber.buildVersion;
-  const release = `${VersionNumber.appVersion} (${VersionNumber.buildVersion})`;
+    Sentry.init({
+      ...defaultOptions,
+      dist, // MUST BE A STRING or Sentry will break in native code
+      release, // MUST BE A STRING or Sentry will break in native code
+    });
 
-  Sentry.init({
-    ...defaultOptions,
-    dist,
-    release,
-  });
+    logger.debug(`Sentry initialized`);
+  } catch (e) {
+    logger.error(new RainbowError(`Sentry initialization failed`));
+  }
 }

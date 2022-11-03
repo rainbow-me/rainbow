@@ -1,64 +1,73 @@
-import lang from 'i18n-js';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { StatusBar } from 'react-native';
-import {
-  SheetActionButton,
-  SheetHandle,
-  SlackSheet,
-} from '../../components/sheet';
-import InfoRow from './InfoRow';
+import LinearGradient from 'react-native-linear-gradient';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/campaigns/campaignChecks';
 import { ImgixImage } from '@/components/images';
 import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
-  Heading,
   Inset,
   Row,
   Rows,
   Stack,
   Text,
+  Bleed,
+  Column,
+  Columns,
 } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
+import { IS_IOS, IS_ANDROID } from '@/env';
 
 const MIN_HEIGHT = 740;
 
-interface PromoSheetProps {
+type SheetActionButtonProps = {
+  label: string;
   onPress: () => void;
-  iconGradient: string[];
+  textColor?: string;
+  color?: string;
+};
+
+type PromoSheetProps = {
   headerImage: StaticImageData;
   headerImageAspectRatio: number;
   backgroundImage?: StaticImageData;
   backgroundColor: string;
   accentColor: string;
   sheetHandleColor?: string;
-  icon1: string;
-  icon2: string;
-  icon3: string;
   campaignKey: CampaignKey;
-}
+  header: string;
+  subHeader: string;
+  primaryButtonProps: SheetActionButtonProps;
+  secondaryButtonProps: SheetActionButtonProps;
+  items: {
+    icon: string;
+    title: string;
+    description: string;
+    gradient: string[];
+  }[];
+};
 
-const PromoSheet = ({
-  onPress,
-  iconGradient,
+export function PromoSheet({
   headerImage,
   headerImageAspectRatio,
   backgroundImage,
   backgroundColor,
   accentColor,
   sheetHandleColor,
-  icon1,
-  icon2,
-  icon3,
   campaignKey,
-}: PromoSheetProps) => {
+  header,
+  subHeader,
+  primaryButtonProps,
+  secondaryButtonProps,
+  items,
+}: PromoSheetProps) {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
   const renderedAt = Date.now();
   const [activated, activate] = useReducer(() => true, false);
 
@@ -75,15 +84,15 @@ const PromoSheet = ({
     [activated, campaignKey, renderedAt]
   );
 
-  const engage = useCallback(() => {
+  const primaryButtonOnPress = useCallback(() => {
     activate();
     const timeElapsed = (Date.now() - renderedAt) / 1000;
     analytics.track('Activated Feature Promo Action', {
       campaign: campaignKey,
       time_viewed: timeElapsed,
     });
-    onPress();
-  }, [activate, campaignKey, onPress, renderedAt]);
+    primaryButtonProps.onPress();
+  }, [activate, campaignKey, primaryButtonProps.onPress, renderedAt]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -94,7 +103,7 @@ const PromoSheet = ({
   return (
     // @ts-ignore
     <SlackSheet
-      additionalTopPadding={android ? StatusBar.currentHeight : false}
+      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
       contentHeight={contentHeight}
       height="100%"
       hideHandle
@@ -124,7 +133,7 @@ const PromoSheet = ({
                         height={{
                           custom: deviceWidth / headerImageAspectRatio,
                         }}
-                        {...(isSmallPhone && { marginTop: { custom: -70 } })}
+                        marginTop={{ custom: isSmallPhone ? -70 : 0 }}
                         source={headerImage}
                         width="full"
                       >
@@ -137,75 +146,92 @@ const PromoSheet = ({
                       </Box>
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
-                      <Text
-                        color="secondary60 (Deprecated)"
-                        size="15px / 21px (Deprecated)"
-                        weight="heavy"
-                      >
-                        {lang.t(`promos.${campaignKey}.subheader`)}
+                      <Text color="labelSecondary" size="15pt" weight="heavy">
+                        {subHeader}
                       </Text>
-                      <Heading
-                        color="primary (Deprecated)"
-                        size="30px / 34px (Deprecated)"
-                        weight="heavy"
-                      >
-                        {lang.t(`promos.${campaignKey}.header`)}
-                      </Heading>
+                      <Text color="label" size="30pt" weight="heavy">
+                        {header}
+                      </Text>
                     </Stack>
                   </Box>
                   <Inset horizontal={{ custom: 43.5 }}>
                     <Stack space={isSmallPhone ? '24px' : '36px'}>
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_1.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon1}
-                        title={lang.t(`promos.${campaignKey}.info_row_1.title`)}
-                      />
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_2.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon2}
-                        title={lang.t(`promos.${campaignKey}.info_row_2.title`)}
-                      />
-                      <InfoRow
-                        description={lang.t(
-                          `promos.${campaignKey}.info_row_3.description`
-                        )}
-                        gradient={iconGradient}
-                        icon={icon3}
-                        title={lang.t(`promos.${campaignKey}.info_row_3.title`)}
-                      />
+                      {items.map(item => (
+                        <Columns key={item.title} space={{ custom: 13 }}>
+                          <Column width="content">
+                            <MaskedView
+                              maskElement={
+                                <Box
+                                  paddingTop={IS_ANDROID ? '6px' : undefined}
+                                >
+                                  <Text
+                                    align="center"
+                                    color="accent"
+                                    size="30pt"
+                                    weight="bold"
+                                  >
+                                    {item.icon}
+                                  </Text>
+                                </Box>
+                              }
+                              style={{ width: 42 }}
+                            >
+                              <Box
+                                as={LinearGradient}
+                                colors={item.gradient}
+                                end={{ x: 0.5, y: 1 }}
+                                height={{ custom: 50 }}
+                                marginTop="-10px"
+                                start={{ x: 0, y: 0 }}
+                                width="full"
+                              />
+                            </MaskedView>
+                          </Column>
+                          <Bleed top="3px">
+                            <Stack space="12px">
+                              <Text color="label" size="17pt" weight="bold">
+                                {item.title}
+                              </Text>
+                              <Text
+                                color="labelSecondary"
+                                size="15pt"
+                                weight="medium"
+                              >
+                                {item.description}
+                              </Text>
+                            </Stack>
+                          </Bleed>
+                        </Columns>
+                      ))}
                     </Stack>
                   </Inset>
                 </Stack>
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone && ios ? '24px' : '42px (Deprecated)'}
+                  bottom={isSmallPhone && IS_IOS ? '24px' : '42px (Deprecated)'}
                   horizontal="19px (Deprecated)"
                 >
                   <Stack space="12px">
                     <SheetActionButton
-                      color={accentColor}
+                      color={primaryButtonProps.color || accentColor}
                       // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${campaignKey}.primary_button`)}
+                      label={primaryButtonProps.label}
                       lightShadows
-                      onPress={engage}
-                      textColor={backgroundColor}
+                      onPress={primaryButtonOnPress}
+                      textColor={
+                        primaryButtonProps.textColor || backgroundColor
+                      }
                       textSize="large"
                       weight="heavy"
                     />
                     <SheetActionButton
-                      color={colors.transparent}
+                      color={secondaryButtonProps.color || colors.transparent}
                       isTransparent
                       // @ts-expect-error JavaScript component
-                      label={lang.t(`promos.${campaignKey}.secondary_button`)}
-                      onPress={goBack}
-                      textColor={accentColor}
+                      label={secondaryButtonProps.label}
+                      onPress={secondaryButtonProps.onPress || (() => {})}
+                      textColor={secondaryButtonProps.textColor || accentColor}
                       textSize="large"
                       weight="heavy"
                     />
@@ -218,6 +244,4 @@ const PromoSheet = ({
       </AccentColorProvider>
     </SlackSheet>
   );
-};
-
-export default PromoSheet;
+}
