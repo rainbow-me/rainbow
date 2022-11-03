@@ -3,12 +3,15 @@ import { AccentColorProvider, Box, Text } from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 
 const ORB_SIZE = 36;
-interface IconOrbProps {
+
+type ShadowColor = 'accent' | 'shadow';
+
+type IconOrbProps = {
   color: string;
-  shadowColor?: 'accent' | 'shadow';
+  shadowColor?: ShadowColor;
   icon: string;
   loaded?: boolean;
-}
+};
 
 export const IconOrb = ({
   color,

@@ -55,12 +55,13 @@ const springConfig = {
 
 export default function ENSSearchCard() {
   const { width: deviceWidth } = useDimensions();
-  const { pendingRegistrations } = useENSPendingRegistrations();
+  // const { pendingRegistrations } = useENSPendingRegistrations();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
   const pendingBadgeProgress = useSharedValue(0);
+  const pendingRegistrations = ['x'];
 
   useEffect(() => {
     if (pendingRegistrations?.length > 0) {

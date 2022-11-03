@@ -370,8 +370,7 @@
       },
       "ens_search": {
         "mini_title": "ENS :)",
-        "title_part_1": "Register a  :)",
-        "title_part_2": ".eth name :)"
+        "title": "Register a .eth name :)"
       },
       "gas": {
         "average": "Average :)",
