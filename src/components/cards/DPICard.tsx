@@ -50,7 +50,7 @@ export const DPICard = () => {
       fromDiscover: true,
       type: 'token_index',
     });
-  }, [nativeCurrency, navigate]);
+  }, [nativeCurrency, navigate, routeName]);
 
   return (
     <ColorModeProvider value="darkTinted">
@@ -84,7 +84,11 @@ export const DPICard = () => {
               />
             </Column>
           </Columns>
-          <ButtonPressAnimation onPress={handlePress} scaleTo={0.92}>
+          <ButtonPressAnimation
+            onPress={handlePress}
+            scaleTo={0.92}
+            overflowMargin={50}
+          >
             <Box
               as={LinearGradient}
               colors={['#5236C2', '#7533D6']}
