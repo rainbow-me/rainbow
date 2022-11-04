@@ -24,7 +24,7 @@ export function NotificationsPromoSheetInner({
   requestNotificationPermissions,
 }: {
   permissions: perms.NotificationsResponse;
-  requestNotificationPermissions: () => Promise<void>;
+  requestNotificationPermissions: () => Promise<perms.Notifications>;
 }) {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
@@ -62,7 +62,10 @@ export function NotificationsPromoSheetInner({
       logger.debug(
         `NotificationsPromoSheet: notifications permissions denied (could be default state)`
       );
-      await requestNotificationPermissions();
+      const result = await requestNotificationPermissions();
+      if (result.status === perms.RESULTS.DENIED) {
+        // TODO alert
+      }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions either blocked or all settings are disabled`
@@ -154,6 +157,7 @@ export default function NotificationsPromoSheet() {
     // TODO what perms
     const result = await perms.requestNotifications(['alert', 'badge']);
     setPermissionsCheckResult(result);
+    return result
   }, [setPermissionsCheckResult]);
 
   // checks initially, then each time after app state becomes active
