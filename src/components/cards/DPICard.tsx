@@ -65,7 +65,7 @@ export const DPICard = () => {
           <Columns space="20px">
             <Column>
               <Stack space="16px">
-                <Text size="22pt" weight="heavy" color="label">
+                <Text size="20pt" weight="heavy" color="label">
                   {i18n.t(TRANSLATIONS.title)}
                 </Text>
                 <Text size="15pt" weight="semibold" color="labelSecondary">

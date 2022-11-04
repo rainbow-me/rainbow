@@ -99,7 +99,7 @@ export default function LearnWebViewScreen() {
         startInLoadingState
         renderLoading={() => (
           <Box
-            background="surfacePrimary"
+            background="surfacePrimaryElevated"
             width="full"
             height={{ custom: contentHeight }}
             paddingBottom={{ custom: HEADER_HEIGHT }}
