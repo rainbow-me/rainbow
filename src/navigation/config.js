@@ -113,6 +113,7 @@ export const transactionDetailsConfig = {
     ...buildCoolModalConfig({
       ...params,
       scrollEnabled: false,
+      longFormHeight: TRANSACTION_DETAILS_SHEET_HEIGHT,
     }),
   }),
 };
