@@ -30,12 +30,20 @@ export function NotificationsPromoSheetInner({
   const { goBack, navigate } = useNavigation();
 
   const { status, settings } = permissions;
-  const hasSettingsEnabled = Boolean(
-    Object.values(settings).find(s => Boolean(s))
-  );
+  /**
+   * Android doesn't return settings, so only useful on iOS
+   * @see https://github.com/zoontek/react-native-permissions#checknotifications
+   */
+  const hasSettingsEnabled =
+    !IS_IOS || Boolean(Object.values(settings).find(s => Boolean(s)));
   const notificationsEnabled = status === perms.RESULTS.GRANTED;
   const notificationsDenied = status === perms.RESULTS.DENIED;
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
+
+  logger.debug(`perms`, {
+    status,
+    hasSettingsEnabled,
+  });
 
   const navigateToNotifications = React.useCallback(() => {
     goBack();
