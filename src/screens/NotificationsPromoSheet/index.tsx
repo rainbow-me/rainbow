@@ -104,8 +104,10 @@ export function NotificationsPromoSheetInner({
       primaryButtonProps={{
         label:
           notificationsEnabled && hasSettingsEnabled
-            ? i18n.t(TRANSLATIONS.primary_button.permissions_enabled)
-            : i18n.t(TRANSLATIONS.primary_button.permissions_not_enabled),
+            ? `􀜊 ${i18n.t(TRANSLATIONS.primary_button.permissions_enabled)}`
+            : `􀝖 ${i18n.t(
+                TRANSLATIONS.primary_button.permissions_not_enabled
+              )}`,
         onPress: primaryButtonOnPress,
       }}
       secondaryButtonProps={{

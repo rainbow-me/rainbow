@@ -1194,8 +1194,8 @@
       },
       "notifications_launch": {
         "primary_button": {
-          "permissions_enabled": "􀜊 Configure",
-          "permissions_not_enabled": "􀝖 Enable"
+          "permissions_enabled": "Configure",
+          "permissions_not_enabled": "Enable"
         },
         "secondary_button": "Not Now",
         "info_row_1": {
