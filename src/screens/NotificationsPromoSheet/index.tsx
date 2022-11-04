@@ -59,7 +59,6 @@ export function NotificationsPromoSheetInner({
         `NotificationsPromoSheet: notifications permissions denied (could be default state)`
       );
       const result = await requestNotificationPermissions();
-      console.log(result);
       if (result.status === perms.RESULTS.BLOCKED) {
         Alert.alert(
           i18n.t(TRANSLATIONS.alert_denied.title),
