@@ -213,27 +213,29 @@ const MenuItem = ({
             </Box>
           </Inline>
         </Box>
-        <Inline alignVertical="center" space={{ custom: 9 }}>
-          {rightComponent}
-          {hasRightArrow && (
-            <Box
-              as={ImgixImage}
-              height={{ custom: 16 }}
-              source={Caret as Source}
-              tintColor={colors.blueGreyDark60}
-              width={{ custom: 7 }}
-            />
-          )}
-          {hasChevron && (
-            <Box
-              as={ImgixImage}
-              height={{ custom: 17 }}
-              source={Chevron as Source}
-              tintColor={colors.blueGreyDark60}
-              width={{ custom: 16 }}
-            />
-          )}
-        </Inline>
+        <Box paddingLeft="8px">
+          <Inline alignVertical="center" space={{ custom: 9 }}>
+            {rightComponent}
+            {hasRightArrow && (
+              <Box
+                as={ImgixImage}
+                height={{ custom: 16 }}
+                source={Caret as Source}
+                tintColor={colors.blueGreyDark60}
+                width={{ custom: 7 }}
+              />
+            )}
+            {hasChevron && (
+              <Box
+                as={ImgixImage}
+                height={{ custom: 17 }}
+                source={Chevron as Source}
+                tintColor={colors.blueGreyDark60}
+                width={{ custom: 16 }}
+              />
+            )}
+          </Inline>
+        </Box>
       </Inline>
     </Box>
   );
