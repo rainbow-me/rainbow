@@ -81,7 +81,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
-import { TransactionDetails } from '@/screens/TransactionDetails/TransactionDetails';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();

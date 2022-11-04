@@ -71,7 +71,10 @@ import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
-import { TransactionDetails } from '@/screens/TransactionDetails/TransactionDetails';
+import {
+  TRANSACTION_DETAILS_SHEET_HEIGHT,
+  TransactionDetails,
+} from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -381,7 +384,10 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
-        options={{ ...bottomSheetPreset, height: 400 }}
+        options={{
+          ...bottomSheetPreset,
+          height: TRANSACTION_DETAILS_SHEET_HEIGHT,
+        }}
       />
     </BSStack.Navigator>
   );
