@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import {
   Box,
   ColorModeProvider,
@@ -21,10 +21,15 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { GenericCard } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
+import { useRoute } from '@react-navigation/native';
+
+const TRANSLATIONS = i18n.l.cards.dpi;
 
 export const DPICard = () => {
   const { nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
+  const { name: routeName } = useRoute();
+  const cardType = 'stretch';
 
   const handlePress = useCallback(() => {
     const asset = ethereumUtils.formatGenericAsset(
@@ -32,7 +37,11 @@ export const DPICard = () => {
       nativeCurrency
     );
 
-    analytics.track('Pressed DPI Button', { category: 'discover' });
+    analyticsV2.track(analyticsV2.event.card.generic.opened, {
+      cardName: 'DPICard',
+      fromScreen: routeName,
+      displayType: cardType,
+    });
 
     navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
@@ -43,8 +52,6 @@ export const DPICard = () => {
     });
   }, [nativeCurrency, navigate]);
 
-  const translations = i18n.l.cards.dpi;
-
   return (
     <ColorModeProvider value="darkTinted">
       <GenericCard
@@ -52,17 +59,17 @@ export const DPICard = () => {
         color="#8D65FA"
         onPress={handlePress}
         testID="dpi-button"
-        type="stretch"
+        type={cardType}
       >
         <Stack space="36px">
           <Columns space="20px">
             <Column>
               <Stack space="16px">
                 <Text size="22pt" weight="heavy" color="label">
-                  {i18n.t(translations.title)}
+                  {i18n.t(TRANSLATIONS.title)}
                 </Text>
                 <Text size="15pt" weight="semibold" color="labelSecondary">
-                  {i18n.t(translations.body)}
+                  {i18n.t(TRANSLATIONS.body)}
                 </Text>
               </Stack>
             </Column>
@@ -92,7 +99,7 @@ export const DPICard = () => {
               shadow="18px"
             >
               <Text color="label" containsEmoji size="15pt" weight="bold">
-                {`􀦌 ${i18n.t(translations.view)}`}
+                {`􀦌 ${i18n.t(TRANSLATIONS.view)}`}
               </Text>
             </Box>
           </ButtonPressAnimation>

@@ -14,6 +14,7 @@ export const genericEvent = {
   // new
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
+  viewedQRCode: 'Viewed QR code',
 } as const;
 
 /**
@@ -30,6 +31,9 @@ export const cardEvent = {
   learn: {
     openedCard: 'Opened Learn card',
     openedShare: 'Opened Learn article share modal',
+  },
+  generic: {
+    opened: 'Opened card',
   },
 } as const;
 
@@ -62,6 +66,9 @@ type GenericEventProperties = {
   // new
   [event.generic.analyticsTrackingDisabled]: undefined;
   [event.generic.analyticsTrackingEnabled]: undefined;
+  [event.generic.viewedQRCode]: {
+    component: string;
+  };
 };
 
 /**
@@ -92,6 +99,11 @@ type CardEventProperties = {
     category: string;
     url: string;
     durationSeconds: number;
+  };
+  [event.card.generic.opened]: {
+    cardName: string;
+    fromScreen: string;
+    displayType: CardType;
   };
 };
 
