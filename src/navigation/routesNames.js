@@ -99,7 +99,7 @@ export const NATIVE_ROUTES = [
     : []),
 ];
 
-const RoutesWithNativeStackAvailability = {
+const RoutesWithPlatformDifferences = {
   ...Routes,
   ADD_CASH_FLOW: IS_IOS
     ? Routes.ADD_CASH_SCREEN_NAVIGATOR
@@ -110,4 +110,4 @@ const RoutesWithNativeStackAvailability = {
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 
-export default RoutesWithNativeStackAvailability;
+export default RoutesWithPlatformDifferences;
