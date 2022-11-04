@@ -16,7 +16,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
-import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
@@ -26,6 +25,7 @@ import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import networkInfo from '@/helpers/networkInfo';
+import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

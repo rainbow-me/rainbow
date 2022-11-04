@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import { FlexItem } from '../layout';
+import { FlexItem } from '@/components/layout';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
@@ -20,7 +20,7 @@ function Switcher({ showSearch, children }) {
   );
 }
 
-export default function DiscoverSheetContent() {
+export default function DiscoverScreenContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 

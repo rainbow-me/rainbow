@@ -2,23 +2,21 @@ import { CardType } from '@/components/cards/GenericCard';
 import { LearnCardKey } from '@/components/cards/utils/types';
 
 /**
- * Uncategorized events
+ * All events, used by `analytics.track()`
  */
 export const genericEvent = {
-  // old
   firstAppOpen: 'First App Open',
   applicationDidMount: 'React component tree finished initial mounting',
   pressedButton: 'Pressed Button',
   appStateChange: 'State change',
-
-  // new
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   viewedQRCode: 'Viewed QR code',
+  swapSubmitted: 'Submitted Swap',
 } as const;
 
 /**
- * Events relevant to or within the swaps product
+ * Properties corresponding to each event
  */
 export const swapEvent = {
   submittedSwap: 'Submitted Swap',
