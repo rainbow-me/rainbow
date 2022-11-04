@@ -1,5 +1,6 @@
 import React from 'react';
 import * as perms from 'react-native-permissions';
+import { Alert } from 'react-native';
 
 import useAppState from '@/hooks/useAppState';
 import { useNavigation } from '@/navigation/Navigation';
@@ -24,7 +25,7 @@ export function NotificationsPromoSheetInner({
   requestNotificationPermissions,
 }: {
   permissions: perms.NotificationsResponse;
-  requestNotificationPermissions: () => Promise<perms.Notifications>;
+  requestNotificationPermissions: () => Promise<perms.NotificationsResponse>;
 }) {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
@@ -39,11 +40,6 @@ export function NotificationsPromoSheetInner({
   const notificationsEnabled = status === perms.RESULTS.GRANTED;
   const notificationsDenied = status === perms.RESULTS.DENIED;
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
-
-  logger.debug(`perms`, {
-    status,
-    hasSettingsEnabled,
-  });
 
   const navigateToNotifications = React.useCallback(() => {
     goBack();
@@ -63,8 +59,23 @@ export function NotificationsPromoSheetInner({
         `NotificationsPromoSheet: notifications permissions denied (could be default state)`
       );
       const result = await requestNotificationPermissions();
-      if (result.status === perms.RESULTS.DENIED) {
-        // TODO alert
+      console.log(result);
+      if (result.status === perms.RESULTS.BLOCKED) {
+        Alert.alert(
+          i18n.t(TRANSLATIONS.alert_denied.title),
+          i18n.t(TRANSLATIONS.alert_denied.description),
+          [
+            {
+              onPress: () => goBack(),
+              style: 'cancel',
+              text: i18n.t(TRANSLATIONS.alert_denied.no_enable),
+            },
+            {
+              onPress: () => perms.openSettings(),
+              text: i18n.t(TRANSLATIONS.alert_denied.yes_enable),
+            },
+          ]
+        );
       }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
       logger.debug(
@@ -157,7 +168,7 @@ export default function NotificationsPromoSheet() {
     // TODO what perms
     const result = await perms.requestNotifications(['alert', 'badge']);
     setPermissionsCheckResult(result);
-    return result
+    return result;
   }, [setPermissionsCheckResult]);
 
   // checks initially, then each time after app state becomes active
