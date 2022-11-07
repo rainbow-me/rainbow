@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
-import isNativeStackAvailable from '../../../helpers/isNativeStackAvailable';
 import TouchableBackdrop from '../../TouchableBackdrop';
 import { AssetPanel, FloatingPanels } from '../../floating-panels';
 import { KeyboardFixedOpenLayout } from '../../layout';
 import { useDimensions } from '@/hooks';
+import { IS_IOS } from '@/env';
 
 export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
   const { width: deviceWidth } = useDimensions();
@@ -12,9 +12,7 @@ export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
 
   return (
     <KeyboardFixedOpenLayout
-      additionalPadding={
-        params?.additionalPadding && isNativeStackAvailable ? 80 : 0
-      }
+      additionalPadding={params?.additionalPadding && IS_IOS ? 80 : 0}
       position="absolute"
     >
       <TouchableBackdrop onPress={onPressBackdrop} />

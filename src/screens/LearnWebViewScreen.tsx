@@ -57,7 +57,7 @@ export default function LearnWebViewScreen() {
   const renderHeader = () => (
     <Box
       top="0px"
-      background="surfacePrimary"
+      background="surfacePrimaryElevated"
       height={{ custom: HEADER_HEIGHT }}
       width="full"
       justifyContent="center"
