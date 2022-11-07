@@ -172,8 +172,7 @@ export default function NotificationsPromoSheet() {
   }, [setPermissionsCheckResult]);
 
   const requestNotificationPermissions = React.useCallback(async () => {
-    // TODO what perms
-    const result = await perms.requestNotifications(['alert', 'badge']);
+    const result = await perms.requestNotifications(['alert']);
     setPermissionsCheckResult(result);
     return result;
   }, [setPermissionsCheckResult]);
