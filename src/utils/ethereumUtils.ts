@@ -2,10 +2,7 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import {
-  ChainId,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-} from '@rainbow-me/swaps';
+import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
@@ -71,12 +68,15 @@ import {
   ethUnits,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
+  BNB_BSC_ADDRESS,
   OPTIMISM_BLOCK_EXPLORER_URL,
   OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
+  BSC_BLOCK_EXPLORER_URL,
   supportedNativeCurrencies,
+  BNB_MAINNET_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
@@ -97,6 +97,9 @@ const getNetworkNativeAsset = (
       break;
     case Network.polygon:
       nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
+      break;
+    case Network.bsc:
+      nativeAssetUniqueId = `${BNB_BSC_ADDRESS}_${network}`;
       break;
     default:
       nativeAssetUniqueId = ETH_ADDRESS;
@@ -123,6 +126,10 @@ const getNativeAssetForNetwork = async (
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
       switch (network) {
+        case Network.bsc:
+          nativeAsset.mainnet_address = mainnetAddress;
+          nativeAsset.address = BNB_BSC_ADDRESS;
+          break;
         case Network.polygon:
           nativeAsset.mainnet_address = mainnetAddress;
           nativeAsset.address = MATIC_POLYGON_ADDRESS;
@@ -202,8 +209,19 @@ export const useEth = (): ParsedAddressAsset => {
 export const useNativeAssetForNetwork = (
   network: Network
 ): ParsedAddressAsset => {
-  const address =
-    network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+  let address = ETH_ADDRESS;
+
+  switch (network) {
+    case Network.polygon:
+      address = MATIC_MAINNET_ADDRESS;
+      break;
+    case Network.bsc:
+      address = BNB_MAINNET_ADDRESS;
+      break;
+    default:
+      address = ETH_ADDRESS;
+      break;
+  }
   return useSelector(
     ({
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
@@ -225,12 +243,18 @@ export const useEthUSDMonthChart = (): number => {
 };
 
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
-  return network === Network.polygon ? getMaticPriceUnit() : getEthPriceUnit();
+  if (network === Network.polygon) {
+    return getMaticPriceUnit();
+  } else if (network === Network.bsc) {
+    return getBnbPriceUnit();
+  }
+  return getEthPriceUnit();
 };
 
 const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
+const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -373,6 +397,8 @@ function getEtherscanHostForNetwork(network?: Network): string {
     return OPTIMISM_BLOCK_EXPLORER_URL;
   } else if (network === Network.polygon) {
     return POLYGON_BLOCK_EXPLORER_URL;
+  } else if (network === Network.bsc) {
+    return BSC_BLOCK_EXPLORER_URL;
   } else if (network === Network.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
   } else if (network && isTestnetNetwork(network)) {
@@ -560,6 +586,8 @@ function getBlockExplorer(network: Network) {
       return 'etherscan';
     case Network.polygon:
       return 'polygonscan';
+    case Network.bsc:
+      return 'bscscan';
     case Network.optimism:
       return 'etherscan';
     case Network.arbitrum:
@@ -746,6 +774,11 @@ const getMultichainAssetAddress = (
     address.toLowerCase() === MATIC_POLYGON_ADDRESS
   ) {
     realAddress = MATIC_POLYGON_ADDRESS;
+  } else if (
+    network === Network.bsc &&
+    address.toLowerCase() === BNB_BSC_ADDRESS
+  ) {
+    realAddress = BNB_BSC_ADDRESS;
   }
 
   return realAddress;
@@ -753,11 +786,13 @@ const getMultichainAssetAddress = (
 
 const getBasicSwapGasLimit = (chainId: number) => {
   switch (chainId) {
-    case ChainId.arbitrum:
+    case getChainIdFromNetwork(Network.arbitrum):
       return ethUnits.basic_swap_arbitrum;
-    case ChainId.polygon:
+    case getChainIdFromNetwork(Network.polygon):
       return ethUnits.basic_swap_polygon;
-    case ChainId.optimism:
+    case getChainIdFromNetwork(Network.bsc):
+      return ethUnits.basic_swap_bsc;
+    case getChainIdFromNetwork(Network.optimism):
       return ethUnits.basic_swap_optimism;
     default:
       return ethUnits.basic_swap;
@@ -785,6 +820,7 @@ export default {
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getBnbPriceUnit,
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
