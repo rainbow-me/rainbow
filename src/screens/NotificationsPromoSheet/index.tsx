@@ -1,6 +1,5 @@
 import React from 'react';
 import * as perms from 'react-native-permissions';
-import { Alert } from 'react-native';
 
 import useAppState from '@/hooks/useAppState';
 import { useNavigation } from '@/navigation/Navigation';
@@ -60,21 +59,7 @@ export function NotificationsPromoSheetInner({
       );
       const result = await requestNotificationPermissions();
       if (result.status === perms.RESULTS.BLOCKED) {
-        Alert.alert(
-          i18n.t(TRANSLATIONS.alert_denied.title),
-          i18n.t(TRANSLATIONS.alert_denied.description),
-          [
-            {
-              onPress: () => goBack(),
-              style: 'cancel',
-              text: i18n.t(TRANSLATIONS.alert_denied.no_enable),
-            },
-            {
-              onPress: () => perms.openSettings(),
-              text: i18n.t(TRANSLATIONS.alert_denied.yes_enable),
-            },
-          ]
-        );
+        goBack();
       }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
       logger.debug(
