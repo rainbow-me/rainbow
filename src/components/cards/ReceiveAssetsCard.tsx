@@ -43,7 +43,7 @@ export const ReceiveAssetsCard = () => {
   );
 
   const onPressQRCode = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.generic.viewedQRCode, {
+    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
       component: 'ReceiveAssetsCard',
     });
     navigate(Routes.RECEIVE_MODAL);

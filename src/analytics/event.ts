@@ -1,113 +1,64 @@
 import { CardType } from '@/components/cards/GenericCard';
-import { LearnCardKey } from '@/components/cards/utils/types';
+import { LearnCategory } from '@/components/cards/utils/types';
 
 /**
  * All events, used by `analytics.track()`
  */
-export const genericEvent = {
+export const event = {
   firstAppOpen: 'First App Open',
   applicationDidMount: 'React component tree finished initial mounting',
   pressedButton: 'Pressed Button',
   appStateChange: 'State change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
-  viewedQRCode: 'Viewed QR code',
   swapSubmitted: 'Submitted Swap',
+  cardPressed: 'Card Pressed',
+  learnArticleOpened: 'Learn Article Opened',
+  learnArticleShared: 'Learn Article Shared',
+  qrCodeViewed: 'QR Code Viewed',
 } as const;
 
 /**
  * Properties corresponding to each event
  */
-export const swapEvent = {
-  submittedSwap: 'Submitted Swap',
-} as const;
-
-/**
- * Events relevant to cards
- */
-export const cardEvent = {
-  learn: {
-    openedCard: 'Opened Learn card',
-    openedShare: 'Opened Learn article share modal',
-  },
-  generic: {
-    opened: 'Opened card',
-  },
-} as const;
-
-/**
- * A union of all event names. Use this when firing events via
- * `analytics.track`
- */
-export const event = {
-  generic: genericEvent,
-  swap: swapEvent,
-  card: cardEvent,
-} as const;
-
-/**
- * Properties corresponding to our uncategorized event object `genericEvent`
- */
-type GenericEventProperties = {
-  // old
-  [event.generic.firstAppOpen]: undefined;
-  [event.generic.applicationDidMount]: undefined;
-  [event.generic.appStateChange]: {
+export type EventProperties = {
+  [event.firstAppOpen]: undefined;
+  [event.applicationDidMount]: undefined;
+  [event.appStateChange]: {
     category: 'app state';
     label: string;
   };
-  [event.generic.pressedButton]: {
+  [event.pressedButton]: {
     buttonName: string;
     action: string;
   };
-
-  // new
-  [event.generic.analyticsTrackingDisabled]: undefined;
-  [event.generic.analyticsTrackingEnabled]: undefined;
-  [event.generic.viewedQRCode]: {
-    component: string;
-  };
-};
-
-/**
- * Properties corresponding to our swaps event object `swapEvent`
- */
-type SwapEventProperties = {
-  [event.swap.submittedSwap]: {
+  [event.analyticsTrackingDisabled]: undefined;
+  [event.analyticsTrackingEnabled]: undefined;
+  [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
   };
-};
-
-/**
- * Properties corresponding to our swaps event object `cardEvent`
- */
-type CardEventProperties = {
-  [event.card.learn.openedCard]: {
-    card: LearnCardKey;
-    category: string;
-    url: string;
-    durationSeconds: number;
-    displayType: CardType;
-    fromScreen: string;
-  };
-  [event.card.learn.openedShare]: {
-    card: LearnCardKey;
-    category: string;
-    url: string;
-    durationSeconds: number;
-  };
-  [event.card.generic.opened]: {
+  [event.cardPressed]: {
     cardName: string;
     fromScreen: string;
+    cardType: CardType;
+  };
+  [event.learnArticleOpened]: {
+    durationSeconds: number;
+    url: string;
+    cardId: string;
+    category: LearnCategory;
     displayType: CardType;
+    fromScreen: string;
+  };
+  [event.learnArticleShared]: {
+    url: string;
+    category: string;
+    cardId: string;
+    durationSeconds: number;
+  };
+  [event.qrCodeViewed]: {
+    component: string;
   };
 };
-
-/**
- * A union of all event properties, used by `analytics.track`
- */
-export type EventProperties = GenericEventProperties &
-  SwapEventProperties &
-  CardEventProperties;

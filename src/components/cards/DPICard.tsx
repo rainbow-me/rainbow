@@ -37,10 +37,10 @@ export const DPICard = () => {
       nativeCurrency
     );
 
-    analyticsV2.track(analyticsV2.event.card.generic.opened, {
+    analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'DPICard',
       fromScreen: routeName,
-      displayType: cardType,
+      cardType,
     });
 
     navigate(Routes.TOKEN_INDEX_SHEET, {

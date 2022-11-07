@@ -307,7 +307,7 @@ function MoreButton() {
   }, [accountAddress, isToastActive, setToastActive]);
 
   const handlePressQRCode = React.useCallback(() => {
-    analyticsV2.track(analyticsV2.event.generic.viewedQRCode, {
+    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
       component: 'ProfileActionButtonsRow',
     });
 

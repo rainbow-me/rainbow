@@ -19,7 +19,7 @@ const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { card, displayType, category, url, fromScreen },
+    params: { key, displayType, category, url, fromScreen },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -29,28 +29,30 @@ export default function LearnWebViewScreen() {
 
   useEffect(
     () => () => {
-      analyticsV2.track(analyticsV2.event.card.learn.openedCard, {
+      analyticsV2.track(analyticsV2.event.learnArticleOpened, {
         durationSeconds: (Date.now() - startTime.current) / 1000,
         url,
-        card,
+        cardId: key,
         category,
         displayType,
         fromScreen,
       });
       return;
     },
-    [card, category, displayType, fromScreen, url]
+    [category, displayType, fromScreen, key, url]
   );
 
   const onPressShare = useCallback(async () => {
-    await Share.share({ url });
-    analyticsV2.track(analyticsV2.event.card.learn.openedShare, {
-      url,
-      category,
-      card,
-      durationSeconds: (Date.now() - startTime.current) / 1000,
-    });
-  }, [card, category, url]);
+    const shared = await Share.share({ url });
+    if (shared.action === Share.sharedAction) {
+      analyticsV2.track(analyticsV2.event.learnArticleShared, {
+        url,
+        category,
+        cardId: key,
+        durationSeconds: (Date.now() - startTime.current) / 1000,
+      });
+    }
+  }, [category, key, url]);
 
   const renderHeader = () => (
     <Box

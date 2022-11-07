@@ -53,10 +53,10 @@ export const ENSSearchCard = () => {
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analyticsV2.track(analyticsV2.event.card.generic.opened, {
+      analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSSearchCard',
         fromScreen: routeName,
-        displayType: cardType,
+        cardType,
       });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         fromDiscover: true,
