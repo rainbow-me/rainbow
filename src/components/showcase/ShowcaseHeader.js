@@ -10,7 +10,6 @@ import {
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -137,18 +136,12 @@ export function Header() {
 
   const onSend = useCallback(async () => {
     goBack();
-    if (isNativeStackAvailable || android) {
-      navigate(Routes.SEND_FLOW, {
-        params: {
-          address: contextValue?.addressOrDomain || contextValue?.address,
-        },
-        screen: Routes.SEND_SHEET,
-      });
-    } else {
-      navigate(Routes.SEND_FLOW, {
+    navigate(Routes.SEND_FLOW, {
+      params: {
         address: contextValue?.addressOrDomain || contextValue?.address,
-      });
-    }
+      },
+      screen: Routes.SEND_SHEET,
+    });
   }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
 
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();

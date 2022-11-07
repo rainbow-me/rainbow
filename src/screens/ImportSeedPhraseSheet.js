@@ -13,7 +13,6 @@ import {
   ToastPositionContainer,
 } from '../components/toasts';
 import { useTheme } from '../theme/ThemeContext';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { isValidWallet } from '@/helpers/validators';
 import {
   useAccountSettings,
@@ -27,15 +26,15 @@ import { sheetVerticalOffset } from '@/navigation/effects';
 import styled from '@/styled-thing';
 import { borders, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 
 const sheetBottomPadding = 19;
 
 const Container = styled.View({
   flex: 1,
-  paddingTop: android ? 0 : isNativeStackAvailable ? 0 : sheetVerticalOffset,
+  paddingTop: 0,
 
-  ...(android
+  ...(IS_ANDROID
     ? {
         backgroundColor: ({ theme: { colors } }) => colors.transparent,
         marginTop: sheetVerticalOffset,
@@ -51,7 +50,7 @@ const Footer = styled(Row).attrs({
   position: 'relative',
   right: 0,
   width: '100%',
-  ...(android
+  ...(IS_ANDROID
     ? {
         marginRight: 18,
         top: ({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0),
@@ -59,12 +58,12 @@ const Footer = styled(Row).attrs({
     : {}),
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
+const LoadingSpinner = styled(IS_ANDROID ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })({
   marginRight: 5,
-  marginTop: android ? 0 : 2,
+  marginTop: IS_ANDROID ? 0 : 2,
 });
 
 const FooterButton = styled(MiniButton).attrs({
@@ -84,7 +83,7 @@ const SecretTextArea = styled(Input).attrs({
   autoFocus: true,
   dataDetectorTypes: 'none',
   enablesReturnKeyAutomatically: true,
-  keyboardType: android ? 'visible-password' : 'default',
+  keyboardType: IS_ANDROID ? 'visible-password' : 'default',
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
@@ -95,8 +94,8 @@ const SecretTextArea = styled(Input).attrs({
   textContentType: 'none',
   weight: 'semibold',
 })({
-  marginBottom: android ? 55 : 0,
-  minHeight: android ? 100 : 50,
+  marginBottom: IS_ANDROID ? 55 : 0,
+  minHeight: IS_ANDROID ? 100 : 50,
   width: '100%',
 });
 
@@ -109,7 +108,7 @@ const Sheet = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })({
-  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
   ...padding.object(0, 15, sheetBottomPadding),
   backgroundColor: ({ theme: { colors } }) => colors.white,
   zIndex: 1,
@@ -186,7 +185,7 @@ export default function ImportSeedPhraseSheet() {
             <FooterButton
               disabled={!isSecretValid}
               hasLeadingIcon
-              {...(android && { height: 30, overflowMargin: 15, width: 89 })}
+              {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 89 })}
               onPress={handlePressImportButton}
             >
               <Row>
@@ -209,7 +208,7 @@ export default function ImportSeedPhraseSheet() {
             </FooterButton>
           ) : (
             <FooterButton
-              {...(android && { height: 30, overflowMargin: 15, width: 63 })}
+              {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 63 })}
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >

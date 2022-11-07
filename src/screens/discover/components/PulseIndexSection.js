@@ -3,10 +3,10 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
-import font from '../../styles/fonts';
-import { ButtonPressAnimation } from '../animations';
-import { CoinIcon } from '../coin-icon';
-import { Column, Row } from '../layout';
+import font from '../../../styles/fonts';
+import { ButtonPressAnimation } from '@/components/animations';
+import { CoinIcon } from '@/components/coin-icon';
+import { Column, Row } from '@/components/layout';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
@@ -16,7 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { fontWithWidth } from '@/styles';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import ShadowStack from '@/react-native-shadow-stack';
+import ShadowStack from 'react-native-shadow-stack';
 
 const formatItem = ({ address, name, price, symbol }, nativeCurrencySymbol) => {
   const change = `${parseFloat(
@@ -189,7 +189,7 @@ const PulseIndex = () => {
             size="14px / 19px (Deprecated)"
             weight="bold"
           >
-            {item.isPositive ? `↑` : `↓`} {item.change}
+            {item.isPositive ? `↑` : `↓`} {item.change}
             <Text
               align="right"
               color={{ custom: item.isPositive ? colors.green : colors.red }}

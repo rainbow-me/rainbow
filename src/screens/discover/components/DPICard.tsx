@@ -2,9 +2,9 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '../../navigation/Navigation';
-import { ButtonPressAnimation } from '../animations';
-import { CoinIcon } from '../coin-icon';
+import { useNavigation } from '@/navigation';
+import { ButtonPressAnimation } from '@/components/animations';
+import { CoinIcon } from '@/components/coin-icon';
 import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
@@ -24,7 +24,7 @@ import {
 import { useAccountSettings } from '@/hooks';
 import store from '@/redux/store';
 import { DPI_ADDRESS } from '@/references';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 
