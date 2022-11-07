@@ -243,8 +243,6 @@ export default function WalletScreen() {
 
   const { navigate } = useNavigation();
 
-  navigate(Routes.NOTIFICATIONS_PROMO_SHEET);
-
   const handlePressActivity = useCallback(() => {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
