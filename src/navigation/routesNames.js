@@ -1,4 +1,4 @@
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { IS_IOS } from '@/env';
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -90,7 +90,7 @@ export const NATIVE_ROUTES = [
   Routes.SAVINGS_SHEET,
   Routes.SAVINGS_WITHDRAW_MODAL,
   Routes.SAVINGS_DEPOSIT_MODAL,
-  ...(isNativeStackAvailable
+  ...(IS_IOS
     ? [
         Routes.SEND_SHEET_NAVIGATOR,
         Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR,
@@ -99,18 +99,15 @@ export const NATIVE_ROUTES = [
     : []),
 ];
 
-const RoutesWithNativeStackAvailability = {
+const RoutesWithPlatformDifferences = {
   ...Routes,
-  ADD_CASH_FLOW: isNativeStackAvailable
+  ADD_CASH_FLOW: IS_IOS
     ? Routes.ADD_CASH_SCREEN_NAVIGATOR
     : Routes.ADD_CASH_SHEET,
-  IMPORT_SEED_PHRASE_FLOW: isNativeStackAvailable
+  IMPORT_SEED_PHRASE_FLOW: IS_IOS
     ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
     : Routes.IMPORT_SEED_PHRASE_SHEET,
-  SEND_FLOW:
-    isNativeStackAvailable || android
-      ? Routes.SEND_SHEET_NAVIGATOR
-      : Routes.SEND_SHEET,
+  SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 
-export default RoutesWithNativeStackAvailability;
+export default RoutesWithPlatformDifferences;
