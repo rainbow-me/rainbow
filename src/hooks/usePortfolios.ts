@@ -12,11 +12,13 @@ export default function usePortfolios() {
 
   const trackPortfolios = useCallback(() => {
     const total = {
+      arbitrum_assets_value: 0,
       assets_value: 0,
       borrowed_value: 0,
       bsc_assets_value: 0,
       deposited_value: 0,
       locked_value: 0,
+      optimism_assets_value: 0,
       polygon_assets_value: 0,
       staked_value: 0,
       total_value: 0,
