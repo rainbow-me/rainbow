@@ -34,6 +34,8 @@ export interface UserProperties {
   bsc_assets_value?: number;
   deposited_value?: number;
   polygon_assets_value?: number;
+  optimism_assets_value?: number;
+  arbitrum_assets_value?: number;
   locked_value?: number;
   staked_value?: number;
   total_value?: number;
