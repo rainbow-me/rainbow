@@ -27,6 +27,7 @@ import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from '@/utils/logger';
+import { measureEventEnd, measureEventStart } from '@/performance/utils';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -76,18 +77,21 @@ export default function useInitializeWallet() {
         logger.sentry('isImporting?', isImporting);
 
         if (shouldRunMigrations && !seedPhrase) {
-          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
+          // this is a heavy function with a lot of side effects
           await dispatch(walletsLoadState(profilesEnabled));
+
           logger.sentry('walletsLoadState call #1');
           await runMigrations();
           logger.sentry('done with migrations');
         }
 
-        setIsSmallBalancesOpen(false);
+        // why is this here?
+        // setIsSmallBalancesOpen(false);
 
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
+        //should be able to simplify this a ton atleast in terms of params
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
@@ -104,6 +108,12 @@ export default function useInitializeWallet() {
           walletAddress,
         });
 
+        /* 
+          this is where the 'Initializing' state comes from 
+          having this block initial start up feels weird,
+          unless im missing something we should be able to run
+          this after loading everything without changing the affect 
+         */
         if (!switching) {
           // Run keychain integrity checks right after walletInit
           // Except when switching wallets!
@@ -112,6 +122,8 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
+
+          // again wallets load state doing too much
           await dispatch(walletsLoadState(profilesEnabled));
         }
 
@@ -125,6 +137,7 @@ export default function useInitializeWallet() {
         }
 
         if (!(isNew || isImporting)) {
+          // loads global account agnostic data
           await loadGlobalEarlyData();
           logger.sentry('loaded global data...');
         }
@@ -134,17 +147,23 @@ export default function useInitializeWallet() {
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
+          // bunch of stuff in here that does not need to loaded initially,
+          // or even based on current wallet
           await loadAccountData(network);
+
           logger.sentry('loaded account data', network);
         }
 
+        // we want to be able to call this as fast as possible
         hideSplashScreen();
         logger.sentry('Hide splash screen');
-        initializeAccountData();
 
+        // this triggers refetching of NFTs
+        initializeAccountData();
         dispatch(appStateUpdate({ walletReady: true }));
 
         if (!switching) {
+          // loading more wallet agnostic data
           dispatch(uniswapPairsInit());
           dispatch(additionalDataCoingeckoIds);
         }

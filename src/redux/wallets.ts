@@ -43,6 +43,7 @@ import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@/styles';
+import { measureEventEnd, measureEventStart } from '@/performance/utils';
 
 // -- Types ---------------------------------------- //
 
@@ -224,6 +225,10 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     });
 
     dispatch(fetchWalletNames());
+
+    // why is this being called here
+    // seems like we need want to verify valid ens for the current account,
+    // but instead end up doing it for all wallets and then touching keychain
     profilesEnabled && dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
@@ -375,6 +380,8 @@ export const createAccountForWallet = (
   });
 
   // Save all the wallets
+
+  // this is an async function so why we not waiting?
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)
   await saveAddress(account.address);
@@ -396,6 +403,9 @@ export const createAccountForWallet = (
  * @param walletsState The wallets to use for fetching avatars.
  * @param dispatch The dispatch.
  */
+
+// NOTE: this is resolving ens avatars for all ens accounts on start up
+// should only do for current wallet, and fetch the rest after initial boot
 export const getWalletENSAvatars = async (
   walletsState: Pick<WalletsState, 'wallets' | 'walletNames' | 'selected'>,
   dispatch: ThunkDispatch<AppState, unknown, never>
@@ -473,6 +483,7 @@ export const getWalletENSAvatars = async (
     };
   });
   if (updatedWallets) {
+    // This function writes to the keychain which is an expensive operation
     dispatch(walletsUpdate(updatedWallets));
   }
 };

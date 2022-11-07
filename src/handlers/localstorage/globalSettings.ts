@@ -15,6 +15,8 @@ const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const TESTNETS_ENABLED = 'testnetsEnabled';
 const FLASHBOTS_ENABLED = 'flashbotsEnabled';
 
+// this seems like an easy perf win to move to mmkv asap
+
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
 
