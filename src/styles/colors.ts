@@ -189,6 +189,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
+    bsc: '#F0B90B',
   };
 
   let gradients = {
@@ -368,6 +369,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       mainnet: '#E0E8FF',
       optimism: '#FF6A6A',
       polygon: '#A275EE',
+      bsc: '#F0B90B',
     };
   }
 
