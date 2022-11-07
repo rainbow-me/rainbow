@@ -14,6 +14,7 @@ import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import { analyticsV2 } from '@/analytics';
 
 const HEADER_HEIGHT = 255;
 const HEADER_WIDTH = 390;
@@ -40,6 +41,13 @@ export function NotificationsPromoSheetInner({
   const notificationsDenied = status === perms.RESULTS.DENIED;
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
 
+  React.useEffect(() => {
+    analyticsV2.track(analyticsV2.event.notificationsPromoShown);
+    return () => {
+      analyticsV2.track(analyticsV2.event.notificationsPromoDismissed);
+    };
+  }, []);
+
   const navigateToNotifications = React.useCallback(() => {
     goBack();
     delay(300).then(() => {
@@ -59,16 +67,30 @@ export function NotificationsPromoSheetInner({
       );
       const result = await requestNotificationPermissions();
       if (result.status === perms.RESULTS.BLOCKED) {
+        analyticsV2.track(
+          analyticsV2.event.notificationsPromoPermissionsBlocked
+        );
         goBack();
+      } else if (result.status === perms.RESULTS.GRANTED) {
+        // only happens on iOS, Android is enabled by default
+        analyticsV2.track(
+          analyticsV2.event.notificationsPromoPermissionsGranted
+        );
       }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions either blocked or all settings are disabled`
       );
+      analyticsV2.track(
+        analyticsV2.event.notificationsPromoSystemSettingsOpened
+      );
       await perms.openSettings();
     } else if (notificationsEnabled) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions enabled`
+      );
+      analyticsV2.track(
+        analyticsV2.event.notificationsPromoNotificationSettingsOpened
       );
       navigateToNotifications();
     } else {
@@ -80,6 +102,7 @@ export function NotificationsPromoSheetInner({
       );
     }
   }, [
+    goBack,
     permissions,
     hasSettingsEnabled,
     notificationsDenied,
