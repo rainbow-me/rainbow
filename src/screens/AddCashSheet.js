@@ -9,7 +9,6 @@ import {
   SheetSubtitleCycler,
   SheetTitle,
 } from '../components/sheet';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { deviceUtils } from '../utils';
 import {
   useAddCashLimits,
@@ -21,21 +20,22 @@ import {
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
+import { IS_IOS } from '@/env';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
 const sheetHeight =
   deviceHeight -
   statusBarHeight -
-  (isNativeStackAvailable ? (deviceHeight >= 812 ? 10 : 20) : 0);
+  (IS_IOS ? (deviceHeight >= 812 ? 10 : 20) : 0);
 
 const subtitleInterval = 3000;
 
 const SheetContainer = styled(Column)({
-  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
   backgroundColor: ({ colors }) => colors.white,
-  height: isNativeStackAvailable ? deviceHeight : sheetHeight,
-  top: isNativeStackAvailable ? 0 : statusBarHeight,
+  height: IS_IOS ? deviceHeight : sheetHeight,
+  top: IS_IOS ? 0 : statusBarHeight,
   width: '100%',
 });
 
@@ -94,7 +94,7 @@ export default function AddCashSheet() {
     <SheetContainer colors={colors}>
       <Column
         align="center"
-        height={isNativeStackAvailable ? sheetHeight : '100%'}
+        height={IS_IOS ? sheetHeight : '100%'}
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
         <Column align="center" paddingVertical={6}>
@@ -102,7 +102,7 @@ export default function AddCashSheet() {
           <ColumnWithMargins
             align="center"
             margin={4}
-            paddingTop={isNativeStackAvailable ? 7 : 5}
+            paddingTop={IS_IOS ? 7 : 5}
           >
             <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
             <SheetSubtitleCycler
