@@ -12,14 +12,14 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 
 const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { card, displayType, category, url },
+    params: { key, displayType, category, url, fromScreen },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -29,32 +29,35 @@ export default function LearnWebViewScreen() {
 
   useEffect(
     () => () => {
-      analytics.track('Learn card opened', {
+      analyticsV2.track(analyticsV2.event.learnArticleOpened, {
         durationSeconds: (Date.now() - startTime.current) / 1000,
         url,
-        card,
+        cardId: key,
         category,
         displayType,
+        fromScreen,
       });
       return;
     },
-    [card, category, displayType, url]
+    [category, displayType, fromScreen, key, url]
   );
 
   const onPressShare = useCallback(async () => {
-    await Share.share({ url });
-    analytics.track('Learn card web view share modal opened', {
-      url,
-      category,
-      card,
-      displayType,
-    });
-  }, [card, category, displayType, url]);
+    const shared = await Share.share({ url });
+    if (shared.action === Share.sharedAction) {
+      analyticsV2.track(analyticsV2.event.learnArticleShared, {
+        url,
+        category,
+        cardId: key,
+        durationSeconds: (Date.now() - startTime.current) / 1000,
+      });
+    }
+  }, [category, key, url]);
 
   const renderHeader = () => (
     <Box
       top="0px"
-      background="surfacePrimary"
+      background="surfacePrimaryElevated"
       height={{ custom: HEADER_HEIGHT }}
       width="full"
       justifyContent="center"
@@ -98,7 +101,7 @@ export default function LearnWebViewScreen() {
         startInLoadingState
         renderLoading={() => (
           <Box
-            background="surfacePrimary"
+            background="surfacePrimaryElevated"
             width="full"
             height={{ custom: contentHeight }}
             paddingBottom={{ custom: HEADER_HEIGHT }}

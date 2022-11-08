@@ -20,6 +20,10 @@ import { watchingAlert } from '@/utils';
 import { GenericCard } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 import * as i18n from '@/languages';
+import { analyticsV2 } from '@/analytics';
+import { useRoute } from '@react-navigation/native';
+
+const TRANSLATIONS = i18n.l.cards.ens_search;
 
 const springConfig = {
   damping: 20,
@@ -31,6 +35,8 @@ export const ENSSearchCard = () => {
   const { pendingRegistrations } = useENSPendingRegistrations();
   const { navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
+  const { name: routeName } = useRoute();
+  const cardType = 'square';
 
   const pendingBadgeProgress = useSharedValue(0);
 
@@ -47,6 +53,11 @@ export const ENSSearchCard = () => {
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      analyticsV2.track(analyticsV2.event.cardPressed, {
+        cardName: 'ENSSearchCard',
+        fromScreen: routeName,
+        cardType,
+      });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         fromDiscover: true,
         mode: REGISTRATION_MODES.SEARCH,
@@ -54,7 +65,7 @@ export const ENSSearchCard = () => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate]);
+  }, [isReadOnlyWallet, navigate, routeName]);
 
   const pendingBadgeStyle = useAnimatedStyle(() => {
     return {
@@ -78,15 +89,13 @@ export const ENSSearchCard = () => {
     };
   }, [pendingRegistrations]);
 
-  const translations = i18n.l.cards.ens_search;
-
   return (
     <GenericCard
       color={globalColors.blue60}
       gradient={[globalColors.blue60, '#61B5FF']}
       onPress={handlePress}
       testID="ens-register-name-banner"
-      type="square"
+      type={cardType}
     >
       <ColorModeProvider value="darkTinted">
         <Box
@@ -118,10 +127,10 @@ export const ENSSearchCard = () => {
               size="13pt"
               weight="bold"
             >
-              {i18n.t(translations.mini_title)}
+              {i18n.t(TRANSLATIONS.mini_title)}
             </Text>
             <Text color="label" size="20pt" weight="heavy">
-              {i18n.t(translations.title)}
+              {i18n.t(TRANSLATIONS.title)}
             </Text>
           </Stack>
         </Box>

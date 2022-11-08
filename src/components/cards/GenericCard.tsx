@@ -9,7 +9,7 @@ import ConditionalWrap from 'conditional-wrap';
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
 export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
 
-type CardType = 'square' | 'stretch';
+export type CardType = 'square' | 'stretch';
 
 type GenericCardProps = {
   type: CardType;

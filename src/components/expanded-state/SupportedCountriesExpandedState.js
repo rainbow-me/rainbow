@@ -5,16 +5,16 @@ import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useDimensions } from '@/hooks';
 import { wyreSupportedCountries } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { neverRerender } from '@/utils';
+import { IS_IOS } from '@/env';
 
 const Panel = styled(FloatingPanels)(
   ({ deviceDimensions: { isTallPhone, width } }) => ({
-    marginBottom: (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0),
+    marginBottom: (isTallPhone ? 90 : 45) + (IS_IOS ? 10 : 0),
     maxWidth: Math.min(270, width - 100),
   })
 );

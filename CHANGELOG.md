@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.1)
+
+### Changed
+
+- Bug fixes
+- Small dev focused items
+- No new features or user facing items
+
 ## [1.8.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.10)
 
 ### Added

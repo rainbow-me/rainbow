@@ -1,15 +1,15 @@
 import React from 'react';
 import BottomSpacer from './BottomSpacer';
 import { Inline, Inset, Stack } from '@/design-system';
-import { LearnCard } from '../cards/LearnCard';
-import { learnCards } from '../cards/utils/constants';
+import { learnCards } from '@/components/cards/utils/constants';
 import {
   ActionCard,
   DPICard,
   ENSCreateProfileCard,
   ENSSearchCard,
   GasCard,
-} from '../cards';
+  LearnCard,
+} from '@/components/cards';
 
 export default function DiscoverHome() {
   return (

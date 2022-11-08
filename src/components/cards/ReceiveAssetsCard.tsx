@@ -9,14 +9,15 @@ import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { IconOrb } from './reusables/IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 
 export const ReceiveCardHeight = 174;
+const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = () => {
   const { accountAddress } = useAccountProfile();
@@ -42,8 +43,8 @@ export const ReceiveAssetsCard = () => {
   );
 
   const onPressQRCode = useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'ReceiveAssetsCard',
+    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
+      component: 'ReceiveAssetsCard',
     });
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);
@@ -61,7 +62,7 @@ export const ReceiveAssetsCard = () => {
           <Stack space="16px">
             {accentColorLoaded ? (
               <Text size="22pt" weight="heavy" color="label">
-                {lang.t('cards.receive.receive_assets')}
+                {i18n.t(TRANSLATIONS.receive_assets)}
               </Text>
             ) : (
               <Box height={{ custom: 16 }}>
@@ -72,7 +73,7 @@ export const ReceiveAssetsCard = () => {
             )}
             {accentColorLoaded ? (
               <Text size="15pt" weight="semibold" color="labelSecondary">
-                {lang.t('cards.receive.description')}
+                {i18n.t(TRANSLATIONS.description)}
               </Text>
             ) : (
               <Box height={{ custom: 30 }} justifyContent="space-between">
@@ -112,7 +113,7 @@ export const ReceiveAssetsCard = () => {
                 loaded={accentColorLoaded}
                 testID="copy-address-button"
               >
-                {`􀐅 ${lang.t('cards.receive.copy_address')}`}
+                {`􀐅 ${i18n.t(TRANSLATIONS.copy_address)}`}
               </TintButton>
             </AccentColorProvider>
           )}

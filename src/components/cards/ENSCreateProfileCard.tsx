@@ -27,27 +27,37 @@ import { watchingAlert } from '@/utils';
 import { GenericCard } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 import * as i18n from '@/languages';
+import { analyticsV2 } from '@/analytics';
+import { useRoute } from '@react-navigation/native';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
+const TRANSLATIONS = i18n.l.cards.ens_create_profile;
 
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
   const { width: deviceWidth } = useDimensions();
+  const { name: routeName } = useRoute();
+  const cardType = 'stretch';
 
   // 40 represents the horizontal padding outside the card
   const imageWidth = deviceWidth - 40;
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      analyticsV2.track(analyticsV2.event.cardPressed, {
+        cardName: 'ENSCreateProfileCard',
+        fromScreen: routeName,
+        cardType,
+      });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
         fromDiscover: true,
       });
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate]);
+  }, [isReadOnlyWallet, navigate, routeName]);
 
   const { uniqueDomain } = useAccountENSDomains();
 
@@ -65,25 +75,23 @@ export const ENSCreateProfileCard = () => {
     );
   }, []);
 
-  const translations = i18n.l.cards.ens_create_profile;
-
   return (
     <ColorModeProvider value="lightTinted">
       <GenericCard
         gradient={['#DADEE5', '#E6E9F0']}
         onPress={handlePress}
         testID="ens-create-profile-card"
-        type="stretch"
+        type={cardType}
       >
         <Stack space="28px">
           <Columns>
             <Column>
               <Stack space={{ custom: 14 }}>
                 <Text weight="heavy" color="label" size="20pt">
-                  {i18n.t(translations.title)}
+                  {i18n.t(TRANSLATIONS.title)}
                 </Text>
                 <Text weight="semibold" color="labelSecondary" size="15pt">
-                  {i18n.t(translations.body)}
+                  {i18n.t(TRANSLATIONS.body)}
                 </Text>
               </Stack>
             </Column>

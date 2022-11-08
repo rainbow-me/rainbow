@@ -29,6 +29,8 @@ type AnimationConfigOptions = {
   easing: Animated.EasingFunction;
 };
 
+const TRANSLATIONS = i18n.l.cards.gas;
+
 const containerConfig = {
   damping: 15,
   mass: 1,
@@ -149,17 +151,17 @@ export const GasCard = () => {
       Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
-      return i18n.t(translations.loading);
+      return i18n.t(TRANSLATIONS.loading);
     } else if (gwei < 30) {
-      return i18n.t(translations.very_low);
+      return i18n.t(TRANSLATIONS.very_low);
     } else if (gwei < 40) {
-      return i18n.t(translations.low);
+      return i18n.t(TRANSLATIONS.low);
     } else if (gwei < 100) {
-      return i18n.t(translations.average);
+      return i18n.t(TRANSLATIONS.average);
     } else if (gwei < 200) {
-      return i18n.t(translations.high);
+      return i18n.t(TRANSLATIONS.high);
     } else {
-      return i18n.t(translations.surging);
+      return i18n.t(TRANSLATIONS.surging);
     }
   };
 
@@ -222,8 +224,6 @@ export const GasCard = () => {
     };
   }, [currentGwei, lastKnownGwei]);
 
-  const translations = i18n.l.cards.gas;
-
   return (
     <Animated.View style={containerStyle}>
       <GenericCard onPress={handlePress} testID="gas-button" type="square">
@@ -248,12 +248,12 @@ export const GasCard = () => {
               <Text color="accent" size="17pt" weight="bold">
                 {!isCurrentGweiLoaded && !lastKnownGwei
                   ? ''
-                  : i18n.t(translations.gwei)}
+                  : i18n.t(TRANSLATIONS.gwei)}
               </Text>
             </Stack>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
-                {i18n.t(translations.network_fees)}
+                {i18n.t(TRANSLATIONS.network_fees)}
               </Text>
               <Text
                 color={

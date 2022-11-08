@@ -40,7 +40,6 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import {
@@ -81,6 +80,7 @@ import {
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
+import { IS_IOS } from '@/env';
 
 const { RNBip39 } = NativeModules;
 
@@ -663,7 +663,7 @@ async function parseEthereumUrl(data: string) {
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
-    if (isNativeStackAvailable) {
+    if (IS_IOS) {
       Navigation.handleAction(Routes.SEND_FLOW, {
         params,
         screen: Routes.SEND_SHEET,

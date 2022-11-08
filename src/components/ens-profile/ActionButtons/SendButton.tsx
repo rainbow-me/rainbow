@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { IS_IOS } from '@/env';
 
 export default function SendButton({ ensName }: { ensName?: string }) {
   const { navigate } = useNavigation();
   const handlePressSend = useCallback(async () => {
-    if (isNativeStackAvailable) {
+    if (IS_IOS) {
       navigate(Routes.SEND_FLOW, {
         params: {
           address: ensName,

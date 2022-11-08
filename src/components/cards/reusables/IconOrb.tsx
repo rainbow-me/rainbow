@@ -1,5 +1,10 @@
 import React from 'react';
-import { AccentColorProvider, Box, Text } from '@/design-system';
+import {
+  AccentColorProvider,
+  Box,
+  ColorModeProvider,
+  Text,
+} from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 
@@ -30,50 +35,52 @@ export const IconOrb = ({
 }: IconOrbProps) => {
   if (loaded) {
     return (
-      <AccentColorProvider color={color}>
-        {shadowColor ? (
-          <Box
-            width={{ custom: ORB_SIZE }}
-            height={{ custom: ORB_SIZE }}
-            style={{ borderColor, borderWidth }}
-            borderRadius={ORB_SIZE / 2}
-            background="accent"
-            alignItems="center"
-            justifyContent="center"
-            shadow={shadowColor === 'accent' ? '18px accent' : '18px'}
-          >
-            <Text
-              containsEmoji
-              size={textSize}
-              weight={textWeight}
-              align="center"
-              color="label"
+      <ColorModeProvider value="light">
+        <AccentColorProvider color={color}>
+          {shadowColor ? (
+            <Box
+              width={{ custom: ORB_SIZE }}
+              height={{ custom: ORB_SIZE }}
+              style={{ borderColor, borderWidth }}
+              borderRadius={ORB_SIZE / 2}
+              background="accent"
+              alignItems="center"
+              justifyContent="center"
+              shadow={shadowColor === 'accent' ? '18px accent' : '18px'}
             >
-              {icon}
-            </Text>
-          </Box>
-        ) : (
-          <Box
-            width={{ custom: ORB_SIZE }}
-            height={{ custom: ORB_SIZE }}
-            style={{ borderColor, borderWidth }}
-            borderRadius={ORB_SIZE / 2}
-            background="accent"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text
-              containsEmoji
-              size={textSize}
-              weight={textWeight}
-              align="center"
-              color="label"
+              <Text
+                containsEmoji
+                size={textSize}
+                weight={textWeight}
+                align="center"
+                color="label"
+              >
+                {icon}
+              </Text>
+            </Box>
+          ) : (
+            <Box
+              width={{ custom: ORB_SIZE }}
+              height={{ custom: ORB_SIZE }}
+              style={{ borderColor, borderWidth }}
+              borderRadius={ORB_SIZE / 2}
+              background="accent"
+              alignItems="center"
+              justifyContent="center"
             >
-              {icon}
-            </Text>
-          </Box>
-        )}
-      </AccentColorProvider>
+              <Text
+                containsEmoji
+                size={textSize}
+                weight={textWeight}
+                align="center"
+                color="label"
+              >
+                {icon}
+              </Text>
+            </Box>
+          )}
+        </AccentColorProvider>
+      </ColorModeProvider>
     );
   } else {
     return (

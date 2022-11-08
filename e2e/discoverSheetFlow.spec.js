@@ -5,7 +5,7 @@ import * as Helpers from './helpers';
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
-describe('Discover Sheet Flow', () => {
+describe('Discover Screen Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -173,7 +173,8 @@ describe('Discover Sheet Flow', () => {
     await Helpers.swipeUntilVisible(
       'lists-section-favorites',
       'discover-sheet',
-      'up'
+      'up',
+      100
     );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
