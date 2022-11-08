@@ -1150,13 +1150,7 @@
           "description": "Sends, receives, sales, mints, swaps, and more. Choose what you want."
         },
         "header": "Notifications",
-        "subheader": "INTRODUCING",
-        "alert_denied": {
-          "title": "Are you sure?",
-          "description": "If you don't enable notifications, you'll miss out on wallet updates, new features, etc.",
-          "no_enable": "Don't enable",
-          "yes_enable": "Enable"
-        }
+        "subheader": "INTRODUCING"
       }
     },
     "review": {
