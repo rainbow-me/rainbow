@@ -59,10 +59,10 @@ const withRunExclusive = async (callback: (...args: any[]) => void) =>
 
 const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
-    case Network.bsc:
     case Network.polygon:
       return 2000;
     case Network.arbitrum:
+    case Network.bsc:
       return 3000;
     default:
       return 5000;
