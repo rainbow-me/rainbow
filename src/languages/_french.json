@@ -1215,8 +1215,8 @@
         "no_first_time_permissions": "Please allow Rainbow to send you notifications. :)",
         "first_time_allow_notifications": "Allow Notifications :)",
         "error_alert_title": "Subscription Failed :)",
-        "error_alert_content": "It likely happened because of poor network conditions or because you changed settings too often.\n\nPlease try again later when your connection is more stable. :)",
-        "offline_alert_content": "It appears you have no internet connection.\n\nYou can't change notification settings while you're offline. :)"
+        "error_alert_content": "Please try again later. :)",
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)"
       },
       "privacy": "Privacy :)",
       "privacy_section": {
