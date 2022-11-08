@@ -9,6 +9,8 @@ import {
   TransactionType,
 } from '@/entities';
 import { Network } from '@/helpers';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 // TODO: Remove this file after finishing work on APP-27
 
@@ -170,8 +172,12 @@ const TxItem: React.FC<{
   title: string;
   transactionDetails: RainbowTransaction;
 }> = ({ title, transactionDetails }) => {
+  const navigation = useNavigation();
+
   const onPress = () => {
-    console.log(JSON.stringify(transactionDetails));
+    navigation.navigate(Routes.TRANSACTION_DETAILS, {
+      transaction: transactionDetails,
+    });
   };
 
   return (

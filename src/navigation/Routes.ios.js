@@ -61,6 +61,7 @@ import {
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
+  transactionDetailsConfig,
 } from './config';
 import {
   emojiPreset,
@@ -80,6 +81,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -441,6 +443,11 @@ function NativeStackNavigator() {
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         {...basicSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.TRANSACTION_DETAILS}
+        component={TransactionDetails}
+        {...transactionDetailsConfig}
       />
     </NativeStack.Navigator>
   );

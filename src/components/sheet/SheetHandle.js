@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from '@/styled-thing';
+import { IS_ANDROID } from '@/env';
 
 export const HandleHeight = 5;
 
 const defaultColor = (colors, showBlur) =>
-  android
+  IS_ANDROID
     ? showBlur
       ? colors.alpha(colors.blueGreyDark, 0.3)
       : colors.blueGreyDark30

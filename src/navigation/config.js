@@ -18,6 +18,7 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { TRANSACTION_DETAILS_SHEET_HEIGHT } from '@/screens/transaction-details/TransactionDetails';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -103,6 +104,16 @@ export const swapDetailsSheetConfig = {
       ...params,
       springDamping: 1,
       transitionDuration: 0.25,
+    }),
+  }),
+};
+
+export const transactionDetailsConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: false,
+      longFormHeight: TRANSACTION_DETAILS_SHEET_HEIGHT,
     }),
   }),
 };

@@ -35,21 +35,3 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
 }));
-
-jest.mock('react-native-mmkv', () => ({
-  MMKV: class MMKVMock {
-    _store = new Map();
-
-    set(key, value) {
-      this._store.set(key, value);
-    }
-
-    getString(key) {
-      return this._store.get(key);
-    }
-
-    delete(key) {
-      return this._store.delete(key);
-    }
-  },
-}));
