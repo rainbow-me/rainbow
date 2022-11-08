@@ -11,12 +11,10 @@ import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
-import {
-  ENSCreateProfileCard,
-  ENSSearchCard,
-  DPICard,
-  GasCard,
-} from '@/components/cards';
+import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
+import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
+import { DPICard } from '@/components/cards/DPICard';
+import { GasCard } from '@/components/cards/GasCard';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
