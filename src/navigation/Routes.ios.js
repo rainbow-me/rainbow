@@ -61,6 +61,7 @@ import {
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
+  transactionDetailsConfig,
 } from './config';
 import {
   emojiPreset,
@@ -81,6 +82,7 @@ import createNativeStackNavigator from '@/react-native-cool-modals/createNativeS
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -442,6 +444,11 @@ function NativeStackNavigator() {
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         {...basicSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.TRANSACTION_DETAILS}
+        component={TransactionDetails}
+        {...transactionDetailsConfig}
       />
     </NativeStack.Navigator>
   );
