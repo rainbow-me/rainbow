@@ -173,7 +173,8 @@ describe('Discover Screen Flow', () => {
     await Helpers.swipeUntilVisible(
       'lists-section-favorites',
       'discover-sheet',
-      'up'
+      'up',
+      100
     );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
