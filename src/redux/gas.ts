@@ -142,10 +142,19 @@ const getUpdatedGasFeeParams = (
   txNetwork: Network,
   l1GasFeeOptimism: BigNumber | null = null
 ) => {
-  const nativeTokenPriceUnit =
-    txNetwork !== Network.polygon
-      ? ethereumUtils.getEthPriceUnit()
-      : ethereumUtils.getMaticPriceUnit();
+  let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
+
+  switch (txNetwork) {
+    case Network.polygon:
+      nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
+      break;
+    case Network.bsc:
+      nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
+      break;
+    default:
+      nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
+      break;
+  }
 
   const isL2 = isL2Network(txNetwork);
 
