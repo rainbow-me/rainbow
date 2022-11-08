@@ -51,5 +51,5 @@ const bscGasStationApi = new RainbowFetchClient({
  */
 export const bscGasStationGetGasPrices = () =>
   bscGasStationApi.get(
-    `?module=gastracker&action=gasoracle&apikey=B395TC4T7BXEWSSUIQCEG1WWSIZ2JCJW35`
+    `?module=gastracker&action=gasoracle&apikey=YourApiKeyToken`
   );
