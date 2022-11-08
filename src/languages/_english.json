@@ -199,6 +199,7 @@
         "enter_amount": "Enter an Amount",
         "fetching_quote": "Fetching Quote",
         "insufficient_eth": "Insufficient ETH",
+        "insufficient_bnb": "Insufficient BNB",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity",
         "no_route_found": "􀅵 No route found",
@@ -245,7 +246,6 @@
       "loading": "Loading",
       "more": "More",
       "my_qr_code": "My QR Code",
-      "no_thanks": "No thanks",
       "notify_me": "Get notified",
       "offline": "Offline",
       "ok": "OK",
@@ -667,6 +667,10 @@
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
+      },
+      "bsc": {
+        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Binance Smart Chain?"
       },
       "read_more": "Read More",
       "learn_more": "Learn More",
@@ -1184,7 +1188,7 @@
         },
         "info_row_2": {
           "title": "Swap directly on L2",
-          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon."
+          "description": "Fast and cheap swaps on Arbitrum, Optimism, Polygon and BSC."
         },
         "info_row_3": {
           "title": "Flashbots protection",
