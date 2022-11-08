@@ -1,5 +1,5 @@
 import { Box, AccentColorProvider } from '@/design-system';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { globalColors } from '@/design-system/color/palettes';
@@ -15,7 +15,6 @@ type GenericCardProps = {
   type: CardType;
   gradient?: string[];
   disabled?: boolean;
-  children: React.ReactNode;
   onPress?: () => void;
   color?: string;
   testID?: string;
@@ -29,7 +28,7 @@ export const GenericCard = ({
   onPress,
   color,
   testID,
-}: GenericCardProps) => (
+}: PropsWithChildren<GenericCardProps>) => (
   <ConditionalWrap
     condition={!!onPress}
     wrap={(children: React.ReactNode) => (
