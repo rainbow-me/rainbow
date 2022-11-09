@@ -37,9 +37,27 @@ const PrivacySection = () => {
     togglePublicShowcase();
   }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
 
+  const toggleTracking = useCallback(() => {}, [
+    initWebData,
+    publicShowCase,
+    showcaseTokens,
+    wipeWebData,
+  ]);
+
   return (
     <MenuContainer>
       <Menu description={lang.t('settings.privacy_section.when_public')}>
+        <MenuItem
+          disabled
+          hasSfSymbol
+          leftComponent={<MenuItem.TextIcon icon="􀑁" isLink />}
+          rightComponent={
+            <Switch onValueChange={toggleTracking} value={publicShowCase} />
+          }
+          size={52}
+          testID="public-showcase"
+          titleComponent={<MenuItem.Title text={'Tracking'} />}
+        />
         <MenuItem
           disabled
           hasSfSymbol
