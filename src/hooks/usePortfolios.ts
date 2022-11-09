@@ -19,6 +19,8 @@ export default function usePortfolios() {
       bsc_assets_value: 0,
       deposited_value: 0,
       locked_value: 0,
+      nft_floor_price_value: 0,
+      nft_last_price_value: 0,
       optimism_assets_value: 0,
       polygon_assets_value: 0,
       staked_value: 0,
