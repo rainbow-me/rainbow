@@ -22,6 +22,7 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
+import { logger as loggr, RainbowError } from '@/logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -100,9 +101,11 @@ export default function AddCashSheet() {
 
   useEffect(() => {
     if (wyreAuthenticationUrl) {
+      loggr.info(`wyreAuthenticationUrl received`);
+
       setWyreAuthenticationFailureTimeout(
         wyreAuthenticationFlowFailureCallback,
-        10_000
+        30_000
       );
     }
   }, [wyreAuthenticationUrl]);
@@ -147,6 +150,11 @@ export default function AddCashSheet() {
                 <WebView
                   source={{ uri: wyreAuthenticationUrl }}
                   onMessage={event => {
+                    loggr.info(
+                      `wyreAuthenticationUrl WebView received postMessage event`,
+                      { event }
+                    );
+
                     /**
                      * Handling pulled from Wyre docs
                      * @see https://docs.sendwyre.com/docs/authentication-widget-whitelabel-api#remove-webview

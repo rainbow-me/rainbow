@@ -19,8 +19,7 @@ import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
 import { analytics } from '@/analytics';
 import { getTokenMetadata } from '@/utils';
-import logger from '@/utils/logger';
-import { logger as loggr, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 export default function useWyreApplePay() {
   const dispatch = useDispatch();
@@ -60,6 +59,7 @@ export default function useWyreApplePay() {
       const referenceInfo = {
         referenceId: getReferenceId(accountAddress),
       };
+
       const { reservation: reservationId } = await reserveWyreOrder(
         value,
         currency,
@@ -71,14 +71,19 @@ export default function useWyreApplePay() {
         analytics.track('Wyre order reservation incomplete', {
           category: 'add cash',
         });
+
         Alert({
           buttons: [{ text: 'Okay' }],
           message:
             'We were unable to reserve your purchase order. Please try again later.',
           title: `Something went wrong!`,
         });
+
+        logger.error(new RainbowError(`Wyre order reservation incomplete`));
+
         return;
       }
+
       const quotation = await getWalletOrderQuotation(
         value,
         currency,
@@ -90,16 +95,22 @@ export default function useWyreApplePay() {
         analytics.track('Wyre order quote incomplete', {
           category: 'add cash',
         });
+
         Alert({
           buttons: [{ text: 'Okay' }],
           message:
             'We were unable to get a quote on your purchase order. Please try again later.',
           title: `Something went wrong!`,
         });
+
+        logger.error(new RainbowError(`Wyre order quote incomplete`));
+
         return;
       }
 
       const { sourceAmountWithFees, purchaseFee } = quotation;
+
+      logger.info(`Showing Apple Pay request`);
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
@@ -115,7 +126,10 @@ export default function useWyreApplePay() {
       setOrderCurrency(currency);
 
       if (applePayResponse) {
-        logger.log('[add cash] - get order id');
+        logger.info(
+          `Apple Pay request returned response, running getWyreWalletOrder`
+        );
+
         const {
           orderId,
           authenticationUrl,
@@ -131,7 +145,10 @@ export default function useWyreApplePay() {
           network,
           reservationId
         );
+
         if (orderId) {
+          logger.info(`getWyreWalletOrder returned an orderId`);
+
           setOrderId(orderId);
 
           // @ts-expect-error ts-migrate(2339) FIXME: Property 'orderId' does not exist on type '{ refer... Remove this comment to see the full error message
@@ -147,6 +164,8 @@ export default function useWyreApplePay() {
 
           setWyreAuthenticationUrl(authenticationUrl);
         } else {
+          logger.info(`getWyreWalletOrder did not return an orderId`);
+
           dispatch(
             addCashOrderCreationFailure({
               errorCategory,
@@ -163,10 +182,16 @@ export default function useWyreApplePay() {
             error_message: errorMessage,
           });
         }
+
+        logger.error(new RainbowError(`wyre onPurchase finished`));
       } else {
+        logger.info(`Apple Pay request did NOT return a response`);
+
         analytics.track('Purchase incomplete', {
           category: 'add cash',
         });
+
+        logger.error(new RainbowError(`wyre onPurchase did NOT finish`));
       }
     },
     [accountAddress, dispatch, handlePaymentCallback, network]
@@ -174,13 +199,15 @@ export default function useWyreApplePay() {
 
   const wyreAuthenticationFlowCallback = useCallback(() => {
     if (!addCashGetOrderStatusPayload.current.length) {
-      loggr.error(
+      logger.error(
         new RainbowError(
           `wyreAuthenticationFlowCallback was called, but no addCashGetOrderStatusPayload exists`
         )
       );
       return;
     }
+
+    logger.info(`wyreAuthenticationFlowCallback called`);
 
     const [
       referenceInfo,
@@ -203,6 +230,8 @@ export default function useWyreApplePay() {
         value
       )
     );
+
+    logger.error(new RainbowError(`wyreAuthenticationFlowCallback completed`));
   }, [
     addCashGetOrderStatusPayload,
     dispatch,
@@ -212,13 +241,15 @@ export default function useWyreApplePay() {
 
   const wyreAuthenticationFlowFailureCallback = useCallback(() => {
     if (!addCashGetOrderStatusPayload.current.length) {
-      loggr.error(
+      logger.error(
         new RainbowError(
           `wyreAuthenticationFlowFailureCallback was called, but no addCashGetOrderStatusPayload exists`
         )
       );
       return;
     }
+
+    logger.info(`wyreAuthenticationFlowFailureCallback called`);
 
     const [
       referenceInfo,
@@ -236,6 +267,10 @@ export default function useWyreApplePay() {
     addCashGetOrderStatusPayload.current = [];
 
     handlePaymentCallback();
+
+    logger.error(
+      new RainbowError(`wyreAuthenticationFlowFailureCallback completed`)
+    );
 
     // TODO Do we need this?
     // dispatch(

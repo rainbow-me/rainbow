@@ -168,7 +168,7 @@ export const getWalletOrderQuotation = async (
       sourceAmountWithFees: responseData?.sourceAmount,
     };
   } catch (error) {
-    logger.sentry('Apple Pay - error getting wallet order quotation', error);
+    loggr.error(new RainbowError(`getWalletOrderQuotation failed`), { error });
     return null;
   }
 };
@@ -210,7 +210,7 @@ export const reserveWyreOrder = async (
     );
     return response?.data;
   } catch (error) {
-    logger.sentry('Apple Pay - error reserving order', error);
+    loggr.error(new RainbowError(`reserveWyreOrder failed`), { error });
     return null;
   }
 };
@@ -270,7 +270,11 @@ export const getWyreWalletOrder = async (
     const orderId = response?.data?.id ?? null;
     let authenticationUrl = response?.data?.authenticationUrl;
 
+    loggr.info(`getWyreWalletOrder returned`);
+
     if (authenticationUrl) {
+      loggr.info(`getWyreWalletOrder returend an authenticationUrl`);
+
       const { host, pathname } = new URL(authenticationUrl);
 
       /**
@@ -287,6 +291,12 @@ export const getWyreWalletOrder = async (
             `getWyreWalletOrder returned an invalid authenticationUrl`
           )
         );
+      } else {
+        loggr.error(
+          new RainbowError(
+            `getWyreWalletOrder returned a VALID authenticationUrl`
+          )
+        );
       }
     }
 
@@ -295,33 +305,30 @@ export const getWyreWalletOrder = async (
     if (error && error.type === RAINBOW_FETCH_ERROR) {
       const { responseBody } = error;
 
-      logger.sentry(
-        'WYRE - getWyreWalletOrder response - was not 200',
-        responseBody
-      );
       const {
         data: { errorCode, exceptionId, message, type },
       } = responseBody;
 
-      captureException(
-        new WyreException(
-          WyreExceptionTypes.CREATE_ORDER,
+      loggr.error(
+        new RainbowError(`getWyreWalletOrder returned non-200 response`),
+        {
+          wyreOrderType: WyreExceptionTypes.CREATE_ORDER,
           referenceInfo,
           exceptionId,
           errorCode,
-          message
-        )
+          message,
+        }
       );
+
       return {
         errorCategory: type,
         errorCode,
         errorMessage: message,
       };
     } else {
-      logger.sentry(
-        `WYRE - getWyreWalletOrder response catch - ${referenceInfo.referenceId}`
-      );
-      captureException(error);
+      loggr.error(new RainbowError(`getWyreWalletOrder threw an exception`), {
+        referenceInfo,
+      });
       return {};
     }
   }
@@ -392,6 +399,7 @@ const createPayload = (
   const partnerId =
     network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
   return {
+    triggerAuthenticationWidget: true,
     partnerId,
     payload: {
       orderRequest: {
