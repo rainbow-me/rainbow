@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
@@ -7,15 +7,11 @@ import { Source } from 'react-native-fast-image';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import TintButton from '@/components/buttons/TintButton';
 import { useNavigation } from '@/navigation';
-import { PermissionsAndroid, Alert } from 'react-native';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { Subscription } from '@ledgerhq/hw-transport';
-import { IS_ANDROID } from '@/env';
-import usePairLedgerBluetooth from '@/hooks/usePairLedgerBluetooth';
+import { usePairLedgerBluetooth } from '@/hooks/usePairLedgerBluetooth';
 
 export function PairHardwareWalletSearchSheet() {
   const { dangerouslyGetParent } = useNavigation();
-  const { device } = usePairLedgerBluetooth();
+  const { device, status } = usePairLedgerBluetooth();
 
   return (
     <Box background="surfaceSecondary" height="full">
@@ -54,11 +50,6 @@ export function PairHardwareWalletSearchSheet() {
             style={{ width: 216, height: 292 }}
             size={292}
           />
-        </Inset>
-        <Inset top="104px">
-          <Text color="label" size="12pt">
-            {device ? `Found!` : 'Waiting...'}
-          </Text>
         </Inset>
       </Layout>
     </Box>

@@ -57,6 +57,8 @@ target 'Rainbow' do
 
     pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
 
+    pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
+
   end
 
   post_install do |installer|

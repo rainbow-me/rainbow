@@ -1,10 +1,44 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, PermissionsAndroid } from 'react-native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { Subscription } from '@ledgerhq/hw-transport';
+import Transport, { Subscription } from '@ledgerhq/hw-transport';
 import { IS_ANDROID } from '@/env';
+import AppEth from '@ledgerhq/hw-app-eth';
 
-export default function usePairLedgerBluetooth() {
+enum CONNECTION_STATUS {
+  NONE = 'NONE',
+  SEARCHING = 'SEARCHING',
+  FOUND = 'FOUND',
+  CONNECTING = 'CONNECTING',
+  CONNECTED = 'CONNECTED',
+}
+
+function usePairLedgerBluetooth() {
+  //   const { handlePressImportButton, handleSetSeedPhrase } = useImportingWallet();
+
+  const importHardwareWallet = useCallback(
+    async device => {
+      console.log('********* importing hw wallet: ', device.id);
+      try {
+        // handleSetSeedPhrase(deviceId);
+        // handlePressImportButton(null, deviceId, null, null);
+        const _transport = await TransportBLE.open(device);
+        console.log('*** - opened device: ', device.id);
+        setTransport(_transport);
+        console.log('successfully ran import ahrdware wallet code');
+        setStatus(CONNECTION_STATUS.CONNECTED);
+      } catch (error) {
+        Alert.alert('failure to import');
+        // logger.log('error importing hw wallet', error);
+        console.log('&&&&&&&&&& failed to import: ', error);
+        setStatus(CONNECTION_STATUS.NONE);
+      }
+    },
+    [
+      // handlePressImportButton,
+      // handleSetSeedPhrase
+    ]
+  );
   const requestBLEPermissions = async () => {
     try {
       await PermissionsAndroid.request(
@@ -19,9 +53,39 @@ export default function usePairLedgerBluetooth() {
       console.log('android bluetooth permissions error: ', e);
     }
   };
+  const [status, setStatus] = useState(CONNECTION_STATUS.NONE);
   const [device, setDevice] = useState();
   const [observe, setObserve] = useState<Subscription>();
   const [listen, setListen] = useState<Subscription>();
+  const [transport, setTransport] = useState();
+  // const [hdWallet, getHdWallet] = useState();
+
+  useEffect(() => {
+    const signTestMessage = async (t: Transport) => {
+      const eth = new AppEth(t);
+      console.log('new eth app:', eth);
+      // const path = "44'/60'/0'/0/0";
+      //   const { address } = await eth.getAddress(path, true);
+      eth
+        .signPersonalMessage(
+          "44'/60'/0'/0/0",
+          Buffer.from('Nico testtttttt').toString('hex')
+        )
+        .then((result: { [x: string]: number }) => {
+          console.log('SO far so good:');
+          const v = result['v'] - 27;
+          let w = v.toString(16);
+          if (w.length < 2) {
+            w = '0' + w;
+          }
+          console.log('test ran correctly');
+          console.log('Signature 0x' + result['r'] + result['s'] + w);
+        });
+    };
+    if (transport !== undefined) {
+      signTestMessage(transport);
+    }
+  }, [transport]);
 
   useEffect(() => {
     const handlePair = () => {
@@ -30,17 +94,34 @@ export default function usePairLedgerBluetooth() {
           if (e.available) {
             console.log('observing: ', e);
             const _listen = TransportBLE.listen({
-              complete: () => {},
+              complete: () => null,
               next: e => {
                 if (!device) {
                   if (e.type === 'add') {
                     const _device = e.descriptor;
                     setDevice(_device);
-                    console.log('device found:', {
-                      deviceId: _device.id,
-                      name: _device.name,
-                    });
-                    Alert.alert('Device Found!', _device.name);
+                    setStatus(CONNECTION_STATUS.FOUND);
+                    Alert.alert(
+                      'Device Found!',
+                      `${_device.id} - ${_device.name}`,
+                      [
+                        {
+                          onPress: () => {
+                            setDevice(undefined);
+                            setStatus(CONNECTION_STATUS.NONE);
+                          },
+                          style: 'cancel',
+                          text: 'Cancel',
+                        },
+                        {
+                          onPress: async () => {
+                            setStatus(CONNECTION_STATUS.CONNECTING);
+                            importHardwareWallet(_device);
+                          },
+                          text: 'Connect',
+                        },
+                      ]
+                    );
                   }
                 }
               },
@@ -58,8 +139,8 @@ export default function usePairLedgerBluetooth() {
             }
           }
         },
-        complete: () => {},
-        error: () => {},
+        complete: () => null,
+        error: () => null,
       });
       setObserve(_observe);
     };
@@ -73,5 +154,8 @@ export default function usePairLedgerBluetooth() {
 
   return {
     device,
+    status,
   };
 }
+
+export { usePairLedgerBluetooth };
