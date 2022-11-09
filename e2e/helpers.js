@@ -162,7 +162,7 @@ export async function swipeUntilVisible(
         .withTimeout(500);
       stop = true;
     } catch {
-      await swipe(scrollViewId, direction, 'slow', 0.5);
+      await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
 }
