@@ -8,13 +8,14 @@ import {
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { LogLevel, logger } from '@/logger';
+import * as storage from '@/storage';
 
 export class Analytics {
   client: SegmentClient;
   currentWalletAddressHash?: string;
   deviceId?: string;
   event = event;
-  disabled = false;
+  disabled = !!storage.device.get(['doNotTrack']);
 
   constructor() {
     this.client = createClient({

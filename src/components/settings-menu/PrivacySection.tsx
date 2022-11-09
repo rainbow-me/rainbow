@@ -8,6 +8,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import Restart from 'react-native-restart';
 import * as storage from '@/storage';
 
 const PrivacySection = () => {
@@ -54,7 +55,13 @@ const PrivacySection = () => {
           hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
           rightComponent={
-            <Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />
+            <Switch
+              onValueChange={() => {
+                toggleAnalytics();
+                Restart.Restart();
+              }}
+              value={analyticsEnabled}
+            />
           }
           size={52}
           testID="public-showcase"

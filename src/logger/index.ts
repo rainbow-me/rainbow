@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react-native';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
+import * as storage from '@/storage';
 
 export enum LogLevel {
   Debug = 'debug',
@@ -183,7 +184,7 @@ export class Logger {
   protected debugContextRegexes: RegExp[] = [];
 
   constructor({
-    enabled = !env.IS_TEST,
+    enabled = !env.IS_TEST && !storage.device.get(['doNotTrack']),
     level = LOG_LEVEL as LogLevel,
     debug = LOG_DEBUG || '',
   }: {
