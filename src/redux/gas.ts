@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import { analytics } from '@/analytics';
+import { logger, RainbowError } from '@/logger';
 import {
   BlocksToConfirmation,
   CurrentBlockParams,
@@ -47,7 +48,6 @@ import {
 import { ethUnits, supportedNativeCurrencies } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
-import logger from '@/utils/logger';
 import { GasFeesBscGasStationData } from '@/entities/gas';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
@@ -274,62 +274,72 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 };
 
 const getPolygonGasPrices = async () => {
-  const {
-    data: { result },
-  }: {
-    data: GasFeesPolygonGasStationData;
-  } = await polygonGasStationGetGasPrices();
-  const polygonGasPriceBumpFactor = 1.05;
+  try {
+    const {
+      data: { result },
+    }: {
+      data: GasFeesPolygonGasStationData;
+    } = await polygonGasStationGetGasPrices();
+    const polygonGasPriceBumpFactor = 1.05;
 
-  // Override required to make it compatible with other responses
-  const polygonGasStationPrices = {
-    fast: Math.ceil(
-      Number(multiply(result['ProposeGasPrice'], polygonGasPriceBumpFactor))
-    ),
-    // 1 blocks, 2.5 - 3 secs
-    fastWait: 0.05,
-    normal: Math.ceil(
-      Number(multiply(result['SafeGasPrice'], polygonGasPriceBumpFactor))
-    ),
-    // 2 blocks, 6 secs
-    normalWait: 0.1,
-    urgent: Math.ceil(
-      Number(multiply(result['FastGasPrice'], polygonGasPriceBumpFactor))
-    ),
-    // 1 blocks, 2.5 - 3 secs
-    urgentWait: 0.05,
-  };
-  return polygonGasStationPrices;
+    // Override required to make it compatible with other responses
+    const polygonGasStationPrices = {
+      fast: Math.ceil(
+        Number(multiply(result['ProposeGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      fastWait: 0.05,
+      normal: Math.ceil(
+        Number(multiply(result['SafeGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 2 blocks, 6 secs
+      normalWait: 0.1,
+      urgent: Math.ceil(
+        Number(multiply(result['FastGasPrice'], polygonGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      urgentWait: 0.05,
+    };
+    return polygonGasStationPrices;
+  } catch (e) {
+    logger.error(new RainbowError(`failed to fetch polygon gas prices ${e}`));
+    return null;
+  }
 };
 
 const getBscGasPrices = async () => {
-  const {
-    data: { result },
-  }: {
-    data: GasFeesBscGasStationData;
-  } = await bscGasStationGetGasPrices();
+  try {
+    const {
+      data: { result },
+    }: {
+      data: GasFeesBscGasStationData;
+    } = await bscGasStationGetGasPrices();
 
-  const bscGasPriceBumpFactor = 1.05;
+    const bscGasPriceBumpFactor = 1.05;
 
-  // Override required to make it compatible with other responses
-  const bscGasStationPrices = {
-    fast: Math.ceil(
-      Number(multiply(result['ProposeGasPrice'], bscGasPriceBumpFactor))
-    ),
-    // 1 blocks, 2.5 - 3 secs
-    fastWait: 0.05,
-    normal: Math.ceil(
-      Number(multiply(result['SafeGasPrice'], bscGasPriceBumpFactor))
-    ),
-    // 2 blocks, 6 secs
-    normalWait: 0.1,
-    urgent: Math.ceil(
-      Number(multiply(result['FastGasPrice'], bscGasPriceBumpFactor))
-    ),
-    // 1 blocks, 2.5 - 3 secs
-    urgentWait: 0.05,
-  };
-  return bscGasStationPrices;
+    // Override required to make it compatible with other responses
+    const bscGasStationPrices = {
+      fast: Math.ceil(
+        Number(multiply(result['ProposeGasPrice'], bscGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      fastWait: 0.05,
+      normal: Math.ceil(
+        Number(multiply(result['SafeGasPrice'], bscGasPriceBumpFactor))
+      ),
+      // 2 blocks, 6 secs
+      normalWait: 0.1,
+      urgent: Math.ceil(
+        Number(multiply(result['FastGasPrice'], bscGasPriceBumpFactor))
+      ),
+      // 1 blocks, 2.5 - 3 secs
+      urgentWait: 0.05,
+    };
+    return bscGasStationPrices;
+  } catch (e) {
+    logger.error(new RainbowError(`failed to fetch BSC gas prices ${e}`));
+    return null;
+  }
 };
 const getArbitrumGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.arbitrum);
@@ -548,16 +558,16 @@ export const gasPricesStartPolling = (
                   type: GAS_FEES_SUCCESS,
                 });
               } catch (e) {
-                captureException(new Error('Etherscan gas estimates failed'));
-                logger.sentry('Etherscan gas estimates error:', e);
-                logger.sentry('falling back to eth gas station');
+                logger.error(
+                  new RainbowError(`Etherscan gas estimates error: ${e}`)
+                );
+                logger.debug('falling back to eth gas station');
               }
             }
             fetchResolve(true);
-          } catch (error) {
-            captureException(new Error('all gas estimates failed'));
-            logger.sentry('gas estimates error', error);
-            fetchReject(error);
+          } catch (e) {
+            logger.error(new RainbowError(`Gas Estimates Failed: ${e}`));
+            fetchReject(e);
           }
         })
     );

@@ -1,3 +1,7 @@
+import {
+  GasFeesBscGasStationData,
+  GasFeesPolygonGasStationData,
+} from '@/entities/gas';
 import { RainbowFetchClient } from '../rainbow-fetch';
 
 const rainbowMeteorologyApi = new RainbowFetchClient({
@@ -29,8 +33,9 @@ const polygonGasStationApi = new RainbowFetchClient({
  * @desc get Polygon gas prices
  * @return {Promise}
  */
-export const polygonGasStationGetGasPrices = () =>
-  polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
+export const polygonGasStationGetGasPrices = (): Promise<{
+  data: GasFeesPolygonGasStationData;
+}> => polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
 
 /**
  * Configuration for BSC GAS Station API
@@ -49,7 +54,9 @@ const bscGasStationApi = new RainbowFetchClient({
  * @desc get BSC gas prices
  * @return {Promise}
  */
-export const bscGasStationGetGasPrices = () =>
+export const bscGasStationGetGasPrices = (): Promise<{
+  data: GasFeesBscGasStationData;
+}> =>
   bscGasStationApi.get(
     `?module=gastracker&action=gasoracle&apikey=YourApiKeyToken`
   );
