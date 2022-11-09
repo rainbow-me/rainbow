@@ -14,6 +14,7 @@ export default function usePortfolios() {
     const total = {
       arbitrum_assets_value: 0,
       assets_value: 0,
+      avalanche_assets_value: 0,
       borrowed_value: 0,
       bsc_assets_value: 0,
       deposited_value: 0,
@@ -22,6 +23,7 @@ export default function usePortfolios() {
       polygon_assets_value: 0,
       staked_value: 0,
       total_value: 0,
+      xdai_assets_value: 0,
     };
     keys(portfolios).forEach(address => {
       keys(portfolios[address]).forEach(key => {
