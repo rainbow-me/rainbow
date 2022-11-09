@@ -10,6 +10,9 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import Restart from 'react-native-restart';
 import * as storage from '@/storage';
+import * as i18n from '@/languages';
+
+const TRANSLATIONS = i18n.l.settings.privacy_section;
 
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
@@ -45,11 +48,7 @@ const PrivacySection = () => {
 
   return (
     <MenuContainer>
-      <Menu
-        description={
-          'Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account.'
-        }
-      >
+      <Menu description={i18n.t(TRANSLATIONS.analytics_toggle_description)}>
         <MenuItem
           disabled
           hasSfSymbol
@@ -65,10 +64,12 @@ const PrivacySection = () => {
           }
           size={52}
           testID="public-showcase"
-          titleComponent={<MenuItem.Title text={'Analytics'} />}
+          titleComponent={
+            <MenuItem.Title text={i18n.t(TRANSLATIONS.analytics_toggle)} />
+          }
         />
       </Menu>
-      <Menu description={lang.t('settings.privacy_section.when_public')}>
+      <Menu description={i18n.t(TRANSLATIONS.when_public)}>
         <MenuItem
           disabled
           hasSfSymbol
@@ -79,9 +80,7 @@ const PrivacySection = () => {
           size={52}
           testID="public-showcase"
           titleComponent={
-            <MenuItem.Title
-              text={lang.t('settings.privacy_section.public_showcase')}
-            />
+            <MenuItem.Title text={i18n.t(TRANSLATIONS.public_showcase)} />
           }
         />
       </Menu>
@@ -93,10 +92,7 @@ const PrivacySection = () => {
             onPress={viewProfile}
             size={52}
             titleComponent={
-              <MenuItem.Title
-                isLink
-                text={lang.t('settings.privacy_section.view_profile')}
-              />
+              <MenuItem.Title isLink text={i18n.t(TRANSLATIONS.view_profile)} />
             }
           />
         </Menu>
