@@ -28,8 +28,7 @@ export const PaymentRequestStatusTypes = {
   SUCCESS: 'success',
 };
 
-const getBaseUrl = (network: any) =>
-  network === NetworkTypes.mainnet ? WYRE_ENDPOINT : WYRE_ENDPOINT_TEST;
+const getBaseUrl = (network: any) => WYRE_ENDPOINT_TEST;
 
 const wyreApi = new RainbowFetchClient({
   headers: {
