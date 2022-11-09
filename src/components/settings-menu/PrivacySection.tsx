@@ -8,6 +8,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import * as storage from '@/storage';
 
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
@@ -19,6 +20,10 @@ const PrivacySection = () => {
     publicShowCase => !publicShowCase,
     webDataEnabled
   );
+  const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
+    storage.device.set(['doNotTrack'], analyticsEnabled);
+    return !analyticsEnabled;
+  }, !storage.device.get(['doNotTrack']));
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const viewProfile = useCallback(() => {
@@ -37,13 +42,6 @@ const PrivacySection = () => {
     togglePublicShowcase();
   }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
 
-  const toggleTracking = useCallback(() => {}, [
-    initWebData,
-    publicShowCase,
-    showcaseTokens,
-    wipeWebData,
-  ]);
-
   return (
     <MenuContainer>
       <Menu
@@ -56,7 +54,7 @@ const PrivacySection = () => {
           hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
           rightComponent={
-            <Switch onValueChange={toggleTracking} value={publicShowCase} />
+            <Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />
           }
           size={52}
           testID="public-showcase"
