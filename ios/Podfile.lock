@@ -445,6 +445,11 @@ PODS:
     - React
   - react-native-flipper (0.162.0):
     - React-Core
+  - react-native-flipper-performance-plugin (0.3.1):
+    - React-Core
+    - react-native-flipper-performance-plugin/FBDefines (= 0.3.1)
+  - react-native-flipper-performance-plugin/FBDefines (0.3.1):
+    - React-Core
   - react-native-get-random-values (1.5.0):
     - React
   - react-native-ios-context-menu (1.7.4):
@@ -767,6 +772,7 @@ DEPENDENCIES:
   - react-native-change-icon (from `../node_modules/react-native-change-icon`)
   - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
   - react-native-flipper (from `../node_modules/react-native-flipper`)
+  - react-native-flipper-performance-plugin (from `../node_modules/react-native-flipper-performance-plugin`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-mail (from `../node_modules/react-native-mail`)
@@ -965,6 +971,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-cloud-fs"
   react-native-flipper:
     :path: "../node_modules/react-native-flipper"
+  react-native-flipper-performance-plugin:
+    :path: "../node_modules/react-native-flipper-performance-plugin"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-ios-context-menu:
@@ -1186,6 +1194,7 @@ SPEC CHECKSUMS:
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: a43ab9d1f2b57fd400035f10bbbbe1f2bdf13bc3
   react-native-flipper: 7eeb9b59b667dd0619372c7349cf7c78032d1de2
+  react-native-flipper-performance-plugin: 2b873b68da3e368afeaf29c9c7a8c2b0ff908c4f
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -1266,6 +1275,6 @@ SPEC CHECKSUMS:
   Yoga: c4d61225a466f250c35c1ee78d2d0b3d41fe661c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: da31a56dca7a5bfb919e31f3096a353630c23f1c
+PODFILE CHECKSUM: c35f3f7380949b76cf85de03b98c904ad8fbb96c
 
 COCOAPODS: 1.11.2
