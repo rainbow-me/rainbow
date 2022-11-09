@@ -14,6 +14,7 @@
       "show_all": "Afficher tout",
       "show_less": "Afficher moins",
       "tab_balances": "Soldes",
+      "tab_balances_empty_state": "Balance",
       "tab_balances_tooltip": "Soldes en Ethereum et en tokens",
       "tab_collectibles": "Collections",
       "tab_interactions": "Interactions",
@@ -220,17 +221,16 @@
       "connect_walletconnect": "Utiliser WalletConnect",
       "continue": "Continue :)",
       "delete": "Effacer",
+      "disconnect_account": "Log out",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
       "edit": "Modifier",
-      "enter": "Entrer",
-      "etherscan": "🔍 Affichage à Etherscan :)",
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
       "exchange_search_placeholder": "Cherche",
       "exchange_search_placeholder_network": "Search tokens on %{network} :)",
       "go_back": "Retourner",
-      "go_back_undercase": "Go back :)",
+      "go_back_lowercase": "Go back :)",
       "got_it": "Got it :)",
       "hide": "Cacher",
       "hold_to_authorize": {
@@ -243,6 +243,8 @@
       "learn_more": "En savoir plus",
       "less": "Moins",
       "loading": "Se charge",
+      "more": "More",
+      "my_qr_code": "My QR Code",
       "no_thanks": "No thanks",
       "notify_me": "Recevoir des notifications",
       "offline": "Hors connexion",
@@ -388,7 +390,6 @@
     },
     "exchange": {
       "coin_row": {
-        "copy_address": "Copy Contract Address :)",
         "expires_in": "Expires in %{minutes}m :)",
         "from_divider": "from :)",
         "to_divider": "to :)",
@@ -400,6 +401,10 @@
       "movers": {
         "loser": "Loser :)",
         "mover": "Mover :)"
+      },
+      "long_wait": {
+        "prefix": "Long Wait",
+        "time": "Up to %{estimatedWaitTime} to swap"
       },
       "no_results": {
         "description": "Some tokens don’t have enough liquidity to perform a successful swap.: )",
@@ -420,8 +425,10 @@
       "settings": "Settings :)",
       "use_defaults": "Use Defaults :)",
       "done": "Done :)",
+      "losing": "Losing",
+      "high": "High",
       "slippage_tolerance": "Slippage Tolerance :)",
-      "route_picker": "Route Swaps via :)",
+      "source_picker": "Route Swaps via :)",
       "use_flashbots": "Use Flashbots :)",
       "swapping_for_prefix": "Swapping for :)",
       "view_details": "View Details :)",
@@ -504,7 +511,6 @@
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
-        "copy_contract_address": "Copy Contract Address :)",
         "flashbots_protect": "Flashbots Protect :)",
         "losing": "Losing :)",
         "on": "On :)",
@@ -526,15 +532,6 @@
         "swap_max_insufficient_alert": {
           "title": "Insufficient %{symbol} :)",
           "message": "You have insufficient %{symbol} to cover the fees to swap the maximum amount. :)"
-        }
-      },
-      "wyre_degradation": {
-        "text": "Because of the ongoing Ethereum upgrade known as \"The Merge\", our partners have temporarily paused crypto purchasing to ensure safety of user funds. :)",
-        "title": "It's happening \nThe Merge is underway :)",
-        "still_curious": {
-          "fragment1": "Still curious? ",
-          "fragment2": "Learn more",
-          "fragment3": " about \"The Merge\". :)"
         }
       },
       "swap_details": {
@@ -599,6 +596,7 @@
         "twitter": "Twitter",
         "view_all_with_property": "View All with Property :)",
         "view_collection": "View Collection :)",
+        "view_on_marketplace": "View on Marketplace...",
         "view_on_block_explorer": "View on %{blockExplorerName} :)",
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
@@ -609,107 +607,150 @@
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon! :)",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
-        "button": "Snag the icon :)"
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
+        "button": "Snag the icon"
       },
       "output_disabled": {
-        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
-        "title": "Enter %{inputToken} Instead :)",
-        "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead :)",
-        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead. :)",
-        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead. :)",
-        "title_empty": "Choose a Token :)"
+        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "title": "Enter %{inputToken} Instead",
+        "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead",
+        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead.",
+        "title_empty": "Choose a Token"
       },
       "available_networks": {
-        "text": "%{tokenSymbol} is also available on %{networks}. To get %{tokenSymbol} on these networks, use a Bridge like Hop. :)",
-        "title_plural": "Available on %{length} Networks :)",
-        "title_singular": "Available on the %{network} Network :)"
+        "text": "%{tokenSymbol} is available on %{networks}. To move %{tokenSymbol} between networks, use a Bridge like Hop.",
+        "title_plural": "Available on %{length} Networks",
+        "title_singular": "Available on the %{network} Network"
       },
       "arbitrum": {
-        "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
-        "title": "What's Arbitrum? :)"
+        "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Arbitrum?"
       },
       "backup": {
-        "title": "Important :)"
+        "title": "Important"
       },
       "base_fee": {
-        "text_falling": "\n\nFees are dropping right now! :)",
-        "text_prefix": "The base fee is set by the Ethereum network and changes depending on how busy the network is. :)",
-        "text_rising": "\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction. :)",
-        "text_stable": "\n\nNetwork traffic is stable right now. Have fun! :)",
-        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop. :)",
-        "title": "Current base fee :)"
+        "text_falling": "\n\nFees are dropping right now!",
+        "text_prefix": "The base fee is set by the Ethereum network and changes depending on how busy the network is.",
+        "text_rising": "\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.",
+        "text_stable": "\n\nNetwork traffic is stable right now. Have fun!",
+        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.",
+        "title": "Current base fee"
       },
       "failed_walletconnect": {
-        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details. :)",
-        "title": "Connection failed :)"
+        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
+        "title": "Connection failed"
       },
       "floor_price": {
-        "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection. :)",
-        "title": "Collection floor price :)"
+        "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
+        "title": "Collection floor price"
       },
       "gas": {
-        "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is! :)",
-        "title": "%{networkName} network fee :)"
+        "text": "This is the \"gas fee\" used by the %{networkName} blockchain to securely validate your transaction.\n\nThis fee varies depending on the complexity of your transaction and how busy the network is!",
+        "title": "%{networkName} network fee"
       },
       "max_base_fee": {
-        "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise. :)",
-        "title": "Max base fee :)"
+        "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
+        "title": "Max base fee"
       },
       "miner_tip": {
-        "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly. :)",
-        "title": "Miner tip :)"
+        "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly.",
+        "title": "Miner tip"
       },
       "optimism": {
-        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum. :)",
-        "title": "What's Optimism? :)"
+        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Optimism?"
       },
       "polygon": {
-        "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum. :)",
-        "title": "What's Polygon? :)"
+        "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Polygon?"
       },
-      "read_more": "Read More :)",
+      "read_more": "Read More",
+      "learn_more": "Learn More",
       "sending_to_contract": {
-        "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first. :)",
-        "title": "Hold your horses! :)"
+        "text": "The address you entered is for a smart contract.\n\nExcept for rare situations, you probably shouldn't do this. You could lose your assets or they might go to the wrong place.\n\nDouble check the address, verify it with the recipient, or contact support first.",
+        "title": "Hold your horses!"
       },
       "verified": {
-        "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust. :)",
-        "title": "Verified Tokens :)"
+        "text": "Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.\n\nAlways do your own research to ensure you are interacting with a token you trust.",
+        "title": "Verified Tokens"
+      },
+      "unverified": {
+        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the ",
+        "fragment2": "token contract",
+        "fragment3": " and always do research to ensure that you interact with tokens you trust.",
+        "title": "%{symbol} is Unverified",
+        "go_back": "Go back"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? ",
+        "fragment2": "Read more",
+        "fragment3": " about bridges.",
+        "title": "No Tokens on %{networkName}"
       },
       "insufficient_liquidity": {
-        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? :)",
-        "fragment2": "Read more :)",
-        "fragment3": " about AMMs and token liquidity. :)",
-        "title": "Insufficient Liquidity :)"
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? ",
+        "fragment2": "Read more",
+        "fragment3": " about AMMs and token liquidity.",
+        "title": "Insufficient Liquidity"
       },
       "no_route_found": {
-        "fragment1": "We couldn’t find a route for this swap. :)",
-        "fragment2": "A route may not exist for this swap, or the amount may be too small. :)",
-        "title": "No routes found :)"
+        "fragment1": "We couldn’t find a route for this swap. ",
+        "fragment2": "A route may not exist for this swap, or the amount may be too small.",
+        "title": "No routes found"
       },
       "no_quote": {
         "title": "No quote available",
         "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
       },
       "cross_chain_swap": {
-        "title": "Expect Bridge Delays :)",
-        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time. :)"
+        "title": "Expect Bridge Delays",
+        "text": "This swap may take longer than expected to complete. \n\n Cross-chain swaps require bridging funds to the destination network, and bridges can sometimes take longer than expected to transfer funds. Your funds will remain safe during this time."
       },
-      "unverified": {
-        "fragment1": "Rainbow surfaces as many tokens as possible, but anyone can create a token, or claim to represent a project with a fake contract. \n\n Please review the :)",
-        "fragment2": "token contract :)",
-        "fragment3": " and always do research to ensure that you interact with tokens you trust. :)",
-        "title": "%{symbol} is Unverified :)",
-        "go_back": "Go back :)"
+      "go_to_hop_with_icon": {
+        "text": "Go to the Hop Bridge 􀮶"
       },
-      "obtain_l2_asset": {
-        "fragment1": "You'll need to get other tokens on %{networkName} to swap for %{networkName} %{tokenName}. \n\n Bridging tokens to %{networkName} is easy using a bridge like Hop. Still curious? :)",
-        "fragment2": "Read more :)",
-        "fragment3": " about bridges. :)",
-        "title": "No Tokens on %{networkName} :)"
+      "rainbow_fee": {
+        "text": "Rainbow takes a %{feePercentage} fee from swaps. It’s part of what enables us to give you the best Ethereum experience possible."
+      },
+      "swap_routing": {
+        "text": "By default, Rainbow chooses the cheapest route possible for your swap. If you prefer to specifically use either 0x or 1inch, you can do that too.",
+        "title": "Swap Routing",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about our approach to routing swaps."
+        }
+      },
+      "wyre_degradation": {
+        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
+        "title": "It's happening \nThe Merge is underway",
+        "still_curious": {
+          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
+          "fragment2": "Learn more",
+          "fragment3": ""
+        }
+      },
+      "slippage": {
+        "text": "Slippage occurs when the price of a swap changes during the time between you submitting your transaction and its confirmation. \n\nSetting a higher slippage tolerance increases the likelihood your swap will be successful, but may result in you getting a worse price.",
+        "title": "Slippage",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about slippage and how it affects swaps."
+        }
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
+        "title": "Flashbots",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about Flashbots and the protection it offers."
+        }
       },
       "swap_refuel": {
         "title": "No %{networkName} %{gasToken} detected",
@@ -724,16 +765,7 @@
       "swap_refuel_notice": {
         "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
-        "button": "Adjust and add $3 of %{gasToken}"
-      },
-      "flashbots": {
-        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing. :)",
-        "title": "Flashbots :)",
-        "still_curious": {
-          "fragment1": "Still curious? :)",
-          "fragment2": "Read more :)",
-          "fragment3": " about Flashbots and the protection it offers. :)"
-        }
+        "button": "Proceed anyway"
       }
     },
     "fedora": {
@@ -751,24 +783,28 @@
     },
     "gas": {
       "network_fee": "Frais de réseau",
-      "current_base_fee": "Current base fee :)",
-      "max_base_fee": "Max base fee :)",
-      "miner_tip": "Miner tip :)",
-      "max_transaction_fee": "Max transaction fee :)",
+      "current_base_fee": "Current base fee",
+      "max_base_fee": "Max base fee",
+      "miner_tip": "Miner tip",
+      "max_transaction_fee": "Max transaction fee",
       "warning_separator": "·",
-      "lower_than_suggested": "Low · may get stuck :)",
-      "higher_than_suggested": "High · overpaying :)",
-      "max_base_fee_too_low_error": "Low · likely to fail :)",
-      "tip_too_low_error": "Low · likely to fail :)",
-      "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues. :)",
-      "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues. :)",
-      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to! :)",
-      "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck! :)",
-      "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck! :)",
-      "alert_title_lower_max_base_fee_needed": "High max base fee! :)",
-      "alert_title_lower_miner_tip_needed": "High miner tip! :)"
+      "lower_than_suggested": "Low · may get stuck",
+      "higher_than_suggested": "High · overpaying",
+      "max_base_fee_too_low_error": "Low · likely to fail",
+      "tip_too_low_error": "Low · likely to fail",
+      "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
+      "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues.",
+      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+      "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck!",
+      "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck!",
+      "alert_title_lower_max_base_fee_needed": "High max base fee!",
+      "alert_title_lower_miner_tip_needed": "High miner tip!",
+      "proceed_anyway": "Proceed Anyway",
+      "edit_max_bass_fee": "Edit Max Base Fee",
+      "edit_miner_tip": "Edit Miner Tip"
     },
     "homepage": {
+      "back": "Back to rainbow.me",
       "coming_soon": "À venir.",
       "connect_ledger": {
         "button": "Se connecter à Ledger",
@@ -788,11 +824,36 @@
         "link_text": "portefeuille matériel Trezor",
         "link_title": "Acheter un hardware wallet Trezor"
       },
+      "connect_trustwallet": {
+        "button": "Connect to Trust Wallet",
+        "description_part_one": "Use the ",
+        "description_part_three": " app to connect.",
+        "description_part_two": " Ethereum ",
+        "link_text_browser": "dapp browser",
+        "link_text_wallet": "Trust Wallet",
+        "link_title_browser": "Discover Trust DApp Browser",
+        "link_title_wallet": "Discover Trust Wallet"
+      },
       "connect_walletconnect": {
         "button": "Utilisez WalletConnect",
+        "button_mobile": "Connect with WalletConnect",
         "description": "Connectez-vous et signez vos transactions avec votre ",
+        "description_mobile": "Connect to any wallet that supports ",
         "link_text": "portefeuille mobile WalletConnect",
-        "link_title": "portefeuille mobile WalletConnect"
+        "link_text_mobile": "WalletConnect",
+        "link_title": "portefeuille mobile WalletConnect",
+        "link_title_mobile": "Connect with WalletConnect"
+      },
+      "reassurance": {
+        "access_link": "No access to your funds",
+        "assessment": "Results of our security assessment",
+        "security": "We work incredibly hard to make sure your funds are safe. This tool never touches your private keys, so that greatly reduces the surface area for attack. If you are familiar with programming, you can check out our code on GitHub.",
+        "security_title": "How secure is Manager?",
+        "source": "View our source code",
+        "text_mobile": "You need to use an Ethereum Wallet to access Balance Manager to view, send and exchange your Ether and Ethereum-based tokens.",
+        "tracking_link": "We do not track you",
+        "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
+        "work_title": "How does Manager work?"
       }
     },
     "image_picker": {
@@ -837,6 +898,7 @@
       "please_connect_ledger": "Veuillez choisir Ethereum après la connexion et le déverrouillage de Ledger",
       "please_connect_trezor": "Veuillez vous connecter à Trezor puis suivez les instructions",
       "power_by": "Réalisé par",
+      "walletconnect_not_unlocked": "Please connect using WalletConnect",
       "web3_not_available": "Veuillez installer l’extension Chrome de MetaMask",
       "web3_not_unlocked": "Veuillez déverrouiller votre wallet MetaMask",
       "web3_unknown_network": "Réseau inconnu, veuillez basculer vers un autre"
@@ -935,14 +997,8 @@
       }
     },
     "pools": {
-      "balance": "Soldes",
       "deposit": "Dépôt",
-      "label": "Pools",
-      "per_share": "par action",
-      "pool": "Pool",
-      "pool_shares": "Partages de Pool",
       "pools_title": "Pools :)",
-      "total_value": "Valeur totale",
       "withdraw": "Retrait"
     },
     "profiles": {
@@ -959,20 +1015,23 @@
       },
       "select_ens_name": "My ENS Names :)",
       "search": {
-        "header": "Find your name :)",
-        "description": "Search available ENS names :)",
-        "available": "🥳 Available :)",
-        "taken": "😭 Taken :)",
-        "registered_on": "This name was last registered on %{content} :)",
-        "price": "%{content} / Year :)",
-        "expiration": "Til %{content} :)",
-        "3_char_min": "Minimum 3 characters :)",
-        "already_registering_name": "You are already registering this name :)",
-        "estimated_total_cost_1": "Estimated total cost of :)",
-        "estimated_total_cost_2": "with current network fees :)",
-        "loading_fees": "Loading network fees… :)",
-        "clear": "􀅉 Clear :)",
-        "continue": "Continue 􀆊 :)"
+        "header": "Find your name",
+        "description": "Search available ENS names",
+        "available": "🥳 Available",
+        "taken": "😭 Taken",
+        "registered_on": "This name was last registered on %{content}",
+        "price": "%{content} / Year",
+        "expiration": "Til %{content}",
+        "3_char_min": "Minimum 3 characters",
+        "already_registering_name": "You are already registering this name",
+        "estimated_total_cost_1": "Estimated total cost of",
+        "estimated_total_cost_2": "with current network fees",
+        "loading_fees": "Loading network fees…",
+        "clear": "􀅉 Clear",
+        "continue": "Continue 􀆊",
+        "finish": "Finish 􀆊",
+        "and_create_ens_profile": "Search available .eth names",
+        "register_name": "Create Your ENS Profile"
       },
       "search_validation": {
         "invalid_domain": "This is an invalid domain :)",
@@ -1060,35 +1119,38 @@
         "website_placeholder": "Add your website :)"
       },
       "details": {
-        "add_to_contacts": "Add to Contacts :)",
-        "copy_address": "Copy Address :)",
-        "remove_from_contacts": "Remove from Contacts :)",
-        "view_on_etherscan": "View on Etherscan :)"
+        "add_to_contacts": "Add to Contacts",
+        "copy_address": "Copy Address",
+        "open_wallet": "Open Wallet",
+        "remove_from_contacts": "Remove from Contacts",
+        "share": "Share",
+        "view_on_etherscan": "View on Etherscan"
       },
       "edit": {
         "label": "Edit your profile :)"
       },
       "intro": {
-        "choose_another_name": "Choose another ENS name :)",
-        "create_your": "Create Your :)",
-        "ens_profile": "ENS Profile :)",
-        "find_your_name": "Find your name :)",
-        "my_ens_names": "My ENS Names :)",
+        "choose_another_name": "Choose another ENS name",
+        "create_your": "Create Your",
+        "ens_profile": "ENS Profile",
+        "find_your_name": "Find your name",
+        "my_ens_names": "My ENS Names",
         "portable_identity_info": {
-          "description": "Carry your ENS name and profile between websites. No more signups. :)",
-          "title": "A portable digital identity :)"
+          "description": "Carry your ENS name and profile between websites. No more signups.",
+          "title": "A portable digital identity"
         },
-        "search_new_ens": "Find a New Name :)",
-        "search_new_name": "Search for a new ENS name :)",
+        "search_new_ens": "Find a New Name",
+        "search_new_name": "Search for a new ENS name",
         "stored_on_blockchain_info": {
-          "description": "Your profile is stored directly on Ethereum and owned by you. :)",
-          "title": "Stored on Ethereum :)"
+          "description": "Your profile is stored directly on Ethereum and owned by you.",
+          "title": "Stored on Ethereum"
         },
-        "use_existing_name": "Use an existing ENS name :)",
-        "use_name": "Use %{name} :)",
+        "edit_name": "Edit %{name}",
+        "use_existing_name": "Use an existing ENS name",
+        "use_name": "Use %{name}",
         "wallet_address_info": {
-          "description": "Send to ENS names instead of hard-to-remember wallet addresses. :)",
-          "title": "A better wallet address :)"
+          "description": "Send to ENS names instead of hard-to-remember wallet addresses.",
+          "title": "A better wallet address"
         }
       },
       "pending_registrations": {
@@ -1174,21 +1236,19 @@
       "no_thanks": "No thanks :)"
     },
     "settings": {
-      "back": "Retour",
       "backup": "Sauvegarder",
       "currency": "Devise",
+      "app_icon": "App Icon",
       "dev": "Dev :)",
       "developer": "Developer Settings :)",
       "done": "Terminé",
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "feedback_and_support": "Feedback & Support :)",
-      "follow_twitter": "Follow us on Twitter :)",
       "follow_us_on_twitter": "Follow Us on Twitter :)",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️ :)",
       "label": "Réglages",
       "language": "Langue",
       "learn": "Learn about Rainbow and Ethereum :)",
-      "learn_short": "Learn about Rainbow :)",
       "network": "Réseau",
       "notifications": "Notifications :)",
       "notifications_section": {
@@ -1224,9 +1284,19 @@
       },
       "restore": "Restore to original deployment :)",
       "review": "Review Rainbow :)",
-      "share": "Share Rainbow:)",
       "share_rainbow": "Share Rainbow :)",
-      "theme": "Theme :)"
+      "theme": "Theme :)",
+      "theme_section": {
+        "system": "System",
+        "dark": "Dark",
+        "light": "Light"
+      },
+      "icon_change": {
+        "title": "Confirm icon change",
+        "warning": "Changing your icon may cause Rainbow to restart.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      }
     },
     "subscribe_form": {
       "email_already_subscribed": "Désolé, vous vous êtes déjà inscrit avec cette adresse de courriel",
@@ -1247,13 +1317,13 @@
         "normal": "Normal",
         "slow": "Lent"
       },
-      "label": "Swap",
       "loading": "Loading...",
-      "max": "Max",
       "modal_types": {
         "confirm": "Confirme dans",
         "deposit": "Dépôts dans",
+        "receive": "Receive",
         "swap": "Swaps en",
+        "get_symbol_with": "Get %{symbol} with",
         "withdraw": "Se retire dans",
         "withdraw_symbol": "Withdraw %{symbol} :)"
       },
@@ -1267,7 +1337,6 @@
           "message": "Vous devez entrer un montant valide",
           "title": "Prix du gaz invalide"
         },
-        "proceed_anyway": "Continuer malgré tout",
         "too_high": {
           "message": "Vérifiez à nouveau que vous avez saisi le montant correct. Vous paierez probablement plus que nécessaire!",
           "title": "Prix de l'essence élevé!"
@@ -1344,8 +1413,9 @@
       "pair_your_nano": "Pair your Nano X",
       "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
       "learn_more_about_ledger": "Learn more about Ledger",
-      "title": "Looking for devices",
-      "subtitle": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+      "pair_a_new_ledger": "Pair a new Ledger",
+      "looking_for_devices": "Looking for devices",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
     },
     "wallet": {
       "action": {
@@ -1358,6 +1428,7 @@
         "edit": "Moadifier le Portefeuille",
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
+        "input": "Transaction Input",
         "notifications": "Notification Settings :)",
         "pair_hardware_wallet": "Pair a Ledger Nano X :)",
         "paste": "Coller",
@@ -1375,10 +1446,7 @@
       "add_cash": {
         "card_notice": "Works with most debit cards :)",
         "interstitial": {
-          "buy_eth": "To get started, buy some ETH with Apple Pay :)",
-          "other_amount": "Other amount :) ",
-          "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
-          "send_eth": "or send ETH to your wallet :)"
+          "other_amount": "Other amount :) "
         },
         "need_help_button_email_subject": "support :)",
         "need_help_button_label": "Get Support :)",
@@ -1427,10 +1495,13 @@
         "imported": "Imported :)"
       },
       "balance_title": "Solde",
+      "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH :)",
         "watching": "Watching :)"
       },
+      "connected_apps": "Connected Apps",
+      "copy": "Copy",
       "copy_address": "Copy Address",
       "diagnostics": {
         "authenticate_with_pin": "Authenticate with PIN :)",
@@ -1480,8 +1551,10 @@
         "message": "Chargement"
       },
       "message_signing": {
-        "message": "Message :)",
-        "request": "Message Signing Request :)"
+        "failed_signing": "Failed to sign message",
+        "message": "Message",
+        "request": "Message Signing Request",
+        "sign": "Sign Message"
       },
       "my_account_address": "My account address: :)",
       "network_title": "Network :)",
@@ -1492,8 +1565,6 @@
         },
         "already_have_wallet": "I already have on :) ",
         "create_wallet": "Créez un portefeuille",
-        "ens_invalid": "Ce n'est pas un nom ENS valide",
-        "ens_try_again": "Désolé, nous ne pouvons pas ajouter ce nom ENS pour le moment. Veuillez réessayer plus tard!",
         "enter_seeds_placeholder": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
         "get_new_wallet": "Get a new wallet :)",
         "import_wallet": "Import Wallet :)",
@@ -1526,7 +1597,6 @@
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized. :)",
         "unrecognized_qr_code_title": "Unrecognized QR Code :)"
       },
-      "receive": "Recovoir",
       "settings": {
         "copy_address": "Copier adresse",
         "copy_address_capitalized": "Copier Adresse",
@@ -1554,10 +1624,14 @@
           "transaction_status": "Échec de l'envoie du status de la transaction"
         },
         "checkboxes": {
-          "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName} :)",
-          "im_not_sending_to_an_exchange": "I’m not sending to an exchange :)"
+          "clear_profile_information": "Clear profile information",
+          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "transfer_control": "Transfer control to the recipient",
+          "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
+          "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "complete_checks": "Complete checks :)",
+        "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirmer transaction",
         "max": "Max :)",
         "placeholder_title": "Placeholder :)",
@@ -1580,7 +1654,6 @@
       "connected_apps": "Connected apps :)",
       "disconnect": "Disconnect :)",
       "go_back_to_your_browser": "Go back to your browser :)",
-      "learn_more": "Apprendre encore plus",
       "paste_uri": {
         "button": "Coller l'URI de session",
         "message": "Collez l'URI WalletConnect ci-dessous",
@@ -1590,14 +1663,6 @@
         "heads_up_title": "Heads up! :)",
         "ignore_this_request": "Ignore This Request :)",
         "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately :)"
-      },
-      "scan_to_connect": {
-        "description": "WalletConnect vous permet de vous connecter à des sites Web de bureau en scannant un code QR",
-        "label": "Scannez pour connecter votre portefeuille"
-      },
-      "scan_to_send": {
-        "description": "Vous pouvez scanner un code QR pour envoyer de l'argent",
-        "label": "Numériser pour envoyer"
       },
       "switch_network": "Switch Network :)",
       "switch_wallet": "Switch Wallet :)",
