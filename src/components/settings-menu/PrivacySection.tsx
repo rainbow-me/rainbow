@@ -46,18 +46,24 @@ const PrivacySection = () => {
 
   return (
     <MenuContainer>
-      <Menu description={lang.t('settings.privacy_section.when_public')}>
+      <Menu
+        description={
+          'Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account.'
+        }
+      >
         <MenuItem
           disabled
           hasSfSymbol
-          leftComponent={<MenuItem.TextIcon icon="􀑁" isLink />}
+          leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
           rightComponent={
             <Switch onValueChange={toggleTracking} value={publicShowCase} />
           }
           size={52}
           testID="public-showcase"
-          titleComponent={<MenuItem.Title text={'Tracking'} />}
+          titleComponent={<MenuItem.Title text={'Analytics'} />}
         />
+      </Menu>
+      <Menu description={lang.t('settings.privacy_section.when_public')}>
         <MenuItem
           disabled
           hasSfSymbol
