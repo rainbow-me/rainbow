@@ -3,46 +3,48 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
-import DPICard from './DPICard';
-import ENSCreateProfileCard from './ENSCreateProfileCard';
-import ENSSearchCard from './ENSSearchCard';
-import GasCard from './GasCard';
 import Lists from './ListsSection';
-import PulseIndex from './PulseIndexSection';
 import TopMoversSection from './TopMoversSection';
 import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Columns, Inset, Stack } from '@/design-system';
+import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
+import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
+import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
+import { DPICard } from '@/components/cards/DPICard';
+import { GasCard } from '@/components/cards/GasCard';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const testNetwork = isTestnetNetwork(network);
+
   return (
     <React.Fragment>
-      <Inset top={{ custom: 16 }}>
+      <Inset top="20px">
         <Stack space="30px (Deprecated)">
           {profilesEnabled &&
           !testNetwork &&
           !isZero(accountAsset.balance.amount) ? (
-            <Inset horizontal={ios && '19px (Deprecated)'}>
-              <Stack space={ios && '19px (Deprecated)'}>
-                <Columns space={ios && '19px (Deprecated)'}>
+            <Inset horizontal="20px">
+              <Stack space="20px">
+                <Inline space="20px">
                   <GasCard />
                   <ENSSearchCard />
-                </Columns>
+                </Inline>
                 <ENSCreateProfileCard />
                 <DPICard />
               </Stack>
             </Inset>
           ) : (
-            <Stack space={{ custom: 21 }}>
+            <Stack>
               <TopMoversSection />
-              <PulseIndex />
+              <Inset top="20px" horizontal="20px">
+                <DPICard />
+              </Inset>
             </Stack>
           )}
           <Stack space="30px (Deprecated)">

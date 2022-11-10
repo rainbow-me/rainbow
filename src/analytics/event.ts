@@ -1,3 +1,6 @@
+import { CardType } from '@/components/cards/GenericCard';
+import { LearnCategory } from '@/components/cards/utils/types';
+
 /**
  * All events, used by `analytics.track()`
  */
@@ -9,6 +12,10 @@ export const event = {
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   swapSubmitted: 'Submitted Swap',
+  cardPressed: 'Card Pressed',
+  learnArticleOpened: 'Learn Article Opened',
+  learnArticleShared: 'Learn Article Shared',
+  qrCodeViewed: 'QR Code Viewed',
 } as const;
 
 /**
@@ -31,5 +38,27 @@ export type EventProperties = {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
+  };
+  [event.cardPressed]: {
+    cardName: string;
+    fromScreen: string;
+    cardType: CardType;
+  };
+  [event.learnArticleOpened]: {
+    durationSeconds: number;
+    url: string;
+    cardId: string;
+    category: LearnCategory;
+    displayType: CardType;
+    fromScreen: string;
+  };
+  [event.learnArticleShared]: {
+    url: string;
+    category: string;
+    cardId: string;
+    durationSeconds: number;
+  };
+  [event.qrCodeViewed]: {
+    component: string;
   };
 };
