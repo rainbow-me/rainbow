@@ -232,12 +232,21 @@ export class Logger {
     };
   }
 
+  disable() {
+    this.enabled = false;
+  }
+
+  enable() {
+    this.enabled = true;
+  }
+
   protected transport(
     level: LogLevel,
     message: string | RainbowError,
     metadata: Metadata = {}
   ) {
     if (!this.enabled) return;
+    console.log('logger is enabled');
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     for (const transport of this.transports) {

@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
@@ -7,11 +7,11 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import RNRestart from 'react-native-restart';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { delay } from '@/helpers/utilities';
+import { logger } from '@/logger';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
@@ -26,14 +26,17 @@ const PrivacySection = () => {
     webDataEnabled
   );
   const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
-    device.set(['doNotTrack'], analyticsEnabled);
     if (analyticsEnabled) {
+      device.set(['doNotTrack'], true);
       analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
+      logger.disable();
+      return false;
     } else {
+      device.set(['doNotTrack'], false);
       analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
+      logger.enable();
+      return true;
     }
-    (async () => delay(500).then(() => RNRestart.Restart()))();
-    return !analyticsEnabled;
   }, !device.get(['doNotTrack']));
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -53,6 +56,10 @@ const PrivacySection = () => {
     }
     togglePublicShowcase();
   }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
+
+  useEffect(() => {
+    logger.debug('HELOOO');
+  });
 
   return (
     <MenuContainer>
