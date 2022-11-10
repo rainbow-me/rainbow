@@ -10,6 +10,8 @@ import Routes from '@/navigation/routesNames';
 import Restart from 'react-native-restart';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
+import { analyticsV2 } from '@/analytics';
+import { delay } from '@/helpers/utilities';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
@@ -25,8 +27,18 @@ const PrivacySection = () => {
   );
   const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
     device.set(['doNotTrack'], analyticsEnabled);
+    if (analyticsEnabled) {
+      analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
+    } else {
+      analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
+    }
+    (async () => {
+      delay(500);
+      Restart.Restart();
+    })();
     return !analyticsEnabled;
   }, !device.get(['doNotTrack']));
+
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const viewProfile = useCallback(() => {
@@ -53,13 +65,7 @@ const PrivacySection = () => {
           hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
           rightComponent={
-            <Switch
-              onValueChange={() => {
-                toggleAnalytics();
-                Restart.Restart();
-              }}
-              value={analyticsEnabled}
-            />
+            <Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />
           }
           size={52}
           testID="public-showcase"
