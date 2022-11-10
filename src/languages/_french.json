@@ -198,6 +198,7 @@
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
         "fetching_quote": "Fetching Quote :)",
+        "insufficient_bnb": "BNB Insuffisants",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
@@ -745,6 +746,15 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about slippage and how it affects swaps."
+        }
+      },
+      "flashbots": {
+        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
+        "title": "Flashbots",
+        "still_curious": {
+          "fragment1": "Still curious? ",
+          "fragment2": "Read more",
+          "fragment3": " about Flashbots and the protection it offers."
         }
       },
       "swap_refuel": {
