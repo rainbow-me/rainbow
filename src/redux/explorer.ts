@@ -35,7 +35,6 @@ import {
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
@@ -811,13 +810,6 @@ export const emitL2TransactionHistoryRequest = () => (
 const listenOnAssetMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  socket.on(
-    messages.ASSET_INFO.RECEIVED,
-    (message: ZerionAssetInfoResponse) => {
-      dispatch(updateTopMovers(message));
-    }
-  );
-
   socket.on(messages.ASSETS.RECEIVED, (message: AssetPricesReceivedMessage) => {
     dispatch(assetPricesReceived(message));
   });

@@ -4,7 +4,6 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
-import TopMoversSection from './TopMoversSection';
 import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
@@ -41,7 +40,6 @@ export default function DiscoverHome() {
             </Inset>
           ) : (
             <Stack>
-              <TopMoversSection />
               <Inset top="20px" horizontal="20px">
                 <DPICard />
               </Inset>
