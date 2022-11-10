@@ -276,7 +276,7 @@ const UniqueTokenExpandedStateHeader = ({
                   : lang.t('expanded_state.unique_expanded.hide'),
                 icon: {
                   ...AssetActions[AssetActionsEnum.hide].icon,
-                  iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
+                  iconValue: isHiddenAsset ? 'eye' : 'eye.slash',
                 },
               },
             ]

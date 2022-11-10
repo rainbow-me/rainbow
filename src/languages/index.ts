@@ -19,7 +19,6 @@ export const resources: {
   [key in Language]: Translation;
 } = {
   en: english,
-  // @ts-ignore
   fr: french,
 };
 
