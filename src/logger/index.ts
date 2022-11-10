@@ -264,6 +264,8 @@ export class Logger {
  *   `logger.info(message[, metadata])`
  *   `logger.warn(message[, metadata])`
  *   `logger.error(error[, metadata])`
+ *   `logger.disable()`
+ *   `logger.enable()`
  */
 export const logger = new Logger();
 
