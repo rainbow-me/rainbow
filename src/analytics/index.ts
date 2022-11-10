@@ -93,8 +93,6 @@ export class Analytics {
    * Enable Segment tracking. Defaults to enabled.
    */
   enable() {
-    logger.debug(`Analytics tracking enabled`);
-    this.track(event.analyticsTrackingEnabled);
     this.disabled = false;
   }
 
@@ -102,8 +100,6 @@ export class Analytics {
    * Disable Segment tracking. Defaults to enabled.
    */
   disable() {
-    logger.debug(`Analytics tracking disabled`);
-    this.track(event.analyticsTrackingDisabled);
     this.disabled = true;
   }
 }

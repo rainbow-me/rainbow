@@ -27,12 +27,14 @@ const PrivacySection = () => {
   const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
     if (analyticsEnabled) {
       device.set(['doNotTrack'], true);
+      logger.debug(`Analytics tracking disabled`);
       analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
       logger.disable();
       analyticsV2.disable();
       return false;
     } else {
       device.set(['doNotTrack'], false);
+      logger.debug(`Analytics tracking enabled`);
       analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
       logger.enable();
       analyticsV2.enable();
