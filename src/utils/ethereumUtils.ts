@@ -119,8 +119,20 @@ const getNativeAssetForNetwork = async (
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
-    const mainnetAddress =
-      network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+    let mainnetAddress = ETH_ADDRESS;
+
+    switch (network) {
+      case Network.polygon:
+        mainnetAddress = MATIC_MAINNET_ADDRESS;
+        break;
+      case Network.bsc:
+        mainnetAddress = BNB_MAINNET_ADDRESS;
+        break;
+      default:
+        ETH_ADDRESS;
+        break;
+    }
+
     nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
