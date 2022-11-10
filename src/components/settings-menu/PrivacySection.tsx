@@ -7,7 +7,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import Restart from 'react-native-restart';
+import RNRestart from 'react-native-restart';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
@@ -32,10 +32,7 @@ const PrivacySection = () => {
     } else {
       analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
     }
-    (async () => {
-      delay(500);
-      Restart.Restart();
-    })();
+    (async () => delay(500).then(() => RNRestart.Restart()))();
     return !analyticsEnabled;
   }, !device.get(['doNotTrack']));
 

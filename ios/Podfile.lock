@@ -406,7 +406,7 @@ PODS:
     - React-Core
   - react-native-randombytes (3.5.3):
     - React
-  - react-native-restart (0.0.22):
+  - react-native-restart (0.0.24):
     - React-Core
   - react-native-safe-area-context (4.3.1):
     - RCT-Folly
@@ -1083,7 +1083,7 @@ SPEC CHECKSUMS:
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
-  react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
+  react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736

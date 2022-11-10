@@ -12,7 +12,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 // @ts-ignore
-import Restart from 'react-native-restart';
+import RNRestart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import { defaultConfig } from '../../config/experimental';
 import useAppVersion from '../../hooks/useAppVersion';
@@ -76,7 +76,7 @@ const DevSection = () => {
       setConfig({ ...config, [value]: !config[value] });
       if ((defaultConfig as any)[value].needsRestart) {
         Navigation.handleAction(Routes.WALLET_SCREEN, {});
-        setTimeout(Restart.Restart, 1000);
+        setTimeout(() => RNRestart.Restart(), 1000);
       }
     },
     [config, setConfig]
@@ -164,7 +164,7 @@ const DevSection = () => {
     await deleteAllBackups();
 
     Alert.alert(lang.t('developer_settings.backups_deleted_successfully'));
-    Restart();
+    RNRestart.Restart();
   };
 
   const clearImageCache = async () => {
@@ -318,7 +318,7 @@ const DevSection = () => {
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
-              onPress={() => Restart.Restart()}
+              onPress={RNRestart.Restart}
               size={52}
               titleComponent={
                 <MenuItem.Title
