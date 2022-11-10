@@ -818,7 +818,8 @@ export const explainers = (params, colors) => ({
         ]}
       >
         <CoinIcon
-          address={params?.nativeAsset?.mainnet_address}
+          ainnet_address={params?.nativeAsset?.mainnet_address}
+          address={params?.nativeAsset?.address}
           symbol={params?.nativeAsset?.symbol}
           type={params?.nativeAsset?.type}
           size={30}
