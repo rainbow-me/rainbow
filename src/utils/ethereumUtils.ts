@@ -23,6 +23,7 @@ import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
+  AssetType,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
@@ -34,6 +35,7 @@ import {
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
   getProviderForNetwork,
+  isL2Network,
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
@@ -348,6 +350,16 @@ const getDataString = (func: string, arrVals: string[]) => {
   for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
   const data = func + val;
   return data;
+};
+
+/**
+ * @desc get asset type from network
+ * @param  {Network} network
+ */
+const getAssetTypeFromNetwork = (network: Network) => {
+  return isL2Network(network)
+    ? ((network as unknown) as AssetType)
+    : AssetType.token;
 };
 
 /**
@@ -840,6 +852,7 @@ export default {
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
+  getAssetTypeFromNetwork,
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,
