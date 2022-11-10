@@ -39,7 +39,7 @@ export const DPICard = () => {
 
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'DPICard',
-      fromScreen: routeName,
+      routeName,
       cardType,
     });
 

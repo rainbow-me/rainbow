@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import {
   Box,
   Inline,
@@ -22,7 +21,7 @@ import {
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import {
   ChartPath,
@@ -38,8 +37,11 @@ import chartTypes from '@/helpers/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { useRoute } from '@react-navigation/core';
+import * as i18n from '@/languages';
 
 export const AssetCardHeight = 284.3;
+const TRANSLATIONS = i18n.l.cards.asset;
 
 export const AssetCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -48,8 +50,12 @@ export const AssetCard = () => {
   const { isDamaged } = useWallets();
   const genericAsset = useGenericAsset(ETH_ADDRESS);
   const { loaded: accentColorLoaded } = useAccountAccentColor();
+  const { name: routeName } = useRoute();
+  const cardType = 'stretch';
 
-  emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
+  useEffect(() => {
+    emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
+  }, []);
 
   const handlePressBuy = useCallback(() => {
     if (isDamaged) {
@@ -67,10 +73,9 @@ export const AssetCard = () => {
         screen: Routes.WYRE_WEBVIEW,
       });
     }
-
-    analytics.track('Tapped Add Cash', {
-      category: 'add cash',
-      source: 'BuyCard',
+    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      componentName: 'AssetCard',
+      routeName,
     });
   }, [accountAddress, isDamaged, navigate]);
 
@@ -88,7 +93,11 @@ export const AssetCard = () => {
       longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
-    analytics.track('Asset card opened');
+    analyticsV2.track(analyticsV2.event.cardPressed, {
+      cardName: 'AssetCard',
+      routeName,
+      cardType,
+    });
   }, [assetWithPrice, navigate]);
 
   let colorForAsset = useColorForAsset(
@@ -142,7 +151,7 @@ export const AssetCard = () => {
   return (
     <GenericCard
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
-      type="stretch"
+      type={cardType}
       testID={`buy-asset-card-${assetWithPrice?.symbol}`}
     >
       <Stack space={{ custom: 41 }}>
@@ -189,26 +198,28 @@ export const AssetCard = () => {
                 </Box>
               ) : (
                 <Inline alignVertical="bottom">
+                  <Inline alignVertical="center">
+                    <Text
+                      size="13pt"
+                      color={{ custom: priceChangeColor }}
+                      weight="heavy"
+                    >
+                      {isNegativePriceChange ? '􀄩' : '􀄨'}
+                    </Text>
+                    <Text
+                      size="17pt"
+                      color={{ custom: priceChangeColor }}
+                      weight="bold"
+                    >
+                      {`${priceChangeDisplay} `}
+                    </Text>
+                  </Inline>
                   <Text
                     size="13pt"
                     color={{ custom: priceChangeColor }}
-                    weight="heavy"
-                  >
-                    {isNegativePriceChange ? '􀄩' : '􀄨'}
-                  </Text>
-                  <Text
-                    size="17pt"
-                    color={{ custom: priceChangeColor }}
                     weight="bold"
                   >
-                    {`${priceChangeDisplay} `}
-                  </Text>
-                  <Text
-                    size="13pt"
-                    color={{ custom: priceChangeColor }}
-                    weight="bold"
-                  >
-                    {lang.t('cards.asset.today')}
+                    {i18n.t(TRANSLATIONS.today)}
                   </Text>
                 </Inline>
               )}
@@ -300,7 +311,7 @@ export const AssetCard = () => {
                   size="15pt"
                   weight="bold"
                 >
-                  {`􀍯 ${lang.t('cards.asset.buy_ethereum')}`}
+                  {`􀍯 ${i18n.t(TRANSLATIONS.buy_ethereum)}`}
                 </Text>
               </Box>
             </AccentColorProvider>

@@ -19,7 +19,7 @@ const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { key, displayType, category, url, fromScreen },
+    params: { key, displayType, category, url, routeName },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -35,11 +35,11 @@ export default function LearnWebViewScreen() {
         cardId: key,
         category,
         displayType,
-        fromScreen,
+        routeName,
       });
       return;
     },
-    [category, displayType, fromScreen, key, url]
+    [category, displayType, key, routeName, url]
   );
 
   const onPressShare = useCallback(async () => {

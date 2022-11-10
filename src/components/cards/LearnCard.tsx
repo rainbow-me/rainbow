@@ -34,14 +34,14 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'LearnCard',
-      fromScreen: routeName,
+      routeName,
       cardType: type,
     });
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
       category,
       url,
       displayType: type,
-      fromScreen: routeName,
+      routeName,
       key,
     });
   }, [category, key, navigate, routeName, type, url]);

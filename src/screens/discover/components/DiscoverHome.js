@@ -15,6 +15,7 @@ import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
 import { GasCard } from '@/components/cards/GasCard';
+import { AssetCard } from '@/components/cards/AssetCard';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
@@ -35,6 +36,7 @@ export default function DiscoverHome() {
                   <GasCard />
                   <ENSSearchCard />
                 </Inline>
+                <AssetCard />
                 <ENSCreateProfileCard />
                 <DPICard />
               </Stack>
