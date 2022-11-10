@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@rai... Remove this comment to see the full error message
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
-import { captureException } from '@sentry/react-native';
 import values from 'lodash/values';
+import URL from 'url-parse';
 
 import {
   RAINBOW_WYRE_MERCHANT_ID,
@@ -14,11 +14,17 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
-import NetworkTypes from '@/helpers/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
 import { subtract } from '@/helpers/utilities';
-import logger from '@/utils/logger';
-import { logger as loggr, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
+
+/**
+ * Use this to set all Wyre related env values to their test versions for local
+ * testing. Local testing requires building to device.
+ *
+ * SHOULD BE `false` IN PRODUCTION
+ */
+const IS_TESTING_WYRE = false;
 
 const SOURCE_CURRENCY_USD = 'USD';
 const PAYMENT_PROCESSOR_COUNTRY_CODE = 'US';
@@ -28,7 +34,7 @@ export const PaymentRequestStatusTypes = {
   SUCCESS: 'success',
 };
 
-const getBaseUrl = (network: any) => WYRE_ENDPOINT_TEST;
+const getBaseUrl = () => (IS_TESTING_WYRE ? WYRE_ENDPOINT_TEST : WYRE_ENDPOINT);
 
 const wyreApi = new RainbowFetchClient({
   headers: {
@@ -74,10 +80,9 @@ export const showApplePayRequest = async (
   const feeAmount = subtract(sourceAmountWithFees, sourceAmount);
   const networkFee = subtract(feeAmount, purchaseFee);
 
-  const merchantIdentifier =
-    network === NetworkTypes.mainnet
-      ? RAINBOW_WYRE_MERCHANT_ID
-      : RAINBOW_WYRE_MERCHANT_ID_TEST;
+  const merchantIdentifier = IS_TESTING_WYRE
+    ? RAINBOW_WYRE_MERCHANT_ID_TEST
+    : RAINBOW_WYRE_MERCHANT_ID;
 
   const methodData = [
     {
@@ -112,18 +117,15 @@ export const showApplePayRequest = async (
     paymentOptions
   );
 
-  logger.sentry(
-    `Apple Pay - Show payment request - ${referenceInfo.referenceId}`
-  );
+  logger.info(`showApplePayRequest: show payment request`);
 
   try {
     const paymentResponse = await paymentRequest.show();
     return paymentResponse;
   } catch (error) {
-    logger.sentry(
-      `Apple Pay - Show payment request catch - ${referenceInfo.referenceId}`
-    );
-    captureException(error);
+    logger.error(new RainbowError(`showApplePayRequest: threw an exception`), {
+      error,
+    });
     return null;
   }
 };
@@ -134,8 +136,7 @@ export const getWalletOrderQuotation = async (
   accountAddress: any,
   network: any
 ) => {
-  const partnerId =
-    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
+  const partnerId = IS_TESTING_WYRE ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
   const dest = `ethereum:${accountAddress}`;
   const data = {
     accountId: partnerId,
@@ -146,10 +147,9 @@ export const getWalletOrderQuotation = async (
     sourceCurrency: SOURCE_CURRENCY_USD,
     walletType: 'APPLE_PAY',
   };
-  const baseUrl = getBaseUrl(network);
+  const baseUrl = getBaseUrl();
   try {
-    const wyreAuthToken =
-      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
+    const wyreAuthToken = IS_TESTING_WYRE ? WYRE_TOKEN_TEST : WYRE_TOKEN;
     const config = {
       headers: {
         Authorization: `Bearer ${wyreAuthToken}`,
@@ -167,7 +167,7 @@ export const getWalletOrderQuotation = async (
       sourceAmountWithFees: responseData?.sourceAmount,
     };
   } catch (error) {
-    loggr.error(new RainbowError(`getWalletOrderQuotation failed`), { error });
+    logger.error(new RainbowError(`getWalletOrderQuotation failed`), { error });
     return null;
   }
 };
@@ -179,8 +179,7 @@ export const reserveWyreOrder = async (
   network: any,
   paymentMethod = null
 ) => {
-  const partnerId =
-    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
+  const partnerId = IS_TESTING_WYRE ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
   const dest = `ethereum:${accountAddress}`;
   const data = {
     amount,
@@ -193,10 +192,9 @@ export const reserveWyreOrder = async (
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'paymentMethod' does not exist on type '{... Remove this comment to see the full error message
     data.paymentMethod = paymentMethod;
   }
-  const baseUrl = getBaseUrl(network);
+  const baseUrl = getBaseUrl();
   try {
-    const wyreAuthToken =
-      network === NetworkTypes.mainnet ? WYRE_TOKEN : WYRE_TOKEN_TEST;
+    const wyreAuthToken = IS_TESTING_WYRE ? WYRE_TOKEN_TEST : WYRE_TOKEN;
     const config = {
       headers: {
         Authorization: `Bearer ${wyreAuthToken}`,
@@ -209,7 +207,7 @@ export const reserveWyreOrder = async (
     );
     return response?.data;
   } catch (error) {
-    loggr.error(new RainbowError(`reserveWyreOrder failed`), { error });
+    logger.error(new RainbowError(`reserveWyreOrder failed`), { error });
     return null;
   }
 };
@@ -219,7 +217,7 @@ export const trackWyreOrder = async (
   orderId: any,
   network: any
 ) => {
-  const baseUrl = getBaseUrl(network);
+  const baseUrl = getBaseUrl();
   const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
   const orderStatus = response?.data?.status;
   const transferId = response?.data?.transferId;
@@ -231,7 +229,7 @@ export const trackWyreTransfer = async (
   transferId: any,
   network: any
 ) => {
-  const baseUrl = getBaseUrl(network);
+  const baseUrl = getBaseUrl();
   const response = await wyreApi.get(
     `${baseUrl}/v2/transfer/${transferId}/track`
   );
@@ -259,8 +257,11 @@ export const getWyreWalletOrder = async (
     network,
     reservationId
   );
+
+  logger.info(`getWyreWalletOrder called`);
+
   try {
-    const baseUrl = getBaseUrl(network);
+    const baseUrl = getBaseUrl();
     const response = await wyreApi.post(
       `${baseUrl}/v3/apple-pay/process/partner`,
       data
@@ -269,10 +270,10 @@ export const getWyreWalletOrder = async (
     const orderId = response?.data?.id ?? null;
     let authenticationUrl = response?.data?.authenticationUrl;
 
-    loggr.info(`getWyreWalletOrder returned`);
+    logger.info(`getWyreWalletOrder returned`);
 
     if (authenticationUrl) {
-      loggr.info(`getWyreWalletOrder returend an authenticationUrl`);
+      logger.info(`getWyreWalletOrder returned an authenticationUrl`);
 
       const { host, pathname } = new URL(authenticationUrl);
 
@@ -285,17 +286,9 @@ export const getWyreWalletOrder = async (
         !pathname.startsWith('/authentication')
       ) {
         authenticationUrl = undefined;
-        loggr.error(
-          new RainbowError(
-            `getWyreWalletOrder returned an invalid authenticationUrl`
-          )
-        );
+        logger.warn(`getWyreWalletOrder returned an invalid authenticationUrl`);
       } else {
-        loggr.error(
-          new RainbowError(
-            `getWyreWalletOrder returned a VALID authenticationUrl`
-          )
-        );
+        logger.info(`getWyreWalletOrder returned a valid authenticationUrl`);
       }
     }
 
@@ -308,7 +301,7 @@ export const getWyreWalletOrder = async (
         data: { errorCode, exceptionId, message, type },
       } = responseBody;
 
-      loggr.error(
+      logger.error(
         new RainbowError(`getWyreWalletOrder returned non-200 response`),
         {
           wyreOrderType: WyreExceptionTypes.CREATE_ORDER,
@@ -325,7 +318,7 @@ export const getWyreWalletOrder = async (
         errorMessage: message,
       };
     } else {
-      loggr.error(new RainbowError(`getWyreWalletOrder threw an exception`), {
+      logger.error(new RainbowError(`getWyreWalletOrder threw an exception`), {
         referenceInfo,
       });
       return {};
@@ -395,10 +388,9 @@ const createPayload = (
     phoneNumber: shippingInfo.phoneNumber,
   };
 
-  const partnerId =
-    network === NetworkTypes.mainnet ? WYRE_ACCOUNT_ID : WYRE_ACCOUNT_ID_TEST;
+  const partnerId = IS_TESTING_WYRE ? WYRE_ACCOUNT_ID_TEST : WYRE_ACCOUNT_ID;
   return {
-    triggerAuthenticationWidget: true,
+    triggerAuthenticationWidget: IS_TESTING_WYRE,
     partnerId,
     payload: {
       orderRequest: {

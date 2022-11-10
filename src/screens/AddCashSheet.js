@@ -23,6 +23,7 @@ import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { logger as loggr, RainbowError } from '@/logger';
+import { SlackSheet } from '@/components/sheet';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -39,19 +40,22 @@ const SheetContainer = styled(Column)({
   height: IS_IOS ? deviceHeight : sheetHeight,
   top: IS_IOS ? 0 : statusBarHeight,
   width: '100%',
+  zIndex: 0,
 });
 
 export default function AddCashSheet() {
   const { colors } = useTheme();
-  const { isNarrowPhone } = useDimensions();
+  const { isNarrowPhone, height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
+
+  /**
+   * Used to determine if the webview is dismissed by a user or if the Wyre 3DS
+   * auth is simply in the the process of completing
+   */
+  const isAuthenticationCompleting = React.useRef(false);
 
   const [errorAnimation, onShake] = useShakeAnimation();
   const [startErrorTimeout, stopErrorTimeout] = useTimeout();
-  const [
-    setWyreAuthenticationFailureTimeout,
-    clearWyreAuthenticationFailureTimeout,
-  ] = useTimeout();
 
   const [errorIndex, setErrorIndex] = useState(null);
   const onClearError = useCallback(() => setErrorIndex(null), []);
@@ -99,96 +103,142 @@ export default function AddCashSheet() {
     [stopErrorTimeout, cashLimits, startErrorTimeout, onClearError]
   );
 
-  useEffect(() => {
-    if (wyreAuthenticationUrl) {
-      loggr.info(`wyreAuthenticationUrl received`);
-
-      setWyreAuthenticationFailureTimeout(
-        wyreAuthenticationFlowFailureCallback,
-        30_000
-      );
-    }
-  }, [wyreAuthenticationUrl]);
+  loggr.debug(`should show WebView`, {
+    wyreAuthenticationUrl,
+    isPaymentComplete,
+  });
 
   return (
-    <SheetContainer colors={colors}>
-      <Column
-        align="center"
-        height={IS_IOS ? sheetHeight : '100%'}
-        paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
-      >
-        <Column align="center" paddingVertical={6}>
-          <SheetHandle />
-          <ColumnWithMargins
-            align="center"
-            margin={4}
-            paddingTop={IS_IOS ? 7 : 5}
-          >
-            <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
-            <SheetSubtitleCycler
-              errorIndex={errorIndex}
-              interval={subtitleInterval}
-              isPaymentComplete={isPaymentComplete}
-              items={Object.values(cashLimits)}
-              sharedValue={errorAnimation}
-            />
-          </ColumnWithMargins>
+    <>
+      <SheetContainer colors={colors}>
+        <Column
+          align="center"
+          height={IS_IOS ? sheetHeight : '100%'}
+          paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
+        >
+          <Column align="center" paddingVertical={6}>
+            <SheetHandle />
+            <ColumnWithMargins
+              align="center"
+              margin={4}
+              paddingTop={IS_IOS ? 7 : 5}
+            >
+              <SheetTitle>{lang.t('button.add_cash')}</SheetTitle>
+              <SheetSubtitleCycler
+                errorIndex={errorIndex}
+                interval={subtitleInterval}
+                isPaymentComplete={isPaymentComplete}
+                items={Object.values(cashLimits)}
+                sharedValue={errorAnimation}
+              />
+            </ColumnWithMargins>
+          </Column>
+          <FlexItem width="100%">
+            {isPaymentComplete ? (
+              <AddCashStatus
+                error={error}
+                orderCurrency={orderCurrency}
+                orderId={orderId}
+                orderStatus={orderStatus}
+                resetAddCashForm={resetAddCashForm}
+                transferStatus={transferStatus}
+              />
+            ) : (
+              <AddCashForm
+                limitWeekly={weeklyRemainingLimit}
+                onClearError={onClearError}
+                onLimitExceeded={onLimitExceeded}
+                onPurchase={onPurchase}
+                onShake={onShake}
+                shakeAnim={errorAnimation}
+              />
+            )}
+          </FlexItem>
         </Column>
-        <FlexItem width="100%">
-          {isPaymentComplete ? (
-            <AddCashStatus
-              error={error}
-              orderCurrency={orderCurrency}
-              orderId={orderId}
-              orderStatus={orderStatus}
-              resetAddCashForm={resetAddCashForm}
-              transferStatus={transferStatus}
-            />
-          ) : (
-            <>
-              {wyreAuthenticationUrl ? (
-                <WebView
-                  source={{ uri: wyreAuthenticationUrl }}
-                  onMessage={event => {
-                    loggr.info(
-                      `wyreAuthenticationUrl WebView received postMessage event`,
-                      { event }
-                    );
+      </SheetContainer>
 
-                    /**
-                     * Handling pulled from Wyre docs
-                     * @see https://docs.sendwyre.com/docs/authentication-widget-whitelabel-api#remove-webview
-                     */
-                    if (
-                      event.origin &&
-                      (event.origin.includes('sendwyre') ||
-                        event.origin.includes('testwyre'))
-                    ) {
-                      const result = JSON.parse(event.data);
-                      if (
-                        result.type === 'authentication' &&
-                        result.status === 'completed'
-                      ) {
-                        clearWyreAuthenticationFailureTimeout();
-                        wyreAuthenticationFlowCallback();
-                      }
-                    }
-                  }}
-                />
-              ) : (
-                <AddCashForm
-                  limitWeekly={weeklyRemainingLimit}
-                  onClearError={onClearError}
-                  onLimitExceeded={onLimitExceeded}
-                  onPurchase={onPurchase}
-                  onShake={onShake}
-                  shakeAnim={errorAnimation}
-                />
-              )}
-            </>
-          )}
-        </FlexItem>
-      </Column>
-    </SheetContainer>
+      {wyreAuthenticationUrl && !isPaymentComplete ? (
+        <SlackSheet
+          height="100%"
+          contentHeight={deviceHeight}
+          removeTopPadding
+          onDismiss={() => {
+            // If in process of completing the auth flow, ignore
+            if (!isAuthenticationCompleting.current) {
+              loggr.debug(
+                `AddCashSheet: dismissing wyreAuthenticationUrl webview`
+              );
+              wyreAuthenticationFlowFailureCallback();
+            }
+          }}
+        >
+          <WebView
+            source={{ uri: wyreAuthenticationUrl }}
+            style={{
+              width: '100%',
+              height: deviceHeight,
+            }}
+            onLoad={() => {
+              loggr.info(`AddsCashSheet: loaded wyreAuthenticationUrl`);
+            }}
+            onError={error => {
+              loggr.error(
+                `AddsCashSheet: error loading wyreAuthenticationUrl`,
+                { error }
+              );
+            }}
+            /**
+             * Handling based on Wyre docs
+             * @see https://docs.sendwyre.com/docs/authentication-widget-whitelabel-api#remove-webview
+             */
+            injectedJavaScript={`
+              ;(function () {
+                window.ReactNativeWebView.postMessage(JSON.stringify({ rainbow: false, data: {} }));
+                window.addEventListener("message", function (event) {
+                  if (event.origin && (event.origin.includes("sendwyre") || event.origin.includes("testwyre"))) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({ rainbow: true, data: event.data, type: typeof event.data }));
+                  }
+                }, false);
+              })();
+            `}
+            onMessage={event => {
+              loggr.debug(`AddCashSheet: onMessage`, event.nativeEvent.data);
+              const { rainbow, data, type } = JSON.parse(
+                event.nativeEvent.data
+              );
+
+              // just an additional check to ensure this is an event we are expecting
+              if (!rainbow) return;
+
+              loggr.info(
+                `AddCashSheet: wyreAuthenticationUrl webview received postMessage event`,
+                { data }
+              );
+
+              try {
+                const result = JSON.parse(data);
+
+                if (
+                  result.type === 'authentication' &&
+                  result.status === 'completed'
+                ) {
+                  isAuthenticationCompleting.current = true;
+                  wyreAuthenticationFlowCallback();
+                }
+              } catch (e) {
+                loggr.error(
+                  new RainbowError(
+                    `AddCashSheet: wyreAuthenticationUrl webview received an invalid postMessage event`
+                  ),
+                  {
+                    error: e.message,
+                  }
+                );
+              }
+            }}
+          />
+        </SlackSheet>
+      ) : null}
+    </>
   );
 }

@@ -51,6 +51,90 @@ export default function useWyreApplePay() {
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 
+  const wyreAuthenticationFlowCallback = useCallback(() => {
+    logger.info(`useWyreApplePay: wyreAuthenticationFlowCallback called`);
+
+    if (!addCashGetOrderStatusPayload.current.length) {
+      logger.error(
+        new RainbowError(
+          `useWyreApplePay: wyreAuthenticationFlowCallback was called, but no addCashGetOrderStatusPayload exists`
+        )
+      );
+      return;
+    }
+
+    const [
+      referenceInfo,
+      currency,
+      orderId,
+      applePayResponse,
+      value,
+    ] = addCashGetOrderStatusPayload.current;
+
+    dispatch(
+      addCashGetOrderStatus(
+        referenceInfo,
+        currency,
+        orderId,
+        applePayResponse,
+        value
+      )
+    );
+
+    handlePaymentCallback();
+
+    logger.info(`useWyreApplePay: wyreAuthenticationFlowCallback completed`);
+  }, [
+    addCashGetOrderStatusPayload,
+    dispatch,
+    addCashGetOrderStatus,
+    handlePaymentCallback,
+  ]);
+
+  const wyreAuthenticationFlowFailureCallback = useCallback(
+    (props: {
+      errorCategory: string;
+      errorCode: string;
+      errorMessage: string;
+    }) => {
+      logger.info(
+        `useWyreApplePay: wyreAuthenticationFlowFailureCallback called`
+      );
+
+      // reset values
+      setOrderId(null);
+      setWyreAuthenticationUrl('');
+      addCashGetOrderStatusPayload.current = [];
+
+      handlePaymentCallback();
+
+      analytics.track('Purchase failed', {
+        category: 'add cash',
+        error_category: props.errorCategory,
+        error_code: props.errorCode,
+        error_message: props.errorMessage,
+      });
+
+      dispatch(
+        addCashOrderCreationFailure({
+          errorCategory: props.errorCategory,
+          errorCode: props.errorCode,
+          errorMessage: props.errorMessage,
+        })
+      );
+
+      logger.info(
+        `useWyreApplePay: wyreAuthenticationFlowFailureCallback completed`
+      );
+    },
+    [
+      addCashGetOrderStatusPayload,
+      dispatch,
+      addCashOrderCreationFailure,
+      handlePaymentCallback,
+    ]
+  );
+
   const onPurchase = useCallback(
     async ({ address, value }) => {
       const metadata = getTokenMetadata(address);
@@ -79,7 +163,9 @@ export default function useWyreApplePay() {
           title: `Something went wrong!`,
         });
 
-        logger.error(new RainbowError(`Wyre order reservation incomplete`));
+        logger.error(
+          new RainbowError(`useWyreApplePay: Wyre order reservation incomplete`)
+        );
 
         return;
       }
@@ -103,14 +189,16 @@ export default function useWyreApplePay() {
           title: `Something went wrong!`,
         });
 
-        logger.error(new RainbowError(`Wyre order quote incomplete`));
+        logger.error(
+          new RainbowError(`useWyreApplePay: Wyre order quote incomplete`)
+        );
 
         return;
       }
 
       const { sourceAmountWithFees, purchaseFee } = quotation;
 
-      logger.info(`Showing Apple Pay request`);
+      logger.info(`useWyreApplePay: showing Apple Pay request`);
 
       const applePayResponse = await showApplePayRequest(
         referenceInfo,
@@ -127,7 +215,7 @@ export default function useWyreApplePay() {
 
       if (applePayResponse) {
         logger.info(
-          `Apple Pay request returned response, running getWyreWalletOrder`
+          `useWyreApplePay: Apple Pay request returned response, running getWyreWalletOrder`
         );
 
         const {
@@ -147,7 +235,9 @@ export default function useWyreApplePay() {
         );
 
         if (orderId) {
-          logger.info(`getWyreWalletOrder returned an orderId`);
+          logger.info(
+            `useWyreApplePay: getWyreWalletOrder returned an orderId`
+          );
 
           setOrderId(orderId);
 
@@ -162,130 +252,68 @@ export default function useWyreApplePay() {
             value,
           ];
 
-          setWyreAuthenticationUrl(authenticationUrl);
+          // show feedback to user immediately
+          applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
+
+          // artificial timeout to allow for Apple Pay to complete
+          setTimeout(() => {
+            if (authenticationUrl) {
+              setWyreAuthenticationUrl(authenticationUrl);
+              logger.info(
+                `useWyreApplePay: setWyreAuthenticationUrl and defer to auth`
+              );
+            } else {
+              wyreAuthenticationFlowCallback();
+              logger.info(
+                `useWyreApplePay: no authenticationUrl returned, continue as normal`
+              );
+            }
+          }, 1_500);
+
+          logger.info(`useWyreApplePay: onPurchase finished`);
         } else {
-          logger.info(`getWyreWalletOrder did not return an orderId`);
-
-          dispatch(
-            addCashOrderCreationFailure({
-              errorCategory,
-              errorCode,
-              errorMessage,
-            })
+          logger.info(
+            `useWyreApplePay: getWyreWalletOrder did not return an orderId`
           );
-          applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
-          handlePaymentCallback();
-          analytics.track('Purchase failed', {
-            category: 'add cash',
-            error_category: errorCategory,
-            error_code: errorCode,
-            error_message: errorMessage,
-          });
-        }
 
-        logger.error(new RainbowError(`wyre onPurchase finished`));
+          // show feedback to user immediately
+          applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
+
+          wyreAuthenticationFlowFailureCallback({
+            errorCategory,
+            errorCode,
+            errorMessage,
+          });
+
+          logger.error(new RainbowError(`useWyreApplePay: onPurchase failed`));
+        }
       } else {
-        logger.info(`Apple Pay request did NOT return a response`);
+        logger.info(
+          `useWyreApplePay: Apple Pay request did NOT return a response`
+        );
 
         analytics.track('Purchase incomplete', {
           category: 'add cash',
         });
 
-        logger.error(new RainbowError(`wyre onPurchase did NOT finish`));
+        wyreAuthenticationFlowFailureCallback({
+          errorCategory: 'Timeout',
+          errorCode: 'Timeout',
+          errorMessage: 'Timeout',
+        });
+
+        logger.error(new RainbowError(`useWyreApplePay: onPurchase failed`));
       }
     },
-    [accountAddress, dispatch, handlePaymentCallback, network]
+    [
+      accountAddress,
+      dispatch,
+      handlePaymentCallback,
+      network,
+      setWyreAuthenticationUrl,
+      wyreAuthenticationFlowCallback,
+    ]
   );
-
-  const wyreAuthenticationFlowCallback = useCallback(() => {
-    if (!addCashGetOrderStatusPayload.current.length) {
-      logger.error(
-        new RainbowError(
-          `wyreAuthenticationFlowCallback was called, but no addCashGetOrderStatusPayload exists`
-        )
-      );
-      return;
-    }
-
-    logger.info(`wyreAuthenticationFlowCallback called`);
-
-    const [
-      referenceInfo,
-      currency,
-      orderId,
-      applePayResponse,
-      value,
-    ] = addCashGetOrderStatusPayload.current;
-
-    applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
-
-    handlePaymentCallback();
-
-    dispatch(
-      addCashGetOrderStatus(
-        referenceInfo,
-        currency,
-        orderId,
-        applePayResponse,
-        value
-      )
-    );
-
-    logger.error(new RainbowError(`wyreAuthenticationFlowCallback completed`));
-  }, [
-    addCashGetOrderStatusPayload,
-    dispatch,
-    addCashGetOrderStatus,
-    handlePaymentCallback,
-  ]);
-
-  const wyreAuthenticationFlowFailureCallback = useCallback(() => {
-    if (!addCashGetOrderStatusPayload.current.length) {
-      logger.error(
-        new RainbowError(
-          `wyreAuthenticationFlowFailureCallback was called, but no addCashGetOrderStatusPayload exists`
-        )
-      );
-      return;
-    }
-
-    logger.info(`wyreAuthenticationFlowFailureCallback called`);
-
-    const [
-      referenceInfo,
-      currency,
-      orderId,
-      applePayResponse,
-      value,
-    ] = addCashGetOrderStatusPayload.current;
-
-    applePayResponse.complete(PaymentRequestStatusTypes.FAIL);
-
-    // reset values
-    setOrderId(null);
-    setWyreAuthenticationUrl('');
-    addCashGetOrderStatusPayload.current = [];
-
-    handlePaymentCallback();
-
-    logger.error(
-      new RainbowError(`wyreAuthenticationFlowFailureCallback completed`)
-    );
-
-    // TODO Do we need this?
-    // dispatch(
-    //   addCashOrderCreationFailure({
-    //     errorCategory,
-    //     errorCode,
-    //     errorMessage,
-    //   })
-    // );
-  }, [
-    addCashGetOrderStatusPayload,
-    dispatch,
-    addCashOrderCreationFailure,
-    handlePaymentCallback,
-  ]);
 
   return {
     error,
