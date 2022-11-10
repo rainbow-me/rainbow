@@ -10,7 +10,6 @@ import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
-import { delay } from '@/helpers/utilities';
 import { logger } from '@/logger';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
@@ -30,11 +29,13 @@ const PrivacySection = () => {
       device.set(['doNotTrack'], true);
       analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
       logger.disable();
+      analyticsV2.disable();
       return false;
     } else {
       device.set(['doNotTrack'], false);
       analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
       logger.enable();
+      analyticsV2.enable();
       return true;
     }
   }, !device.get(['doNotTrack']));
