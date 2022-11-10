@@ -34,10 +34,10 @@ const PrivacySection = () => {
       return false;
     } else {
       device.set(['doNotTrack'], false);
-      logger.debug(`Analytics tracking enabled`);
-      analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
       logger.enable();
       analyticsV2.enable();
+      logger.debug(`Analytics tracking enabled`);
+      analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
       return true;
     }
   }, !device.get(['doNotTrack']));
