@@ -271,6 +271,7 @@
       "hidden": "Caché"
     },
     "cards": {
+      "asset": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
       "dpi": {
         "title": "DeFi Pulse Index :)",
         "body": "All the top decentralized finance tokens in one. Track the industry. :)",
