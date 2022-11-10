@@ -246,7 +246,6 @@ export class Logger {
     metadata: Metadata = {}
   ) {
     if (!this.enabled) return;
-    console.log('logger is enabled');
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     for (const transport of this.transports) {
