@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
@@ -566,7 +565,9 @@ export const gasPricesStartPolling = (
             }
             fetchResolve(true);
           } catch (e) {
-            logger.error(new RainbowError(`Gas Estimates Failed: ${e}`));
+            logger.error(
+              new RainbowError(`Gas Estimates Failed for ${network}: ${e}`)
+            );
             fetchReject(e);
           }
         })
