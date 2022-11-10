@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react-native';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
+import { Timestamp } from '@/logger/timestamps';
 
 export enum LogLevel {
   Debug = 'debug',
@@ -175,10 +176,16 @@ export class RainbowError extends Error {}
 export class Logger {
   LogLevel = LogLevel;
   DebugContext = DebugContext;
+  Timestamp = Timestamp;
 
   enabled: boolean;
   level: LogLevel;
   transports: Transport[] = [];
+  timestamps: {
+    [key in Timestamp]?: number;
+  } & {
+    [key: string]: number;
+  } = {};
 
   protected debugContextRegexes: RegExp[] = [];
 
@@ -199,7 +206,11 @@ export class Logger {
   }
 
   debug(message: string, metadata: Metadata = {}, context?: string) {
-    if (context && !this.debugContextRegexes.find(reg => reg.test(context)))
+    if (
+      !this.debugContextRegexes.find(reg =>
+        context ? reg.test(context) : false
+      )
+    )
       return;
     this.transport(LogLevel.Debug, message, metadata);
   }
@@ -242,6 +253,31 @@ export class Logger {
     for (const transport of this.transports) {
       // metadata fallback accounts for JS usage
       transport(level, message, metadata || {});
+    }
+  }
+
+  performance(
+    to: Timestamp | string,
+    from: Timestamp | string = Timestamp.Init
+  ) {
+    if (
+      !this.debugContextRegexes.find(reg => reg.test(DebugContext.performance))
+    )
+      return;
+
+    const now = Date.now();
+
+    this.timestamps[to] = now;
+
+    if (from) {
+      const then = this.timestamps[from];
+
+      if (!then) return;
+
+      this.transport(
+        LogLevel.Debug,
+        `[PERFORMANCE] ${from} → ${to} (${now - then}ms)`
+      );
     }
   }
 }

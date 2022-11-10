@@ -18,7 +18,9 @@ export class Analytics {
 
   constructor() {
     this.client = createClient({
-      debug: Boolean(LOG_DEBUG) || LOG_LEVEL === LogLevel.Debug,
+      debug:
+        LOG_DEBUG === logger.DebugContext.analytics ||
+        LOG_LEVEL === LogLevel.Debug,
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,

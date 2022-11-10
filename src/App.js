@@ -165,6 +165,11 @@ class OldApp extends Component {
     }
   }
 
+  UNSAFE_componentWillMount() {
+    loggr.performance(loggr.Timestamp.AppInit);
+    loggr.performance(loggr.Timestamp.AppInit, loggr.Timestamp.RootInit);
+  }
+
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
@@ -337,9 +342,16 @@ function Root() {
       ls.device.set(['isReturningUser'], true);
     }
 
+    loggr.performance(loggr.Timestamp.RootInit);
+
     initializeApplication()
       .then(() => {
         loggr.debug(`Application initialized with Sentry and Segment`);
+
+        loggr.performance(
+          loggr.Timestamp.RootInitComplete,
+          loggr.Timestamp.RootInit
+        );
 
         // init complete, load the rest of the app
         setInitializing(false);

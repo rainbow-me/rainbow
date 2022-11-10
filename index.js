@@ -4,10 +4,13 @@
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
 */
+import { logger } from '@/logger';
 import { analytics } from './src/analytics';
 import { StartTime } from './src/performance/start-time';
 import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
+
+logger.performance(logger.Timestamp.Init);
 
 analytics.track('Started executing JavaScript bundle');
 PerformanceTracking.logDirectly(

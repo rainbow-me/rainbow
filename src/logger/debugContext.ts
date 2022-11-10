@@ -6,6 +6,7 @@
  * lowercase.
  */
 export const DebugContext = {
-  // e.g. swaps: 'swaps'
+  analytics: 'analytics',
+  performance: 'performance',
   migrations: 'migrations',
 } as const;

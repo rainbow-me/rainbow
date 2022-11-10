@@ -38,7 +38,7 @@ export async function saveString(
   return new Promise(async (resolve, reject) => {
     try {
       await setInternetCredentials(key, key, value, accessControlOptions);
-      logger.info(`Keychain: saved string for key: ${key}`);
+      logger.debug(`Keychain: saved string for key: ${key}`);
       resolve();
     } catch (e) {
       logger.warn(
@@ -53,7 +53,9 @@ export async function saveString(
           acOptions.accessControl = undefined;
         }
         await setInternetCredentials(key, key, value, acOptions);
-        logger.info(`Keychain: saved string for key: ${key} on second attempt`);
+        logger.debug(
+          `Keychain: saved string for key: ${key} on second attempt`
+        );
         resolve();
       } catch (e) {
         logger.error(
@@ -72,7 +74,7 @@ export async function loadString(
   try {
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
-      logger.info(`Keychain: loaded string for key: ${key}`);
+      logger.debug(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
     }
     logger.error(
@@ -96,7 +98,7 @@ export async function loadString(
       try {
         const credentials = await getInternetCredentials(key, options);
         if (credentials) {
-          logger.info(
+          logger.debug(
             `Keychain: loaded string for key on second attempt: ${key}`
           );
           return credentials.password;
@@ -150,7 +152,7 @@ export async function loadObject(
   }
   try {
     const objectValue = JSON.parse(jsonValue);
-    logger.info(`Keychain: parsed object for key: ${key}`);
+    logger.debug(`Keychain: parsed object for key: ${key}`);
     return objectValue;
   } catch (err) {
     logger.error(
