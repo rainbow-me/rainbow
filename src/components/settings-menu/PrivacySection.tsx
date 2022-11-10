@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './components/Menu';
@@ -9,7 +8,7 @@ import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import Restart from 'react-native-restart';
-import * as storage from '@/storage';
+import { device } from '@/storage';
 import * as i18n from '@/languages';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
@@ -25,9 +24,9 @@ const PrivacySection = () => {
     webDataEnabled
   );
   const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
-    storage.device.set(['doNotTrack'], analyticsEnabled);
+    device.set(['doNotTrack'], analyticsEnabled);
     return !analyticsEnabled;
-  }, !storage.device.get(['doNotTrack']));
+  }, !device.get(['doNotTrack']));
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const viewProfile = useCallback(() => {

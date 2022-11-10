@@ -1,8 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import sentryUtils from './sentry';
-import * as storage from '@/storage';
-
-const TRACKING_ENABLED = !storage.device.get(['doNotTrack']);
+import { device } from '@/storage';
 
 /**
  * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
@@ -12,7 +10,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   debug(...args: any[]) {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}] ⚡⚡⚡ `);
       console.log(...args); // eslint-disable-line no-console
@@ -23,7 +21,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   error(...args: any[]) {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       console.error(...args); // eslint-disable-line no-console
     }
   },
@@ -32,7 +30,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   log(...args: any[]) {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
       console.log(...args); // eslint-disable-line no-console
@@ -43,7 +41,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   prettyLog() {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       const allArgs = Array.prototype.slice.call(arguments).map(arg => {
         try {
           if (typeof arg === 'object') {
@@ -63,7 +61,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   sentry(...args: any[]) {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
       console.log(...args); // eslint-disable-line no-console
@@ -81,7 +79,7 @@ const Logger = {
    * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
    */
   warn(...args: any[]) {
-    if (__DEV__ && TRACKING_ENABLED) {
+    if (__DEV__ && !device.get(['doNotTrack'])) {
       console.warn(...args); // eslint-disable-line no-console
     }
   },
