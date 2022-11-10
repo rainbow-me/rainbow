@@ -1,6 +1,6 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback } from 'react';
-import { GenericCard } from './GenericCard';
+import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';
 import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
@@ -15,7 +15,7 @@ export const LEARN_CARD_HEIGHT = 184;
 
 type LearnCardProps = {
   cardDetails: LearnCardDetails;
-  type: 'square' | 'stretch';
+  type: CardType;
 };
 
 export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {

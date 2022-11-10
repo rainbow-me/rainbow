@@ -12,7 +12,8 @@ export type LearnCardKey =
   | 'backups'
   | 'protect_wallet'
   | 'connect_to_dapp'
-  | 'avoid_scams';
+  | 'avoid_scams'
+  | 'crypto_and_wallets';
 
 export type CardColor =
   | 'pink'

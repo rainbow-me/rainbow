@@ -108,39 +108,46 @@ export const getLearnCardColorway: (
   }
 };
 
-const getStartedCard: LearnCardDetails = {
+export const getStartedCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/get-started-with-rainbow',
   category: LearnCategory.Essentials,
   key: 'get_started',
   emoji: '🌈',
 };
 
-const backupsCard: LearnCardDetails = {
+export const backupsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/the-importance-of-backups',
   category: LearnCategory.Essentials,
   key: 'backups',
   emoji: '☮️',
 };
 
-const protectWalletCard: LearnCardDetails = {
+export const protectWalletCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/protect-your-wallet',
   category: LearnCategory.Safety,
   key: 'protect_wallet',
   emoji: '🔒',
 };
 
-const connectToDappCard: LearnCardDetails = {
+export const connectToDappCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
   category: LearnCategory.Essentials,
   key: 'connect_to_dapp',
   emoji: '🔌',
 };
 
-const avoidScamsCard: LearnCardDetails = {
+export const avoidScamsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/avoid-crypto-scams',
   category: LearnCategory.Safety,
   key: 'avoid_scams',
   emoji: '🤬',
+};
+
+export const cryptoAndWalletsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/crypto-and-wallets',
+  category: LearnCategory.BeginnersGuides,
+  key: 'crypto_and_wallets',
+  emoji: '🤔',
 };
 
 export const learnCards: LearnCardDetails[] = [
