@@ -198,6 +198,7 @@
         "deposit": "Tenir pour Déposer",
         "enter_amount": "Entrez un Montant",
         "fetching_quote": "Fetching Quote :)",
+        "insufficient_bnb": "BNB Insuffisants",
         "insufficient_eth": "ETH Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
@@ -707,6 +708,10 @@
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
       },
+      "bsc": {
+        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum. :)",
+        "title": "What's Binance Smart Chain? :)"
+      },
       "read_more": "Read More",
       "learn_more": "Learn More",
       "sending_to_contract": {
@@ -1094,6 +1099,7 @@
         "hold_to_extend": "Hold to Extend :)",
         "hold_to_register": "Hold to Register :)",
         "insufficient_eth": "Insufficient ETH :)",
+        "insufficient_bnb": "Insufficient BNB :)",
         "last_step": "One last step :)",
         "last_step_description": "Confirm below to register your name and configure your profile :)",
         "new_expiration_date": "New expiration date :)",
