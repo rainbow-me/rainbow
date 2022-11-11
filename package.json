@@ -55,9 +55,8 @@
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env",
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
     "android-reverse-ports-all": "yarn adb-all reverse tcp:8097 tcp:8097 && yarn adb-all reverse tcp:8081 tcp:8081",
-    "update-tokens": "yarn update-token-list && yarn update-token-metadata",
+    "update-tokens": "yarn update-token-list",
     "update-token-list": "./scripts/update-token-list.sh",
-    "update-token-metadata": "./scripts/update-token-metadata.sh",
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install"
