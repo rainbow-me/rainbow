@@ -69,8 +69,8 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
       : AssetTypes.token;
 
   const parsedAsset = {
-    ...asset,
     ...metadata,
+    ...asset,
     address,
     isNativeAsset: isNativeAsset(
       address,
