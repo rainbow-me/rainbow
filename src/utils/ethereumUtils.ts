@@ -131,7 +131,7 @@ const getNativeAssetForNetwork = async (
         mainnetAddress = BNB_MAINNET_ADDRESS;
         break;
       default:
-        ETH_ADDRESS;
+        mainnetAddress = ETH_ADDRESS;
         break;
     }
 
