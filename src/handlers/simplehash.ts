@@ -7,7 +7,7 @@ import { parseSimplehashNfts } from '@/parsers';
 import { queryClient } from '@/react-query/queryClient';
 
 import { logger } from '@/utils';
-import { UniqueAsset } from '@/entities';
+import { EthereumAddress, UniqueAsset } from '@/entities';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -139,12 +139,19 @@ export async function getNftsByWalletAddress(walletAddress: string) {
   const polygonAllowlist = await queryClient.fetchQuery(
     ['polygon-allowlist'],
     async () => {
-      return (
+      const polygonAllowlistAddresses = (
         await rainbowFetch(
           'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
           { method: 'get' }
         )
       ).data.data.addresses;
+
+      const polygonAllowlist: Record<EthereumAddress, boolean> = {};
+      polygonAllowlistAddresses.forEach((address: EthereumAddress) => {
+        polygonAllowlist[address] = true;
+      });
+
+      return polygonAllowlist;
     },
     {
       staleTime: 1000 * 60 * 10, // 10 minutes
@@ -154,6 +161,6 @@ export async function getNftsByWalletAddress(walletAddress: string) {
   return parseSimplehashNfts(rawResponseNfts).filter(
     (token: UniqueAsset) =>
       token.network !== Network.polygon ||
-      polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
+      polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
   );
 }
