@@ -325,7 +325,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
