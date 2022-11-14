@@ -1018,6 +1018,7 @@ export default function ExchangeModal({
         gasToken: networkDetails?.gasToken,
         nativeAsset: {
           mainnet_address: outputNativeAsset?.mainnet_address,
+          address: outputNativeAsset?.address,
           type: outputNativeAsset?.type,
           symbol: outputNativeAsset?.symbol,
         },
@@ -1048,6 +1049,7 @@ export default function ExchangeModal({
         networkName: networkDetails?.name,
         gasToken: networkDetails?.gasToken,
         nativeAsset: {
+          address: outputNativeAsset?.address,
           mainnet_address: outputNativeAsset?.mainnet_address,
           type: outputNativeAsset?.type,
           symbol: outputNativeAsset?.symbol,
