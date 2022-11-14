@@ -410,6 +410,12 @@ export const getTransactionSocketStatus = async (
     }
   } catch (e) {
     logger.error(new RainbowError(`catch socket tx check failed: ${e}`));
+    if (IS_TEST) {
+      status = swap?.isBridge
+        ? TransactionStatus.bridged
+        : TransactionStatus.swapped;
+      pending = false;
+    }
   }
 
   const title = getTitle({
