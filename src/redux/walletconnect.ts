@@ -521,6 +521,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         networkTypes.mainnet,
         networkTypes.goerli,
         networkTypes.polygon,
+        networkTypes.bsc,
         networkTypes.optimism,
         networkTypes.arbitrum,
       ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
