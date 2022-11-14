@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
@@ -60,10 +60,6 @@ const PrivacySection = () => {
     togglePublicShowcase();
   }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
 
-  useEffect(() => {
-    logger.debug('HELOOO');
-  });
-
   return (
     <MenuContainer>
       <Menu description={i18n.t(TRANSLATIONS.analytics_toggle_description)}>
@@ -75,7 +71,6 @@ const PrivacySection = () => {
             <Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />
           }
           size={52}
-          testID="public-showcase"
           titleComponent={
             <MenuItem.Title text={i18n.t(TRANSLATIONS.analytics_toggle)} />
           }
