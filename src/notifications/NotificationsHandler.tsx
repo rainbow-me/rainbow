@@ -59,13 +59,14 @@ import {
 } from '@/notifications/analytics';
 import {
   addDefaultNotificationSettingsForWallet,
+  initializeAllWalletsWithDefaults,
   NotificationRelationship,
 } from '@/notifications/settings';
+import { AddressWithRelationship } from '@/notifications/settings/types';
 
 type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
-type ValueOf<T> = T[keyof T];
 
 export const NotificationsHandler = ({ walletReady }: Props) => {
   const wallets = useWallets();
@@ -309,10 +310,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   };
 
   const addresses = useMemo(() => {
-    const addresses: {
-      address: string;
-      relationship: ValueOf<typeof NotificationRelationship>;
-    }[] = [];
+    const addresses: AddressWithRelationship[] = [];
     Object.values(wallets.wallets || {}).forEach(wallet =>
       wallet?.addresses.forEach(
         ({ address, visible }: { address: string; visible: boolean }) =>
@@ -373,10 +371,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
 
   useEffect(() => {
-    addresses.forEach(({ address, relationship }) => {
-      dispatch(notificationsSubscription(address));
-      addDefaultNotificationSettingsForWallet(address, relationship);
-    });
+    initializeAllWalletsWithDefaults(addresses, dispatch);
   }, [addresses, dispatch]);
 
   return null;

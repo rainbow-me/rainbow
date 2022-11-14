@@ -3,6 +3,7 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
+  GroupSettings,
   NotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -20,14 +21,14 @@ export const notificationSettingsStorage = new MMKV({
 export const getAllNotificationSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY);
 
-  if (data) return JSON.parse(data);
+  if (data) return JSON.parse(data) as WalletNotificationSettings[];
   return [];
 };
 
 export const getExistingGroupSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(WALLET_GROUPS_STORAGE_KEY);
 
-  if (data) return JSON.parse(data);
+  if (data) return JSON.parse(data) as GroupSettings;
   return {};
 };
 

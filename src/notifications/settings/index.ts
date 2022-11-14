@@ -7,6 +7,7 @@ export {
 export {
   addDefaultNotificationGroupSettings,
   addDefaultNotificationSettingsForWallet,
+  initializeAllWalletsWithDefaults,
 } from './defaults';
 export {
   useNotificationSettings,
