@@ -707,12 +707,6 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
-    let nativeToken = 'ETH';
-    if (currentNetwork === Network.polygon) {
-      nativeToken = 'MATIC';
-    } else if (currentNetwork === Network.bsc) {
-      nativeToken = 'BNB';
-    }
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -726,9 +720,13 @@ export default function SendSheet(props) {
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: nativeToken,
-      });
+      if (currentNetwork === Network.polygon) {
+        label = lang.t('button.confirm_exchange.insufficient_matic');
+      } else if (currentNetwork === Network.bsc) {
+        label = lang.t('button.confirm_exchange.insufficient_bnb');
+      } else {
+        label = lang.t('button.confirm_exchange.insufficient_eth');
+      }
     } else if (!isValidGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.invalid_fee');
