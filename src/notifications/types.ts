@@ -1,4 +1,5 @@
 import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { NotificationRelationship } from '@/notifications/settings';
 
 export const NotificationTypes = {
   transaction: 'transaction',

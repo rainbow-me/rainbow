@@ -17,3 +17,8 @@ export type WalletNotificationSettings = {
 export type GroupSettings = {
   [key: NotificationRelationshipType]: boolean;
 };
+
+export type AddressWithRelationship = {
+  address: string;
+  relationship: typeof NotificationRelationship[keyof typeof NotificationRelationship];
+};
