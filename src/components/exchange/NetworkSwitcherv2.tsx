@@ -106,6 +106,7 @@ const NetworkSwitcherv2 = ({
                     alignHorizontal="center"
                     alignVertical="center"
                     horizontalSpace="4px"
+                    wrap={false}
                   >
                     {type === AssetType.token ? (
                       // @ts-expect-error Javacript Component
