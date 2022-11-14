@@ -15,7 +15,6 @@ export default function useImageMetadata(imageUrl: string | null) {
     [imageUrl]
   );
 
-  console.log(imageUrl);
   const selectorMeta = useSelector(imageMetadataSelector);
   const metadata = selectorMeta || null;
   const defaultMetadata = useMemo(
