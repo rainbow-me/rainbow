@@ -199,6 +199,7 @@
         "enter_amount": "Enter an Amount",
         "fetching_quote": "Fetching Quote",
         "insufficient_eth": "Insufficient ETH",
+        "insufficient_bnb": "Insufficient BNB",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity",
         "no_route_found": "􀅵 No route found",
@@ -270,6 +271,69 @@
       "watch_this_wallet": "Watch this Wallet",
       "hidden": "Hidden"
     },
+    "cards": {
+      "dpi": {
+        "title": "DeFi Pulse Index",
+        "body": "All the top decentralized finance tokens in one. Track the industry.",
+        "view": "View"
+      },
+      "ens_create_profile": {
+        "title": "Create your ENS profile",
+        "body": "Replace your wallet address with a profile owned entirely by you."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title": "Register a .eth name"
+      },
+      "gas": {
+        "average": "Average",
+        "gwei": "Gwei",
+        "high": "High",
+        "loading": "Loading…",
+        "low": "Low",
+        "network_fees": "Network fees",
+        "surging": "Surging",
+        "very_low": "Very low"
+      },
+      "learn": {
+        "learn": "Learn",
+        "cards": {
+          "get_started": {
+            "title": "Get Started with Rainbow",
+            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
+          },
+          "backups": {
+            "title": "The Importance of Backups",
+            "description": "Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with."
+          },
+          "protect_wallet": {
+            "title": "Protect Your Wallet",
+            "description": "One of the best parts of having an Ethereum wallet like Rainbow is that you are in total control of your money. Unlike a bank account from Wells Fargo or a crypto exchange like Coinbase, we do not hold your assets on your behalf."
+          },
+          "connect_to_dapp": {
+            "title": "Connect to a Website or App",
+            "description": "Now that you have an Ethereum wallet, you can login to certain websites using it. Instead of creating new accounts and passwords for every website you interact with, you'll just connect your wallet instead."
+          },
+          "avoid_scams": {
+            "title": "Avoid Crypto Scams",
+            "description": "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that!"
+          }
+        },
+        "categories": {
+          "essentials": "Essentials",
+          "safety": "Staying Safe",
+          "rainbow": "How to use Rainbow",
+          "beginners_guides": "Beginner's Guides",
+          "blockchains": "Blockchains and Fees",
+          "web3": "What is Web3?"
+        }
+      },
+      "receive": {
+        "receive_assets": "Receive assets",
+        "copy_address": "Copy Address",
+        "description": "You can also long press your\naddress above to copy it."
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -321,30 +385,6 @@
       "sync_codepush": "Sync codepush"
     },
     "discover": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "All the top decentralized finance tokens in one. Track the industry.",
-        "view": "View"
-      },
-      "ens_create_profile": {
-        "title": "Create your ENS profile",
-        "body": "Replace your wallet address with a profile owned entirely by you."
-      },
-      "ens_search": {
-        "mini_title": "ENS",
-        "title_part_1": "Register a ",
-        "title_part_2": ".eth name"
-      },
-      "gas": {
-        "average": "Average",
-        "gwei": "Gwei",
-        "high": "High",
-        "loading": "Loading…",
-        "low": "Low",
-        "network_fees": "Network fees",
-        "surging": "Surging",
-        "very_low": "Very low"
-      },
       "lists": {
         "lists_title": "Lists",
         "this_list_is_empty": "This list is empty!"
@@ -667,6 +707,10 @@
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
+      },
+      "bsc": {
+        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Binance Smart Chain?"
       },
       "read_more": "Read More",
       "learn_more": "Learn More",
@@ -1028,6 +1072,7 @@
         "hold_to_confirm": "Hold to Confirm",
         "hold_to_extend": "Hold to Extend",
         "hold_to_register": "Hold to Register",
+        "insufficient_bnb": "Insufficient BNB",
         "insufficient_eth": "Insufficient ETH",
         "last_step": "One last step",
         "last_step_description": "Confirm below to register your name and configure your profile",
@@ -1184,7 +1229,7 @@
         },
         "info_row_2": {
           "title": "Swap directly on L2",
-          "description": "Fast and cheap swaps on Arbitrum, Optimism and Polygon."
+          "description": "Fast and cheap swaps on Arbitrum, Optimism, Polygon and BSC."
         },
         "info_row_3": {
           "title": "Flashbots protection",
@@ -1273,7 +1318,10 @@
         "unsupported_network": "Notifications are only available for Ethereum Mainnet transactions at this time.",
         "change_network": "Change your Network",
         "no_first_time_permissions": "Please allow Rainbow to send you notifications.",
-        "first_time_allow_notifications": "Allow Notifications"
+        "first_time_allow_notifications": "Allow Notifications",
+        "error_alert_title": "Subscription Failed",
+        "error_alert_content": "Please try again later.",
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later."
       },
       "privacy": "Privacy",
       "privacy_section": {

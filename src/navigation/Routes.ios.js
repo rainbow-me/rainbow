@@ -60,6 +60,7 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
+  learnWebViewScreenConfig,
   transactionDetailsConfig,
 } from './config';
 import {
@@ -80,6 +81,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
@@ -194,6 +196,11 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
+      />
       <NativeStack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}

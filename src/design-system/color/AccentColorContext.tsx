@@ -1,5 +1,5 @@
 import chroma from 'chroma-js';
-import React, { createContext, ReactNode, useMemo } from 'react';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { BackgroundColorValue } from './palettes';
 
 export const AccentColorContext = createContext<BackgroundColorValue | null>(
@@ -9,6 +9,16 @@ export const AccentColorContext = createContext<BackgroundColorValue | null>(
 export interface AccentColorProviderProps {
   color: string;
   children: ReactNode;
+}
+
+export function useAccentColor(): BackgroundColorValue {
+  const context = useContext(AccentColorContext);
+  if (!context) {
+    throw new Error(
+      'useAccentColor must be used within an AccentColorProvider'
+    );
+  }
+  return context;
 }
 
 /**
