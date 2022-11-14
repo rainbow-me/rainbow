@@ -118,6 +118,7 @@ export interface IndexToken extends Asset {
 export interface TokenMetadata {
   address: EthereumAddress;
   name: string;
+  symbol: string;
   color?: string;
   isRainbowCurated?: boolean;
   isVerified?: boolean;
