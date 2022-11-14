@@ -137,7 +137,7 @@ export const updateSwapInputCurrency = (
   } = getState().swap;
   if (
     type === ExchangeModalTypes.swap &&
-    newInputCurrency?.address === outputCurrency?.address &&
+    newInputCurrency?.uniqueId === outputCurrency?.uniqueId &&
     newInputCurrency
   ) {
     dispatch(flipSwapCurrencies(false));
@@ -175,7 +175,7 @@ export const updateSwapOutputCurrency = (
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { independentField, inputCurrency, type } = getState().swap;
   if (
-    newOutputCurrency?.address === inputCurrency?.address &&
+    newOutputCurrency?.uniqueId === inputCurrency?.uniqueId &&
     newOutputCurrency
   ) {
     dispatch(flipSwapCurrencies(true));

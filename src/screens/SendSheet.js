@@ -38,7 +38,6 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@/handlers/web3';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import Network from '@/helpers/networkTypes';
 import {
   checkIsValidAddressOrDomain,
@@ -81,14 +80,15 @@ import {
 } from '@/helpers/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
-const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
+const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
   flex: 1,
-  paddingTop: isNativeStackAvailable ? 0 : statusBarHeight,
+  paddingTop: IS_IOS ? 0 : statusBarHeight,
   width: '100%',
 });
 
@@ -96,9 +96,9 @@ const SheetContainer = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })({
-  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
   backgroundColor: ({ theme: { colors } }) => colors.white,
-  height: isNativeStackAvailable || android ? sheetHeight : '100%',
+  height: sheetHeight,
   width: '100%',
 });
 

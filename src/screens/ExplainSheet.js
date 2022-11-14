@@ -25,7 +25,6 @@ import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import {
@@ -609,7 +608,7 @@ export const explainers = (params, colors) => ({
     ),
   },
   crossChainGas: {
-    extraHeight: 20,
+    extraHeight: 40,
     title: lang.t('explain.cross_chain_swap.title'),
     text: lang.t('explain.cross_chain_swap.text'),
     logo: (

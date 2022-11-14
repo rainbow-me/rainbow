@@ -1,4 +1,4 @@
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { IS_IOS } from '@/env';
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -28,11 +28,9 @@ const Routes = {
   EXPLAIN_SHEET: 'ExplainSheet',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   IMPORT_SCREEN: 'ImportScreen',
-  PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
-  PAIR_HARDWARE_WALLET_INTRO_SHEET: 'PairHardwareWalletIntroSheet',
-  PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
+  LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
@@ -41,6 +39,9 @@ const Routes = {
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
+  PAIR_HARDWARE_WALLET_INTRO_SHEET: 'PairHardwareWalletIntroSheet',
+  PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
+  PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',
@@ -63,12 +64,13 @@ const Routes = {
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
   SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
+  SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
-  SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
   TOKEN_INDEX_SHEET: 'TokenIndexSheet',
+  TRANSACTION_DETAILS: 'TransactionDetails',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_DIAGNOSTICS_SHEET: 'WalletDiagnosticsSheet',
@@ -90,7 +92,7 @@ export const NATIVE_ROUTES = [
   Routes.SAVINGS_SHEET,
   Routes.SAVINGS_WITHDRAW_MODAL,
   Routes.SAVINGS_DEPOSIT_MODAL,
-  ...(isNativeStackAvailable
+  ...(IS_IOS
     ? [
         Routes.SEND_SHEET_NAVIGATOR,
         Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR,
@@ -99,18 +101,15 @@ export const NATIVE_ROUTES = [
     : []),
 ];
 
-const RoutesWithNativeStackAvailability = {
+const RoutesWithPlatformDifferences = {
   ...Routes,
-  ADD_CASH_FLOW: isNativeStackAvailable
+  ADD_CASH_FLOW: IS_IOS
     ? Routes.ADD_CASH_SCREEN_NAVIGATOR
     : Routes.ADD_CASH_SHEET,
-  IMPORT_SEED_PHRASE_FLOW: isNativeStackAvailable
+  IMPORT_SEED_PHRASE_FLOW: IS_IOS
     ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
     : Routes.IMPORT_SEED_PHRASE_SHEET,
-  SEND_FLOW:
-    isNativeStackAvailable || android
-      ? Routes.SEND_SHEET_NAVIGATOR
-      : Routes.SEND_SHEET,
+  SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 
-export default RoutesWithNativeStackAvailability;
+export default RoutesWithPlatformDifferences;

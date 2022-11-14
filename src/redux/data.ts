@@ -362,6 +362,17 @@ interface CoingeckoApiResponseWithLastUpdate {
  * https://docs.zerion.io/websockets/models#portfolio for details.
  */
 interface ZerionPortfolio {
+  arbitrum_assets_value: number;
+  aurora_assets_value: number;
+  avalanche_assets_value: number;
+  ethereum_assets_value: number;
+  fantom_assets_value: number;
+  loopring_assets_value: number;
+  nft_floor_price_value: number;
+  nft_last_price_value: number;
+  optimism_assets_value: number;
+  solana_assets_value: number;
+  xdai_assets_value: number;
   assets_value: number;
   deposited_value: number;
   borrowed_value: number;

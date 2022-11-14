@@ -1,4 +1,3 @@
-import { capitalize } from 'lodash';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';

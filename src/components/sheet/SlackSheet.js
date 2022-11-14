@@ -24,6 +24,7 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,
@@ -38,7 +39,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
     deferredHeight,
     deviceHeight,
   }) => ({
-    ...(deferredHeight || ios
+    ...(deferredHeight || IS_IOS
       ? {}
       : {
           top:
@@ -48,7 +49,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
               ? deviceHeight - contentHeight
               : 0,
         }),
-    ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+    ...(IS_ANDROID
+      ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 }
+      : {}),
     backgroundColor: backgroundColor,
     bottom: 0,
     left: 0,
@@ -156,7 +159,7 @@ export default forwardRef(function SlackSheet(
 
   return (
     <Fragment>
-      {android ? (
+      {IS_ANDROID ? (
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
       <Container
@@ -168,7 +171,7 @@ export default forwardRef(function SlackSheet(
         testID={testID}
         {...props}
       >
-        {android && (
+        {IS_ANDROID && (
           <AndroidBackground as={TouchableWithoutFeedback} backgroundColor={bg}>
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
@@ -195,7 +198,7 @@ export default forwardRef(function SlackSheet(
             scrollIndicatorInsets={scrollIndicatorInsets}
             showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
             showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-            {...(isInsideBottomSheet && android
+            {...(isInsideBottomSheet && IS_ANDROID
               ? {
                   onScrollWorklet: scrollHandler,
                 }

@@ -171,9 +171,10 @@ describe('Discover Screen Flow', () => {
   it('Should cycle through token lists', async () => {
     android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
     await Helpers.swipeUntilVisible(
-      'lists-section-favorites',
+      'lists-section',
       'discover-sheet',
-      'up'
+      'up',
+      100
     );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
@@ -182,8 +183,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('list-coin-row-Unisocks');
     await Helpers.waitAndTap('list-trending');
     await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.waitAndTap('list-favorites');
-    await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.waitAndTap('list-defi');
     await Helpers.checkIfVisible('lists-section-defi');
     await Helpers.waitAndTap('list-stablecoins');

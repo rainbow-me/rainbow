@@ -47,6 +47,8 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
+  learnWebViewScreenConfig,
+  transactionDetailsConfig,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -70,6 +72,11 @@ import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import {
+  TRANSACTION_DETAILS_SHEET_HEIGHT,
+  TransactionDetails,
+} from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -275,6 +282,11 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
+      />
+      <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
@@ -374,6 +386,14 @@ function BSNavigator() {
             deviceUtils.dimensions.height +
             CUSTOM_MARGIN_TOP_ANDROID -
             StatusBar.currentHeight,
+        }}
+      />
+      <BSStack.Screen
+        name={Routes.TRANSACTION_DETAILS}
+        component={TransactionDetails}
+        options={{
+          ...bottomSheetPreset,
+          height: TRANSACTION_DETAILS_SHEET_HEIGHT,
         }}
       />
     </BSStack.Navigator>
