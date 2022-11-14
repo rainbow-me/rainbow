@@ -21,6 +21,8 @@ import {
   OPTIMISM_MAINNET_RPC,
   // @ts-ignore
   POLYGON_MAINNET_RPC,
+  // @ts-ignore
+  BSC_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
   getNetwork,
@@ -42,6 +44,7 @@ export interface RainbowConfig extends Record<string, any> {
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  bsc_mainnet_rpc?: string;
   trace_call_block_number_offset?: number;
   wyre_enabled?: boolean;
 }
@@ -56,6 +59,7 @@ const DEFAULT_CONFIG = {
     mainnet: 100,
     optimism: 200,
     polygon: 200,
+    bsc: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__
@@ -65,6 +69,7 @@ const DEFAULT_CONFIG = {
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+  bsc_mainnet_rpc: BSC_MAINNET_RPC,
   trace_call_block_number_offset: 20,
   wyre_enabled: true,
 };
