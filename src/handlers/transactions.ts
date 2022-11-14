@@ -385,7 +385,6 @@ export const getTransactionSocketStatus = async (
     });
     const socketResponse = socketStatus.data;
     if (socketResponse.success) {
-      console.log('its a success!! ', socketResponse);
       if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
         status = swap?.isBridge
           ? TransactionStatus.bridging
@@ -411,16 +410,6 @@ export const getTransactionSocketStatus = async (
     }
   } catch (e) {
     logger.error(new RainbowError(`catch socket tx check failed: ${e}`));
-
-    if (IS_TEST) {
-      status = swap?.isBridge
-        ? TransactionStatus.bridged
-        : TransactionStatus.swapped;
-      pending = false;
-    } else {
-      status = TransactionStatus.failed;
-      pending = false;
-    }
   }
 
   const title = getTitle({

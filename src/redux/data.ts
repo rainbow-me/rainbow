@@ -58,7 +58,6 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import {
-  getTitle,
   parseAccountAssets,
   parseAsset,
   parseNewTransaction,
@@ -84,7 +83,6 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
-import { Logger } from '@/logger';
 
 const storage = new MMKV();
 
@@ -1367,7 +1365,6 @@ export const dataWatchPendingTransactions = (
       };
       try {
         logger.log('Checking pending tx with hash', txHash);
-        console.log('the type is : ', tx.type);
         const p =
           (await getProviderForNetwork(updatedPendingTransaction.network)) ||
           provider;
@@ -1376,7 +1373,6 @@ export const dataWatchPendingTransactions = (
         );
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
         const nonceAlreadyIncluded = currentNonce > (tx?.nonce ?? txObj.nonce);
-        console.log('NONCE ALREADY INCLUDED? ', nonceAlreadyIncluded);
         if (
           (txObj && txObj?.blockNumber && txObj?.blockHash) ||
           nonceAlreadyIncluded
@@ -1398,15 +1394,8 @@ export const dataWatchPendingTransactions = (
             nonceAlreadyIncluded,
             txObj
           );
-          console.log('tx status: ', transactionStatus);
-          console.log('pending tx: ', updatedPendingTransaction);
-          console.log(
-            'pending tx type: ',
-            updatedPendingTransaction.type,
-            ' is authorizze? ',
-            updatedPendingTransaction.type === TransactionTypes.authorize
-          );
 
+          // approvals are not via socket so we dont want to check their status with them.
           const isApproveTx =
             transactionStatus === TransactionStatus.approved ||
             transactionStatus === TransactionStatus.approving;
@@ -1414,17 +1403,15 @@ export const dataWatchPendingTransactions = (
             updatedPendingTransaction?.swap?.type === SwapType.crossChain &&
             !isApproveTx
           ) {
-            console.log('crosschain tx: ');
             pendingTransactionData = await getTransactionSocketStatus(
               updatedPendingTransaction
             );
             logger.debug('pending tx data: ', pendingTransactionData);
             if (!pendingTransactionData.pending) {
-              console.log('we are confirmed'),
-                appEvents.emit('transactionConfirmed', {
-                  ...txObj,
-                  internalType: tx.type,
-                });
+              appEvents.emit('transactionConfirmed', {
+                ...txObj,
+                internalType: tx.type,
+              });
             }
             txStatusesDidChange = true;
           } else {
