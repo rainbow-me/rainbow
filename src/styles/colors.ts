@@ -46,6 +46,7 @@ const darkModeColors = {
   shimmer: '#1F2229',
   skeleton: '#191B21',
   stackBackground: '#000000',
+  surfacePrimary: '#000000',
   white: '#12131A',
   whiteLabel: '#FFFFFF',
 };
@@ -143,6 +144,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     smolPurple: '#7D50E6', // '125, 80, 230'
     smolPurple06: 'rgba(125, 80, 230, 0.06)', // '125, 80, 230, 0.06'
     stackBackground: '#000000', // '0, 0, 0'
+    surfacePrimary: '#FFFFFF', // '255, 255, 255'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
     trueBlack: '#000000', // '0, 0, 0'
