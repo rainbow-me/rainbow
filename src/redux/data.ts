@@ -1413,13 +1413,17 @@ export const dataWatchPendingTransactions = (
                 internalType: tx.type,
               });
             }
-            txStatusesDidChange = true;
+            if (transactionStatus !== pendingTransactionData.status) {
+              txStatusesDidChange = true;
+            }
           } else {
             pendingTransactionData = getPendingTransactionData(
               updatedPendingTransaction,
               transactionStatus
             );
-            txStatusesDidChange = true;
+            if (transactionStatus !== pendingTransactionData.status) {
+              txStatusesDidChange = true;
+            }
           }
         } else if (tx.flashbots) {
           pendingTransactionData = await getTransactionFlashbotStatus(
@@ -1433,6 +1437,7 @@ export const dataWatchPendingTransactions = (
             dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
           }
         }
+
         if (pendingTransactionData) {
           updatedPendingTransaction.title = pendingTransactionData.title;
           updatedPendingTransaction.status = pendingTransactionData.status;
