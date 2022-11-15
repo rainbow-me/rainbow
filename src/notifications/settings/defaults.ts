@@ -6,10 +6,6 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
-  subscribeWalletToAllNotificationTopics,
-  unsubscribeWalletFromAllNotificationTopics,
-} from '@/notifications/settings/settings';
-import {
   AddressWithRelationship,
   GroupSettings,
   NotificationRelationshipType,
@@ -24,6 +20,10 @@ import {
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
 import { AppDispatch } from '@/redux/store';
+import {
+  subscribeWalletToAllNotificationTopics,
+  unsubscribeWalletFromAllNotificationTopics,
+} from '@/notifications/settings/firebase';
 
 /**
  Checks if group notification settings are present in storage
