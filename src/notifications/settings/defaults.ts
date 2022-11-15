@@ -50,7 +50,7 @@ export const initializeAllWalletsWithDefaults = (
 ): Promise<void> => {
   const currentSettings = getAllNotificationSettingsFromStorage();
   const currentGroups = getExistingGroupSettingsFromStorage();
-  const newSettings = { ...currentSettings };
+  const newSettings = [...currentSettings];
   // This map is used in order to optimize the time complexity of initialization
   const walletSettingsMap = new Map<
     string,
