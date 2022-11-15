@@ -10,6 +10,7 @@ import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import { useNavigation } from '@/navigation';
+import chartTypes, { ChartType } from '@/helpers/chartTypes';
 
 const formatChartData = (chart: any) => {
   if (!chart || isEmpty(chart)) return null;
@@ -41,13 +42,15 @@ export default function useChartData(asset: any, secondStore: any) {
   const dispatch = useDispatch();
   const { setParams } = useNavigation();
 
-  const {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'chartType' does not exist on type 'Reado... Remove this comment to see the full error message
-    params: { chartType = DEFAULT_CHART_TYPE },
-  } = useRoute();
+  const { params } = useRoute<{
+    key: string;
+    name: string;
+    params: any;
+  }>();
   const { address, price: priceObject } = asset;
 
   const { value: price } = priceObject || {};
+  const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
 
   const { chart, chartsForAsset, fetchingCharts } = useSelector(
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(state: never) => { chart: any; ... Remove this comment to see the full error message
@@ -82,7 +85,7 @@ export default function useChartData(asset: any, secondStore: any) {
     [setParams]
   );
 
-  // add current price at the very end
+  // TODO: @skylarbarrera APP-211
   const filteredData = useMemo(() => {
     const now = Math.floor(Date.now() / 1000);
     // Filter tokens with no data

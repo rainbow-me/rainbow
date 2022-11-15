@@ -48,7 +48,7 @@ export const ENSCreateProfileCard = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSCreateProfileCard',
-        fromScreen: routeName,
+        routeName,
         cardType,
       });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {

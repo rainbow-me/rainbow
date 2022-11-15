@@ -55,7 +55,7 @@ export const ENSSearchCard = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSSearchCard',
-        fromScreen: routeName,
+        routeName,
         cardType,
       });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {

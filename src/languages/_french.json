@@ -190,7 +190,7 @@
       "add_to_list": "Add to List :)",
       "all": "Tous",
       "attempt_cancellation": "Attempt Cancellation :)",
-      "buy_more_eth": "Buy more ETH :)",
+      "buy_eth": "Buy Ethereum :)",
       "cancel": "Annuler",
       "close": "Fermer",
       "confirm": "Confirmer",
@@ -285,6 +285,7 @@
         "title": "Create your ENS profile :)",
         "body": "Replace your wallet address with a profile owned entirely by you. :)"
       },
+      "eth": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",
