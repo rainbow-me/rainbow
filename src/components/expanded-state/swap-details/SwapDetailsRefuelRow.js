@@ -56,10 +56,11 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                 marginBottom={ICON_ALIGN_MARGIN}
               >
                 <CoinIcon
-                  mainnet_address={fromNativeAsset?.address}
+                  address={fromNativeAsset?.address}
+                  mainnet_address={fromNativeAsset?.mainnet_address}
                   symbol={fromAsset?.symbol}
                   size={20}
-                  type={fromNetwork}
+                  type={ethereumUtils.getAssetTypeFromNetwork(fromNetwork)}
                   badgeXPosition={-6}
                   badgeYPosition={0}
                   badgeSize="tiny"
@@ -78,10 +79,11 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                 marginBottom={ICON_ALIGN_MARGIN}
               >
                 <CoinIcon
-                  mainnet_address={toNativeAsset?.address}
+                  address={toNativeAsset?.address}
+                  mainnet_address={toNativeAsset?.mainnet_address}
                   symbol={toAsset?.symbol}
                   size={20}
-                  type={toNetwork}
+                  type={ethereumUtils.getAssetTypeFromNetwork(toNetwork)}
                   badgeXPosition={-6}
                   badgeYPosition={0}
                   badgeSize="tiny"

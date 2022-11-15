@@ -99,6 +99,18 @@ export interface GasFeesPolygonGasStationData {
   };
 }
 
+export interface GasFeesBscGasStationData {
+  status: string;
+  message: string;
+  result: {
+    LastBlock: string;
+    SafeGasPrice: string;
+    ProposeGasPrice: string;
+    FastGasPrice: string;
+    UsdPrice: string;
+  };
+}
+
 export interface BlocksToConfirmationByPriorityFee {
   1: string;
   2: string;
