@@ -12,6 +12,7 @@ import { textSizes, textWeights } from '../../typography/typography';
 import { useTextStyle } from './useTextStyle';
 
 export type TextSize = keyof typeof textSizes;
+export type TextWeight = keyof typeof textWeights;
 
 export function selectTextSizes<SelectedTextSizes extends readonly TextSize[]>(
   ...textSizes: SelectedTextSizes
@@ -27,7 +28,7 @@ export type TextProps = {
   tabularNumbers?: boolean;
   testID?: string;
   uppercase?: boolean;
-  weight?: keyof typeof textWeights;
+  weight?: TextWeight;
 } & (
   | {
       containsEmoji: true;

@@ -1,3 +1,6 @@
+import { CardType } from '@/components/cards/GenericCard';
+import { LearnCategory } from '@/components/cards/utils/types';
+
 /**
  * All events, used by `analytics.track()`
  */
@@ -9,7 +12,6 @@ export const event = {
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   swapSubmitted: 'Submitted Swap',
-
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
   // only for iOS — initial prompt is not allowed — Android is enabled by default
@@ -26,6 +28,10 @@ export const event = {
     'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
+  cardPressed: 'Card Pressed',
+  learnArticleOpened: 'Learn Article Opened',
+  learnArticleShared: 'Learn Article Shared',
+  qrCodeViewed: 'QR Code Viewed',
 } as const;
 
 /**
@@ -55,4 +61,26 @@ export type EventProperties = {
   [event.notificationsPromoSystemSettingsOpened]: undefined;
   [event.notificationsPromoNotificationSettingsOpened]: undefined;
   [event.notificationsPromoDismissed]: undefined;
+  [event.cardPressed]: {
+    cardName: string;
+    fromScreen: string;
+    cardType: CardType;
+  };
+  [event.learnArticleOpened]: {
+    durationSeconds: number;
+    url: string;
+    cardId: string;
+    category: LearnCategory;
+    displayType: CardType;
+    fromScreen: string;
+  };
+  [event.learnArticleShared]: {
+    url: string;
+    category: string;
+    cardId: string;
+    durationSeconds: number;
+  };
+  [event.qrCodeViewed]: {
+    component: string;
+  };
 };

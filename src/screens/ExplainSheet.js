@@ -25,7 +25,6 @@ import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import {
@@ -201,6 +200,8 @@ const OPTIMISM_EXPLAINER = lang.t('explain.optimism.text');
 const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 
 const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
+
+const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
@@ -492,6 +493,22 @@ export const explainers = (params, colors) => ({
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
   },
+  bsc: {
+    emoji: '⛽️',
+    extraHeight: 160,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.bsc}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    text: BSC_EXPLAINER,
+    title: lang.t('explain.bsc.title'),
+  },
   failed_wc_connection: {
     emoji: '😵',
     extraHeight: -50,
@@ -591,7 +608,7 @@ export const explainers = (params, colors) => ({
     ),
   },
   crossChainGas: {
-    extraHeight: 20,
+    extraHeight: 40,
     title: lang.t('explain.cross_chain_swap.title'),
     text: lang.t('explain.cross_chain_swap.text'),
     logo: (
@@ -818,7 +835,8 @@ export const explainers = (params, colors) => ({
         ]}
       >
         <CoinIcon
-          address={params?.nativeAsset?.mainnet_address}
+          mainnet_address={params?.nativeAsset?.mainnet_address}
+          address={params?.nativeAsset?.address}
           symbol={params?.nativeAsset?.symbol}
           type={params?.nativeAsset?.type}
           size={30}

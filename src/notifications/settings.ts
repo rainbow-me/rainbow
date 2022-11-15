@@ -44,9 +44,9 @@ export const notificationSettingsStorage = new MMKV({
 });
 
 /**
-  Grabs notification settings for all wallets if they exist,
-  otherwise returns an empty array.
-*/
+ Grabs notification settings for all wallets if they exist,
+ otherwise returns an empty array.
+ */
 export const getAllNotificationSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY);
 
@@ -62,8 +62,8 @@ export const getExistingGroupSettingsFromStorage = () => {
 };
 
 /**
-  Hook to constantly listen to notification settings.
-*/
+ Hook to constantly listen to notification settings.
+ */
 export const useAllNotificationSettingsFromStorage = () => {
   const data = getAllNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
@@ -93,8 +93,8 @@ export const useAllNotificationSettingsFromStorage = () => {
 };
 
 /**
-  Checks if notification settings exist for a wallet and returns a boolean.
-*/
+ Checks if notification settings exist for a wallet and returns a boolean.
+ */
 export const walletHasNotificationSettings = (address: string) => {
   const data = getAllNotificationSettingsFromStorage();
   const settings = data.find(
@@ -105,11 +105,11 @@ export const walletHasNotificationSettings = (address: string) => {
 };
 
 /**
-  1. Reads notification settings for all wallets from storage.
-  2. Matches settings for the wallet with the given address.
-  3. Excludes that wallet from the array and saves the new array.
-  4. Unsubscribes the wallet from all notification topics on Firebase.
-*/
+ 1. Reads notification settings for all wallets from storage.
+ 2. Matches settings for the wallet with the given address.
+ 3. Excludes that wallet from the array and saves the new array.
+ 4. Unsubscribes the wallet from all notification topics on Firebase.
+ */
 export const removeNotificationSettingsForWallet = (address: string) => {
   const allSettings = getAllNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
@@ -131,12 +131,12 @@ export const removeNotificationSettingsForWallet = (address: string) => {
 };
 
 /**
-  1. Checks if notification settings already exist for the given address.
-  2. Grabs all notification settings from storage.
-  3. Appends default settings for the given address to the array.
-  4. Saves the new array to storage.
-  5. Subscribes the wallet to all notification topics on Firebase.
-*/
+ 1. Checks if notification settings already exist for the given address.
+ 2. Grabs all notification settings from storage.
+ 3. Appends default settings for the given address to the array.
+ 4. Saves the new array to storage.
+ 5. Subscribes the wallet to all notification topics on Firebase.
+ */
 export const addDefaultNotificationSettingsForWallet = (
   address: string,
   relationship: string
@@ -218,9 +218,9 @@ export const addDefaultNotificationSettingsForWallet = (
 };
 
 /**
-  Checks if group notification settings are present in storage
-  and adds default values for them if they do not exist.
-*/
+ Checks if group notification settings are present in storage
+ and adds default values for them if they do not exist.
+ */
 export const addDefaultNotificationGroupSettings = () => {
   const data = notificationSettingsStorage.getString(WALLET_GROUPS_STORAGE_KEY);
 
@@ -240,21 +240,24 @@ export const addDefaultNotificationGroupSettings = () => {
 addDefaultNotificationGroupSettings();
 
 /**
-  Hook for getting and setting notification settings for a single wallet.
+ Hook for getting and setting notification settings for a single wallet.
 
-  Returns an object with the wallet address, enabled/disabled topics, relationship,
-  and a main boolean for enabling/disabling all notifications for this wallet.
+ Returns an object with the wallet address, enabled/disabled topics, relationship,
+ and a main boolean for enabling/disabling all notifications for this wallet.
 
-  Also returns a function for updating settings.
-  The function saves new option values to storage and handles 
-  subscribing/unsubscribing to Firebase based on selected topics for this wallet.
-*/
+ Also returns a function for updating settings.
+ The function saves new option values to storage and handles
+ subscribing/unsubscribing to Firebase based on selected topics for this wallet.
+ */
 export const useNotificationSettings = (address: string) => {
   const data = getAllNotificationSettingsFromStorage();
   const settingsForWallet = data.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
-  const [notifications, setNotificationSettings] = useState(settingsForWallet);
+  const [
+    notifications,
+    setNotificationSettings,
+  ] = useState<WalletNotificationSettings>(settingsForWallet);
 
   const updateSettings = useCallback(
     (options: object) => {
@@ -297,12 +300,12 @@ export const updateSettingsForWallets = (
 };
 
 /**
-  Hook for getting and setting notification settings for all wallets 
-  in an owned/watched group.
+ Hook for getting and setting notification settings for all wallets
+ in an owned/watched group.
 
-  Returns a boolean for two groups: owned and watched.
-  Provides a function for updating the group settings.
-*/
+ Returns a boolean for two groups: owned and watched.
+ Provides a function for updating the group settings.
+ */
 export const useWalletGroupNotificationSettings = () => {
   const {
     notificationSettings,
@@ -365,31 +368,35 @@ export const useWalletGroupNotificationSettings = () => {
   );
 
   const updateGroupSettings = useCallback(
-    (options: object) => {
+    (type: NotificationRelationshipType, enabled: boolean) => {
+      const options = {
+        [type]: enabled,
+      };
       const newSettings = { ...existingGroupSettings, ...options };
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      notificationSettingsStorage.set(
-        WALLET_GROUPS_STORAGE_KEY,
-        JSON.stringify(newSettings)
-      );
+      const updatedStore = () => {
+        notificationSettingsStorage.set(
+          WALLET_GROUPS_STORAGE_KEY,
+          JSON.stringify(newSettings)
+        );
+      };
 
       if (newOwnerEnabled !== ownerEnabled) {
-        toggleGroupNotifications(
+        return toggleGroupNotifications(
           ownedWallets,
           NotificationRelationship.OWNER,
           newOwnerEnabled
-        );
-      }
-
-      if (newWatcherEnabled !== watcherEnabled) {
-        toggleGroupNotifications(
+        ).then(updatedStore);
+      } else if (newWatcherEnabled !== watcherEnabled) {
+        return toggleGroupNotifications(
           watchedWallets,
           NotificationRelationship.WATCHER,
           newWatcherEnabled
-        );
+        ).then(updatedStore);
       }
+      return Promise.resolve();
     },
     [
       existingGroupSettings,
@@ -420,64 +427,68 @@ export const useWalletGroupNotificationSettings = () => {
 };
 
 /**
-  Function for enabling/disabling all notifications for a group of wallets.
-  Also used to batch toggle notifications for a single wallet 
-  when using the `Allow Notifications` switch in the wallet settings view.
-*/
+ Function for enabling/disabling all notifications for a group of wallets.
+ Also used to batch toggle notifications for a single wallet
+ when using the `Allow Notifications` switch in the wallet settings view.
+ */
 export function toggleGroupNotifications(
   wallets: WalletNotificationSettings[],
   relationship: NotificationRelationshipType,
   enableNotifications: boolean
-) {
+): Promise<void[][] | void[]> {
   if (enableNotifications) {
-    // loop through all owned wallets, loop through their topics, subscribe to enabled topics
-    wallets.forEach((wallet: WalletNotificationSettings) => {
-      const { topics, address } = wallet;
-      // when toggling a whole group, check if notifications
-      // are specifically enabled for this wallet
-      // if (enabled || singleWallet) {
-      Object.keys(topics).forEach((topic: NotificationTopicType) => {
-        if (topics[topic]) {
-          subscribeWalletToSingleNotificationTopic(
-            relationship,
-            NOTIFICATIONS_DEFAULT_CHAIN_ID,
-            address,
-            topic
-          );
-        }
-      });
-      // }
-    });
+    return Promise.all(
+      // loop through all owned wallets, loop through their topics, subscribe to enabled topics
+      wallets.flatMap((wallet: WalletNotificationSettings) => {
+        const { topics, address } = wallet;
+        // when toggling a whole group, check if notifications
+        // are specifically enabled for this wallet
+        return Object.keys(topics).map((topic: NotificationTopicType) => {
+          if (topics[topic]) {
+            return subscribeWalletToSingleNotificationTopic(
+              relationship,
+              NOTIFICATIONS_DEFAULT_CHAIN_ID,
+              address,
+              topic
+            );
+          } else {
+            return Promise.resolve();
+          }
+        });
+      })
+    );
   } else {
     // loop through all owned wallets, unsubscribe from all topics
-    wallets.forEach((wallet: WalletNotificationSettings) => {
-      unsubscribeWalletFromAllNotificationTopics(
-        relationship,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID,
-        wallet.address
-      );
-    });
+    return Promise.all(
+      wallets.map((wallet: WalletNotificationSettings) => {
+        return unsubscribeWalletFromAllNotificationTopics(
+          relationship,
+          NOTIFICATIONS_DEFAULT_CHAIN_ID,
+          wallet.address
+        );
+      })
+    );
   }
 }
 
 /**
-  Function for subscribing/unsubscribing a wallet to/from a single notification topic.  
-*/
+ Function for subscribing/unsubscribing a wallet to/from a single notification topic.
+ */
 export function toggleTopicForWallet(
   relationship: NotificationRelationshipType,
   address: string,
   topic: NotificationTopicType,
   enableTopic: boolean
-) {
+): Promise<void> {
   if (enableTopic) {
-    subscribeWalletToSingleNotificationTopic(
+    return subscribeWalletToSingleNotificationTopic(
       relationship,
       NOTIFICATIONS_DEFAULT_CHAIN_ID,
       address,
       topic
     );
   } else {
-    unsubscribeWalletFromSingleNotificationTopic(
+    return unsubscribeWalletFromSingleNotificationTopic(
       relationship,
       NOTIFICATIONS_DEFAULT_CHAIN_ID,
       address,
@@ -487,41 +498,51 @@ export function toggleTopicForWallet(
 }
 
 /**
-  Firebase functions for subscribing/unsubscribing to topics.
-*/
-const subscribeWalletToAllNotificationTopics = async (
+ Firebase functions for subscribing/unsubscribing to topics.
+ */
+const subscribeWalletToAllNotificationTopics = (
   type: string,
   chainId: number,
   address: string
-) => {
-  Object.values(NotificationTopic).forEach(topic => {
-    subscribeWalletToSingleNotificationTopic(type, chainId, address, topic);
-  });
+): Promise<void[]> => {
+  return Promise.all(
+    Object.values(NotificationTopic).map(topic =>
+      subscribeWalletToSingleNotificationTopic(type, chainId, address, topic)
+    )
+  );
 };
 
-const unsubscribeWalletFromAllNotificationTopics = async (
+const unsubscribeWalletFromAllNotificationTopics = (
   type: string,
   chainId: number,
   address: string
-) => {
-  Object.values(NotificationTopic).forEach(topic => {
-    unsubscribeWalletFromSingleNotificationTopic(type, chainId, address, topic);
-  });
+): Promise<void[]> => {
+  return Promise.all(
+    Object.values(NotificationTopic).map(topic =>
+      unsubscribeWalletFromSingleNotificationTopic(
+        type,
+        chainId,
+        address,
+        topic
+      )
+    )
+  );
 };
 
-const subscribeWalletToSingleNotificationTopic = async (
+const subscribeWalletToSingleNotificationTopic = (
   type: string,
   chainId: number,
   address: string,
   topic: NotificationTopicType
-) => {
+): Promise<void> => {
   Logger.log(
     `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
   );
-  messaging().subscribeToTopic(
-    `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-  );
-  trackChangedNotificationSettings(chainId, topic, type, 'subscribe');
+  return messaging()
+    .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
+    .then(() =>
+      trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
+    );
 };
 
 const unsubscribeWalletFromSingleNotificationTopic = async (
@@ -533,8 +554,11 @@ const unsubscribeWalletFromSingleNotificationTopic = async (
   Logger.log(
     `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
   );
-  messaging().unsubscribeFromTopic(
-    `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-  );
-  trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
+  return messaging()
+    .unsubscribeFromTopic(
+      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
+    )
+    .then(() => {
+      trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
+    });
 };

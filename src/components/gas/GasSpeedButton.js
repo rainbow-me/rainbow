@@ -24,7 +24,11 @@ import {
   useSwapCurrencies,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_BSC_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -355,6 +359,8 @@ const GasSpeedButton = ({
     switch (currentNetwork) {
       case networkTypes.polygon:
         return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
+      case networkTypes.bsc:
+        return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       default:
@@ -369,7 +375,8 @@ const GasSpeedButton = ({
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-        return [NORMAL];
+      case networkTypes.bsc:
+        return [NORMAL, FAST, URGENT];
       default:
         return GasSpeedOrder;
     }
@@ -386,7 +393,8 @@ const GasSpeedButton = ({
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
       const gweiDisplay =
-        currentNetwork === networkTypes.polygon
+        currentNetwork === networkTypes.polygon ||
+        currentNetwork === networkTypes.bsc
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
           : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
           ? ''

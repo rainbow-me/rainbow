@@ -23,6 +23,7 @@ import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
+  AssetType,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
@@ -34,6 +35,7 @@ import {
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
   getProviderForNetwork,
+  isL2Network,
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
@@ -119,8 +121,20 @@ const getNativeAssetForNetwork = async (
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
-    const mainnetAddress =
-      network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+    let mainnetAddress = ETH_ADDRESS;
+
+    switch (network) {
+      case Network.polygon:
+        mainnetAddress = MATIC_MAINNET_ADDRESS;
+        break;
+      case Network.bsc:
+        mainnetAddress = BNB_MAINNET_ADDRESS;
+        break;
+      default:
+        mainnetAddress = ETH_ADDRESS;
+        break;
+    }
+
     nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
@@ -336,6 +350,16 @@ const getDataString = (func: string, arrVals: string[]) => {
   for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
   const data = func + val;
   return data;
+};
+
+/**
+ * @desc get asset type from network
+ * @param  {Network} network
+ */
+const getAssetTypeFromNetwork = (network: Network) => {
+  return isL2Network(network)
+    ? ((network as unknown) as AssetType)
+    : AssetType.token;
 };
 
 /**
@@ -828,6 +852,7 @@ export default {
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
+  getAssetTypeFromNetwork,
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,

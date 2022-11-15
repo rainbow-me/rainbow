@@ -34,7 +34,7 @@ import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
@@ -307,8 +307,8 @@ function MoreButton() {
   }, [accountAddress, isToastActive, setToastActive]);
 
   const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'home screen',
+    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
+      component: 'ProfileActionButtonsRow',
     });
 
     navigate(Routes.RECEIVE_MODAL);

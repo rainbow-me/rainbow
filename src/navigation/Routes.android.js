@@ -48,6 +48,7 @@ import {
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
+  learnWebViewScreenConfig,
   transactionDetailsConfig,
   wyreWebviewOptions,
 } from './config';
@@ -72,6 +73,7 @@ import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import {
   TRANSACTION_DETAILS_SHEET_HEIGHT,
   TransactionDetails,
@@ -279,6 +281,11 @@ function BSNavigator() {
         options={{
           height: '95%',
         }}
+      />
+      <BSStack.Screen
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
       />
       <BSStack.Screen
         component={ExpandedAssetSheet}

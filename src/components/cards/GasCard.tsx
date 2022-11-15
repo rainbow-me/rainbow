@@ -1,7 +1,7 @@
 // @ts-expect-error
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
@@ -12,27 +12,24 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
 import {
   AccentColorProvider,
   Box,
-  CustomShadow,
-  Heading,
-  Inset,
+  globalColors,
   Stack,
   Text,
-  useColorMode,
-  useForegroundColor,
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import { useDimensions, useGas } from '@/hooks';
-import { useTheme } from '@/theme';
+import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
+import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 
 type AnimationConfigOptions = {
   duration: number;
   easing: Animated.EasingFunction;
 };
+
+const TRANSLATIONS = i18n.l.cards.gas;
 
 const containerConfig = {
   damping: 15,
@@ -49,9 +46,7 @@ const fadeOutConfig: AnimationConfigOptions = {
   easing: Easing.bezierFn(0.76, 0, 0.24, 1),
 };
 
-export default function GasCard() {
-  const { colorMode } = useColorMode();
-  const { width: deviceWidth } = useDimensions();
+export const GasCard = () => {
   const {
     currentBlockParams,
     gasFeeParamsBySpeed,
@@ -60,40 +55,10 @@ export default function GasCard() {
   } = useGas();
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
-  const { colors } = useTheme();
 
   const container = useSharedValue(1);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0);
-
-  const cardShadow = useMemo<CustomShadow>(
-    () => ({
-      custom: {
-        android: {
-          color: 'shadowFar',
-          elevation: 24,
-          opacity: 0.5,
-        },
-        ios: [
-          {
-            color: 'shadowFar',
-            blur: 24,
-            x: 0,
-            y: 8,
-            opacity: colorMode === 'dark' ? 0.3 : 0.1,
-          },
-          {
-            color: 'shadowFar',
-            blur: 6,
-            x: 0,
-            y: 2,
-            opacity: 0.02,
-          },
-        ],
-      },
-    }),
-    [colorMode]
-  );
 
   // Listen to gas prices
   useEffect(() => {
@@ -125,9 +90,9 @@ export default function GasCard() {
             : Math.round(Number(lastKnownGwei)) || '􀖇'
           : animatedNumber;
       return (
-        <Heading color="accent" size="44px / 53px (Deprecated)" weight="bold">
+        <Text color="accent" size="44pt" weight="bold">
           {priceText}
-        </Heading>
+        </Text>
       );
     },
     [currentGwei, isCurrentGweiLoaded, lastKnownGwei]
@@ -145,7 +110,7 @@ export default function GasCard() {
     opacity.value = 0;
     scale.value = 0;
     container.value = withSequence(
-      withSpring(1.1, containerConfig),
+      withSpring(1.04, containerConfig),
       withSpring(1, pulseConfig)
     );
     opacity.value = withSequence(
@@ -160,53 +125,21 @@ export default function GasCard() {
     );
   }, [container, opacity, scale]);
 
-  const cardColor = useForegroundColor({
-    custom: {
-      dark: '#22232A',
-      light: '#FFFFFF',
-    },
-  });
-  const grey = useForegroundColor('secondary60 (Deprecated)');
-  const green = useForegroundColor({
-    custom: {
-      dark: colors.green,
-      light: '#1DB847',
-    },
-  });
-  const blue = useForegroundColor({
-    custom: {
-      dark: '#5FA9EE',
-      light: '#3157D3',
-    },
-  });
-  const orange = useForegroundColor({
-    custom: {
-      dark: '#FF983D',
-      light: '#FF801F',
-    },
-  });
-  const pink = useForegroundColor({
-    custom: {
-      dark: colors.pink,
-      light: '#FF5CA0',
-    },
-  });
-
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
     'worklet';
     const gwei =
       Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
-      return grey;
+      return globalColors.grey60;
     } else if (gwei < 40) {
-      return green;
+      return globalColors.green60;
     } else if (gwei < 100) {
-      return blue;
+      return globalColors.blue60;
     } else if (gwei < 200) {
-      return orange;
+      return globalColors.orange60;
     } else {
-      return pink;
+      return globalColors.pink60;
     }
   };
 
@@ -218,17 +151,17 @@ export default function GasCard() {
       Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
-      return lang.t('discover.gas.loading');
+      return i18n.t(TRANSLATIONS.loading);
     } else if (gwei < 30) {
-      return lang.t('discover.gas.very_low');
+      return i18n.t(TRANSLATIONS.very_low);
     } else if (gwei < 40) {
-      return lang.t('discover.gas.low');
+      return i18n.t(TRANSLATIONS.low);
     } else if (gwei < 100) {
-      return lang.t('discover.gas.average');
+      return i18n.t(TRANSLATIONS.average);
     } else if (gwei < 200) {
-      return lang.t('discover.gas.high');
+      return i18n.t(TRANSLATIONS.high);
     } else {
-      return lang.t('discover.gas.surging');
+      return i18n.t(TRANSLATIONS.surging);
     }
   };
 
@@ -241,7 +174,7 @@ export default function GasCard() {
       opacity.value = 0;
       scale.value = 0;
       container.value = withSequence(
-        withSpring(1.1, containerConfig),
+        withSpring(1.04, containerConfig),
         withSpring(1, pulseConfig)
       );
       opacity.value = withSequence(
@@ -279,97 +212,64 @@ export default function GasCard() {
 
     return {
       backgroundColor: color,
-      borderRadius: 24,
-      height: '100%',
+      borderRadius: 20,
+      height: SQUARE_CARD_SIZE,
       opacity: 0.08 * opacity.value,
       transform: [
         {
           scale: 1 * scale.value,
         },
       ],
-      width: '100%',
+      width: SQUARE_CARD_SIZE,
     };
   }, [currentGwei, lastKnownGwei]);
 
   return (
     <Animated.View style={containerStyle}>
-      <ButtonPressAnimation
-        onPress={handlePress}
-        scaleTo={1}
-        style={
-          android && {
-            paddingBottom: 19,
-            paddingLeft: 19,
-            paddingRight: 9.5,
-          }
-        }
-        testID="gas-button"
-      >
-        <AccentColorProvider color={cardColor}>
+      <GenericCard onPress={handlePress} testID="gas-button" type="square">
+        <AccentColorProvider
+          color={getColorForGwei(currentGwei, lastKnownGwei)}
+        >
+          <Box as={Animated.View} position="absolute" style={pulseStyle} />
           <Box
-            background="accent"
-            borderRadius={24}
-            height={{ custom: (deviceWidth - 19 * 3) / 2 }}
-            shadow={cardShadow}
+            height="full"
+            width="full"
+            justifyContent="space-between"
+            alignItems="flex-start"
           >
-            <AccentColorProvider
-              color={getColorForGwei(currentGwei, lastKnownGwei)}
-            >
-              <Box as={Animated.View} position="absolute" style={pulseStyle} />
-              <Inset
-                bottom={{ custom: 23.5 }}
-                horizontal={{ custom: 20 }}
-                top="24px"
+            <Stack space={{ custom: 14 }}>
+              <AnimateNumber
+                formatter={formatGasPrice}
+                interval={2}
+                renderContent={renderGweiText}
+                timing={(t: number) => 1 - --t * t * t * t}
+                value={currentGwei || lastKnownGwei}
+              />
+              <Text color="accent" size="17pt" weight="bold">
+                {!isCurrentGweiLoaded && !lastKnownGwei
+                  ? ''
+                  : i18n.t(TRANSLATIONS.gwei)}
+              </Text>
+            </Stack>
+            <Stack space="10px">
+              <Text color="labelTertiary" size="13pt" weight="bold">
+                {i18n.t(TRANSLATIONS.network_fees)}
+              </Text>
+              <Text
+                color={
+                  !isCurrentGweiLoaded && !lastKnownGwei
+                    ? 'labelTertiary'
+                    : 'labelSecondary'
+                }
+                size="20pt"
+                weight="bold"
               >
-                <Box height="full">
-                  <Stack>
-                    <Stack space={{ custom: 14 }}>
-                      <AnimateNumber
-                        formatter={formatGasPrice}
-                        interval={2}
-                        renderContent={renderGweiText}
-                        timing={(t: number) => 1 - --t * t * t * t}
-                        value={currentGwei || lastKnownGwei}
-                      />
-                      <Text
-                        color="accent"
-                        size="18px / 27px (Deprecated)"
-                        weight="bold"
-                      >
-                        {!isCurrentGweiLoaded && !lastKnownGwei
-                          ? ''
-                          : lang.t('discover.gas.gwei')}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                  <Box bottom="0px" position="absolute">
-                    <Stack space={{ custom: 11 }}>
-                      <Text
-                        color="secondary60 (Deprecated)"
-                        size="14px / 19px (Deprecated)"
-                        weight="bold"
-                      >
-                        {lang.t('discover.gas.network_fees')}
-                      </Text>
-                      <Text
-                        color={
-                          !isCurrentGweiLoaded && !lastKnownGwei
-                            ? 'secondary60 (Deprecated)'
-                            : 'secondary80 (Deprecated)'
-                        }
-                        size="18px / 27px (Deprecated)"
-                        weight="bold"
-                      >
-                        {getCurrentPriceComparison(currentGwei, lastKnownGwei)}
-                      </Text>
-                    </Stack>
-                  </Box>
-                </Box>
-              </Inset>
-            </AccentColorProvider>
+                {getCurrentPriceComparison(currentGwei, lastKnownGwei)}
+              </Text>
+            </Stack>
           </Box>
         </AccentColorProvider>
-      </ButtonPressAnimation>
+      </GenericCard>
     </Animated.View>
   );
-}
+};
