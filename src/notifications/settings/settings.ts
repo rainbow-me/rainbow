@@ -28,6 +28,13 @@ export const removeNotificationSettingsForWallet = (address: string) => {
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
+
+  if (!settingsForWallet) {
+    throw new Error(
+      "Can't remove settings for wallet, wallet is not in storage"
+    );
+  }
+
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
@@ -36,11 +43,12 @@ export const removeNotificationSettingsForWallet = (address: string) => {
     settingsForWallet.type,
     NOTIFICATIONS_DEFAULT_CHAIN_ID,
     address
-  );
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
+  ).then(() => {
+    notificationSettingsStorage.set(
+      WALLET_TOPICS_STORAGE_KEY,
+      JSON.stringify(newSettings)
+    );
+  });
 };
 
 /**

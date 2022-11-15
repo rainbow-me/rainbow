@@ -14,6 +14,7 @@ import {
   getAllNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
+  updateSettingsForWalletWithAddress,
 } from '@/notifications/settings/storage';
 
 /**
@@ -31,27 +32,26 @@ export const useNotificationSettings = (address: string) => {
   const settingsForWallet = data.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
+
+  if (!settingsForWallet) {
+    throw new Error('There are no settings for this wallet');
+  }
+
   const [
     notifications,
     setNotificationSettings,
   ] = useState<WalletNotificationSettings>(settingsForWallet);
 
   const updateSettings = useCallback(
-    (options: object) => {
-      const newSettings = data.map((wallet: WalletNotificationSettings) => {
-        if (wallet.address === address) {
-          return { ...wallet, ...options };
-        }
-        return wallet;
-      });
-      const newSettingsForWallet = newSettings.find(
-        (wallet: WalletNotificationSettings) => wallet.address === address
+    (options: Partial<WalletNotificationSettings>) => {
+      const newSettingsForWallet = updateSettingsForWalletWithAddress(
+        address,
+        options
       );
-      notificationSettingsStorage.set(
-        WALLET_TOPICS_STORAGE_KEY,
-        JSON.stringify(newSettings)
-      );
-      setNotificationSettings(newSettingsForWallet);
+
+      if (newSettingsForWallet) {
+        setNotificationSettings(newSettingsForWallet);
+      }
     },
     [address, data]
   );

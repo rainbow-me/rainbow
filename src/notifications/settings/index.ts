@@ -27,5 +27,5 @@ export type {
 } from './types';
 export {
   notificationSettingsStorage,
-  updateSettingsForWallets,
+  updateSettingsForWalletsWithRelationshipType,
 } from './storage';
