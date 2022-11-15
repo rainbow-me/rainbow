@@ -271,7 +271,6 @@
       "hidden": "Hidden"
     },
     "cards": {
-      "asset": { "buy_ethereum": "Buy Ethereum", "today": "today" },
       "dpi": {
         "title": "DeFi Pulse Index",
         "body": "All the top decentralized finance tokens in one. Track the industry.",
@@ -285,6 +284,7 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
+      "eth": { "buy_ethereum": "Buy Ethereum", "today": "today" },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",

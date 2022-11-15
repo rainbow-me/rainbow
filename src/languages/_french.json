@@ -271,7 +271,6 @@
       "hidden": "Caché"
     },
     "cards": {
-      "asset": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
       "dpi": {
         "title": "DeFi Pulse Index :)",
         "body": "All the top decentralized finance tokens in one. Track the industry. :)",
@@ -285,6 +284,7 @@
         "title": "Create your ENS profile :)",
         "body": "Replace your wallet address with a profile owned entirely by you. :)"
       },
+      "eth": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",

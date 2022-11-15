@@ -40,10 +40,10 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/core';
 import * as i18n from '@/languages';
 
-export const AssetCardHeight = 284.3;
-const TRANSLATIONS = i18n.l.cards.asset;
+export const EthCardHeight = 284.3;
+const TRANSLATIONS = i18n.l.cards.eth;
 
-export const AssetCard = () => {
+export const EthCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
@@ -74,7 +74,7 @@ export const AssetCard = () => {
       });
     }
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-      componentName: 'AssetCard',
+      componentName: 'EthCard',
       routeName,
     });
   }, [accountAddress, isDamaged, navigate]);
@@ -94,11 +94,11 @@ export const AssetCard = () => {
       type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
-      cardName: 'AssetCard',
+      cardName: 'EthCard',
       routeName,
       cardType,
     });
-  }, [assetWithPrice, navigate]);
+  }, [assetWithPrice, navigate, routeName]);
 
   let colorForAsset = useColorForAsset(
     {
@@ -152,7 +152,7 @@ export const AssetCard = () => {
     <GenericCard
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type={cardType}
-      testID={`buy-asset-card-${assetWithPrice?.symbol}`}
+      testID="eth-card"
     >
       <Stack space={{ custom: 41 }}>
         <Stack space="12px">
