@@ -175,18 +175,6 @@ export default function CurrencySelectModal() {
     }
   }, [chainId]);
 
-  useEffect(() => {
-    if (currentChainId !== prevChainId) {
-      listRef?.current?.scrollToLocation({
-        animated: false,
-        itemIndex: 0,
-        sectionIndex: 0,
-        viewOffset: 0,
-        viewPosition: 0,
-      });
-    }
-  }, [currentChainId, prevChainId]);
-
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   // TODO: remove this value when crosschain swaps is released
@@ -622,6 +610,18 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
+
+  useEffect(() => {
+    if (currentChainId !== prevChainId && currencyList[0]?.data) {
+      listRef?.current?.scrollToLocation({
+        animated: false,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+    }
+  }, [currencyList, currentChainId, prevChainId]);
 
   return (
     <Wrapper>
