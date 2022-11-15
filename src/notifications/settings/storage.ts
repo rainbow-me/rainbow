@@ -91,3 +91,22 @@ export const updateSettingsForWalletWithAddress = (
 
   return updatedSettings;
 };
+
+/**
+ * Updates group settings by passing full or partial group settings object
+ * @returns updated group settings object
+ */
+export const updateGroupSettings = (options: GroupSettings): GroupSettings => {
+  const existingGroupSettings = getExistingGroupSettingsFromStorage();
+  const newSettings: GroupSettings = {
+    ...existingGroupSettings,
+    ...options,
+  };
+
+  notificationSettingsStorage.set(
+    WALLET_GROUPS_STORAGE_KEY,
+    JSON.stringify(newSettings)
+  );
+
+  return newSettings;
+};
