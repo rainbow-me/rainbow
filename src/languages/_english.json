@@ -190,7 +190,7 @@
       "add_to_list": "Add to List",
       "all": "All",
       "attempt_cancellation": "Attempt Cancellation",
-      "buy_more_eth": "Buy more ETH",
+      "buy_eth": "Buy Ethereum",
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
@@ -284,7 +284,7 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
-      "eth": { "buy_ethereum": "Buy Ethereum", "today": "today" },
+      "eth": { "today": "today" },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",

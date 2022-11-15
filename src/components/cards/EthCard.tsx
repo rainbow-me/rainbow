@@ -41,7 +41,6 @@ import { useRoute } from '@react-navigation/core';
 import * as i18n from '@/languages';
 
 export const EthCardHeight = 284.3;
-const TRANSLATIONS = i18n.l.cards.eth;
 
 export const EthCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -219,7 +218,7 @@ export const EthCard = () => {
                     color={{ custom: priceChangeColor }}
                     weight="bold"
                   >
-                    {i18n.t(TRANSLATIONS.today)}
+                    {i18n.t(i18n.l.cards.eth.today)}
                   </Text>
                 </Inline>
               )}
@@ -293,7 +292,7 @@ export const EthCard = () => {
         ) : (
           <ButtonPressAnimation
             onPress={handlePressBuy}
-            testID={`buy-button-${assetWithPrice.symbol}`}
+            testID="buy-eth-button"
             scaleTo={0.92}
           >
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
@@ -311,7 +310,7 @@ export const EthCard = () => {
                   size="15pt"
                   weight="bold"
                 >
-                  {`􀍯 ${i18n.t(TRANSLATIONS.buy_ethereum)}`}
+                  {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}
                 </Text>
               </Box>
             </AccentColorProvider>

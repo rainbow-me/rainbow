@@ -55,7 +55,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
     <SheetActionButton
       {...props}
       color={color}
-      label={`􀍰 ${lang.t('button.buy_more_eth')}`}
+      label={`􀍰 ${lang.t('button.buy_eth')}`}
       onPress={handlePress}
       weight="bold"
     />
