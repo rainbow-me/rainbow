@@ -193,7 +193,7 @@ const NotificationsSection = () => {
 
   const {
     ownerEnabled: storedOwnerEnabled,
-    updateGroupSettings,
+    updateGroupSettingsAndSubscriptions,
     watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
   // local state controls the switch UI for better UX
@@ -250,7 +250,10 @@ const NotificationsSection = () => {
       return;
     }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettings(NotificationRelationship.OWNER, !storedOwnerEnabled)
+    updateGroupSettingsAndSubscriptions(
+      NotificationRelationship.OWNER,
+      !storedOwnerEnabled
+    )
       .then(() => {
         setOwnedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
@@ -264,7 +267,7 @@ const NotificationsSection = () => {
         showNotificationSubscriptionErrorAlert();
         setOwnedState(prev => ({ status: !prev.status, loading: false }));
       });
-  }, [storedOwnerEnabled, updateGroupSettings, isConnected]);
+  }, [storedOwnerEnabled, updateGroupSettingsAndSubscriptions, isConnected]);
 
   const toggleAllWatchedNotifications = useCallback(() => {
     if (!isConnected) {
@@ -272,7 +275,10 @@ const NotificationsSection = () => {
       return;
     }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettings(NotificationRelationship.WATCHER, !storedWatcherEnabled)
+    updateGroupSettingsAndSubscriptions(
+      NotificationRelationship.WATCHER,
+      !storedWatcherEnabled
+    )
       .then(() => {
         setWatchedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
@@ -286,7 +292,7 @@ const NotificationsSection = () => {
         showNotificationSubscriptionErrorAlert();
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
-  }, [updateGroupSettings, storedWatcherEnabled, isConnected]);
+  }, [updateGroupSettingsAndSubscriptions, storedWatcherEnabled, isConnected]);
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(

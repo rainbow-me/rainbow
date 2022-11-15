@@ -26,6 +26,7 @@ import {
   showOfflineAlert,
 } from '@/components/settings-menu/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { updateGroupSettings } from '@/notifications/settings/storage';
 
 type RouteParams = {
   WalletNotificationsSettings: {
@@ -46,7 +47,6 @@ const WalletNotificationsSettings = () => {
     lastOwnedWalletEnabled,
     lastWatchedWalletEnabled,
     ownerEnabled,
-    updateSectionSettings,
     watcherEnabled,
   } = useWalletGroupNotificationSettings();
 
@@ -109,7 +109,7 @@ const WalletNotificationsSettings = () => {
           !notificationsSectionEnabled ||
           (notificationsSectionEnabled && lastWalletEnabled)
         ) {
-          updateSectionSettings({
+          updateGroupSettings({
             [notifications.type]: !notificationsEnabled,
           });
         }
@@ -128,7 +128,6 @@ const WalletNotificationsSettings = () => {
     updateSettings,
     notificationsEnabled,
     notifications,
-    updateSectionSettings,
     isConnected,
   ]);
 

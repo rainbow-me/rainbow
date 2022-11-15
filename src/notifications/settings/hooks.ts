@@ -14,6 +14,7 @@ import {
   getAllNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
+  updateGroupSettings,
   updateSettingsForWalletWithAddress,
 } from '@/notifications/settings/storage';
 
@@ -147,31 +148,20 @@ export const useWalletGroupNotificationSettings = () => {
     };
   }, [notificationSettings]);
 
-  const updateSectionSettings = useCallback(
-    (options: object) => {
-      const newSettings = { ...existingGroupSettings, ...options };
-      notificationSettingsStorage.set(
-        WALLET_GROUPS_STORAGE_KEY,
-        JSON.stringify(newSettings)
-      );
-    },
-    [existingGroupSettings]
-  );
-
-  const updateGroupSettings = useCallback(
+  const updateGroupSettingsAndSubscriptions = useCallback(
     (type: NotificationRelationshipType, enabled: boolean) => {
-      const options = {
+      const options: GroupSettings = {
         [type]: enabled,
       };
-      const newSettings = { ...existingGroupSettings, ...options };
+      const newSettings: GroupSettings = {
+        ...existingGroupSettings,
+        ...options,
+      };
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      const updatedStore = () => {
-        notificationSettingsStorage.set(
-          WALLET_GROUPS_STORAGE_KEY,
-          JSON.stringify(newSettings)
-        );
+      const updateStore = () => {
+        updateGroupSettings(newSettings);
       };
 
       if (newOwnerEnabled !== ownerEnabled) {
@@ -179,13 +169,13 @@ export const useWalletGroupNotificationSettings = () => {
           ownedWallets,
           NotificationRelationship.OWNER,
           newOwnerEnabled
-        ).then(updatedStore);
+        ).then(updateStore);
       } else if (newWatcherEnabled !== watcherEnabled) {
         return toggleGroupNotifications(
           watchedWallets,
           NotificationRelationship.WATCHER,
           newWatcherEnabled
-        ).then(updatedStore);
+        ).then(updateStore);
       }
       return Promise.resolve();
     },
@@ -212,7 +202,6 @@ export const useWalletGroupNotificationSettings = () => {
     watcherEnabled: isWatcherEnabled,
     lastOwnedWalletEnabled,
     lastWatchedWalletEnabled,
-    updateGroupSettings,
-    updateSectionSettings,
+    updateGroupSettingsAndSubscriptions,
   };
 };
