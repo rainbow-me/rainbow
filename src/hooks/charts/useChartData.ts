@@ -85,8 +85,7 @@ export default function useChartData(asset: any, secondStore: any) {
     [setParams]
   );
 
-  // FIXME: check if native currency is correct
-  // add current price at the very end
+  // TODO: @skylarbarrera APP-211
   const filteredData = useMemo(() => {
     const now = Math.floor(Date.now() / 1000);
     // Filter tokens with no data
