@@ -580,11 +580,16 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          const { result: txResult } = await sendTransaction({
+          const { result: txResult, error } = await sendTransaction({
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
           });
+
+          if (error) {
+            throw new Error(`SendSheet sendTransaction failed`);
+          }
+
           const { hash, nonce } = txResult;
           const { data, value } = signableTransaction;
           if (!isEmpty(hash)) {
@@ -601,11 +606,11 @@ export default function SendSheet(props) {
           }
         }
       } catch (error) {
+        submitSuccess = false;
         logger.sentry('TX Details', txDetails);
         logger.sentry('SendSheet onSubmit error');
         logger.sentry(error);
         captureException(error);
-        submitSuccess = false;
       }
       return submitSuccess;
     },
