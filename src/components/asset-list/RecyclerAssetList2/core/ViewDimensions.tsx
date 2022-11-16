@@ -15,8 +15,8 @@ import {
 import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
-import { ReceiveCardHeight } from '@/components/cards/ReceiveAssetsCard';
-import { EthCardHeight } from '@/components/cards/EthCard';
+import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
+import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/LearnCard';
 import { DiscoverMoreButtonHeight } from './DiscoverMoreButton';
 
@@ -27,8 +27,8 @@ type Dim = {
 const ViewDimensions: Record<CellType, Dim> = {
   [CellType.EMPTY_ROW]: { height: 0 },
   [CellType.DISCOVER_MORE_BUTTON]: { height: DiscoverMoreButtonHeight },
-  [CellType.RECEIVE_CARD]: { height: ReceiveCardHeight },
-  [CellType.ETH_CARD]: { height: EthCardHeight },
+  [CellType.RECEIVE_CARD]: { height: RECEIVE_CARD_HEIGHT },
+  [CellType.ETH_CARD]: { height: ETH_CARD_HEIGHT },
   [CellType.LEARN_CARD]: { height: LEARN_CARD_HEIGHT },
   [CellType.EMPTY_WALLET_SPACER]: { height: 20 },
   [CellType.BIG_EMPTY_WALLET_SPACER]: { height: 32 },

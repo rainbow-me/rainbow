@@ -448,9 +448,9 @@
         "time": "Up to %{estimatedWaitTime} to swap"
       },
       "no_results": {
-        "description": "Some tokens don’t have enough liquidity to perform a successful swap.",
-        "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap.",
-        "description_no_assets": "You don’t have any tokens to %{action}.",
+        "description": "Some tokens don't have enough liquidity to perform a successful swap.",
+        "description_l2": "Some tokens don't have enough layer 2 liquidity to perform a successful swap.",
+        "description_no_assets": "You don't have any tokens to %{action}.",
         "nothing_found": "Nothing found",
         "nothing_here": "Nothing here!",
         "nothing_to_send": "Nothing to send"

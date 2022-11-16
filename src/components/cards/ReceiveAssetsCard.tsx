@@ -16,7 +16,7 @@ import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import * as i18n from '@/languages';
 
-export const ReceiveCardHeight = 174;
+export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = () => {
