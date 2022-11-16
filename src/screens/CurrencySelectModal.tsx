@@ -613,7 +613,7 @@ export default function CurrencySelectModal() {
 
   useEffect(() => {
     // check if list has items before attempting to scroll
-    if (!currencyList[0]?.data) return
+    if (!currencyList[0]?.data) return;
     if (currentChainId !== prevChainId) {
       listRef?.current?.scrollToLocation({
         animated: false,
