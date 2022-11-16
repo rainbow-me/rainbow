@@ -3,7 +3,7 @@ import { rainbowTokenList } from '@/references';
 
 export default function getTokenMetadata(
   tokenAddress: string | undefined
-): TokenMetadata | undefined {
+): Omit<TokenMetadata, 'decimals' | 'chainId'> | undefined {
   if (!tokenAddress) return undefined;
   const metadata: TokenMetadata =
     rainbowTokenList.RAINBOW_TOKEN_LIST[tokenAddress.toLowerCase()];
