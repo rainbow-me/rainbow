@@ -19,12 +19,38 @@ import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
 import Routes from '@/navigation/routesNames';
 
-const LOADING_ASSETS_PLACEHOLDER = [
+const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
+];
+
+const EMPTY_WALLET_CONTENT = [
+  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
+  {
+    type: 'RECEIVE_CARD',
+    uid: 'receive_card',
+  },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+  { type: 'ETH_CARD', uid: 'eth-card' },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+  {
+    type: 'LEARN_CARD',
+    uid: 'learn-card',
+  },
+  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
+  {
+    type: 'DISCOVER_MORE_BUTTON',
+    uid: 'discover-home-button',
+  },
+];
+
+const ONLY_NFTS_CONTENT = [
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+  { type: 'ETH_CARD', uid: 'eth-card' },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
 ];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
@@ -388,36 +414,13 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  const isEmpty = !briefAssets?.length && !collectibles?.length;
-  const isOnlyNFTs = !briefAssets?.length && collectibles?.length;
+  const hasTokens = briefAssets?.length;
+  const hasNFTs = collectibles?.length;
 
-  const emptySection = [
-    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
-    {
-      type: 'RECEIVE_CARD',
-      uid: 'receive_card',
-    },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
-    { type: 'ETH_CARD', uid: 'eth-card' },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
-    {
-      type: 'LEARN_CARD',
-      uid: 'learn-card',
-    },
-    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
-    {
-      type: 'DISCOVER_MORE_BUTTON',
-      uid: 'discover-home-button',
-    },
-  ];
+  const isEmpty = !hasTokens && !hasNFTs;
+  const hasNFTsOnly = !hasTokens && hasNFTs;
 
-  const isOnlyNFTsSection = [
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
-    { type: 'ETH_CARD', uid: 'eth-card' },
-    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
-  ];
-
-  return [
+  const header = [
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
@@ -439,49 +442,50 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW',
       uid: 'profile-name',
     },
-    briefAssets?.length
-      ? {
-          type: 'PROFILE_NAME_ROW_SPACE_AFTER',
-          uid: 'profile-name-space-after',
-        }
-      : {
-          type: 'EMPTY_ROW',
-          uid: 'empty-row-1',
-        },
-    briefAssets?.length
-      ? {
-          type: 'PROFILE_BALANCE_ROW',
-          uid: 'profile-balance',
-          value: totalValue,
-        }
-      : {
-          type: 'EMPTY_ROW',
-          uid: 'empty-row-2',
-        },
     {
-      type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
-      uid: 'profile-balance-space-after',
+      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+      uid: 'profile-name-space-after',
     },
+    ...(hasTokens
+      ? [
+          {
+            type: 'PROFILE_BALANCE_ROW',
+            uid: 'profile-balance',
+            value: totalValue,
+          },
+          {
+            type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
+            uid: 'profile-balance-space-after',
+          },
+        ]
+      : []),
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
       value: totalValue,
     },
-    isEmpty || isOnlyNFTs
-      ? { type: 'EMPTY_ROW', uid: 'empty-row-3' }
-      : {
+    hasTokens
+      ? {
           type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
           uid: 'profile-action-buttons-space-after',
           value: totalValue,
-        },
-    ...(isEmpty
-      ? emptySection
-      : isOnlyNFTs
-      ? isOnlyNFTsSection
-      : isLoadingAssets
-      ? LOADING_ASSETS_PLACEHOLDER
-      : briefAssets),
+        }
+      : { type: 'EMPTY_ROW', uid: 'empty-row-3' },
   ];
+
+  let content = CONTENT_PLACEHOLDER;
+
+  if (isEmpty) {
+    content = EMPTY_WALLET_CONTENT;
+  } else if (hasNFTsOnly) {
+    content = ONLY_NFTS_CONTENT;
+  } else if (isLoadingAssets) {
+    content = CONTENT_PLACEHOLDER;
+  } else if (hasTokens) {
+    content = briefAssets;
+  }
+
+  return [...header, ...content];
 };
 
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
