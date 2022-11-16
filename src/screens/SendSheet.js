@@ -21,6 +21,7 @@ import {
   SendContactList,
   SendHeader,
 } from '../components/send';
+import { Box } from '@/design-system';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -81,6 +82,8 @@ import {
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { NoResults } from '@/components/list';
+import { NoResultsType } from '@/components/list/NoResults';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -983,19 +986,30 @@ export default function SendSheet(props) {
             watchedAccounts={watchedAccounts}
           />
         )}
-        {showAssetList && (
-          <SendAssetList
-            hiddenCoins={hiddenCoinsObj}
-            nativeCurrency={nativeCurrency}
-            network={network}
-            onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoinsObj}
-            savings={savings}
-            sortedAssets={sortedAssets}
-            theme={theme}
-            uniqueTokens={sendableUniqueTokens}
-          />
-        )}
+        {showAssetList &&
+          (sortedAssets.length || sendableUniqueTokens.length ? (
+            <SendAssetList
+              hiddenCoins={hiddenCoinsObj}
+              nativeCurrency={nativeCurrency}
+              network={network}
+              onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoinsObj}
+              savings={savings}
+              sortedAssets={sortedAssets}
+              theme={theme}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          ) : (
+            <Box
+              height={{ custom: sheetHeight }}
+              bottom="0px"
+              width="full"
+              position="absolute"
+              justifyContent="center"
+            >
+              <NoResults type={NoResultsType.send} />
+            </Box>
+          ))}
         {showAssetForm && (
           <SendAssetForm
             {...props}

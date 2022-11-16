@@ -221,7 +221,8 @@ const withBriefBalanceSavingsSection = (
   if (network !== Network.mainnet) {
     return [];
   }
-
+  // TODO: make this logic conditional
+  return [];
   if (isLoadingAssets) return [];
   return [
     {
@@ -355,7 +356,8 @@ const withBriefBalanceSection = (
   hiddenCoins: any,
   collectibles: any,
   savingsSection: any,
-  uniswapTotal: any
+  uniswapTotal: any,
+  uniqueTokens: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -386,6 +388,35 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
+  const isEmpty = !briefAssets?.length && !collectibles?.length;
+  const isOnlyNFTs = !briefAssets?.length && collectibles?.length;
+
+  const emptySection = [
+    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
+    {
+      type: 'RECEIVE_CARD',
+      uid: 'receive_card',
+    },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+    { type: 'ETH_CARD', uid: 'eth-card' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+    {
+      type: 'LEARN_CARD',
+      uid: 'learn-card',
+    },
+    { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
+    {
+      type: 'DISCOVER_MORE_BUTTON',
+      uid: 'discover-home-button',
+    },
+  ];
+
+  const isOnlyNFTsSection = [
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+    { type: 'ETH_CARD', uid: 'eth-card' },
+    { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+  ];
+
   return [
     {
       type: 'PROFILE_STICKY_HEADER',
@@ -408,15 +439,25 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW',
       uid: 'profile-name',
     },
-    {
-      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
-      uid: 'profile-name-space-after',
-    },
-    {
-      type: 'PROFILE_BALANCE_ROW',
-      uid: 'profile-balance',
-      value: totalValue,
-    },
+    briefAssets?.length
+      ? {
+          type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+          uid: 'profile-name-space-after',
+        }
+      : {
+          type: 'EMPTY_ROW',
+          uid: 'empty-row-1',
+        },
+    briefAssets?.length
+      ? {
+          type: 'PROFILE_BALANCE_ROW',
+          uid: 'profile-balance',
+          value: totalValue,
+        }
+      : {
+          type: 'EMPTY_ROW',
+          uid: 'empty-row-2',
+        },
     {
       type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
       uid: 'profile-balance-space-after',
@@ -426,12 +467,20 @@ const withBriefBalanceSection = (
       uid: 'profile-action-buttons',
       value: totalValue,
     },
-    {
-      type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
-      uid: 'profile-action-buttons-space-after',
-      value: totalValue,
-    },
-    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
+    isEmpty || isOnlyNFTs
+      ? { type: 'EMPTY_ROW', uid: 'empty-row-3' }
+      : {
+          type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+          uid: 'profile-action-buttons-space-after',
+          value: totalValue,
+        },
+    ...(isEmpty
+      ? emptySection
+      : isOnlyNFTs
+      ? isOnlyNFTsSection
+      : isLoadingAssets
+      ? LOADING_ASSETS_PLACEHOLDER
+      : briefAssets),
   ];
 };
 
@@ -473,7 +522,12 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, isLoadingAssetsSelector, networkSelector],
+  [
+    savingsSelector,
+    isLoadingAssetsSelector,
+    networkSelector,
+    uniqueTokensSelector,
+  ],
   withBriefBalanceSavingsSection
 );
 

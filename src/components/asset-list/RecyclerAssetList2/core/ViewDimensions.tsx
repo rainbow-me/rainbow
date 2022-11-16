@@ -15,12 +15,23 @@ import {
 import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
+import { ReceiveCardHeight } from '@/components/cards/ReceiveAssetsCard';
+import { EthCardHeight } from '@/components/cards/EthCard';
+import { LEARN_CARD_HEIGHT } from '@/components/cards/LearnCard';
+import { DiscoverMoreButtonHeight } from './DiscoverMoreButton';
 
 type Dim = {
   width?: number;
   height: number;
 };
 const ViewDimensions: Record<CellType, Dim> = {
+  [CellType.EMPTY_ROW]: { height: 0 },
+  [CellType.DISCOVER_MORE_BUTTON]: { height: DiscoverMoreButtonHeight },
+  [CellType.RECEIVE_CARD]: { height: ReceiveCardHeight },
+  [CellType.ETH_CARD]: { height: EthCardHeight },
+  [CellType.LEARN_CARD]: { height: LEARN_CARD_HEIGHT },
+  [CellType.EMPTY_WALLET_SPACER]: { height: 20 },
+  [CellType.BIG_EMPTY_WALLET_SPACER]: { height: 32 },
   [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },

@@ -450,8 +450,10 @@
       "no_results": {
         "description": "Some tokens don’t have enough liquidity to perform a successful swap.: )",
         "description_l2": "Some tokens don’t have enough layer 2 liquidity to perform a successful swap. :)",
+        "description_no_assets": "You don’t have any tokens to %{action}. :)",
         "nothing_found": "Nothing found :)",
-        "nothing_here": "Nothing here! :)"
+        "nothing_here": "Nothing here! :)",
+        "nothing_to_send": "Nothing to send :)"
       },
       "price_impact": {
         "losing_prefix": "Losing :)",
@@ -899,7 +901,8 @@
         "tracking_link": "We do not track you",
         "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
         "work_title": "How does Manager work?"
-      }
+      },
+      "discover_web3": "Discover Web3 :)"
     },
     "image_picker": {
       "cancel": "Cancel :)",

@@ -28,6 +28,12 @@ import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsR
 import { ProfileAvatarRow } from '../profile-header/ProfileAvatarRow';
 import { ProfileBalanceRow } from '../profile-header/ProfileBalanceRow';
 import { ProfileNameRow } from '../profile-header/ProfileNameRow';
+import { EthCard } from '@/components/cards/EthCard';
+import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
+import { CardRowWrapper } from '../cards/CardRowWrapper';
+import { DiscoverMoreButton } from './DiscoverMoreButton';
+import { LearnCard } from '@/components/cards/LearnCard';
+import { learnCards } from '@/components/cards/utils/constants';
 
 function rowRenderer(
   type: CellType,
@@ -36,7 +42,6 @@ function rowRenderer(
   extendedState: ExtendedState
 ) {
   const data = extendedState.additionalData[uid];
-
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -48,6 +53,9 @@ function rowRenderer(
     case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
     case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
     case CellType.SAVINGS_HEADER_SPACE_BEFORE:
+    case CellType.EMPTY_WALLET_SPACER:
+    case CellType.BIG_EMPTY_WALLET_SPACER:
+    case CellType.EMPTY_ROW:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -58,6 +66,31 @@ function rowRenderer(
           }
           extendedState={extendedState}
         />
+      );
+    case CellType.DISCOVER_MORE_BUTTON:
+      return (
+        <CardRowWrapper>
+          <DiscoverMoreButton />
+        </CardRowWrapper>
+      );
+
+    case CellType.RECEIVE_CARD:
+      return (
+        <CardRowWrapper>
+          <ReceiveAssetsCard />
+        </CardRowWrapper>
+      );
+    case CellType.ETH_CARD:
+      return (
+        <CardRowWrapper>
+          <EthCard />
+        </CardRowWrapper>
+      );
+    case CellType.LEARN_CARD:
+      return (
+        <CardRowWrapper>
+          <LearnCard cardDetails={learnCards[0]} type="stretch" />
+        </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;

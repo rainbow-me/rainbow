@@ -19,59 +19,31 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
-  usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
   useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export const ProfileActionButtonsRowHeight = 80;
 
 export function ProfileActionButtonsRow() {
-  // ////////////////////////////////////////////////////
-  // Account
-  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
-  // ////////////////////////////////////////////////////
-  // Colors
-
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
-
-  const { colors } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  } else if (typeof accountColor === 'string') {
-    accentColor = accountColor;
-  }
-
-  // ////////////////////////////////////////////////////
-  // Animations
-
-  const hasAvatarLoaded = !!accountImage || accountSymbol;
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
-
-  const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
+  const scale = useDerivedValue(() => (accentColorLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -85,7 +57,7 @@ export function ProfileActionButtonsRow() {
     ],
   }));
 
-  if (!hasLoaded) return null;
+  if (!accentColorLoaded) return null;
   return (
     <Box width="full">
       <Inset horizontal={{ custom: 17 }}>
@@ -307,8 +279,8 @@ function MoreButton() {
   }, [accountAddress, isToastActive, setToastActive]);
 
   const handlePressQRCode = React.useCallback(() => {
-    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
-      component: 'ProfileActionButtonsRow',
+    analytics.track('Tapped "My QR Code"', {
+      category: 'home screen',
     });
 
     navigate(Routes.RECEIVE_MODAL);

@@ -9,6 +9,7 @@ import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import { Box } from '@/design-system';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
+import { NoResultsType } from '../list/NoResults';
 
 interface CurrencySelectionListProps {
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
@@ -62,7 +63,10 @@ const CurrencySelectionList: ForwardRefRenderFunction<
             custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
           }}
         >
-          <NoResults fromDiscover={fromDiscover} onL2={onL2} />
+          <NoResults
+            onL2={onL2}
+            type={fromDiscover ? NoResultsType.discover : NoResultsType.swap}
+          />
         </Box>
       ) : (
         <Centered flex={1}>
