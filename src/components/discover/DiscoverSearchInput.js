@@ -31,7 +31,7 @@ export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
 
 const Container = styled(Row)(({ isSearchModeEnabled, theme: { colors } }) => ({
-  ...margin.object(0, 15, 8),
+  ...margin.object(0, 15, isSearchModeEnabled ? 8 : 0),
   ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
   borderRadius: ExchangeSearchHeight / 2,

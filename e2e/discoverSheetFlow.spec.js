@@ -152,6 +152,7 @@ describe('Discover Screen Flow', () => {
   });
 
   it('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.swipeUntilVisible('dpi-button', 'discover-sheet', 'up');
     await Helpers.waitAndTap('dpi-button');
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
