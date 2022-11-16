@@ -92,6 +92,13 @@ class TransactionListViewCell: TransactionListBaseCell {
           badge.image = img
           badge.isHidden = false
         }
+      }else if transaction.network == "bsc" {
+        var imgName = "bscBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
       }else if transaction.network == "arbitrum" {
         var imgName = "arbitrumBadge"
         if(darkMode){ imgName += "Dark" }

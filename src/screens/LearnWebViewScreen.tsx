@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Share, StatusBar } from 'react-native';
+import { Share, StatusBar, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
@@ -97,31 +97,33 @@ export default function LearnWebViewScreen() {
       removeTopPadding
       additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
     >
-      <WebView
-        startInLoadingState
-        renderLoading={() => (
-          <Box
-            background="surfacePrimaryElevated"
-            width="full"
-            height={{ custom: contentHeight }}
-            paddingBottom={{ custom: HEADER_HEIGHT }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-            /* @ts-ignore - JS component */}
-            <LoadingSpinner />
-          </Box>
-        )}
-        onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
-        injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
-        style={{
-          height: webViewHeight,
-        }}
-        source={{
-          uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
-        }}
-      />
+      <View pointerEvents="none">
+        <WebView
+          startInLoadingState
+          renderLoading={() => (
+            <Box
+              background="surfacePrimaryElevated"
+              width="full"
+              height={{ custom: contentHeight }}
+              paddingBottom={{ custom: HEADER_HEIGHT }}
+              alignItems="center"
+              justifyContent="center"
+            >
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+              /* @ts-ignore - JS component */}
+              <LoadingSpinner />
+            </Box>
+          )}
+          onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
+          injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
+          style={{
+            height: webViewHeight,
+          }}
+          source={{
+            uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
+          }}
+        />
+      </View>
     </SlackSheet>
   );
 }
