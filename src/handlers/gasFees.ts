@@ -58,5 +58,5 @@ export const bscGasStationGetGasPrices = (): Promise<{
   data: GasFeesBscGasStationData;
 }> =>
   bscGasStationApi.get(
-    `?module=gastracker&action=gasoracle&apikey=YourApiKeyToken`
+    `?module=gastracker&action=gasoracle&apikey=B395TC4T7BXEWSSUIQCEG1WWSIZ2JCJW35`
   );
