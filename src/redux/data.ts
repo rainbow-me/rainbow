@@ -1418,9 +1418,7 @@ export const dataWatchPendingTransactions = (
               updatedPendingTransaction,
               transactionStatus
             );
-            if (transactionStatus !== pendingTransactionData.status) {
-              txStatusesDidChange = true;
-            }
+            txStatusesDidChange = true;
           }
         } else if (tx.flashbots) {
           pendingTransactionData = await getTransactionFlashbotStatus(
