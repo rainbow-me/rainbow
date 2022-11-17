@@ -61,8 +61,7 @@ describe('@/analytics', () => {
     analytics.identify({ currency: 'USD' });
     analytics.screen(Routes.BACKUP_SHEET);
 
-    // called once to let us know it was disabled
-    expect(analytics.client.track).toHaveBeenCalledTimes(1);
+    expect(analytics.client.track).not.toHaveBeenCalled();
     expect(analytics.client.identify).not.toHaveBeenCalled();
     expect(analytics.client.screen).not.toHaveBeenCalled();
   });

@@ -1328,7 +1328,9 @@
         "public_showcase": "Public Showcase",
         "when_public": "When public, your NFT Showcase will be visible on your Rainbow profile!",
         "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at",
-        "view_profile": "View your profile"
+        "view_profile": "View your profile",
+        "analytics_toggle": "Analytics",
+        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account."
       },
       "restore": "Restore to original deployment",
       "review": "Review Rainbow",
