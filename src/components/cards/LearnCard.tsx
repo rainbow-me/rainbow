@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import { useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 
-export const LEARN_CARD_HEIGHT = 184;
+export const LEARN_CARD_HEIGHT = 185;
 
 type LearnCardProps = {
   cardDetails: LearnCardDetails;
