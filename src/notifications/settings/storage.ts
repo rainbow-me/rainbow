@@ -1,4 +1,5 @@
 import {
+  NOTIFICATIONS_SETTINGS_VERSION,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -14,6 +15,19 @@ export const notificationSettingsStorage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
 });
 
+export const getSettingsVersion = (): number => {
+  const version = notificationSettingsStorage.getNumber(
+    NOTIFICATIONS_SETTINGS_VERSION
+  );
+
+  if (version === undefined) return 1;
+  else return version;
+};
+
+export const setSettingsVersion = (newVersion: number) => {
+  notificationSettingsStorage.set(NOTIFICATIONS_SETTINGS_VERSION, newVersion);
+};
+
 /**
  Grabs notification settings for all wallets if they exist,
  otherwise returns an empty array.
@@ -23,6 +37,18 @@ export const getAllNotificationSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data) as WalletNotificationSettings[];
   return [];
+};
+
+/**
+ * Writes an updated settings object to storage
+ */
+export const setAllNotificationSettingsToStorage = (
+  settings: WalletNotificationSettings[]
+) => {
+  notificationSettingsStorage.set(
+    WALLET_TOPICS_STORAGE_KEY,
+    JSON.stringify(settings)
+  );
 };
 
 export const getExistingGroupSettingsFromStorage = () => {
@@ -50,7 +76,7 @@ export const walletHasNotificationSettings = (address: string) => {
  */
 export const updateSettingsForWalletsWithRelationshipType = (
   type: NotificationRelationshipType,
-  options: object
+  options: Partial<WalletNotificationSettings>
 ): WalletNotificationSettings[] => {
   const data = getAllNotificationSettingsFromStorage();
   const newSettings = data.map((wallet: WalletNotificationSettings) => {

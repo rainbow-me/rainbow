@@ -45,24 +45,24 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { delay, isZero } from '@/helpers/utilities';
+import { isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
-import { notificationsSubscription } from '@/redux/explorer';
 import walletTypes from '@/helpers/walletTypes';
 import {
-  resolveAndTrackPushNotificationPermissionStatus,
   NotificationSubscriptionChangesListener,
   registerNotificationSubscriptionChangesListener,
+  resolveAndTrackPushNotificationPermissionStatus,
   trackTappedPushNotification,
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
 import {
-  addDefaultNotificationSettingsForWallet,
-  initializeAllWalletsWithDefaults,
   NotificationRelationship,
+  AddressWithRelationship,
+  initializeAllWalletsWithEmptySettings,
+  migrateWalletSettings,
 } from '@/notifications/settings';
-import { AddressWithRelationship } from '@/notifications/settings/types';
+import { getAllNotificationSettingsFromStorage } from '@/notifications/settings/storage';
 
 type Callback = () => void;
 
@@ -84,6 +84,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   const appStateListener = useRef<NativeEventSubscription>();
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
+  const alreadyRanInitialization = useRef(false);
 
   /*
   We need to save some properties to a ref in order to have an up-to-date value
@@ -370,9 +371,21 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     }
   }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
 
+  // Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
   useEffect(() => {
-    initializeAllWalletsWithDefaults(addresses, dispatch);
-  }, [addresses, dispatch]);
+    if (walletReady && !alreadyRanInitialization.current) {
+      console.log(JSON.stringify(addresses, null, 2));
+      console.log(
+        JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
+      );
+      migrateWalletSettings();
+      initializeAllWalletsWithEmptySettings(addresses, dispatch);
+      console.log(
+        JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
+      );
+      alreadyRanInitialization.current = true;
+    }
+  }, [addresses, dispatch, walletReady]);
 
   return null;
 };

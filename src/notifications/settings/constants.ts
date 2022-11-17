@@ -14,6 +14,7 @@ export const NotificationRelationship = {
 };
 export const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
 export const WALLET_GROUPS_STORAGE_KEY = 'notificationGroupToggle';
+export const NOTIFICATIONS_SETTINGS_VERSION = 'notificationsSettingsVersion';
 export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
 export const DEFAULT_ENABLED_TOPIC_SETTINGS = {};
 Object.values(NotificationTopic).forEach(

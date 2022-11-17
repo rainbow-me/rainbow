@@ -12,6 +12,7 @@ export type WalletNotificationSettings = {
   topics: { [key: NotificationTopicType]: boolean };
   enabled: boolean;
   type: NotificationRelationshipType;
+  appliedDefaults?: boolean;
 };
 
 export type GroupSettings = {

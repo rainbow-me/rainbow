@@ -1,25 +1,28 @@
 export {
-  NotificationTopic,
   NotificationRelationship,
+  NotificationTopic,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from './constants';
 export {
   addDefaultNotificationGroupSettings,
   addDefaultNotificationSettingsForWallet,
-  initializeAllWalletsWithDefaults,
+  initializeAllWalletsWithEmptySettings,
+  initializeSingleWalletWithEmptySettings,
 } from './defaults';
 export {
-  useNotificationSettings,
   useAllNotificationSettingsFromStorage,
+  useNotificationSettings,
   useWalletGroupNotificationSettings,
 } from './hooks';
+export { migrateWalletSettings } from './migrations';
 export {
   removeNotificationSettingsForWallet,
   toggleGroupNotifications,
   toggleTopicForWallet,
 } from './settings';
 export type {
+  AddressWithRelationship,
   GroupSettings,
   NotificationRelationshipType,
   NotificationTopicType,
@@ -27,5 +30,6 @@ export type {
 } from './types';
 export {
   notificationSettingsStorage,
+  updateGroupSettings,
   updateSettingsForWalletsWithRelationshipType,
 } from './storage';
