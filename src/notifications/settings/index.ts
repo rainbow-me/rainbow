@@ -15,6 +15,7 @@ export {
   useNotificationSettings,
   useWalletGroupNotificationSettings,
 } from './hooks';
+export { migrateWalletSettings } from './migrations';
 export {
   removeNotificationSettingsForWallet,
   toggleGroupNotifications,
