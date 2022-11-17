@@ -13,6 +13,12 @@ export enum MigrationName {
 
 export type Migration = {
   /**
+   * Set to true to run the migration every time when writing your migration
+   * code
+   */
+  debug?: boolean;
+
+  /**
    * Must be a UNIQUE name of the migration.
    */
   name: MigrationName;
