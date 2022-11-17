@@ -1,6 +1,6 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback } from 'react';
-import { GenericCard } from './GenericCard';
+import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';
 import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
@@ -15,7 +15,7 @@ export const LEARN_CARD_HEIGHT = 184;
 
 type LearnCardProps = {
   cardDetails: LearnCardDetails;
-  type: 'square' | 'stretch';
+  type: CardType;
 };
 
 export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
@@ -34,14 +34,14 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'LearnCard',
-      fromScreen: routeName,
+      routeName,
       cardType: type,
     });
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
       category,
       url,
       displayType: type,
-      fromScreen: routeName,
+      routeName,
       key,
     });
   }, [category, key, navigate, routeName, type, url]);

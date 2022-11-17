@@ -79,4 +79,5 @@ declare module 'react-native-dotenv' {
   export const RAINBOW_TOKEN_LIST_URL: string;
   export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
   export const LOG_DEBUG: string;
+  export const QUIET_OLD_LOGGER: string;
 }

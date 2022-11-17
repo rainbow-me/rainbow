@@ -2,9 +2,7 @@ import React from 'react';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
-import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
-import TopMoversSection from './TopMoversSection';
 import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
@@ -15,6 +13,12 @@ import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
 import { GasCard } from '@/components/cards/GasCard';
+import { LearnCard } from '@/components/cards/LearnCard';
+import {
+  avoidScamsCard,
+  backupsCard,
+  cryptoAndWalletsCard,
+} from '@/components/cards/utils/constants';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
@@ -23,37 +27,37 @@ export default function DiscoverHome() {
   const testNetwork = isTestnetNetwork(network);
 
   return (
-    <React.Fragment>
-      <Inset top="20px">
-        <Stack space="30px (Deprecated)">
+    <Inset top="20px" bottom={{ custom: 150 }}>
+      <Stack space="20px">
+        <Inset horizontal="20px">
           {profilesEnabled &&
           !testNetwork &&
           !isZero(accountAsset.balance.amount) ? (
-            <Inset horizontal="20px">
-              <Stack space="20px">
-                <Inline space="20px">
-                  <GasCard />
-                  <ENSSearchCard />
-                </Inline>
-                <ENSCreateProfileCard />
-                <DPICard />
-              </Stack>
-            </Inset>
+            <Stack space="20px">
+              <Inline space="20px">
+                <GasCard />
+                <ENSSearchCard />
+              </Inline>
+              <ENSCreateProfileCard />
+              <Inline space="20px">
+                <LearnCard cardDetails={backupsCard} type="square" />
+                <LearnCard cardDetails={avoidScamsCard} type="square" />
+              </Inline>
+              <DPICard />
+            </Stack>
           ) : (
-            <Stack>
-              <TopMoversSection />
-              <Inset top="20px" horizontal="20px">
-                <DPICard />
-              </Inset>
+            <Stack space="20px">
+              <Inline space="20px">
+                <GasCard />
+                <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
+              </Inline>
+              <DPICard />
             </Stack>
           )}
-          <Stack space="30px (Deprecated)">
-            <Lists />
-            {accountAddress ? <UniswapPools /> : null}
-          </Stack>
-        </Stack>
-      </Inset>
-      <BottomSpacer />
-    </React.Fragment>
+        </Inset>
+        <Lists />
+        {accountAddress ? <UniswapPools /> : null}
+      </Stack>
+    </Inset>
   );
 }

@@ -31,6 +31,7 @@ import {
 import { useChartData } from '../../helpers/useChartData';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
+const FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER = 3;
 
 function least(length: number, compare: (value: number) => number) {
   'worklet';
@@ -40,7 +41,7 @@ function least(length: number, compare: (value: number) => number) {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    let pivot = Math.round(bound1 + (bound2 - bound1) / 2);
+    const pivot = Math.round(bound1 + (bound2 - bound1) / 2);
     if (bound1 === bound2) {
       return bound1;
     }
@@ -93,6 +94,7 @@ interface ChartPathProps extends PathProps {
   longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
   timingFeedbackConfig?: WithTimingConfig;
   timingAnimationConfig?: WithTimingConfig;
+  isCard?: boolean;
 }
 
 function positionXWithMargin(x: number, margin: number, width: number) {
@@ -130,8 +132,10 @@ const ChartPathInner = React.memo(
     pathOpacity,
     currentPath,
     previousPath,
+    isCard,
     ...props
   }: ChartPathProps & Omit<ChartData, 'data' | 'dotScale'>) => {
+    ChartPathInner.displayName = 'chartPathInner';
     const interpolatorWorklet = useWorkletValue();
 
     const translationX = useSharedValue<number | null>(null);
@@ -378,7 +382,11 @@ const ChartPathInner = React.memo(
         <Animated.View>
           <Svg
             style={{
-              height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
+              height:
+                height +
+                (isCard
+                  ? FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER
+                  : FIX_CLIPPED_PATH_MAGIC_NUMBER),
               width,
             }}
             viewBox={`0 0 ${width} ${height}`}
@@ -388,6 +396,7 @@ const ChartPathInner = React.memo(
               animatedProps={animatedProps}
               stroke={stroke}
               strokeWidth={strokeWidth}
+              strokeLinecap="round"
               style={pathAnimatedStyles}
               {...props}
             />
@@ -412,6 +421,7 @@ export const ChartPath = React.memo(
     timingFeedbackConfig,
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
+    isCard = false,
     ...props
   }: ChartPathProps) => {
     const {
@@ -438,6 +448,7 @@ export const ChartPath = React.memo(
           {...{
             ...props,
             currentPath,
+            isCard,
             gestureEnabled,
             hapticsEnabled,
             height,
