@@ -1359,7 +1359,7 @@ export const dataWatchPendingTransactions = (
         status: TransactionStatus;
       } | null = {
         status: TransactionStatus.sending,
-        title: '',
+        title: pendingTransactionData?.title || TransactionStatus.sending,
         minedAt: null,
         pending: true,
       };
@@ -1406,14 +1406,11 @@ export const dataWatchPendingTransactions = (
             pendingTransactionData = await getTransactionSocketStatus(
               updatedPendingTransaction
             );
-            logger.debug('pending tx data: ', pendingTransactionData);
             if (!pendingTransactionData.pending) {
               appEvents.emit('transactionConfirmed', {
                 ...txObj,
                 internalType: tx.type,
               });
-            }
-            if (transactionStatus !== pendingTransactionData.status) {
               txStatusesDidChange = true;
             }
           } else {
@@ -1438,12 +1435,10 @@ export const dataWatchPendingTransactions = (
           }
         }
 
-        if (pendingTransactionData) {
-          updatedPendingTransaction.title = pendingTransactionData.title;
-          updatedPendingTransaction.status = pendingTransactionData.status;
-          updatedPendingTransaction.pending = pendingTransactionData.pending;
-          updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
-        }
+        updatedPendingTransaction.title = pendingTransactionData.title;
+        updatedPendingTransaction.status = pendingTransactionData.status;
+        updatedPendingTransaction.pending = pendingTransactionData.pending;
+        updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
       } catch (error) {
         logger.log('Error watching pending txn', error);
       }
