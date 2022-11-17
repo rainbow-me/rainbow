@@ -18,7 +18,7 @@ import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader
 import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
-import { DiscoverMoreButtonHeight } from './DiscoverMoreButton';
+import { DISCOVER_MORE_BUTTON_HEIGHT } from './DiscoverMoreButton';
 
 type Dim = {
   width?: number;
@@ -26,7 +26,7 @@ type Dim = {
 };
 const ViewDimensions: Record<CellType, Dim> = {
   [CellType.EMPTY_ROW]: { height: 0 },
-  [CellType.DISCOVER_MORE_BUTTON]: { height: DiscoverMoreButtonHeight },
+  [CellType.DISCOVER_MORE_BUTTON]: { height: DISCOVER_MORE_BUTTON_HEIGHT },
   [CellType.RECEIVE_CARD]: { height: RECEIVE_CARD_HEIGHT },
   [CellType.ETH_CARD]: { height: ETH_CARD_HEIGHT },
   [CellType.LEARN_CARD]: { height: LEARN_CARD_HEIGHT },
