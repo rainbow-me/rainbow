@@ -242,9 +242,8 @@ const withBriefBalanceSavingsSection = (
   if (network !== Network.mainnet) {
     return [];
   }
-  // TODO: make this logic conditional
-  return [];
-  if (isLoadingAssets) return [];
+
+  if (isLoadingAssets || totalUnderlyingNativeValue === '0') return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
