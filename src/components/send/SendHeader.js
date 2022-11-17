@@ -12,6 +12,7 @@ import { PasteAddressButton } from '../buttons';
 import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
+import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
@@ -52,6 +53,13 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   })
 )({
   marginRight: 2,
+});
+
+const SendSheetTitle = styled(SheetTitle).attrs({
+  weight: 'heavy',
+})({
+  marginBottom: android ? -10 : 0,
+  marginTop: android ? 10 : 17,
 });
 
 const defaultContactItem = {
@@ -210,6 +218,10 @@ export default function SendHeader({
 
   return (
     <Fragment>
+      <SheetHandleFixedToTop />
+      {isTinyPhone ? null : (
+        <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
+      )}
       <AddressInputContainer
         isSmallPhone={isSmallPhone}
         isTinyPhone={isTinyPhone}

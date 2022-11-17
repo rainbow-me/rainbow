@@ -4,11 +4,12 @@ import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { useAssetsInWallet } from '@/hooks';
+import { logger, RainbowError } from '@/logger';
 
 export enum NoResultsType {
-  discover,
-  send,
-  swap,
+  Discover = 'discover',
+  Send = 'send',
+  Swap = 'swap',
 }
 
 export const NoResults = ({
@@ -25,10 +26,10 @@ export const NoResults = ({
   let description;
 
   switch (type) {
-    case NoResultsType.discover:
+    case NoResultsType.Discover:
       title = lang.t('exchange.no_results.nothing_here');
       break;
-    case NoResultsType.swap:
+    case NoResultsType.Swap:
       title = lang.t('exchange.no_results.nothing_found');
       if (assets.length) {
         description = onL2
@@ -40,13 +41,14 @@ export const NoResults = ({
         });
       }
       break;
-    case NoResultsType.send:
+    case NoResultsType.Send:
       title = lang.t('exchange.no_results.nothing_to_send');
       description = lang.t('exchange.no_results.description_no_assets', {
         action: type,
       });
       break;
     default:
+      logger.error(new RainbowError('<NoResults /> - unknown type'));
       break;
   }
 

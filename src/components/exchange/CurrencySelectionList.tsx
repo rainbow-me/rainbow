@@ -65,7 +65,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
         >
           <NoResults
             onL2={onL2}
-            type={fromDiscover ? NoResultsType.discover : NoResultsType.swap}
+            type={fromDiscover ? NoResultsType.Discover : NoResultsType.Swap}
           />
         </Box>
       ) : (

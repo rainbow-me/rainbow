@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -21,7 +21,6 @@ import {
   SendContactList,
   SendHeader,
 } from '../components/send';
-import { Box } from '@/design-system';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -948,6 +947,8 @@ export default function SendSheet(props) {
     [ensSuggestions]
   );
 
+  const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -987,7 +988,7 @@ export default function SendSheet(props) {
           />
         )}
         {showAssetList &&
-          (sortedAssets.length || sendableUniqueTokens.length ? (
+          (!isEmptyWallet ? (
             <SendAssetList
               hiddenCoins={hiddenCoinsObj}
               nativeCurrency={nativeCurrency}
@@ -1000,15 +1001,19 @@ export default function SendSheet(props) {
               uniqueTokens={sendableUniqueTokens}
             />
           ) : (
-            <Box
-              height={{ custom: sheetHeight }}
-              bottom="0px"
-              width="full"
-              position="absolute"
-              justifyContent="center"
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: sheetHeight,
+                alignItems: 'center',
+                justifyContent: 'center',
+                bottom: 0,
+              }}
             >
-              <NoResults type={NoResultsType.send} />
-            </Box>
+              <NoResults type={NoResultsType.Send} />
+            </View>
           ))}
         {showAssetForm && (
           <SendAssetForm
