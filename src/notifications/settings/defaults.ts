@@ -7,8 +7,6 @@ import {
 } from '@/notifications/settings/constants';
 import {
   AddressWithRelationship,
-  GroupSettings,
-  NotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import Logger from 'logger';
@@ -16,6 +14,8 @@ import {
   getAllNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
+  setAllNotificationSettingsToStorage,
+  setSettingsVersion,
   walletHasNotificationSettings,
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
@@ -44,92 +44,59 @@ export const addDefaultNotificationGroupSettings = () => {
   }
 };
 
-export const initializeAllWalletsWithDefaults = (
+/**
+ * Adds fresh disabled settings for all wallets that didn't have settings
+ */
+export const initializeAllWalletsWithEmptySettings = (
   addresses: AddressWithRelationship[],
   dispatch: AppDispatch
-): Promise<void> => {
+) => {
   const currentSettings = getAllNotificationSettingsFromStorage();
-  const currentGroups = getExistingGroupSettingsFromStorage();
-  const newSettings = [...currentSettings];
-  // This map is used in order to optimize the time complexity of initialization
-  const walletSettingsMap = new Map<
-    string,
-    { settings: WalletNotificationSettings; index: number }
-  >(
-    newSettings.map((walletSettings, index) => [
-      walletSettings.address,
-      { settings: walletSettings, index },
-    ])
+  const newSettings: WalletNotificationSettings[] = [...currentSettings];
+  const alreadySavedSettings = new Set(
+    currentSettings.map(entry => entry.address)
   );
-  const subscriptionsQueue: Array<{
-    settings: WalletNotificationSettings;
-    // used for case where we need to resubscribe a wallet
-    oldRelationship?: NotificationRelationshipType;
-  }> = [];
 
-  addresses.forEach(({ address, relationship }) => {
-    dispatch(notificationsSubscription(address));
-    const walletEntry = walletSettingsMap.get(address);
-
-    if (walletEntry === undefined) {
-      const isOwnedWallet = relationship === NotificationRelationship.OWNER;
-      const notificationsEnabled =
-        isOwnedWallet && currentGroups[NotificationRelationship.OWNER];
-      const settingsToAdd: WalletNotificationSettings = {
-        address,
+  addresses.forEach(entry => {
+    dispatch(notificationsSubscription(entry.address));
+    if (!alreadySavedSettings.has(entry.address)) {
+      newSettings.push({
+        type: entry.relationship,
+        address: entry.address,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-        enabled: notificationsEnabled, // turn off notifications for watched wallets by default
-        type: relationship,
-      };
-      newSettings.push(settingsToAdd);
-      subscriptionsQueue.push({
-        settings: settingsToAdd,
-      });
-
-      // handle a case where user imports an already watched wallet which becomes owned
-    } else if (walletEntry.settings.type !== relationship) {
-      Logger.log(
-        `Notifications: unsubscribing ${address} from all [${walletEntry.settings.type.toUpperCase()}] notifications and subscribing to all notifications as [${relationship.toUpperCase()}]`
-      );
-      const index = walletEntry.index;
-      newSettings[index].type = relationship;
-      newSettings[index].enabled = true;
-      newSettings[index].topics = DEFAULT_ENABLED_TOPIC_SETTINGS;
-      subscriptionsQueue.push({
-        settings: { ...walletEntry.settings, type: relationship },
-        oldRelationship: walletEntry.settings.type,
+        enabled: false,
+        appliedDefaults: false,
       });
     }
   });
 
-  return Promise.all(
-    subscriptionsQueue.map(item => {
-      if (item.oldRelationship !== undefined) {
-        return unsubscribeWalletFromAllNotificationTopics(
-          item.oldRelationship,
-          NOTIFICATIONS_DEFAULT_CHAIN_ID,
-          item.settings.address
-        ).then(() =>
-          subscribeWalletToAllNotificationTopics(
-            item.settings.type,
-            NOTIFICATIONS_DEFAULT_CHAIN_ID,
-            item.settings.address
-          )
-        );
-      } else {
-        return subscribeWalletToAllNotificationTopics(
-          item.settings.type,
-          NOTIFICATIONS_DEFAULT_CHAIN_ID,
-          item.settings.address
-        );
-      }
-    })
-  ).then(() => {
-    notificationSettingsStorage.set(
-      WALLET_TOPICS_STORAGE_KEY,
-      JSON.stringify(newSettings)
-    );
-  });
+  setAllNotificationSettingsToStorage(newSettings);
+};
+
+export const initializeSingleWalletWithEmptySettings = (
+  address: string,
+  isReadOnly: boolean,
+  dispatch: AppDispatch
+) => {
+  const currentSettings = getAllNotificationSettingsFromStorage();
+  const newSettings: WalletNotificationSettings[] = [...currentSettings];
+  const alreadySavedSettings = currentSettings.find(
+    wallet => wallet.address === address
+  );
+
+  dispatch(notificationsSubscription(address));
+  if (!alreadySavedSettings) {
+    newSettings.push({
+      type: isReadOnly
+        ? NotificationRelationship.WATCHER
+        : NotificationRelationship.OWNER,
+      topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
+      enabled: false,
+      appliedDefaults: false,
+      address,
+    });
+    setAllNotificationSettingsToStorage(newSettings);
+  }
 };
 
 /**

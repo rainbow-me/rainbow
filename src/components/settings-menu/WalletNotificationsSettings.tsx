@@ -17,16 +17,16 @@ import {
   NotificationTopicType,
   toggleGroupNotifications,
   toggleTopicForWallet,
+  updateGroupSettings,
   useNotificationSettings,
   useWalletGroupNotificationSettings,
 } from '@/notifications/settings';
-import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
   showOfflineAlert,
 } from '@/components/settings-menu/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { updateGroupSettings } from '@/notifications/settings/storage';
 
 type RouteParams = {
   WalletNotificationsSettings: {
@@ -201,7 +201,7 @@ const WalletNotificationsSettings = () => {
       rightComponent={
         <>
           {topicSubscriptionInProgress === topic && (
-            <NotificationLoadingIndicator />
+            <SettingsLoadingIndicator />
           )}
           <Switch
             disabled={allState.loading || topicSubscriptionInProgress !== null}
@@ -222,7 +222,7 @@ const WalletNotificationsSettings = () => {
           disabled
           rightComponent={
             <>
-              {allState.loading && <NotificationLoadingIndicator />}
+              {allState.loading && <SettingsLoadingIndicator />}
               <Switch
                 disabled={
                   allState.loading || topicSubscriptionInProgress !== null

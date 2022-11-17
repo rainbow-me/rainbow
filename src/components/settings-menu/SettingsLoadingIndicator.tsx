@@ -12,7 +12,7 @@ const ActivityIndicatorIos = styled(ActivityIndicator).attrs({
   marginRight: 4,
 });
 
-export const NotificationLoadingIndicator = () => {
+export const SettingsLoadingIndicator = () => {
   const { colors } = useTheme();
   if (IS_IOS) {
     return <ActivityIndicatorIos color={colors.black} />;

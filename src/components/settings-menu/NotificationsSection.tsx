@@ -22,14 +22,13 @@ import {
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
-import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
   showOfflineAlert,
 } from '@/components/settings-menu/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
-  addDefaultNotificationSettingsForWallet,
   NotificationRelationship,
   updateSettingsForWalletsWithRelationshipType,
   useAllNotificationSettingsFromStorage,
@@ -259,6 +258,7 @@ const NotificationsSection = () => {
         updateSettingsForWalletsWithRelationshipType(
           NotificationRelationship.OWNER,
           {
+            appliedDefaults: true,
             enabled: !storedOwnerEnabled,
           }
         );
@@ -284,6 +284,7 @@ const NotificationsSection = () => {
         updateSettingsForWalletsWithRelationshipType(
           NotificationRelationship.WATCHER,
           {
+            appliedDefaults: true,
             enabled: !storedWatcherEnabled,
           }
         );
@@ -318,31 +319,7 @@ const NotificationsSection = () => {
 
   useEffect(() => {
     checkPermissions();
-    // populate notification settings if they
-    // have been cleared from dev settings to prevent a crash
-    // when going to the notification settings screen for a wallet
-    if (notificationSettings.length === 0) {
-      ownedWallets.forEach(wallet => {
-        addDefaultNotificationSettingsForWallet(
-          wallet.address,
-          NotificationRelationship.OWNER
-        );
-      });
-
-      watchedWallets.forEach(wallet => {
-        addDefaultNotificationSettingsForWallet(
-          wallet.address,
-          NotificationRelationship.WATCHER
-        );
-      });
-    }
-  }, [
-    checkPermissions,
-    justBecameActive,
-    notificationSettings,
-    ownedWallets,
-    watchedWallets,
-  ]);
+  }, [checkPermissions, justBecameActive]);
 
   return (
     <Box>
@@ -432,7 +409,7 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <>
-                    {ownedState.loading && <NotificationLoadingIndicator />}
+                    {ownedState.loading && <SettingsLoadingIndicator />}
                     <Switch
                       disabled={
                         noOwnedWallets || isTestnet || ownedState.loading
@@ -473,7 +450,7 @@ const NotificationsSection = () => {
                 disabled
                 rightComponent={
                   <>
-                    {watchedState.loading && <NotificationLoadingIndicator />}
+                    {watchedState.loading && <SettingsLoadingIndicator />}
                     <Switch
                       disabled={
                         noWatchedWallets || isTestnet || watchedState.loading

@@ -60,6 +60,7 @@ import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { initializeSingleWalletWithEmptySettings } from '@/notifications/settings';
 
 const encryptor = new AesEncryptor();
 
@@ -87,8 +88,10 @@ interface MessageTypeProperty {
   name: string;
   type: string;
 }
+
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
+
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
@@ -163,6 +166,7 @@ export interface PrivateKeyData {
   privateKey: EthereumPrivateKey;
   version: string;
 }
+
 interface SeedPhraseData {
   seedphrase: EthereumPrivateKey;
   version: string;
@@ -550,8 +554,8 @@ export const createWallet = async (
   overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation: boolean = false
+  silent = false,
+  clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
@@ -878,6 +882,13 @@ export const createWallet = async (
       primary,
       type,
     };
+
+    // create notifications settings entry for newly created wallet
+    initializeSingleWalletWithEmptySettings(
+      walletAddress,
+      type === EthereumWalletType.readOnly,
+      dispatch
+    );
 
     if (!silent) {
       await setSelectedWallet(allWallets[id]);

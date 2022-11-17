@@ -23,23 +23,23 @@ import {
  3. Excludes that wallet from the array and saves the new array.
  4. Unsubscribes the wallet from all notification topics on Firebase.
  */
-export const removeNotificationSettingsForWallet = (address: string) => {
+export const removeNotificationSettingsForWallet = (
+  address: string
+): Promise<void> => {
   const allSettings = getAllNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
 
   if (!settingsForWallet) {
-    throw new Error(
-      "Can't remove settings for wallet, wallet is not in storage"
-    );
+    return Promise.resolve();
   }
 
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  unsubscribeWalletFromAllNotificationTopics(
+  return unsubscribeWalletFromAllNotificationTopics(
     settingsForWallet.type,
     NOTIFICATIONS_DEFAULT_CHAIN_ID,
     address
