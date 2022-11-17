@@ -28,7 +28,6 @@ const CONTENT_PLACEHOLDER = [
 ];
 
 const EMPTY_WALLET_CONTENT = [
-  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   {
     type: 'RECEIVE_CARD',
     uid: 'receive_card',
@@ -47,11 +46,7 @@ const EMPTY_WALLET_CONTENT = [
   },
 ];
 
-const ONLY_NFTS_CONTENT = [
-  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
-  { type: 'ETH_CARD', uid: 'eth-card' },
-  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
-];
+const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const sortedAssetsCountSelector = (state: any) => state.sortedAssetsCount;
@@ -470,7 +465,7 @@ const withBriefBalanceSection = (
           uid: 'profile-action-buttons-space-after',
           value: totalValue,
         }
-      : { type: 'EMPTY_ROW', uid: 'empty-row-3' },
+      : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
 
   let content = CONTENT_PLACEHOLDER;
