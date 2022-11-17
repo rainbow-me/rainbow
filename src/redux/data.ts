@@ -1434,11 +1434,12 @@ export const dataWatchPendingTransactions = (
             dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
           }
         }
-
-        updatedPendingTransaction.title = pendingTransactionData.title;
-        updatedPendingTransaction.status = pendingTransactionData.status;
-        updatedPendingTransaction.pending = pendingTransactionData.pending;
-        updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
+        if (pendingTransactionData) {
+          updatedPendingTransaction.title = pendingTransactionData.title;
+          updatedPendingTransaction.status = pendingTransactionData.status;
+          updatedPendingTransaction.pending = pendingTransactionData.pending;
+          updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
+        }
       } catch (error) {
         logger.log('Error watching pending txn', error);
       }
