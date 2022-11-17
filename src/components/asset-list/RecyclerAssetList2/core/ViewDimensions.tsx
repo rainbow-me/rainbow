@@ -17,7 +17,7 @@ import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
 import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
-import { LEARN_CARD_HEIGHT } from '@/components/cards/LearnCard';
+import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
 import { DiscoverMoreButtonHeight } from './DiscoverMoreButton';
 
 type Dim = {

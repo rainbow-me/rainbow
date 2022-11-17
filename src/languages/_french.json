@@ -322,15 +322,32 @@
           "avoid_scams": {
             "title": "Avoid Crypto Scams :)",
             "description": "Here at Rainbow, one of our goals is to make exploring the new world of Ethereum fun, friendly, and safe. You know what's not any of those things? Scams. They're mean, and no one likes them. We want to help you avoid them, so we wrote this brief guide to help you do exactly that! :)"
+          },
+          "understanding_web3": {
+            "title": "Understanding Web3 :)",
+            "description": "The internet has been evolving ever since it was created, and it has been through many eras. Web1 started during the 1990s, and it was a period marked by people connecting to the internet and reading what was there, but not publishing or contributing themselves. :)"
+          },
+          "manage_connections": {
+            "title": "Manage Connections and Networks :)",
+            "description": "Many of the websites or applications you connect your wallet to require you to be using a specific network. Currently, most websites use the main Ethereum network and new connections to your wallet usually default to this network. :)"
+          },
+          "supported_networks": {
+            "title": "Supported Networks :)",
+            "description": "Up until recently, Rainbow and many other blockchain projects have only been compatible with Ethereum—the world's public decentralized ledger. Ethereum is extremely secure and highly reliable, but it isn't always well suited for speed and efficiency. :)"
+          },
+          "collect_nfts": {
+            "title": "Collect NFTs on OpenSea :)",
+            "description": "NFTs are digital collectibles that can be owned and traded. The acronym \"NFT\" stands for non-fungible token, and they can come in the form of anything from digital trading cards to digital art. There are even NFTs that act like certificates of authenticity for physical items. :)"
           }
         },
         "categories": {
           "essentials": "Essentials :)",
-          "safety": "Staying Safe :)",
-          "rainbow": "How to use Rainbow :)",
+          "staying_safe": "Staying Safe :)",
           "beginners_guides": "Beginner's Guides :)",
-          "blockchains": "Blockchains and Fees :)",
-          "web3": "What is Web3? :)"
+          "blockchains_and_fees": "Blockchains and Fees :)",
+          "what_is_web3": "What is Web3? :)",
+          "apps_and_connections": "Apps and Connections :)",
+          "navigating_your_wallet": "Navigating your Wallet :)"
         }
       },
       "receive": {

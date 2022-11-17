@@ -32,8 +32,7 @@ import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
-import { LearnCard } from '@/components/cards/LearnCard';
-import { learnCards } from '@/components/cards/utils/constants';
+import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 
 function rowRenderer(
   type: CellType,
@@ -89,7 +88,7 @@ function rowRenderer(
     case CellType.LEARN_CARD:
       return (
         <CardRowWrapper>
-          <LearnCard cardDetails={learnCards[0]} type="stretch" />
+          <RotatingLearnCard />
         </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:
