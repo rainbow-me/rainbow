@@ -4,7 +4,7 @@ import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { useAssetsInWallet } from '@/hooks';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 export enum NoResultsType {
   Discover = 'discover',
@@ -48,7 +48,8 @@ export const NoResults = ({
       });
       break;
     default:
-      logger.error(new RainbowError('<NoResults /> - unknown type'));
+      title = lang.t('exchange.no_results.nothing_found');
+      logger.warn('NoResults: unknown type, falling back to default message');
       break;
   }
 
