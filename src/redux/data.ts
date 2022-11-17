@@ -1359,7 +1359,7 @@ export const dataWatchPendingTransactions = (
         status: TransactionStatus;
       } | null = {
         status: TransactionStatus.sending,
-        title: pendingTransactionData?.title || TransactionStatus.sending,
+        title: tx?.title || TransactionStatus.sending,
         minedAt: null,
         pending: true,
       };
