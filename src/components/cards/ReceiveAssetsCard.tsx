@@ -86,7 +86,11 @@ export const ReceiveAssetsCard = () => {
               </Box>
             )}
           </Stack>
-          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8}>
+          <ButtonPressAnimation
+            onPress={onPressQRCode}
+            scaleTo={0.8}
+            overflowMargin={50}
+          >
             <IconOrb
               color={accentColor}
               icon="􀖂"
