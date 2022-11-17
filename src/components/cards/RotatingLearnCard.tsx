@@ -2,6 +2,8 @@ import { delay } from '@/helpers/utilities';
 import React, { useReducer } from 'react';
 import { LearnCard } from './LearnCard';
 import {
+  avoidScamsCard,
+  backupsCard,
   collectNFTsCard,
   connectToDappCard,
   getStartedCard,
@@ -16,9 +18,11 @@ export const LEARN_CARD_HEIGHT = 185;
 
 const learnCards: LearnCardDetails[] = [
   getStartedCard,
+  backupsCard,
   connectToDappCard,
   web3Card,
   protectWalletCard,
+  avoidScamsCard,
   manageConnectionsCard,
   supportedNetworksCard,
   collectNFTsCard,
