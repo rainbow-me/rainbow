@@ -94,19 +94,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should go to settings and enable cross chain swaps', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    await Helpers.checkIfVisible('profile-screen');
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-    await Helpers.scrollTo('settings-menu-container', 'bottom');
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-    await Helpers.tapByText('Crosschain Swaps');
-    await Helpers.waitAndTap('hardhat-section');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
-
   it('Should be able to do a cross chain swap', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
