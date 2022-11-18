@@ -404,12 +404,17 @@ export const getTransactionSocketStatus = async (
         pending = false;
       }
     } else if (socketResponse.error) {
-      logger.debug('socket tx check failed: ', socketResponse.error);
+      logger.warn(
+        'getTransactionSocketStatus transaction check failed',
+        socketResponse.error
+      );
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
-    logger.error(new RainbowError(`catch socket tx check failed: ${e}`));
+    logger.error(
+      new RainbowError('getTransactionSocketStatus transaction check caught')
+    );
     if (IS_TEST) {
       status = swap?.isBridge
         ? TransactionStatus.bridged
