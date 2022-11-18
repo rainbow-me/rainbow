@@ -242,9 +242,8 @@ const withBriefBalanceSavingsSection = (
   if (network !== Network.mainnet) {
     return [];
   }
-  // TODO: make this logic conditional
-  return [];
-  if (isLoadingAssets) return [];
+
+  if (isLoadingAssets || totalUnderlyingNativeValue === '0') return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -470,14 +469,14 @@ const withBriefBalanceSection = (
 
   let content = CONTENT_PLACEHOLDER;
 
-  if (isEmpty) {
-    content = EMPTY_WALLET_CONTENT;
-  } else if (hasNFTsOnly) {
-    content = ONLY_NFTS_CONTENT;
-  } else if (isLoadingAssets) {
+  if (isLoadingAssets) {
     content = CONTENT_PLACEHOLDER;
   } else if (hasTokens) {
     content = briefAssets;
+  } else if (hasNFTsOnly) {
+    content = ONLY_NFTS_CONTENT;
+  } else if (isEmpty) {
+    content = EMPTY_WALLET_CONTENT;
   }
 
   return [...header, ...content];
