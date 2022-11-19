@@ -224,7 +224,7 @@ export const textRecordFields = {
       message: lang.t('profiles.create.invalid_username', {
         app: lang.t('profiles.create.github'),
       }),
-      validator: value => /^([\w.])*$/.test(value),
+      validator: value => /^([\w.-])*$/.test(value),
     },
   },
   [ENS_RECORDS.BTC]: {
