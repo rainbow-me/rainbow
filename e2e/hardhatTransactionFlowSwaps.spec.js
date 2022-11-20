@@ -101,7 +101,7 @@ describe('Hardhat Transaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.waitAndTap('currency-select-network-switcher-optimism');
+    await Helpers.waitAndTap('network-switcher-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-USDC-optimism'
@@ -129,7 +129,7 @@ describe('Hardhat Transaction Flow', () => {
       'currency-select-list-exchange-coin-row-USDC-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.waitAndTap('currency-select-network-switcher-optimism');
+    await Helpers.waitAndTap('network-switcher-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-USDC-optimism'
