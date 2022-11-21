@@ -107,6 +107,7 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
+  [Network.bsc]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
@@ -1017,6 +1018,7 @@ export default function ExchangeModal({
         gasToken: networkDetails?.gasToken,
         nativeAsset: {
           mainnet_address: outputNativeAsset?.mainnet_address,
+          address: outputNativeAsset?.address,
           type: outputNativeAsset?.type,
           symbol: outputNativeAsset?.symbol,
         },
@@ -1047,6 +1049,7 @@ export default function ExchangeModal({
         networkName: networkDetails?.name,
         gasToken: networkDetails?.gasToken,
         nativeAsset: {
+          address: outputNativeAsset?.address,
           mainnet_address: outputNativeAsset?.mainnet_address,
           type: outputNativeAsset?.type,
           symbol: outputNativeAsset?.symbol,

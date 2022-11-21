@@ -608,7 +608,7 @@ export const explainers = (params, colors) => ({
     ),
   },
   crossChainGas: {
-    extraHeight: 20,
+    extraHeight: 40,
     title: lang.t('explain.cross_chain_swap.title'),
     text: lang.t('explain.cross_chain_swap.text'),
     logo: (
@@ -835,7 +835,8 @@ export const explainers = (params, colors) => ({
         ]}
       >
         <CoinIcon
-          address={params?.nativeAsset?.mainnet_address}
+          mainnet_address={params?.nativeAsset?.mainnet_address}
+          address={params?.nativeAsset?.address}
           symbol={params?.nativeAsset?.symbol}
           type={params?.nativeAsset?.type}
           size={30}

@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FloatingEmojis } from '../floating-emojis';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 
 import { pickShallow } from '@/helpers/utilities';
@@ -19,6 +19,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import config from '@/model/config';
+import { useRoute } from '@react-navigation/core';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
@@ -66,6 +67,7 @@ export default function TransactionList({
     accountName,
     accountImage,
   } = useAccountProfile();
+  const { name: routeName } = useRoute();
 
   const onAddCashPress = useCallback(() => {
     if (isDamaged) {
@@ -79,10 +81,11 @@ export default function TransactionList({
     }
 
     navigate(Routes.ADD_CASH_FLOW);
-    analytics.track('Tapped Add Cash', {
-      category: 'add cash',
+    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      componentName: 'TransactionList',
+      routeName,
     });
-  }, [navigate, isDamaged]);
+  }, [isDamaged, navigate, routeName]);
 
   const {
     avatarOptions,

@@ -13,13 +13,14 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import config from '@/model/config';
+import { useRoute } from '@react-navigation/core';
 
 const ContainerWidth = 261;
 
@@ -184,6 +185,7 @@ const AddFundsInterstitial = ({ network }) => {
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
+  const { name: routeName } = useRoute();
 
   const handlePressAmount = useCallback(
     amount => {
@@ -203,10 +205,11 @@ const AddFundsInterstitial = ({ network }) => {
           params: !isNaN(amount) ? { amount } : null,
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
         });
-        analytics.track('Tapped Add Cash', {
-          amount: amount,
-          category: 'add cash',
+        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+          amount,
+          componentName: 'AddFundsInterstitial',
           newWallet: true,
+          routeName,
         });
       } else {
         navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
@@ -216,14 +219,15 @@ const AddFundsInterstitial = ({ network }) => {
           },
           screen: Routes.WYRE_WEBVIEW,
         });
-        analytics.track('Tapped Add Cash', {
-          amount: amount,
-          category: 'add cash',
+        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+          amount,
+          componentName: 'AddFundsInterstitial',
           newWallet: true,
+          routeName,
         });
       }
     },
-    [isDamaged, navigate, accountAddress]
+    [isDamaged, navigate, routeName, accountAddress]
   );
 
   const addFundsToAccountAddress = useCallback(

@@ -35,7 +35,6 @@ import {
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
@@ -46,7 +45,12 @@ import {
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_MAINNET_ADDRESS,
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
@@ -347,7 +351,8 @@ const assetPricesSubscription = (
     tokenAddresses,
     ETH_ADDRESS,
     DPI_ADDRESS,
-    MATIC_MAINNET_ADDRESS
+    MATIC_MAINNET_ADDRESS,
+    BNB_MAINNET_ADDRESS
   );
   return [
     action,
@@ -640,6 +645,9 @@ export const explorerInit = () => async (
       disableGenericAssetsFallbackIfNeeded();
     }
 
+    // we want to get ETH info ASAP
+    dispatch(emitAssetRequest(ETH_ADDRESS));
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
@@ -811,13 +819,6 @@ export const emitL2TransactionHistoryRequest = () => (
 const listenOnAssetMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  socket.on(
-    messages.ASSET_INFO.RECEIVED,
-    (message: ZerionAssetInfoResponse) => {
-      dispatch(updateTopMovers(message));
-    }
-  );
-
   socket.on(messages.ASSETS.RECEIVED, (message: AssetPricesReceivedMessage) => {
     dispatch(assetPricesReceived(message));
   });

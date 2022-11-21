@@ -8,17 +8,20 @@ import {
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { LogLevel, logger } from '@/logger';
+import { device } from '@/storage';
 
 export class Analytics {
   client: SegmentClient;
   currentWalletAddressHash?: string;
   deviceId?: string;
   event = event;
-  disabled = false;
+  disabled = !!device.get(['doNotTrack']);
 
   constructor() {
     this.client = createClient({
-      debug: Boolean(LOG_DEBUG) || LOG_LEVEL === LogLevel.Debug,
+      debug:
+        (LOG_DEBUG || '').includes(logger.DebugContext.analytics) ||
+        LOG_LEVEL === LogLevel.Debug,
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
@@ -92,8 +95,6 @@ export class Analytics {
    * Enable Segment tracking. Defaults to enabled.
    */
   enable() {
-    logger.debug(`Analytics tracking enabled`);
-    this.track(event.analyticsTrackingEnabled);
     this.disabled = false;
   }
 
@@ -101,8 +102,6 @@ export class Analytics {
    * Disable Segment tracking. Defaults to enabled.
    */
   disable() {
-    logger.debug(`Analytics tracking disabled`);
-    this.track(event.analyticsTrackingDisabled);
     this.disabled = true;
   }
 }

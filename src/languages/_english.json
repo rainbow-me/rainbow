@@ -190,7 +190,7 @@
       "add_to_list": "Add to List",
       "all": "All",
       "attempt_cancellation": "Attempt Cancellation",
-      "buy_more_eth": "Buy more ETH",
+      "buy_eth": "Buy Ethereum",
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
@@ -285,6 +285,7 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
+      "eth": { "today": "today" },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",
@@ -305,6 +306,10 @@
           "backups": {
             "title": "The Importance of Backups",
             "description": "Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with."
+          },
+          "crypto_and_wallets": {
+            "title": "Crypto and Wallets",
+            "description": "On a really simple level, a wallet is just a personal and unique cryptographic key (as shown below). Wallet apps like Rainbow are user interfaces that allow you to create, store, and manage cryptographic keys without having to have technical skills or knowledge."
           },
           "protect_wallet": {
             "title": "Protect Your Wallet",
@@ -1328,7 +1333,9 @@
         "public_showcase": "Public Showcase",
         "when_public": "When public, your NFT Showcase will be visible on your Rainbow profile!",
         "when_public_prefix": "When public, your NFT Showcase will be visible on your Rainbow web profile! You can view your profile at",
-        "view_profile": "View your profile"
+        "view_profile": "View your profile",
+        "analytics_toggle": "Analytics",
+        "analytics_toggle_description": "Help Rainbow improve its products and services by allowing analytics of usage data. Collected data is not associated with you or your account."
       },
       "restore": "Restore to original deployment",
       "review": "Review Rainbow",

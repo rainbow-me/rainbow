@@ -79,6 +79,7 @@ import {
 } from '@/analytics/utils';
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
+import { migrate } from '@/migrations';
 
 const FedoraToastRef = createRef();
 
@@ -274,6 +275,9 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
+
+      // must happen immediately, but after Sentry
+      await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();

@@ -15,10 +15,6 @@ export {
 } from './SavingsCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';
 export { default as SendSavingsCoinRow } from './SendSavingsCoinRow';
-export {
-  default as TopMoverCoinRow,
-  measureTopMoverCoinRow,
-} from './TopMoverCoinRow';
 export { default as FastTransactionCoinRow } from './FastTransactionCoinRow';
 export { default as TransactionCoinRow } from './TransactionCoinRow';
 export { default as UnderlyingAssetCoinRow } from './UnderlyingAssetCoinRow';
