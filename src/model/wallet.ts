@@ -88,10 +88,8 @@ interface MessageTypeProperty {
   name: string;
   type: string;
 }
-
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
-
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
