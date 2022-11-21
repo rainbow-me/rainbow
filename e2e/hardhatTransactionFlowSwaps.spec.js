@@ -101,7 +101,7 @@ describe('Hardhat Transaction Flow', () => {
       'currency-select-list-exchange-coin-row-DAI-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.waitAndTap('network-switcher-optimism');
+    await Helpers.waitAndTap('network-switcher-item-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-USDC-optimism'
@@ -129,7 +129,7 @@ describe('Hardhat Transaction Flow', () => {
       'currency-select-list-exchange-coin-row-USDC-token'
     );
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
-    await Helpers.waitAndTap('network-switcher-optimism');
+    await Helpers.waitAndTap('network-switcher-item-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.waitAndTap(
       'currency-select-list-exchange-coin-row-USDC-optimism'
@@ -138,17 +138,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await Helpers.tapAndLongPress('swap-details-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-  });
-
-  it('Should go to settings and disable cross chain swaps', async () => {
-    await Helpers.checkIfVisible('profile-screen');
-    await Helpers.waitAndTap('settings-button');
-    await Helpers.checkIfVisible('settings-sheet');
-    await Helpers.scrollTo('settings-menu-container', 'bottom');
-    await Helpers.waitAndTap('developer-section');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
-    await Helpers.tapByText('Crosschain Swaps');
-    await Helpers.waitAndTap('hardhat-section');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 

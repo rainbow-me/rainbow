@@ -274,14 +274,14 @@ describe('Swap Sheet Interaction Flow', () => {
       'ETH'
     );
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input', '246', true);
-    await Helpers.clearField('exchange-modal-input-246');
+    await Helpers.typeText('exchange-modal-input', '24', true);
+    await Helpers.clearField('exchange-modal-input-24');
     await Helpers.checkIfVisible('exchange-modal-output');
-    await Helpers.typeText('exchange-modal-output', '246', true);
-    await Helpers.clearField('exchange-modal-output-246');
+    await Helpers.typeText('exchange-modal-output', '24', true);
+    await Helpers.clearField('exchange-modal-output-24');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input-native', '246\n', true);
-    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.typeText('exchange-modal-input-native', '24', true);
+    await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
@@ -297,17 +297,17 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('network-switcher-10');
     await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246');
+    await Helpers.typeText('exchange-modal-input', '24', false);
+    await Helpers.clearField('exchange-modal-input-24');
     await Helpers.checkIfVisible('exchange-modal-output');
-    await Helpers.typeText('exchange-modal-output', '246\n', false);
-    await Helpers.clearField('exchange-modal-output-246');
+    await Helpers.typeText('exchange-modal-output', '24', false);
+    await Helpers.clearField('exchange-modal-output-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     if (ios) {
       await Helpers.checkForElementByLabel('Enter an Amount');
     }
-    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.typeText('exchange-modal-input-native', '24', false);
+    await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
   });
@@ -330,11 +330,11 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('network-switcher-42161');
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246');
+    await Helpers.typeText('exchange-modal-input', '24\n', false);
+    await Helpers.clearField('exchange-modal-input-24');
     await Helpers.checkIfVisible('exchange-modal-output');
-    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.typeText('exchange-modal-input-native', '24\n', false);
+    await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
   });
@@ -351,20 +351,20 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should clear inputs when typing a number in inputs and then clearing it polygon', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.typeText('currency-select-search-input', 'WETH\n', true);
+    await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('network-switcher-137');
     await Helpers.tap('currency-select-list-exchange-coin-row-MATIC-polygon');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-246');
+    await Helpers.typeText('exchange-modal-input', '24', false);
+    await Helpers.clearField('exchange-modal-input-24');
     await Helpers.checkIfVisible('exchange-modal-output');
-    await Helpers.typeText('exchange-modal-output', '246\n', false);
-    await Helpers.clearField('exchange-modal-output-246');
+    await Helpers.typeText('exchange-modal-output', '24', false);
+    await Helpers.clearField('exchange-modal-output-24');
     await Helpers.checkIfVisible('exchange-modal-input');
-    await Helpers.typeText('exchange-modal-input-native', '246\n', false);
-    await Helpers.clearField('exchange-modal-input-native-246');
+    await Helpers.typeText('exchange-modal-input-native', '24', false);
+    await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
   });
