@@ -167,7 +167,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
-      style={{ marginBottom: -100 }}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
     />
