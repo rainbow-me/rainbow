@@ -107,6 +107,7 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
+  [Network.bsc]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,

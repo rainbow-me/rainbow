@@ -327,7 +327,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -339,6 +339,10 @@ export default function SendSheet(props) {
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
+            break;
+          case AssetTypes.bsc:
+            setCurrentNetwork(Network.bsc);
+            provider = await getProviderForNetwork(Network.bsc);
             break;
           case AssetTypes.arbitrum:
             setCurrentNetwork(Network.arbitrum);
@@ -710,10 +714,6 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
-    let nativeToken = 'ETH';
-    if (currentNetwork === Network.polygon) {
-      nativeToken = 'MATIC';
-    }
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -727,9 +727,13 @@ export default function SendSheet(props) {
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: nativeToken,
-      });
+      if (currentNetwork === Network.polygon) {
+        label = lang.t('button.confirm_exchange.insufficient_matic');
+      } else if (currentNetwork === Network.bsc) {
+        label = lang.t('button.confirm_exchange.insufficient_bnb');
+      } else {
+        label = lang.t('button.confirm_exchange.insufficient_eth');
+      }
     } else if (!isValidGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.invalid_fee');
