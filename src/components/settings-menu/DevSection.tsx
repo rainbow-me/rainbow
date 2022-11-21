@@ -227,14 +227,8 @@ const DevSection = () => {
 
     await clearAllNotificationSettings();
     await AsyncStorage.clear();
-    console.log(
-      JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
-    );
     clearAllStorages();
     addDefaultNotificationGroupSettings();
-    console.log(
-      JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
-    );
 
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   };

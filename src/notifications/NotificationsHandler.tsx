@@ -60,9 +60,7 @@ import {
   NotificationRelationship,
   AddressWithRelationship,
   initializeAllWalletsWithEmptySettings,
-  migrateWalletSettings,
 } from '@/notifications/settings';
-import { getAllNotificationSettingsFromStorage } from '@/notifications/settings/storage';
 
 type Callback = () => void;
 
@@ -374,15 +372,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   // Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
   useEffect(() => {
     if (walletReady && !alreadyRanInitialization.current) {
-      console.log(JSON.stringify(addresses, null, 2));
-      console.log(
-        JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
-      );
-      migrateWalletSettings();
       initializeAllWalletsWithEmptySettings(addresses, dispatch);
-      console.log(
-        JSON.stringify(getAllNotificationSettingsFromStorage(), null, 2)
-      );
       alreadyRanInitialization.current = true;
     }
   }, [addresses, dispatch, walletReady]);
