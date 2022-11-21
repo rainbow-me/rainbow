@@ -88,8 +88,10 @@ interface MessageTypeProperty {
   name: string;
   type: string;
 }
+
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
+
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
@@ -882,11 +884,13 @@ export const createWallet = async (
     };
 
     // create notifications settings entry for newly created wallet
-    initializeSingleWalletWithEmptySettings(
-      walletAddress,
-      type === EthereumWalletType.readOnly,
-      dispatch
-    );
+    addresses.forEach(address => {
+      initializeSingleWalletWithEmptySettings(
+        address.address,
+        type === EthereumWalletType.readOnly,
+        dispatch
+      );
+    });
 
     if (!silent) {
       await setSelectedWallet(allWallets[id]);
