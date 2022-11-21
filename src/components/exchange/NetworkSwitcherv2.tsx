@@ -70,7 +70,7 @@ const NetworkSwitcherv2 = ({
     <>
       <Box
         width="full"
-        testID="network-switcher-v2"
+        testID={`network-switcher-${currentChainId}`}
         paddingTop="8px"
         paddingBottom="16px"
       >
@@ -80,7 +80,7 @@ const NetworkSwitcherv2 = ({
           horizontal
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
-          testID={'network-switcher-v2-scroll-view'}
+          testID={'network-switcher-scroll-view'}
         >
           <Columns space="8px">
             {networkMenuItems.map(({ chainId, title, type, network }) => {
@@ -131,7 +131,7 @@ const NetworkSwitcherv2 = ({
                         }
                         size="16px / 22px (Deprecated)"
                         weight="bold"
-                        testID={`network-switcher-v2-item-${network}`}
+                        testID={`network-switcher-item-${network}`}
                       >
                         {title}
                       </Text>
