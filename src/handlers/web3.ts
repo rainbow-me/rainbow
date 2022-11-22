@@ -388,7 +388,7 @@ export async function estimateGasWithPadding(
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
       logger.sentry(
-        '⛽ returning orginal gas estimation',
+        '⛽ returning original gas estimation',
         estimatedGas.toString()
       );
       return estimatedGas.toString();
