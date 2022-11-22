@@ -165,7 +165,7 @@ class SvgImage extends Component {
             style={position.coverAsObject}
           />
         )}
-        {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
+        {
           <WebView
             onMessage={this.onLoad}
             originWhitelist={['*']}
@@ -175,13 +175,9 @@ class SvgImage extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             source={{ html }}
-            style={[
-              styles,
-              props.style,
-              { display: this.state.loaded || android ? 'flex' : 'none' },
-            ]}
+            style={[styles, props.style]}
           />
-        )}
+        }
       </View>
     );
   }
