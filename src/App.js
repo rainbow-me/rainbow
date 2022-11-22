@@ -243,21 +243,20 @@ class OldApp extends Component {
 
   render = () => (
     <Portal>
-      <NotificationsHandler walletReady={this.props.walletReady}>
-        <View style={containerStyle}>
-          {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
-          )}
-          <OfflineToast />
-          <FedoraToast ref={FedoraToastRef} />
-        </View>
-      </NotificationsHandler>
+      <View style={containerStyle}>
+        {this.state.initialRoute && (
+          <InitialRouteContext.Provider value={this.state.initialRoute}>
+            <RoutesComponent
+              onReady={this.handleSentryNavigationIntegration}
+              ref={this.handleNavigatorRef}
+            />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
+        )}
+        <OfflineToast />
+        <FedoraToast ref={FedoraToastRef} />
+      </View>
+      <NotificationsHandler walletReady={this.props.walletReady} />
     </Portal>
   );
 }
