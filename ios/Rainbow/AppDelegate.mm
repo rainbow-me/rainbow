@@ -11,6 +11,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+#import <React/RCTAppSetupUtils.h>
 #import <React/RCTReloadCommand.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
@@ -18,6 +19,11 @@
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
 #import <segment_analytics_react_native-Swift.h>
+
+#ifdef FB_SONARKIT_ENABLED
+  #import <FlipperKit/FlipperClient.h>
+  #import <FlipperPerformancePlugin.h>
+#endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -57,7 +63,12 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
+// Additional Flipper Plugin Setup
+#ifdef FB_SONARKIT_ENABLED
+  FlipperClient *client = [FlipperClient sharedClient];
+  [client addPlugin:[FlipperPerformancePlugin new]];
+#endif
+  RCTAppSetupPrepareApp(application);
   // Developer support; define whether internal support has been declared for this build.
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
 
