@@ -115,7 +115,10 @@ export default function LearnWebViewScreen() {
             </Box>
           )}
           onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
-          injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
+          injectedJavaScript={`
+            window.ReactNativeWebView.postMessage(document.body.scrollHeight);
+            document.getElementsByClassName('super-navbar simple')[0].style.display = 'none';
+         `}
           style={{
             height: webViewHeight,
           }}
