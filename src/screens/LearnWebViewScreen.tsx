@@ -121,6 +121,7 @@ export default function LearnWebViewScreen() {
           // set bg color
           // remove header + icon
           // remove leftover whitespace from removing header + icon
+          // @ts-ignore ts is yelling for some reason
           injectedJavaScript={`
             window.document.querySelector('body').style.backgroundColor = '${surfacePrimaryElevated}';
             window.document.querySelector('body').style.marginTop = '-170px';
