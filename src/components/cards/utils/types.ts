@@ -1,10 +1,11 @@
 export enum LearnCategory {
   Essentials = 'essentials',
-  Safety = 'safety',
-  Rainbow = 'rainbow',
+  StayingSafe = 'staying_safe',
   BeginnersGuides = 'beginners_guides',
-  Blockchains = 'blockchains',
-  Web3 = 'web3',
+  BlockchainsAndFees = 'blockchains_and_fees',
+  WhatIsWeb3 = 'what_is_web3',
+  AppsAndConnections = 'apps_and_connections',
+  NavigatingYourWallet = 'navigating_your_wallet',
 }
 
 export type LearnCardKey =
@@ -13,7 +14,11 @@ export type LearnCardKey =
   | 'protect_wallet'
   | 'connect_to_dapp'
   | 'avoid_scams'
-  | 'crypto_and_wallets';
+  | 'crypto_and_wallets'
+  | 'understanding_web3'
+  | 'manage_connections'
+  | 'supported_networks'
+  | 'collect_nfts';
 
 export type CardColor =
   | 'pink'

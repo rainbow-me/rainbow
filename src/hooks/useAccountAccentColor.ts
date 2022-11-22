@@ -6,21 +6,25 @@ import {
 } from '@/hooks';
 
 export function useAccountAccentColor() {
-  const { accountColor, accountImage } = useAccountProfile();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
     maybeSignUri(accountImage ?? '') ?? ''
   );
 
   const { colors } = useTheme();
-  let accentColor = colors.white;
+  let accentColor = colors.appleBlue;
   if (accountImage) {
-    accentColor = dominantColor || colors.white;
+    accentColor = dominantColor || colors.appleBlue;
   } else if (typeof accountColor === 'number') {
     accentColor = colors.avatarBackgrounds[accountColor];
   }
+
+  const hasImageColorLoaded = state === 2 || state === 3;
+  const hasLoaded = accountImage || accountSymbol || hasImageColorLoaded;
+
   return {
     accentColor,
-    loaded: accentColor !== colors.white,
+    loaded: hasLoaded,
   };
 }

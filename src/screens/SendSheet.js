@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -81,6 +81,8 @@ import {
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { NoResults } from '@/components/list';
+import { NoResultsType } from '@/components/list/NoResults';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -949,6 +951,8 @@ export default function SendSheet(props) {
     [ensSuggestions]
   );
 
+  const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -987,19 +991,34 @@ export default function SendSheet(props) {
             watchedAccounts={watchedAccounts}
           />
         )}
-        {showAssetList && (
-          <SendAssetList
-            hiddenCoins={hiddenCoinsObj}
-            nativeCurrency={nativeCurrency}
-            network={network}
-            onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoinsObj}
-            savings={savings}
-            sortedAssets={sortedAssets}
-            theme={theme}
-            uniqueTokens={sendableUniqueTokens}
-          />
-        )}
+        {showAssetList &&
+          (!isEmptyWallet ? (
+            <SendAssetList
+              hiddenCoins={hiddenCoinsObj}
+              nativeCurrency={nativeCurrency}
+              network={network}
+              onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoinsObj}
+              savings={savings}
+              sortedAssets={sortedAssets}
+              theme={theme}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          ) : (
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: sheetHeight,
+                alignItems: 'center',
+                justifyContent: 'center',
+                bottom: 0,
+              }}
+            >
+              <NoResults type={NoResultsType.Send} />
+            </View>
+          ))}
         {showAssetForm && (
           <SendAssetForm
             {...props}

@@ -40,7 +40,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/core';
 import * as i18n from '@/languages';
 
-export const EthCardHeight = 284.3;
+export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -54,7 +54,7 @@ export const EthCard = () => {
 
   useEffect(() => {
     emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
-  }, []);
+  }, [nativeCurrency]);
 
   const handlePressBuy = useCallback(() => {
     if (isDamaged) {
@@ -76,7 +76,7 @@ export const EthCard = () => {
       componentName: 'EthCard',
       routeName,
     });
-  }, [accountAddress, isDamaged, navigate]);
+  }, [accountAddress, isDamaged, navigate, routeName]);
 
   const assetWithPrice = useMemo(() => {
     return {

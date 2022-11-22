@@ -93,16 +93,17 @@ export const getLearnCardColorway: (
   switch (category) {
     case LearnCategory.Essentials:
       return colorways.purple;
-    case LearnCategory.Safety:
+    case LearnCategory.StayingSafe:
       return colorways.pink;
-    case LearnCategory.Rainbow:
+    case LearnCategory.AppsAndConnections:
       return colorways.blue;
     case LearnCategory.BeginnersGuides:
       return colorways.yellow;
-    case LearnCategory.Blockchains:
+    case LearnCategory.BlockchainsAndFees:
       return colorways.darkGreen;
-    case LearnCategory.Web3:
+    case LearnCategory.WhatIsWeb3:
       return colorways.green;
+    case LearnCategory.NavigatingYourWallet:
     default:
       return colorways.darkBlue;
   }
@@ -124,7 +125,7 @@ export const backupsCard: LearnCardDetails = {
 
 export const protectWalletCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/protect-your-wallet',
-  category: LearnCategory.Safety,
+  category: LearnCategory.StayingSafe,
   key: 'protect_wallet',
   emoji: '🔒',
 };
@@ -138,7 +139,7 @@ export const connectToDappCard: LearnCardDetails = {
 
 export const avoidScamsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/avoid-crypto-scams',
-  category: LearnCategory.Safety,
+  category: LearnCategory.StayingSafe,
   key: 'avoid_scams',
   emoji: '🤬',
 };
@@ -150,10 +151,30 @@ export const cryptoAndWalletsCard: LearnCardDetails = {
   emoji: '🤔',
 };
 
-export const learnCards: LearnCardDetails[] = [
-  getStartedCard,
-  backupsCard,
-  protectWalletCard,
-  connectToDappCard,
-  avoidScamsCard,
-];
+export const web3Card: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/understanding-web3',
+  category: LearnCategory.WhatIsWeb3,
+  key: 'understanding_web3',
+  emoji: '🧠',
+};
+
+export const manageConnectionsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/manage-connections-and-networks',
+  category: LearnCategory.AppsAndConnections,
+  key: 'manage_connections',
+  emoji: '⚙️',
+};
+
+export const supportedNetworksCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/supported-networks',
+  category: LearnCategory.NavigatingYourWallet,
+  key: 'supported_networks',
+  emoji: '⛑️',
+};
+
+export const collectNFTsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/collect-nfts-on-opensea',
+  category: LearnCategory.BeginnersGuides,
+  key: 'collect_nfts',
+  emoji: '⛵️',
+};
