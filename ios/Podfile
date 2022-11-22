@@ -46,15 +46,14 @@ target 'Rainbow' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
-
   pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
-
   pod 'Shimmer'
+  pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
+  pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
+
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
     use_flipper!({'Flipper' => '0.162.0'}) # should match the version of your Flipper client app
-    pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
-    pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   end
 
   post_install do |installer|
