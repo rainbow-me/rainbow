@@ -11,14 +11,13 @@ import { useTheme } from '@/theme';
 import { useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 
-export const LEARN_CARD_HEIGHT = 184;
-
 type LearnCardProps = {
   cardDetails: LearnCardDetails;
+  rotate?: () => void;
   type: CardType;
 };
 
-export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
+export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
   const { category, emoji, url, key } = cardDetails;
@@ -44,7 +43,8 @@ export const LearnCard = ({ cardDetails, type }: LearnCardProps) => {
       routeName,
       key,
     });
-  }, [category, key, navigate, routeName, type, url]);
+    rotate?.();
+  }, [category, key, navigate, rotate, routeName, type, url]);
 
   const translations = i18n.l.cards.learn;
 
