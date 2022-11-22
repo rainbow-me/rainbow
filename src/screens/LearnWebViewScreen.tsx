@@ -83,14 +83,16 @@ export default function LearnWebViewScreen() {
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
+  const surfacePrimaryElevated = isDarkMode
+    ? globalColors.white10
+    : globalColors.white100;
+
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JS component
     <SlackSheet
       renderHeader={renderHeader}
-      backgroundColor={
-        isDarkMode ? globalColors.grey100 : globalColors.white100
-      }
+      backgroundColor={surfacePrimaryElevated}
       contentContainerStyle={{ flexGrow: 1 }}
       contentHeight={contentHeight}
       height="100%"
@@ -115,9 +117,16 @@ export default function LearnWebViewScreen() {
             </Box>
           )}
           onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
+          // set scrollview height
+          // set bg color
+          // remove header + icon
+          // remove leftover whitespace from removing header + icon
           injectedJavaScript={`
+            window.document.querySelector('body').style.backgroundColor = '${surfacePrimaryElevated}';
+            window.document.querySelector('body').style.marginTop = '-170px';
             window.ReactNativeWebView.postMessage(document.body.scrollHeight);
             document.getElementsByClassName('super-navbar simple')[0].style.display = 'none';
+            document.getElementsByClassName('notion-header__icon-wrapper')[0].style.display = 'none';
          `}
           style={{
             height: webViewHeight,
