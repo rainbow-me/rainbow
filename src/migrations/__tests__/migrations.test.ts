@@ -67,4 +67,17 @@ describe(`@/migrations`, () => {
 
     expect(storage.getString(throwMigrationName)).toBeFalsy();
   });
+
+  test(`migration in debug mode does not mark as complete`, async () => {
+    const throwMigrationName = 'migration_debug' as MigrationName;
+    const throwMigration: Migration = {
+      debug: true,
+      name: throwMigrationName,
+      async migrate() {},
+    };
+
+    await runMigrations([throwMigration]);
+
+    expect(storage.getString(throwMigrationName)).toBeFalsy();
+  });
 });
