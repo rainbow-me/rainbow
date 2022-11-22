@@ -25,6 +25,14 @@
     "network_id": 10
   },
   {
+    "name": "Binance Smart Chain",
+    "short_name": "bsc",
+    "chain": "BNB",
+    "network": "bsc",
+    "chain_id": 56,
+    "network_id": 56
+  },
+  {
     "name": "Polygon (Matic)",
     "short_name": "poly",
     "chain": "ETH",

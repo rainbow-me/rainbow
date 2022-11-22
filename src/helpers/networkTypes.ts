@@ -4,6 +4,7 @@ export enum Network {
   mainnet = 'mainnet',
   optimism = 'optimism',
   polygon = 'polygon',
+  bsc = 'bsc',
 }
 
 // We need to keep this one until
@@ -14,4 +15,5 @@ export default {
   mainnet: 'mainnet' as Network,
   optimism: 'optimism' as Network,
   polygon: 'polygon' as Network,
+  bsc: 'bsc' as Network,
 };

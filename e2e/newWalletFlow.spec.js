@@ -30,16 +30,26 @@ describe('New Wallet flow', () => {
   //   await Helpers.swipe('backup-sheet', 'down');
   // });
 
+  it('should show the receive card and its contents', async () => {
+    await Helpers.checkIfVisible('receive-card');
+    await Helpers.checkIfVisible('copy-address-button');
+  });
+
+  it('should show eth asset card with a buy button', async () => {
+    await Helpers.checkIfVisible('eth-card');
+    await Helpers.checkIfVisible('buy-eth-button');
+  });
+
   it('should show the "Add funds" button', async () => {
     await Helpers.checkIfVisible('copy-address-button');
   });
 
   it('should show "No transactions yet" in the activity list', async () => {
     if (android) {
-      await Helpers.waitAndTap('navbar-profile-button');
+      await Helpers.waitAndTap('activity-button');
       await Helpers.checkIfElementByTextIsVisible('No transactions yet');
     } else {
-      await Helpers.waitAndTap('navbar-profile-button');
+      await Helpers.waitAndTap('activity-button');
       await Helpers.checkForElementByLabel('no-transactions-yet-label');
     }
   });

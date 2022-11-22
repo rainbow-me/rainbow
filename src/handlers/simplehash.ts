@@ -1,9 +1,13 @@
 import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
-import { RainbowFetchClient } from '../rainbow-fetch';
+import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
+
 import { Network } from '@/helpers';
 import { parseSimplehashNfts } from '@/parsers';
+import { queryClient } from '@/react-query/queryClient';
+
 import { logger } from '@/utils';
+import { EthereumAddress, UniqueAsset } from '@/entities';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -103,7 +107,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainsParam = `${Network.arbitrum},${Network.optimism}`;
+    const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon}`;
 
     let cursor = START_CURSOR;
     while (cursor) {
@@ -130,5 +134,33 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     );
     captureException(error);
   }
-  return parseSimplehashNfts(rawResponseNfts);
+
+  // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
+  const polygonAllowlist = await queryClient.fetchQuery(
+    ['polygon-allowlist'],
+    async () => {
+      const polygonAllowlistAddresses = (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses;
+
+      const polygonAllowlist: Record<EthereumAddress, boolean> = {};
+      polygonAllowlistAddresses.forEach((address: EthereumAddress) => {
+        polygonAllowlist[address] = true;
+      });
+
+      return polygonAllowlist;
+    },
+    {
+      staleTime: 1000 * 60 * 10, // 10 minutes
+    }
+  );
+
+  return parseSimplehashNfts(rawResponseNfts).filter(
+    (token: UniqueAsset) =>
+      token.network !== Network.polygon ||
+      polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
+  );
 }

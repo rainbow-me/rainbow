@@ -1,7 +1,7 @@
 import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
 import config from '../model/config';
 import {
@@ -35,7 +35,6 @@ import {
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
@@ -46,7 +45,12 @@ import {
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_MAINNET_ADDRESS,
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
@@ -115,13 +119,13 @@ interface ExplorerState {
   fallback: boolean;
 
   // A socket for the address endpoint.
-  addressSocket: SocketIOClient.Socket | null;
+  addressSocket: Socket | null;
 
   // The address subscribed to on the address socket.
   addressSubscribed: string | null;
 
   // A socket for the assets endpoint.
-  assetsSocket: SocketIOClient.Socket | null;
+  assetsSocket: Socket | null;
 }
 
 // A `ZerionAsset` with additional fields available for L2 assets.
@@ -209,7 +213,7 @@ type SocketGetActionType = 'get';
 /**
  * An array representing arguments for a call to `emit` on a socket.
  */
-type SocketEmitArguments = Parameters<SocketIOClient.Socket['emit']>;
+type SocketEmitArguments = Parameters<Socket['emit']>;
 
 /**
  * An ordering option, either ascending or descending.
@@ -224,14 +228,15 @@ type OrderType = 'asc' | 'desc';
  * @param endpoint The endpoint.
  * @returns The new socket
  */
-const createSocket = (endpoint: string): SocketIOClient.Socket =>
+const createSocket = (endpoint: string): Socket =>
   io(`${config.data_endpoint}/${endpoint}`, {
+    // @ts-expect-error
     extraHeaders: { origin: config.data_origin },
     query: {
       api_token: config.data_api_key,
     },
     transports: ['websocket'],
-  } as SocketIOClient.ConnectOpts);
+  });
 
 /**
  * Configures a subscription to an address.
@@ -282,6 +287,31 @@ const portfolioSubscription = (
 ];
 
 /**
+ * Configures a notifications subscription.
+ *
+ * @param address The address to subscribe to.
+ * @returns Arguments for an `emit` function call.
+ */
+export const notificationsSubscription = (address: string) => (
+  _: Dispatch,
+  getState: AppGetState
+) => {
+  const { addressSocket } = getState().explorer;
+
+  const payload: SocketEmitArguments = [
+    'get',
+    {
+      payload: {
+        address,
+        action: 'subscribe',
+      },
+      scope: ['notifications'],
+    },
+  ];
+  addressSocket?.emit(...payload);
+};
+
+/**
  * Configures a mainnet asset discovery request.
  *
  * @param address The address to request assets for.
@@ -321,7 +351,8 @@ const assetPricesSubscription = (
     tokenAddresses,
     ETH_ADDRESS,
     DPI_ADDRESS,
-    MATIC_MAINNET_ADDRESS
+    MATIC_MAINNET_ADDRESS,
+    BNB_MAINNET_ADDRESS
   );
   return [
     action,
@@ -614,6 +645,9 @@ export const explorerInit = () => async (
       disableGenericAssetsFallbackIfNeeded();
     }
 
+    // we want to get ETH info ASAP
+    dispatch(emitAssetRequest(ETH_ADDRESS));
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
@@ -782,16 +816,9 @@ export const emitL2TransactionHistoryRequest = () => (
  *
  * @param socket The socket to add listeners to.
  */
-const listenOnAssetMessages = (socket: SocketIOClient.Socket) => (
+const listenOnAssetMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  socket.on(
-    messages.ASSET_INFO.RECEIVED,
-    (message: ZerionAssetInfoResponse) => {
-      dispatch(updateTopMovers(message));
-    }
-  );
-
   socket.on(messages.ASSETS.RECEIVED, (message: AssetPricesReceivedMessage) => {
     dispatch(assetPricesReceived(message));
   });
@@ -916,7 +943,7 @@ const l2AddressAssetsReceived = (
  *
  * @param socket The socket to add listeners to.
  */
-const listenOnAddressMessages = (socket: SocketIOClient.Socket) => (
+const listenOnAddressMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
   socket.on(

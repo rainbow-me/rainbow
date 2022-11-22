@@ -36,7 +36,11 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import {
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
+} from '@rainbow-me/swaps';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -65,6 +69,7 @@ export const parseTransactions = async (
   accountAddress: EthereumAddress,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
   existingTransactions: RainbowTransaction[],
+  pendingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
   network: Network,
   appended = false
@@ -73,9 +78,23 @@ export const parseTransactions = async (
     ethereumUtils.getHash(txn)
   );
 
-  const [allL2Transactions, existingWithoutL2] = partition(
-    existingTransactions,
-    tx => isL2Network(tx.network || '')
+  // pending crosschain swaps transactions now depends on bridge status API
+  // so we need to persist pending txs until bridge is done even tho the tx
+  // on chain was confirmed https://github.com/rainbow-me/rainbow/pull/4189
+  const pendingCrosschainSwapsTransactionHashes = pendingTransactions
+    .filter(txn => txn.protocol === ProtocolType.socket)
+    .map(txn => ethereumUtils.getHash(txn));
+  const filteredExistingTransactions = existingTransactions.filter(
+    txn =>
+      !pendingCrosschainSwapsTransactionHashes.includes(
+        ethereumUtils.getHash(txn)
+      )
+  );
+  const [
+    allL2Transactions,
+    existingWithoutL2,
+  ] = partition(filteredExistingTransactions, tx =>
+    isL2Network(tx.network || '')
   );
 
   const data = appended
@@ -270,6 +289,19 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
+  if (
+    isLowerCaseMatch(
+      tx.address_to || '',
+      SOCKET_REGISTRY_CONTRACT_ADDRESSESS
+    ) ||
+    isLowerCaseMatch(tx.address_to || '', RAINBOW_ROUTER_CONTRACT_ADDRESS)
+  ) {
+    return { ...tx, type: TransactionType.trade };
+  }
+  return tx;
+};
+
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
   nativeCurrency: keyof typeof supportedNativeCurrencies,
@@ -329,6 +361,7 @@ const parseTransaction = async (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
+  txn = overrideSwap(txn);
 
   if (txn.changes.length) {
     const internalTransactions = txn.changes.map(

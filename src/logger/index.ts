@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react-native';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
+import { device } from '@/storage';
 
 export enum LogLevel {
   Debug = 'debug',
@@ -183,7 +184,7 @@ export class Logger {
   protected debugContextRegexes: RegExp[] = [];
 
   constructor({
-    enabled = !env.IS_TEST,
+    enabled = !env.IS_TEST && !device.get(['doNotTrack']),
     level = LOG_LEVEL as LogLevel,
     debug = LOG_DEBUG || '',
   }: {
@@ -231,16 +232,25 @@ export class Logger {
     };
   }
 
+  disable() {
+    this.enabled = false;
+  }
+
+  enable() {
+    this.enabled = true;
+  }
+
   protected transport(
     level: LogLevel,
     message: string | RainbowError,
-    metadata: Metadata
+    metadata: Metadata = {}
   ) {
     if (!this.enabled) return;
     if (!enabledLogLevels[this.level].includes(level)) return;
 
     for (const transport of this.transports) {
-      transport(level, message, metadata);
+      // metadata fallback accounts for JS usage
+      transport(level, message, metadata || {});
     }
   }
 }
@@ -254,6 +264,8 @@ export class Logger {
  *   `logger.info(message[, metadata])`
  *   `logger.warn(message[, metadata])`
  *   `logger.error(error[, metadata])`
+ *   `logger.disable()`
+ *   `logger.enable()`
  */
 export const logger = new Logger();
 

@@ -1,15 +1,16 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { setListener } from '../navigation/nativeStackHelpers';
+import { setListener } from '@/navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
+import { IS_ANDROID } from '@/env';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 let timeout: ReturnType<typeof setTimeout> | null = null;
 let delay = false;
 let cancel = false;
+let cancelAll = false;
 
 export function delayNext() {
   if (timeout !== null) {
@@ -26,6 +27,14 @@ export function cancelNext() {
 
 export function uncancelNext() {
   cancel = false;
+}
+
+export function disable() {
+  cancelAll = true;
+}
+
+export function enable() {
+  cancelAll = false;
 }
 
 export default function useMagicAutofocus(
@@ -46,7 +55,7 @@ export default function useMagicAutofocus(
   }, []);
 
   const triggerFocus = useCallback(() => {
-    if (cancel) {
+    if (cancel || cancelAll) {
       cancel = false;
       return;
     }
@@ -93,7 +102,7 @@ export default function useMagicAutofocus(
             delay = false;
           }, 200);
         });
-      } else if (!isNativeStackAvailable) {
+      } else if (IS_ANDROID) {
         // We need to do this in order to assure that the input gets focused
         // when using fallback stacks.
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);

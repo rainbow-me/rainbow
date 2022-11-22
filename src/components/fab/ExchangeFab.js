@@ -59,7 +59,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       disabled={disabled}
       onPress={handlePress}
       shadows={FabShadow}
-      testID="exchange-fab"
+      testID="swap-button"
     >
       <FabIcon>􀖅</FabIcon>
     </FloatingActionButton>

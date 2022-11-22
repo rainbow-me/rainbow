@@ -226,7 +226,7 @@ const SettingsSection = ({
   );
 
   return (
-    <MenuContainer>
+    <MenuContainer testID="settings-menu-container">
       <Menu>
         {canBeBackedUp && (
           <MenuItem

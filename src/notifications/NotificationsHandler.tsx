@@ -1,4 +1,10 @@
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -39,15 +45,29 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
+import { delay, isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
+import { notificationsSubscription } from '@/redux/explorer';
+import walletTypes from '@/helpers/walletTypes';
+import {
+  resolveAndTrackPushNotificationPermissionStatus,
+  NotificationSubscriptionChangesListener,
+  registerNotificationSubscriptionChangesListener,
+  trackTappedPushNotification,
+  trackWalletsSubscribedForNotifications,
+} from '@/notifications/analytics';
+import {
+  addDefaultNotificationSettingsForWallet,
+  NotificationRelationship,
+} from '@/notifications/settings';
 
 type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
+type ValueOf<T> = T[keyof T];
 
-export const NotificationsHandler = ({ children, walletReady }: Props) => {
+export const NotificationsHandler = ({ walletReady }: Props) => {
   const wallets = useWallets();
   const { contacts } = useContacts();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
@@ -56,6 +76,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     contacts,
   });
   const prevWalletReady = usePrevious(walletReady);
+  const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
   const notificationOpenedListener = useRef<Callback>();
@@ -69,44 +90,6 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
    */
   syncedStateRef.current.wallets = wallets;
   syncedStateRef.current.contacts = contacts;
-
-  useEffect(() => {
-    setupAndroidChannels();
-    saveFCMToken();
-    onTokenRefreshListener.current = registerTokenRefreshListener();
-    foregroundNotificationListener.current = messaging().onMessage(
-      onForegroundRemoteNotification
-    );
-    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
-    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
-    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
-      handleAppOpenedWithNotification
-    );
-    appStateListener.current = ApplicationState.addEventListener(
-      'change',
-      nextAppState => {
-        if (appState.current === 'background' && nextAppState === 'active') {
-          handleDeferredNotificationIfNeeded();
-        }
-      }
-    );
-    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
-      handleNotificationPressed
-    );
-
-    return () => {
-      onTokenRefreshListener.current?.();
-      foregroundNotificationListener.current?.();
-      notificationOpenedListener.current?.();
-      appStateListener.current?.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (prevWalletReady !== walletReady) {
-      handleDeferredNotificationIfNeeded();
-    }
-  }, [walletReady]);
 
   const onForegroundRemoteNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage
@@ -142,13 +125,14 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }, WALLETCONNECT_SYNC_DELAY);
   };
 
-  const handleDeferredNotificationIfNeeded = () => {
+  const handleDeferredNotificationIfNeeded = useCallback(async () => {
     const notification = NotificationStorage.getDeferredNotification();
     if (notification) {
+      // wait to wallet to load completely before opening
       performActionBasedOnOpenedNotificationType(notification);
       NotificationStorage.clearDeferredNotification();
     }
-  };
+  }, []);
 
   const handleAppOpenedWithNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage | null
@@ -174,6 +158,7 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     if (!notification) {
       return;
     }
+    trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
     if (!store.getState().appState.walletReady) {
@@ -323,5 +308,76 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     }
   };
 
-  return children;
+  const addresses = useMemo(() => {
+    const addresses: {
+      address: string;
+      relationship: ValueOf<typeof NotificationRelationship>;
+    }[] = [];
+    Object.values(wallets.wallets || {}).forEach(wallet =>
+      wallet?.addresses.forEach(
+        ({ address, visible }: { address: string; visible: boolean }) =>
+          visible &&
+          addresses.push({
+            address,
+            relationship:
+              wallet.type === walletTypes.readOnly
+                ? NotificationRelationship.WATCHER
+                : NotificationRelationship.OWNER,
+          })
+      )
+    );
+    return addresses;
+  }, [wallets]);
+
+  useEffect(() => {
+    setupAndroidChannels();
+    saveFCMToken();
+    trackWalletsSubscribedForNotifications();
+    subscriptionChangesListener.current = registerNotificationSubscriptionChangesListener();
+    onTokenRefreshListener.current = registerTokenRefreshListener();
+    foregroundNotificationListener.current = messaging().onMessage(
+      onForegroundRemoteNotification
+    );
+    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
+    messaging().getInitialNotification().then(handleAppOpenedWithNotification);
+    notificationOpenedListener.current = messaging().onNotificationOpenedApp(
+      handleAppOpenedWithNotification
+    );
+    appStateListener.current = ApplicationState.addEventListener(
+      'change',
+      nextAppState => {
+        if (appState.current === 'background' && nextAppState === 'active') {
+          handleDeferredNotificationIfNeeded();
+        }
+      }
+    );
+    notifeeForegroundEventListener.current = notifee.onForegroundEvent(
+      handleNotificationPressed
+    );
+
+    resolveAndTrackPushNotificationPermissionStatus();
+
+    return () => {
+      subscriptionChangesListener.current?.remove();
+      onTokenRefreshListener.current?.();
+      foregroundNotificationListener.current?.();
+      notificationOpenedListener.current?.();
+      appStateListener.current?.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (walletReady && prevWalletReady !== walletReady) {
+      handleDeferredNotificationIfNeeded();
+    }
+  }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
+
+  useEffect(() => {
+    addresses.forEach(({ address, relationship }) => {
+      dispatch(notificationsSubscription(address));
+      addDefaultNotificationSettingsForWallet(address, relationship);
+    });
+  }, [addresses, dispatch]);
+
+  return null;
 };

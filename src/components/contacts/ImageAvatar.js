@@ -16,7 +16,7 @@ const sizeConfigs = (colors, isDarkMode) => ({
     textSize: 'large',
   },
   large: {
-    dimensions: 65,
+    dimensions: 60,
     shadow: [
       [0, 6, 10, colors.shadow, 0.12],
       [0, 2, 5, colors.shadow, 0.08],
@@ -48,6 +48,11 @@ const sizeConfigs = (colors, isDarkMode) => ({
   smedium: {
     dimensions: 36,
     shadow: [[0, 4, android ? 5 : 12, colors.shadow, 0.4]],
+    textSize: 'large',
+  },
+  smedium_shadowless: {
+    dimensions: 36,
+    shadow: [[0, 0, 0, colors.shadow, 0]],
     textSize: 'large',
   },
 });

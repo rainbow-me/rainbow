@@ -103,7 +103,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should open send sheet after tapping send fab', async () => {
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
@@ -148,7 +148,7 @@ describe('Hardhat Transaction Flow', () => {
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
     );
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
@@ -182,7 +182,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should send ETH', async () => {
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH

@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
 import Link from '../../Link';
-import EdgeFade from '../../discover-sheet/EdgeFade';
+import EdgeFade from '../../EdgeFade';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 

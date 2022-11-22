@@ -92,32 +92,23 @@ const docs: DocsType = {
       ...examples.shadows,
       description: (
         <Docs.Text>
-          To apply a shadow, a blur radius & weight pair (e.g.{' '}
-          <Docs.Code>30px light</Docs.Code>) can be supplied to the{' '}
-          <Docs.Code>shadow</Docs.Code> prop.
+          To apply a standard shadow, a size with an optional color variant
+          (e.g. <Docs.Code>&quot;30px&quot;</Docs.Code> or{' '}
+          <Docs.Code>&quot;30px accent&quot;</Docs.Code>) can be supplied to the{' '}
+          <Docs.Code>shadow</Docs.Code> prop. Note that the default set of
+          shadow colors are only applied in light mode.
         </Docs.Text>
       ),
       showFrame: true,
       examples: [
-        examples.shadowsWithSizes,
-        {
-          ...examples.shadowsWithColors,
-          description: (
-            <Docs.Text>
-              Passing a valid shadow color (e.g. <Docs.Code>accent</Docs.Code>{' '}
-              or <Docs.Code>swap</Docs.Code>) as a third parameter to the{' '}
-              <Docs.Code>shadow</Docs.Code> prop string, will apply a colored
-              glow to the shadow.
-            </Docs.Text>
-          ),
-        },
         {
           ...examples.shadowsWithCustom,
           description: (
             <Docs.Text>
               The <Docs.Code>shadow</Docs.Code> prop also accepts a custom
-              shadow in the form of an array of shadow properties. The shadows
-              are applied as a stack, from top to bottom, meaning that the first
+              shadow in the form of an object defining shadow properties for iOS
+              and Android across light and dark modes. On iOS, shadows are
+              applied as a stack from top to bottom, meaning that the first
               element of the array is the most front facing shadow, and the last
               is the back facing shadow.
             </Docs.Text>

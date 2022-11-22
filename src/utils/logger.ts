@@ -1,8 +1,16 @@
 import { captureException } from '@sentry/react-native';
+import { QUIET_OLD_LOGGER } from 'react-native-dotenv';
 import sentryUtils from './sentry';
 
+/**
+ * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+ */
 const Logger = {
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   debug(...args: any[]) {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}] ⚡⚡⚡ `);
@@ -10,13 +18,21 @@ const Logger = {
     }
   },
 
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   error(...args: any[]) {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       console.error(...args); // eslint-disable-line no-console
     }
   },
 
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   log(...args: any[]) {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
@@ -24,7 +40,11 @@ const Logger = {
     }
   },
 
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   prettyLog() {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       const allArgs = Array.prototype.slice.call(arguments).map(arg => {
         try {
@@ -40,7 +60,12 @@ const Logger = {
       console.log(allArgs.length > 0 ? allArgs : allArgs[0]); // eslint-disable-line no-console
     }
   },
+
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   sentry(...args: any[]) {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
@@ -54,7 +79,12 @@ const Logger = {
       sentryUtils.addDataBreadcrumb(args[0], safeData);
     }
   },
+
+  /**
+   * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
+   */
   warn(...args: any[]) {
+    if (QUIET_OLD_LOGGER) return;
     if (__DEV__) {
       console.warn(...args); // eslint-disable-line no-console
     }

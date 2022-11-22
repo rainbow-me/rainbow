@@ -19,13 +19,34 @@ import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
 import Routes from '@/navigation/routesNames';
 
-const LOADING_ASSETS_PLACEHOLDER = [
+const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
 ];
+
+const EMPTY_WALLET_CONTENT = [
+  {
+    type: 'RECEIVE_CARD',
+    uid: 'receive_card',
+  },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+  { type: 'ETH_CARD', uid: 'eth-card' },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+  {
+    type: 'LEARN_CARD',
+    uid: 'learn-card',
+  },
+  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
+  {
+    type: 'DISCOVER_MORE_BUTTON',
+    uid: 'discover-home-button',
+  },
+];
+
+const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const sortedAssetsCountSelector = (state: any) => state.sortedAssetsCount;
@@ -222,7 +243,7 @@ const withBriefBalanceSavingsSection = (
     return [];
   }
 
-  if (isLoadingAssets) return [];
+  if (isLoadingAssets || totalUnderlyingNativeValue === '0') return [];
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -355,7 +376,8 @@ const withBriefBalanceSection = (
   hiddenCoins: any,
   collectibles: any,
   savingsSection: any,
-  uniswapTotal: any
+  uniswapTotal: any,
+  uniqueTokens: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -386,18 +408,78 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  return [
+  const hasTokens = briefAssets?.length;
+  const hasNFTs = collectibles?.length;
+
+  const isEmpty = !hasTokens && !hasNFTs;
+  const hasNFTsOnly = !hasTokens && hasNFTs;
+
+  const header = [
     {
-      type: 'ASSETS_HEADER',
-      uid: 'assets-header',
+      type: 'PROFILE_STICKY_HEADER',
+      uid: 'assets-profile-header-compact',
       value: totalValue,
     },
     {
-      type: 'ASSETS_HEADER_SPACE_AFTER',
-      uid: 'assets-header-space-after',
+      type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
+      uid: 'profile-avatar-space-before',
     },
-    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
+    {
+      type: 'PROFILE_AVATAR_ROW',
+      uid: 'profile-avatar',
+    },
+    {
+      type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
+      uid: 'profile-avatar-space-after',
+    },
+    {
+      type: 'PROFILE_NAME_ROW',
+      uid: 'profile-name',
+    },
+    {
+      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+      uid: 'profile-name-space-after',
+    },
+    ...(hasTokens
+      ? [
+          {
+            type: 'PROFILE_BALANCE_ROW',
+            uid: 'profile-balance',
+            value: totalValue,
+          },
+          {
+            type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
+            uid: 'profile-balance-space-after',
+          },
+        ]
+      : []),
+    {
+      type: 'PROFILE_ACTION_BUTTONS_ROW',
+      uid: 'profile-action-buttons',
+      value: totalValue,
+    },
+    hasTokens
+      ? {
+          type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+          uid: 'profile-action-buttons-space-after',
+          value: totalValue,
+        }
+      : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
+
+  let content = CONTENT_PLACEHOLDER;
+
+  if (isLoadingAssets) {
+    content = CONTENT_PLACEHOLDER;
+  } else if (hasTokens) {
+    content = briefAssets;
+  } else if (hasNFTsOnly) {
+    content = ONLY_NFTS_CONTENT;
+  } else if (isEmpty) {
+    content = EMPTY_WALLET_CONTENT;
+  }
+
+  return [...header, ...content];
 };
 
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
@@ -438,7 +520,12 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, isLoadingAssetsSelector, networkSelector],
+  [
+    savingsSelector,
+    isLoadingAssetsSelector,
+    networkSelector,
+    uniqueTokensSelector,
+  ],
   withBriefBalanceSavingsSection
 );
 

@@ -1,4 +1,4 @@
-import { isEmpty, isNil, remove } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
@@ -8,7 +8,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
 import { pickBy, pickShallow } from '@/helpers/utilities';
-import { ENS_NFT_CONTRACT_ADDRESS, polygonAllowList } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
 import isSVGImage from '@/utils/isSVG';

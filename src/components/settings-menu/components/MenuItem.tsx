@@ -129,6 +129,7 @@ const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
     containsEmoji
     size="18px / 27px (Deprecated)"
     weight={weight}
+    numberOfLines={1}
   >
     {text}
   </Text>
@@ -189,45 +190,52 @@ const MenuItem = ({
       testID={disabled ? testID : undefined}
       width="full"
     >
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center">
-          {leftComponent && (
-            <Box width={{ custom: hasSfSymbol ? 34 : 46 }}>
-              {hasSfSymbol ? (
-                <Box alignItems="center" width={{ custom: 28 }}>
-                  {leftComponent}
-                </Box>
-              ) : (
-                leftComponent
-              )}
+      <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+        <Box flexShrink={1}>
+          <Inline alignVertical="center" wrap={false}>
+            {leftComponent && (
+              <Box width={{ custom: hasSfSymbol ? 34 : 46 }}>
+                {hasSfSymbol ? (
+                  <Box alignItems="center" width={{ custom: 28 }}>
+                    {leftComponent}
+                  </Box>
+                ) : (
+                  leftComponent
+                )}
+              </Box>
+            )}
+
+            <Box flexShrink={1}>
+              <Stack space="8px">
+                {titleComponent}
+                {labelComponent}
+              </Stack>
             </Box>
-          )}
-          <Stack space="8px">
-            {titleComponent}
-            {labelComponent}
-          </Stack>
-        </Inline>
-        <Inline alignVertical="center" space={{ custom: 9 }}>
-          {rightComponent}
-          {hasRightArrow && (
-            <Box
-              as={ImgixImage}
-              height={{ custom: 16 }}
-              source={Caret as Source}
-              tintColor={colors.blueGreyDark60}
-              width={{ custom: 7 }}
-            />
-          )}
-          {hasChevron && (
-            <Box
-              as={ImgixImage}
-              height={{ custom: 17 }}
-              source={Chevron as Source}
-              tintColor={colors.blueGreyDark60}
-              width={{ custom: 16 }}
-            />
-          )}
-        </Inline>
+          </Inline>
+        </Box>
+        <Box paddingLeft="8px">
+          <Inline alignVertical="center" space={{ custom: 9 }}>
+            {rightComponent}
+            {hasRightArrow && (
+              <Box
+                as={ImgixImage}
+                height={{ custom: 16 }}
+                source={Caret as Source}
+                tintColor={colors.blueGreyDark60}
+                width={{ custom: 7 }}
+              />
+            )}
+            {hasChevron && (
+              <Box
+                as={ImgixImage}
+                height={{ custom: 17 }}
+                source={Chevron as Source}
+                tintColor={colors.blueGreyDark60}
+                width={{ custom: 16 }}
+              />
+            )}
+          </Inline>
+        </Box>
       </Inline>
     </Box>
   );

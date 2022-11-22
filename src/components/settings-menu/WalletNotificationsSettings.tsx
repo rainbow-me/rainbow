@@ -1,17 +1,219 @@
 import lang from 'i18n-js';
-import React, { useReducer } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Switch } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { useTheme } from '@/theme';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import {
+  NotificationRelationship,
+  NotificationTopic,
+  NotificationTopicType,
+  toggleGroupNotifications,
+  toggleTopicForWallet,
+  useNotificationSettings,
+  useWalletGroupNotificationSettings,
+} from '@/notifications/settings';
+import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import {
+  showNotificationSubscriptionErrorAlert,
+  showOfflineAlert,
+} from '@/components/settings-menu/notificationAlerts';
+import { useNetInfo } from '@react-native-community/netinfo';
+
+type RouteParams = {
+  WalletNotificationsSettings: {
+    address: string;
+  };
+};
 
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
+  const route = useRoute<
+    RouteProp<RouteParams, 'WalletNotificationsSettings'>
+  >();
+  const { address } = route.params;
+  const { notifications, updateSettings } = useNotificationSettings(address);
+  const { isConnected } = useNetInfo();
 
-  const [notificationsAllowed, toggleNotifications] = useReducer(
-    s => !s,
-    false
+  const {
+    lastOwnedWalletEnabled,
+    lastWatchedWalletEnabled,
+    ownerEnabled,
+    updateSectionSettings,
+    watcherEnabled,
+  } = useWalletGroupNotificationSettings();
+
+  const {
+    notificationsEnabled,
+    notificationsSectionEnabled,
+    lastWalletEnabled,
+  } = useMemo(() => {
+    const ownedWallet = notifications.type === NotificationRelationship.OWNER;
+    const notificationsSectionEnabled = ownedWallet
+      ? ownerEnabled
+      : watcherEnabled;
+    const lastWalletEnabled = ownedWallet
+      ? lastOwnedWalletEnabled
+      : lastWatchedWalletEnabled;
+    return {
+      notificationsEnabled:
+        notificationsSectionEnabled && notifications.enabled,
+      notificationsSectionEnabled,
+      lastWalletEnabled,
+    };
+  }, [
+    notifications.type,
+    notifications.enabled,
+    ownerEnabled,
+    watcherEnabled,
+    lastOwnedWalletEnabled,
+    lastWatchedWalletEnabled,
+  ]);
+
+  const [allState, setAllState] = useState({
+    loading: false,
+    status: notificationsEnabled,
+  });
+
+  const [topicState, setTopicState] = useState({ ...notifications.topics });
+  const toggleStateForTopic = (topic: NotificationTopicType) =>
+    setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
+
+  // We allow only one subscription in progress
+  // this states controls which we are currently updating
+  const [
+    topicSubscriptionInProgress,
+    setTopicSubscriptionInProgress,
+  ] = useState<NotificationTopicType | null>(null);
+
+  const toggleAllowNotifications = useCallback(() => {
+    if (!isConnected) {
+      showOfflineAlert();
+      return;
+    }
+    setAllState(prev => ({ status: !prev.status, loading: true }));
+    toggleGroupNotifications(
+      [notifications],
+      notifications.type,
+      !notificationsEnabled
+    )
+      .then(() => {
+        if (
+          !notificationsSectionEnabled ||
+          (notificationsSectionEnabled && lastWalletEnabled)
+        ) {
+          updateSectionSettings({
+            [notifications.type]: !notificationsEnabled,
+          });
+        }
+        updateSettings({
+          enabled: !notificationsEnabled,
+        });
+        setAllState(prev => ({ ...prev, loading: false }));
+      })
+      .catch(() => {
+        showNotificationSubscriptionErrorAlert();
+        setAllState(prev => ({ status: !prev.status, loading: false }));
+      });
+  }, [
+    notificationsSectionEnabled,
+    lastWalletEnabled,
+    updateSettings,
+    notificationsEnabled,
+    notifications,
+    updateSectionSettings,
+    isConnected,
+  ]);
+
+  const toggleTopic = useCallback(
+    (topic: NotificationTopicType) => {
+      if (!isConnected) {
+        showOfflineAlert();
+        return;
+      }
+      toggleStateForTopic(topic);
+      setTopicSubscriptionInProgress(topic);
+      toggleTopicForWallet(
+        notifications.type,
+        notifications.address,
+        topic,
+        !notifications?.topics[topic]
+      )
+        .then(() => {
+          updateSettings({
+            topics: {
+              ...notifications.topics,
+              [topic]: !notifications?.topics[topic],
+            },
+          });
+        })
+        .catch(() => {
+          showNotificationSubscriptionErrorAlert();
+          toggleStateForTopic(topic);
+        })
+        .finally(() => {
+          setTopicSubscriptionInProgress(null);
+        });
+    },
+    [notifications, updateSettings, isConnected]
+  );
+
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(notificationsEnabled ? 1 : 0, {
+        duration: 150,
+      }),
+      transform: [
+        {
+          translateY: withTiming(notificationsEnabled ? 0 : -20, {
+            duration: 150,
+            easing: Easing.bezier(0.4, 0, 0.22, 1),
+          }),
+        },
+      ],
+    }),
+    [notificationsEnabled]
+  );
+
+  const IndividualTopicItemRow = ({
+    topic,
+    icon,
+    iconColor,
+    text,
+  }: {
+    topic: NotificationTopicType;
+    icon: string;
+    iconColor: string;
+    text: string;
+  }) => (
+    <MenuItem
+      disabled
+      hasSfSymbol
+      leftComponent={
+        <MenuItem.TextIcon colorOverride={iconColor} icon={icon} />
+      }
+      rightComponent={
+        <>
+          {topicSubscriptionInProgress === topic && (
+            <NotificationLoadingIndicator />
+          )}
+          <Switch
+            disabled={allState.loading || topicSubscriptionInProgress !== null}
+            value={topicState[topic]}
+            onValueChange={() => toggleTopic(topic)}
+          />
+        </>
+      }
+      size={52}
+      titleComponent={<MenuItem.Title text={text} />}
+    />
   );
 
   return (
@@ -20,10 +222,16 @@ const WalletNotificationsSettings = () => {
         <MenuItem
           disabled
           rightComponent={
-            <Switch
-              onValueChange={toggleNotifications}
-              value={notificationsAllowed}
-            />
+            <>
+              {allState.loading && <NotificationLoadingIndicator />}
+              <Switch
+                disabled={
+                  allState.loading || topicSubscriptionInProgress !== null
+                }
+                onValueChange={toggleAllowNotifications}
+                value={allState.status}
+              />
+            </>
           }
           size={52}
           titleComponent={
@@ -36,127 +244,58 @@ const WalletNotificationsSettings = () => {
           }
         />
       </Menu>
-      {notificationsAllowed && (
+      <Animated.View style={animatedStyle}>
         <Menu>
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.appleBlue} icon="􀈟" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.sent')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.SENT}
+            icon="􀈟"
+            iconColor={colors.appleBlue}
+            text={lang.t('settings.notifications_section.sent')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.green} icon="􀅀" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.received')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.RECEIVED}
+            icon="􀅀"
+            iconColor={colors.green}
+            text={lang.t('settings.notifications_section.received')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.pink} icon="􀑉" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.purchased')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.PURCHASED}
+            icon="􀑉"
+            iconColor={colors.green}
+            text={lang.t('settings.notifications_section.purchased')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.orange} icon="􀋡" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.sold')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.SOLD}
+            icon="􀋡"
+            iconColor={colors.orange}
+            text={lang.t('settings.notifications_section.sold')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.yellowOrange} icon="􀆿" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.minted')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.MINTED}
+            icon="􀆿"
+            iconColor={colors.yellowOrange}
+            text={lang.t('settings.notifications_section.minted')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.swapPurple} icon="􀖅" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.swapped')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.SWAPPED}
+            icon="􀖅"
+            iconColor={colors.swapPurple}
+            text={lang.t('settings.notifications_section.swapped')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon colorOverride={colors.green} icon="􀁢" />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t('settings.notifications_section.approvals')}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.APPROVALS}
+            icon="􀁢"
+            iconColor={colors.green}
+            text={lang.t('settings.notifications_section.approvals')}
           />
-          <MenuItem
-            disabled
-            hasSfSymbol
-            leftComponent={
-              <MenuItem.TextIcon
-                colorOverride={colors.blueGreyDark60}
-                icon="􀍡"
-              />
-            }
-            rightComponent={<Switch />}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                text={lang.t(
-                  'settings.notifications_section.contracts_and_more'
-                )}
-              />
-            }
+          <IndividualTopicItemRow
+            topic={NotificationTopic.OTHER}
+            icon="􀍡"
+            iconColor={colors.blueGreyDark60}
+            text={lang.t('settings.notifications_section.other')}
           />
         </Menu>
-      )}
+      </Animated.View>
     </MenuContainer>
   );
 };

@@ -143,15 +143,7 @@
 {
   switch (stackPresentation) {
     case RNSScreenStackPresentationModal:
-#ifdef __IPHONE_13_0
-      if (@available(iOS 13.0, *)) {
-        _controller.modalPresentationStyle = UIModalPresentationAutomatic;
-      } else {
-        _controller.modalPresentationStyle = UIModalPresentationFullScreen;
-      }
-#else
-      _controller.modalPresentationStyle = UIModalPresentationFullScreen;
-#endif
+      _controller.modalPresentationStyle = UIModalPresentationAutomatic;
       if (_controller.transDelegate != nil) {
         _controller.modalPresentationStyle = UIModalPresentationCustom;
       }
@@ -210,12 +202,7 @@
 
 - (void)setGestureEnabled:(BOOL)gestureEnabled
 {
-#ifdef __IPHONE_13_0
-  if (@available(iOS 13.0, *)) {
-    _controller.modalInPresentation = !gestureEnabled;
-  }
-#endif
-  
+  _controller.modalInPresentation = !gestureEnabled;
   _gestureEnabled = gestureEnabled;
 }
 

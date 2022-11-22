@@ -18,7 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
-import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
+import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
@@ -31,6 +31,7 @@ import { useTheme } from '@/theme';
 import { Box, Text } from '@/design-system';
 import { Source } from 'react-native-fast-image';
 import { IS_TEST } from '@/env';
+import { ChainId } from '@rainbow-me/swaps';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;

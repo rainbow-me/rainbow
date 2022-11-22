@@ -21,6 +21,7 @@
       -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <application
       android:name=".MainApplication"

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useRefreshAccountData } from '@/hooks';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
+import { navbarHeight } from '@/components/navbar/Navbar';
 
 export default function RefreshControlWrapped(
   props: Partial<RefreshControlProps>
@@ -19,7 +20,7 @@ export default function RefreshControlWrapped(
     <RefreshControl
       {...props}
       onRefresh={onRefresh}
-      progressViewOffset={android ? 30 : 0}
+      progressViewOffset={navbarHeight + 16}
       refreshing={isRefreshing}
       tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
     />
