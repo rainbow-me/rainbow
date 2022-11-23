@@ -106,6 +106,7 @@ export default forwardRef(function SlackSheet(
     testID,
     removeClippedSubviews = false,
     yPosition: givenYPosition,
+    onDismiss,
     ...props
   },
   ref
@@ -156,6 +157,14 @@ export default forwardRef(function SlackSheet(
   });
 
   const bg = backgroundColor || colors.white;
+
+  // callback upon closing the sheet
+  useEffect(
+    () => () => {
+      if (onDismiss) onDismiss();
+    },
+    []
+  );
 
   return (
     <Fragment>

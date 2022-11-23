@@ -14,6 +14,13 @@ export enum MigrationName {
 
 export type Migration = {
   /**
+   * Set to true to run the migration every time when writing your migration
+   * code. DELETE THIS PROP or set to `false` before merging your code,
+   * otherwise your migration will not run in production.
+   */
+  debug?: boolean;
+
+  /**
    * Must be a UNIQUE name of the migration.
    */
   name: MigrationName;
