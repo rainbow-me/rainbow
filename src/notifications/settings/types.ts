@@ -21,5 +21,5 @@ export type GroupSettings = {
 
 export type AddressWithRelationship = {
   address: string;
-  relationship: typeof NotificationRelationship[keyof typeof NotificationRelationship];
+  relationship: NotificationRelationshipType;
 };

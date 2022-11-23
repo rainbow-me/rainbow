@@ -308,24 +308,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     }
   };
 
-  const addresses = useMemo(() => {
-    const addresses: AddressWithRelationship[] = [];
-    Object.values(wallets.wallets || {}).forEach(wallet =>
-      wallet?.addresses.forEach(
-        ({ address, visible }: { address: string; visible: boolean }) =>
-          visible &&
-          addresses.push({
-            address,
-            relationship:
-              wallet.type === walletTypes.readOnly
-                ? NotificationRelationship.WATCHER
-                : NotificationRelationship.OWNER,
-          })
-      )
-    );
-    return addresses;
-  }, [wallets]);
-
   useEffect(() => {
     setupAndroidChannels();
     saveFCMToken();
@@ -369,13 +351,33 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     }
   }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
 
-  // Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
+  /*
+   * Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
+   * and start subscribing for notifications with Firebase
+   */
   useEffect(() => {
+    // It is run only once per app session, that means on every app cold start
     if (walletReady && !alreadyRanInitialization.current) {
+      const addresses: AddressWithRelationship[] = [];
+
+      Object.values(wallets.wallets ?? {}).forEach(wallet =>
+        wallet?.addresses.forEach(
+          ({ address, visible }: { address: string; visible: boolean }) =>
+            visible &&
+            addresses.push({
+              address,
+              relationship:
+                wallet.type === walletTypes.readOnly
+                  ? NotificationRelationship.WATCHER
+                  : NotificationRelationship.OWNER,
+            })
+        )
+      );
+
       initializeAllWalletsWithEmptySettings(addresses, dispatch);
       alreadyRanInitialization.current = true;
     }
-  }, [addresses, dispatch, walletReady]);
+  }, [dispatch, walletReady]);
 
   return null;
 };

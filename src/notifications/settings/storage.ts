@@ -1,5 +1,5 @@
 import {
-  NOTIFICATIONS_SETTINGS_VERSION,
+  NOTIFICATION_SETTINGS_VERSION,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -17,7 +17,7 @@ export const notificationSettingsStorage = new MMKV({
 
 export const getSettingsVersion = (): number => {
   const version = notificationSettingsStorage.getNumber(
-    NOTIFICATIONS_SETTINGS_VERSION
+    NOTIFICATION_SETTINGS_VERSION
   );
 
   if (version === undefined) return 1;
@@ -25,7 +25,7 @@ export const getSettingsVersion = (): number => {
 };
 
 export const setSettingsVersion = (newVersion: number) => {
-  notificationSettingsStorage.set(NOTIFICATIONS_SETTINGS_VERSION, newVersion);
+  notificationSettingsStorage.set(NOTIFICATION_SETTINGS_VERSION, newVersion);
 };
 
 /**
