@@ -1,4 +1,7 @@
-import { NotificationTopicType } from '@/notifications/settings/types';
+import {
+  NotificationTopicType,
+  WalletNotificationSettings,
+} from '@/notifications/settings/types';
 import Logger from 'logger';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
@@ -7,15 +10,23 @@ import { NotificationTopic } from '@/notifications/settings/constants';
 /**
  Firebase functions for subscribing/unsubscribing to topics.
  */
-export const subscribeWalletToAllNotificationTopics = (
-  type: string,
-  chainId: number,
-  address: string
+export const subscribeWalletToAllEnabledTopics = (
+  settings: WalletNotificationSettings,
+  chainId: number
 ): Promise<void[]> => {
   return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      subscribeWalletToSingleNotificationTopic(type, chainId, address, topic)
-    )
+    Object.entries(settings.topics).map(([topic, isEnabled]) => {
+      if (isEnabled) {
+        return subscribeWalletToSingleNotificationTopic(
+          settings.type,
+          chainId,
+          settings.address,
+          topic
+        );
+      } else {
+        return Promise.resolve();
+      }
+    })
   );
 };
 

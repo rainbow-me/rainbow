@@ -6,10 +6,8 @@ export {
 } from './constants';
 export {
   addDefaultNotificationGroupSettings,
-  addDefaultNotificationSettingsForWallet,
-  initializeAllWalletsWithEmptySettings,
-  initializeSingleWalletWithEmptySettings,
-} from './defaults';
+  initializeNotificationSettingsForAddresses,
+} from './initialization';
 export {
   useAllNotificationSettingsFromStorage,
   useNotificationSettings,

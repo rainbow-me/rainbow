@@ -1,10 +1,4 @@
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -57,9 +51,9 @@ import {
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
 import {
-  NotificationRelationship,
   AddressWithRelationship,
-  initializeAllWalletsWithEmptySettings,
+  initializeNotificationSettingsForAddresses,
+  NotificationRelationship,
 } from '@/notifications/settings';
 
 type Callback = () => void;
@@ -374,7 +368,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         )
       );
 
-      initializeAllWalletsWithEmptySettings(addresses, dispatch);
+      initializeNotificationSettingsForAddresses(addresses, dispatch);
       alreadyRanInitialization.current = true;
     }
   }, [dispatch, walletReady]);

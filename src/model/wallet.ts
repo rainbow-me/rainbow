@@ -60,7 +60,11 @@ import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { initializeSingleWalletWithEmptySettings } from '@/notifications/settings';
+import {
+  AddressWithRelationship,
+  initializeNotificationSettingsForAddresses,
+  NotificationRelationship,
+} from '@/notifications/settings';
 
 const encryptor = new AesEncryptor();
 
@@ -88,8 +92,10 @@ interface MessageTypeProperty {
   name: string;
   type: string;
 }
+
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
+
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
@@ -882,13 +888,20 @@ export const createWallet = async (
     };
 
     // create notifications settings entry for newly created wallet
-    addresses.forEach(address => {
-      initializeSingleWalletWithEmptySettings(
-        address.address,
-        type === EthereumWalletType.readOnly,
-        dispatch
-      );
-    });
+    const relationship =
+      type === EthereumWalletType.readOnly
+        ? NotificationRelationship.WATCHER
+        : NotificationRelationship.OWNER;
+    const addressesWithRelationship: AddressWithRelationship[] = addresses.map(
+      account => ({
+        relationship,
+        address: account.address,
+      })
+    );
+    initializeNotificationSettingsForAddresses(
+      addressesWithRelationship,
+      dispatch
+    );
 
     if (!silent) {
       await setSelectedWallet(allWallets[id]);
