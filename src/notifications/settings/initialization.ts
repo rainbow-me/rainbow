@@ -21,6 +21,7 @@ import {
 } from '@/notifications/settings/firebase';
 import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';
+import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
 
 /**
  Checks if group notification settings are present in storage
@@ -64,7 +65,15 @@ export const initializeNotificationSettingsForAddresses = (
       alreadyAppliedDefaults.add(entry.address);
     }
   });
+  // Set of wallet addresses we have in app (unrelated to notification settings entries)
+  const walletAddresses = new Set(
+    addresses.map(addressWithRelationship => addressWithRelationship.address)
+  );
+  const removedWalletsThatWereNotUnsubscribedProperly: string[] = [
+    ...alreadySaved.keys(),
+  ].filter(address => !walletAddresses.has(address));
 
+  // preparing list of wallets that need to be subscribed
   addresses.forEach(entry => {
     dispatch(notificationsSubscription(entry.address));
     const alreadySavedEntry = alreadySaved.get(entry.address);
@@ -104,6 +113,13 @@ export const initializeNotificationSettingsForAddresses = (
   });
 
   setAllNotificationSettingsToStorage(newSettings);
+  if (removedWalletsThatWereNotUnsubscribedProperly.length) {
+    InteractionManager.runAfterInteractions(() => {
+      removedWalletsThatWereNotUnsubscribedProperly.forEach(address => {
+        removeNotificationSettingsForWallet(address);
+      });
+    });
+  }
   InteractionManager.runAfterInteractions(() => {
     processSubscriptionQueue(subscriptionQueue);
   });
