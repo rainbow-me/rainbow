@@ -38,6 +38,7 @@ export const GenericCard = ({
         disabled={disabled}
         scaleTo={0.96}
         overflowMargin={50}
+        skipTopMargin
       >
         {children}
       </ButtonPressAnimation>
