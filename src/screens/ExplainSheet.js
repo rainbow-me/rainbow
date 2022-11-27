@@ -90,25 +90,17 @@ const Gradient = styled(GradientText).attrs({
 })({});
 
 const OptimismAppIcon = () => {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   return (
-    <Box
-      style={{
-        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
+    <AccentColorProvider color={colors.optimismRed}>
+      <Box
+        as={ImgixImage}
         source={AppIconOptimism}
-        style={{
-          width: APP_ICON_SIZE,
-          height: APP_ICON_SIZE,
-        }}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
       />
-    </Box>
+    </AccentColorProvider>
   );
 };
 
@@ -128,25 +120,17 @@ const GoldDogeAppIcon = () => {
 };
 
 const SmolAppIcon = () => {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   return (
-    <Box
-      style={{
-        shadowColor: isDarkMode ? colors.shadowBlack : colors.smolPurple,
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
+    <AccentColorProvider color={colors.smolPurple}>
+      <Box
+        as={ImgixImage}
         source={AppIconSmol}
-        style={{
-          width: APP_ICON_SIZE,
-          height: APP_ICON_SIZE,
-        }}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
       />
-    </Box>
+    </AccentColorProvider>
   );
 };
 
