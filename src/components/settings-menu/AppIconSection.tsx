@@ -63,7 +63,7 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     unlock_key: SmolIcon.unlockKey,
   },
   golddoge: {
-    accentColor: 'smolPurple',
+    accentColor: 'dogeGold',
     key: GoldDogeIcon.key,
     name: 'GOLDDOGE',
     source: AppIconGoldDoge,

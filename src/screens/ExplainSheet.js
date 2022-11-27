@@ -15,7 +15,8 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { AccentColorProvider, Box } from '@/design-system';
+import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -39,6 +40,7 @@ import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
+const APP_ICON_SIZE = 64;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const getBodyTextPropsWithColor = colors =>
@@ -102,11 +104,26 @@ const OptimismAppIcon = () => {
       <ImgixImage
         source={AppIconOptimism}
         style={{
-          width: 64,
-          height: 64,
+          width: APP_ICON_SIZE,
+          height: APP_ICON_SIZE,
         }}
       />
     </Box>
+  );
+};
+
+const GoldDogeAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.dogeGold}>
+      <Box
+        as={ImgixImage}
+        source={AppIconGoldDoge}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
   );
 };
 
@@ -125,8 +142,8 @@ const SmolAppIcon = () => {
       <ImgixImage
         source={AppIconSmol}
         style={{
-          width: 64,
-          height: 64,
+          width: APP_ICON_SIZE,
+          height: APP_ICON_SIZE,
         }}
       />
     </Box>
@@ -238,6 +255,8 @@ const ENS_CONFIGURATION_EXPLAINER =
 
 const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
 
+const GOLDDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.golddoge_text');
+
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 export const explainers = (params, colors) => ({
@@ -250,6 +269,17 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
+    },
+  },
+  golddoge_app_icon: {
+    logo: <GoldDogeAppIcon />,
+    extraHeight: -65,
+    text: GOLDDOGE_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
+    button: {
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.dogeGold,
+      bgColor: colors?.dogeGold06,
     },
   },
   smol_app_icon: {
