@@ -43,3 +43,11 @@ export const SmolIcon: UnlockableAppIcon = {
   ],
   unlockKey: 'smol_nft_app_icon',
 };
+
+export const GoldDogeIcon: UnlockableAppIcon = {
+  key: 'golddoge',
+  explainSheetType: 'golddoge_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [SMOL_BRAINS_NFT_ADDRESS],
+  unlockKey: 'golddoge_nft_app_icon',
+};
