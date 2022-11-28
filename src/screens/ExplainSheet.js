@@ -15,9 +15,10 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { AccentColorProvider, Box } from '@/design-system';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
@@ -39,6 +40,7 @@ import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
+const APP_ICON_SIZE = 64;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const getBodyTextPropsWithColor = colors =>
@@ -130,6 +132,21 @@ const SmolAppIcon = () => {
         }}
       />
     </Box>
+  );
+};
+
+const ZoraAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.rainbowBlue}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZora}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
   );
 };
 
@@ -240,6 +257,8 @@ const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
 
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
+const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
+
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
@@ -261,6 +280,17 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.smolPurple,
       bgColor: colors?.smolPurple06,
+    },
+  },
+  zora_app_icon: {
+    logo: <ZoraAppIcon />,
+    extraHeight: -90,
+    text: ZORA_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
+    button: {
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.rainbowBlue,
+      bgColor: colors?.rainbowBlue06,
     },
   },
   output_disabled: {

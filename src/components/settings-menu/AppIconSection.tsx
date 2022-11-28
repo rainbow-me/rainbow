@@ -63,7 +63,7 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     unlock_key: SmolIcon.unlockKey,
   },
   zora: {
-    accentColor: 'smolPurple',
+    accentColor: 'rainbowBlue',
     key: ZoraIcon.key,
     name: 'Zora',
     source: AppIconZora,
