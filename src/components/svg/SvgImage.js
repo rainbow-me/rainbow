@@ -119,7 +119,6 @@ class SvgImage extends Component {
     const { svgContent } = this.state;
 
     let html;
-    let isSVGAnimated = false;
     if (svgContent) {
       const flattenedStyle = StyleSheet.flatten(props.style) || {};
       if (svgContent.includes('viewBox')) {
@@ -143,8 +142,6 @@ class SvgImage extends Component {
         }`;
         html = getHTML(patchedSvgContent, flattenedStyle);
       }
-
-      isSVGAnimated = html?.indexOf('<animate') !== -1;
     }
 
     return (
@@ -165,23 +162,17 @@ class SvgImage extends Component {
             style={position.coverAsObject}
           />
         )}
-        {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
-          <WebView
-            onMessage={this.onLoad}
-            originWhitelist={['*']}
-            pointerEvents="none"
-            scalesPageToFit
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            source={{ html }}
-            style={[
-              styles,
-              props.style,
-              { display: this.state.loaded || android ? 'flex' : 'none' },
-            ]}
-          />
-        )}
+        <WebView
+          onMessage={this.onLoad}
+          originWhitelist={['*']}
+          pointerEvents="none"
+          scalesPageToFit
+          scrollEnabled={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          source={{ html }}
+          style={[styles, props.style]}
+        />
       </View>
     );
   }
