@@ -7,6 +7,7 @@ import {
 } from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
+import { useTheme } from '@/theme';
 
 export const ORB_SIZE = 36;
 
@@ -33,9 +34,11 @@ export const IconOrb = ({
   textSize = '17pt',
   textWeight = 'bold',
 }: IconOrbProps) => {
+  const { isDarkMode } = useTheme();
+
   if (loaded) {
     return (
-      <ColorModeProvider value="light">
+      <ColorModeProvider value={isDarkMode ? 'dark' : 'light'}>
         <AccentColorProvider color={color}>
           {shadowColor ? (
             <Box

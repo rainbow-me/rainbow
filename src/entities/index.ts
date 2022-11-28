@@ -11,7 +11,6 @@ export type {
   GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
-  GasFeesPolygonGasStationData,
   LegacyGasFee,
   LegacyGasFeeParams,
   LegacyGasFeeParamsBySpeed,
@@ -20,6 +19,7 @@ export type {
   MaxPriorityFeeSuggestions,
   TransactionGasParams,
   RainbowMeteorologyData,
+  RainbowMeteorologyLegacyData,
   SelectedGasFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';

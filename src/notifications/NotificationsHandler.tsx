@@ -49,10 +49,6 @@ import { delay, isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
 import { notificationsSubscription } from '@/redux/explorer';
-import {
-  addDefaultNotificationSettingsForWallet,
-  NotificationRelationship,
-} from './settings';
 import walletTypes from '@/helpers/walletTypes';
 import {
   resolveAndTrackPushNotificationPermissionStatus,
@@ -61,13 +57,17 @@ import {
   trackTappedPushNotification,
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
+import {
+  addDefaultNotificationSettingsForWallet,
+  NotificationRelationship,
+} from '@/notifications/settings';
 
 type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
 type ValueOf<T> = T[keyof T];
 
-export const NotificationsHandler = ({ children, walletReady }: Props) => {
+export const NotificationsHandler = ({ walletReady }: Props) => {
   const wallets = useWallets();
   const { contacts } = useContacts();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
@@ -379,5 +379,5 @@ export const NotificationsHandler = ({ children, walletReady }: Props) => {
     });
   }, [addresses, dispatch]);
 
-  return children;
+  return null;
 };

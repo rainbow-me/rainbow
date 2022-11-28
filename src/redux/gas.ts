@@ -13,19 +13,15 @@ import {
   GasFeeParams,
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
-  GasFeesPolygonGasStationData,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
   RainbowMeteorologyData,
+  RainbowMeteorologyLegacyData,
   SelectedGasFee,
 } from '@/entities';
 
-import {
-  bscGasStationGetGasPrices,
-  polygonGasStationGetGasPrices,
-  rainbowMeteorologyGetData,
-} from '@/handlers/gasFees';
+import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import {
   getProviderForNetwork,
   isHardHat,
@@ -47,7 +43,6 @@ import {
 import { ethUnits, supportedNativeCurrencies } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { GasFeesBscGasStationData } from '@/entities/gas';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -276,26 +271,28 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 const getPolygonGasPrices = async () => {
   try {
     const {
-      data: { result },
-    }: {
-      data: GasFeesPolygonGasStationData;
-    } = await polygonGasStationGetGasPrices();
+      data: {
+        data: { legacy: result },
+      },
+    } = (await rainbowMeteorologyGetData(Network.polygon)) as {
+      data: RainbowMeteorologyLegacyData;
+    };
     const polygonGasPriceBumpFactor = 1.05;
 
     // Override required to make it compatible with other responses
     const polygonGasStationPrices = {
       fast: Math.ceil(
-        Number(multiply(result['ProposeGasPrice'], polygonGasPriceBumpFactor))
+        Number(multiply(result['proposeGasPrice'], polygonGasPriceBumpFactor))
       ),
       // 1 blocks, 2.5 - 3 secs
       fastWait: 0.05,
       normal: Math.ceil(
-        Number(multiply(result['SafeGasPrice'], polygonGasPriceBumpFactor))
+        Number(multiply(result['safeGasPrice'], polygonGasPriceBumpFactor))
       ),
       // 2 blocks, 6 secs
       normalWait: 0.1,
       urgent: Math.ceil(
-        Number(multiply(result['FastGasPrice'], polygonGasPriceBumpFactor))
+        Number(multiply(result['fastGasPrice'], polygonGasPriceBumpFactor))
       ),
       // 1 blocks, 2.5 - 3 secs
       urgentWait: 0.05,
@@ -310,27 +307,29 @@ const getPolygonGasPrices = async () => {
 const getBscGasPrices = async () => {
   try {
     const {
-      data: { result },
-    }: {
-      data: GasFeesBscGasStationData;
-    } = await bscGasStationGetGasPrices();
+      data: {
+        data: { legacy: result },
+      },
+    } = (await rainbowMeteorologyGetData(Network.bsc)) as {
+      data: RainbowMeteorologyLegacyData;
+    };
 
     const bscGasPriceBumpFactor = 1.05;
 
     // Override required to make it compatible with other responses
     const bscGasStationPrices = {
       fast: Math.ceil(
-        Number(multiply(result['ProposeGasPrice'], bscGasPriceBumpFactor))
+        Number(multiply(result['proposeGasPrice'], bscGasPriceBumpFactor))
       ),
       // 1 blocks, 2.5 - 3 secs
       fastWait: 0.05,
       normal: Math.ceil(
-        Number(multiply(result['SafeGasPrice'], bscGasPriceBumpFactor))
+        Number(multiply(result['safeGasPrice'], bscGasPriceBumpFactor))
       ),
       // 2 blocks, 6 secs
       normalWait: 0.1,
       urgent: Math.ceil(
-        Number(multiply(result['FastGasPrice'], bscGasPriceBumpFactor))
+        Number(multiply(result['fastGasPrice'], bscGasPriceBumpFactor))
       ),
       // 1 blocks, 2.5 - 3 secs
       urgentWait: 0.05,
@@ -377,7 +376,7 @@ const getOptimismGasPrices = async () => {
 };
 
 export const getEIP1559GasParams = async () => {
-  const { data } = (await rainbowMeteorologyGetData()) as {
+  const { data } = (await rainbowMeteorologyGetData(Network.mainnet)) as {
     data: RainbowMeteorologyData;
   };
   const {

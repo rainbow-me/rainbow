@@ -1,17 +1,17 @@
 import { analytics } from '@/analytics';
 import { MinimalNotification } from '@/notifications/types';
-import {
-  GroupSettings,
-  NotificationRelationship,
-  NotificationRelationshipType,
-  notificationSettingsStorage,
-  NotificationTopicType,
-  WALLET_GROUPS_STORAGE_KEY,
-  WALLET_TOPICS_STORAGE_KEY,
-  WalletNotificationSettings,
-} from './settings';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
+import {
+  NotificationRelationship,
+  WALLET_GROUPS_STORAGE_KEY,
+  WALLET_TOPICS_STORAGE_KEY,
+  GroupSettings,
+  NotificationRelationshipType,
+  NotificationTopicType,
+  WalletNotificationSettings,
+  notificationSettingsStorage,
+} from '@/notifications/settings';
 
 export const trackTappedPushNotification = (
   notification: MinimalNotification | undefined

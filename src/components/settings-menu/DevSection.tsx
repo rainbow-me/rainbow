@@ -49,9 +49,9 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import {
-  addDefaultNotificationGroupSettings,
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
+  addDefaultNotificationGroupSettings,
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
 

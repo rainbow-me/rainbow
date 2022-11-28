@@ -372,11 +372,11 @@ const GasSpeedButton = ({
     if (speeds) return speeds;
     switch (currentNetwork) {
       case networkTypes.polygon:
+      case networkTypes.bsc:
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-      case networkTypes.bsc:
-        return [NORMAL, FAST, URGENT];
+        return [NORMAL];
       default:
         return GasSpeedOrder;
     }

@@ -58,7 +58,6 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import {
-  getTitle,
   parseAccountAssets,
   parseAsset,
   parseNewTransaction,
@@ -1360,7 +1359,7 @@ export const dataWatchPendingTransactions = (
         status: TransactionStatus;
       } | null = {
         status: TransactionStatus.sending,
-        title: '',
+        title: tx?.title || TransactionStatus.sending,
         minedAt: null,
         pending: true,
       };
@@ -1396,7 +1395,14 @@ export const dataWatchPendingTransactions = (
             txObj
           );
 
-          if (updatedPendingTransaction?.swap?.type === SwapType.crossChain) {
+          // approvals are not via socket so we dont want to check their status with them.
+          const isApproveTx =
+            transactionStatus === TransactionStatus.approved ||
+            transactionStatus === TransactionStatus.approving;
+          if (
+            updatedPendingTransaction?.swap?.type === SwapType.crossChain &&
+            !isApproveTx
+          ) {
             pendingTransactionData = await getTransactionSocketStatus(
               updatedPendingTransaction
             );
@@ -1405,8 +1411,8 @@ export const dataWatchPendingTransactions = (
                 ...txObj,
                 internalType: tx.type,
               });
+              txStatusesDidChange = true;
             }
-            txStatusesDidChange = true;
           } else {
             pendingTransactionData = getPendingTransactionData(
               updatedPendingTransaction,

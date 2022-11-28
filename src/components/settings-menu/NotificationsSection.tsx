@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, Switch } from 'react-native';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -13,14 +13,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useAppState, useWallets } from '@/hooks';
 import { requestPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
-import {
-  addDefaultNotificationSettingsForWallet,
-  NotificationRelationship,
-  updateSettingsForWallets,
-  useAllNotificationSettingsFromStorage,
-  useWalletGroupNotificationSettings,
-  WalletNotificationSettings,
-} from '@/notifications/settings';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
 import {
@@ -36,6 +28,14 @@ import {
   showOfflineAlert,
 } from '@/components/settings-menu/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
+import {
+  addDefaultNotificationSettingsForWallet,
+  NotificationRelationship,
+  updateSettingsForWallets,
+  useAllNotificationSettingsFromStorage,
+  useWalletGroupNotificationSettings,
+  WalletNotificationSettings,
+} from '@/notifications/settings';
 
 type WalletRowProps = {
   ens: string;
