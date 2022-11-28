@@ -43,3 +43,11 @@ export const SmolIcon: UnlockableAppIcon = {
   ],
   unlockKey: 'smol_nft_app_icon',
 };
+
+export const ZoraIcon: UnlockableAppIcon = {
+  key: 'zora',
+  explainSheetType: 'zora_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [SMOL_BRAINS_NFT_ADDRESS],
+  unlockKey: 'zora_nft_app_icon',
+};
