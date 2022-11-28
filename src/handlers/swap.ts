@@ -27,6 +27,7 @@ import {
   add,
   convertRawAmountToDecimalFormat,
   divide,
+  lessThan,
   multiply,
   subtract,
 } from '@/helpers/utilities';
@@ -374,15 +375,18 @@ export const estimateCrosschainSwapGasLimit = async ({
           return gasLimitWithFakeApproval;
         } catch (e) {
           logger.debug('Error estimating swap gas limit with approval', e);
-          const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-          if (routeGasLimit) return routeGasLimit;
         }
       }
 
-      return (
-        getCrosschainSwapDefaultGasLimit(tradeDetails) ||
-        getDefaultGasLimitForTrade(tradeDetails, chainId)
+      const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+      const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
+        tradeDetails,
+        chainId
       );
+      if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+        return routeGasLimit;
+      }
+      return rainbowDefaultGasLimit;
     }
 
     const gasLimit = await estimateGasWithPadding(
@@ -397,10 +401,29 @@ export const estimateCrosschainSwapGasLimit = async ({
       provider,
       SWAP_GAS_PADDING
     );
+    const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
+      tradeDetails,
+      chainId
+    );
 
-    return gasLimit || getCrosschainSwapDefaultGasLimit(tradeDetails);
+    let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
+    if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+      fallbackGasLimit = routeGasLimit;
+    }
+    return gasLimit || fallbackGasLimit;
   } catch (error) {
-    return getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
+      tradeDetails,
+      chainId
+    );
+
+    let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
+    if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+      fallbackGasLimit = routeGasLimit;
+    }
+    return fallbackGasLimit;
   }
 };
 
