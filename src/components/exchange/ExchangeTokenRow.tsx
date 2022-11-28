@@ -89,7 +89,7 @@ export default React.memo(function ExchangeTokenRow({
                 {showBalance && item?.balance?.display && (
                   <Text
                     size="13pt"
-                    color="secondary (Deprecated)"
+                    color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
                     weight="medium"
                   >
@@ -99,7 +99,7 @@ export default React.memo(function ExchangeTokenRow({
                 {!showBalance && (
                   <Text
                     size="13pt"
-                    color="secondary (Deprecated)"
+                    color={{ custom: theme.colors.blueGreyDark50 }}
                     weight="medium"
                     numberOfLines={1}
                   >
