@@ -43,6 +43,15 @@
 					<string>optimism</string>
 				</array>
 			</dict>
+			<key>zora</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>zora</string>
+				</array>
+			</dict>
 			<key>og</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
