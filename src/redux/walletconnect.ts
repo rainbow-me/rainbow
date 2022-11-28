@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
-import { parseWalletConnectUri } from '@walletconnect/utils';
+import { parseUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
@@ -283,7 +283,7 @@ export const walletConnectRemovePendingRedirect = (
 
 /**
  * Handles an incoming WalletConnect session request and updates state
- * accordingly.
+ * accordingly. This is the entrypoint of WC v1.
  *
  * @param uri The WalletConnect URI.
  * @param callback The callback function to use.
@@ -309,13 +309,13 @@ export const walletConnectOnSessionRequest = (
     const { clientMeta, push } = await getNativeOptions();
     try {
       // Don't initiate a new session if we have already established one using this walletconnect URI
+      // TODO test this, do we need to do this with the URI check above?
       const allSessions = await getAllValidWalletConnectSessions();
-      const wcUri = parseWalletConnectUri(uri);
+      const wcUri = parseUri(uri);
 
       const alreadyConnected = Object.values(allSessions).some(session => {
         return (
-          session.handshakeTopic === wcUri.handshakeTopic &&
-          session.key === wcUri.key
+          session.handshakeTopic === wcUri.topic && session.key === wcUri.symKey
         );
       });
 
@@ -388,6 +388,7 @@ export const walletConnectOnSessionRequest = (
           captureException(error);
           throw error;
         }
+
         const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
