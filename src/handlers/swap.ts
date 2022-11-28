@@ -102,6 +102,9 @@ async function getClosestGasEstimate(
 const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
+const getCrosschainSwapRainbowDefaultGasLimit = (chainId: ChainId) =>
+  ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
+
 export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.serviceTime;
 
@@ -379,8 +382,7 @@ export const estimateCrosschainSwapGasLimit = async ({
       }
 
       const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-      const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
-        tradeDetails,
+      const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
         chainId
       );
       if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
@@ -402,8 +404,7 @@ export const estimateCrosschainSwapGasLimit = async ({
       SWAP_GAS_PADDING
     );
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
-      tradeDetails,
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
       chainId
     );
 
@@ -414,8 +415,7 @@ export const estimateCrosschainSwapGasLimit = async ({
     return gasLimit || fallbackGasLimit;
   } catch (error) {
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit = getDefaultGasLimitForTrade(
-      tradeDetails,
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
       chainId
     );
 
