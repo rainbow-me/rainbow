@@ -162,19 +162,17 @@ class SvgImage extends Component {
             style={position.coverAsObject}
           />
         )}
-        {
-          <WebView
-            onMessage={this.onLoad}
-            originWhitelist={['*']}
-            pointerEvents="none"
-            scalesPageToFit
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            source={{ html }}
-            style={[styles, props.style]}
-          />
-        }
+        <WebView
+          onMessage={this.onLoad}
+          originWhitelist={['*']}
+          pointerEvents="none"
+          scalesPageToFit
+          scrollEnabled={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          source={{ html }}
+          style={[styles, props.style]}
+        />
       </View>
     );
   }
