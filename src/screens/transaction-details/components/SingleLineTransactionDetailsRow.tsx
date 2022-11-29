@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Columns, Inline, Text } from '@/design-system';
+import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 
 type Props = {
   icon: string;
@@ -15,17 +16,9 @@ export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
   return (
     <Box paddingVertical="20px">
       <Inline alignVertical="center" wrap={false}>
-        <Columns>
-          <Inline space="10px">
-            <Box
-              width={{ custom: 40 }}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text color={'label'} size="20pt" weight="bold">
-                {icon}
-              </Text>
-            </Box>
+        <Columns alignVertical="center">
+          <Inline space="10px" alignVertical="center">
+            <TransactionDetailsSymbol icon={icon} />
             <Text color="label" size="17pt" weight="semibold">
               {title}
             </Text>

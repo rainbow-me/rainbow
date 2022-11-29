@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { TransactionDetailsContent } from '@/screens/transaction-details/TransactionDetailsContent';
+import { TransactionDetailsContent } from '@/screens/transaction-details/components/TransactionDetailsContent';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Centered } from '@/components/layout';
