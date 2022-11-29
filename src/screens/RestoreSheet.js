@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
-import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
+import { RestoreSheetFirstStep } from '../components/backup/RestoreSheetFirstStep.tsx';
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import {

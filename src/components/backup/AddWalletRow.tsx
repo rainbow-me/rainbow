@@ -1,0 +1,87 @@
+import { Box, Stack, Text, useForegroundColor } from '@/design-system';
+import { IS_ANDROID, IS_TEST } from '@/env';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import React from 'react';
+import { GradientText, Text as RNText } from '../text';
+import { Icon } from '../icons';
+import ConditionalWrap from 'conditional-wrap';
+import { deviceUtils } from '@/utils';
+
+const RainbowText =
+  IS_ANDROID && IS_TEST
+    ? Text
+    : styled(GradientText).attrs(({ theme: { colors } }: any) => ({
+        angle: false,
+        colors: colors.gradients.rainbow,
+        end: { x: 0, y: 0.5 },
+        start: { x: 1, y: 0.5 },
+        steps: [0, 0.774321, 1],
+      }))({});
+
+const TextIcon = styled(RNText).attrs({
+  size: 29,
+  weight: 'medium',
+});
+
+const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
+  name: 'caret',
+  color: color,
+}))({
+  marginBottom: 5.25,
+});
+
+export type AddWalletItem = {
+  title: string;
+  description: string;
+  icon: string;
+  iconColor: string;
+};
+
+type AddWalletRowProps = {
+  content: AddWalletItem;
+  horizontalInset: number;
+};
+
+export const AddWalletRow = ({
+  content,
+  horizontalInset,
+}: AddWalletRowProps) => {
+  const { colors } = useTheme();
+  const labelQuaternary = useForegroundColor('labelQuaternary');
+  const { title, description, icon, iconColor } = content;
+
+  // device width - 2 * horizontal inset - caret column width (30)
+  const contentWidth = deviceUtils.dimensions.width - 2 * horizontalInset - 30;
+
+  return (
+    <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+      <Box width={{ custom: contentWidth }}>
+        <Stack space="12px" alignHorizontal="left">
+          <ConditionalWrap
+            condition={!iconColor}
+            wrap={(children: React.ReactNode) => (
+              <RainbowText colors={colors}>{children}</RainbowText>
+            )}
+          >
+            <TextIcon color={iconColor}>{icon}</TextIcon>
+          </ConditionalWrap>
+          <ConditionalWrap
+            condition={!iconColor}
+            wrap={(children: React.ReactNode) => (
+              <RainbowText colors={colors}>{children}</RainbowText>
+            )}
+          >
+            <Text size="20pt" weight="bold" color="label">
+              {title}
+            </Text>
+          </ConditionalWrap>
+          <Text size="13pt" weight="semibold" color="labelTertiary">
+            {description}
+          </Text>
+        </Stack>
+      </Box>
+      <CaretIcon color={labelQuaternary} />
+    </Box>
+  );
+};
