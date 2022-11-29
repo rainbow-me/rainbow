@@ -321,7 +321,7 @@ const withBalanceSection = (
     pinnedCoins,
     hiddenCoins,
     true,
-    !collectibles.length
+    isLoadingAssets
   );
 
   let balanceSectionData = [...assets];
@@ -386,7 +386,7 @@ const withBriefBalanceSection = (
     pinnedCoins,
     hiddenCoins,
     true,
-    !collectibles.length
+    isLoadingAssets
   );
 
   const savingsTotalValue = savingsSection?.find(
