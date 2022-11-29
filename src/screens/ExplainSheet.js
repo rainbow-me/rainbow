@@ -19,6 +19,7 @@ import { AccentColorProvider, Box } from '@/design-system';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
@@ -126,6 +127,21 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const ZoraAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.rainbowBlue}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZora}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -243,6 +259,8 @@ const GOLDDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.golddoge_text');
 
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
+const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
+
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
@@ -275,6 +293,17 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.smolPurple,
       bgColor: colors?.smolPurple06,
+    },
+  },
+  zora_app_icon: {
+    logo: <ZoraAppIcon />,
+    extraHeight: -90,
+    text: ZORA_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
+    button: {
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.appleBlue06,
     },
   },
   output_disabled: {
