@@ -4,6 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
@@ -15,6 +16,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import {
+  GoldDogeIcon,
   OptimismIcon,
   SmolIcon,
   ZoraIcon,
@@ -68,6 +70,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Zora',
     source: AppIconZora,
     unlock_key: ZoraIcon.unlockKey,
+  },
+  golddoge: {
+    accentColor: 'dogeGold',
+    key: GoldDogeIcon.key,
+    name: 'GOLDDOGE',
+    source: AppIconGoldDoge,
+    unlock_key: GoldDogeIcon.unlockKey,
   },
 };
 

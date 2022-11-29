@@ -25,6 +25,24 @@
         	<string>smol</string>
       	</array>
     	</dict>
+			<key>raindoge</key>
+    	<dict>
+      	<key>UIPrerenderedIcon</key>
+      	<false/>
+      	<key>CFBundleIconFiles</key>
+      	<array>
+        	<string>raindoge</string>
+      	</array>
+    	</dict>
+			<key>golddoge</key>
+    	<dict>
+      	<key>UIPrerenderedIcon</key>
+      	<false/>
+      	<key>CFBundleIconFiles</key>
+      	<array>
+        	<string>golddoge</string>
+      	</array>
+    	</dict>
 			<key>pixel</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
