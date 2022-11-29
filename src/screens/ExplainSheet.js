@@ -289,8 +289,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
     button: {
       label: lang.t('explain.icon_unlock.button'),
-      textColor: colors?.rainbowBlue,
-      bgColor: colors?.rainbowBlue06,
+      textColor: colors?.appleBlue,
+      bgColor: colors?.appleBlue06,
     },
   },
   output_disabled: {

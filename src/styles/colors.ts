@@ -84,7 +84,8 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
-    appleBlue: '#0E76FD', // '13, 13, 13'
+    appleBlue: '#0E76FD', // '14, 118, 253'
+    appleBlue06: 'rgba(14, 118, 253, 0.06)',
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
     blueGreyDark04: '#222326', // this color is blueGreyDark at 4% over white
