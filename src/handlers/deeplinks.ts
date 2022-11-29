@@ -144,6 +144,7 @@ export default async function handleDeeplink(
   }
 }
 
+// TODO need to handle this for v2 as well
 function handleWalletConnect(uri: any) {
   const { dispatch } = store;
   dispatch(walletConnectSetPendingRedirect());

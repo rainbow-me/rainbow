@@ -80,6 +80,7 @@ import {
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
+import { initListeners } from '@/utils/walletConnectV2';
 
 const FedoraToastRef = createRef();
 
@@ -147,6 +148,8 @@ class OldApp extends Component {
       PerformanceMetrics.loadRootAppComponent
     );
     analyticsV2.track(analyticsV2.event.applicationDidMount);
+
+    initListeners();
   }
 
   componentDidUpdate(prevProps) {

@@ -117,7 +117,14 @@ export default function WalletConnectApprovalSheet() {
     currentNetwork || network
   );
 
-  const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
+  const {
+    dappName,
+    dappUrl,
+    dappScheme,
+    imageUrl,
+    peerId,
+    walletConnectV2Proposal,
+  } = meta;
 
   const checkIfScam = useCallback(
     async dappUrl => {
@@ -190,15 +197,16 @@ export default function WalletConnectApprovalSheet() {
       if (callback) {
         setTimeout(
           () =>
-            callback(
-              success,
-              approvalNetworkInfo.chainId,
-              approvalAccount.address,
+            callback({
+              approved: success,
+              chainId: approvalNetworkInfo.chainId,
+              accountAddress: approvalAccount.address,
               peerId,
               dappScheme,
               dappName,
-              dappUrl
-            ),
+              dappUrl,
+              walletConnectV2Proposal,
+            }),
           300
         );
       }
@@ -211,6 +219,7 @@ export default function WalletConnectApprovalSheet() {
       dappScheme,
       dappName,
       dappUrl,
+      walletConnectV2Proposal,
     ]
   );
 

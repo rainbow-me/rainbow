@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
+import { SignClientTypes } from '@walletconnect/types';
 import { parseUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
@@ -136,19 +137,21 @@ type WalletconnectResultType =
 /**
  * Route parameters sent to a WalletConnect approval sheet.
  */
-interface WalletconnectApprovalSheetRouteParams {
-  callback: (
-    approved: boolean,
-    chainId: number,
-    accountAddress: string,
-    peerId: RequestData['peerId'],
-    dappScheme: RequestData['dappScheme'],
-    dappName: RequestData['dappName'],
-    dappUrl: RequestData['dappUrl']
-  ) => Promise<unknown>;
+export interface WalletconnectApprovalSheetRouteParams {
+  callback: (props: {
+    approved: boolean;
+    chainId: number;
+    accountAddress: string;
+    peerId: string;
+    dappScheme: any;
+    dappName: string;
+    dappUrl: string;
+    walletConnectV2Proposal: SignClientTypes.EventArguments['session_proposal'];
+  }) => Promise<unknown>;
   receivedTimestamp: number;
   meta?: {
     chainId: number;
+    walletConnectV2Proposal: SignClientTypes.EventArguments['session_proposal'];
   } & Pick<
     RequestData,
     'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'
@@ -328,15 +331,23 @@ export const walletConnectOnSessionRequest = (
       let navigated = false;
       let timedOut = false;
       let routeParams: WalletconnectApprovalSheetRouteParams = {
-        callback: async (
+        callback: async ({
           approved,
           chainId,
           accountAddress,
           peerId,
           dappScheme,
           dappName,
-          dappUrl
-        ) => {
+          dappUrl,
+        }: {
+          approved: boolean;
+          chainId: number;
+          accountAddress: string;
+          peerId: string;
+          dappScheme: any;
+          dappName: string;
+          dappUrl: string;
+        }) => {
           if (approved) {
             dispatch(setPendingRequest(peerId, walletConnector!));
             dispatch(
@@ -530,7 +541,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async (approved: boolean) => {
+          callback: async ({ approved }: { approved: boolean }) => {
             if (approved) {
               walletConnector.approveRequest({
                 id: requestId,
@@ -649,6 +660,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
 /**
  * Begins listening to WalletConnect events on existing connections.
  */
+// TODO explains how we boot up
 export const walletConnectLoadState = () => async (
   dispatch: ThunkDispatch<
     StoreAppState,
