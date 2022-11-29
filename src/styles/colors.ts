@@ -102,6 +102,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
     darkModeDark: '#404656',
+    dogeGold: '#FCAC34', // '252, 172, 52'
+    dogeGold06: 'rgba(252, 172, 52, 0.06)',
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
