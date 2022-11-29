@@ -87,30 +87,6 @@ export interface GasPricesAPIData {
   urgentWait: Numberish;
 }
 
-export interface GasFeesPolygonGasStationData {
-  status: string;
-  message: string;
-  result: {
-    LastBlock: string;
-    SafeGasPrice: string;
-    ProposeGasPrice: string;
-    FastGasPrice: string;
-    UsdPrice: string;
-  };
-}
-
-export interface GasFeesBscGasStationData {
-  status: string;
-  message: string;
-  result: {
-    LastBlock: string;
-    SafeGasPrice: string;
-    ProposeGasPrice: string;
-    FastGasPrice: string;
-    UsdPrice: string;
-  };
-}
-
 export interface BlocksToConfirmationByPriorityFee {
   1: string;
   2: string;
@@ -145,6 +121,20 @@ export interface RainbowMeteorologyData {
     blocksToConfirmationByPriorityFee: BlocksToConfirmationByPriorityFee;
     blocksToConfirmationByBaseFee: BlocksToConfirmationByBaseFee;
     maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
+  };
+  meta: {
+    blockNumber: number;
+    provider: string;
+  };
+}
+
+export interface RainbowMeteorologyLegacyData {
+  data: {
+    legacy: {
+      fastGasPrice: string;
+      proposeGasPrice: string;
+      safeGasPrice: string;
+    };
   };
   meta: {
     blockNumber: number;

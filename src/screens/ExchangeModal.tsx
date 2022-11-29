@@ -111,7 +111,6 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
-  [Network.bsc]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {

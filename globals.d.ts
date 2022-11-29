@@ -25,7 +25,6 @@ declare module 'react-native-dotenv' {
   export const ENABLE_DEV_MODE: '0' | '1';
   export const SENTRY_ENDPOINT: string;
   export const SENTRY_ENVIRONMENT: string;
-  export const ARBITRUM_MAINNET_RPC: string;
   export const DATA_API_KEY: string;
   export const DATA_ENDPOINT: string;
   export const DATA_ORIGIN: string;
@@ -41,6 +40,8 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_ROPSTEN_RPC_DEV: string;
   export const OPTIMISM_MAINNET_RPC: string;
   export const POLYGON_MAINNET_RPC: string;
+  export const ARBITRUM_MAINNET_RPC: string;
+  export const BSC_MAINNET_RPC: string;
   export const RAINBOW_WYRE_MERCHANT_ID: string;
   export const RAINBOW_WYRE_MERCHANT_ID_TEST: string;
   export const WYRE_ACCOUNT_ID: string;
