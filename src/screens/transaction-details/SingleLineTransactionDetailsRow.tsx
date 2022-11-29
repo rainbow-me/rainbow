@@ -7,7 +7,11 @@ type Props = {
   value: string;
 };
 
-export const ThinSymbolRow: React.FC<Props> = ({ icon, title, value }) => {
+export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
+  icon,
+  title,
+  value,
+}) => {
   return (
     <Box paddingVertical="20px">
       <Inline alignVertical="center" wrap={false}>
