@@ -71,6 +71,10 @@
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
 		B52242E628B1B11F0024D19D /* smol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E428B1B11F0024D19D /* smol@2x.png */; };
 		B52242E728B1B11F0024D19D /* smol@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E528B1B11F0024D19D /* smol@3x.png */; };
+		B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0C29358945007560D9 /* golddoge@3x.png */; };
+		B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0D29358945007560D9 /* golddoge@2x.png */; };
+		B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0E29358946007560D9 /* raindoge@3x.png */; };
+		B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0F29358946007560D9 /* raindoge@2x.png */; };
 		B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
 		C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
@@ -296,6 +300,10 @@
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
 		B52242E428B1B11F0024D19D /* smol@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smol@2x.png"; sourceTree = "<group>"; };
 		B52242E528B1B11F0024D19D /* smol@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smol@3x.png"; sourceTree = "<group>"; };
+		B54C1D0C29358945007560D9 /* golddoge@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "golddoge@3x.png"; sourceTree = "<group>"; };
+		B54C1D0D29358945007560D9 /* golddoge@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "golddoge@2x.png"; sourceTree = "<group>"; };
+		B54C1D0E29358946007560D9 /* raindoge@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "raindoge@3x.png"; sourceTree = "<group>"; };
+		B54C1D0F29358946007560D9 /* raindoge@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "raindoge@2x.png"; sourceTree = "<group>"; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
 		C11640E7274DC10B00C9120A /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		C1272389274EBBB6006AC743 /* CurrencyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyDetails.swift; sourceTree = "<group>"; };
@@ -452,6 +460,10 @@
 				15CF49BF2889AFAD005F92C9 /* pixel@2x.png */,
 				15CF49BE2889AFAD005F92C9 /* pixel@3x.png */,
 				15CF49BB2889AF7C005F92C9 /* optimism@2x.png */,
+				B54C1D0D29358945007560D9 /* golddoge@2x.png */,
+				B54C1D0C29358945007560D9 /* golddoge@3x.png */,
+				B54C1D0F29358946007560D9 /* raindoge@2x.png */,
+				B54C1D0E29358946007560D9 /* raindoge@3x.png */,
 				15CF49BA2889AF7C005F92C9 /* optimism@3x.png */,
 				15C3987F2880EDFF006033AC /* og@2x.png */,
 				15C3987D2880EDFF006033AC /* og@3x.png */,
@@ -928,7 +940,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */,
+				B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */,
 				A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */,
@@ -937,6 +951,8 @@
 				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
 				7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
+				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
+				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,
 				15CF49C12889AFAD005F92C9 /* pixel@2x.png in Resources */,
 				B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */,
 				C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */,

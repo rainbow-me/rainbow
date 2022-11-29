@@ -4,6 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
@@ -13,7 +14,11 @@ import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
-import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import {
+  GoldDogeIcon,
+  OptimismIcon,
+  SmolIcon,
+} from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
 
 type AppIcon = {
@@ -56,6 +61,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'SMOL',
     source: AppIconSmol,
     unlock_key: SmolIcon.unlockKey,
+  },
+  golddoge: {
+    accentColor: 'dogeGold',
+    key: GoldDogeIcon.key,
+    name: 'GOLDDOGE',
+    source: AppIconGoldDoge,
+    unlock_key: GoldDogeIcon.unlockKey,
   },
 };
 
