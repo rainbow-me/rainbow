@@ -64,7 +64,8 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     asset.type === AssetTypes.uniswapV2 ||
     asset.type === AssetTypes.arbitrum ||
     asset.type === AssetTypes.optimism ||
-    asset.type === AssetTypes.polygon
+    asset.type === AssetTypes.polygon ||
+    asset.type === AssetTypes.bsc
       ? asset.type
       : AssetTypes.token;
 

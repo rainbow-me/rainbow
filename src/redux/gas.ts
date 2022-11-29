@@ -71,6 +71,7 @@ const getDefaultGasLimit = (
     case Network.arbitrum:
       return ethUnits.arbitrum_basic_tx;
     case Network.polygon:
+    case Network.bsc:
     case Network.optimism:
     case Network.mainnet:
     default:
@@ -433,6 +434,8 @@ export const gasPricesStartPolling = (
               } else if (network === Network.optimism) {
                 adjustedGasFees = await getOptimismGasPrices();
                 dataIsReady = l1GasFeeOptimism !== null;
+              } else if (network === Network.bsc) {
+                adjustedGasFees = await getBscGasPrices();
               }
               if (!adjustedGasFees) return;
 
