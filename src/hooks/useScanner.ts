@@ -7,7 +7,7 @@ import { parseUri } from '@walletconnect/utils';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '../navigation/Navigation';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
@@ -22,10 +22,10 @@ import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { handleWalletConnectV2QR } from '@/utils/walletConnectV2';
+import { pair } from '@/utils/walletConnectV2';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
-  const navigation = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
@@ -63,7 +63,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         ? address
         : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
-      navigation.navigate(Routes.WALLET_SCREEN);
+      navigate(Routes.WALLET_SCREEN);
 
       // And then navigate to Profile sheet
       InteractionManager.runAfterInteractions(() => {
@@ -78,7 +78,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         setTimeout(onSuccess, 500);
       });
     },
-    [navigation.navigate, onSuccess, profilesEnabled]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanRainbowProfile = useCallback(
@@ -94,7 +94,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
           ? addressOrENS
           : await fetchReverseRecordWithRetry(addressOrENS);
         // First navigate to wallet screen
-        navigation.navigate(Routes.WALLET_SCREEN);
+        navigate(Routes.WALLET_SCREEN);
 
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
@@ -110,7 +110,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         });
       }
     },
-    [navigation.navigate, onSuccess, profilesEnabled]
+    [navigate, onSuccess, profilesEnabled]
   );
 
   const handleScanWalletConnect = useCallback(
@@ -118,7 +118,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
-      navigation.goBack();
+      goBack();
       onSuccess();
       try {
         const { version } = parseUri(qrCodeData);
@@ -126,13 +126,13 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         if (version === 1) {
           await walletConnectOnSessionRequest(qrCodeData, () => {});
         } else if (version === 2) {
-          await handleWalletConnectV2QR({ uri: qrCodeData, navigation });
+          await pair({ uri: qrCodeData });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
       }
     },
-    [navigation.goBack, onSuccess, walletConnectOnSessionRequest]
+    [goBack, onSuccess, walletConnectOnSessionRequest]
   );
 
   const handleScanInvalid = useCallback(

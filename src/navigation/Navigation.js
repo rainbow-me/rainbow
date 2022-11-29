@@ -132,11 +132,16 @@ function setTopLevelNavigator(navigatorRef) {
   TopLevelNavigationRef = navigatorRef;
 }
 
+export function getTopLevelNavigator() {
+  return TopLevelNavigationRef;
+}
+
 export default {
   getActiveOptions,
   getActiveRoute,
   getActiveRouteName,
   handleAction,
   setTopLevelNavigator,
+  getTopLevelNavigator,
   transitionPosition,
 };
