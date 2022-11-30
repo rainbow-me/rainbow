@@ -10,12 +10,19 @@ import { RainbowWallet } from '@/model/wallet';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
 
-export const RestoreSheetFirstStep = ({
+type AddWalletSheetProps = {
+  onCloudRestore: () => void;
+  onManualRestore: () => void;
+  onWatchAddress: () => void;
+  userData: { wallets: RainbowWallet[] };
+};
+
+export const AddWalletSheet = ({
   onCloudRestore,
   onManualRestore,
   onWatchAddress,
   userData,
-}: any) => {
+}: AddWalletSheetProps) => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const { setParams } = useNavigation();
 

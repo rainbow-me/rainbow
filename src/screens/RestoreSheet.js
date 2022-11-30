@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
-import { RestoreSheetFirstStep } from '../components/backup/RestoreSheetFirstStep.tsx';
+import { AddWalletSheet } from '../components/backup/AddWalletSheet';
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import {
@@ -115,7 +115,7 @@ export function RestoreSheet() {
             userData={userData}
           />
         ) : (
-          <RestoreSheetFirstStep
+          <AddWalletSheet
             onCloudRestore={onCloudRestore}
             onManualRestore={onManualRestore}
             onWatchAddress={onWatchAddress}
