@@ -14,7 +14,7 @@ import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 
-const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
+export const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
   'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
 const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 

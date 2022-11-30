@@ -631,6 +631,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
             addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
           )
         : null;
+
       if (request) {
         Navigation.handleAction(Routes.CONFIRM_REQUEST, {
           openAutomatically: true,
@@ -660,7 +661,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
 /**
  * Begins listening to WalletConnect events on existing connections.
  */
-// TODO explains how we boot up
 export const walletConnectLoadState = () => async (
   dispatch: ThunkDispatch<
     StoreAppState,

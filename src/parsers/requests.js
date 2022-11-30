@@ -1,4 +1,3 @@
-import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
@@ -17,6 +16,7 @@ import {
   SIGN,
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
+import { utils as ethersUtils } from 'ethers';
 
 export const getRequestDisplayDetails = (
   payload,
@@ -58,10 +58,10 @@ export const getRequestDisplayDetails = (
     return result;
   }
   if (payload.method === PERSONAL_SIGN) {
-    let message = payload?.params?.[0];
+    let message = payload?.params?.find(p => !ethersUtils.isAddress(p));
     try {
       if (isHexString(message)) {
-        message = convertHexToUtf8(message);
+        message = ethersUtils.toUtf8String(message);
       }
     } catch (error) {
       // TODO error handling
