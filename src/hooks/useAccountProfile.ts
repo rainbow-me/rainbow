@@ -11,8 +11,7 @@ const walletSelector = (state: AppState) => ({
   selectedWallet: state.wallets.selected || ({} as RainbowWallet),
   walletNames: state.wallets.walletNames,
 });
-
-const accountAddressSelector = (state: AppState) => ({
+const settingsSelector = (state: AppState) => ({
   accountAddress: state.settings.accountAddress,
 });
 
@@ -36,7 +35,7 @@ const buildAccountProfile = (
 };
 
 const accountProfileSelector = createSelector(
-  [walletSelector, accountAddressSelector],
+  [walletSelector, settingsSelector],
   buildAccountProfile
 );
 
