@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { AddWalletItem, AddWalletRow } from './AddWalletRow';
 import { Inset, Separator, Stack } from '@/design-system';
 
@@ -6,7 +6,8 @@ type AddWalletListProps = {
   items: AddWalletItem[];
   horizontalInset: number;
 };
-export const ConnectWalletList = ({
+
+export const AddWalletList = ({
   items,
   horizontalInset,
 }: AddWalletListProps) => {

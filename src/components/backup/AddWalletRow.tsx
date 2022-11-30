@@ -22,7 +22,7 @@ const RainbowText =
 const TextIcon = styled(RNText).attrs({
   size: 29,
   weight: 'medium',
-});
+})({});
 
 const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
   name: 'caret',
@@ -35,7 +35,7 @@ export type AddWalletItem = {
   title: string;
   description: string;
   icon: string;
-  iconColor: string;
+  iconColor?: string;
 };
 
 type AddWalletRowProps = {
