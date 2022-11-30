@@ -48,29 +48,38 @@ export const AddWalletSheet = ({
     setParams({ enableCloudRestore });
   }, [enableCloudRestore, hardwareWalletsEnabled, setParams]);
 
+  let restoreFromCloudDescription;
+  if (IS_IOS) {
+    // It is not possible for the user to be on iOS and have
+    // no backups at this point, since `enableCloudRestore`
+    // would be false in that case.
+    if (walletsBackedUp > 1) {
+      restoreFromCloudDescription = lang.t(
+        'back_up.restore_sheet.from_backup.ios.you_have_multiple_wallets',
+        {
+          walletsBackedUpCount: walletsBackedUp,
+        }
+      );
+    } else {
+      restoreFromCloudDescription = lang.t(
+        'back_up.restore_sheet.from_backup.ios.you_have_1_wallet'
+      );
+    }
+  } else {
+    restoreFromCloudDescription = lang.t(
+      'back_up.restore_sheet.from_backup.non_ios.if_you_previously_backed_up',
+      {
+        cloudPlatformName: cloudPlatform,
+      }
+    );
+  }
+
   const restoreFromCloud: AddWalletItem = {
     title: lang.t(
       'back_up.restore_sheet.from_backup.restore_from_cloud_platform',
       { cloudPlatformName: cloudPlatform }
     ),
-    description: IS_IOS
-      ? // It is not possible for the user to be on iOS and have
-        // no backups at this point, since `enableCloudRestore`
-        // would be false in that case.
-        walletsBackedUp > 1
-        ? lang.t(
-            'back_up.restore_sheet.from_backup.ios.you_have_multiple_wallets',
-            {
-              walletsBackedUpCount: walletsBackedUp,
-            }
-          )
-        : lang.t('back_up.restore_sheet.from_backup.ios.you_have_1_wallet')
-      : lang.t(
-          'back_up.restore_sheet.from_backup.non_ios.if_you_previously_backed_up',
-          {
-            cloudPlatformName: cloudPlatform,
-          }
-        ),
+    description: restoreFromCloudDescription,
     icon: '􀌍',
     onPress: onCloudRestore,
   };
