@@ -262,6 +262,13 @@ const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 
+const navigateToAppIconSettings = async (navigate, goBack) => {
+  goBack();
+  navigate(Routes.SETTINGS_SHEET);
+  await delay(500);
+  navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+};
+
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
@@ -269,12 +276,7 @@ export const explainers = (params, colors) => ({
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
-      onPress: async (navigate, goBack) => {
-        goBack();
-        navigate(Routes.SETTINGS_SHEET);
-        await delay(500);
-        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-      },
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
@@ -286,12 +288,7 @@ export const explainers = (params, colors) => ({
     text: GOLDDOGE_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
     button: {
-      onPress: async (navigate, goBack) => {
-        goBack();
-        navigate(Routes.SETTINGS_SHEET);
-        await delay(500);
-        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-      },
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.dogeGold,
       bgColor: colors?.dogeGold06,
@@ -303,12 +300,7 @@ export const explainers = (params, colors) => ({
     text: SMOL_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
-      onPress: async (navigate, goBack) => {
-        goBack();
-        navigate(Routes.SETTINGS_SHEET);
-        await delay(500);
-        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-      },
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.smolPurple,
       bgColor: colors?.smolPurple06,
@@ -320,12 +312,7 @@ export const explainers = (params, colors) => ({
     text: ZORA_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
     button: {
-      onPress: async (navigate, goBack) => {
-        goBack();
-        navigate(Routes.SETTINGS_SHEET);
-        await delay(500);
-        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-      },
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.appleBlue,
       bgColor: colors?.appleBlue06,
