@@ -45,14 +45,15 @@ export const updateLanguageLocale = (code: Language) => {
 };
 
 /**
- * Returns a i18n string for a given object-keypath or string.
+ * Returns a i18n string for a given object-keypath or string
+ * and optional template literal args.
  *   `import * as i18n from '@/languages'`
  *
  * Type-safe usage:
- *   `i18n.t(i18n.l.account.hide)`
+ *   `i18n.t(i18n.l.account.hide, { accountName: 'myAccount' })`
  *
  * Alternative standard usage:
- *   `i18n.t('account.hide')`
+ *   `i18n.t('account.hide', { accountName: 'myAccount' })`
  */
 export function t(keypath: string, args?: { [key: string]: string }) {
   // if it's anything truthy, try __keypath__ or fall back to the value
