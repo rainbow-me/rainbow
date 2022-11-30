@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { TransactionDetailsContent } from '@/screens/transaction-details/components/TransactionDetailsContent';
+import { TransactionDetailsContent } from './components/TransactionDetailsContent';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Centered } from '@/components/layout';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { TransactionDetailsFee } from './types/TransactionDetailsFee';
 import { ethUnits } from '@/references';
+import { useTheme } from '@/theme';
 
 // TODO: this is only temporary as I was figuring out how to do the slacksheet thing
 export const TRANSACTION_DETAILS_SHEET_HEIGHT = 400;
@@ -27,6 +28,7 @@ type Params = {
 
 export const TransactionDetails: React.FC = () => {
   const route = useRoute();
+  const { colors } = useTheme();
   const { transaction } = route.params as Params;
   const { height } = useDimensions();
   // TODO: unmock before release
@@ -46,9 +48,16 @@ export const TransactionDetails: React.FC = () => {
   console.log(transaction);
 
   return (
-    <Container height={TRANSACTION_DETAILS_SHEET_HEIGHT} deviceHeight={height}>
+    <Container
+      height={TRANSACTION_DETAILS_SHEET_HEIGHT}
+      deviceHeight={height}
+      backgroundColor={colors.surfacePrimary}
+    >
       {/* @ts-expect-error JS component */}
-      <SlackSheet contentHeight={TRANSACTION_DETAILS_SHEET_HEIGHT}>
+      <SlackSheet
+        backgroundColor={colors.surfacePrimary}
+        contentHeight={TRANSACTION_DETAILS_SHEET_HEIGHT}
+      >
         <TransactionDetailsContent
           accountAddress={accountAddress}
           fromCurrentAddress={isTxSentFromCurrentAddress}
