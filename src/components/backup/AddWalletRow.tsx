@@ -37,6 +37,8 @@ export type AddWalletItem = {
   description: string;
   icon: string;
   iconColor?: string;
+  testID?: string;
+  onPress: () => void;
 };
 
 type AddWalletRowProps = {
@@ -50,7 +52,7 @@ export const AddWalletRow = ({
 }: AddWalletRowProps) => {
   const { colors } = useTheme();
   const labelQuaternary = useForegroundColor('labelQuaternary');
-  const { title, description, icon, iconColor } = content;
+  const { title, description, icon, iconColor, testID, onPress } = content;
 
   // device width - 2 * total horizontal inset from device boundaries - caret column width (30)
   const contentWidth =
@@ -59,11 +61,13 @@ export const AddWalletRow = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      //@ts-expect-error js component
+      // @ts-expect-error js component
       scaleTo={0.9}
       flexDirection="row"
       alignItems="center"
       justifyContent="space-between"
+      onPress={onPress}
+      testID={testID}
     >
       <Box width={{ custom: contentWidth }}>
         <Stack space="12px" alignHorizontal="left">

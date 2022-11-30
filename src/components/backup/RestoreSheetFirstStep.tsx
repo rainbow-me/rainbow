@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { DebugLayout, globalColors, Inset } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { cloudPlatform } from '../../utils/platform';
@@ -6,9 +6,33 @@ import lang from 'i18n-js';
 import { AddWalletItem } from './AddWalletRow';
 import { AddWalletList } from './AddWalletList';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
+import { RainbowWallet } from '@/model/wallet';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
 
-export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
+export const RestoreSheetFirstStep = ({
+  onCloudRestore,
+  onManualRestore,
+  onWatchAddress,
+  userData,
+}: any) => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+
+  const walletsBackedUp = useMemo(() => {
+    let count = 0;
+    if (userData?.wallets) {
+      (Object.values(userData.wallets) as RainbowWallet[]).forEach(
+        (wallet: RainbowWallet) => {
+          if (
+            wallet.backedUp &&
+            wallet.backupType === WalletBackupTypes.cloud
+          ) {
+            count += 1;
+          }
+        }
+      );
+    }
+    return count;
+  }, [userData]);
 
   const restoreFromCloud: AddWalletItem = {
     title: lang.t(
@@ -34,6 +58,7 @@ export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
           }
         ),
     icon: '􀌍',
+    onPress: onCloudRestore,
   };
 
   const restoreFromSeed: AddWalletItem = {
@@ -43,6 +68,8 @@ export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
     ),
     icon: '􀑚',
     iconColor: globalColors.purple60,
+    testID: 'restore-with-key-button',
+    onPress: onManualRestore,
   };
 
   const watchAddress: AddWalletItem = {
@@ -52,6 +79,8 @@ export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
     ),
     icon: '􀒒',
     iconColor: globalColors.green60,
+    testID: 'watch-address-button',
+    onPress: onWatchAddress,
   };
 
   const importFromHardwareWallet: AddWalletItem = {
@@ -61,6 +90,7 @@ export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
     ),
     icon: '􀕹',
     iconColor: globalColors.blue60,
+    onPress: () => {},
   };
 
   const items = hardwareWalletsEnabled
