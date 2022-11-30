@@ -54,11 +54,11 @@ export const updateLanguageLocale = (code: Language) => {
  * Alternative standard usage:
  *   `i18n.t('account.hide')`
  */
-export function t(keypath: string) {
+export function t(keypath: string, args?: { [key: string]: string }) {
   // if it's anything truthy, try __keypath__ or fall back to the value
   // otherwise let falsy values fall through
   // @ts-expect-error
-  return lang.t(keypath ? keypath.__keypath__ || keypath : keypath);
+  return lang.t(keypath ? keypath.__keypath__ || keypath : keypath, args);
 }
 
 /**
