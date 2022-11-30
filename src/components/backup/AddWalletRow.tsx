@@ -7,6 +7,7 @@ import { GradientText, Text as RNText } from '../text';
 import { Icon } from '../icons';
 import ConditionalWrap from 'conditional-wrap';
 import { deviceUtils } from '@/utils';
+import { ButtonPressAnimation } from '../animations';
 
 const RainbowText =
   IS_ANDROID && IS_TEST
@@ -40,22 +41,30 @@ export type AddWalletItem = {
 
 type AddWalletRowProps = {
   content: AddWalletItem;
-  horizontalInset: number;
+  totalHorizontalInset: number;
 };
 
 export const AddWalletRow = ({
   content,
-  horizontalInset,
+  totalHorizontalInset,
 }: AddWalletRowProps) => {
   const { colors } = useTheme();
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const { title, description, icon, iconColor } = content;
 
-  // device width - 2 * horizontal inset - caret column width (30)
-  const contentWidth = deviceUtils.dimensions.width - 2 * horizontalInset - 30;
+  // device width - 2 * total horizontal inset from device boundaries - caret column width (30)
+  const contentWidth =
+    deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
 
   return (
-    <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+    <Box
+      as={ButtonPressAnimation}
+      //@ts-expect-error js component
+      scaleTo={0.9}
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+    >
       <Box width={{ custom: contentWidth }}>
         <Stack space="12px" alignHorizontal="left">
           <ConditionalWrap

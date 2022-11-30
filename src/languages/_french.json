@@ -160,6 +160,10 @@
           },
           "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
         },
+        "from_hardware_wallet": {
+          "title": "Import from your hardware wallet :)",
+          "description": "Add accounts from your Bluetooth hardware wallet :)"
+        },
         "from_key": {
           "secret_phrase_description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
           "secret_phrase_title": "Restore with a recovery phrase or private key :) "

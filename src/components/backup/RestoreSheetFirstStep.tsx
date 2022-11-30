@@ -1,58 +1,14 @@
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  DebugLayout,
-  Inset,
-  Row,
-  Rows,
-  Separator,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import React from 'react';
-import { GradientText, Text as RNText } from '../text';
-import { Icon } from '../icons';
+import React, { useEffect } from 'react';
+import { DebugLayout, globalColors, Inset } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { cloudPlatform } from '../../utils/platform';
-import { deviceUtils } from '@/utils';
 import lang from 'i18n-js';
 import { AddWalletItem } from './AddWalletRow';
 import { AddWalletList } from './AddWalletList';
-
-// device width - horizontal inset (60) - caret column width (30)
-const CONTENT_WIDTH = deviceUtils.dimensions.width - 90;
-
-const RainbowText =
-  IS_ANDROID && IS_TEST
-    ? Text
-    : styled(GradientText).attrs(({ theme: { colors } }: any) => ({
-        angle: false,
-        colors: colors.gradients.rainbow,
-        end: { x: 0, y: 0.5 },
-        start: { x: 1, y: 0.5 },
-        steps: [0, 0.774321, 1],
-      }))({});
-
-const TextIcon = styled(RNText).attrs({
-  size: 29,
-  weight: 'medium',
-})({});
-
-const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
-  name: 'caret',
-  color: color,
-}))({
-  marginBottom: 5.25,
-});
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
-  const { colors } = useTheme();
-  const labelQuaternary = useForegroundColor('labelQuaternary');
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
   const restoreFromCloud: AddWalletItem = {
     title: lang.t(
@@ -86,13 +42,39 @@ export const RestoreSheetFirstStep = ({ walletsBackedUp }: any) => {
       'back_up.restore_sheet.from_key.secret_phrase_description'
     ),
     icon: '􀑚',
-    iconColor: colors.purple,
+    iconColor: globalColors.purple60,
   };
 
+  const watchAddress: AddWalletItem = {
+    title: lang.t('back_up.restore_sheet.watch_address.watch_title'),
+    description: lang.t(
+      'back_up.restore_sheet.watch_address.watch_description'
+    ),
+    icon: '􀒒',
+    iconColor: globalColors.green60,
+  };
+
+  const importFromHardwareWallet: AddWalletItem = {
+    title: lang.t('back_up.restore_sheet.from_hardware_wallet.title'),
+    description: lang.t(
+      'back_up.restore_sheet.from_hardware_wallet.description'
+    ),
+    icon: '􀕹',
+    iconColor: globalColors.blue60,
+  };
+
+  const items = hardwareWalletsEnabled
+    ? [
+        restoreFromCloud,
+        restoreFromSeed,
+        importFromHardwareWallet,
+        watchAddress,
+      ]
+    : [restoreFromCloud, restoreFromSeed, watchAddress];
+
   return (
-    <AddWalletList
-      items={[restoreFromCloud, restoreFromSeed]}
-      horizontalInset={30}
-    />
+    <Inset top="36px" horizontal="30px (Deprecated)">
+      <AddWalletList items={items} totalHorizontalInset={30} />
+    </Inset>
   );
 };

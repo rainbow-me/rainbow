@@ -19,6 +19,7 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TRANSACTION_DETAILS_SHEET_HEIGHT } from '@/screens/transaction-details/TransactionDetails';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -311,12 +312,6 @@ export const expandedAssetSheetConfigWithLimit = {
   }),
 };
 
-const restoreSheetSizes = {
-  ...backupSheetSizes,
-  medium: 505,
-  short: 363,
-};
-
 export const restoreSheetConfig = {
   options: ({ navigation, route }) => {
     const {
@@ -324,15 +319,16 @@ export const restoreSheetConfig = {
         enableCloudRestore,
         longFormHeight,
         step = WalletBackupStepTypes.first,
+        hardwareWalletsEnabled,
         ...params
       } = {},
     } = route;
 
-    let heightForStep = restoreSheetSizes.short;
+    let heightForStep = hardwareWalletsEnabled ? 688 : 522;
     if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-      heightForStep = restoreSheetSizes.medium;
+      heightForStep = 505;
     } else if (step === WalletBackupStepTypes.cloud) {
-      heightForStep = restoreSheetSizes.long;
+      heightForStep = backupSheetSizes.long;
     }
 
     if (longFormHeight !== heightForStep) {

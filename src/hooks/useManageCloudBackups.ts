@@ -13,11 +13,13 @@ import { useNavigation } from '@/navigation/Navigation';
 import { walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
   const { navigate } = useNavigation();
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const manageCloudBackups = useCallback(() => {
@@ -91,6 +93,7 @@ export default function useManageCloudBackups() {
                         backupSelected,
                         fromSettings: true,
                         step: walletBackupStepTypes.cloud,
+                        hardwareWalletsEnabled,
                         userData,
                       });
                     }
@@ -137,7 +140,7 @@ export default function useManageCloudBackups() {
         }
       }
     );
-  }, [dispatch, navigate, wallets]);
+  }, [dispatch, hardwareWalletsEnabled, navigate, wallets]);
 
   return { manageCloudBackups };
 }
