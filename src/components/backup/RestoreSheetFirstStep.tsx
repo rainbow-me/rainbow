@@ -39,7 +39,7 @@ export const RestoreSheetFirstStep = ({
   const enableCloudRestore = IS_ANDROID || walletsBackedUp > 0;
   useEffect(() => {
     setParams({ enableCloudRestore });
-  }, [enableCloudRestore, setParams]);
+  }, [enableCloudRestore, hardwareWalletsEnabled, setParams]);
 
   const restoreFromCloud: AddWalletItem = {
     title: lang.t(

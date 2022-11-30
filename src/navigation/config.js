@@ -323,10 +323,13 @@ export const restoreSheetConfig = {
         ...params
       } = {},
     } = route;
-
-    let heightForStep = hardwareWalletsEnabled ? 688 : 522;
-    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-      heightForStep = 505;
+    let heightForStep = 390;
+    if (step === WalletBackupStepTypes.first) {
+      if (enableCloudRestore && hardwareWalletsEnabled) {
+        heightForStep = 654;
+      } else if (enableCloudRestore || hardwareWalletsEnabled) {
+        heightForStep = 522;
+      }
     } else if (step === WalletBackupStepTypes.cloud) {
       heightForStep = backupSheetSizes.long;
     }
