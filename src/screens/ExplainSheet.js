@@ -269,7 +269,8 @@ export const explainers = (params, colors) => ({
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
-      onPress: async navigate => {
+      onPress: async (navigate, goBack) => {
+        goBack();
         navigate(Routes.SETTINGS_SHEET);
         await delay(500);
         navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
@@ -285,7 +286,8 @@ export const explainers = (params, colors) => ({
     text: GOLDDOGE_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
     button: {
-      onPress: async navigate => {
+      onPress: async (navigate, goBack) => {
+        goBack();
         navigate(Routes.SETTINGS_SHEET);
         await delay(500);
         navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
@@ -301,7 +303,8 @@ export const explainers = (params, colors) => ({
     text: SMOL_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
-      onPress: async navigate => {
+      onPress: async (navigate, goBack) => {
+        goBack();
         navigate(Routes.SETTINGS_SHEET);
         await delay(500);
         navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
@@ -317,7 +320,8 @@ export const explainers = (params, colors) => ({
     text: ZORA_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
     button: {
-      onPress: async navigate => {
+      onPress: async (navigate, goBack) => {
+        goBack();
         navigate(Routes.SETTINGS_SHEET);
         await delay(500);
         navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
