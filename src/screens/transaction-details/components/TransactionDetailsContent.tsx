@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { Bleed, Box, Separator } from '@/design-system';
-import { RainbowTransaction } from '@/entities';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
-import { ethereumUtils } from '@/utils';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
+import { TransactionDetailsFee } from '../types/TransactionDetailsFee';
+import { getFormattedEthFee } from '@/screens/transaction-details/helpers/getFormattedEthFee';
 
 type Props = {
-  transaction: RainbowTransaction;
+  accountAddress: string;
+  txHash?: string;
+  fromCurrentAddress?: boolean;
+  fee?: TransactionDetailsFee;
 };
 
 const Divider = () => (
@@ -17,9 +20,15 @@ const Divider = () => (
   </Bleed>
 );
 
-export const TransactionDetailsContent: React.FC<Props> = ({ transaction }) => {
-  const hash = ethereumUtils.getHash(transaction);
-  const formattedHash = hash ? shortenTxHashString(hash) : '';
+export const TransactionDetailsContent: React.FC<Props> = ({
+  accountAddress,
+  txHash,
+  fromCurrentAddress,
+  fee,
+}) => {
+  const formattedHash = txHash ? shortenTxHashString(txHash) : '';
+  const usdFee = `$${fee?.currencyAmount?.toPrecision(3)}`;
+  const formattedEthFee = getFormattedEthFee(fee?.weiAmount ?? 0);
 
   return (
     <Box
@@ -28,18 +37,23 @@ export const TransactionDetailsContent: React.FC<Props> = ({ transaction }) => {
       paddingHorizontal="20px"
       paddingBottom="20px"
     >
-      <DoubleLineTransactionDetailsRow
-        leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
-        secondaryValue={'$2.59'}
-        title={'Network Fee'}
-        value={'43.71 Gwei'}
-      />
+      {fromCurrentAddress && fee && (
+        <DoubleLineTransactionDetailsRow
+          leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
+          secondaryValue={usdFee}
+          title={'Network Fee'}
+          value={formattedEthFee}
+        />
+      )}
+
       <Divider />
-      <SingleLineTransactionDetailsRow
-        icon={'􀆃'}
-        title={'Tx Hash'}
-        value={formattedHash}
-      />
+      {formattedHash && (
+        <SingleLineTransactionDetailsRow
+          icon={'􀆃'}
+          title={'Tx Hash'}
+          value={formattedHash}
+        />
+      )}
     </Box>
   );
 };

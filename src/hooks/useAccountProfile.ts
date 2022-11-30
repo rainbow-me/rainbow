@@ -11,7 +11,8 @@ const walletSelector = (state: AppState) => ({
   selectedWallet: state.wallets.selected || ({} as RainbowWallet),
   walletNames: state.wallets.walletNames,
 });
-const settingsSelector = (state: AppState) => ({
+
+const accountAddressSelector = (state: AppState) => ({
   accountAddress: state.settings.accountAddress,
 });
 
@@ -34,12 +35,12 @@ const buildAccountProfile = (
   );
 };
 
-export default function useAccountProfile() {
-  const accountProfileSelector = createSelector(
-    [walletSelector, settingsSelector],
-    buildAccountProfile
-  );
+const accountProfileSelector = createSelector(
+  [walletSelector, accountAddressSelector],
+  buildAccountProfile
+);
 
+export default function useAccountProfile() {
   const {
     accountAddress,
     accountColor,

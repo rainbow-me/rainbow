@@ -39,6 +39,7 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Sent',
     to: '0xe0e0f2277752af0f797855be0c24d13c15e5a261',
     type: TransactionType.send,
+    fee: { price: 1186.44, value: 2422871970692212 },
   },
   'Received': {
     address: '0x23b608675a2b2fb1890d3abbd85c5775c51691d5',
@@ -62,7 +63,7 @@ const transactions: Record<string, RainbowTransaction> = {
     status: TransactionStatus.received,
     symbol: 'SOCKS',
     title: 'Received',
-    to: '0x2e67869829c734ac13723a138a952f7a8b56e774',
+    to: '0x5e087b61aad29559e31565079fcdabe384b44614',
     type: TransactionType.receive,
   },
   'Failed': {
@@ -72,7 +73,7 @@ const transactions: Record<string, RainbowTransaction> = {
       display: '0.00374 ETH',
     },
     description: 'Ethereum',
-    from: '0x3c74d5d6e0f55d75cc850c9aee0dda99fbfd5415',
+    from: '0x5e087b61aad29559e31565079fcdabe384b44614',
     hash:
       '0x6752a68c377e81ee63f2b3237b00e88f57d220b152743a063997d7e2ffdf37e3-0',
     minedAt: 1665754055,
@@ -89,6 +90,7 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Failed',
     to: '0xc30141b657f4216252dc59af2e7cdb9d8792e1b0',
     type: TransactionType.trade,
+    fee: { price: 1258.2, value: 17750462695427 },
   },
   'Swapped': {
     address: 'eth',
@@ -114,6 +116,7 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Swapped',
     to: '0xc30141b657f4216252dc59af2e7cdb9d8792e1b0',
     type: TransactionType.trade,
+    fee: { price: 1258.2, value: 17750462695427280 },
   },
   'Contract Interaction': {
     address: 'eth',
@@ -139,9 +142,10 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Contract Interaction',
     to: '0x084b1c3c81545d370f3634392de611caabff8148',
     type: TransactionType.contract_interaction,
+    fee: { price: 1258.2, value: 17750462695427280 },
   },
   'Savings': {
-    address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+    address: '0x5e087b61aad29559e31565079fcdabe384b44614',
     balance: {
       amount: '10',
       display: '10.00 DAI',
@@ -165,6 +169,7 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Savings',
     to: '0x2e67869829c734ac13723a138a952f7a8b56e774',
     type: TransactionType.withdraw,
+    fee: { price: 1258.2, value: 17750462695427280 },
   },
 };
 

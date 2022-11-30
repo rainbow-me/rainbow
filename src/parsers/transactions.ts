@@ -343,6 +343,7 @@ const parseTransactionWithEmptyChanges = async (
       title: `Contract Interaction`,
       to: txn.address_to,
       type: TransactionType.contract_interaction,
+      fee: txn.fee,
     },
   ];
 };
@@ -431,6 +432,7 @@ const parseTransaction = async (
           title,
           to: internalTxn.address_to ?? txn.address_to,
           type: txn.type,
+          fee: txn?.fee,
         };
       }
     );

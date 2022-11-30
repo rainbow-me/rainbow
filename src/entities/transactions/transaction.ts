@@ -8,6 +8,7 @@ import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';
+import { ZerionTransaction } from '@/entities';
 
 export interface RainbowTransaction {
   address?: string;
@@ -53,6 +54,7 @@ export interface RainbowTransaction {
   txTo?: EthereumAddress | null;
   type?: TransactionType;
   value?: BigNumberish; // for pending tx
+  fee?: ZerionTransaction['fee']; // tx fee provided by Zerion
 }
 
 export interface NewTransaction {

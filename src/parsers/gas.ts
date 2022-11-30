@@ -162,7 +162,7 @@ export const parseRainbowMeteorologyData = (
 /**
  * @desc parse ether gas prices
  * @param {Object} data
-s */
+ s */
 export const parseL2GasPrices = (data: GasPricesAPIData) => ({
   [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.normalWait, data.normal),
@@ -375,4 +375,9 @@ export const gweiToWei = (gweiAmount: BigNumberish) => {
 export const weiToGwei = (weiAmount: BigNumberish) => {
   const gweiAmount = divide(weiAmount, ethUnits.gwei);
   return gweiAmount;
+};
+
+export const weiToEth = (weiAmount: BigNumberish) => {
+  const ethAmount = divide(weiAmount, ethUnits.ether);
+  return ethAmount;
 };
