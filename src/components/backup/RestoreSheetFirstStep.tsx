@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import { DebugLayout, globalColors, Inset } from '@/design-system';
-import { IS_IOS } from '@/env';
+import { globalColors, Inset } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { cloudPlatform } from '../../utils/platform';
 import lang from 'i18n-js';
 import { AddWalletItem } from './AddWalletRow';
@@ -8,6 +8,7 @@ import { AddWalletList } from './AddWalletList';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { RainbowWallet } from '@/model/wallet';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { useNavigation } from '@/navigation';
 
 export const RestoreSheetFirstStep = ({
   onCloudRestore,
@@ -16,6 +17,7 @@ export const RestoreSheetFirstStep = ({
   userData,
 }: any) => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const { setParams } = useNavigation();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -33,6 +35,11 @@ export const RestoreSheetFirstStep = ({
     }
     return count;
   }, [userData]);
+
+  const enableCloudRestore = IS_ANDROID || walletsBackedUp > 0;
+  useEffect(() => {
+    setParams({ enableCloudRestore });
+  }, [enableCloudRestore, setParams]);
 
   const restoreFromCloud: AddWalletItem = {
     title: lang.t(
@@ -93,18 +100,17 @@ export const RestoreSheetFirstStep = ({
     onPress: () => {},
   };
 
-  const items = hardwareWalletsEnabled
-    ? [
-        restoreFromCloud,
-        restoreFromSeed,
-        importFromHardwareWallet,
-        watchAddress,
-      ]
-    : [restoreFromCloud, restoreFromSeed, watchAddress];
-
   return (
     <Inset top="36px" horizontal="30px (Deprecated)">
-      <AddWalletList items={items} totalHorizontalInset={30} />
+      <AddWalletList
+        items={[
+          ...(enableCloudRestore ? [restoreFromCloud] : []),
+          restoreFromSeed,
+          ...(hardwareWalletsEnabled ? [importFromHardwareWallet] : []),
+          watchAddress,
+        ]}
+        totalHorizontalInset={30}
+      />
     </Inset>
   );
 };
