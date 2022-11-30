@@ -19,7 +19,6 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TRANSACTION_DETAILS_SHEET_HEIGHT } from '@/screens/transaction-details/TransactionDetails';
-import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

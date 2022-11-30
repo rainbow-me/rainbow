@@ -23,7 +23,9 @@ const RainbowText =
 const TextIcon = styled(RNText).attrs({
   size: 29,
   weight: 'medium',
-})({});
+})({
+  marginVertical: IS_ANDROID ? -10 : 0,
+});
 
 const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
   name: 'caret',
@@ -82,7 +84,11 @@ export const AddWalletRow = ({
           <ConditionalWrap
             condition={!iconColor}
             wrap={(children: React.ReactNode) => (
-              <RainbowText colors={colors}>{children}</RainbowText>
+              <Box marginBottom={{ custom: -4 }}>
+                <RainbowText colors={colors}>
+                  <Box marginBottom={{ custom: 4 }}>{children}</Box>
+                </RainbowText>
+              </Box>
             )}
           >
             <Text size="20pt" weight="bold" color="label">

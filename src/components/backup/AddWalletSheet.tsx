@@ -108,7 +108,11 @@ export const AddWalletSheet = ({
   };
 
   return (
-    <Inset top="36px" horizontal="30px (Deprecated)">
+    <Inset
+      top="36px"
+      horizontal="30px (Deprecated)"
+      bottom={{ custom: IS_ANDROID ? 130 : 0 }}
+    >
       <AddWalletList
         items={[
           ...(enableCloudRestore ? [restoreFromCloud] : []),
