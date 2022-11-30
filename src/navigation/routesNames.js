@@ -28,6 +28,7 @@ const Routes = {
   EXPLAIN_SHEET: 'ExplainSheet',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   IMPORT_SCREEN: 'ImportScreen',
+  IMPORT_WALLET_SHEET: 'ImportWalletSheet',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
   IMPORT_SEED_PHRASE_SHEET_NAVIGATOR: 'ImportSeedPhraseSheetNavigator',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',

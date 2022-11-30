@@ -84,7 +84,7 @@ export function RestoreSheet() {
     analytics.track('Tapped "Restore with a secret phrase or private key"');
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
+      setTimeout(() => navigate(Routes.IMPORT_WALLET_SHEET), 50);
     });
   }, [goBack, navigate]);
 
