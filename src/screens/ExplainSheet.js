@@ -11,6 +11,7 @@ import {
   Row,
   RowWithMargins,
 } from '../components/layout';
+import Routes from '@/navigation/routesNames';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
@@ -23,7 +24,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
-import { toFixedDecimals } from '@/helpers/utilities';
+import { delay, toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
@@ -264,10 +265,15 @@ const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
-    extraHeight: -25,
+    extraHeight: -35,
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
+      onPress: async navigate => {
+        navigate(Routes.SETTINGS_SHEET);
+        await delay(500);
+        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+      },
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
@@ -279,6 +285,11 @@ export const explainers = (params, colors) => ({
     text: GOLDDOGE_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
     button: {
+      onPress: async navigate => {
+        navigate(Routes.SETTINGS_SHEET);
+        await delay(500);
+        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+      },
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.dogeGold,
       bgColor: colors?.dogeGold06,
@@ -286,10 +297,15 @@ export const explainers = (params, colors) => ({
   },
   smol_app_icon: {
     logo: <SmolAppIcon />,
-    extraHeight: -44,
+    extraHeight: -65,
     text: SMOL_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
+      onPress: async navigate => {
+        navigate(Routes.SETTINGS_SHEET);
+        await delay(500);
+        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+      },
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.smolPurple,
       bgColor: colors?.smolPurple06,
@@ -301,6 +317,11 @@ export const explainers = (params, colors) => ({
     text: ZORA_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
     button: {
+      onPress: async navigate => {
+        navigate(Routes.SETTINGS_SHEET);
+        await delay(500);
+        navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+      },
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.appleBlue,
       bgColor: colors?.appleBlue06,
