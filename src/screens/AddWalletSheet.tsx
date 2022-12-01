@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { globalColors, Inset } from '@/design-system';
+import { Box, globalColors, Inset } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { cloudPlatform } from '../../utils/platform';
 import lang from 'i18n-js';
-import { AddWalletItem } from './AddWalletRow';
-import { AddWalletList } from './AddWalletList';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { RainbowWallet } from '@/model/wallet';
 import WalletBackupTypes from '@/helpers/walletBackupStepTypes';
 import { useNavigation } from '@/navigation';
-import { SlackSheet } from '../sheet';
 import { useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import Routes from '@/navigation/routesNames';
+import { AddWalletList } from '@/components/backup/AddWalletList';
+import { SlackSheet } from '@/components/sheet';
+import { AddWalletItem } from '@/components/backup/AddWalletRow';
+import { cloudPlatform } from '@/utils/platform';
 
 export const AddWalletSheet = () => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -146,8 +146,10 @@ export const AddWalletSheet = () => {
   return (
     <SlackSheet
       contentHeight={longFormHeight}
+      // backgroundColor={globalColors.blueGrey10}
+      scrollEnabled={false}
+      height="100%"
       deferredHeight={IS_ANDROID}
-      testID="restore-sheet"
     >
       <Inset
         top="36px"

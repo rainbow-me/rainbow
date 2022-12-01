@@ -83,6 +83,7 @@ import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletSheet } from '@/screens/AddWalletSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -328,6 +329,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
+        {...restoreSheetConfig}
+      />
+      <NativeStack.Screen
+        component={AddWalletSheet}
+        name={Routes.ADD_WALLET_SHEET}
         {...restoreSheetConfig}
       />
       <NativeStack.Screen

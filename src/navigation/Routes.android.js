@@ -77,6 +77,7 @@ import {
   TRANSACTION_DETAILS_SHEET_HEIGHT,
   TransactionDetails,
 } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletSheet } from '@/screens/AddWalletSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -209,6 +210,12 @@ function MainNavigator() {
       <Stack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
+        {...restoreSheetConfig}
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
+        component={AddWalletSheet}
+        name={Routes.ADD_WALLET_SHEET}
         {...restoreSheetConfig}
         options={bottomSheetPreset}
       />
