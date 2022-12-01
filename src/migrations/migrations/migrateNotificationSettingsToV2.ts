@@ -17,7 +17,7 @@ export default function migrateNotificationSettingsToV2(): Migration {
         //
         const newSettings = walletSettings.map(wallet => ({
           ...wallet,
-          appliedDefaults: true,
+          successfullyFinishedInitialSubscription: true,
         }));
         setAllNotificationSettingsToStorage(newSettings);
       }

@@ -258,7 +258,7 @@ const NotificationsSection = () => {
         updateSettingsForWalletsWithRelationshipType(
           NotificationRelationship.OWNER,
           {
-            appliedDefaults: true,
+            successfullyFinishedInitialSubscription: true,
             enabled: !storedOwnerEnabled,
           }
         );
@@ -284,7 +284,7 @@ const NotificationsSection = () => {
         updateSettingsForWalletsWithRelationshipType(
           NotificationRelationship.WATCHER,
           {
-            appliedDefaults: true,
+            successfullyFinishedInitialSubscription: true,
             enabled: !storedWatcherEnabled,
           }
         );

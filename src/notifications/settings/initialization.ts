@@ -55,14 +55,14 @@ export const initializeNotificationSettingsForAddresses = (
     string,
     { index: number; settings: WalletNotificationSettings }
   >();
-  const alreadyAppliedDefaults = new Set();
+  const alreadyFinishedInitialSubscriptions = new Set();
   const subscriptionQueue: WalletNotificationSettings[] = [];
 
   // Initialize hashmap and a set
   newSettings.forEach((entry, index) => {
     alreadySaved.set(entry.address, { settings: entry, index });
-    if (entry.appliedDefaults) {
-      alreadyAppliedDefaults.add(entry.address);
+    if (entry.successfullyFinishedInitialSubscription) {
+      alreadyFinishedInitialSubscriptions.add(entry.address);
     }
   });
   // Set of wallet addresses we have in app (unrelated to notification settings entries)
@@ -87,7 +87,7 @@ export const initializeNotificationSettingsForAddresses = (
         ...oldSettingsEntry,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         type: entry.relationship,
-        appliedDefaults: false,
+        successfullyFinishedInitialSubscription: false,
         oldType: alreadySavedEntry.settings.type,
       };
       newSettings[alreadySavedEntry.index] = updatedSettingsEntry;
@@ -95,7 +95,7 @@ export const initializeNotificationSettingsForAddresses = (
     } else if (
       alreadySavedEntry !== undefined &&
       (alreadySavedEntry.settings?.oldType !== undefined ||
-        !alreadySavedEntry.settings.appliedDefaults)
+        !alreadySavedEntry.settings.successfullyFinishedInitialSubscription)
     ) {
       subscriptionQueue.push(alreadySavedEntry.settings);
     } else if (!alreadySaved.has(entry.address)) {
@@ -105,7 +105,7 @@ export const initializeNotificationSettingsForAddresses = (
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: false,
         // Watched wallets are not automatically subscribed to topics, so they already have applied defaults
-        appliedDefaults:
+        successfullyFinishedInitialSubscription:
           entry.relationship === NotificationRelationship.WATCHER,
       };
       newSettings.push(newSettingsEntry);
@@ -167,14 +167,14 @@ const processSubscriptionQueueItem = async (
   }
   if (
     newSettings.type === NotificationRelationship.OWNER &&
-    !newSettings.appliedDefaults
+    !newSettings.successfullyFinishedInitialSubscription
   ) {
     try {
       await subscribeWalletToAllEnabledTopics(
         newSettings,
         NOTIFICATIONS_DEFAULT_CHAIN_ID
       );
-      newSettings.appliedDefaults = true;
+      newSettings.successfullyFinishedInitialSubscription = true;
       newSettings.enabled = true;
     } catch (e) {
       logger.error(

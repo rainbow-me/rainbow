@@ -12,7 +12,7 @@ export type WalletNotificationSettings = {
   topics: { [key: NotificationTopicType]: boolean };
   enabled: boolean;
   type: NotificationRelationshipType;
-  appliedDefaults: boolean;
+  successfullyFinishedInitialSubscription: boolean;
   // only set in cases when the user imported an already watched wallet
   oldType?: NotificationRelationshipType;
 };
