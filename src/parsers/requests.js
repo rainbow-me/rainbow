@@ -1,4 +1,4 @@
-import { convertHexToUtf8 } from '@walletconnect/utils';
+import { convertHexToUtf8 } from '@walletconnect/legacy-utils';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
