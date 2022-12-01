@@ -32,6 +32,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
+import { Network } from '@/helpers';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -59,7 +60,9 @@ export default function DiscoverSearch() {
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
   const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
-    searchQueryForSearch
+    searchQueryForSearch,
+    ethereumUtils.getChainIdFromNetwork(Network.mainnet),
+    true
   );
   const currencyList = useMemo(() => {
     // order:

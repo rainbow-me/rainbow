@@ -97,7 +97,8 @@ const searchCurrencyList = async (searchParams: {
 
 const useSwapCurrencyList = (
   searchQuery: string,
-  searchChainId = MAINNET_CHAINID
+  searchChainId = MAINNET_CHAINID,
+  isDiscover = false
 ) => {
   const previousChainId = usePrevious(searchChainId);
 
@@ -143,11 +144,12 @@ const useSwapCurrencyList = (
     if (
       inputChainId &&
       inputChainId !== searchChainId &&
-      crosschainSwapsEnabled
+      crosschainSwapsEnabled &&
+      !isDiscover
     ) {
       return true;
     }
-  }, [searchChainId, inputChainId, crosschainSwapsEnabled]);
+  }, [inputChainId, searchChainId, crosschainSwapsEnabled, isDiscover]);
 
   const isFavorite = useCallback(
     (address: EthereumAddress) =>
