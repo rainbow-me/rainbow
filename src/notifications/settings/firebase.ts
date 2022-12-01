@@ -2,10 +2,10 @@ import {
   NotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
-import Logger from 'logger';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import { NotificationTopic } from '@/notifications/settings/constants';
+import { logger } from '@/logger';
 
 /**
  Firebase functions for subscribing/unsubscribing to topics.
@@ -53,7 +53,7 @@ export const subscribeWalletToSingleNotificationTopic = (
   address: string,
   topic: NotificationTopicType
 ): Promise<void> => {
-  Logger.log(
+  logger.debug(
     `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
   );
   return messaging()
@@ -69,7 +69,7 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
   address: string,
   topic: NotificationTopicType
 ) => {
-  Logger.log(
+  logger.debug(
     `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
   );
   return messaging()
