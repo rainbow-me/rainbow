@@ -11,7 +11,7 @@ import {
   Migration,
 } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
-import migrateNotificationSettingsToV2 from '@/migrations/migrations/migrateNotificationSettingsToV2';
+import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 
 /**
  * Local storage for migrations only. Should not be exported.

@@ -6,15 +6,17 @@ import {
   setSettingsVersion,
 } from '@/notifications/settings/storage';
 
-export default function migrateNotificationSettingsToV2(): Migration {
+export function migrateNotificationSettingsToV2(): Migration {
   return {
     name: MigrationName.migrateNotificationSettingsToVersion2,
-    migrate(): Promise<void> {
+    migrate() {
       const walletSettings = getAllNotificationSettingsFromStorage();
 
-      // migrate to V2
+      // if we are already migrated, but the migration ran anyway
+      if (getSettingsVersion() === 2) return Promise.resolve();
+
+      // migrating from v1 ro v2
       if (walletSettings.length && getSettingsVersion() === 1) {
-        //
         const newSettings = walletSettings.map(wallet => ({
           ...wallet,
           successfullyFinishedInitialSubscription: true,
