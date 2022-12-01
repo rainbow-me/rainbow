@@ -162,7 +162,7 @@ export const parseRainbowMeteorologyData = (
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- s */
+s */
 export const parseL2GasPrices = (data: GasPricesAPIData) => ({
   [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.normalWait, data.normal),
