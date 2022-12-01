@@ -368,7 +368,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         )
       );
 
-      initializeNotificationSettingsForAddresses(addresses, dispatch);
+      initializeNotificationSettingsForAddresses(addresses);
       alreadyRanInitialization.current = true;
     }
   }, [dispatch, walletReady]);

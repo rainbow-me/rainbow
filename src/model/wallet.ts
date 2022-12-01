@@ -898,10 +898,7 @@ export const createWallet = async (
         address: account.address,
       })
     );
-    initializeNotificationSettingsForAddresses(
-      addressesWithRelationship,
-      dispatch
-    );
+    initializeNotificationSettingsForAddresses(addressesWithRelationship);
 
     if (!silent) {
       await setSelectedWallet(allWallets[id]);

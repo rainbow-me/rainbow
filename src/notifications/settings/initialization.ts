@@ -14,7 +14,7 @@ import {
   setAllNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
-import { AppDispatch } from '@/redux/store';
+import store, { AppDispatch } from '@/redux/store';
 import {
   subscribeWalletToAllEnabledTopics,
   unsubscribeWalletFromAllNotificationTopics,
@@ -46,8 +46,7 @@ export const addDefaultNotificationGroupSettings = () => {
  * Adds fresh disabled settings for all wallets that didn't have settings
  */
 export const initializeNotificationSettingsForAddresses = (
-  addresses: AddressWithRelationship[],
-  dispatch: AppDispatch
+  addresses: AddressWithRelationship[]
 ) => {
   const currentSettings = getAllNotificationSettingsFromStorage();
   const newSettings: WalletNotificationSettings[] = [...currentSettings];
@@ -75,7 +74,7 @@ export const initializeNotificationSettingsForAddresses = (
 
   // preparing list of wallets that need to be subscribed
   addresses.forEach(entry => {
-    dispatch(notificationsSubscription(entry.address));
+    store.dispatch(notificationsSubscription(entry.address));
     const alreadySavedEntry = alreadySaved.get(entry.address);
     // handling a case where we import a seed phrase of a previously watched wallet
     if (
