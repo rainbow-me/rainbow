@@ -25,6 +25,9 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { AccentColorContext } from '@/design-system/color/AccentColorContext';
+import { ColorModeContext } from '@/design-system/color/ColorMode';
+import { getDefaultAccentColorForColorMode } from '@/design-system/color/palettes';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,
@@ -156,7 +159,25 @@ export default forwardRef(function SlackSheet(
     yPosition.value = event.contentOffset.y;
   });
 
-  const bg = backgroundColor || colors.white;
+  const { backgroundColors, colorMode } = useContext(ColorModeContext);
+  const accentColorContextValue = useContext(AccentColorContext);
+
+  let bg = backgroundColor;
+
+  if (!backgroundColor) {
+    bg = colors.white;
+  } else if (
+    backgroundColor === 'accent' ||
+    backgroundColors[backgroundColor]
+  ) {
+    const accentColor =
+      accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
+    const colorObject =
+      backgroundColor === 'accent'
+        ? accentColor
+        : backgroundColors[backgroundColor];
+    bg = colorObject.color;
+  }
 
   // callback upon closing the sheet
   useEffect(
