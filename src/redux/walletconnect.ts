@@ -136,7 +136,7 @@ type WalletconnectResultType =
 /**
  * Route parameters sent to a WalletConnect approval sheet.
  */
-interface WalletconnectApprovalSheetRouteParams {
+export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
     chainId: number,
