@@ -162,21 +162,19 @@ export default forwardRef(function SlackSheet(
   const { backgroundColors, colorMode } = useContext(ColorModeContext);
   const accentColorContextValue = useContext(AccentColorContext);
 
-  let bg = backgroundColor;
+  let bg = colors.white;
 
-  if (!backgroundColor) {
-    bg = colors.white;
-  } else if (
-    backgroundColor === 'accent' ||
-    backgroundColors[backgroundColor]
-  ) {
-    const accentColor =
-      accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
-    const colorObject =
-      backgroundColor === 'accent'
-        ? accentColor
-        : backgroundColors[backgroundColor];
-    bg = colorObject.color;
+  if (backgroundColor) {
+    bg = backgroundColor;
+    if (backgroundColor === 'accent' || backgroundColors[backgroundColor]) {
+      const accentColor =
+        accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
+      const colorObject =
+        backgroundColor === 'accent'
+          ? accentColor
+          : backgroundColors[backgroundColor];
+      bg = colorObject.color;
+    }
   }
 
   // callback upon closing the sheet
