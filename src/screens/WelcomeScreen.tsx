@@ -38,7 +38,6 @@ import { position, shadow } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -193,7 +192,6 @@ const animationColors = [
 ];
 
 export default function WelcomeScreen() {
-  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
@@ -339,11 +337,10 @@ export default function WelcomeScreen() {
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
-    navigate(Routes.ADD_WALLET_SHEET, {
-      hardwareWalletsEnabled,
+    navigate(Routes.ADD_FIRST_WALLET_SHEET, {
       userData,
     });
-  }, [hardwareWalletsEnabled, navigate, userData]);
+  }, [navigate, userData]);
 
   useAndroidBackHandler(() => {
     return true;

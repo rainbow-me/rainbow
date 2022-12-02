@@ -4,7 +4,7 @@ const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
   ADD_TOKEN_SHEET: 'AddTokenSheet',
-  ADD_WALLET_SHEET: 'AddWalletSheet',
+  ADD_FIRST_WALLET_SHEET: 'AddFirstWalletSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
   AVATAR_BUILDER_WALLET: 'AvatarBuilderWallet',
   BACKUP_SCREEN: 'BackupScreen',

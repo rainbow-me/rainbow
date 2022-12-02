@@ -315,7 +315,7 @@ export const restoreSheetConfig = {
   options: ({ navigation, route }) => {
     const {
       params: {
-        enableCloudRestore,
+        cloudRestoreEnabled,
         longFormHeight,
         step = WalletBackupStepTypes.first,
         hardwareWalletsEnabled,
@@ -324,9 +324,9 @@ export const restoreSheetConfig = {
     } = route;
     let heightForStep = 390;
     if (step === WalletBackupStepTypes.first) {
-      if (enableCloudRestore && hardwareWalletsEnabled) {
+      if (cloudRestoreEnabled && hardwareWalletsEnabled) {
         heightForStep = 654;
-      } else if (enableCloudRestore || hardwareWalletsEnabled) {
+      } else if (cloudRestoreEnabled || hardwareWalletsEnabled) {
         heightForStep = 522;
       }
     } else if (step === WalletBackupStepTypes.cloud) {
@@ -342,6 +342,17 @@ export const restoreSheetConfig = {
     return buildCoolModalConfig({
       ...params,
       longFormHeight: heightForStep,
+    });
+  },
+};
+
+export const addFirstWalletSheetConfig = {
+  options: ({ route }) => {
+    const { params: { iosHeight, ...params } = {} } = route;
+
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: iosHeight,
     });
   },
 };

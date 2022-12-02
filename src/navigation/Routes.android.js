@@ -50,6 +50,7 @@ import {
   learnWebViewScreenConfig,
   transactionDetailsConfig,
   wyreWebviewOptions,
+  addFirstWalletSheetConfig,
 } from './config';
 import {
   androidRecievePreset,
@@ -77,7 +78,7 @@ import {
   TRANSACTION_DETAILS_SHEET_HEIGHT,
   TransactionDetails,
 } from '@/screens/transaction-details/TransactionDetails';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
+import { AddFirstWalletSheet } from '@/screens/AddFirstWalletSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -214,9 +215,9 @@ function MainNavigator() {
         options={bottomSheetPreset}
       />
       <Stack.Screen
-        component={AddWalletSheet}
-        name={Routes.ADD_WALLET_SHEET}
-        {...restoreSheetConfig}
+        component={AddFirstWalletSheet}
+        name={Routes.ADD_FIRST_WALLET_SHEET}
+        {...addFirstWalletSheetConfig}
         options={bottomSheetPreset}
       />
       <Stack.Screen

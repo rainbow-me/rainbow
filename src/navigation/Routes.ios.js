@@ -62,6 +62,7 @@ import {
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  addFirstWalletSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -83,7 +84,7 @@ import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
+import { AddFirstWalletSheet } from '@/screens/AddFirstWalletSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -332,9 +333,9 @@ function NativeStackNavigator() {
         {...restoreSheetConfig}
       />
       <NativeStack.Screen
-        component={AddWalletSheet}
-        name={Routes.ADD_WALLET_SHEET}
-        {...restoreSheetConfig}
+        component={AddFirstWalletSheet}
+        name={Routes.ADD_FIRST_WALLET_SHEET}
+        {...addFirstWalletSheetConfig}
       />
       <NativeStack.Screen
         component={SavingsSheet}

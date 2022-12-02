@@ -14,6 +14,7 @@ import { useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import Routes from '@/navigation/routesNames';
+import { getAddWalletSheetHeight } from '@/screens/AddFirstWalletSheet';
 
 export const AddWalletSheet = () => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -70,15 +71,19 @@ export const AddWalletSheet = () => {
     // });
   }, [goBack, navigate]);
 
-  const enableCloudRestore = IS_ANDROID || walletsBackedUp > 0;
+  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0;
+  const sheetHeight = getAddWalletSheetHeight(
+    hardwareWalletsEnabled,
+    cloudRestoreEnabled
+  );
   useEffect(() => {
-    setParams({ enableCloudRestore });
-  }, [enableCloudRestore, hardwareWalletsEnabled, setParams]);
+    setParams({ sheetHeight });
+  }, [sheetHeight, setParams]);
 
   let restoreFromCloudDescription;
   if (IS_IOS) {
     // It is not possible for the user to be on iOS and have
-    // no backups at this point, since `enableCloudRestore`
+    // no backups at this point, since `cloudRestoreEnabled`
     // would be false in that case.
     if (walletsBackedUp > 1) {
       restoreFromCloudDescription = lang.t(
@@ -156,7 +161,7 @@ export const AddWalletSheet = () => {
       >
         <AddWalletList
           items={[
-            ...(enableCloudRestore ? [restoreFromCloud] : []),
+            ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
             restoreFromSeed,
             ...(hardwareWalletsEnabled ? [importFromHardwareWallet] : []),
             watchAddress,
