@@ -7,9 +7,13 @@ export type NotificationTopicType = typeof NotificationTopic[keyof typeof Notifi
 
 export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
 
+export type WalletNotificationTopics = {
+  [key: NotificationTopicType]: boolean;
+};
+
 export type WalletNotificationSettings = {
   address: string;
-  topics: { [key: NotificationTopicType]: boolean };
+  topics: WalletNotificationTopics;
   enabled: boolean;
   type: NotificationRelationshipType;
   successfullyFinishedInitialSubscription: boolean;

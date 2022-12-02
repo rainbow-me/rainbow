@@ -15,50 +15,7 @@ import {
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
   updateGroupSettings,
-  updateSettingsForWalletWithAddress,
 } from '@/notifications/settings/storage';
-
-/**
- Hook for getting and setting notification settings for a single wallet.
-
- Returns an object with the wallet address, enabled/disabled topics, relationship,
- and a main boolean for enabling/disabling all notifications for this wallet.
-
- Also returns a function for updating settings.
- The function saves new option values to storage and handles
- subscribing/unsubscribing to Firebase based on selected topics for this wallet.
- */
-export const useNotificationSettings = (address: string) => {
-  const data = getAllNotificationSettingsFromStorage();
-  const settingsForWallet = data.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
-
-  if (!settingsForWallet) {
-    throw new Error('There are no settings for this wallet');
-  }
-
-  const [
-    notifications,
-    setNotificationSettings,
-  ] = useState<WalletNotificationSettings>(settingsForWallet);
-
-  const updateSettings = useCallback(
-    (options: Partial<WalletNotificationSettings>) => {
-      const newSettingsForWallet = updateSettingsForWalletWithAddress(
-        address,
-        options
-      );
-
-      if (newSettingsForWallet) {
-        setNotificationSettings(newSettingsForWallet);
-      }
-    },
-    [address, data]
-  );
-
-  return { notifications, updateSettings };
-};
 
 /**
  Hook to constantly listen to notification settings.

@@ -10,7 +10,6 @@ export {
 } from './initialization';
 export {
   useAllNotificationSettingsFromStorage,
-  useNotificationSettings,
   useWalletGroupNotificationSettings,
 } from './hooks';
 export {

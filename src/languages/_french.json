@@ -285,7 +285,10 @@
         "title": "Create your ENS profile :)",
         "body": "Replace your wallet address with a profile owned entirely by you. :)"
       },
-      "eth": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
+      "eth": {
+        "buy_ethereum": "Buy Ethereum :)",
+        "today": "today :)"
+      },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",
@@ -1346,7 +1349,9 @@
         "first_time_allow_notifications": "Allow Notifications :)",
         "error_alert_title": "Subscription Failed :)",
         "error_alert_content": "Please try again later. :)",
-        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)"
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)",
+        "no_settings_for_address_title": "No settings for this address",
+        "no_settings_for_address_content": "There are no settings for this address.\nPlease try restarting the app or try again later."
       },
       "privacy": "Privacy :)",
       "privacy_section": {

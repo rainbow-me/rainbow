@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, Switch } from 'react-native';
+import { Alert, Linking, Switch } from 'react-native';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import Menu from './components/Menu';
@@ -35,6 +35,7 @@ import {
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
+import { getAllNotificationSettingsFromStorage } from '@/notifications/settings/storage';
 
 type WalletRowProps = {
   ens: string;
@@ -124,10 +125,28 @@ const WalletRow = ({
 
   const navigateToWalletSettings = useCallback(
     (name, address) => {
-      navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
-        title: name,
-        address,
-      });
+      const settings = getAllNotificationSettingsFromStorage();
+      const settingsForWallet = settings.find(
+        wallet => wallet.address === address
+      );
+
+      if (settingsForWallet) {
+        navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
+          title: name,
+          notificationSettings: settingsForWallet,
+          address,
+        });
+      } else {
+        Alert.alert(
+          lang.t(
+            'settings.notifications_section.no_settings_for_address_title'
+          ),
+          lang.t(
+            'settings.notifications_section.no_settings_for_address_content'
+          ),
+          [{ text: 'OK' }]
+        );
+      }
     },
     [navigate]
   );
