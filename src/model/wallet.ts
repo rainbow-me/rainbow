@@ -1165,6 +1165,15 @@ export const generateAccount = async (
     // Creating signature for this wallet
     await createSignature(walletAddress, walletPkey);
 
+    // Initialize settings for freshly created account
+    initializeNotificationSettingsForAddresses([
+      {
+        address: walletAddress,
+        // Wallet or account created from within the app is attached to a seed phrase so it's an owned wallet
+        relationship: NotificationRelationship.OWNER,
+      },
+    ]);
+
     return newAccount;
   } catch (error) {
     logger.sentry('Error generating account for keychain', id);

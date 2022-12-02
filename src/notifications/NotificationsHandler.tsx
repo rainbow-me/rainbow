@@ -52,9 +52,9 @@ import {
 } from '@/notifications/analytics';
 import {
   AddressWithRelationship,
-  initializeNotificationSettingsForAddresses,
   NotificationRelationship,
 } from '@/notifications/settings';
+import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
 
 type Callback = () => void;
 
@@ -368,7 +368,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         )
       );
 
-      initializeNotificationSettingsForAddresses(addresses);
+      initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(
+        addresses
+      );
       alreadyRanInitialization.current = true;
     }
   }, [dispatch, walletReady]);
