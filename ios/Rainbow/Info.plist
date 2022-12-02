@@ -165,9 +165,9 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Rainbow</string>
+	<string>This allows Rainbow to save images to your Camera Roll</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Rainbow</string>
+	<string>This allows Rainbow to display selected photos as avatars across each of your wallet addresses</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSUbiquitousContainers</key>
