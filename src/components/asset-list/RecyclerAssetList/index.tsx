@@ -174,7 +174,7 @@ type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewState
 >;
 
-function useRecyclerListViewRef(): {
+export function useRecyclerListViewRef(): {
   readonly handleRef: (ref: RecyclerListViewRef) => void;
   readonly ref: RecyclerListViewRef | undefined;
 } {

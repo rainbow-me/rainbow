@@ -61,17 +61,13 @@ export default forwardRef(function DiscoverSearchContainer(
   const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(
     DiscoverSheetContext
   );
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute();
 
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
       setIsSearchModeEnabled(value);
-      setViewPagerSwipeEnabled(!value);
     },
-    [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
+    [setIsSearchModeEnabled, setShowSearch]
   );
 
   const onTapSearch = useCallback(() => {

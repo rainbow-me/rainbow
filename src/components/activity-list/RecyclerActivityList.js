@@ -104,10 +104,9 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 39;
         } else {
-          dim.height = this.props.isLoading
-            ? deviceUtils.dimensions.height
-            : (this.props.addCashAvailable ? 278 : 203) +
-              (this.props.isEmpty ? 297 : 0);
+          // this handles the inital list height offset atm 
+          dim.height =  40;
+        
         }
       }
     );
@@ -167,17 +166,7 @@ export default class RecyclerActivityList extends PureComponent {
           recyclerListRef={this.rlv}
         />
       );
-      return this.props.isLoading ? (
-        <LoadingState>{header}</LoadingState>
-      ) : this.props.isEmpty ? (
-        <ActivityListEmptyState
-          label={lang.t('activity_list.empty_state.recycler_label')}
-        >
-          {header}
-        </ActivityListEmptyState>
-      ) : (
-        header
-      );
+      return null;
     }
     if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
     if (type === ViewTypes.FOOTER) return <ListFooter />;

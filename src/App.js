@@ -311,7 +311,7 @@ class OldApp extends Component {
               <PortalConsumer />
             </InitialRouteContext.Provider>
           )}
-          <OfflineToast />
+          
           <FedoraToast ref={FedoraToastRef} />
         </View>
       </NotificationsHandler>

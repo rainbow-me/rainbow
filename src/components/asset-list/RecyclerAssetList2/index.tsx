@@ -9,6 +9,7 @@ import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { UniqueAsset } from '@/entities';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
+import { ProfileNameRow } from './profile-header/ProfileNameRow';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -93,6 +94,21 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
         },
         animatedStyle,
       ]}
-    />
+    >
+      <Box 
+      style={{
+        top: 60,
+        bottom: 0,
+        alignItems: 'center'
+      }}>
+      <ProfileNameRow
+          disableOnPress={false}
+          testIDPrefix="profile-name-sticky"
+        />
+
+      </Box>
+     
+
+      </Box>
   );
 }

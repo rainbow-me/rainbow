@@ -1,7 +1,8 @@
 import { useRoute } from '@react-navigation/core';
+import lang from 'i18n-js';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, PressableProps } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -15,6 +16,7 @@ import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Inline } from '@/design-system';
 import {
   useAccountEmptyState,
+  useAccountProfile,
   useAccountSettings,
   useCoinListEdited,
   useInitializeAccountData,
@@ -23,10 +25,12 @@ import {
   useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
+  usePersistentDominantColorFromImage,
   usePortfolios,
   useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
+  useWalletConnectConnections,
   useWalletSectionsData,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -36,8 +40,12 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { atom, useRecoilValue } from 'recoil';
+import { atom, useRecoilState, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { maybeSignUri } from '@/handlers/imgix';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { analytics } from '@/analytics';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation'
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -57,7 +65,101 @@ const WalletPage = styled(Page)({
   flex: 1,
 });
 
-export default function WalletScreen() {
+function MoreButton({
+  children,
+  onPress,
+})  {
+  // ////////////////////////////////////////////////////
+  // Handlers
+
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
+  const { accountAddress } = useAccountProfile();
+  const { navigate } = useNavigation();
+
+  const handlePressCopy = React.useCallback(() => {
+    if (!isToastActive) {
+      setToastActive(true);
+      setTimeout(() => {
+        setToastActive(false);
+      }, 2000);
+    }
+    Clipboard.setString(accountAddress);
+  }, [accountAddress, isToastActive, setToastActive]);
+
+  const handlePressQRCode = React.useCallback(() => {
+    analytics.track('Tapped "My QR Code"', {
+      category: 'home screen',
+    });
+
+    navigate(Routes.RECEIVE_MODAL);
+  }, [navigate]);
+
+  const handlePressConnectedApps = React.useCallback(() => {
+    navigate(Routes.CONNECTED_DAPPS);
+  }, [navigate]);
+
+  // ////////////////////////////////////////////////////
+  // Context Menu
+  const { mostRecentWalletConnectors } = useWalletConnectConnections();
+
+  const menuConfig = React.useMemo(
+    () => ({
+      menuItems: [
+        {
+          actionKey: 'copy',
+          actionTitle: lang.t('wallet.copy_address'),
+          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
+        },
+        {
+          actionKey: 'qrCode',
+          actionTitle: lang.t('button.my_qr_code'),
+          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+        },
+        mostRecentWalletConnectors.length > 0
+          ? {
+              actionKey: 'connectedApps',
+              actionTitle: lang.t('wallet.connected_apps'),
+              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+            }
+          : null,
+      ].filter(Boolean),
+      ...(ios ? { menuTitle: '' } : {}),
+    }),
+    [mostRecentWalletConnectors.length]
+  );
+
+  const handlePressMenuItem = React.useCallback(
+    e => {
+      if (e.nativeEvent.actionKey === 'copy') {
+        handlePressCopy();
+      }
+      if (e.nativeEvent.actionKey === 'qrCode') {
+        handlePressQRCode();
+      }
+      if (e.nativeEvent.actionKey === 'connectedApps') {
+        handlePressConnectedApps();
+      }
+    },
+    [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
+  );
+
+
+  return (
+    <ContextMenuButton
+      menuConfig={menuConfig}
+      onPressMenuItem={handlePressMenuItem}
+    >
+      <ButtonPressAnimation onPress={onPress}>
+      {children}
+      </ButtonPressAnimation>
+
+    </ContextMenuButton>
+  );
+}
+
+ export default function WalletScreen() {
   const { params } = useRoute();
   const {
     setParams,
@@ -250,28 +352,41 @@ export default function WalletScreen() {
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
+
+    const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+
+    // ////////////////////////////////////////////////////
+    // Colors
+  
+    const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+      maybeSignUri(accountImage ?? '') ?? ''
+    );
+  
+    const { colors } = useTheme();
+    let accentColor = colors.appleBlue;
+    if (accountImage) {
+      accentColor = dominantColor || colors.appleBlue;
+    } else if (typeof accountColor === 'number') {
+      accentColor = colors.avatarBackgrounds[accountColor];
+    } else if (typeof accountColor === 'string') {
+      accentColor = accountColor;
+    }
+  
+
   return (
     <WalletPage testID="wallet-screen">
       <HeaderOpacityToggler isVisible={isCoinListEdited}>
         <Navbar
           hasStatusBarInset
           leftComponent={
-            <Navbar.Item onPress={handlePressActivity} testID="activity-button">
-              <Navbar.TextIcon icon="􀐫" />
-            </Navbar.Item>
+            <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
+                <Navbar.TextIcon color={accentColor} icon="􀎹" />
+              </Navbar.Item>
           }
           rightComponent={
-            <Inline space={{ custom: 17 }}>
-              <Navbar.Item onPress={handlePressQRScanner}>
-                <Navbar.TextIcon icon="􀎹" />
+            <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
+                <Navbar.TextIcon color={accentColor} icon="􀍠" />
               </Navbar.Item>
-              <Navbar.Item
-                onPress={handlePressDiscover}
-                testID="discover-button"
-              >
-                <Navbar.TextIcon icon="􀎬" />
-              </Navbar.Item>
-            </Inline>
           }
         />
       </HeaderOpacityToggler>
@@ -297,3 +412,17 @@ export default function WalletScreen() {
     </WalletPage>
   );
 }
+/*
+{
+            <Inline space={{ custom: 17 }}>
+            
+            <MoreButton>
+   
+
+    
+               
+               </MoreButton>
+            </Inline>
+          }
+*/
+

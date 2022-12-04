@@ -286,7 +286,7 @@ function SendButton() {
   );
 }
 
-function MoreButton() {
+export function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
@@ -314,64 +314,11 @@ function MoreButton() {
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);
 
-  const handlePressConnectedApps = React.useCallback(() => {
-    navigate(Routes.CONNECTED_DAPPS);
-  }, [navigate]);
-
-  // ////////////////////////////////////////////////////
-  // Context Menu
-
-  const { mostRecentWalletConnectors } = useWalletConnectConnections();
-
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: [
-        {
-          actionKey: 'copy',
-          actionTitle: lang.t('wallet.copy_address'),
-          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
-        },
-        {
-          actionKey: 'qrCode',
-          actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
-        mostRecentWalletConnectors.length > 0
-          ? {
-              actionKey: 'connectedApps',
-              actionTitle: lang.t('wallet.connected_apps'),
-              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-            }
-          : null,
-      ].filter(Boolean),
-      ...(ios ? { menuTitle: '' } : {}),
-    }),
-    [mostRecentWalletConnectors.length]
-  );
-
-  const handlePressMenuItem = React.useCallback(
-    e => {
-      if (e.nativeEvent.actionKey === 'copy') {
-        handlePressCopy();
-      }
-      if (e.nativeEvent.actionKey === 'qrCode') {
-        handlePressQRCode();
-      }
-      if (e.nativeEvent.actionKey === 'connectedApps') {
-        handlePressConnectedApps();
-      }
-    },
-    [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
-  );
-
   return (
-    <ContextMenuButton
-      menuConfig={menuConfig}
-      onPressMenuItem={handlePressMenuItem}
-    >
-      <ActionButton icon="􀍡" testID="more-button">
-        {lang.t('button.more')}
+ 
+      <ActionButton onPress={handlePressQRCode} icon="􀐅" testID="receive-button">
+        {'Copy'}
       </ActionButton>
-    </ContextMenuButton>
+
   );
 }

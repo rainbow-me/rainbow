@@ -2,6 +2,9 @@ import React from 'react';
 import { PressableProps } from 'react-native';
 import { Bleed, Box, Inset, Space } from '@/design-system';
 import { ButtonPressAnimation } from '../animations';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme';
+
 
 type NavbarItemProps = {
   children: React.ReactElement;
@@ -9,8 +12,9 @@ type NavbarItemProps = {
   testID?: string;
 };
 
-export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
+export function NavbarItem({ children, onPress, testID}: NavbarItemProps) {
   const hitSlop: Space = '10px';
+  const {colors} = useTheme()
   return (
     <Bleed space={hitSlop}>
       <Box
@@ -19,6 +23,7 @@ export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
         onPress={onPress}
         scale={0.8}
         testID={testID}
+
       >
         <Inset space={hitSlop}>{children}</Inset>
       </Box>

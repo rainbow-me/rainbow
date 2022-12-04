@@ -120,7 +120,7 @@ const ActivityList = ({
       return (
         <RecyclerActivityList
           addCashAvailable={addCashAvailable}
-          header={header}
+          header={null}
           isEmpty={isEmpty}
           isLoading={isLoading}
           navigation={navigation}

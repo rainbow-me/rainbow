@@ -11,9 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 
 export default function DiscoverScreen() {
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute<any>();
+
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
   const { navigate } = useNavigation();
@@ -21,14 +19,6 @@ export default function DiscoverScreen() {
   const handlePressWallet = React.useCallback(() => {
     navigate(Routes.WALLET_SCREEN);
   }, [navigate]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        setViewPagerSwipeEnabled(true);
-      };
-    }, [setViewPagerSwipeEnabled])
-  );
 
   return (
     <DiscoverSheetContext.Provider

@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FloatingEmojis } from '../floating-emojis';
 import { analytics } from '@/analytics';
@@ -19,8 +18,6 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import config from '@/model/config';
-
-const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View({
   flex: 1,
@@ -214,7 +211,6 @@ export default function TransactionList({
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
-        as={NativeTransactionListView}
         avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}

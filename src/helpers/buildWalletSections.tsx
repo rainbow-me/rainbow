@@ -224,20 +224,6 @@ const withBriefBalanceSavingsSection = (
 
   if (isLoadingAssets) return [];
   return [
-    {
-      type: 'SAVINGS_HEADER_SPACE_BEFORE',
-      uid: 'savings-header-space-before',
-    },
-    {
-      type: 'SAVINGS_HEADER',
-      uid: 'savings-header',
-      value: totalUnderlyingNativeValue,
-    },
-    ...addresses.map((address: any) => ({
-      address,
-      type: 'SAVINGS',
-      uid: 'savings-' + address,
-    })),
   ];
 };
 
