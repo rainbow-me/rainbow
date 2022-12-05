@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.2)
+
+### Changed
+
+- Cross chain swaps
+- Update to discover home cards
+- Other bug fixes and improvements
+
 ## [1.8.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.1)
 
 ### Changed
