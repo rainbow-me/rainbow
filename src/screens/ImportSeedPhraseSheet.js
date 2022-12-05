@@ -159,71 +159,68 @@ export default function ImportSeedPhraseSheet() {
   const { colors } = useTheme();
   return (
     <Container testID="import-sheet">
-      <Sheet>
-        <SheetHandle marginBottom={7} marginTop={6} />
-        <Text size="large" weight="bold">
-          {lang.t('wallet.action.import_wallet')}
-        </Text>
-        <SecretTextAreaContainer>
-          <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
-            onChangeText={handleSetSeedPhrase}
-            onFocus={handleFocus}
-            onSubmitEditing={handlePressImportButton}
-            placeholder={lang.t('wallet.new.enter_seeds_placeholder')}
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            ref={inputRef}
-            returnKeyType="done"
-            size="large"
-            spellCheck={false}
-            testID="import-sheet-input"
-            value={seedPhrase}
-          />
-        </SecretTextAreaContainer>
-        <Footer isSmallPhone={isSmallPhone}>
-          {seedPhrase ? (
-            <FooterButton
-              disabled={!isSecretValid}
-              hasLeadingIcon
-              {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 89 })}
-              onPress={handlePressImportButton}
-            >
-              <Row>
-                {busy && !IS_TEST ? (
-                  <LoadingSpinner />
-                ) : (
-                  <Text align="center" color="whiteLabel" weight="bold">
-                    􀂍{' '}
-                  </Text>
-                )}
-                <Text
-                  align="center"
-                  color="whiteLabel"
-                  testID="import-sheet-button-label"
-                  weight="bold"
-                >
-                  {lang.t('button.import')}
+      <Text size="large" weight="bold">
+        {lang.t('wallet.action.import_wallet')}
+      </Text>
+      <SecretTextAreaContainer>
+        <SecretTextArea
+          color={isSecretValid ? colors.appleBlue : colors.dark}
+          onChangeText={handleSetSeedPhrase}
+          onFocus={handleFocus}
+          onSubmitEditing={handlePressImportButton}
+          placeholder={lang.t('wallet.new.enter_seeds_placeholder')}
+          placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
+          ref={inputRef}
+          returnKeyType="done"
+          size="large"
+          spellCheck={false}
+          testID="import-sheet-input"
+          value={seedPhrase}
+        />
+      </SecretTextAreaContainer>
+      <Footer isSmallPhone={isSmallPhone}>
+        {seedPhrase ? (
+          <FooterButton
+            disabled={!isSecretValid}
+            hasLeadingIcon
+            {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 89 })}
+            onPress={handlePressImportButton}
+          >
+            <Row>
+              {busy && !IS_TEST ? (
+                <LoadingSpinner />
+              ) : (
+                <Text align="center" color="whiteLabel" weight="bold">
+                  􀂍{' '}
                 </Text>
-              </Row>
-            </FooterButton>
-          ) : (
-            <FooterButton
-              {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 63 })}
-              disabled={!isClipboardValidSecret}
-              onPress={handlePressPasteButton}
-            >
+              )}
               <Text
                 align="center"
                 color="whiteLabel"
                 testID="import-sheet-button-label"
                 weight="bold"
               >
-                {lang.t('button.paste_seed_phrase')}
+                {lang.t('button.import')}
               </Text>
-            </FooterButton>
-          )}
-        </Footer>
-      </Sheet>
+            </Row>
+          </FooterButton>
+        ) : (
+          <FooterButton
+            {...(IS_ANDROID && { height: 30, overflowMargin: 15, width: 63 })}
+            disabled={!isClipboardValidSecret}
+            onPress={handlePressPasteButton}
+          >
+            <Text
+              align="center"
+              color="whiteLabel"
+              testID="import-sheet-button-label"
+              weight="bold"
+            >
+              {lang.t('button.paste_seed_phrase')}
+            </Text>
+          </FooterButton>
+        )}
+      </Footer>
       <ToastPositionContainer bottom={keyboardHeight}>
         <InvalidPasteToast />
       </ToastPositionContainer>

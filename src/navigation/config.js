@@ -269,6 +269,33 @@ export const ensAdditionalRecordsSheetConfig = {
   }),
 };
 
+// export const addFirstWalletSheetConfig = {
+//   options: ({ route: { params: { sheetHeight, ...params } = {} } }) => ({
+//     ...buildCoolModalConfig({
+//       ...params,
+//       longFormHeight: sheetHeight,
+//     }),
+//   }),
+// };
+
+export const addWalletNavigatorConfig = {
+  options: ({ route: { params: { sheetHeight, ...params } = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: sheetHeight,
+    }),
+  }),
+};
+
+// export const restoreFromCloudSheetConfig = {
+//   options: ({ route: { params: { ...params } = {} } }) => ({
+//     ...buildCoolModalConfig({
+//       ...params,
+//       longFormHeight: 500,
+//     }),
+//   }),
+// };
+
 export const explainSheetConfig = {
   options: ({
     route: { params = { network: networkInfo[networkTypes.mainnet].name } },

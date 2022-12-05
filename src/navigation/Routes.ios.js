@@ -62,6 +62,9 @@ import {
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  addFirstWalletSheetConfig,
+  restoreFromCloudSheetConfig,
+  addWalletNavigatorConfig,
 } from './config';
 import {
   emojiPreset,
@@ -83,6 +86,9 @@ import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddFirstWalletSheet } from '@/screens/AddFirstWalletSheet';
+import RestoreFromCloudSheet from '@/screens/RestoreFromCloudSheet';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -382,7 +388,21 @@ function NativeStackNavigator() {
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
       />
-
+      {/* <NativeStack.Screen
+        component={AddFirstWalletSheet}
+        name={Routes.ADD_FIRST_WALLET_SHEET}
+        {...addFirstWalletSheetConfig}
+      /> */}
+      {/* <NativeStack.Screen
+        component={RestoreFromCloudSheet}
+        name={Routes.RESTORE_FROM_CLOUD_SHEET}
+        {...restoreFromCloudSheetConfig}
+      /> */}
+      <NativeStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
+        {...addWalletNavigatorConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen

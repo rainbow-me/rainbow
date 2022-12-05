@@ -77,6 +77,9 @@ import {
   TRANSACTION_DETAILS_SHEET_HEIGHT,
   TransactionDetails,
 } from '@/screens/transaction-details/TransactionDetails';
+import { AddFirstWalletSheet } from '@/screens/AddFirstWalletSheet';
+import RestoreFromCloudSheet from '@/screens/RestoreFromCloudSheet';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -298,6 +301,18 @@ function BSNavigator() {
       <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
+      />
+      {/* <BSStack.Screen
+        component={AddFirstWalletSheet}
+        name={Routes.ADD_FIRST_WALLET_SHEET}
+      /> */}
+      <BSStack.Screen
+        component={RestoreFromCloudSheet}
+        name={Routes.RESTORE_FROM_CLOUD_SHEET}
+      />
+      <BSStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
       />
       {profilesEnabled && (
         <>
