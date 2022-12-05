@@ -1397,6 +1397,17 @@
     "@ethersproject/transactions" "^5.6.2"
     "@ethersproject/web" "^5.6.1"
 
+"@ethersproject/abstract-signer@5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@ethersproject/abstract-signer/-/abstract-signer-5.6.0.tgz#9cd7ae9211c2b123a3b29bf47aab17d4d016e3e7"
+  integrity sha512-WOqnG0NJKtI8n0wWZPReHtaLkDByPL67tn4nBaDAhmVq8sjHTPbCdz4DRhVu/cfTOvfy9w3iq5QZ7BX7zw56BQ==
+  dependencies:
+    "@ethersproject/abstract-provider" "^5.6.0"
+    "@ethersproject/bignumber" "^5.6.0"
+    "@ethersproject/bytes" "^5.6.0"
+    "@ethersproject/logger" "^5.6.0"
+    "@ethersproject/properties" "^5.6.0"
+
 "@ethersproject/abstract-signer@5.6.2", "@ethersproject/abstract-signer@^5.6.0", "@ethersproject/abstract-signer@^5.6.2":
   version "5.6.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/abstract-signer/-/abstract-signer-5.6.2.tgz#491f07fc2cbd5da258f46ec539664713950b0b33"
@@ -2649,12 +2660,13 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.17.tgz#90e29e5e15dee2af92cf1e8c58e95abeb2140a5a"
-  integrity sha512-D5XMoj2fVrmtsUMdL4Xztb/QOAusR7gxy28s4YsXnUJtTyLincJuSnJwyuXL9NebKE3PVJQMbr8Mv4DIGPfGtQ==
+"@rainbow-me/swaps@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.2.0.tgz#544008fbb0cf9f9ac5e98753bb7847c86a6326ee"
+  integrity sha512-dvfKdRdsNE0jVrfE8YDfi449iDHLZgVykaJhiq0cAbuYi3jBnbxiGd5IkchsIrC9FYnaV2vtiN0PXC+7r9JDuA==
   dependencies:
     "@ethersproject/abi" "5.6.0"
+    "@ethersproject/abstract-signer" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
     "@ethersproject/bytes" "5.6.0"
     "@ethersproject/contracts" "5.6.0"
