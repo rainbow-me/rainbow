@@ -1599,11 +1599,16 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
+<<<<<<< HEAD
 				MARKETING_VERSION = 1.8.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+=======
+				MARKETING_VERSION = 1.8.3;
+				OTHER_CFLAGS = "$(inherited)";
+>>>>>>> 48895c4a9 (version bump (#4429))
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1664,11 +1669,16 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
+<<<<<<< HEAD
 				MARKETING_VERSION = 1.8.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+=======
+				MARKETING_VERSION = 1.8.3;
+				OTHER_CFLAGS = "$(inherited)";
+>>>>>>> 48895c4a9 (version bump (#4429))
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1773,11 +1783,16 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
+<<<<<<< HEAD
 				MARKETING_VERSION = 1.8.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+=======
+				MARKETING_VERSION = 1.8.3;
+				OTHER_CFLAGS = "$(inherited)";
+>>>>>>> 48895c4a9 (version bump (#4429))
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1883,11 +1898,16 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
+<<<<<<< HEAD
 				MARKETING_VERSION = 1.8.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
 				);
+=======
+				MARKETING_VERSION = 1.8.3;
+				OTHER_CFLAGS = "$(inherited)";
+>>>>>>> 48895c4a9 (version bump (#4429))
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
