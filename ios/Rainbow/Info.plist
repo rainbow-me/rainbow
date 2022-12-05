@@ -142,34 +142,14 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan QR codes</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions and access wallet keys</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This allows Rainbow to save images to your Camera Roll</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This allows Rainbow to display selected photos as avatars across each of your wallet addresses</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.me.rainbow</key>
