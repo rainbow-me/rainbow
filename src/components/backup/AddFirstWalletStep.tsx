@@ -21,19 +21,14 @@ const MIN_ROWS = 2;
 
 const TRANSLATIONS = i18n.l.add_first_wallet;
 
-type RouteParams = {
-  AddFirstWalletSheetParams: {
-    // setSheetHeight: (height: number) => void;
-    userData: { wallets: RainbowWallet[] };
-  };
+type Props = {
+  onCloudRestore: () => void;
+  userData: { wallets: RainbowWallet[] };
 };
 
-export const AddFirstWalletSheet = () => {
+export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const { goBack, navigate, setParams } = useNavigation();
-  const { params: { userData } = {} } = useRoute<
-    RouteProp<RouteParams, 'AddFirstWalletSheetParams'>
-  >();
+  const { goBack, navigate } = useNavigation();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -49,31 +44,17 @@ export const AddFirstWalletSheet = () => {
 
   const onManualRestore = useCallback(() => {
     analytics.track('Tapped "Restore with a secret phrase or private key"');
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_SHEET,
+    InteractionManager.runAfterInteractions(goBack);
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
     });
-  }, [navigate]);
+  }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
     analytics.track('Tapped "Watch an Ethereum Address"');
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_SHEET), 50);
-    });
-  }, [goBack, navigate]);
-
-  const onCloudRestore = useCallback(() => {
-    analytics.track('Tapped "Restore from cloud"');
-    InteractionManager.runAfterInteractions(goBack);
-    // TODO: Add cloud restore
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(
-        () =>
-          navigate(Routes.ADD_WALLET_NAVIGATOR, {
-            screen: Routes.RESTORE_FROM_CLOUD_SHEET,
-          }),
-        50
-      );
     });
   }, [goBack, navigate]);
 

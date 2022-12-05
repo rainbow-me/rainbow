@@ -3,9 +3,7 @@ import { IS_IOS } from '@/env';
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
-  ADD_FIRST_WALLET_SHEET: 'AddFirstWalletSheet',
   ADD_TOKEN_SHEET: 'AddTokenSheet',
-  ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   AVATAR_BUILDER: 'AvatarBuilder',
   AVATAR_BUILDER_WALLET: 'AvatarBuilderWallet',
   BACKUP_SCREEN: 'BackupScreen',
@@ -52,7 +50,6 @@ const Routes = {
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   RESTORE_SHEET: 'RestoreSheet',
-  RESTORE_FROM_CLOUD_SHEET: 'RestoreFromCloudSheet',
   SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
   SAVINGS_SHEET: 'SavingsSheet',
   SAVINGS_WITHDRAW_MODAL: 'SavingsWithdrawModal',

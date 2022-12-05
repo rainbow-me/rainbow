@@ -269,33 +269,6 @@ export const ensAdditionalRecordsSheetConfig = {
   }),
 };
 
-// export const addFirstWalletSheetConfig = {
-//   options: ({ route: { params: { sheetHeight, ...params } = {} } }) => ({
-//     ...buildCoolModalConfig({
-//       ...params,
-//       longFormHeight: sheetHeight,
-//     }),
-//   }),
-// };
-
-export const addWalletNavigatorConfig = {
-  options: ({ route: { params: { sheetHeight, ...params } = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: sheetHeight,
-    }),
-  }),
-};
-
-// export const restoreFromCloudSheetConfig = {
-//   options: ({ route: { params: { ...params } = {} } }) => ({
-//     ...buildCoolModalConfig({
-//       ...params,
-//       longFormHeight: 500,
-//     }),
-//   }),
-// };
-
 export const explainSheetConfig = {
   options: ({
     route: { params = { network: networkInfo[networkTypes.mainnet].name } },
@@ -355,22 +328,22 @@ export const restoreSheetConfig = {
       } = {},
     } = route;
 
-    let heightForStep = restoreSheetSizes.short;
-    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-      heightForStep = restoreSheetSizes.medium;
-    } else if (step === WalletBackupStepTypes.cloud) {
-      heightForStep = restoreSheetSizes.long;
-    }
+    // let heightForStep = restoreSheetSizes.short;
+    // if (enableCloudRestore && step === WalletBackupStepTypes.first) {
+    //   heightForStep = restoreSheetSizes.medium;
+    // } else if (step === WalletBackupStepTypes.cloud) {
+    //   heightForStep = restoreSheetSizes.long;
+    // }
 
-    if (longFormHeight !== heightForStep) {
-      navigation.setParams({
-        longFormHeight: heightForStep,
-      });
-    }
+    // if (longFormHeight !== heightForStep) {
+    //   navigation.setParams({
+    //     longFormHeight: heightForStep,
+    //   });
+    // }
 
     return buildCoolModalConfig({
       ...params,
-      longFormHeight: heightForStep,
+      longFormHeight: longFormHeight,
     });
   },
 };

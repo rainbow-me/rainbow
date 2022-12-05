@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
-import { InteractionManager } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { InteractionManager, View } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
@@ -22,6 +22,7 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { AddFirstWalletStep } from '@/components/backup/AddFirstWalletStep';
 
 export function RestoreSheet() {
   const { goBack, navigate, setParams } = useNavigation();
@@ -80,48 +81,41 @@ export function RestoreSheet() {
     }
   }, [setParams]);
 
-  const onManualRestore = useCallback(() => {
-    analytics.track('Tapped "Restore with a secret phrase or private key"');
-    InteractionManager.runAfterInteractions(goBack);
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
-    });
-  }, [goBack, navigate]);
+  const [sheetHeight, setSheetHeight] = useState(0);
 
-  const onWatchAddress = useCallback(() => {
-    analytics.track('Tapped "Watch an Ethereum Address"');
-    InteractionManager.runAfterInteractions(goBack);
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
-    });
-  }, [goBack, navigate]);
+  useEffect(() => setParams({ longFormHeight: sheetHeight }), [
+    setParams,
+    sheetHeight,
+  ]);
 
   const wrapperHeight =
-    deviceHeight +
-    longFormHeight +
-    (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
+    deviceHeight + sheetHeight + (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
 
+  console.log(sheetHeight);
   return (
     <Column height={wrapperHeight}>
       <SlackSheet
-        contentHeight={longFormHeight}
+        contentHeight={sheetHeight}
+        height={IS_ANDROID ? sheetHeight : '100%'}
         deferredHeight={IS_ANDROID}
         testID="restore-sheet"
       >
-        {step === WalletBackupStepTypes.cloud ? (
-          <RestoreCloudStep
-            backupSelected={backupSelected}
-            fromSettings={fromSettings}
-            userData={userData}
-          />
-        ) : (
-          <RestoreSheetFirstStep
-            onCloudRestore={onCloudRestore}
-            onManualRestore={onManualRestore}
-            onWatchAddress={onWatchAddress}
-            userData={userData}
-          />
-        )}
+        <View
+          onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
+        >
+          {step === WalletBackupStepTypes.cloud ? (
+            <RestoreCloudStep
+              backupSelected={backupSelected}
+              fromSettings={fromSettings}
+              userData={userData}
+            />
+          ) : (
+            <AddFirstWalletStep
+              onCloudRestore={onCloudRestore}
+              userData={userData}
+            />
+          )}
+        </View>
       </SlackSheet>
     </Column>
   );

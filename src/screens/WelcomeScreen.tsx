@@ -337,7 +337,7 @@ export default function WelcomeScreen() {
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
+    navigate(Routes.RESTORE_SHEET, {
       userData,
     });
   }, [navigate, userData]);
