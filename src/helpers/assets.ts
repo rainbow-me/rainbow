@@ -52,7 +52,7 @@ export const buildCoinsList = (
     hiddenAssets: any = [];
 
   // separate into standard, pinned, small balances, hidden assets
-  sortedAssets?.forEach(asset => {
+  sortedAssets?.forEach((asset: any) => {
     if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,
