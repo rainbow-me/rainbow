@@ -99,7 +99,7 @@ export const updateSettingsForWalletsWithRelationshipType = (
  */
 export const updateSettingsForWalletWithAddress = (
   address: string,
-  options: object
+  options: Partial<WalletNotificationSettings>
 ): WalletNotificationSettings | undefined => {
   let updatedSettings: WalletNotificationSettings | undefined = undefined;
   const data = getAllNotificationSettingsFromStorage();
