@@ -24,56 +24,6 @@ export const buildAssetUniqueIdentifier = (item: any) => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-const addEthPlaceholder = (
-  assets: any[],
-  includePlaceholder: any,
-  pinnedCoins: any,
-  nativeCurrency: any,
-  isLoadingAssets: boolean
-) => {
-  const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
-
-  const { genericAssets } = store.getState().data;
-  if (includePlaceholder && !hasEth && assets.length > 0 && !isLoadingAssets) {
-    const { relative_change_24h, value } = genericAssets?.eth?.price || {};
-
-    const zeroEth = {
-      address: 'eth',
-      balance: {
-        amount: '0',
-        display: '0 ETH',
-      },
-      color: '#29292E',
-      decimals: 18,
-      icon_url: ETH_ICON_URL,
-      isCoin: true,
-      isPinned: pinnedCoins['eth'],
-      isSmall: false,
-      name: 'Ethereum',
-      native: {
-        balance: {
-          amount: '0.00',
-          display: convertAmountToNativeDisplay('0.00', nativeCurrency),
-        },
-        change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
-        price: {
-          amount: value || '0.00',
-          display: convertAmountToNativeDisplay(
-            value ? value : '0.00',
-            nativeCurrency
-          ),
-        },
-      },
-      price: value,
-      symbol: 'ETH',
-      type: 'token',
-      uniqueId: 'eth',
-    };
-    return { addedEth: true, assets: [zeroEth].concat(assets) };
-  }
-  return { addedEth: false, assets };
-};
-
 const getTotal = (assets: any) =>
   // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
   assets.reduce((acc, asset) => {
@@ -86,37 +36,23 @@ export const buildCoinsList = (
   nativeCurrency: any,
   isCoinListEdited: any,
   pinnedCoins: any,
-  hiddenCoins: any,
-  includePlaceholder = false,
-  isLoadingAssets: boolean
+  hiddenCoins: any
 ) => {
+  if (!sortedAssets.length) {
+    return {
+      assets: [],
+      smallBalancesValue: 0,
+      totalBalancesValue: 0,
+    };
+  }
+
   let standardAssets: any = [],
     pinnedAssets: any = [],
     smallAssets: any = [],
     hiddenAssets: any = [];
 
-  // const { addedEth, assets } = addEthPlaceholder(
-  //   sortedAssets,
-  //   includePlaceholder,
-  //   pinnedCoins,
-  //   nativeCurrency,
-  //   isLoadingAssets
-  // );
-
-  const addedEth = false;
-  const assets = sortedAssets;
-
-  // if (!assets.length) {
-  //   return {
-  //     addedEth,
-  //     assets,
-  //     smallBalancesValue: 0,
-  //     totalBalancesValue: 0,
-  //   };
-  // }
-
   // separate into standard, pinned, small balances, hidden assets
-  assets?.forEach(asset => {
+  sortedAssets?.forEach(asset => {
     if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
       hiddenAssets.push({
         isCoin: true,
@@ -186,7 +122,6 @@ export const buildCoinsList = (
   }
 
   return {
-    addedEth,
     assets: allAssets,
     smallBalancesValue,
     totalBalancesValue,
@@ -199,18 +134,14 @@ export const buildBriefCoinsList = (
   nativeCurrency: any,
   isCoinListEdited: any,
   pinnedCoins: any,
-  hiddenCoins: any,
-  includePlaceholder = false,
-  isLoadingAssets: boolean
+  hiddenCoins: any
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins,
-    includePlaceholder,
-    isLoadingAssets
+    hiddenCoins
   );
   const briefAssets = [];
   if (assets) {
