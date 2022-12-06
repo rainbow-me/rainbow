@@ -1,4 +1,4 @@
-import { toChecksumAddress } from '@walletconnect/utils';
+import { toChecksumAddress } from '@/handlers/web3';
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
