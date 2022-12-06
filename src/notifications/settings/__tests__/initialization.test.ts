@@ -35,14 +35,7 @@ jest.mock('@/redux/store', () => ({
   dispatch: jest.fn(),
 }));
 
-jest.mock('@/notifications/settings/firebase', () => ({
-  subscribeWalletToAllEnabledTopics: jest.fn(() => Promise.resolve()),
-  unsubscribeWalletFromAllNotificationTopics: jest.fn(() => Promise.resolve()),
-  unsubscribeWalletFromSingleNotificationTopic: jest.fn(() =>
-    Promise.resolve()
-  ),
-  subscribeWalletToSingleNotificationTopic: jest.fn(() => Promise.resolve()),
-}));
+jest.mock('@/notifications/settings/firebase');
 
 describe('Notification settings, groups initialization', function () {
   test('adding default group settings if they do not exist in MMKV', () => {
@@ -542,6 +535,11 @@ describe('Notification settings, subscription queue processing implementation er
   });
 
   test('running a subscription queue with no items in it causes zero effects even when firebase fails', async () => {
+    // @ts-ignore
+    subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
+    // @ts-ignore
+    unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
+
     const before = notificationSettingsStorage.getString(
       WALLET_TOPICS_STORAGE_KEY
     );
@@ -560,8 +558,8 @@ describe('Notification settings, subscription queue processing implementation er
     );
 
     await _processSubscriptionQueue([]);
-    // expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
-    // expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
+    expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
+    expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
     expect(
       JSON.parse(
         notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ?? '[]'
