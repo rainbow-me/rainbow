@@ -95,22 +95,25 @@ export const buildCoinsList = (
     smallAssets: any = [],
     hiddenAssets: any = [];
 
-  const { addedEth, assets } = addEthPlaceholder(
-    sortedAssets,
-    includePlaceholder,
-    pinnedCoins,
-    nativeCurrency,
-    isLoadingAssets
-  );
+  // const { addedEth, assets } = addEthPlaceholder(
+  //   sortedAssets,
+  //   includePlaceholder,
+  //   pinnedCoins,
+  //   nativeCurrency,
+  //   isLoadingAssets
+  // );
 
-  if (!assets.length) {
-    return {
-      addedEth,
-      assets,
-      smallBalancesValue: 0,
-      totalBalancesValue: 0,
-    };
-  }
+  const addedEth = false;
+  const assets = sortedAssets;
+
+  // if (!assets.length) {
+  //   return {
+  //     addedEth,
+  //     assets,
+  //     smallBalancesValue: 0,
+  //     totalBalancesValue: 0,
+  //   };
+  // }
 
   // separate into standard, pinned, small balances, hidden assets
   assets?.forEach(asset => {
