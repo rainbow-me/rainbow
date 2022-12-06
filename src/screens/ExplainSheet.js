@@ -11,17 +11,20 @@ import {
   Row,
   RowWithMargins,
 } from '../components/layout';
+import Routes from '@/navigation/routesNames';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { AccentColorProvider, Box } from '@/design-system';
+import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
-import { toFixedDecimals } from '@/helpers/utilities';
+import { delay, toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
@@ -39,6 +42,7 @@ import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 
 const { GAS_TRENDS } = gasUtils;
+const APP_ICON_SIZE = 64;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const getBodyTextPropsWithColor = colors =>
@@ -88,48 +92,62 @@ const Gradient = styled(GradientText).attrs({
 })({});
 
 const OptimismAppIcon = () => {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   return (
-    <Box
-      style={{
-        shadowColor: isDarkMode ? colors.shadowBlack : colors.optimismRed,
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
+    <AccentColorProvider color={colors.optimismRed}>
+      <Box
+        as={ImgixImage}
         source={AppIconOptimism}
-        style={{
-          width: 64,
-          height: 64,
-        }}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
       />
-    </Box>
+    </AccentColorProvider>
+  );
+};
+
+const GoldDogeAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.dogeGold}>
+      <Box
+        as={ImgixImage}
+        source={AppIconGoldDoge}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
   );
 };
 
 const SmolAppIcon = () => {
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   return (
-    <Box
-      style={{
-        shadowColor: isDarkMode ? colors.shadowBlack : colors.smolPurple,
-        shadowOffset: { height: 4, width: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
+    <AccentColorProvider color={colors.smolPurple}>
+      <Box
+        as={ImgixImage}
         source={AppIconSmol}
-        style={{
-          width: 64,
-          height: 64,
-        }}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
       />
-    </Box>
+    </AccentColorProvider>
+  );
+};
+
+const ZoraAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.rainbowBlue}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZora}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
   );
 };
 
@@ -238,29 +256,66 @@ const ENS_CONFIGURATION_EXPLAINER =
 
 const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
 
+const GOLDDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.golddoge_text');
+
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
+
+const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
+
+const navigateToAppIconSettings = async (navigate, goBack) => {
+  goBack();
+  navigate(Routes.SETTINGS_SHEET);
+  await delay(500);
+  navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+};
 
 export const explainers = (params, colors) => ({
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
-    extraHeight: -25,
+    extraHeight: -35,
     text: OPTIMISM_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
     button: {
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
     },
   },
+  golddoge_app_icon: {
+    logo: <GoldDogeAppIcon />,
+    extraHeight: -65,
+    text: GOLDDOGE_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.dogeGold,
+      bgColor: colors?.dogeGold06,
+    },
+  },
   smol_app_icon: {
     logo: <SmolAppIcon />,
-    extraHeight: -44,
+    extraHeight: -65,
     text: SMOL_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
     button: {
+      onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.smolPurple,
       bgColor: colors?.smolPurple06,
+    },
+  },
+  zora_app_icon: {
+    logo: <ZoraAppIcon />,
+    extraHeight: -90,
+    text: ZORA_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.appleBlue,
+      bgColor: colors?.appleBlue06,
     },
   },
   output_disabled: {
@@ -495,7 +550,7 @@ export const explainers = (params, colors) => ({
   },
   bsc: {
     emoji: '⛽️',
-    extraHeight: 160,
+    extraHeight: IS_ANDROID ? 120 : 160,
     logo: (
       <ChainBadge
         assetType={networkTypes.bsc}

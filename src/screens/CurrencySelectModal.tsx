@@ -210,7 +210,7 @@ export default function CurrencySelectModal() {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
-  } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
   const {
     swappableUserAssets,

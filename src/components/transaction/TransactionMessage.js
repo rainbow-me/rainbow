@@ -1,4 +1,4 @@
-import { addHexPrefix } from '@walletconnect/utils';
+import { addHexPrefix } from '@walletconnect/legacy-utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { isSignTypedData, PERSONAL_SIGN } from '../../utils/signingMethods';

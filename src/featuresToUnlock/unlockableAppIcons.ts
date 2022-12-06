@@ -15,6 +15,14 @@ const SMOL_BRAINS_PETS_NFT_ADDRESS: EthereumAddress =
 const SMOL_BODIES_PETS_NFT_ADDRESS: EthereumAddress =
   '0xae0d0c4cc3335fd49402781e406adf3f02d41bca';
 
+// zora app icon unlocking NFTs
+const ZORA_NFT_ADDRESS: EthereumAddress =
+  '0x7492e30d60d96c58ed0f0dc2fe536098c620c4c0';
+
+// gold doge app icon unlocking NFTs
+const GOLDDOGE_NFT_ADDRESS: EthereumAddress =
+  '0x1cad624e9db9a1c26187e5d49e0077ff9d90cbe2';
+
 export interface UnlockableAppIcon {
   key: string; // string used for analytics
   network: Network; // network that the unlockingNfts exist on
@@ -42,4 +50,20 @@ export const SmolIcon: UnlockableAppIcon = {
     SMOL_BODIES_PETS_NFT_ADDRESS,
   ],
   unlockKey: 'smol_nft_app_icon',
+};
+
+export const ZoraIcon: UnlockableAppIcon = {
+  key: 'zora',
+  explainSheetType: 'zora_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [ZORA_NFT_ADDRESS],
+  unlockKey: 'zora_nft_app_icon',
+};
+
+export const GoldDogeIcon: UnlockableAppIcon = {
+  key: 'golddoge',
+  explainSheetType: 'golddoge_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [GOLDDOGE_NFT_ADDRESS],
+  unlockKey: 'golddoge_nft_app_icon',
 };

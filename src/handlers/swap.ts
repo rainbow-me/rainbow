@@ -27,6 +27,7 @@ import {
   add,
   convertRawAmountToDecimalFormat,
   divide,
+  lessThan,
   multiply,
   subtract,
 } from '@/helpers/utilities';
@@ -100,6 +101,9 @@ async function getClosestGasEstimate(
 
 const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
+
+const getCrosschainSwapRainbowDefaultGasLimit = (chainId: ChainId) =>
+  ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 
 export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) =>
   tradeDetails?.routes?.[0]?.serviceTime;
@@ -374,15 +378,17 @@ export const estimateCrosschainSwapGasLimit = async ({
           return gasLimitWithFakeApproval;
         } catch (e) {
           logger.debug('Error estimating swap gas limit with approval', e);
-          const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-          if (routeGasLimit) return routeGasLimit;
         }
       }
 
-      return (
-        getCrosschainSwapDefaultGasLimit(tradeDetails) ||
-        getDefaultGasLimitForTrade(tradeDetails, chainId)
+      const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+      const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+        chainId
       );
+      if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+        return routeGasLimit;
+      }
+      return rainbowDefaultGasLimit;
     }
 
     const gasLimit = await estimateGasWithPadding(
@@ -397,10 +403,27 @@ export const estimateCrosschainSwapGasLimit = async ({
       provider,
       SWAP_GAS_PADDING
     );
+    const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+      chainId
+    );
 
-    return gasLimit || getCrosschainSwapDefaultGasLimit(tradeDetails);
+    let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
+    if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+      fallbackGasLimit = routeGasLimit;
+    }
+    return gasLimit || fallbackGasLimit;
   } catch (error) {
-    return getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+      chainId
+    );
+
+    let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
+    if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
+      fallbackGasLimit = routeGasLimit;
+    }
+    return fallbackGasLimit;
   }
 };
 

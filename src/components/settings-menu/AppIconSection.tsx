@@ -4,16 +4,23 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
+import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
+import AppIconZora from '@/assets/appIconZora.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
-import { OptimismIcon, SmolIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import {
+  GoldDogeIcon,
+  OptimismIcon,
+  SmolIcon,
+  ZoraIcon,
+} from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
 
 type AppIcon = {
@@ -56,6 +63,20 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'SMOL',
     source: AppIconSmol,
     unlock_key: SmolIcon.unlockKey,
+  },
+  zora: {
+    accentColor: 'rainbowBlue',
+    key: ZoraIcon.key,
+    name: 'Zora',
+    source: AppIconZora,
+    unlock_key: ZoraIcon.unlockKey,
+  },
+  golddoge: {
+    accentColor: 'dogeGold',
+    key: GoldDogeIcon.key,
+    name: 'GOLDDOGE',
+    source: AppIconGoldDoge,
+    unlock_key: GoldDogeIcon.unlockKey,
   },
 };
 
