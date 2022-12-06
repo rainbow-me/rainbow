@@ -57,7 +57,7 @@
       },
       "hardware_wallet": {
         "description": "Add accounts from your Bluetooth hardware wallet",
-        "title": "Import from your hardware wallet"
+        "title": "Connect your hardware wallet"
       },
       "seed": {
         "description": "Use your recovery phrase from Rainbow or another crypto wallet",

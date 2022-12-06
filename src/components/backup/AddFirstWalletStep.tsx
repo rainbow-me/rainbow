@@ -21,7 +21,8 @@ type Props = {
 };
 
 export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
-  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  // const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const hardwareWalletsEnabled = true;
   const { goBack, navigate } = useNavigation();
 
   const walletsBackedUp = useMemo(() => {
@@ -52,7 +53,7 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
     });
   }, [goBack, navigate]);
 
-  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0;
+  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0 || true;
 
   let restoreFromCloudDescription;
   if (IS_IOS) {
@@ -102,7 +103,7 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
     onPress: onWatchAddress,
   };
 
-  const importFromHardwareWallet: AddWalletItem = {
+  const connectHardwareWallet: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.hardware_wallet.title),
     description: i18n.t(TRANSLATIONS.hardware_wallet.description),
     icon: '􀕹',
@@ -110,36 +111,17 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
     onPress: () => {},
   };
 
-  // useEffect(() => setParams({ sheetHeight }), [setParams, sheetHeight]);
-
-  // const androidHeight = iosHeight + 24;
-
   return (
-    // <BackgroundProvider color="surfaceSecondary">
-    //   {({ backgroundColor }) => (
-    //     <SlackSheet
-    //       contentHeight={sheetHeight}
-    //       backgroundColor={backgroundColor}
-    //       deferredHeight={IS_ANDROID}
-    //       height={IS_ANDROID ? sheetHeight : '100%'}
-    //       scrollEnabled={false}
-    //       testID="restore-sheet"
-    //     >
-    // <View onLayout={event => setSheetHeight?.(event.nativeEvent.layout.height)}>
     <Inset top="36px" horizontal="30px (Deprecated)" bottom="80px">
       <AddWalletList
         items={[
           ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
           restoreFromSeed,
-          ...(hardwareWalletsEnabled ? [importFromHardwareWallet] : []),
+          ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
           watchAddress,
         ]}
         totalHorizontalInset={30}
       />
     </Inset>
-    // </View>
-    //     </SlackSheet>
-    //   )}
-    // </BackgroundProvider>
   );
 };
