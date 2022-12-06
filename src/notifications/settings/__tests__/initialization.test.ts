@@ -5,7 +5,6 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings';
-import { InteractionManager } from 'react-native';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
   NOTIFICATIONS_DEFAULT_CHAIN_ID,
@@ -27,15 +26,6 @@ const EMPTY_INIT_STATE = {
   alreadySaved: new Map(),
   subscriptionQueue: [],
 };
-
-// @ts-ignore just for the mock
-InteractionManager.runAfterInteractions = jest.fn(cb => {
-  if (typeof cb === 'function') {
-    cb();
-  } else {
-    cb?.gen();
-  }
-});
 
 jest.mock('@/redux/explorer', () => ({
   notificationsSubscription: jest.fn(),
@@ -72,7 +62,6 @@ describe('Notification settings, groups initialization', function () {
 describe('Notification settings, wallet settings initialization', () => {
   beforeEach(() => {
     notificationSettingsStorage.delete(WALLET_TOPICS_STORAGE_KEY);
-    jest.resetAllMocks();
   });
 
   test('initializing settings when list of wallets is empty and the stored state is not initialized', () => {
@@ -416,7 +405,7 @@ describe('Notification settings, wallet settings initialization', () => {
   });
 });
 
-describe('Notification settings, subscription queue processing implementation', () => {
+describe('Notification settings, subscription queue processing implementation happy path', () => {
   beforeEach(() => {
     notificationSettingsStorage.delete(WALLET_TOPICS_STORAGE_KEY);
     jest.resetAllMocks();
@@ -439,8 +428,9 @@ describe('Notification settings, subscription queue processing implementation', 
         },
       ])
     );
-
     await _processSubscriptionQueue([]);
+    expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
+    expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
     expect(
       JSON.parse(
         notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ?? '[]'
@@ -542,5 +532,91 @@ describe('Notification settings, subscription queue processing implementation', 
         notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ?? '[]'
       )
     ).toEqual([stateAfter]);
+  });
+});
+
+describe('Notification settings, subscription queue processing implementation error path', () => {
+  beforeEach(() => {
+    notificationSettingsStorage.delete(WALLET_TOPICS_STORAGE_KEY);
+    jest.resetAllMocks();
+  });
+
+  test('running a subscription queue with no items in it causes zero effects even when firebase fails', async () => {
+    const before = notificationSettingsStorage.getString(
+      WALLET_TOPICS_STORAGE_KEY
+    );
+    expect(before).toBeUndefined();
+    notificationSettingsStorage.set(
+      WALLET_TOPICS_STORAGE_KEY,
+      JSON.stringify([
+        {
+          address: TEST_ADDRESS_1,
+          type: NotificationRelationship.OWNER,
+          successfullyFinishedInitialSubscription: false,
+          topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
+          enabled: false,
+        },
+      ])
+    );
+
+    await _processSubscriptionQueue([]);
+    // expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
+    // expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
+    expect(
+      JSON.parse(
+        notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ?? '[]'
+      )
+    ).toEqual([
+      {
+        address: TEST_ADDRESS_1,
+        type: NotificationRelationship.OWNER,
+        successfullyFinishedInitialSubscription: false,
+        topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
+        enabled: false,
+      },
+    ]);
+  });
+
+  test('running subscription queue processing while firebase fails should produce no changes in the stored settings', async () => {
+    // @ts-ignore
+    subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
+    // @ts-ignore
+    unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
+
+    const before = notificationSettingsStorage.getString(
+      WALLET_TOPICS_STORAGE_KEY
+    );
+    expect(before).toBeUndefined();
+    const stateBefore = [
+      {
+        address: TEST_ADDRESS_1,
+        type: NotificationRelationship.OWNER,
+        successfullyFinishedInitialSubscription: false,
+        topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
+        enabled: false,
+      },
+      {
+        address: TEST_ADDRESS_2,
+        type: NotificationRelationship.OWNER,
+        oldType: NotificationRelationship.WATCHER,
+        successfullyFinishedInitialSubscription: false,
+        topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
+        enabled: false,
+      },
+    ];
+    notificationSettingsStorage.set(
+      WALLET_TOPICS_STORAGE_KEY,
+      JSON.stringify(stateBefore)
+    );
+    await _processSubscriptionQueue(stateBefore);
+
+    expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledTimes(2);
+    expect(unsubscribeWalletFromAllNotificationTopics).toHaveBeenCalled();
+
+    expect(
+      JSON.parse(
+        notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ?? '[]'
+      )
+    ).toEqual(stateBefore);
   });
 });
