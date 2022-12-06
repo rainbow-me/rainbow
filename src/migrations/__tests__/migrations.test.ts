@@ -9,11 +9,7 @@ import {
   MIGRATIONS_STORAGE_ID,
 } from '@/migrations/types';
 
-jest.mock('react-native', () => ({
-  InteractionManager: {
-    runAfterInteractions: jest.fn(),
-  },
-}));
+InteractionManager.runAfterInteractions = jest.fn();
 
 describe(`@/migrations`, () => {
   const storage = new MMKV({ id: MIGRATIONS_STORAGE_ID });

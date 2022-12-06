@@ -59,7 +59,7 @@ export const addDefaultNotificationGroupSettings = () => {
 export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets = (
   addresses: AddressWithRelationship[]
 ) => {
-  const initializationState = makeInitializationState();
+  const initializationState = _prepareInitializationState();
   // Set of wallet addresses we have in app (unrelated to notification settings entries)
   const walletAddresses = new Set(
     addresses.map(addressWithRelationship => addressWithRelationship.address)
@@ -68,10 +68,14 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
     ...initializationState.alreadySaved.keys(),
   ].filter(address => !walletAddresses.has(address));
 
-  internalInitializeNotificationSettingsForAddresses(
+  const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
     addresses,
     initializationState
   );
+
+  InteractionManager.runAfterInteractions(() => {
+    _processSubscriptionQueue(queue);
+  });
 
   if (removedWalletsThatWereNotUnsubscribedProperly.length) {
     InteractionManager.runAfterInteractions(() => {
@@ -88,15 +92,20 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
 export const initializeNotificationSettingsForAddresses = (
   addresses: AddressWithRelationship[]
 ) => {
-  const initializationState = makeInitializationState();
+  const initializationState = _prepareInitializationState();
 
-  internalInitializeNotificationSettingsForAddresses(
+  const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
     addresses,
     initializationState
   );
+
+  InteractionManager.runAfterInteractions(() => {
+    _processSubscriptionQueue(queue);
+  });
 };
 
-const internalInitializeNotificationSettingsForAddresses = (
+// exported for testing only
+export const _prepareSubscriptionQueueAndCreateInitialSettings = (
   addresses: AddressWithRelationship[],
   initializationState: InitializationStateType
 ) => {
@@ -121,7 +130,8 @@ const internalInitializeNotificationSettingsForAddresses = (
       newSettings[alreadySavedEntry.index] = updatedSettingsEntry;
       subscriptionQueue.push(updatedSettingsEntry);
     }
-    // case where there's work to do on for the wallet
+    // case when the wallet wasn't yet successfully initialized
+    // or a wallet was imported after being watched previously and we haven't properly subscribed it yet
     else if (
       alreadySavedEntry !== undefined &&
       (alreadySavedEntry.settings?.oldType !== undefined ||
@@ -129,29 +139,29 @@ const internalInitializeNotificationSettingsForAddresses = (
     ) {
       subscriptionQueue.push(alreadySavedEntry.settings);
     }
-    // case where there are no settings for the wallet and there will be work to do
+    // case where there are no settings for the wallet and there will be subscriptions to process for imported wallets
     else if (!alreadySaved.has(entry.address)) {
+      const isImported = entry.relationship === NotificationRelationship.OWNER;
       const newSettingsEntry: WalletNotificationSettings = {
         type: entry.relationship,
         address: entry.address,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: false,
-        // Watched wallets are not automatically subscribed to topics, so they already have applied defaults
-        successfullyFinishedInitialSubscription:
-          entry.relationship === NotificationRelationship.WATCHER,
+        successfullyFinishedInitialSubscription: !isImported,
       };
       newSettings.push(newSettingsEntry);
-      subscriptionQueue.push(newSettingsEntry);
+      if (isImported) {
+        subscriptionQueue.push(newSettingsEntry);
+      }
     }
   });
 
   setAllNotificationSettingsToStorage(newSettings);
-  InteractionManager.runAfterInteractions(() => {
-    processSubscriptionQueue(subscriptionQueue);
-  });
+  return subscriptionQueue;
 };
 
-const makeInitializationState = (): InitializationStateType => {
+// exported for testing only
+export const _prepareInitializationState = (): InitializationStateType => {
   const currentSettings = getAllNotificationSettingsFromStorage();
   const newSettings: WalletNotificationSettings[] = [...currentSettings];
   const alreadySaved = new Map<
@@ -172,7 +182,8 @@ const makeInitializationState = (): InitializationStateType => {
   };
 };
 
-const processSubscriptionQueue = async (
+// exported for testing
+export const _processSubscriptionQueue = async (
   subscriptionQueue: WalletNotificationSettings[]
 ): Promise<void> => {
   const results = await Promise.all(
