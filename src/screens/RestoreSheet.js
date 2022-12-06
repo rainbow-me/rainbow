@@ -29,7 +29,6 @@ export function RestoreSheet() {
   const { height: deviceHeight } = useDimensions();
   const {
     params: {
-      longFormHeight = 0,
       step = WalletBackupStepTypes.first,
       userData,
       backupSelected,
@@ -88,35 +87,28 @@ export function RestoreSheet() {
     sheetHeight,
   ]);
 
-  const wrapperHeight =
-    deviceHeight + sheetHeight + (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
-
-  console.log(sheetHeight);
   return (
-    <Column height={wrapperHeight}>
-      <SlackSheet
-        contentHeight={sheetHeight}
-        height={IS_ANDROID ? sheetHeight : '100%'}
-        deferredHeight={IS_ANDROID}
-        testID="restore-sheet"
-      >
-        <View
-          onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
-        >
-          {step === WalletBackupStepTypes.cloud ? (
-            <RestoreCloudStep
-              backupSelected={backupSelected}
-              fromSettings={fromSettings}
-              userData={userData}
-            />
-          ) : (
-            <AddFirstWalletStep
-              onCloudRestore={onCloudRestore}
-              userData={userData}
-            />
-          )}
-        </View>
-      </SlackSheet>
-    </Column>
+    <SlackSheet
+      contentHeight={sheetHeight}
+      backgroundColor="#fff"
+      height={IS_ANDROID ? sheetHeight : '100%'}
+      deferredHeight={IS_ANDROID}
+      testID="restore-sheet"
+    >
+      <View onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}>
+        {step === WalletBackupStepTypes.cloud ? (
+          <RestoreCloudStep
+            backupSelected={backupSelected}
+            fromSettings={fromSettings}
+            userData={userData}
+          />
+        ) : (
+          <AddFirstWalletStep
+            onCloudRestore={onCloudRestore}
+            userData={userData}
+          />
+        )}
+      </View>
+    </SlackSheet>
   );
 }

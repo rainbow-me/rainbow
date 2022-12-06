@@ -1,23 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { BackgroundProvider, globalColors, Inset } from '@/design-system';
+import React, { useCallback, useMemo } from 'react';
+import { globalColors, Inset } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { RainbowWallet } from '@/model/wallet';
 import WalletBackupTypes from '@/helpers/walletBackupStepTypes';
 import { useNavigation } from '@/navigation';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
-import { SlackSheet } from '@/components/sheet';
 import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { cloudPlatform } from '@/utils/platform';
 import * as i18n from '@/languages';
-
-const HEIGHT_INCREMENT = 132;
-const MIN_HEIGHT = 390;
-const MIN_ROWS = 2;
 
 const TRANSLATIONS = i18n.l.add_first_wallet;
 
@@ -54,7 +48,7 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
     analytics.track('Tapped "Watch an Ethereum Address"');
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_SHEET), 50);
+      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
     });
   }, [goBack, navigate]);
 
