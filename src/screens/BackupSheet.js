@@ -155,7 +155,7 @@ export default function BackupSheet() {
         );
       case WalletBackupStepTypes.imported:
         return (
-          //TODO: ADD CloudPlatform to back_up.description
+          // TODO: ADD CloudPlatform to back_up.description
           <BackupSheetSection
             descriptionText={lang.t('modal.back_up.imported.description', {
               cloudPlatformName: cloudPlatform,
@@ -214,13 +214,13 @@ export default function BackupSheet() {
     android && !nativeScreen
       ? AndroidHeight
       : longFormHeight + getSoftMenuBarHeight();
-  let wrapperHeight =
+  const wrapperHeight =
     deviceHeight +
     (android && !nativeScreen ? AndroidHeight : longFormHeight) +
     getSoftMenuBarHeight();
   let additionalTopPadding = android && !nativeScreen;
 
-  //If the sheet is full screen we should handle the sheet heights and padding differently
+  // If the sheet is full screen we should handle the sheet heights and padding differently
   if (
     android &&
     (step === WalletBackupStepTypes.cloud ||
@@ -228,6 +228,11 @@ export default function BackupSheet() {
   ) {
     sheetHeight = deviceHeight - 40;
     additionalTopPadding = true;
+  }
+
+  if (android && step === WalletBackupStepTypes.existing_user) {
+    // on this step we have 3 lines of text instead of 2
+    sheetHeight += 26;
   }
 
   return (
