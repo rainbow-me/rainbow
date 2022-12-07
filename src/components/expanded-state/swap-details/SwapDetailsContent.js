@@ -52,6 +52,9 @@ export default function SwapDetailsContent({
   const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     inputCurrency?.type
   );
+  const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+    outputCurrency?.type
+  );
 
   return (
     <AccentColorProvider color={colorForAsset}>
@@ -87,7 +90,7 @@ export default function SwapDetailsContent({
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
             <SwapDetailsFeeRow
-              network={inputCurrencyNetwork}
+              network={outputCurrencyNetwork}
               testID="swaps-details-fee-row"
               tradeDetails={tradeDetails}
             />
