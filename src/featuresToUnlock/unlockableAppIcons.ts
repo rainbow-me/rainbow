@@ -23,6 +23,10 @@ const ZORA_NFT_ADDRESS: EthereumAddress =
 const GOLDDOGE_NFT_ADDRESS: EthereumAddress =
   '0x1cad624e9db9a1c26187e5d49e0077ff9d90cbe2';
 
+// rain doge app icon unlocking NFTs
+const RAINDOGE_NFT_ADDRESS: EthereumAddress =
+  '0x6d60e6c4038b20cbba263ff842fec852f0550041';
+
 export interface UnlockableAppIcon {
   key: string; // string used for analytics
   network: Network; // network that the unlockingNfts exist on
@@ -66,4 +70,12 @@ export const GoldDogeIcon: UnlockableAppIcon = {
   network: Network.mainnet,
   unlockingNfts: [GOLDDOGE_NFT_ADDRESS],
   unlockKey: 'golddoge_nft_app_icon',
+};
+
+export const RainDogeIcon: UnlockableAppIcon = {
+  key: 'raindoge',
+  explainSheetType: 'raindoge_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [RAINDOGE_NFT_ADDRESS],
+  unlockKey: 'raindoge_nft_app_icon',
 };
