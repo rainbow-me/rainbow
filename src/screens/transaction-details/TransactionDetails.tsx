@@ -8,8 +8,6 @@ import { useDimensions } from '@/hooks';
 import { useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
 import { ethereumUtils } from '@/utils';
-import { TransactionDetailsFee } from './types/TransactionDetailsFee';
-import { ethUnits } from '@/references';
 import { useTheme } from '@/theme';
 
 // TODO: this is only temporary as I was figuring out how to do the slacksheet thing
@@ -37,13 +35,7 @@ export const TransactionDetails: React.FC = () => {
 
   const hash = ethereumUtils.getHash(transaction);
   const isTxSentFromCurrentAddress = accountAddress === transaction.from;
-  const parsedFee: TransactionDetailsFee | undefined = transaction?.fee
-    ? {
-        currencyAmount:
-          (transaction.fee.value / ethUnits.ether) * transaction.fee.price,
-        weiAmount: transaction.fee.value,
-      }
-    : undefined;
+  const weiFee: number | undefined = transaction?.fee?.value;
 
   console.log(transaction);
 
@@ -62,7 +54,7 @@ export const TransactionDetails: React.FC = () => {
           accountAddress={accountAddress}
           fromCurrentAddress={isTxSentFromCurrentAddress}
           txHash={hash}
-          fee={parsedFee}
+          weiFee={weiFee}
         />
       </SlackSheet>
     </Container>

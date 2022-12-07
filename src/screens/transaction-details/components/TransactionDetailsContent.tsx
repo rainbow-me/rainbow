@@ -4,14 +4,13 @@ import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/c
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import { TransactionDetailsFee } from '../types/TransactionDetailsFee';
 import { getFormattedEthFee } from '@/screens/transaction-details/helpers/getFormattedEthFee';
 
 type Props = {
   accountAddress: string;
   txHash?: string;
   fromCurrentAddress?: boolean;
-  fee?: TransactionDetailsFee;
+  weiFee?: number;
 };
 
 const Divider = () => (
@@ -24,11 +23,10 @@ export const TransactionDetailsContent: React.FC<Props> = ({
   accountAddress,
   txHash,
   fromCurrentAddress,
-  fee,
+  weiFee,
 }) => {
   const formattedHash = txHash ? shortenTxHashString(txHash) : '';
-  const usdFee = `$${fee?.currencyAmount?.toPrecision(3)}`;
-  const formattedEthFee = getFormattedEthFee(fee?.weiAmount ?? 0);
+  const formattedEthFee = getFormattedEthFee(weiFee ?? 0);
 
   return (
     <Box
@@ -37,10 +35,9 @@ export const TransactionDetailsContent: React.FC<Props> = ({
       paddingHorizontal="20px"
       paddingBottom="20px"
     >
-      {fromCurrentAddress && fee && (
+      {fromCurrentAddress && weiFee && (
         <DoubleLineTransactionDetailsRow
           leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
-          secondaryValue={usdFee}
           title={'Network Fee'}
           value={formattedEthFee}
         />
