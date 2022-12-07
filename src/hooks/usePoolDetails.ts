@@ -5,7 +5,6 @@ import { uniswapClientDeprecated } from '../apollo/client';
 import { UNISWAP_PAIR_DATA_QUERY_VOLUME } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { getOneDayVolume } from './useUniswapPools';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { AppDispatch, AppState } from '@/redux/store';
 import { setPoolsDetails } from '@/redux/uniswapLiquidity';
@@ -14,6 +13,13 @@ import { uniswapClient } from '@/graphql';
 
 function cutIfOver10000(value: number) {
   return value > 10000 ? Math.round(value) : value;
+}
+
+function getOneDayVolume(
+  valueNow: string | number,
+  value24HoursAgo: string | number
+) {
+  return parseFloat(valueNow as string) - parseFloat(value24HoursAgo as string);
 }
 
 async function fetchPoolDetails(address: string, dispatch: AppDispatch) {
