@@ -135,7 +135,6 @@ export { default as useTransactionConfirmation } from './useTransactionConfirmat
 export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useAssetsInWallet } from './useAssetsInWallet';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
-export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
