@@ -268,8 +268,7 @@ const coinEditContextMenu = (
   isCoinListEdited: any,
   isLoadingAssets: any,
   sortedAssetsCount: any,
-  totalValue: any,
-  addedEth: any
+  totalValue: any
 ) => {
   const noSmallBalances = !balanceSectionData.find(
     ({ smallBalancesContainer }: any) => smallBalancesContainer
@@ -293,7 +292,7 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + sortedAssetsCount,
+    totalItems: isLoadingAssets ? 1 : sortedAssetsCount,
     totalValue: totalValue,
   };
 };
@@ -314,14 +313,12 @@ const withBalanceSection = (
   uniswapTotal: any,
   collectibles: any
 ) => {
-  const { addedEth, assets, totalBalancesValue } = buildCoinsList(
+  const { assets, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins,
-    true,
-    isLoadingAssets
+    hiddenCoins
   );
 
   let balanceSectionData = [...assets];
@@ -357,8 +354,7 @@ const withBalanceSection = (
       isCoinListEdited,
       isLoadingAssets,
       sortedAssetsCount,
-      totalValue,
-      addedEth
+      totalValue
     ),
     name: 'balances',
     renderItem: isLoadingAssets
@@ -384,9 +380,7 @@ const withBriefBalanceSection = (
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins,
-    true,
-    isLoadingAssets
+    hiddenCoins
   );
 
   const savingsTotalValue = savingsSection?.find(
