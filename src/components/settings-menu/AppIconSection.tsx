@@ -19,6 +19,7 @@ import Logger from '@/utils/logger';
 import {
   GoldDogeIcon,
   OptimismIcon,
+  RainDogeIcon,
   SmolIcon,
   ZoraIcon,
 } from '@/featuresToUnlock/unlockableAppIcons';
