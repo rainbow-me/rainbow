@@ -51,9 +51,8 @@ export async function pair({ uri }: { uri: string }) {
       const routeParams: WalletconnectApprovalSheetRouteParams = {
         receivedTimestamp,
         timedOut: true,
-        async callback() {
-          logger.debug(`callback`);
-        },
+        // empty, the sheet will show the error state
+        async callback() {},
       };
 
       // end load state with `timedOut` and provide failure callback
@@ -80,7 +79,6 @@ export async function pair({ uri }: { uri: string }) {
   client.on('session_proposal', handler);
 }
 
-// TODO ignore expired requests?
 export async function initListeners() {
   const client = await signClient;
 
@@ -101,8 +99,14 @@ export function onSessionProposal(
     requiredNamespaces,
   } = proposal.params;
 
-  // TODO what if eip155 namespace doesn't exist
-  // TODO do I need to check for existing sessions? WC v2 might do this for us
+  /**
+   * Trying to be defensive here, but I'm not sure we support this anyway so
+   * probably not a big deal right now.
+   */
+  if (!requiredNamespaces.eip155) {
+    logger.error(new RainbowError(`WC v2: missing required namespace eip155`));
+    return;
+  }
 
   const { chains } = requiredNamespaces.eip155;
   const chainId = parseInt(chains[0].split('eip155:')[1]);
