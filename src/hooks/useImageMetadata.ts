@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import OfflineMetadata from '../references/meta/tokens-metadata.json';
 import useDimensions from './useDimensions';
 import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
@@ -17,9 +16,7 @@ export default function useImageMetadata(imageUrl: string | null) {
   );
 
   const selectorMeta = useSelector(imageMetadataSelector);
-  const metadata = imageUrl
-    ? OfflineMetadata[imageUrl as keyof typeof OfflineMetadata] || selectorMeta
-    : null;
+  const metadata = selectorMeta || null;
   const defaultMetadata = useMemo(
     () => ({
       dimensions: position.sizeAsObject(deviceWidth - 30),

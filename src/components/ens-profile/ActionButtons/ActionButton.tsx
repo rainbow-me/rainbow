@@ -31,7 +31,7 @@ export default function ActionButton({
 }: ActionButtonProps) {
   const appleBlue = useForegroundColor('action (Deprecated)');
   const divider100 = useForegroundColor('divider100 (Deprecated)');
-  const shadow = useForegroundColor('shadow');
+  const shadow = useForegroundColor('shadowFar');
 
   const shadowColor = useForegroundColor({
     custom: {
@@ -51,7 +51,7 @@ export default function ActionButton({
           height="36px"
           justifyContent="center"
           {...(variant === 'solid' && {
-            shadow: '30px light accent',
+            shadow: '30px light accent (Deprecated)',
           })}
           {...(variant === 'outlined' && {
             background: 'body (Deprecated)',

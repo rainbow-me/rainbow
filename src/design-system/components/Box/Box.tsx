@@ -4,12 +4,8 @@ import {
   useForegroundColor,
   useForegroundColors,
 } from '../../color/useForegroundColor';
-import {
-  defaultShadowColor,
-  Shadow,
-  ShadowColor,
-  shadows,
-} from '../../layout/shadow';
+import { useColorMode } from '../../color/ColorMode';
+import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
 import {
   NegativeSpace,
@@ -303,19 +299,35 @@ export const Box = forwardRef(function Box(
   );
 }) as PolymorphicBox;
 
+function useShadowColorMode() {
+  const { colorMode } = useColorMode();
+
+  if (colorMode === 'darkTinted') {
+    return 'dark';
+  }
+
+  if (colorMode === 'lightTinted') {
+    return 'light';
+  }
+
+  return colorMode;
+}
+
 function useShadow(shadowProp: BoxProps['shadow']) {
-  const shadow = resolveToken(shadows, shadowProp);
+  const shadowColorMode = useShadowColorMode();
+  const shadowToken = resolveToken(shadows, shadowProp);
+  const shadow =
+    shadowToken && 'light' in shadowToken
+      ? shadowToken[shadowColorMode]
+      : shadowToken;
 
   const iosColors = useMemo(() => {
-    if (shadow) {
-      return shadow.ios.map(({ color }) => color || defaultShadowColor);
-    }
-    return [defaultShadowColor as ShadowColor];
+    return shadow ? shadow.ios.map(({ color }) => color) : [];
   }, [shadow]);
   const iosShadowColors = useForegroundColors(iosColors);
 
   const androidColor = useForegroundColor(
-    shadow?.android.color || defaultShadowColor
+    shadow ? shadow.android.color : 'shadowFar' // This fallback color will never be used if shadow is undefined, but we're using a sensible default anyway just in case
   );
 
   return useMemo(
@@ -327,13 +339,11 @@ function useShadow(shadowProp: BoxProps['shadow']) {
               color: androidColor,
             },
             ios: shadow.ios.map((item, index) => {
-              const { offset, blur, opacity } = item;
+              const { x, y, blur, opacity } = item;
+
               return {
                 color: iosShadowColors[index],
-                offset: {
-                  height: offset.y,
-                  width: offset.x,
-                },
+                offset: { width: x, height: y },
                 opacity,
                 radius: blur,
               };

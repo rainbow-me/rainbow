@@ -13,6 +13,57 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.2)
+
+### Changed
+
+- Cross chain swaps
+- Update to discover home cards
+- Other bug fixes and improvements
+
+## [1.8.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.1)
+
+### Changed
+
+- Bug fixes
+- Small dev focused items
+- No new features or user facing items
+
+## [1.8.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.10)
+
+### Added
+
+- New updated Homescreen
+
+### Changed
+
+- Small bug fixes / dev improvements
+- Some more cross-chain swaps PRs (still behind a feature flag)
+- LooksRare marketplace link
+- Audio NFTs bugfix
+
+## [1.7.9](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.9)
+
+### Changed
+
+- Notifications Tweaks
+- Bug Fixes
+
+## [1.7.8](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.8)
+
+### Added
+
+- Notifications
+- Simplehash being used for Polygon NFTs
+- React native safe area context
+- First PRs for hardware wallet integration
+
+### Changed
+
+- Gas UI alignments & tweaks
+- Other small bug fixes (including initializing stuck state fix)
+- Fix Android 13 ripple effect
+
 ## [1.7.7](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.7)
 
 ### Changed

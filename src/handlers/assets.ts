@@ -3,6 +3,7 @@ import { AssetTypes } from '@/entities';
 import networkTypes from '@/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
+  BNB_BSC_ADDRESS,
   erc20ABI,
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
@@ -19,6 +20,7 @@ const nativeAssetsPerNetwork = {
   [networkTypes.mainnet]: ETH_ADDRESS,
   [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
+  [networkTypes.bsc]: BNB_BSC_ADDRESS,
 };
 
 export function isL2Asset(type: any) {
@@ -26,6 +28,7 @@ export function isL2Asset(type: any) {
     case AssetTypes.arbitrum:
     case AssetTypes.optimism:
     case AssetTypes.polygon:
+    case AssetTypes.bsc:
       return true;
     default:
       return false;

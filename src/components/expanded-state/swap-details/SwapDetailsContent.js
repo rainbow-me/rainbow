@@ -1,15 +1,18 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, View } from 'react-redux';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsExchangeRow from './SwapDetailsExchangeRow';
 import SwapDetailsFeeRow from './SwapDetailsFeeRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
+import SwapDetailsRefuelRow from './SwapDetailsRefuelRow';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
+import Routes from '@/navigation/routesNames';
 import {
+  useAccountSettings,
   useColorForAsset,
   useSwapAdjustedAmounts,
   useSwapCurrencies,
@@ -18,23 +21,27 @@ import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils } from '@/utils';
+import { useNavigation } from '@/navigation';
+import { Network } from '@/helpers';
 
 const Container = styled(Box).attrs({
   flex: 1,
-})(({ isHighPriceImpact }) =>
-  padding.object(isHighPriceImpact ? 24 : 30, 19, 30)
-);
+})(({ hasWarning }) => padding.object(hasWarning ? 24 : 30, 19, 30));
 
 export default function SwapDetailsContent({
   isHighPriceImpact,
+  isRefuelTx,
   onCopySwapDetailsText,
   tradeDetails,
+  onPressMore,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
     tradeDetails
   );
+  const { navigate } = useNavigation();
+  const { flashbotsEnabled } = useAccountSettings();
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
@@ -45,10 +52,14 @@ export default function SwapDetailsContent({
   const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     inputCurrency?.type
   );
+  const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
+    outputCurrency?.type
+  );
+
   return (
     <AccentColorProvider color={colorForAsset}>
       <Container
-        isHighPriceImpact={isHighPriceImpact}
+        hasWarning={isHighPriceImpact}
         testID="swap-details-state"
         {...props}
       >
@@ -62,18 +73,42 @@ export default function SwapDetailsContent({
               {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
+
+          {(isRefuelTx || tradeDetails?.refuel) && (
+            <SwapDetailsRefuelRow
+              testID="swaps-details-refuel-row"
+              tradeDetails={tradeDetails}
+            />
+          )}
+
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
               protocols={tradeDetails?.protocols}
+              routes={tradeDetails?.routes}
               testID="swaps-details-protocols-row"
             />
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
             <SwapDetailsFeeRow
-              network={inputCurrencyNetwork}
+              network={outputCurrencyNetwork}
               testID="swaps-details-fee-row"
               tradeDetails={tradeDetails}
             />
+          )}
+          {flashbotsEnabled && inputCurrencyNetwork === Network.mainnet && (
+            <SwapDetailsRow
+              labelPress={() =>
+                navigate(Routes.EXPLAIN_SHEET, {
+                  type: 'flashbots',
+                })
+              }
+              label={`${lang.t('expanded_state.swap.flashbots_protect')} 􀅵`}
+              testID="swaps-details-flashbots-row"
+            >
+              <SwapDetailsValue letterSpacing="roundedTight">
+                {`${lang.t('expanded_state.swap.on')} 􀞜`}
+              </SwapDetailsValue>
+            </SwapDetailsRow>
           )}
           {!detailsExpanded && (
             <Box
@@ -83,7 +118,10 @@ export default function SwapDetailsContent({
               }}
             >
               <ButtonPressAnimation
-                onPress={() => setDetailsExpanded(!detailsExpanded)}
+                onPress={() => {
+                  setDetailsExpanded(!detailsExpanded);
+                  onPressMore();
+                }}
                 scaleTo={1.06}
                 style={{
                   // enlarge tap target for details button

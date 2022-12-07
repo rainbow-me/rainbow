@@ -18,6 +18,7 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { TRANSACTION_DETAILS_SHEET_HEIGHT } from '@/screens/transaction-details/TransactionDetails';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -107,6 +108,16 @@ export const swapDetailsSheetConfig = {
   }),
 };
 
+export const transactionDetailsConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: false,
+      longFormHeight: TRANSACTION_DETAILS_SHEET_HEIGHT,
+    }),
+  }),
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -150,6 +161,20 @@ export const settingsSheetConfig = {
   }),
 };
 
+export const qrScannerConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      scrollEnabled: true,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const pairHardwareWalletNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -168,6 +193,18 @@ export const registerENSNavigatorConfig = {
       ...params,
       backgroundOpacity: 1,
       scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const learnWebViewScreenConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
       springDamping: 1,
       transitionDuration: 0.3,
     }),

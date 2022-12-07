@@ -12,6 +12,10 @@ import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
 import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
+import BscBadge from '../../assets/badges/bscBadge.png';
+import BscBadgeDark from '../../assets/badges/bscBadgeDark.png';
+import BscBadgeLarge from '../../assets/badges/bscBadgeLarge.png';
+import BscBadgeLargeDark from '../../assets/badges/bscBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
@@ -75,6 +79,8 @@ export default function ChainBadge({
         val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;
       } else if (assetType === AssetType.polygon) {
         val = isDarkMode ? PolygonBadgeLargeDark : PolygonBadgeLarge;
+      } else if (assetType === AssetType.bsc) {
+        val = isDarkMode ? BscBadgeLargeDark : BscBadgeLarge;
       }
     } else {
       if (assetType === AssetType.arbitrum) {
@@ -83,6 +89,8 @@ export default function ChainBadge({
         val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
       } else if (assetType === AssetType.polygon) {
         val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
+      } else if (assetType === AssetType.bsc) {
+        val = isDarkMode ? BscBadgeDark : BscBadge;
       }
     }
     return val;

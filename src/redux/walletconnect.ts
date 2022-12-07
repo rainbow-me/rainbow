@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
-import { parseWalletConnectUri } from '@walletconnect/utils';
+import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
@@ -521,6 +521,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         networkTypes.mainnet,
         networkTypes.goerli,
         networkTypes.polygon,
+        networkTypes.bsc,
         networkTypes.optimism,
         networkTypes.arbitrum,
       ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());

@@ -4,13 +4,17 @@ import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useAccountProfile, useLatestCallback } from '@/hooks';
+import ContextMenu from '@/components/native-context-menu/contextMenu';
+import {
+  useAccountProfile,
+  useLatestCallback,
+  useOnAvatarPress,
+} from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
-const AvatarCircleSize = 65;
+const AvatarCircleSize = 60;
 
 const AvatarCircleView = styled(Flex)({
   ...position.sizeAsObject(AvatarCircleSize),
@@ -25,10 +29,10 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 2,
   size: ios ? 38 : 30,
   weight: 'semibold',
-  ...(ios && { lineHeight: 66 }),
+  ...(ios && { lineHeight: 60 }),
 }))({
   ...(android && { left: -1 }),
-  ...(ios && { width: 67 }),
+  ...(ios && { width: 62 }),
 });
 
 export default function AvatarCircle({
@@ -38,7 +42,6 @@ export default function AvatarCircle({
   onPress,
   showcaseAccountSymbol,
   showcaseAccountColor,
-  onSelectionCallback = () => {},
   menuOptions = [],
   newProfile = false,
   ...props
@@ -75,36 +78,33 @@ export default function AvatarCircle({
     [resolvedColor, colors, isDarkMode]
   );
 
-  const items = useMemo(
-    () => ({
-      menuItems: menuOptions?.map(label => ({
-        actionKey: label,
-        actionTitle: label,
-      })),
-    }),
-    [menuOptions]
-  );
+  const {
+    avatarContextMenuConfig,
+    onAvatarPressProfile,
+    onSelectionCallback,
+    hasENSProfile,
+  } = useOnAvatarPress({ screenType: 'wallet' });
 
-  const handlePressMenuItem = useLatestCallback(
-    e => {
-      const index = items.menuItems?.findIndex(
-        item => item.actionKey === e.nativeEvent.actionKey
-      );
-      onSelectionCallback(index);
-    },
-    [onSelectionCallback, items.menuItems]
-  );
+  const handlePressMenuItem = useLatestCallback(e => {
+    const index = avatarContextMenuConfig.menuItems?.findIndex(
+      item => item.actionKey === e.nativeEvent.actionKey
+    );
+    onSelectionCallback(index);
+  });
 
-  const Wrapper =
-    ios || !isAvatarPickerAvailable ? React.Fragment : ContextMenuButton;
+  const Wrapper = hasENSProfile ? React.Fragment : ContextMenu;
 
   return (
-    <Wrapper menuConfig={items} onPressMenuItem={handlePressMenuItem}>
+    <Wrapper
+      menuConfig={avatarContextMenuConfig}
+      onPressMenuItem={handlePressMenuItem}
+    >
       <ButtonPressAnimation
         disabled={!isAvatarPickerAvailable}
         enableHapticFeedback={isAvatarPickerAvailable}
         marginTop={2}
-        {...(ios && { onPress })}
+        onPress={onAvatarPressProfile}
+        onLongPress={() => null}
         overflowMargin={30}
         pressOutDuration={200}
         scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
@@ -117,8 +117,8 @@ export default function AvatarCircle({
           marginBottom={12}
           shadows={shadows[overlayStyles ? 'overlay' : 'default']}
           {...(android && {
-            height: 64,
-            width: 64,
+            height: 60,
+            width: 60,
           })}
         >
           {image ? (
@@ -126,7 +126,7 @@ export default function AvatarCircle({
           ) : (
             <AvatarCircleView backgroundColor={resolvedColor}>
               <FirstLetter>{accountSymbol}</FirstLetter>
-              {!overlayStyles && <InnerBorder opacity={0.02} radius={65} />}
+              {!overlayStyles && <InnerBorder opacity={0.02} radius={60} />}
             </AvatarCircleView>
           )}
         </ShadowStack>

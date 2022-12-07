@@ -18,7 +18,7 @@ import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 
-const AvatarCircleHeight = 65;
+const AvatarCircleHeight = 60;
 const AvatarCircleMarginTop = 2;
 const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;

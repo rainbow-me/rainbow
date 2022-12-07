@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import RestoreSheetFirstStep from '../components/backup/RestoreSheetFirstStep';
 import { Column } from '../components/layout';
@@ -11,8 +10,8 @@ import { SlackSheet } from '../components/sheet';
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
-} from '../handlers/cloudBackup';
-import { cloudPlatform } from '../utils/platform';
+} from '@/handlers/cloudBackup';
+import { cloudPlatform } from '@/utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -21,8 +20,10 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
-export default function RestoreSheet() {
+export function RestoreSheet() {
   const { goBack, navigate, setParams } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const {
@@ -38,7 +39,7 @@ export default function RestoreSheet() {
   const onCloudRestore = useCallback(async () => {
     analytics.track('Tapped "Restore from cloud"');
     let proceed = false;
-    if (android) {
+    if (IS_ANDROID) {
       const isAvailable = await isCloudBackupAvailable();
       if (isAvailable) {
         try {
@@ -96,12 +97,15 @@ export default function RestoreSheet() {
   }, [goBack, navigate]);
 
   const wrapperHeight =
-    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
+    deviceHeight +
+    longFormHeight +
+    (IS_ANDROID ? getSoftMenuBarHeight() / 2 : 0);
+
   return (
     <Column height={wrapperHeight}>
       <SlackSheet
         contentHeight={longFormHeight}
-        deferredHeight={android}
+        deferredHeight={IS_ANDROID}
         testID="restore-sheet"
       >
         {step === WalletBackupStepTypes.cloud ? (

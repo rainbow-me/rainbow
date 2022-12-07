@@ -10,6 +10,7 @@ import AvatarIcon from './svg/AvatarIcon';
 import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
+import CaretDownIcon from './svg/CaretDownIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
@@ -74,6 +75,7 @@ import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
+import BridgeIcon from './svg/BridgeIcon';
 
 const IconTypes = {
   applePay: ApplePayIcon,
@@ -82,9 +84,11 @@ const IconTypes = {
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
+  bridge: BridgeIcon,
   btcCoin: BTCIcon,
   camera: CameraIcon,
   caret: CaretIcon,
+  caretDownIcon: CaretDownIcon,
   caretThin: CaretThinIcon,
   checkmark: CheckmarkIcon,
   checkmarkCircled: CheckmarkCircledIcon,

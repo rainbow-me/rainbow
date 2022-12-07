@@ -5,7 +5,7 @@ import * as Helpers from './helpers';
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
-describe('Discover Sheet Flow', () => {
+describe('Discover Screen Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -54,12 +54,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
     await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
-  });
-
-  it('Should show the camera if Discover is minimized', async () => {
-    await Helpers.swipe('discover-header', 'down');
-    await Helpers.checkIfVisible('scanner-header');
-    await Helpers.checkIfNotVisible('lists-section');
   });
 
   // TODO: doesn't work for unknown reason on Android.
@@ -158,6 +152,7 @@ describe('Discover Sheet Flow', () => {
   });
 
   it('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.swipeUntilVisible('dpi-button', 'discover-sheet', 'up');
     await Helpers.waitAndTap('dpi-button');
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
@@ -177,9 +172,10 @@ describe('Discover Sheet Flow', () => {
   it('Should cycle through token lists', async () => {
     android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
     await Helpers.swipeUntilVisible(
-      'lists-section-favorites',
+      'lists-section',
       'discover-sheet',
-      'up'
+      'up',
+      100
     );
     await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
@@ -188,8 +184,6 @@ describe('Discover Sheet Flow', () => {
     await Helpers.checkIfVisible('list-coin-row-Unisocks');
     await Helpers.waitAndTap('list-trending');
     await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.waitAndTap('list-favorites');
-    await Helpers.checkIfVisible('lists-section-favorites');
     await Helpers.waitAndTap('list-defi');
     await Helpers.checkIfVisible('lists-section-defi');
     await Helpers.waitAndTap('list-stablecoins');

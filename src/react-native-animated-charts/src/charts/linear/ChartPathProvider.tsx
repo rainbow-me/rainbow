@@ -15,7 +15,8 @@ import {
 } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
 
-export const { width: WIDTH } = Dimensions.get('window');
+const { width: WIDTH } = Dimensions.get('window');
+
 const HEIGHT = 146.5;
 
 interface ChartPathProviderProps {
@@ -23,6 +24,7 @@ interface ChartPathProviderProps {
   width?: number;
   height?: number;
   yRange?: [number, number];
+  children: React.ReactNode;
 }
 
 function getCurveType(curveType: keyof typeof CurveType) {
@@ -92,7 +94,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const smallestX = data.points[0];
   const greatestX = data.points[data.points.length - 1];
 
-  for (let point of data.points) {
+  for (const point of data.points) {
     points.push({
       originalX: point.x,
       originalY: point.y,

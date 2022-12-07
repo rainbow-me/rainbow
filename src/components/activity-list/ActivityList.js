@@ -15,6 +15,7 @@ import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { useAccountProfile } from '@/hooks';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -83,20 +84,20 @@ function ListFooterComponent({ label, onPress }) {
 }
 
 const ActivityList = ({
+  addCashAvailable,
   hasPendingTransaction,
   header,
-  nativeCurrency,
-  sections,
-  requests,
-  transactionsCount,
-  addCashAvailable,
   isEmpty,
   isLoading,
+  nativeCurrency,
   navigation,
   network,
-  recyclerListView,
   nextPage,
+  recyclerListView,
   remainingItemsLabel,
+  requests,
+  sections,
+  transactionsCount,
 }) => {
   const pendingTransactionsCount = useMemo(() => {
     let currentPendingTransactionsCount = 0;

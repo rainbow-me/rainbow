@@ -1,4 +1,4 @@
-import { Quote, QuoteError } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
 import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
@@ -40,7 +40,7 @@ interface SwapState {
   slippageInBips: number;
   source: Source;
   type: string;
-  tradeDetails: Quote | null;
+  tradeDetails: Quote | CrosschainQuote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: SwappableAsset | null;
 }
@@ -137,7 +137,7 @@ export const updateSwapInputCurrency = (
   } = getState().swap;
   if (
     type === ExchangeModalTypes.swap &&
-    newInputCurrency?.address === outputCurrency?.address &&
+    newInputCurrency?.uniqueId === outputCurrency?.uniqueId &&
     newInputCurrency
   ) {
     dispatch(flipSwapCurrencies(false));
@@ -175,7 +175,7 @@ export const updateSwapOutputCurrency = (
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { independentField, inputCurrency, type } = getState().swap;
   if (
-    newOutputCurrency?.address === inputCurrency?.address &&
+    newOutputCurrency?.uniqueId === inputCurrency?.uniqueId &&
     newOutputCurrency
   ) {
     dispatch(flipSwapCurrencies(true));

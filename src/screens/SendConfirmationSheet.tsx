@@ -722,7 +722,7 @@ export default function SendConfirmationSheet() {
                         <Box
                           background="accent"
                           borderRadius={20}
-                          shadow="12px heavy accent"
+                          shadow="12px heavy accent (Deprecated)"
                           style={{ height: 20, width: 20 }}
                         >
                           <ENSCircleIcon height={20} width={20} />

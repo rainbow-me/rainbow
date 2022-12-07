@@ -41,6 +41,8 @@ const AssetActionsEnum = {
   etherscan: 'etherscan',
   hide: 'hide',
   rainbowWeb: 'rainbowWeb',
+  opensea: 'opensea',
+  looksrare: 'looksrare',
 } as const;
 
 const getAssetActions = (network: Network) =>
@@ -88,6 +90,22 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'eye',
+      },
+    },
+    [AssetActionsEnum.opensea]: {
+      actionKey: AssetActionsEnum.opensea,
+      actionTitle: 'OpenSea',
+      icon: {
+        iconType: 'ASSET',
+        iconValue: 'opensea',
+      },
+    },
+    [AssetActionsEnum.looksrare]: {
+      actionKey: AssetActionsEnum.looksrare,
+      actionTitle: 'LooksRare',
+      icon: {
+        iconType: 'ASSET',
+        iconValue: 'looksrare',
       },
     },
   } as const);
@@ -258,22 +276,11 @@ const UniqueTokenExpandedStateHeader = ({
                   : lang.t('expanded_state.unique_expanded.hide'),
                 icon: {
                   ...AssetActions[AssetActionsEnum.hide].icon,
-                  iconValue: isHiddenAsset ? 'eye.slash' : 'eye',
+                  iconValue: isHiddenAsset ? 'eye' : 'eye.slash',
                 },
               },
             ]
           : []),
-        ...(isSupportedOnRainbowWeb
-          ? [
-              {
-                ...AssetActions[AssetActionsEnum.rainbowWeb],
-                discoverabilityTitle: 'rainbow.me',
-              },
-            ]
-          : []),
-        {
-          ...AssetActions[AssetActionsEnum.etherscan],
-        },
         ...(isPhotoDownloadAvailable
           ? [
               {
@@ -286,6 +293,27 @@ const UniqueTokenExpandedStateHeader = ({
           discoverabilityTitle:
             asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
+        ...(isSupportedOnRainbowWeb
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.rainbowWeb],
+                discoverabilityTitle: 'rainbow.me',
+              },
+            ]
+          : []),
+        {
+          ...AssetActions[AssetActionsEnum.etherscan],
+        },
+        ...(asset.network === Network.mainnet
+          ? [
+              {
+                menuTitle: lang.t(
+                  'expanded_state.unique_expanded.view_on_marketplace'
+                ),
+                menuItems: [AssetActions.opensea, AssetActions.looksrare],
+              },
+            ]
+          : []),
       ],
       menuTitle: '',
     };
@@ -333,6 +361,14 @@ const UniqueTokenExpandedStateHeader = ({
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
+      } else if (actionKey === AssetActionsEnum.opensea) {
+        Linking.openURL(
+          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
+        );
+      } else if (actionKey === AssetActionsEnum.looksrare) {
+        Linking.openURL(
+          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
+        );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
