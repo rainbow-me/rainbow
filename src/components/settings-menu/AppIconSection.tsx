@@ -5,6 +5,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
+import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
@@ -77,6 +78,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'GOLDDOGE',
     source: AppIconGoldDoge,
     unlock_key: GoldDogeIcon.unlockKey,
+  },
+  raindoge: {
+    accentColor: 'dogeGold',
+    key: RainDogeIcon.key,
+    name: 'RAINDOGE',
+    source: AppIconRainDoge,
+    unlock_key: RainDogeIcon.unlockKey,
   },
 };
 

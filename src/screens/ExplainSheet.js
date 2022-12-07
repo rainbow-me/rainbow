@@ -18,6 +18,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { AccentColorProvider, Box } from '@/design-system';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
+import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
@@ -113,6 +114,21 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const RainDogeAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.dogeGold}>
+      <Box
+        as={ImgixImage}
+        source={AppIconRainDoge}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -258,6 +274,8 @@ const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
 
 const GOLDDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.golddoge_text');
 
+const RAINDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.raindoge_text');
+
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
@@ -286,6 +304,18 @@ export const explainers = (params, colors) => ({
     logo: <GoldDogeAppIcon />,
     extraHeight: -65,
     text: GOLDDOGE_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.dogeGold,
+      bgColor: colors?.dogeGold06,
+    },
+  },
+  raindoge_app_icon: {
+    logo: <RainDogeAppIcon />,
+    extraHeight: -65,
+    text: RAINDOGE_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
     button: {
       onPress: navigateToAppIconSettings,
