@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import RNCloudFs from 'react-native-cloud-fs';
@@ -12,13 +11,16 @@ import {
 import { BackgroundProvider } from '@/design-system';
 import { cloudPlatform } from '@/utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
-import logger from '@/utils/logger';
 import { IS_ANDROID } from '@/env';
 import { AddFirstWalletStep } from '@/components/backup/AddFirstWalletStep';
+import { Logger } from '@/logger';
+import * as i18n from '@/languages';
+
+const TRANSLATIONS = i18n.l.add_first_wallet;
 
 export function RestoreSheet() {
   const { setParams } = useNavigation();
@@ -32,7 +34,10 @@ export function RestoreSheet() {
   } = useRoute();
 
   const onCloudRestore = useCallback(async () => {
-    analytics.track('Tapped "Restore from cloud"');
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: true,
+      type: 'seed',
+    });
     let proceed = false;
     if (IS_ANDROID) {
       const isAvailable = await isCloudBackupAvailable();
@@ -53,15 +58,14 @@ export function RestoreSheet() {
               setParams({ userData: data });
             }
           }
-
-          logger.log(`Downloaded ${cloudPlatform} backup info`);
+          Logger.log(`Downloaded ${cloudPlatform} backup info`);
         } catch (e) {
-          logger.log(e);
+          Logger.log(e);
         } finally {
           if (!proceed) {
             Alert.alert(
-              lang.t('back_up.restore_sheet.no_backups_found'),
-              lang.t('back_up.restore_sheet.we_couldnt_find_google_drive')
+              i18n.t(TRANSLATIONS.no_backups),
+              i18n.t(TRANSLATIONS.no_google_backups)
             );
             await RNCloudFs.logout();
           }

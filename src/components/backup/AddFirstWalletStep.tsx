@@ -5,7 +5,7 @@ import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { RainbowWallet } from '@/model/wallet';
 import WalletBackupTypes from '@/helpers/walletBackupStepTypes';
 import { useNavigation } from '@/navigation';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
@@ -21,8 +21,7 @@ type Props = {
 };
 
 export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
-  // const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const hardwareWalletsEnabled = true;
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const { goBack, navigate } = useNavigation();
 
   const walletsBackedUp = useMemo(() => {
@@ -38,7 +37,10 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
   }, [userData]);
 
   const onManualRestore = useCallback(() => {
-    analytics.track('Tapped "Restore with a secret phrase or private key"');
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: true,
+      type: 'seed',
+    });
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
@@ -46,14 +48,17 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
-    analytics.track('Tapped "Watch an Ethereum Address"');
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: true,
+      type: 'watch',
+    });
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
     });
   }, [goBack, navigate]);
 
-  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0 || true;
+  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0;
 
   let restoreFromCloudDescription;
   if (IS_IOS) {

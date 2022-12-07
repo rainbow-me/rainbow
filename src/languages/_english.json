@@ -53,7 +53,9 @@
         "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
         "description_ios_one_wallet": "You have 1 wallet backed up",
         "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
-        "title": "Restore from %{platform}"
+        "title": "Restore from %{platform}",
+        "no_backups": "No backups found",
+        "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
       },
       "hardware_wallet": {
         "description": "Add accounts from your Bluetooth hardware wallet",
@@ -168,10 +170,6 @@
         "error_while_restoring": "Error while restoring backup",
         "incorrect_password": "Incorrect Password",
         "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
-      },
-      "restore_sheet": {
-        "no_backups_found": "No Backups found",
-        "we_couldnt_find_google_drive": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
