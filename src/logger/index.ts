@@ -274,6 +274,11 @@ export const logger = new Logger();
  */
 if (env.IS_DEV) {
   logger.addTransport(consoleTransport);
+
+  /**
+   * Uncomment this to test Sentry in dev
+   */
+  // logger.addTransport(sentryTransport);
 } else if (env.IS_PROD) {
   logger.addTransport(sentryTransport);
 }
