@@ -316,7 +316,7 @@ export const explainers = (params, colors) => ({
     logo: <RainDogeAppIcon />,
     extraHeight: -65,
     text: RAINDOGE_APP_ICON_EXPLAINER,
-    title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
+    title: lang.t('explain.icon_unlock.title', { partner: 'The Doge NFT' }),
     button: {
       onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
