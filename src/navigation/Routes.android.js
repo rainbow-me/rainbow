@@ -14,7 +14,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
