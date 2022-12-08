@@ -13,7 +13,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
