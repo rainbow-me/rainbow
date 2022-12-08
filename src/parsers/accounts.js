@@ -3,7 +3,7 @@ import toUpper from 'lodash/toUpper';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -86,6 +86,11 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
         : address
       : name,
   };
+
+  if (parsedAsset.type === Network.bsc && parsedAsset.symbol === 'USDT') {
+    console.log('just parsed');
+    console.log(parsedAsset);
+  }
 
   return parsedAsset;
 };

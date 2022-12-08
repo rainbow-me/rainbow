@@ -317,6 +317,9 @@ export const convertRawAmountToBalance = (
   asset: { decimals: number },
   buffer?: number
 ) => {
+  if (asset?.symbol === 'USDT' && asset?.type === 'bsc') {
+    console.log('USDT ON BSC WITH DECIMALS === ', asset.decimals);
+  }
   const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 

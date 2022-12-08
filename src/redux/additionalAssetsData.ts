@@ -131,6 +131,9 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
   getState: AppGetState
 ) => {
   try {
+    if (tx.network === 'bsc') {
+      console.log('!!!!!!! updating bsc l2 asset balance !!!!!!!!!!');
+    }
     const { genericAssets } = getState().data;
     const { l2AssetsToWatch } = getState().additionalAssetsData;
     const network = tx.chainId
@@ -165,7 +168,11 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
         : null,
     ];
 
-    updatedAssets.forEach(asset => asset && dispatch(dataUpdateAsset(asset)));
+    console.log('L2 UPDATED ASSETS');
+
+    updatedAssets.forEach(asset => {
+      asset && dispatch(dataUpdateAsset(asset));
+    });
 
     const newL2AssetsToWatch = Object.entries(l2AssetsToWatch).reduce(
       (newData, [key, asset]) => {

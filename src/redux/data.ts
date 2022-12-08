@@ -1069,6 +1069,15 @@ export const addressAssetsReceived = (
     [id: string]: ParsedAddressAsset;
   };
 
+  if (assetsNetwork === Network.bsc) {
+    console.log('Parsed BSC assets');
+    Object.values(parsedAssets).forEach(asset => {
+      if (asset.symbol === 'USDT') {
+        console.log(asset);
+      }
+    });
+  }
+
   const liquidityTokens = Object.values(parsedAssets).filter(
     asset => asset?.type === AssetTypes.uniswapV2
   );
@@ -1097,6 +1106,14 @@ export const addressAssetsReceived = (
     parsedAssets,
     asset => !!Number(asset?.balance?.amount)
   );
+  if (assetsNetwork === Network.bsc) {
+    console.log('Parsed BSC assets 2');
+    Object.values(parsedAssets).forEach(asset => {
+      if (asset.symbol === 'USDT') {
+        console.log(asset);
+      }
+    });
+  }
 
   saveAccountAssetsData(parsedAssets, accountAddress, network);
   if (!isEmpty(parsedAssets)) {
