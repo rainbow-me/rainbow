@@ -143,7 +143,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Used to scan QR codes for connecting to other apps and open profile's for other addresses</string>
+	<string>Used to scan QR codes for connecting to other apps and opening profile's for other addresses</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions and access wallet keys</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
