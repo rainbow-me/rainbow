@@ -7,6 +7,9 @@ import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-d
 type Props = {
   txHash?: string;
   fee?: RainbowTransactionFee;
+  value?: string;
+  coinSymbol?: string;
+  coinAddress?: string;
 };
 
 export const TransactionDetailsContent: React.FC<Props> = ({ txHash, fee }) => {
