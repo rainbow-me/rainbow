@@ -13,6 +13,7 @@ import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
+import * as lang from '@/languages';
 
 const signClient = Promise.resolve(
   SignClient.init({
@@ -189,11 +190,13 @@ export function onSessionProposal(
             buttons: [
               {
                 style: 'cancel',
-                text: `Go back`,
+                text: lang.t(lang.l.walletconnect.go_back),
               },
             ],
-            message: `Failed to connect to ${dappName}`,
-            title: `Uh oh!`,
+            message: lang.t(lang.l.walletconnect.failed_to_connect_to, {
+              appName: dappName,
+            }),
+            title: lang.t(lang.l.walletconnect.connection_failed),
           });
 
           logger.error(new RainbowError(`WC v2: session approval failed`), {
