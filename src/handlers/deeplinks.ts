@@ -31,7 +31,10 @@ import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { logger } from '@/logger';
-import { pair as pairWalletConnect } from '@/utils/walletConnect';
+import {
+  pair as pairWalletConnect,
+  setHasPendingDeeplinkPendingRedirect,
+} from '@/utils/walletConnect';
 
 // initial research into refactoring deep links
 //                         eip      native deeplink  rainbow.me profiles
@@ -175,8 +178,8 @@ function handleWalletConnect(uri: any) {
     parsedUri.version === 2 &&
     getExperimetalFlag(WC_V2)
   ) {
+    setHasPendingDeeplinkPendingRedirect(true);
     pairWalletConnect({ uri });
-    // TODO remove pending redirect?
   } else {
     // This is when we get focused by WC due to a signing request
   }

@@ -3,6 +3,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import { NavigationContainerRef } from '@react-navigation/native';
+import Minimizer from 'react-native-minimizer';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -14,6 +15,26 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
+
+/**
+ * Indicates that the app should redirect or go back after the next action
+ * completes
+ *
+ * This is a hack to get around having to muddy the scopes of our event
+ * listeners. BE CAREFUL WITH THIS.
+ */
+let hasDeeplinkPendingRedirect = false;
+
+/**
+ * Set `hasDeeplinkPendingRedirect` to a boolean, indicating that the app
+ * should redirect or go back after the next action completes
+ *
+ * This is a hack to get around having to muddy the scopes of our event
+ * listeners. BE CAREFUL WITH THIS.
+ */
+export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
+  hasDeeplinkPendingRedirect = value;
+}
 
 const signClient = Promise.resolve(
   SignClient.init({
@@ -178,6 +199,11 @@ export function onSessionProposal(
             namespaces,
           });
           const session = await acknowledged();
+
+          if (hasDeeplinkPendingRedirect) {
+            setHasPendingDeeplinkPendingRedirect(false);
+            Minimizer.goBack();
+          }
 
           logger.debug(`WC v2: session created`, { session });
 
