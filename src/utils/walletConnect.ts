@@ -10,6 +10,9 @@ import { Navigation } from '@/navigation';
 import { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
+import { maybeSignUri } from '@/handlers/imgix';
+import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
+import { Alert } from '@/components/alerts';
 
 const signClient = Promise.resolve(
   SignClient.init({
@@ -110,60 +113,93 @@ export function onSessionProposal(
 
   const { chains } = requiredNamespaces.eip155;
   const chainId = parseInt(chains[0].split('eip155:')[1]);
+  const peerMeta = proposer.metadata;
+  const dappName = dappNameOverride(peerMeta.name) || 'Unknown Dapp';
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
     meta: {
       chainId,
-      dappName: proposer.metadata.name,
-      dappScheme: '', // TODO
-      dappUrl: proposer.metadata.url,
-      imageUrl: proposer.metadata.icons[0],
+      dappName,
+      dappScheme: peerMeta.url || 'Unknown URL', // TODO
+      dappUrl: peerMeta.url || 'Unknown URL',
+      imageUrl: maybeSignUri(
+        dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0]
+      ),
       peerId: proposer.publicKey,
     },
     timedOut: false,
-    callback: async (approved, chainId, accountAddress) => {
+    callback: async (approved, approvedChainId, accountAddress) => {
       const client = await signClient;
       const { id, proposer, requiredNamespaces } = proposal.params;
 
       if (approved) {
         logger.debug(`WC v2: session approved`, {
           approved,
-          chainId,
+          approvedChainId,
           accountAddress,
         });
 
-        const namespaces = Object.keys(requiredNamespaces).reduce<
-          Parameters<typeof client.approve>[0]['namespaces']
-        >((ns, key) => {
-          ns[key] = {
-            accounts: [`${key}:${chainId}:${accountAddress}`],
-            methods: requiredNamespaces.eip155.methods,
-            events: requiredNamespaces.eip155.events,
+        const namespaces: Parameters<
+          typeof client.approve
+        >[0]['namespaces'] = {};
+
+        for (const [key, value] of Object.entries(requiredNamespaces)) {
+          namespaces[key] = {
+            accounts: [],
+            methods: value.methods,
+            events: value.events,
           };
-          return ns;
-        }, {});
 
-        /**
-         * This is equivalent handling of setPendingRequest and
-         * walletConnectApproveSession, since setPendingRequest is only used
-         * within the /redux/walletconnect handlers
-         *
-         * WC v2 stores existing _pairings_ itself, so we don't need to persist
-         * ourselves
-         */
-        const { acknowledged } = await client.approve({
-          id,
-          namespaces,
-        });
-        const session = await acknowledged();
+          // TODO do we support connecting to multiple chains at the same time?
+          // The sheet def doesn't, only shows one
+          for (const chain of value.chains) {
+            const chainId = parseInt(chain.split(`${key}:`)[1]);
+            namespaces[key].accounts.push(
+              `${key}:${chainId}:${accountAddress}`
+            );
+          }
+        }
 
-        logger.debug(`WC v2: session created`, { session });
+        logger.debug(`WC v2: session approved namespaces`, { namespaces });
 
-        analytics.track('Approved new WalletConnect session', {
-          dappName: proposer.metadata.name,
-          dappUrl: proposer.metadata.url,
-        });
+        try {
+          /**
+           * This is equivalent handling of setPendingRequest and
+           * walletConnectApproveSession, since setPendingRequest is only used
+           * within the /redux/walletconnect handlers
+           *
+           * WC v2 stores existing _pairings_ itself, so we don't need to persist
+           * ourselves
+           */
+          const { acknowledged } = await client.approve({
+            id,
+            namespaces,
+          });
+          const session = await acknowledged();
+
+          logger.debug(`WC v2: session created`, { session });
+
+          analytics.track('Approved new WalletConnect session', {
+            dappName: proposer.metadata.name,
+            dappUrl: proposer.metadata.url,
+          });
+        } catch (e) {
+          Alert({
+            buttons: [
+              {
+                style: 'cancel',
+                text: `Go back`,
+              },
+            ],
+            message: `Failed to connect to ${dappName}`,
+            title: `Uh oh!`,
+          });
+
+          logger.error(new RainbowError(`WC v2: session approval failed`), {
+            error: (e as Error).message,
+          });
+        }
       } else if (!approved) {
         logger.debug(`WC v2: session approval denied`, {
           approved,
