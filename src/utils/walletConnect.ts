@@ -1,5 +1,5 @@
 import SignClient from '@walletconnect/sign-client';
-import { SignClientTypes } from '@walletconnect/types';
+import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import { NavigationContainerRef } from '@react-navigation/native';
@@ -54,7 +54,14 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
   hasDeeplinkPendingRedirect = value;
 }
 
-const signClient = Promise.resolve(
+/**
+ * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
+ */
+export let syncSignClient:
+  | Awaited<ReturnType<typeof SignClient.init>>
+  | undefined;
+
+export const signClient = Promise.resolve(
   SignClient.init({
     projectId: WC_PROJECT_ID,
     // relayUrl: "<YOUR RELAY URL>",
@@ -167,6 +174,8 @@ export async function pair({ uri }: { uri: string }) {
 export async function initListeners() {
   const client = await signClient;
 
+  syncSignClient = client;
+
   logger.debug(`WC v2: signClient initialized, initListeners`);
 
   client.on('session_proposal', onSessionProposal);
@@ -176,7 +185,7 @@ export async function initListeners() {
 export function onSessionProposal(
   proposal: SignClientTypes.EventArguments['session_proposal']
 ) {
-  logger.debug(`WC v2: session_proposal`, { event: proposal });
+  logger.debug(`WC v2: session_proposal`);
 
   const receivedTimestamp = Date.now();
   const {
@@ -196,13 +205,16 @@ export function onSessionProposal(
 
   const { chains } = requiredNamespaces.eip155;
   const chainId = parseInt(chains[0].split('eip155:')[1]);
+  const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
   const peerMeta = proposer.metadata;
-  const dappName = dappNameOverride(peerMeta.name) || 'Unknown Dapp';
+  const dappName =
+    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
     meta: {
       chainId,
+      chainIds,
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || 'Unknown URL',
@@ -210,6 +222,7 @@ export function onSessionProposal(
         dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0]
       ),
       peerId: proposer.publicKey,
+      isWalletConnectV2: true,
     },
     timedOut: false,
     callback: async (approved, approvedChainId, accountAddress) => {
@@ -244,7 +257,7 @@ export function onSessionProposal(
           }
         }
 
-        logger.debug(`WC v2: session approved namespaces`, { namespaces });
+        logger.debug(`WC v2: session approved namespaces`);
 
         try {
           /**
@@ -266,7 +279,7 @@ export function onSessionProposal(
             Minimizer.goBack();
           }
 
-          logger.debug(`WC v2: session created`, { session });
+          logger.debug(`WC v2: session created`);
 
           analytics.track('Approved new WalletConnect session', {
             dappName: proposer.metadata.name,
@@ -295,11 +308,7 @@ export function onSessionProposal(
       } else if (!approved) {
         setHasPendingDeeplinkPendingRedirect(false);
 
-        logger.debug(`WC v2: session approval denied`, {
-          approved,
-          chainId,
-          accountAddress,
-        });
+        logger.debug(`WC v2: session approval denied`);
 
         await client.reject({ id, reason: getSdkError('USER_REJECTED') });
 
@@ -327,7 +336,7 @@ export async function onSessionRequest(
 ) {
   const client = await signClient;
 
-  logger.debug(`WC v2: session_request`, { event });
+  logger.debug(`WC v2: session_request`);
 
   const { id, topic } = event;
   const { method, params } = event.params.request;
@@ -413,7 +422,7 @@ export async function onSessionRequest(
       },
     };
 
-    logger.debug(`request`, { request });
+    logger.debug(`WC v2: handling request`);
 
     const { requests: pendingRequests } = store.getState().requests;
 
@@ -461,7 +470,6 @@ export async function handleSessionRequestResponse(
   },
   { result, error }: { result: string; error: any }
 ) {
-  logger.debug(`WC v2: handleSessionRequestResponse`, { result, error });
   logger.info(`WC v2: handleSessionRequestResponse`, {
     success: Boolean(result),
   });
@@ -474,16 +482,62 @@ export async function handleSessionRequestResponse(
       topic,
       response: formatJsonRpcResult(id, result),
     };
-    logger.debug(`WC v2: handleSessionRequestResponse success`, { payload });
+    logger.debug(`WC v2: handleSessionRequestResponse success`);
     await client.respond(payload);
   } else {
     const payload = {
       topic,
       response: formatJsonRpcError(id, error),
     };
-    logger.debug(`WC v2: handleSessionRequestResponse reject`, { payload });
+    logger.debug(`WC v2: handleSessionRequestResponse reject`);
     await client.respond(payload);
   }
 
   store.dispatch(removeRequest(sessionRequestEvent.id));
+}
+
+export async function getAllActiveSessions() {
+  const client = await signClient;
+  return client?.session?.values || [];
+}
+
+export function getAllActiveSessionsSync() {
+  return syncSignClient?.session?.values || [];
+}
+
+export async function updateSession(
+  session: SessionTypes.Struct,
+  { address }: { address?: string }
+) {
+  const client = await signClient;
+
+  const namespaces: Parameters<typeof client.update>[0]['namespaces'] = {};
+
+  for (const [key, value] of Object.entries(session.requiredNamespaces)) {
+    namespaces[key] = {
+      accounts: [],
+      methods: value.methods,
+      events: value.events,
+    };
+
+    // TODO do we support connecting to multiple chains at the same time?
+    for (const chain of value.chains) {
+      const chainId = parseInt(chain.split(`${key}:`)[1]);
+      namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
+    }
+  }
+
+  await client.update({
+    topic: session.topic,
+    namespaces,
+  });
+}
+
+export async function disconnectSession(session: SessionTypes.Struct) {
+  const client = await signClient;
+
+  await client.disconnect({
+    topic: session.topic,
+    reason: getSdkError('USER_DISCONNECTED'),
+  });
 }

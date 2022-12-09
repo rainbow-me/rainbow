@@ -37,6 +37,7 @@ import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { getAllActiveSessionsSync } from '@/utils/walletConnect';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -267,6 +268,9 @@ function MoreButton() {
   );
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
+  const [activeWCV2Sessions, setActiveWCV2Sessions] = React.useState(
+    getAllActiveSessionsSync()
+  );
 
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {
@@ -295,31 +299,28 @@ function MoreButton() {
 
   const { mostRecentWalletConnectors } = useWalletConnectConnections();
 
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: [
-        {
-          actionKey: 'copy',
-          actionTitle: lang.t('wallet.copy_address'),
-          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
-        },
-        {
-          actionKey: 'qrCode',
-          actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
-        mostRecentWalletConnectors.length > 0
-          ? {
-              actionKey: 'connectedApps',
-              actionTitle: lang.t('wallet.connected_apps'),
-              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-            }
-          : null,
-      ].filter(Boolean),
-      ...(ios ? { menuTitle: '' } : {}),
-    }),
-    [mostRecentWalletConnectors.length]
-  );
+  const menuConfig = {
+    menuItems: [
+      {
+        actionKey: 'copy',
+        actionTitle: lang.t('wallet.copy_address'),
+        icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
+      },
+      {
+        actionKey: 'qrCode',
+        actionTitle: lang.t('button.my_qr_code'),
+        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+      },
+      mostRecentWalletConnectors.length > 0 || activeWCV2Sessions.length > 0
+        ? {
+            actionKey: 'connectedApps',
+            actionTitle: lang.t('wallet.connected_apps'),
+            icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+          }
+        : null,
+    ].filter(Boolean),
+    ...(ios ? { menuTitle: '' } : {}),
+  };
 
   const handlePressMenuItem = React.useCallback(
     e => {
@@ -336,8 +337,14 @@ function MoreButton() {
     [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
   );
 
+  const onMenuWillShow = React.useCallback(() => {
+    // update state to potentially hide the menu button
+    setActiveWCV2Sessions(getAllActiveSessionsSync());
+  }, [setActiveWCV2Sessions]);
+
   return (
     <ContextMenuButton
+      onMenuWillShow={onMenuWillShow}
       menuConfig={menuConfig}
       onPressMenuItem={handlePressMenuItem}
     >

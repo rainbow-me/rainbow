@@ -1,15 +1,19 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import Divider from '../components/Divider';
 import { Row } from '../components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
-} from '../components/walletconnect-list/WalletConnectListItem';
+} from '@/components/walletconnect-list/WalletConnectListItem';
+import { WalletConnectV2ListItem } from '@/components/walletconnect-list/WalletConnectV2ListItem';
 import { useWalletConnectConnections } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
+import { signClient, getAllActiveSessionsSync } from '@/utils/walletConnect';
+import { logger } from '@/logger';
 
 const MAX_VISIBLE_DAPPS = 7;
 
@@ -28,12 +32,43 @@ export default function ConnectedDappsSheet() {
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const [loadSessions, setLoadSessions] = React.useState(true);
+  const [sessions, setSessions] = React.useState(
+    getAllActiveSessionsSync() || []
+  );
+
+  const numOfRows = mostRecentWalletConnectors.length + sessions.length;
+
+  React.useEffect(() => {
+    function load() {
+      const sessions = getAllActiveSessionsSync();
+      setSessions(sessions);
+      setLoadSessions(false);
+    }
+
+    if (loadSessions) load();
+  }, [loadSessions, setLoadSessions, setSessions]);
+
+  React.useEffect(() => {
+    async function listen() {
+      const client = await signClient;
+
+      // client handles disconnected sessions
+      client.on('session_delete', () => {
+        const sessions = client.session.values;
+        setSessions(sessions);
+        logger.debug(`ConnectedDappsSheet: handling session_delete`);
+      });
+    }
+
+    listen();
+  }, []);
 
   useEffect(() => {
-    if (mostRecentWalletConnectors.length === 0) {
+    if (numOfRows === 0) {
       goBack();
     }
-  }, [goBack, mostRecentWalletConnectors.length]);
+  }, [goBack, numOfRows]);
 
   return (
     <Sheet
@@ -48,8 +83,15 @@ export default function ConnectedDappsSheet() {
         {lang.t('walletconnect.connected_apps')}
       </SheetTitleWithPadding>
       <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
-      <ScrollableItems length={mostRecentWalletConnectors.length}>
+      <ScrollableItems length={numOfRows}>
         <Row height={4} />
+        {sessions.map(session => (
+          <WalletConnectV2ListItem
+            key={session.topic}
+            session={session}
+            reload={() => setLoadSessions(true)}
+          />
+        ))}
         {mostRecentWalletConnectors.map(
           ({ account, chainId, dappIcon, dappName, dappUrl, peerId }) => (
             <WalletConnectListItem

@@ -1755,7 +1755,9 @@
       "unknown_application": "Unknown Application :)",
       "connection_failed": "Connection failed :)",
       "failed_to_connect_to": "Failed to connect to %{appName} :)",
-      "go_back": "Go back :)"
+      "go_back": "Go back :)",
+      "requesting_network": "Requesting %{num} network :)",
+      "requesting_networks": "Requesting %{num} networks :)"
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",
