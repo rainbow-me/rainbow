@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Divider from '@/components/Divider';
-import { Row } from '@/components/layout';
-import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
+import Divider from '../components/Divider';
+import { Row } from '../components/layout';
+import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from '@/components/walletconnect-list/WalletConnectListItem';
