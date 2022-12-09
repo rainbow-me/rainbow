@@ -33,8 +33,13 @@ let hasDeeplinkPendingRedirect = false;
  * listeners. BE CAREFUL WITH THIS.
  */
 export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
+  logger.info(`setHasPendingDeeplinkPendingRedirect`, { value });
   hasDeeplinkPendingRedirect = value;
 }
+
+setInterval(() => {
+  logger.debug(`hasDeeplinkPendingRedirect`, { hasDeeplinkPendingRedirect });
+}, 5000);
 
 const signClient = Promise.resolve(
   SignClient.init({
@@ -212,6 +217,8 @@ export function onSessionProposal(
             dappUrl: proposer.metadata.url,
           });
         } catch (e) {
+          setHasPendingDeeplinkPendingRedirect(false);
+
           Alert({
             buttons: [
               {
@@ -230,6 +237,8 @@ export function onSessionProposal(
           });
         }
       } else if (!approved) {
+        setHasPendingDeeplinkPendingRedirect(false);
+
         logger.debug(`WC v2: session approval denied`, {
           approved,
           chainId,
