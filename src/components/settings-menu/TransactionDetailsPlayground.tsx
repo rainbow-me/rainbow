@@ -39,7 +39,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Sent',
     to: '0xe0e0f2277752af0f797855be0c24d13c15e5a261',
     type: TransactionType.send,
-    fee: { price: 1186.44, value: 2422871970692212 },
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Received': {
     address: '0x23b608675a2b2fb1890d3abbd85c5775c51691d5',
@@ -65,6 +74,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Received',
     to: '0x5e087b61aad29559e31565079fcdabe384b44614',
     type: TransactionType.receive,
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Failed': {
     address: 'eth',
@@ -90,7 +109,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Failed',
     to: '0xc30141b657f4216252dc59af2e7cdb9d8792e1b0',
     type: TransactionType.trade,
-    fee: { price: 1258.2, value: 17750462695427 },
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Swapped': {
     address: 'eth',
@@ -116,7 +144,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Swapped',
     to: '0xc30141b657f4216252dc59af2e7cdb9d8792e1b0',
     type: TransactionType.trade,
-    fee: { price: 1258.2, value: 17750462695427280 },
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Contract Interaction': {
     address: 'eth',
@@ -142,7 +179,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Contract Interaction',
     to: '0x084b1c3c81545d370f3634392de611caabff8148',
     type: TransactionType.contract_interaction,
-    fee: { price: 1258.2, value: 17750462695427280 },
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Savings': {
     address: '0x5e087b61aad29559e31565079fcdabe384b44614',
@@ -169,7 +215,16 @@ const transactions: Record<string, RainbowTransaction> = {
     title: 'Savings',
     to: '0x2e67869829c734ac13723a138a952f7a8b56e774',
     type: TransactionType.withdraw,
-    fee: { price: 1258.2, value: 17750462695427280 },
+    fee: {
+      value: {
+        amount: '0.001919842221937984',
+        display: '0.00192 ETH',
+      },
+      native: {
+        amount: '2.25030466360016918592',
+        display: '$2.25',
+      },
+    },
   },
   'Pending': {
     address: 'eth',

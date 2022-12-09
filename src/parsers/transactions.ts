@@ -13,6 +13,7 @@ import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
   EthereumAddress,
+  NativeCurrencyKey,
   ProtocolType,
   ProtocolTypeNames,
   RainbowTransaction,
@@ -41,6 +42,7 @@ import {
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
 } from '@rainbow-me/swaps';
+import { RainbowTransactionFee } from '@/entities/transactions/transaction';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -74,6 +76,7 @@ export const parseTransactions = async (
   network: Network,
   appended = false
 ) => {
+  console.log(JSON.stringify(transactionData));
   const purchaseTransactionHashes = purchaseTransactions.map(txn =>
     ethereumUtils.getHash(txn)
   );
@@ -102,8 +105,13 @@ export const parseTransactions = async (
     : dataFromLastTxHash(transactionData, existingWithoutL2);
 
   const newTransactionPromises = data.map(txn =>
-    // @ts-expect-error ts-migrate(100002) FIXME
-    parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
+    parseTransaction(
+      txn,
+      nativeCurrency,
+      // @ts-expect-error ts-migrate(100002) FIXME
+      purchaseTransactionHashes,
+      network
+    )
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);
@@ -322,6 +330,10 @@ const parseTransactionWithEmptyChanges = async (
     priceUnit,
     nativeCurrency
   );
+  const fee =
+    network === Network.mainnet
+      ? getTransactionFee(txn, nativeCurrency)
+      : undefined;
   return [
     {
       address: ETH_ADDRESS,
@@ -343,7 +355,7 @@ const parseTransactionWithEmptyChanges = async (
       title: `Contract Interaction`,
       to: txn.address_to,
       type: TransactionType.contract_interaction,
-      fee: txn.fee,
+      fee,
     },
   ];
 };
@@ -365,6 +377,10 @@ const parseTransaction = async (
   txn = overrideSwap(txn);
 
   if (txn.changes.length) {
+    const fee =
+      network === Network.mainnet
+        ? getTransactionFee(txn, nativeCurrency)
+        : undefined;
     const internalTransactions = txn.changes.map(
       (internalTxn, index): RainbowTransaction => {
         const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
@@ -409,6 +425,7 @@ const parseTransaction = async (
           status,
           type: txn.type,
         });
+
         return {
           address:
             updatedAsset.address.toLowerCase() === ETH_ADDRESS
@@ -432,7 +449,7 @@ const parseTransaction = async (
           title,
           to: internalTxn.address_to ?? txn.address_to,
           type: txn.type,
-          fee: txn?.fee,
+          fee,
         };
       }
     );
@@ -444,6 +461,37 @@ const parseTransaction = async (
     network
   );
   return parsedTransaction;
+};
+
+/**
+ * Helper for retrieving tx fee snet by zerion, works only for mainnet only
+ */
+const getTransactionFee = (
+  txn: ZerionTransaction,
+  nativeCurrency: NativeCurrencyKey
+): RainbowTransactionFee | undefined => {
+  if (txn.fee === null || txn.fee === undefined) {
+    return undefined;
+  }
+
+  const zerionFee = txn.fee;
+  return {
+    // TODO: asset hardcoded for mainnet only need to add support for L2 networks
+    value: convertRawAmountToBalance(zerionFee.value, {
+      decimals: 18,
+      symbol: 'ETH',
+    }),
+    native:
+      nativeCurrency !== 'ETH' && zerionFee?.price > 0
+        ? convertRawAmountToNativeDisplay(
+            zerionFee.value,
+            // TODO: asset decimals hardcoded for mainnet only need to add support for L2 networks
+            18,
+            zerionFee.price,
+            nativeCurrency
+          )
+        : undefined,
+  };
 };
 
 export const getTitle = ({

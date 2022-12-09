@@ -29,15 +29,9 @@ export const TransactionDetails: React.FC = () => {
   const { colors } = useTheme();
   const { transaction } = route.params as Params;
   const { height } = useDimensions();
-  // TODO: unmock before release
-  // const { accountAddress } = useAccountProfile();
-  const accountAddress = '0x5e087b61aad29559e31565079fcdabe384b44614';
 
   const hash = ethereumUtils.getHash(transaction);
-  const isTxSentFromCurrentAddress = accountAddress === transaction.from;
-  const weiFee: number | undefined = transaction?.fee?.value;
-
-  console.log(transaction);
+  const fee = transaction.fee;
 
   return (
     <Container
@@ -50,12 +44,7 @@ export const TransactionDetails: React.FC = () => {
         backgroundColor={colors.surfacePrimary}
         contentHeight={TRANSACTION_DETAILS_SHEET_HEIGHT}
       >
-        <TransactionDetailsContent
-          accountAddress={accountAddress}
-          fromCurrentAddress={isTxSentFromCurrentAddress}
-          txHash={hash}
-          weiFee={weiFee}
-        />
+        <TransactionDetailsContent txHash={hash} fee={fee} />
       </SlackSheet>
     </Container>
   );
