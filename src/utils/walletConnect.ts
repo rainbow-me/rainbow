@@ -37,10 +37,6 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
   hasDeeplinkPendingRedirect = value;
 }
 
-setInterval(() => {
-  logger.debug(`hasDeeplinkPendingRedirect`, { hasDeeplinkPendingRedirect });
-}, 5000);
-
 const signClient = Promise.resolve(
   SignClient.init({
     projectId: WC_PROJECT_ID,
