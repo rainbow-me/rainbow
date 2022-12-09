@@ -43,7 +43,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
-  const [seedPhrase, setSeedPhrase] = useState('');
+  const [input, setInput] = useState('');
   const [color, setColor] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
@@ -68,15 +68,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isWatchable = useMemo(() => {
-    return (
-      seedPhrase !== accountAddress &&
-      checkIsValidAddressOrDomainFormat(seedPhrase)
-    );
-  }, [accountAddress, seedPhrase]);
+    return input !== accountAddress && checkIsValidAddressOrDomainFormat(input);
+  }, [accountAddress, input]);
 
   const isImportable = useMemo(() => {
-    return seedPhrase !== accountAddress && isValidSeed(seedPhrase);
-  }, [accountAddress, seedPhrase]);
+    return input !== accountAddress && isValidSeed(input);
+  }, [accountAddress, input]);
 
   const isInputValid = isWatchable || isImportable;
 
@@ -88,10 +85,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     [setParams]
   );
 
-  const handleSetSeedPhrase = useCallback(
+  const handleSetInput = useCallback(
     text => {
       if (isImporting) return null;
-      return setSeedPhrase(text);
+      return setInput(text);
     },
     [isImporting]
   );
@@ -136,6 +133,78 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     },
     [handleSetImporting, navigate, showImportModal]
   );
+
+  const handlePressWatchButton = useCallback(async () => {
+    if (!isInputValid) return null;
+    if (isImportable) {
+      Alert.alert('importable');
+      return;
+    }
+    if (isENSAddressFormat(input)) {
+      try {
+        const [address, avatar] = await Promise.all([
+          web3Provider.resolveName(input),
+          fetchENSAvatar(input, { swallowError: true }),
+        ]);
+        if (!address) {
+          Alert.alert(lang.t('wallet.invalid_ens_name'));
+          return;
+        }
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
+        setResolvedAddress(address);
+        name = forceEmoji ? `${forceEmoji} ${input}` : input;
+        avatarUrl = avatarUrl || avatar?.imageUrl;
+        startImportProfile(name, guardedForceColor, address, avatarUrl);
+        analytics.track('Show wallet profile modal for ENS address', {
+          address,
+          input,
+        });
+      } catch (e) {
+        Alert.alert(lang.t('wallet.sorry_cannot_add_ens'));
+        return;
+      }
+      // Look up ENS for 0x address
+    } else if (isUnstoppableAddressFormat(input)) {
+      try {
+        const address = await resolveUnstoppableDomain(input);
+        if (!address) {
+          Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
+          return;
+        }
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
+        setResolvedAddress(address);
+        name = forceEmoji ? `${forceEmoji} ${input}` : input;
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
+        startImportProfile(name, guardedForceColor, address);
+        analytics.track('Show wallet profile modal for Unstoppable address', {
+          address,
+          input,
+        });
+      } catch (e) {
+        Alert.alert(lang.t('wallet.sorry_cannot_add_unstoppable'));
+        return;
+      }
+    } else if (isValidAddress(input)) {
+      try {
+        const ens = await fetchReverseRecord(input);
+        if (ens && ens !== input) {
+          name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+          if (!avatarUrl && profilesEnabled) {
+            const avatar = await fetchENSAvatar(name, { swallowError: true });
+            avatarUrl = avatar?.imageUrl;
+          }
+        }
+        analytics.track('Show wallet profile modal for read only wallet', {
+          ens,
+          input,
+        });
+      } catch (e) {
+        logger.log(`Error resolving ENS during wallet import`, e);
+      }
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
+      startImportProfile(name, guardedForceColor, input);
+    }
+  }, []);
 
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {

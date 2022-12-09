@@ -199,6 +199,18 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
+export const importSeedPhraseFlowNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const learnWebViewScreenConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
