@@ -173,7 +173,6 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    {/* @ts-expect-error – JS component */}
                     <CoinIcon
                       address={assetWithPrice.address}
                       size={20}
