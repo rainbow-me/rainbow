@@ -62,6 +62,7 @@ import {
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  importSeedPhraseFlowNavigatorConfig,
 } from './config';
 import {
   emojiPreset,
@@ -430,6 +431,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ImportSeedPhraseFlowNavigator}
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+        {...importSeedPhraseFlowNavigatorConfig}
       />
       <NativeStack.Screen
         component={AddCashFlowNavigator}
