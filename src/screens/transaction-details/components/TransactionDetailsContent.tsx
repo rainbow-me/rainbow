@@ -5,14 +5,22 @@ import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-deta
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 
 type Props = {
-  txHash?: string;
-  fee?: RainbowTransactionFee;
-  value?: string;
-  coinSymbol?: string;
   coinAddress?: string;
+  coinSymbol?: string;
+  fee?: RainbowTransactionFee;
+  nativeCurrencyValue?: string;
+  txHash?: string;
+  value?: string;
 };
 
-export const TransactionDetailsContent: React.FC<Props> = ({ txHash, fee }) => {
+export const TransactionDetailsContent: React.FC<Props> = ({
+  coinAddress,
+  coinSymbol,
+  fee,
+  nativeCurrencyValue,
+  txHash,
+  value,
+}) => {
   return (
     <Box
       background="surfacePrimary"
@@ -20,7 +28,13 @@ export const TransactionDetailsContent: React.FC<Props> = ({ txHash, fee }) => {
       paddingHorizontal="20px"
       paddingBottom="20px"
     >
-      <TransactionDetailsValueAndFeeSection fee={fee} />
+      <TransactionDetailsValueAndFeeSection
+        coinAddress={coinAddress}
+        coinSymbol={coinSymbol}
+        fee={fee}
+        nativeCurrencyValue={nativeCurrencyValue}
+        value={value}
+      />
       <TransactionDetailsHashAndActionsSection hash={txHash} />
     </Box>
   );

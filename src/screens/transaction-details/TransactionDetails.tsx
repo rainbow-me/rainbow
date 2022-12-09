@@ -26,6 +26,7 @@ export const TransactionDetails: React.FC = () => {
   const hash = ethereumUtils.getHash(transaction);
   const fee = transaction.fee;
   const value = transaction.balance?.display;
+  const nativeCurrencyValue = transaction.native?.display;
   const coinSymbol =
     type === TransactionType.contract_interaction
       ? 'eth'
@@ -60,6 +61,7 @@ export const TransactionDetails: React.FC = () => {
               txHash={hash}
               fee={fee}
               value={value}
+              nativeCurrencyValue={nativeCurrencyValue}
               coinSymbol={coinSymbol}
               coinAddress={coinAddress}
             />
