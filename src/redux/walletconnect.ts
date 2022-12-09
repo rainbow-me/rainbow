@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
@@ -30,8 +29,8 @@ import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import logger from '@/utils/logger';
 import { getFCMToken } from '@/notifications/tokens';
+import { logger, RainbowError } from '@/logger';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -198,9 +197,11 @@ const getNativeOptions = async () => {
   try {
     token = await getFCMToken();
   } catch (error) {
-    logger.log(
-      'Error getting FCM token, ignoring token for WC connection',
-      error
+    logger.error(
+      new RainbowError(
+        'WC: Error getting FCM token, ignoring token for WC connection'
+      ),
+      { error }
     );
   }
 
@@ -387,8 +388,10 @@ export const walletConnectOnSessionRequest = (
             error,
             payload,
           });
-          logger.log('Error on wc session_request', payload);
-          captureException(error);
+          logger.error(new RainbowError('WC: Error on wc session_request'), {
+            error,
+            payload,
+          });
           throw error;
         }
         const { peerId, peerMeta, chainId } = payload.params[0];
@@ -466,20 +469,24 @@ export const walletConnectOnSessionRequest = (
       }, 2000);
     } catch (error: any) {
       clearTimeout(timeout!);
-      logger.log('Exception during wc session_request', error);
+      logger.error(
+        new RainbowError('WC: Exception during wc session_request'),
+        { error }
+      );
       analytics.track('Exception on wc session_request', {
         error,
       });
-      captureException(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error: any) {
     clearTimeout(timeout!);
-    logger.log('FCM exception during wc session_request', error);
+    logger.error(
+      new RainbowError('WC: FCM exception during wc session_request'),
+      { error }
+    );
     analytics.track('FCM exception on wc session_request', {
       error,
     });
-    captureException(error);
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
 };
@@ -495,15 +502,18 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
   getState: AppGetState
 ) => {
   walletConnector.on('call_request', async (error, payload) => {
-    logger.log('WC Request!', error, payload);
+    logger.debug(
+      'WC: Request!',
+      { error, payload },
+      logger.DebugContext.walletconnect
+    );
     if (error) {
       analytics.track('Error on wc call_request', {
         // @ts-ignore
         error,
         payload,
       });
-      logger.log('Error on wc call_request');
-      captureException(error);
+      logger.error(new RainbowError('WC: Error on wc call_request'));
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
@@ -539,7 +549,11 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
                 result: null,
               });
               const { accountAddress } = getState().settings;
-              logger.log('Updating session for chainID', numericChainId);
+              logger.debug(
+                'WC: Updating session for chainID',
+                { numericChainId },
+                logger.DebugContext.walletconnect
+              );
               await walletConnector.updateSession({
                 accounts: [accountAddress],
                 // @ts-expect-error "numericChainId" is a string, not a number.
@@ -579,7 +593,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
           type: WalletConnectApprovalSheetType.switch_chain,
         });
       } else {
-        logger.log('NOT SUPPORTED CHAIN');
+        logger.info('WC: NOT SUPPORTED CHAIN');
         walletConnector.rejectRequest({
           error: { message: 'Chain currently not supported' },
           id: requestId,
@@ -691,8 +705,9 @@ export const walletConnectLoadState = () => async (
       // @ts-ignore
       error,
     });
-    logger.log('Error on wc walletConnectLoadState', error);
-    captureException(error);
+    logger.error(new RainbowError('WC: Error on wc walletConnectLoadState'), {
+      error,
+    });
     newWalletConnectors = {};
   }
   if (!isEmpty(newWalletConnectors)) {
