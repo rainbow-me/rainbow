@@ -108,10 +108,8 @@ const BottomSheetRoute = ({
   //#endregion
 
   //#region callbacks
-  const handleOnChange = useCallback((index: number) => {
-    if (index === -1) {
+  const handleOnClose = useCallback(() => {
       onDismiss(routeKey, removingRef.current);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //#endregion
@@ -158,7 +156,7 @@ const BottomSheetRoute = ({
         enablePanDownToClose
         handleComponent={null}
         index={index}
-        onChange={handleOnChange}
+        onClose={handleOnClose}
         ref={ref}
         simultaneousHandlers={[]}
         snapPoints={snapPoints}
