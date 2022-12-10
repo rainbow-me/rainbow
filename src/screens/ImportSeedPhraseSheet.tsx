@@ -4,6 +4,7 @@ import {
   AccentColorProvider,
   BackgroundProvider,
   Box,
+  ColorModeProvider,
   DebugLayout,
   globalColors,
   Inset,
@@ -13,13 +14,22 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
+import {
+  useAccountSettings,
+  useClipboard,
+  useDimensions,
+  useImportingWallet,
+  useKeyboardHeight,
+} from '@/hooks';
 import { colors } from '@/styles';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
 import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/core';
+import { isValidWallet } from '@/helpers/validators';
+import Clipboard from '@react-native-community/clipboard';
+import { delay } from '@/helpers/utilities';
 
 type RouteParams = {
   ImportSeedPhraseSheetParams: {
@@ -44,6 +54,28 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     seedPhrase,
   } = useImportingWallet();
 
+  const [copiedText, setCopiedText] = useState('');
+
+  // const { clipboard } = useClipboard();
+  const { accountAddress } = useAccountSettings();
+
+  const isClipboardValidSecret = useMemo(
+    () => copiedText !== accountAddress && isValidWallet(copiedText),
+    [accountAddress, copiedText]
+  );
+
+  useEffect(() => {
+    const refreshClipboard = async () => {
+      while (!seedPhrase) {
+        // eslint-disable-next-line no-await-in-loop
+        const text = await Clipboard.getString();
+        setCopiedText(text);
+        delay(1000);
+      }
+    };
+    refreshClipboard();
+  }, [seedPhrase]);
+
   const { height: deviceHeight } = useDimensions();
 
   const keyboardHeight = useKeyboardHeight();
@@ -55,9 +87,19 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     weight: 'semibold',
   });
 
+  const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');
 
   const shouldWarn = type === 'watch' ? isImportable : isWatchable;
+
+  let buttonText;
+  if (seedPhrase) {
+    buttonText = type === 'watch' ? '􀨭 Watch' : '􀂍 Import';
+  } else {
+    buttonText = '􀉃 Paste';
+  }
+
+  const buttonDisabled = seedPhrase ? !isInputValid : !isClipboardValidSecret;
 
   return (
     <>
@@ -132,19 +174,32 @@ export const ImportSeedPhraseSheet: React.FC = () => {
       </Box>
       <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
         <Inset bottom="20px" right="20px">
-          <AccentColorProvider color={colors.alpha(globalColors.purple60, 1)}>
+          <AccentColorProvider
+            color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
+          >
             <Box
               alignItems="center"
               as={ButtonPressAnimation}
               background="accent"
               borderRadius={99}
+              disabled={buttonDisabled}
               height="36px"
               justifyContent="center"
-              onPress={handlePressImportButton}
+              onPress={
+                seedPhrase
+                  ? handlePressImportButton
+                  : () => handleSetSeedPhrase(copiedText)
+              }
+              shadow={seedPhrase ? '12px accent' : undefined}
               width={{ custom: 88 }}
             >
-              <Text align="center" color="label" size="15pt" weight="bold">
-                {type === 'watch' ? '􀨭 Watch' : '􀂍 Import'}
+              <Text
+                align="center"
+                color={seedPhrase ? 'label' : { custom: globalColors.purple60 }}
+                size="15pt"
+                weight="bold"
+              >
+                {seedPhrase ? 'Continue' : '􀉃 Paste'}
               </Text>
             </Box>
           </AccentColorProvider>
