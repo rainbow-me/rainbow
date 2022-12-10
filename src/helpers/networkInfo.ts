@@ -61,6 +61,20 @@ const networkInfo = {
     gasToken: 'MATIC',
     value: networkTypes.polygon,
   },
+  [`${networkTypes.mumbai}`]: {
+    balance_checker_contract_address:
+      '0x2352c63A83f9Fd126af8676146721Fa00924d7e4',
+    color: '#8247E5',
+    disabled: false,
+    exchange_enabled: false,
+    faucet_url: 'https://faucet.polygon.technology',
+    layer2: true,
+    longName: 'Polygon Mumbai (Matic)',
+    name: 'Mumbai',
+    gasToken: 'MATIC',
+    testnet: true,
+    value: networkTypes.mumbai,
+  },
   [`${networkTypes.bsc}`]: {
     balance_checker_contract_address:
       '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
