@@ -2,6 +2,7 @@ import React from 'react';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
+import lang from 'i18n-js';
 
 type Props = { hash?: string };
 
@@ -15,7 +16,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
       {formattedHash && (
         <SingleLineTransactionDetailsRow
           icon="􀆃"
-          title="Tx Hash"
+          title={lang.t('transaction_details.hash')}
           value={formattedHash}
         />
       )}
