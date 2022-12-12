@@ -76,7 +76,6 @@ export const parseTransactions = async (
   network: Network,
   appended = false
 ) => {
-  console.log(JSON.stringify(transactionData));
   const purchaseTransactionHashes = purchaseTransactions.map(txn =>
     ethereumUtils.getHash(txn)
   );

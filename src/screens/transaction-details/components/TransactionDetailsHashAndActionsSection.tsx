@@ -14,8 +14,8 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
       <TransactionDetailsDivider />
       {formattedHash && (
         <SingleLineTransactionDetailsRow
-          icon={'􀆃'}
-          title={'Tx Hash'}
+          icon="􀆃"
+          title="Tx Hash"
           value={formattedHash}
         />
       )}
