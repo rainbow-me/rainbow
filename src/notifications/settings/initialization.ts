@@ -36,10 +36,10 @@ type InitializationStateType = {
  Checks if group notification settings are present in storage
  and adds default values for them if they do not exist.
  */
-export const addDefaultNotificationGroupSettings = () => {
+export const addDefaultNotificationGroupSettings = (override = false) => {
   const data = notificationSettingsStorage.getString(WALLET_GROUPS_STORAGE_KEY);
 
-  if (!data) {
+  if (!data || override) {
     const defaultSettings = {
       [NotificationRelationship.OWNER]: true,
       [NotificationRelationship.WATCHER]: false,
@@ -104,7 +104,9 @@ export const initializeNotificationSettingsForAddresses = (
   });
 };
 
-// exported for testing only
+/**
+ * exported for testing only
+ */
 export const _prepareSubscriptionQueueAndCreateInitialSettings = (
   addresses: AddressWithRelationship[],
   initializationState: InitializationStateType
@@ -160,7 +162,9 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
   return subscriptionQueue;
 };
 
-// exported for testing only
+/**
+ * exported for testing only
+ */
 export const _prepareInitializationState = (): InitializationStateType => {
   const currentSettings = getAllNotificationSettingsFromStorage();
   const newSettings: WalletNotificationSettings[] = [...currentSettings];
@@ -182,7 +186,9 @@ export const _prepareInitializationState = (): InitializationStateType => {
   };
 };
 
-// exported for testing
+/**
+ * exported for testing only
+ */
 export const _processSubscriptionQueue = async (
   subscriptionQueue: WalletNotificationSettings[]
 ): Promise<void> => {
@@ -245,6 +251,3 @@ const processSubscriptionQueueItem = async (
 
   return newSettings;
 };
-// Runs some MMKV operations when the app is loaded
-// to ensure that settings are always present
-addDefaultNotificationGroupSettings();

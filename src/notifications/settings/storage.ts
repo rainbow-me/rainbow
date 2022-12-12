@@ -1,5 +1,4 @@
 import {
-  NOTIFICATION_SETTINGS_VERSION,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';

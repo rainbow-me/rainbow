@@ -227,7 +227,7 @@ const DevSection = () => {
     await clearAllNotificationSettings();
     await AsyncStorage.clear();
     clearAllStorages();
-    addDefaultNotificationGroupSettings();
+    addDefaultNotificationGroupSettings(true);
 
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   };
@@ -243,7 +243,7 @@ const DevSection = () => {
 
     await clearAllNotificationSettings();
     clearAllStorages();
-    addDefaultNotificationGroupSettings();
+    addDefaultNotificationGroupSettings(true);
 
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
