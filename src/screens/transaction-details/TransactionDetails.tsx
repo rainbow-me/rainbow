@@ -37,7 +37,6 @@ export const TransactionDetails: React.FC = () => {
           backgroundColor={backgroundColor}
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
-          testID="restore-sheet"
         >
           <View
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
