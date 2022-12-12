@@ -26,6 +26,18 @@ export const getAllNotificationSettingsFromStorage = () => {
 };
 
 /**
+ * Grabs notification settings for wallet with a given address if it exists
+ */
+export const getNotificationSettingsForWalletWithAddress = (
+  address: string
+) => {
+  const allSettings = getAllNotificationSettingsFromStorage();
+  return allSettings.find(
+    (wallet: WalletNotificationSettings) => wallet.address === address
+  );
+};
+
+/**
  * Writes an updated settings object to storage
  */
 export const setAllNotificationSettingsToStorage = (
@@ -42,18 +54,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data) as GroupSettings;
   return {};
-};
-
-/**
- Checks if notification settings exist for a wallet and returns a boolean.
- */
-export const walletHasNotificationSettings = (address: string) => {
-  const data = getAllNotificationSettingsFromStorage();
-  const settings = data.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
-
-  return !!settings;
 };
 
 /**

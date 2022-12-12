@@ -35,7 +35,7 @@ import {
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
-import { getAllNotificationSettingsFromStorage } from '@/notifications/settings/storage';
+import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 
 type WalletRowProps = {
   ens: string;
@@ -125,9 +125,8 @@ const WalletRow = ({
 
   const navigateToWalletSettings = useCallback(
     (name, address) => {
-      const settings = getAllNotificationSettingsFromStorage();
-      const settingsForWallet = settings.find(
-        wallet => wallet.address === address
+      const settingsForWallet = getNotificationSettingsForWalletWithAddress(
+        address
       );
 
       if (settingsForWallet) {
