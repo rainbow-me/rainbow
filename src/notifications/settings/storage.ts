@@ -15,19 +15,6 @@ export const notificationSettingsStorage = new MMKV({
   id: STORAGE_IDS.NOTIFICATIONS,
 });
 
-export const getSettingsVersion = (): number => {
-  const version = notificationSettingsStorage.getNumber(
-    NOTIFICATION_SETTINGS_VERSION
-  );
-
-  if (version === undefined) return 1;
-  else return version;
-};
-
-export const setSettingsVersion = (newVersion: number) => {
-  notificationSettingsStorage.set(NOTIFICATION_SETTINGS_VERSION, newVersion);
-};
-
 /**
  Grabs notification settings for all wallets if they exist,
  otherwise returns an empty array.

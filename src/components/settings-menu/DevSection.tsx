@@ -52,7 +52,6 @@ import {
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
   addDefaultNotificationGroupSettings,
-  setSettingsVersion,
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
 import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
@@ -229,7 +228,6 @@ const DevSection = () => {
     await AsyncStorage.clear();
     clearAllStorages();
     addDefaultNotificationGroupSettings();
-    setSettingsVersion(2);
 
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   };
@@ -246,7 +244,6 @@ const DevSection = () => {
     await clearAllNotificationSettings();
     clearAllStorages();
     addDefaultNotificationGroupSettings();
-    setSettingsVersion(2);
 
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
