@@ -463,7 +463,7 @@ const parseTransaction = async (
 };
 
 /**
- * Helper for retrieving tx fee snet by zerion, works only for mainnet only
+ * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
 const getTransactionFee = (
   txn: ZerionTransaction,
