@@ -30,7 +30,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
               // @ts-expect-error JS component
               <CoinIcon address={coinAddress} symbol={coinSymbol} />
             }
-            title={'Value'}
+            title={lang.t('transaction_details.value')}
             value={value}
             secondaryValue={nativeCurrencyValue}
           />
