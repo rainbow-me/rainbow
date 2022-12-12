@@ -27,6 +27,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
         {value && (
           <DoubleLineTransactionDetailsRow
             leftComponent={
+              // TODO: Remove that expect error comment because the CoinIcon got typescripted in another PR
               // @ts-expect-error JS component
               <CoinIcon address={coinAddress} symbol={coinSymbol} />
             }
