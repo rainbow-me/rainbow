@@ -1,10 +1,10 @@
 import messaging from '@react-native-firebase/messaging';
 import { requestNotifications } from 'react-native-permissions';
-import logger from 'logger';
 import { Alert } from '@/components/alerts';
 import lang from 'i18n-js';
 import { saveFCMToken } from '@/notifications/tokens';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
+import { logger, RainbowError } from '@/logger';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
@@ -24,9 +24,11 @@ export const checkPushNotificationPermissions = async () => {
     try {
       permissionStatus = await getPermissionStatus();
     } catch (error) {
-      logger.log(
-        'Error checking if a user has push notifications permission',
-        error
+      logger.error(
+        new RainbowError(
+          'Error checking if a user has push notifications permission'
+        ),
+        { error }
       );
     }
 
@@ -45,7 +47,10 @@ export const checkPushNotificationPermissions = async () => {
                 );
                 await saveFCMToken();
               } catch (error) {
-                logger.log('ERROR while getting permissions', error);
+                logger.error(
+                  new RainbowError('Error while getting permissions'),
+                  { error }
+                );
               } finally {
                 resolve(true);
               }

@@ -54,7 +54,9 @@ export const subscribeWalletToSingleNotificationTopic = (
   topic: NotificationTopicType
 ): Promise<void> => {
   logger.debug(
-    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
+    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`,
+    {},
+    logger.DebugContext.notifications
   );
   return messaging()
     .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
@@ -70,7 +72,9 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
   topic: NotificationTopicType
 ) => {
   logger.debug(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
+    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`,
+    {},
+    logger.DebugContext.notifications
   );
   return messaging()
     .unsubscribeFromTopic(
