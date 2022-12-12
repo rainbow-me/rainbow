@@ -7,7 +7,7 @@ import { Network } from '@/helpers';
 import { SheetActionButton } from '@/components/sheet';
 import { ethereumUtils } from '@/utils';
 import startCase from 'lodash/startCase';
-import { Stack } from '@/design-system';
+import { Box, Stack } from '@/design-system';
 import { useTheme } from '@/theme';
 
 type Props = { hash?: string; network?: Network };
@@ -26,28 +26,30 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
   return (
     <>
       <TransactionDetailsDivider />
-      <Stack space="12px">
-        {formattedHash && (
-          <SingleLineTransactionDetailsRow
-            icon="􀆃"
-            title={lang.t('transaction_details.hash')}
-            value={formattedHash}
+      <Box paddingVertical="20px">
+        <Stack space="32px">
+          {formattedHash && (
+            <SingleLineTransactionDetailsRow
+              icon="􀆃"
+              title={lang.t('transaction_details.hash')}
+              value={formattedHash}
+            />
+          )}
+          <SheetActionButton
+            color={colors.appleBlue}
+            onPress={() => {
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
+            }}
+            // @ts-expect-error JS component
+            label={lang.t('wallet.action.view_on', {
+              blockExplorerName: startCase(
+                ethereumUtils.getBlockExplorer(network)
+              ),
+            })}
+            lightShadows
           />
-        )}
-        <SheetActionButton
-          color={colors.appleBlue}
-          onPress={() => {
-            ethereumUtils.openTransactionInBlockExplorer(hash, network);
-          }}
-          // @ts-expect-error JS component
-          label={lang.t('wallet.action.view_on', {
-            blockExplorerName: startCase(
-              ethereumUtils.getBlockExplorer(network)
-            ),
-          })}
-          lightShadows
-        />
-      </Stack>
+        </Stack>
+      </Box>
     </>
   );
 };
