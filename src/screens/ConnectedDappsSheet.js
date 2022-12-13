@@ -39,6 +39,9 @@ export default function ConnectedDappsSheet() {
 
   const numOfRows = mostRecentWalletConnectors.length + sessions.length;
 
+  /**
+   * Load and reload functionality
+   */
   React.useEffect(() => {
     function load() {
       const sessions = getAllActiveSessionsSync();
@@ -49,6 +52,11 @@ export default function ConnectedDappsSheet() {
     if (loadSessions) load();
   }, [loadSessions, setLoadSessions, setSessions]);
 
+  /**
+   * Listen for disconnected sessions and remove from list. Really only needed
+   * if the list is already opened, since we otherwise lazily check for
+   * sessions when the user clicks on the overflow menu button.
+   */
   React.useEffect(() => {
     async function listen() {
       const client = await signClient;
