@@ -51,7 +51,6 @@ const CurrencySection = () => {
                   isEmoji
                 />
               ) : (
-                // @ts-ignore missing props
                 <CoinIcon
                   address={currency}
                   size={23}

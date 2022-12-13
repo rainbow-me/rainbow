@@ -1,6 +1,6 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { View, ViewProps } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
@@ -15,19 +15,36 @@ import {
   magicMemo,
   CoinIcon as ReactCoinIcon,
 } from '@/utils';
+import { ChainBadgeType } from '@/components/coin-icon/ChainBadgeSizeConfigs';
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage)(({ size }) => ({
-  height: size,
-  width: size,
-}));
+const ContractInteractionIcon = styled(ImgixImage)(
+  ({ size }: { size: number }) => ({
+    height: size,
+    width: size,
+  })
+);
 
 const StyledCoinIcon = styled(ReactCoinIcon)({
-  opacity: ({ isHidden }) => (isHidden ? 0.4 : 1),
+  opacity: ({ isHidden }: { isHidden?: boolean }) => (isHidden ? 0.4 : 1),
 });
 
-const CoinIcon = ({
+type Props = {
+  address?: string;
+  badgeXPosition?: number;
+  badgeYPosition?: number;
+  badgeSize?: ChainBadgeType;
+  ignoreBadge?: boolean;
+  forcedShadowColor?: string;
+  size?: number;
+  symbol?: string;
+  type?: string;
+  mainnet_address?: string;
+  shadowOpacity?: number;
+} & Pick<ViewProps, 'testID' | 'style'>;
+
+const CoinIcon: React.FC<Props> = ({
   address = 'eth',
   badgeXPosition,
   badgeYPosition,
@@ -37,16 +54,17 @@ const CoinIcon = ({
   size = CoinIconSize,
   symbol = '',
   type,
+  mainnet_address,
   ...props
 }) => {
-  const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
+  const tokenMetadata = getTokenMetadata(mainnet_address || address);
   const color = useColorForAsset({
-    address: props.mainnet_address || address,
-    type: props.mainnet_address ? AssetTypes.token : type,
+    address: mainnet_address || address,
+    type: mainnet_address ? AssetTypes.token : type,
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback =
-    !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
+    !isETH(mainnet_address || address) && isNil(tokenMetadata);
   const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
     symbol,
   ]);
@@ -56,7 +74,7 @@ const CoinIcon = ({
       {isNotContractInteraction ? (
         <StyledCoinIcon
           {...props}
-          address={props.mainnet_address || address}
+          address={mainnet_address || address}
           color={color}
           fallbackRenderer={CoinIconFallback}
           forceFallback={forceFallback}
@@ -68,7 +86,7 @@ const CoinIcon = ({
           }
           size={size}
           symbol={symbol}
-          type={props.mainnet_address ? AssetTypes.token : type}
+          type={mainnet_address ? AssetTypes.token : type}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
