@@ -139,6 +139,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
+      setBusy(true);
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -166,12 +167,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || avatar?.imageUrl;
+          setBusy(false);
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
           });
         } catch (e) {
+          setBusy(false);
           Alert.alert(lang.t('wallet.sorry_cannot_add_ens'));
           return;
         }
@@ -186,6 +189,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          setBusy(false);
           // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
           startImportProfile(name, guardedForceColor, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
@@ -193,6 +197,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
+          setBusy(false);
           Alert.alert(lang.t('wallet.sorry_cannot_add_unstoppable'));
           return;
         }
@@ -213,11 +218,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
+        setBusy(false);
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
         startImportProfile(name, guardedForceColor, input);
       } else {
         try {
-          setBusy(true);
           setTimeout(async () => {
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input

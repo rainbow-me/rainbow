@@ -4,8 +4,6 @@ import {
   AccentColorProvider,
   BackgroundProvider,
   Box,
-  ColorModeProvider,
-  DebugLayout,
   globalColors,
   Inset,
   Stack,
@@ -13,34 +11,35 @@ import {
   useForegroundColor,
   useTextStyle,
 } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID } from '@/env';
 import {
   useAccountSettings,
-  useClipboard,
   useDimensions,
   useImportingWallet,
   useKeyboardHeight,
 } from '@/hooks';
 import { colors } from '@/styles';
 import React, { useEffect, useMemo, useState } from 'react';
+import { Keyboard, StatusBar } from 'react-native';
 import * as i18n from '@/languages';
-import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { isValidWallet } from '@/helpers/validators';
 import Clipboard from '@react-native-community/clipboard';
 import { delay } from '@/helpers/utilities';
+import { LoadingOverlay } from '@/components/modal';
 
-const TRANSLATIONS = i18n.l.import_seed_phrase_sheet;
+const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
 
 type RouteParams = {
   ImportSeedPhraseSheetParams: {
-    type: 'watch' | 'import';
+    // watch_or_import type is temporary, will be removed in followup PR
+    type: 'watch' | 'import' | 'watch_or_import';
   };
 };
 
 export const ImportSeedPhraseSheet: React.FC = () => {
-  const { params: { type = 'watch' } = {} } = useRoute<
+  const { params: { type = 'watch_or_import' } = {} } = useRoute<
     RouteProp<RouteParams, 'ImportSeedPhraseSheetParams'>
   >();
 
@@ -51,12 +50,8 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     handleSetSeedPhrase,
     inputRef,
     isInputValid,
-    isImportable,
-    isWatchable,
     seedPhrase,
   } = useImportingWallet();
-
-  const { isDarkMode } = useTheme();
 
   const [copiedText, setCopiedText] = useState('');
 
@@ -66,6 +61,8 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     () => copiedText !== accountAddress && isValidWallet(copiedText),
     [accountAddress, copiedText]
   );
+
+  const [keyboardVisible, setKeyboardVisibility] = useState(true);
 
   useEffect(() => {
     const refreshClipboard = async () => {
@@ -79,6 +76,26 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     refreshClipboard();
   }, [seedPhrase]);
 
+  useEffect(() => {
+    const keyboardShownSubscription = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisibility(true);
+      }
+    );
+    const keyboardDismissedSubscription = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisibility(false);
+      }
+    );
+
+    return () => {
+      keyboardShownSubscription.remove();
+      keyboardDismissedSubscription.remove();
+    };
+  }, []);
+
   const { height: deviceHeight } = useDimensions();
 
   const keyboardHeight = useKeyboardHeight();
@@ -90,40 +107,25 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     weight: 'semibold',
   });
 
-  const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');
-
-  const shouldWarn = type === 'watch' ? isImportable : isWatchable;
-
-  let buttonText;
-  if (seedPhrase) {
-    buttonText = type === 'watch' ? '􀨭 Watch' : '􀂍 Import';
-  } else {
-    buttonText = '􀉃 Paste';
-  }
 
   const buttonDisabled = seedPhrase ? !isInputValid : !isClipboardValidSecret;
 
-  let buttonColor;
-  let buttonTextColor;
-  if (buttonDisabled) {
-    buttonColor = globalColors.grey100;
-    buttonTextColor = 'labelSecondary';
-  } else {
-    buttonColor = colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1);
-    buttonTextColor = seedPhrase ? 'label' : { custom: globalColors.purple60 };
-  }
+  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
+
+  const bottomOffset = IS_ANDROID && keyboardVisible ? 0 : keyboardHeight;
 
   return (
     <>
       <BackgroundProvider color="surfaceSecondary">
         {({ backgroundColor }) => (
+          // @ts-expect-error js component
           <SlackSheet
-            contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
+            additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+            contentHeight={contentHeight}
             backgroundColor={backgroundColor}
             scrollEnabled={false}
             height="100%"
-            deferredHeight={IS_ANDROID}
             testID="import-sheet"
           >
             <Box
@@ -153,7 +155,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
       </BackgroundProvider>
       <Box
         alignItems="center"
-        bottom={{ custom: keyboardHeight }}
+        bottom={{ custom: bottomOffset }}
         justifyContent="center"
         position="absolute"
         top="0px"
@@ -161,7 +163,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
       >
         <Input
           autoCorrect={false}
-          autoComplete={false}
+          autoCompleteType={false}
           autoFocus
           autoCapitalize="none"
           textContentType="none"
@@ -171,7 +173,10 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           onFocus={handleFocus}
           multiline
           numberOfLines={3}
-          onSubmitEditing={handlePressImportButton}
+          onSubmitEditing={() => {
+            // @ts-expect-error callback needs refactor
+            if (isInputValid) handlePressImportButton();
+          }}
           placeholder={i18n.t(TRANSLATIONS[type].placeholder)}
           placeholderTextColor={labelTertiary}
           ref={inputRef}
@@ -184,42 +189,54 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           value={seedPhrase}
         />
       </Box>
-      <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
+      <Box position="absolute" right="0px" bottom={{ custom: bottomOffset }}>
         <Inset bottom="20px" right="20px">
-          <AccentColorProvider color={buttonColor}>
-            <Box
-              alignItems="center"
-              as={ButtonPressAnimation}
-              background="accent"
-              borderRadius={99}
+          <AccentColorProvider
+            color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
+          >
+            <ButtonPressAnimation
               disabled={buttonDisabled}
-              height="36px"
-              justifyContent="center"
               onPress={
                 seedPhrase
                   ? handlePressImportButton
                   : () => handleSetSeedPhrase(copiedText)
               }
-              shadow={seedPhrase && !buttonDisabled ? '12px accent' : undefined}
-              width={{ custom: 88 }}
+              overflowMargin={50}
             >
-              {/* for some reason RDS is inferring the color mode as dark here */}
-              {/* <ColorModeProvider value={isDarkMode ? 'dark' : 'light'}> */}
-              <Text
-                align="center"
-                color={buttonTextColor}
-                size="15pt"
-                weight="bold"
+              <Box
+                alignItems="center"
+                background={buttonDisabled ? 'fillSecondary' : 'accent'}
+                borderRadius={99}
+                height="36px"
+                justifyContent="center"
+                shadow={
+                  seedPhrase && !buttonDisabled ? '12px accent' : undefined
+                }
+                width={{ custom: 88 }}
               >
-                {seedPhrase
-                  ? i18n.t(TRANSLATIONS.continue)
-                  : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
-              </Text>
-              {/* </ColorModeProvider> */}
-            </Box>
+                <Text
+                  align="center"
+                  color={
+                    // eslint-disable-next-line no-nested-ternary
+                    buttonDisabled
+                      ? 'labelSecondary'
+                      : seedPhrase
+                      ? 'label'
+                      : { custom: globalColors.purple60 }
+                  }
+                  size="15pt"
+                  weight="bold"
+                >
+                  {seedPhrase
+                    ? i18n.t(TRANSLATIONS.continue)
+                    : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
           </AccentColorProvider>
         </Inset>
       </Box>
+      {busy && <LoadingOverlay />}
     </>
   );
 };

@@ -20,7 +20,7 @@ import { AddFirstWalletStep } from '@/components/backup/AddFirstWalletStep';
 import { Logger } from '@/logger';
 import * as i18n from '@/languages';
 
-const TRANSLATIONS = i18n.l.add_first_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_first_wallet;
 
 export function RestoreSheet() {
   const { setParams } = useNavigation();

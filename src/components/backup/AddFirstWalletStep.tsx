@@ -13,7 +13,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { cloudPlatform } from '@/utils/platform';
 import * as i18n from '@/languages';
 
-const TRANSLATIONS = i18n.l.add_first_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_first_wallet;
 
 type Props = {
   onCloudRestore: () => void;
