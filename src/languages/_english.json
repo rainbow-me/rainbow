@@ -1752,7 +1752,10 @@
         "transaction_canceled": "Transaction canceled!",
         "transaction_sent": "Transaction sent!"
       },
-      "unknown_application": "Unknown Application"
+      "unknown_application": "Unknown Application",
+      "connection_failed": "Connection failed",
+      "failed_to_connect_to": "Failed to connect to %{appName}",
+      "go_back": "Go back"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",
