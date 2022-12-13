@@ -302,7 +302,6 @@ export function WalletConnectV2ListItem({
                             size="small"
                           />
                         ) : (
-                          /* @ts-expect-error */
                           <CoinIcon
                             address={ETH_ADDRESS}
                             size={20}

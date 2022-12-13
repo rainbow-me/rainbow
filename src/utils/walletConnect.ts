@@ -57,9 +57,7 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-export let syncSignClient:
-  | Awaited<ReturnType<typeof SignClient.init>>
-  | undefined;
+export let syncSignClient: SignClient | undefined;
 
 export const signClient = Promise.resolve(
   SignClient.init({
