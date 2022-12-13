@@ -49,7 +49,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     handlePressImportButton,
     handleSetSeedPhrase,
     inputRef,
-    isInputValid,
+    isSecretValid,
     seedPhrase,
   } = useImportingWallet();
 
@@ -57,7 +57,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
 
   const { accountAddress } = useAccountSettings();
 
-  const isClipboardValidSecret = useMemo(
+  const isClipboardValidInput = useMemo(
     () => copiedText !== accountAddress && isValidWallet(copiedText),
     [accountAddress, copiedText]
   );
@@ -102,14 +102,14 @@ export const ImportSeedPhraseSheet: React.FC = () => {
 
   const textStyle = useTextStyle({
     align: 'center',
-    color: isInputValid ? { custom: globalColors.purple60 } : 'label',
+    color: isSecretValid ? { custom: globalColors.purple60 } : 'label',
     size: '17pt / 135%',
     weight: 'semibold',
   });
 
   const labelTertiary = useForegroundColor('labelTertiary');
 
-  const buttonDisabled = seedPhrase ? !isInputValid : !isClipboardValidSecret;
+  const buttonDisabled = seedPhrase ? !isSecretValid : !isClipboardValidInput;
 
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
@@ -175,7 +175,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           numberOfLines={3}
           onSubmitEditing={() => {
             // @ts-expect-error callback needs refactor
-            if (isInputValid) handlePressImportButton();
+            if (isSecretValid) handlePressImportButton();
           }}
           placeholder={i18n.t(TRANSLATIONS[type].placeholder)}
           placeholderTextColor={labelTertiary}

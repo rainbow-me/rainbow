@@ -1650,6 +1650,10 @@
             "title": "Watch an address :)",
             "placeholder": "Enter an Ethereum address or ENS name :)",
             "button": "Watch :)"
+          },
+          "watch_or_import": {
+            "title": "Add a wallet :)",
+            "placeholder": "Enter a secret phrase, private key, Ethereum address, or ENS name :)"
           }
         },
         "alert": {
