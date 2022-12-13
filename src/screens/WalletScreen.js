@@ -45,7 +45,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { maybeSignUri } from '@/handlers/imgix';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation'
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -65,10 +65,7 @@ const WalletPage = styled(Page)({
   flex: 1,
 });
 
-function MoreButton({
-  children,
-  onPress,
-})  {
+function MoreButton({ children, onPress }) {
   // ////////////////////////////////////////////////////
   // Handlers
 
@@ -145,21 +142,17 @@ function MoreButton({
     [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
   );
 
-
   return (
     <ContextMenuButton
       menuConfig={menuConfig}
       onPressMenuItem={handlePressMenuItem}
     >
-      <ButtonPressAnimation onPress={onPress}>
-      {children}
-      </ButtonPressAnimation>
-
+      <ButtonPressAnimation onPress={onPress}>{children}</ButtonPressAnimation>
     </ContextMenuButton>
   );
 }
 
- export default function WalletScreen() {
+export default function WalletScreen() {
   const { params } = useRoute();
   const {
     setParams,
@@ -173,7 +166,11 @@ function MoreButton({
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
   const { trackENSProfile } = useTrackENSProfile();
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const {
+    network: currentNetwork,
+    accountAddress,
+    appIcon,
+  } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
@@ -333,6 +330,11 @@ function MoreButton({
     }
   }, [profilesEnabled, trackENSProfile, walletReady]);
 
+  // track current app icon
+  useEffect(() => {
+    analytics.identify(undefined, { appIcon });
+  }, [appIcon]);
+
   const { navigate } = useNavigation();
 
   const handlePressActivity = useCallback(() => {
@@ -352,26 +354,24 @@ function MoreButton({
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
 
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
-    const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+  // ////////////////////////////////////////////////////
+  // Colors
 
-    // ////////////////////////////////////////////////////
-    // Colors
-  
-    const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-      maybeSignUri(accountImage ?? '') ?? ''
-    );
-  
-    const { colors } = useTheme();
-    let accentColor = colors.appleBlue;
-    if (accountImage) {
-      accentColor = dominantColor || colors.appleBlue;
-    } else if (typeof accountColor === 'number') {
-      accentColor = colors.avatarBackgrounds[accountColor];
-    } else if (typeof accountColor === 'string') {
-      accentColor = accountColor;
-    }
-  
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    maybeSignUri(accountImage ?? '') ?? ''
+  );
+
+  const { colors } = useTheme();
+  let accentColor = colors.appleBlue;
+  if (accountImage) {
+    accentColor = dominantColor || colors.appleBlue;
+  } else if (typeof accountColor === 'number') {
+    accentColor = colors.avatarBackgrounds[accountColor];
+  } else if (typeof accountColor === 'string') {
+    accentColor = accountColor;
+  }
 
   return (
     <WalletPage testID="wallet-screen">
@@ -380,13 +380,13 @@ function MoreButton({
           hasStatusBarInset
           leftComponent={
             <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
-                <Navbar.TextIcon color={accentColor} icon="􀎹" />
-              </Navbar.Item>
+              <Navbar.TextIcon color={accentColor} icon="􀎹" />
+            </Navbar.Item>
           }
           rightComponent={
             <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
-                <Navbar.TextIcon color={accentColor} icon="􀍠" />
-              </Navbar.Item>
+              <Navbar.TextIcon color={accentColor} icon="􀍠" />
+            </Navbar.Item>
           }
         />
       </HeaderOpacityToggler>
@@ -425,4 +425,3 @@ function MoreButton({
             </Inline>
           }
 */
-

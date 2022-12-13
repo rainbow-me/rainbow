@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { ChainId } from '@rainbow-me/swaps';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
@@ -11,7 +12,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, Linking, TextInput } from 'react-native';
+import {
+  DefaultSectionT,
+  InteractionManager,
+  Keyboard,
+  Linking,
+  SectionList,
+  TextInput,
+} from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -51,7 +59,7 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
-import DiscoverSearchInput from '@/components/discover-sheet/DiscoverSearchInput';
+import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -132,6 +140,8 @@ export default function CurrencySelectModal() {
     },
   } = useRoute<RouteProp<ParamList, 'Currency'>>();
 
+  const listRef = useRef<SectionList<any, DefaultSectionT>>(null);
+
   const scrollPosition = (usePagerPosition() as unknown) as { value: number };
 
   const searchInputRef = useRef<TextInput>(null);
@@ -149,6 +159,8 @@ export default function CurrencySelectModal() {
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
+  const prevChainId = usePrevious(currentChainId);
+
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const NetworkSwitcher = crosschainSwapsEnabled
     ? NetworkSwitcherv2
@@ -198,7 +210,7 @@ export default function CurrencySelectModal() {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
-  } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
   const {
     swappableUserAssets,
@@ -268,7 +280,9 @@ export default function CurrencySelectModal() {
               ...unswappableAsset,
               disabled: true,
             })),
-            title: TokenSectionTypes.unswappableTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
+            ),
             key: 'unswappableAssets',
           });
         }
@@ -293,7 +307,9 @@ export default function CurrencySelectModal() {
               ...unswappableAsset,
               disabled: true,
             })),
-            title: TokenSectionTypes.unswappableTokenSection,
+            title: lang.t(
+              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
+            ),
             key: 'unswappableAssets',
           });
         }
@@ -595,6 +611,20 @@ export default function CurrencySelectModal() {
     ],
   }));
 
+  useEffect(() => {
+    // check if list has items before attempting to scroll
+    if (!currencyList[0]?.data) return;
+    if (currentChainId !== prevChainId) {
+      listRef?.current?.scrollToLocation({
+        animated: false,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+    }
+  }, [currencyList, currentChainId, prevChainId]);
+
   return (
     <Wrapper>
       <Box as={Animated.View} height="full" width="full" style={style}>
@@ -643,6 +673,7 @@ export default function CurrencySelectModal() {
             )}
             {type === null || type === undefined ? null : (
               <CurrencySelectionList
+                ref={listRef}
                 isExchangeList={crosschainSwapsEnabled}
                 onL2={searchingOnL2Network}
                 footerSpacer={android}

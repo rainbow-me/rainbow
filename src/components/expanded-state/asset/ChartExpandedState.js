@@ -15,8 +15,8 @@ import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
-import EdgeFade from '../../discover-sheet/EdgeFade';
-import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+import EdgeFade from '../../EdgeFade';
+import UniswapPools from '../../discover/UniswapPoolsSection';
 import useExperimentalFlag, {
   CROSSCHAIN_SWAPS,
 } from '@/config/experimentalHooks';
@@ -50,13 +50,14 @@ import {
   useGenericAsset,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS } from '@/references';
+import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
+import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -348,6 +349,10 @@ export default function ChartExpandedState({ asset }) {
       </View>
     );
   }, [delayedMorePoolsVisible]);
+
+  const isDOG =
+    assetWithPrice.address === DOG_ADDRESS ||
+    assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -357,6 +362,7 @@ export default function ChartExpandedState({ asset }) {
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
+      {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}

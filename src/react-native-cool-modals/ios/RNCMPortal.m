@@ -76,9 +76,7 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
 
 -(void)removeFromSuperview {
   [self.window setHidden:YES];
-  if (@available(iOS 13.0, *)) {
-    self.window.windowScene = nil;
-  }
+  self.window.windowScene = nil;
   if (self.reactSubviews.count != 0) {
     [self.window.rootViewController.view removeReactSubview:self.reactSubviews[0]];
   }
@@ -89,9 +87,7 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
 
 -(void)removeReactSubview:(UIView *)subview {
   [self.window setHidden:YES];
-  if (@available(iOS 13.0, *)) {
-    self.window.windowScene = nil;
-  }
+  self.window.windowScene = nil;
   [self.window.rootViewController.view removeReactSubview:subview];
   self.window = nil;
   [super removeReactSubview:subview];

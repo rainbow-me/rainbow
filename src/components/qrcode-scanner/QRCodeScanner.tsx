@@ -15,7 +15,7 @@ import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
@@ -63,8 +63,7 @@ export default function QRCodeScanner() {
 
   const hideCamera = useCallback(() => {
     setEnabled(false);
-    goBack();
-  }, [goBack]);
+  }, []);
 
   const { onScan } = useScanner(
     cameraState === CameraState.Scanning,
@@ -76,7 +75,7 @@ export default function QRCodeScanner() {
 
   const askForPermissions = useCallback(async () => {
     try {
-      const permission = ios
+      const permission = IS_IOS
         ? PERMISSIONS.IOS.CAMERA
         : PERMISSIONS.ANDROID.CAMERA;
 

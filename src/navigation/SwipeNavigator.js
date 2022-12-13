@@ -1,11 +1,10 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { FlexItem } from '../components/layout';
 import { TestnetToast } from '../components/toasts';
-import { web3Provider } from '../handlers/web3';
-import DiscoverScreen from '../screens/DiscoverScreen';
+import { web3Provider } from '@/handlers/web3';
+import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
@@ -18,12 +17,10 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Box, Columns, DebugLayout, Stack, Text } from '@/design-system';
+import { Box, Columns, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const Swipe = createMaterialTopTabNavigator();
-
-const renderTabBar = () => null;
 
 const renderPager = props => (
   <ScrollPagerWrapper {...props} initialScrollPosition={1} />
@@ -61,7 +58,11 @@ export function SwipeNavigator() {
 
   const TabBar = ({ state, descriptors, navigation }) => {
     return (
-      <Box width="full" height={{ custom: 80 }} style={{backgroundColor: colors.white}}>
+      <Box
+        width="full"
+        height={{ custom: 80 }}
+        style={{ backgroundColor: colors.white }}
+      >
         <Columns alignVertical="center" space="12px">
           {state.routes.map((route, index) => {
             const { options } = descriptors[route.key];
@@ -87,20 +88,45 @@ export function SwipeNavigator() {
             };
 
             return (
-                <Box key={route.key} height="full" width="full" justifyContent='flex-start' paddingTop='10px'>
-                  <ButtonPressAnimation
-                    onPress={onPress}
-                    onLongPress={onLongPress}
+              <Box
+                key={route.key}
+                height="full"
+                width="full"
+                justifyContent="flex-start"
+                paddingTop="10px"
+              >
+                <ButtonPressAnimation
+                  onPress={onPress}
+                  onLongPress={onLongPress}
+                >
+                  <Stack
+                    alignVertical="center"
+                    alignHorizontal="center"
+                    space="10px"
                   >
-                    <Stack alignVertical='center' alignHorizontal="center" space="10px">
-                      <Box  alignItems="center" style={{backgroundColor: isFocused ? colors.alpha(accentColor, 0.3) : colors.transparent}} justifyContent="center" borderRadius={20} paddingVertical='12px' paddingHorizontal='28px'>
-                        <Text color={{ custom: accentColor }} size="20pt" weight='semibold'>
-                          {options.tabBarIcon}
-                        </Text>
-                      </Box>
-                    </Stack>
-                  </ButtonPressAnimation>
-                </Box>
+                    <Box
+                      alignItems="center"
+                      style={{
+                        backgroundColor: isFocused
+                          ? colors.alpha(accentColor, 0.3)
+                          : colors.transparent,
+                      }}
+                      justifyContent="center"
+                      borderRadius={20}
+                      paddingVertical="12px"
+                      paddingHorizontal="28px"
+                    >
+                      <Text
+                        color={{ custom: accentColor }}
+                        size="20pt"
+                        weight="semibold"
+                      >
+                        {options.tabBarIcon}
+                      </Text>
+                    </Box>
+                  </Stack>
+                </ButtonPressAnimation>
+              </Box>
             );
           })}
         </Columns>
@@ -116,7 +142,7 @@ export function SwipeNavigator() {
         pager={renderPager}
         swipeEnabled={!isCoinListEdited}
         tabBar={props => <TabBar {...props} />}
-        tabBarPosition='bottom'
+        tabBarPosition="bottom"
       >
         <Swipe.Screen
           component={WalletScreen}

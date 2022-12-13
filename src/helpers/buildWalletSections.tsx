@@ -19,13 +19,34 @@ import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { Network } from '.';
 import Routes from '@/navigation/routesNames';
 
-const LOADING_ASSETS_PLACEHOLDER = [
+const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
 ];
+
+const EMPTY_WALLET_CONTENT = [
+  {
+    type: 'RECEIVE_CARD',
+    uid: 'receive_card',
+  },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
+  { type: 'ETH_CARD', uid: 'eth-card' },
+  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+  {
+    type: 'LEARN_CARD',
+    uid: 'learn-card',
+  },
+  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
+  {
+    type: 'DISCOVER_MORE_BUTTON',
+    uid: 'discover-home-button',
+  },
+];
+
+const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const sortedAssetsCountSelector = (state: any) => state.sortedAssetsCount;
@@ -222,9 +243,8 @@ const withBriefBalanceSavingsSection = (
     return [];
   }
 
-  if (isLoadingAssets) return [];
-  return [
-  ];
+  if (isLoadingAssets || totalUnderlyingNativeValue === '0') return [];
+  return [];
 };
 
 const coinEditContextMenu = (
@@ -233,8 +253,7 @@ const coinEditContextMenu = (
   isCoinListEdited: any,
   isLoadingAssets: any,
   sortedAssetsCount: any,
-  totalValue: any,
-  addedEth: any
+  totalValue: any
 ) => {
   const noSmallBalances = !balanceSectionData.find(
     ({ smallBalancesContainer }: any) => smallBalancesContainer
@@ -258,7 +277,7 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + sortedAssetsCount,
+    totalItems: isLoadingAssets ? 1 : sortedAssetsCount,
     totalValue: totalValue,
   };
 };
@@ -279,14 +298,12 @@ const withBalanceSection = (
   uniswapTotal: any,
   collectibles: any
 ) => {
-  const { addedEth, assets, totalBalancesValue } = buildCoinsList(
+  const { assets, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins,
-    true,
-    !collectibles.length
+    hiddenCoins
   );
 
   let balanceSectionData = [...assets];
@@ -322,8 +339,7 @@ const withBalanceSection = (
       isCoinListEdited,
       isLoadingAssets,
       sortedAssetsCount,
-      totalValue,
-      addedEth
+      totalValue
     ),
     name: 'balances',
     renderItem: isLoadingAssets
@@ -341,16 +357,15 @@ const withBriefBalanceSection = (
   hiddenCoins: any,
   collectibles: any,
   savingsSection: any,
-  uniswapTotal: any
+  uniswapTotal: any,
+  uniqueTokens: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins,
-    true,
-    !collectibles.length
+    hiddenCoins
   );
 
   const savingsTotalValue = savingsSection?.find(
@@ -372,7 +387,13 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  return [
+  const hasTokens = briefAssets?.length;
+  const hasNFTs = collectibles?.length;
+
+  const isEmpty = !hasTokens && !hasNFTs;
+  const hasNFTsOnly = !hasTokens && hasNFTs;
+
+  const header = [
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
@@ -398,27 +419,46 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    {
-      type: 'PROFILE_BALANCE_ROW',
-      uid: 'profile-balance',
-      value: totalValue,
-    },
-    {
-      type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
-      uid: 'profile-balance-space-after',
-    },
+    ...(hasTokens
+      ? [
+          {
+            type: 'PROFILE_BALANCE_ROW',
+            uid: 'profile-balance',
+            value: totalValue,
+          },
+          {
+            type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
+            uid: 'profile-balance-space-after',
+          },
+        ]
+      : []),
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
       value: totalValue,
     },
-    {
-      type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
-      uid: 'profile-action-buttons-space-after',
-      value: totalValue,
-    },
-    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
+    hasTokens
+      ? {
+          type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
+          uid: 'profile-action-buttons-space-after',
+          value: totalValue,
+        }
+      : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
+
+  let content = CONTENT_PLACEHOLDER;
+
+  if (isLoadingAssets) {
+    content = CONTENT_PLACEHOLDER;
+  } else if (hasTokens) {
+    content = briefAssets;
+  } else if (hasNFTsOnly) {
+    content = ONLY_NFTS_CONTENT;
+  } else if (isEmpty) {
+    content = EMPTY_WALLET_CONTENT;
+  }
+
+  return [...header, ...content];
 };
 
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
@@ -459,7 +499,12 @@ const balanceSavingsSectionSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [savingsSelector, isLoadingAssetsSelector, networkSelector],
+  [
+    savingsSelector,
+    isLoadingAssetsSelector,
+    networkSelector,
+    uniqueTokensSelector,
+  ],
   withBriefBalanceSavingsSection
 );
 

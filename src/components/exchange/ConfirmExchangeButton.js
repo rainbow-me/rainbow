@@ -117,10 +117,13 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    label =
-      currentNetwork === NetworkTypes.polygon
-        ? lang.t('button.confirm_exchange.insufficient_matic')
-        : lang.t('button.confirm_exchange.insufficient_eth');
+    if (currentNetwork === NetworkTypes.polygon) {
+      label = lang.t('button.confirm_exchange.insufficient_matic');
+    } else if (currentNetwork === NetworkTypes.bsc) {
+      label = lang.t('button.confirm_exchange.insufficient_bnb');
+    } else {
+      label = lang.t('button.confirm_exchange.insufficient_eth');
+    }
   } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {

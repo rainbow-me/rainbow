@@ -60,6 +60,8 @@ import {
   stackNavigationConfig,
   swapDetailsSheetConfig,
   swapsPromoSheetConfig,
+  learnWebViewScreenConfig,
+  transactionDetailsConfig,
 } from './config';
 import {
   emojiPreset,
@@ -75,11 +77,12 @@ import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import isNativeStackAvailable from '@/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
+import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -171,7 +174,7 @@ function MainNavigator() {
   );
 }
 
-function MainNavigatorWrapper() {
+function MainStack() {
   return (
     <Stack.Navigator
       initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER}
@@ -186,58 +189,6 @@ function MainNavigatorWrapper() {
   );
 }
 
-function NativeStackFallbackNavigator() {
-  return (
-    <Stack.Navigator
-      initialRouteName={Routes.MAIN_NAVIGATOR}
-      {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
-    >
-      <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <Stack.Screen
-        component={ImportSeedPhraseSheet}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        options={{
-          ...sheetPreset,
-          onTransitionStart: StatusBarHelper.setLightContent,
-        }}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={sheetPreset}
-      />
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={{
-          ...omitFlatten(sheetPreset, 'gestureResponseDistance'),
-          onTransitionStart: StatusBarHelper.setLightContent,
-        }}
-      />
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
-    </Stack.Navigator>
-  );
-}
-
-const MainStack = isNativeStackAvailable
-  ? MainNavigatorWrapper
-  : NativeStackFallbackNavigator;
-
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -245,6 +196,11 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
+      <NativeStack.Screen
+        component={LearnWebViewScreen}
+        name={Routes.LEARN_WEB_VIEW_SCREEN}
+        {...learnWebViewScreenConfig}
+      />
       <NativeStack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
@@ -467,28 +423,18 @@ function NativeStackNavigator() {
           />
         </>
       )}
-      {isNativeStackAvailable ? (
-        <>
-          <NativeStack.Screen
-            component={SendFlowNavigator}
-            name={Routes.SEND_SHEET_NAVIGATOR}
-          />
-          <NativeStack.Screen
-            component={ImportSeedPhraseFlowNavigator}
-            name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-          />
-          <NativeStack.Screen
-            component={AddCashFlowNavigator}
-            name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-          />
-        </>
-      ) : (
-        <NativeStack.Screen
-          component={ImportSeedPhraseFlowNavigator}
-          name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-          options={{ customStack: true }}
-        />
-      )}
+      <NativeStack.Screen
+        component={SendFlowNavigator}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={ImportSeedPhraseFlowNavigator}
+        name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={AddCashFlowNavigator}
+        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
+      />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
@@ -498,6 +444,11 @@ function NativeStackNavigator() {
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         {...basicSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.TRANSACTION_DETAILS}
+        component={TransactionDetails}
+        {...transactionDetailsConfig}
       />
     </NativeStack.Navigator>
   );

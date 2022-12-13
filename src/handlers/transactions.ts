@@ -48,6 +48,7 @@ import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics } from '@/analytics';
+import { logger, RainbowError } from '@/logger';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
@@ -403,17 +404,21 @@ export const getTransactionSocketStatus = async (
         pending = false;
       }
     } else if (socketResponse.error) {
+      logger.warn(
+        'getTransactionSocketStatus transaction check failed',
+        socketResponse.error
+      );
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
+    logger.error(
+      new RainbowError('getTransactionSocketStatus transaction check caught')
+    );
     if (IS_TEST) {
       status = swap?.isBridge
         ? TransactionStatus.bridged
         : TransactionStatus.swapped;
-      pending = false;
-    } else {
-      status = TransactionStatus.failed;
       pending = false;
     }
   }

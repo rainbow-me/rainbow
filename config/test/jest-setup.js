@@ -2,6 +2,9 @@
 // needed to set up global translations
 import '../../src/languages';
 
+global.ios = false;
+global.android = false;
+
 jest.mock('@/env', () => ({
   IS_DEV: false,
   IS_TEST: true,
@@ -31,22 +34,4 @@ jest.mock('react-native-keychain', () => ({
   getGenericPassword: jest.fn(),
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
-}));
-
-jest.mock('react-native-mmkv', () => ({
-  MMKV: class MMKVMock {
-    _store = new Map();
-
-    set(key, value) {
-      this._store.set(key, value);
-    }
-
-    getString(key) {
-      return this._store.get(key);
-    }
-
-    delete(key) {
-      return this._store.delete(key);
-    }
-  },
 }));

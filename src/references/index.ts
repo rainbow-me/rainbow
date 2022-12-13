@@ -54,6 +54,7 @@ export const OVM_GAS_PRICE_ORACLE =
 // Block Explorers
 export const ARBITRUM_BLOCK_EXPLORER_URL = 'arbiscan.io';
 export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
+export const BSC_BLOCK_EXPLORER_URL = 'bscscan.com';
 export const OPTIMISM_BLOCK_EXPLORER_URL = 'optimistic.etherscan.io';
 
 // NFTs Contracts
@@ -74,6 +75,8 @@ export const ARBITRUM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const OPTIMISM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
+export const BNB_BSC_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const BNB_MAINNET_ADDRESS = '0xb8c77482e45f1f44de1745f52c74426c631bdd52';
 export const MATIC_MAINNET_ADDRESS =
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS =
@@ -84,6 +87,7 @@ export const COVALENT_ETH_ADDRESS =
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WMATIC_POLYGON_ADDRESS =
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
+export const WBNB_BSC_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
@@ -144,7 +148,7 @@ export type TokenListsExtendedRecord = Record<
 >;
 
 export const DefaultUniswapFavorites = {
-  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, DOG_ADDRESS, SOCKS_ADDRESS],
+  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
 };
 
 export const DefaultUniswapFavoritesMeta: Record<
@@ -176,19 +180,6 @@ export const DefaultUniswapFavoritesMeta: Record<
       symbol: 'ETH',
       type: 'token',
       uniqueId: ETH_ADDRESS,
-    },
-    [DOG_ADDRESS]: {
-      address: DOG_ADDRESS,
-      color: '#d6c492',
-      decimals: 18,
-      favorite: true,
-      highLiquidity: true,
-      isRainbowCurated: true,
-      isVerified: true,
-      name: 'The Doge NFT',
-      symbol: 'DOG',
-      type: 'token',
-      uniqueId: DOG_ADDRESS,
     },
     [SOCKS_ADDRESS]: {
       address: SOCKS_ADDRESS,

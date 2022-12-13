@@ -10,7 +10,7 @@ import { useAccountSettings, useSwapCurrencies } from '@/hooks';
 import { ethereumUtils } from '@/utils';
 
 export default function useRainbowFee({ tradeDetails, network }) {
-  const { inputCurrency } = useSwapCurrencies();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { accountAddress } = useAccountSettings();
   const [nativeAsset, setNativeAsset] = useState(null);
 
@@ -35,7 +35,7 @@ export default function useRainbowFee({ tradeDetails, network }) {
 
         const feeInOutputToken = convertRawAmountToDecimalFormat(
           feeInOutputTokensRawAmount,
-          18
+          outputCurrency?.decimals || 18
         );
 
         return (
@@ -59,7 +59,17 @@ export default function useRainbowFee({ tradeDetails, network }) {
       }
     }
     return null;
-  }, [inputCurrency, tradeDetails, nativeAsset]);
+  }, [
+    nativeAsset,
+    inputCurrency.price,
+    inputCurrency.decimals,
+    tradeDetails.sellAmount,
+    tradeDetails.buyTokenAddress,
+    tradeDetails.buyAmount,
+    tradeDetails.feePercentageBasisPoints,
+    tradeDetails.sellAmountMinusFees,
+    outputCurrency?.decimals,
+  ]);
 
   useEffect(() => {
     const getNativeAsset = async () => {

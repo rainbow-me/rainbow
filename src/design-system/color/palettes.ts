@@ -403,6 +403,7 @@ export type ForegroundColor =
   | 'scrimTertiary'
   | 'separator'
   | 'separatorSecondary'
+  | 'separatorTertiary'
   | 'buttonStroke'
   | 'buttonStrokeSecondary'
   | 'shadowNear'
@@ -493,6 +494,10 @@ export const foregroundColors: Record<
   'separatorSecondary': {
     light: globalColors.grey20,
     dark: 'rgba(245, 248, 255, 0.06)',
+  },
+  'separatorTertiary': {
+    light: 'rgba(9, 17, 31, 0.02)',
+    dark: 'rgba(245, 248, 255, 0.02)',
   },
   'buttonStroke': {
     light: 'rgba(0, 0, 0, 0.05)',
@@ -719,6 +724,7 @@ export type ShadowColor = typeof shadowColors[number];
 export const separatorColors = selectForegroundColors(
   'separator',
   'separatorSecondary',
+  'separatorTertiary',
   'divider20 (Deprecated)',
   'divider40 (Deprecated)',
   'divider60 (Deprecated)',
