@@ -20,10 +20,9 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
 import {
-  checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
   isUnstoppableAddressFormat,
-  isValidSeed,
+  isValidWallet,
 } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
@@ -67,18 +66,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
-  const isWatchable = useMemo(() => {
-    return (
-      seedPhrase !== accountAddress &&
-      checkIsValidAddressOrDomainFormat(seedPhrase)
-    );
+  const isSecretValid = useMemo(() => {
+    return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
-
-  const isImportable = useMemo(() => {
-    return seedPhrase !== accountAddress && isValidSeed(seedPhrase);
-  }, [accountAddress, seedPhrase]);
-
-  const isInputValid = isWatchable || isImportable;
 
   const handleSetImporting = useCallback(
     newImportingState => {
@@ -147,7 +137,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         typeof forceColor === 'string' || typeof forceColor === 'number'
           ? forceColor
           : null;
-      if ((!isInputValid || !seedPhrase) && !forceAddress) return null;
+      if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
       // Validate ENS
@@ -257,7 +247,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         }
       }
     },
-    [isInputValid, profilesEnabled, seedPhrase, startImportProfile]
+    [isSecretValid, profilesEnabled, seedPhrase, startImportProfile]
   );
 
   const dispatch = useDispatch();
@@ -408,10 +398,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     handlePressImportButton,
     handleSetSeedPhrase,
     inputRef,
-    isImportable,
-    isWatchable,
     isImporting,
-    isInputValid,
+    isSecretValid,
     seedPhrase,
   };
 }
