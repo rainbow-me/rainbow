@@ -27,6 +27,11 @@ const EMPTY_INIT_STATE = {
   subscriptionQueue: [],
 };
 
+/*
+ * We need to mock below three mocks because one of the migrations has imported our redux store
+ * which has a lot of module dependencies and firebase which mocks aren't working as they should.
+ * We don't want to mock all of them so we mock the used redux and firebase files, since we are not testing them here.
+ */
 jest.mock('@/redux/explorer', () => ({
   notificationsSubscription: jest.fn(),
 }));
