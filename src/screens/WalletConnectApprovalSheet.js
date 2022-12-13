@@ -475,7 +475,7 @@ export default function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
                     : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
-                        Number(chainId) // TODO
+                        Number(chainId)
                       )} network`}
                 </Text>
               </Column>
