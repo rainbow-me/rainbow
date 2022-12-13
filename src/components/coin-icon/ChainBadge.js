@@ -20,25 +20,7 @@ import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
-
-const sizeConfigs = {
-  large: {
-    containerSize: 64,
-    iconSize: 40,
-  },
-  medium: {
-    containerSize: 44,
-    iconSize: 20,
-  },
-  small: {
-    containerSize: 44,
-    iconSize: 20,
-  },
-  tiny: {
-    containerSize: 30,
-    iconSize: 14,
-  },
-};
+import { ChainBadgeSizeConfigs } from '@/components/coin-icon/ChainBadgeSizeConfigs';
 
 const ChainIcon = styled(FastImage)({
   height: ({ containerSize }) => containerSize,
@@ -68,7 +50,7 @@ export default function ChainBadge({
   size = 'small',
 }) {
   const { isDarkMode } = useTheme();
-  const { containerSize, iconSize } = sizeConfigs[size];
+  const { containerSize, iconSize } = ChainBadgeSizeConfigs[size];
 
   const source = useMemo(() => {
     let val = null;
