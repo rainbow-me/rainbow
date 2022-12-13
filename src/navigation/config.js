@@ -328,22 +328,22 @@ export const restoreSheetConfig = {
       } = {},
     } = route;
 
-    let heightForStep = restoreSheetSizes.short;
-    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-      heightForStep = restoreSheetSizes.medium;
-    } else if (step === WalletBackupStepTypes.cloud) {
-      heightForStep = restoreSheetSizes.long;
-    }
+    // let heightForStep = restoreSheetSizes.short;
+    // if (enableCloudRestore && step === WalletBackupStepTypes.first) {
+    //   heightForStep = restoreSheetSizes.medium;
+    // } else if (step === WalletBackupStepTypes.cloud) {
+    //   heightForStep = restoreSheetSizes.long;
+    // }
 
-    if (longFormHeight !== heightForStep) {
-      navigation.setParams({
-        longFormHeight: heightForStep,
-      });
-    }
+    // if (longFormHeight !== heightForStep) {
+    //   navigation.setParams({
+    //     longFormHeight: heightForStep,
+    //   });
+    // }
 
     return buildCoolModalConfig({
       ...params,
-      longFormHeight: heightForStep,
+      longFormHeight: longFormHeight,
     });
   },
 };

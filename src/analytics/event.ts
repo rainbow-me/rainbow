@@ -17,6 +17,7 @@ export const event = {
   learnArticleShared: 'learn_article.shared',
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
+  addWalletFlowStarted: 'add_wallet_flow.started',
 } as const;
 
 /**
@@ -67,5 +68,9 @@ export type EventProperties = {
     componentName: string;
     newWallet?: boolean;
     routeName: string;
+  };
+  [event.addWalletFlowStarted]: {
+    isFirstWallet: boolean;
+    type: 'backup' | 'seed' | 'watch' | 'hardware_wallet';
   };
 };
