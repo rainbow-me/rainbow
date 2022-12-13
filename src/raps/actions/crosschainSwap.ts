@@ -14,14 +14,13 @@ import {
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
-import { getFlashbotsProvider, isL2Network, toHex } from '@/handlers/web3';
+import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { Network } from '@/helpers';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { swapMetadataStorage } from './swap';
@@ -51,21 +50,8 @@ export const executeCrosschainSwap = async ({
   permit: boolean;
   flashbots: boolean;
 }) => {
-  let walletToUse = wallet;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider;
-
-  // Switch to the flashbots provider if enabled
-  if (flashbots && network === Network.mainnet) {
-    logger.debug('flashbots provider being set on mainnet');
-    provider = await getFlashbotsProvider();
-
-    // TODO(skylarbarrera): need to check if ledger and handle differently here
-    walletToUse = new Wallet((walletToUse as Wallet).privateKey, provider);
-  }
-
-  if (!walletToUse || !tradeDetails) return null;
-  const walletAddress = await walletToUse.getAddress();
+  if (!wallet || !tradeDetails) return null;
+  const walletAddress = await wallet.getAddress();
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
@@ -85,7 +71,7 @@ export const executeCrosschainSwap = async ({
     permit,
     chainId
   );
-  return fillCrosschainQuote(tradeDetails, transactionParams, walletToUse);
+  return fillCrosschainQuote(tradeDetails, transactionParams, wallet);
 };
 
 const crosschainSwap = async (

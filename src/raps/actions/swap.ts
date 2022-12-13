@@ -1,4 +1,3 @@
-import { Wallet } from '@ethersproject/wallet';
 import { Signer } from 'ethers';
 import {
   ChainId,
@@ -18,7 +17,7 @@ import {
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
-import { getFlashbotsProvider, isL2Network, toHex } from '@/handlers/web3';
+import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
@@ -26,7 +25,6 @@ import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { Network } from '@/helpers';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -55,25 +53,12 @@ export const executeSwap = async ({
   gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
-  wallet: Wallet | Signer | null;
+  wallet: Signer | null;
   permit: boolean;
   flashbots: boolean;
 }) => {
-  let walletToUse = wallet;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  let provider;
-
-  // Switch to the flashbots provider if enabled
-  if (flashbots && network === Network.mainnet) {
-    logger.debug('flashbots provider being set on mainnet');
-    provider = await getFlashbotsProvider();
-
-    // TODO(skylarbarrera): need to check if ledger and handle differently here
-    walletToUse = new Wallet((walletToUse as Wallet).privateKey, provider);
-  }
-
-  if (!walletToUse || !tradeDetails) return null;
-  const walletAddress = await walletToUse.getAddress();
+  if (!wallet || !tradeDetails) return null;
+  const walletAddress = await wallet.getAddress();
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
   const transactionParams = {
@@ -99,7 +84,7 @@ export const executeSwap = async ({
     );
     return wrapNativeAsset(
       tradeDetails.buyAmount,
-      walletToUse,
+      wallet,
       chainId,
       transactionParams
     );
@@ -116,7 +101,7 @@ export const executeSwap = async ({
     );
     return unwrapNativeAsset(
       tradeDetails.sellAmount,
-      walletToUse,
+      wallet,
       chainId,
       transactionParams
     );
@@ -130,13 +115,7 @@ export const executeSwap = async ({
       permit,
       chainId
     );
-    return fillQuote(
-      tradeDetails,
-      transactionParams,
-      walletToUse,
-      permit,
-      chainId
-    );
+    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId);
   }
 };
 
