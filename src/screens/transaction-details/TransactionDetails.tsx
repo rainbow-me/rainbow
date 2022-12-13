@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
-import { useNavigation } from '@/navigation';
 import { BackgroundProvider, Box } from '@/design-system';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
+import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RouteParams = {
@@ -31,6 +31,8 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const [sheetHeight, setSheetHeight] = useState(0);
 
   const type = transaction.type;
+  const from = transaction.from ?? undefined;
+  const to = transaction.to ?? undefined;
   const hash = ethereumUtils.getHash(transaction);
   const fee = transaction.fee;
   const value = transaction.balance?.display;
@@ -61,6 +63,8 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           backgroundColor={backgroundColor}
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
+          scrollEnaled={false}
+          showsVerticalScrollIndicator={false}
         >
           <Box
             background="surfacePrimary"
@@ -68,6 +72,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
+            <TransactionDetailsFromToSection from={from} to={to} />
             <TransactionDetailsValueAndFeeSection
               coinAddress={coinAddress}
               coinSymbol={coinSymbol}
