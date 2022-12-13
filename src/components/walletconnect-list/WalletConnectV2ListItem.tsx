@@ -131,7 +131,6 @@ export function WalletConnectV2ListItem({
   }, [session]);
 
   const availableNetworks = useMemo(() => {
-    // we dont want to show mainnet
     return chainIds
       .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
       .sort(network => (network === Network.mainnet ? -1 : 1));
