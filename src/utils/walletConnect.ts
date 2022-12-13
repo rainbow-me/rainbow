@@ -188,11 +188,7 @@ export function onSessionProposal(
   logger.debug(`WC v2: session_proposal`);
 
   const receivedTimestamp = Date.now();
-  const {
-    proposer,
-    expiry, // TODO do we need to do anything with this?
-    requiredNamespaces,
-  } = proposal.params;
+  const { proposer, requiredNamespaces } = proposal.params;
 
   /**
    * Trying to be defensive here, but I'm not sure we support this anyway so
@@ -247,8 +243,6 @@ export function onSessionProposal(
             events: value.events,
           };
 
-          // TODO do we support connecting to multiple chains at the same time?
-          // The sheet def doesn't, only shows one
           for (const chain of value.chains) {
             const chainId = parseInt(chain.split(`${key}:`)[1]);
             namespaces[key].accounts.push(
@@ -496,15 +490,25 @@ export async function handleSessionRequestResponse(
   store.dispatch(removeRequest(sessionRequestEvent.id));
 }
 
+/**
+ * Returns all active settings in a type-safe manner.
+ */
 export async function getAllActiveSessions() {
   const client = await signClient;
   return client?.session?.values || [];
 }
 
+/**
+ * Synchronous version of `getAllActiveSessions`. Returns all active settings
+ * in a type-safe manner.
+ */
 export function getAllActiveSessionsSync() {
   return syncSignClient?.session?.values || [];
 }
 
+/**
+ * Updates an existing session with new values
+ */
 export async function updateSession(
   session: SessionTypes.Struct,
   { address }: { address?: string }
@@ -520,7 +524,6 @@ export async function updateSession(
       events: value.events,
     };
 
-    // TODO do we support connecting to multiple chains at the same time?
     for (const chain of value.chains) {
       const chainId = parseInt(chain.split(`${key}:`)[1]);
       namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
@@ -533,6 +536,10 @@ export async function updateSession(
   });
 }
 
+/**
+ * Initiates a disconnect from the app-end of the connection. Disconnection
+ * within a dapp is handled internally by WC v2.
+ */
 export async function disconnectSession(session: SessionTypes.Struct) {
   const client = await signClient;
 
