@@ -46,14 +46,6 @@ const androidContextMenuActions = [
   lang.t('walletconnect.disconnect'),
 ];
 
-if (networksAvailable.length > 1) {
-  androidContextMenuActions.splice(
-    0,
-    0,
-    lang.t('walletconnect.switch_network')
-  );
-}
-
 const SessionRow = styled(Row)({
   alignItems: 'center',
   justifyContent: 'flex-start',
@@ -177,17 +169,9 @@ export function WalletConnectV2ListItem({
         title: dappName,
       },
       async (index: number) => {
-        if (index === 0 && networksAvailable.length > 1) {
-          // TODO
-        } else if (
-          (index === 0 && networksAvailable.length === 1) ||
-          index === 1
-        ) {
+        if (index === 0) {
           handlePressChangeWallet();
-        } else if (
-          (index === 1 && networksAvailable.length === 1) ||
-          index === 2
-        ) {
+        } else if (index === 1) {
           await disconnectSession(session);
           reload();
           analytics.track(
@@ -213,8 +197,6 @@ export function WalletConnectV2ListItem({
         });
       } else if (actionKey === 'switch-account') {
         handlePressChangeWallet();
-      } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
-        // TODO
       }
     },
     [address, dappName, dappUrl, handlePressChangeWallet]
