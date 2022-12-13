@@ -70,6 +70,21 @@
         "title": "Watch an Ethereum address"
       }
     },
+    "import_seed_phrase_sheet": {
+      "paste": "Paste",
+      "continue": "Continue",
+      "import": {
+        "title": "Restore a wallet",
+        "description": "Restore with a recovery phrase or private key from Rainbow or another crypto wallet",
+        "placeholder": "Enter a recovery phrase or private key",
+        "button": "Import"
+      },
+      "watch": {
+        "title": "Watch an address",
+        "placeholder": "Enter an Ethereum address or ENS name",
+        "button": "Watch"
+      }
+    },
     "add_funds": {
       "eth": {
         "or_send_eth": "or send ETH to your wallet",

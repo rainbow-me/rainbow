@@ -31,6 +31,8 @@ import { isValidWallet } from '@/helpers/validators';
 import Clipboard from '@react-native-community/clipboard';
 import { delay } from '@/helpers/utilities';
 
+const TRANSLATIONS = i18n.l.import_seed_phrase_sheet;
+
 type RouteParams = {
   ImportSeedPhraseSheetParams: {
     type: 'watch' | 'import';
@@ -38,7 +40,7 @@ type RouteParams = {
 };
 
 export const ImportSeedPhraseSheet: React.FC = () => {
-  const { params: { type } = {} } = useRoute<
+  const { params: { type = 'watch' } = {} } = useRoute<
     RouteProp<RouteParams, 'ImportSeedPhraseSheetParams'>
   >();
 
@@ -54,9 +56,10 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     seedPhrase,
   } = useImportingWallet();
 
+  const { isDarkMode } = useTheme();
+
   const [copiedText, setCopiedText] = useState('');
 
-  // const { clipboard } = useClipboard();
   const { accountAddress } = useAccountSettings();
 
   const isClipboardValidSecret = useMemo(
@@ -101,6 +104,16 @@ export const ImportSeedPhraseSheet: React.FC = () => {
 
   const buttonDisabled = seedPhrase ? !isInputValid : !isClipboardValidSecret;
 
+  let buttonColor;
+  let buttonTextColor;
+  if (buttonDisabled) {
+    buttonColor = globalColors.grey100;
+    buttonTextColor = 'labelSecondary';
+  } else {
+    buttonColor = colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1);
+    buttonTextColor = seedPhrase ? 'label' : { custom: globalColors.purple60 };
+  }
+
   return (
     <>
       <BackgroundProvider color="surfaceSecondary">
@@ -121,7 +134,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
             >
               <Stack space="20px">
                 <Text align="center" color="label" size="26pt" weight="bold">
-                  {type === 'watch' ? 'Watch an address' : 'Restore a wallet'}
+                  {i18n.t(TRANSLATIONS[type].title)}
                 </Text>
                 {type === 'import' && (
                   <Text
@@ -130,8 +143,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
                     size="15pt / 135%"
                     weight="semibold"
                   >
-                    Restore with a recovery phrase or private key from Rainbow
-                    or another crypto wallet.
+                    {i18n.t(TRANSLATIONS.import.description)}
                   </Text>
                 )}
               </Stack>
@@ -160,7 +172,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           multiline
           numberOfLines={3}
           onSubmitEditing={handlePressImportButton}
-          placeholder={i18n.t(i18n.l.wallet.new.enter_seeds_placeholder)}
+          placeholder={i18n.t(TRANSLATIONS[type].placeholder)}
           placeholderTextColor={labelTertiary}
           ref={inputRef}
           selectionColor={globalColors.purple60}
@@ -174,9 +186,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
       </Box>
       <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
         <Inset bottom="20px" right="20px">
-          <AccentColorProvider
-            color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
-          >
+          <AccentColorProvider color={buttonColor}>
             <Box
               alignItems="center"
               as={ButtonPressAnimation}
@@ -190,17 +200,22 @@ export const ImportSeedPhraseSheet: React.FC = () => {
                   ? handlePressImportButton
                   : () => handleSetSeedPhrase(copiedText)
               }
-              shadow={seedPhrase ? '12px accent' : undefined}
+              shadow={seedPhrase && !buttonDisabled ? '12px accent' : undefined}
               width={{ custom: 88 }}
             >
+              {/* for some reason RDS is inferring the color mode as dark here */}
+              {/* <ColorModeProvider value={isDarkMode ? 'dark' : 'light'}> */}
               <Text
                 align="center"
-                color={seedPhrase ? 'label' : { custom: globalColors.purple60 }}
+                color={buttonTextColor}
                 size="15pt"
                 weight="bold"
               >
-                {seedPhrase ? 'Continue' : '􀉃 Paste'}
+                {seedPhrase
+                  ? i18n.t(TRANSLATIONS.continue)
+                  : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
               </Text>
+              {/* </ColorModeProvider> */}
             </Box>
           </AccentColorProvider>
         </Inset>
