@@ -14,50 +14,8 @@ import {
   getAllNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
+  updateGroupSettings,
 } from '@/notifications/settings/storage';
-
-/**
- Hook for getting and setting notification settings for a single wallet.
-
- Returns an object with the wallet address, enabled/disabled topics, relationship,
- and a main boolean for enabling/disabling all notifications for this wallet.
-
- Also returns a function for updating settings.
- The function saves new option values to storage and handles
- subscribing/unsubscribing to Firebase based on selected topics for this wallet.
- */
-export const useNotificationSettings = (address: string) => {
-  const data = getAllNotificationSettingsFromStorage();
-  const settingsForWallet = data.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
-  const [
-    notifications,
-    setNotificationSettings,
-  ] = useState<WalletNotificationSettings>(settingsForWallet);
-
-  const updateSettings = useCallback(
-    (options: object) => {
-      const newSettings = data.map((wallet: WalletNotificationSettings) => {
-        if (wallet.address === address) {
-          return { ...wallet, ...options };
-        }
-        return wallet;
-      });
-      const newSettingsForWallet = newSettings.find(
-        (wallet: WalletNotificationSettings) => wallet.address === address
-      );
-      notificationSettingsStorage.set(
-        WALLET_TOPICS_STORAGE_KEY,
-        JSON.stringify(newSettings)
-      );
-      setNotificationSettings(newSettingsForWallet);
-    },
-    [address, data]
-  );
-
-  return { notifications, updateSettings };
-};
 
 /**
  Hook to constantly listen to notification settings.
@@ -147,31 +105,20 @@ export const useWalletGroupNotificationSettings = () => {
     };
   }, [notificationSettings]);
 
-  const updateSectionSettings = useCallback(
-    (options: object) => {
-      const newSettings = { ...existingGroupSettings, ...options };
-      notificationSettingsStorage.set(
-        WALLET_GROUPS_STORAGE_KEY,
-        JSON.stringify(newSettings)
-      );
-    },
-    [existingGroupSettings]
-  );
-
-  const updateGroupSettings = useCallback(
+  const updateGroupSettingsAndSubscriptions = useCallback(
     (type: NotificationRelationshipType, enabled: boolean) => {
-      const options = {
+      const options: GroupSettings = {
         [type]: enabled,
       };
-      const newSettings = { ...existingGroupSettings, ...options };
+      const newSettings: GroupSettings = {
+        ...existingGroupSettings,
+        ...options,
+      };
       const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
       const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      const updatedStore = () => {
-        notificationSettingsStorage.set(
-          WALLET_GROUPS_STORAGE_KEY,
-          JSON.stringify(newSettings)
-        );
+      const updateStore = () => {
+        updateGroupSettings(newSettings);
       };
 
       if (newOwnerEnabled !== ownerEnabled) {
@@ -179,13 +126,13 @@ export const useWalletGroupNotificationSettings = () => {
           ownedWallets,
           NotificationRelationship.OWNER,
           newOwnerEnabled
-        ).then(updatedStore);
+        ).then(updateStore);
       } else if (newWatcherEnabled !== watcherEnabled) {
         return toggleGroupNotifications(
           watchedWallets,
           NotificationRelationship.WATCHER,
           newWatcherEnabled
-        ).then(updatedStore);
+        ).then(updateStore);
       }
       return Promise.resolve();
     },
@@ -212,7 +159,6 @@ export const useWalletGroupNotificationSettings = () => {
     watcherEnabled: isWatcherEnabled,
     lastOwnedWalletEnabled,
     lastWatchedWalletEnabled,
-    updateGroupSettings,
-    updateSectionSettings,
+    updateGroupSettingsAndSubscriptions,
   };
 };

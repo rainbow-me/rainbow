@@ -11,6 +11,8 @@ import {
   Migration,
 } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
+import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
+import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -26,7 +28,11 @@ const storage = new Storage<
  * All migrations should be added here IN the ORDER in which we need them to
  * run.
  */
-const migrations: Migration[] = [deleteImgixMMKVCache()];
+const migrations: Migration[] = [
+  deleteImgixMMKVCache(),
+  prepareDefaultNotificationGroupSettingsState(),
+  migrateNotificationSettingsToV2(),
+];
 
 /**
  * @private Only exported for testing

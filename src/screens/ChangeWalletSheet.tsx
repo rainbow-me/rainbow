@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/core';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import Divider from '../components/Divider';
@@ -52,6 +52,7 @@ import {
 import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
+import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 164 : 111;
@@ -338,10 +339,25 @@ export default function ChangeWalletSheet() {
   const onPressNotifications = useCallback(
     (walletName, address) => {
       analytics.track('Tapped "Notification Settings"');
-      navigate(Routes.SETTINGS_SHEET, {
-        params: { address, title: walletName },
-        screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
-      });
+      const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(
+        address
+      );
+      if (walletNotificationSettings) {
+        navigate(Routes.SETTINGS_SHEET, {
+          params: {
+            address,
+            title: walletName,
+            notificationSettings: walletNotificationSettings,
+          },
+          screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
+        });
+      } else {
+        Alert.alert(
+          lang.t('wallet.action.notifications.alert_title'),
+          lang.t('wallet.action.notifications.alert_message'),
+          [{ text: 'OK' }]
+        );
+      }
     },
     [navigate]
   );
