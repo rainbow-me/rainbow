@@ -11,7 +11,7 @@ import {
   useForegroundColor,
   useTextStyle,
 } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import {
   useAccountSettings,
   useDimensions,
@@ -73,7 +73,9 @@ export const ImportSeedPhraseSheet: React.FC = () => {
         delay(1000);
       }
     };
-    refreshClipboard();
+    if (!IS_TEST) {
+      refreshClipboard();
+    }
   }, [seedPhrase]);
 
   useEffect(() => {
