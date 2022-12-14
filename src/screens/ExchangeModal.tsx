@@ -663,7 +663,7 @@ export default function ExchangeModal({
         ) {
           logger.debug('flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
-          wallet = new Wallet((wallet as Wallet).privateKey, flashbotsProvider);
+          wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         const callback = (
