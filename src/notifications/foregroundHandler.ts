@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
 import notifee, { AndroidStyle, Notification } from '@notifee/react-native';
-import { logger } from '@/utils';
 import { FixedRemoteMessage } from '@/notifications/types';
+import { logger, RainbowError } from '@/logger';
 
 export function handleShowingForegroundNotification(
   remoteMessage: FixedRemoteMessage
@@ -32,7 +32,12 @@ export function handleShowingForegroundNotification(
     };
   }
 
-  notifee.displayNotification(notification).catch(e => {
-    logger.sentry(e);
+  notifee.displayNotification(notification).catch(error => {
+    logger.error(
+      new RainbowError(
+        'Error while displaying notification with notifee library'
+      ),
+      { error }
+    );
   });
 }

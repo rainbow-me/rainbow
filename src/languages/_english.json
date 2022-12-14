@@ -1349,7 +1349,9 @@
         "first_time_allow_notifications": "Allow Notifications",
         "error_alert_title": "Subscription Failed",
         "error_alert_content": "Please try again later.",
-        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later."
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later.",
+        "no_settings_for_address_title": "No settings for this wallet",
+        "no_settings_for_address_content": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
       },
       "privacy": "Privacy",
       "privacy_section": {
@@ -1507,7 +1509,11 @@
         "hide": "Hide",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
-        "notifications": "Notification Settings",
+        "notifications": {
+          "action_title": "Notification Settings",
+          "alert_title": "No settings for this wallet",
+          "alert_message": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
+        },
         "pair_hardware_wallet": "Pair a Ledger Nano X",
         "paste": "Paste",
         "pin": "Pin",
