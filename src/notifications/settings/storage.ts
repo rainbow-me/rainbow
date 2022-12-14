@@ -3,6 +3,7 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
+  GroupSettings,
   NotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -20,33 +21,49 @@ export const notificationSettingsStorage = new MMKV({
 export const getAllNotificationSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY);
 
-  if (data) return JSON.parse(data);
+  if (data) return JSON.parse(data) as WalletNotificationSettings[];
   return [];
+};
+
+/**
+ * Grabs notification settings for wallet with a given address if it exists
+ */
+export const getNotificationSettingsForWalletWithAddress = (
+  address: string
+) => {
+  const allSettings = getAllNotificationSettingsFromStorage();
+  return allSettings.find(
+    (wallet: WalletNotificationSettings) => wallet.address === address
+  );
+};
+
+/**
+ * Writes an updated settings object to storage
+ */
+export const setAllNotificationSettingsToStorage = (
+  settings: WalletNotificationSettings[]
+) => {
+  notificationSettingsStorage.set(
+    WALLET_TOPICS_STORAGE_KEY,
+    JSON.stringify(settings)
+  );
 };
 
 export const getExistingGroupSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(WALLET_GROUPS_STORAGE_KEY);
 
-  if (data) return JSON.parse(data);
+  if (data) return JSON.parse(data) as GroupSettings;
   return {};
 };
 
 /**
- Checks if notification settings exist for a wallet and returns a boolean.
+ * Updates settings for all wallets with relationship type
+ * @returns updated wallet settings array
  */
-export const walletHasNotificationSettings = (address: string) => {
-  const data = getAllNotificationSettingsFromStorage();
-  const settings = data.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
-
-  return !!settings;
-};
-
-export const updateSettingsForWallets = (
+export const updateSettingsForWalletsWithRelationshipType = (
   type: NotificationRelationshipType,
-  options: object
-) => {
+  options: Partial<WalletNotificationSettings>
+): WalletNotificationSettings[] => {
   const data = getAllNotificationSettingsFromStorage();
   const newSettings = data.map((wallet: WalletNotificationSettings) => {
     if (wallet.type === type) {
@@ -58,4 +75,50 @@ export const updateSettingsForWallets = (
     WALLET_TOPICS_STORAGE_KEY,
     JSON.stringify(newSettings)
   );
+
+  return newSettings;
+};
+
+/**
+ * Updates settings for wallet with address
+ * @returns updated wallet settings object or undefined if there's no wallet with passed address
+ */
+export const updateSettingsForWalletWithAddress = (
+  address: string,
+  options: Partial<WalletNotificationSettings>
+): WalletNotificationSettings | undefined => {
+  let updatedSettings: WalletNotificationSettings | undefined = undefined;
+  const data = getAllNotificationSettingsFromStorage();
+  const newSettings = data.map((wallet: WalletNotificationSettings) => {
+    if (wallet.address === address) {
+      updatedSettings = { ...wallet, ...options };
+      return updatedSettings;
+    }
+    return wallet;
+  });
+  notificationSettingsStorage.set(
+    WALLET_TOPICS_STORAGE_KEY,
+    JSON.stringify(newSettings)
+  );
+
+  return updatedSettings;
+};
+
+/**
+ * Updates group settings by passing full or partial group settings object
+ * @returns updated group settings object
+ */
+export const updateGroupSettings = (options: GroupSettings): GroupSettings => {
+  const existingGroupSettings = getExistingGroupSettingsFromStorage();
+  const newSettings: GroupSettings = {
+    ...existingGroupSettings,
+    ...options,
+  };
+
+  notificationSettingsStorage.set(
+    WALLET_GROUPS_STORAGE_KEY,
+    JSON.stringify(newSettings)
+  );
+
+  return newSettings;
 };

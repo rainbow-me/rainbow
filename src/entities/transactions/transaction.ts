@@ -53,6 +53,18 @@ export interface RainbowTransaction {
   txTo?: EthereumAddress | null;
   type?: TransactionType;
   value?: BigNumberish; // for pending tx
+  fee?: RainbowTransactionFee;
+}
+
+export interface RainbowTransactionFee {
+  value: {
+    amount: string;
+    display: string;
+  };
+  native?: {
+    amount: string;
+    display: string;
+  };
 }
 
 export interface NewTransaction {

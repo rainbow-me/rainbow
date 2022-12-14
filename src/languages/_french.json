@@ -263,7 +263,10 @@
         "title": "Create your ENS profile :)",
         "body": "Replace your wallet address with a profile owned entirely by you. :)"
       },
-      "eth": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
+      "eth": {
+        "buy_ethereum": "Buy Ethereum :)",
+        "today": "today :)"
+      },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",
@@ -1327,7 +1330,9 @@
         "first_time_allow_notifications": "Allow Notifications :)",
         "error_alert_title": "Subscription Failed :)",
         "error_alert_content": "Please try again later. :)",
-        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)"
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)",
+        "no_settings_for_address_title": "No settings for this wallet",
+        "no_settings_for_address_content": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
       },
       "privacy": "Privacy :)",
       "privacy_section": {
@@ -1402,6 +1407,10 @@
           "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!"
         }
       }
+    },
+    "transaction_details": {
+      "hash": "Tx Hash",
+      "network_fee": "Network Fee"
     },
     "time": {
       "days": {
@@ -1485,7 +1494,11 @@
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
         "input": "Transaction Input",
-        "notifications": "Notification Settings :)",
+        "notifications": {
+          "action_title": "Notification Settings",
+          "alert_title": "No settings for this wallet",
+          "alert_message": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
+        },
         "pair_hardware_wallet": "Pair a Ledger Nano X :)",
         "paste": "Coller",
         "pin": "Pin :)",
