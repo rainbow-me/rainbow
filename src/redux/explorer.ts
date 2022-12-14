@@ -75,7 +75,6 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
-    RECEIVED_BSC: 'received address bsc-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -88,7 +87,6 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
-    RECEIVED_BSC: 'received address bsc-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
@@ -261,30 +259,6 @@ const addressSubscription = (
       transactions_limit: TRANSACTIONS_LIMIT,
     },
     scope: ['assets', 'transactions'],
-  },
-];
-
-/**
- * Configures a subscription to get asset balances for a network
- *
- * @param address The address.
- * @param currency The currency to use.
- * @param action The subscription asset.
- * @returns The arguments for the `emit` function call.
- */
-const addressAssetBalanceSubscription = (
-  address: string,
-  currency: string,
-  network: Network,
-  action: SocketSubscriptionActionType = 'subscribe'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: [`${network === Network.mainnet ? '' : `${network}-`}assets`],
   },
 ];
 
@@ -475,7 +449,6 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.arbitrum}-transactions`,
       `${Network.optimism}-transactions`,
       `${Network.polygon}-transactions`,
-      `${Network.bsc}-transactions`,
     ],
   },
 ];
@@ -546,14 +519,6 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.bsc,
-        'unsubscribe'
-      )
     );
     addressSocket.close();
   }
@@ -669,13 +634,6 @@ export const explorerInit = () => async (
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.bsc
-      )
     );
   });
 
@@ -890,7 +848,6 @@ export const explorerInitL2 = (network: Network | null = null) => (
   if (getState().settings.network === Network.mainnet) {
     switch (network) {
       case Network.arbitrum:
-      case Network.bsc:
       case Network.polygon:
         // Fetch all assets from refraction
         dispatch(fetchAssetsFromRefraction());
@@ -1033,14 +990,6 @@ const listenOnAddressMessages = (socket: Socket) => (
   );
 
   socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_BSC,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('bsc txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
-
-  socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
@@ -1091,12 +1040,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.polygon));
-    }
-  );
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_BSC,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.bsc));
     }
   );
 

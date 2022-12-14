@@ -28,7 +28,6 @@ import {
   ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
-  BNB_BSC_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
 } from '@/references';
@@ -108,7 +107,6 @@ export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
   rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
-  rpcEndpoints[Network.bsc] = config.bsc_mainnet_rpc;
 };
 
 /**
@@ -148,7 +146,6 @@ export const isL2Network = (network: Network | string): boolean => {
     case Network.arbitrum:
     case Network.optimism:
     case Network.polygon:
-    case Network.bsc:
       return true;
     default:
       return false;
@@ -623,8 +620,7 @@ export const createSignableTransaction = async (
     transaction.asset.address === ETH_ADDRESS ||
     transaction.asset.address === ARBITRUM_ETH_ADDRESS ||
     transaction.asset.address === OPTIMISM_ETH_ADDRESS ||
-    transaction.asset.address === MATIC_POLYGON_ADDRESS ||
-    transaction.asset.address === BNB_BSC_ADDRESS
+    transaction.asset.address === MATIC_POLYGON_ADDRESS
   ) {
     return getTxDetails(transaction);
   }
