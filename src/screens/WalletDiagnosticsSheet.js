@@ -30,8 +30,9 @@ import {
   useWalletsWithBalancesAndNames,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, haptics } from '@/utils';
+import { haptics } from '@/utils';
 import logger from '@/utils/logger';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
 export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -231,10 +232,9 @@ const WalletDiagnosticsSheet = () => {
                 if (userPin) {
                   secret = await encryptor.decrypt(userPin, secret);
                 }
-                const {
-                  address,
-                  type,
-                } = await ethereumUtils.deriveAccountFromWalletInput(secret);
+                const { address, type } = await deriveAccountFromWalletInput(
+                  secret
+                );
                 let createdAt = null;
                 let label = null;
                 Object.keys(walletsWithBalancesAndNames).some(k => {

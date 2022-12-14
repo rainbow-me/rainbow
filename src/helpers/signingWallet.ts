@@ -15,17 +15,18 @@ import {
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix } from '@/handlers/web3';
-import { ethereumUtils, logger } from '@/utils';
+import { logger } from '@/utils';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
 
   if (typeof alreadyExistingWallet !== 'string') {
     const walletSeed = generateMnemonic();
-    const {
-      wallet,
-      address,
-    } = await ethereumUtils.deriveAccountFromWalletInput(walletSeed);
+    const { wallet, address } = await deriveAccountFromWalletInput(walletSeed);
+
+    // @ts-ignore need to handle types in case wallet or address are null
+    if (!wallet || !address) return null;
 
     const privateKey = addHexPrefix(
       (wallet as LibWallet).getPrivateKey().toString('hex')
