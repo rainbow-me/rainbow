@@ -689,6 +689,10 @@
         "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
         "title": "Connection failed"
       },
+      "failed_wc_invalid_methods": {
+        "text": "Uh oh, something went wrong! The dapp requested wallet signing methods that are unsupported by Rainbow.",
+        "title": "Connection failed"
+      },
       "floor_price": {
         "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
         "title": "Collection floor price"

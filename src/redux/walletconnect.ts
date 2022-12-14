@@ -157,6 +157,7 @@ export interface WalletconnectApprovalSheetRouteParams {
   >;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
+  failureExplainSheetVariant?: string;
 }
 
 /**

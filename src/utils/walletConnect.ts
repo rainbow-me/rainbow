@@ -114,59 +114,89 @@ function parseRPCParams({
   return {};
 }
 
+/**
+ * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
+ * shows the text configured by the `reason` string, which is a key of the
+ * `explainers` object in `ExplainSheet`
+ */
+function showErrorSheet({ reason }: { reason?: string } = {}) {
+  const route: ReturnType<
+    NavigationContainerRef['getCurrentRoute']
+  > = getActiveRoute();
+
+  const routeParams: WalletconnectApprovalSheetRouteParams = {
+    receivedTimestamp: Date.now(),
+    timedOut: true,
+    failureExplainSheetVariant: reason || 'failed_wc_connection',
+    // empty, the sheet will show the error state
+    async callback() {},
+  };
+
+  // end load state with `timedOut` and provide failure callback
+  Navigation.handleAction(
+    Routes.WALLET_CONNECT_APPROVAL_SHEET,
+    routeParams,
+    route?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+  );
+}
+
+async function rejectProposal({
+  proposal,
+  reason,
+}: {
+  proposal: SignClientTypes.EventArguments['session_proposal'];
+  reason: Parameters<typeof getSdkError>[0];
+}) {
+  logger.error(new RainbowError(`WC v2: session approval denied`), {
+    reason,
+    proposal,
+  });
+
+  const client = await signClient;
+  const { id, proposer } = proposal.params;
+
+  await client.reject({ id, reason: getSdkError(reason) });
+
+  setHasPendingDeeplinkPendingRedirect(false);
+
+  analytics.track('Rejected new WalletConnect session', {
+    dappName: proposer.metadata.name,
+    dappUrl: proposer.metadata.url,
+  });
+}
+
 export async function pair({ uri }: { uri: string }) {
   logger.debug(`WC v2: pair`, { uri });
 
-  // show loading state as feedback for user
-  Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {});
+  try {
+    // show loading state as feedback for user
+    Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {});
 
-  const receivedTimestamp = Date.now();
-  const { topic } = parseUri(uri);
-  const client = await signClient;
+    const { topic } = parseUri(uri);
+    const client = await signClient;
 
-  await client.core.pairing.pair({ uri });
+    await client.core.pairing.pair({ uri });
 
-  const timeout = setTimeout(() => {
-    const route: ReturnType<
-      NavigationContainerRef['getCurrentRoute']
-    > = getActiveRoute();
+    const timeout = setTimeout(() => {
+      showErrorSheet();
+      analytics.track('New WalletConnect session time out');
+    }, 10_000);
 
-    if (!route) return;
+    const handler = (
+      proposal: SignClientTypes.EventArguments['session_proposal']
+    ) => {
+      // listen for THIS topic pairing, and clear timeout if received
+      if (proposal.params.pairingTopic === topic) {
+        client.off('session_proposal', handler);
+        clearTimeout(timeout);
+      }
+    };
 
-    /**
-     * If user is still looking at the approval sheet, show them the failure
-     * state. Otherwise, do nothing
-     */
-    if (route.name === Routes.WALLET_CONNECT_APPROVAL_SHEET) {
-      const routeParams: WalletconnectApprovalSheetRouteParams = {
-        receivedTimestamp,
-        timedOut: true,
-        // empty, the sheet will show the error state
-        async callback() {},
-      };
-
-      // end load state with `timedOut` and provide failure callback
-      Navigation.handleAction(
-        Routes.WALLET_CONNECT_APPROVAL_SHEET,
-        routeParams,
-        true
-      );
-    }
-
-    analytics.track('New WalletConnect session time out');
-  }, 20_000);
-
-  function handler(
-    proposal: SignClientTypes.EventArguments['session_proposal']
-  ) {
-    // listen for THIS topic pairing, and clear timeout if received
-    if (proposal.params.pairingTopic === topic) {
-      client.off('session_proposal', handler);
-      clearTimeout(timeout);
-    }
+    client.on('session_proposal', handler);
+  } catch (e) {
+    logger.error(new RainbowError(`WC v2: pairing failed`), { uri });
+    showErrorSheet();
   }
-
-  client.on('session_proposal', handler);
 }
 
 export async function initListeners() {
@@ -180,7 +210,7 @@ export async function initListeners() {
   client.on('session_request', onSessionRequest);
 }
 
-export function onSessionProposal(
+export async function onSessionProposal(
   proposal: SignClientTypes.EventArguments['session_proposal']
 ) {
   logger.debug(`WC v2: session_proposal`);
@@ -197,7 +227,7 @@ export function onSessionProposal(
     return;
   }
 
-  const { chains } = requiredNamespaces.eip155;
+  const { chains, methods } = requiredNamespaces.eip155;
   const chainId = parseInt(chains[0].split('eip155:')[1]);
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
   const peerMeta = proposer.metadata;
@@ -205,6 +235,14 @@ export function onSessionProposal(
     dappNameOverride(peerMeta.url) ||
     peerMeta.name ||
     lang.t(lang.l.walletconnect.unknown_dapp);
+
+  for (const method of methods) {
+    if (!isSigningMethod(method)) {
+      await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
+      showErrorSheet({ reason: 'failed_wc_invalid_methods' });
+      return;
+    }
+  }
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
@@ -266,7 +304,8 @@ export function onSessionProposal(
             id,
             namespaces,
           });
-          const session = await acknowledged();
+
+          await acknowledged();
 
           if (hasDeeplinkPendingRedirect) {
             setHasPendingDeeplinkPendingRedirect(false);
@@ -300,16 +339,7 @@ export function onSessionProposal(
           });
         }
       } else if (!approved) {
-        setHasPendingDeeplinkPendingRedirect(false);
-
-        logger.debug(`WC v2: session approval denied`);
-
-        await client.reject({ id, reason: getSdkError('USER_REJECTED') });
-
-        analytics.track('Rejected new WalletConnect session', {
-          dappName: proposer.metadata.name,
-          dappUrl: proposer.metadata.url,
-        });
+        await rejectProposal({ proposal, reason: 'USER_REJECTED' });
       }
     },
   };
@@ -444,11 +474,18 @@ export async function onSessionRequest(
       });
     }
   } else {
-    logger.info(`utils/walletConnectV2: received unsupported session_request`);
+    logger.error(
+      new RainbowError(
+        `WC v2: received unsupported session_request RPC method`
+      ),
+      {
+        method,
+      }
+    );
 
     await client.respond({
       topic,
-      response: formatJsonRpcError(id, `Unsupported RPC method`),
+      response: formatJsonRpcError(id, getSdkError('UNSUPPORTED_METHODS')),
     });
   }
 }
