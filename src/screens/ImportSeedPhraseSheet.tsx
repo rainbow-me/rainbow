@@ -12,21 +12,14 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import {
-  useAccountSettings,
-  useDimensions,
-  useImportingWallet,
-  useKeyboardHeight,
-} from '@/hooks';
+import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/core';
-import { isValidWallet } from '@/helpers/validators';
 import Clipboard from '@react-native-community/clipboard';
-import { delay } from '@/helpers/utilities';
 import { LoadingOverlay } from '@/components/modal';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
@@ -52,29 +45,18 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     isSecretValid,
     seedPhrase,
   } = useImportingWallet();
+  const { height: deviceHeight } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
 
-  const [copiedText, setCopiedText] = useState('');
-
-  const { accountAddress } = useAccountSettings();
-
-  const isClipboardValidInput = useMemo(
-    () => copiedText !== accountAddress && isValidWallet(copiedText),
-    [accountAddress, copiedText]
-  );
+  const textStyle = useTextStyle({
+    align: 'center',
+    color: isSecretValid ? { custom: globalColors.purple60 } : 'label',
+    size: '17pt / 135%',
+    weight: 'semibold',
+  });
+  const labelTertiary = useForegroundColor('labelTertiary');
 
   const [keyboardVisible, setKeyboardVisibility] = useState(true);
-
-  useEffect(() => {
-    const refreshClipboard = async () => {
-      while (!seedPhrase) {
-        // eslint-disable-next-line no-await-in-loop
-        const text = await Clipboard.getString();
-        setCopiedText(text);
-        delay(1000);
-      }
-    };
-    refreshClipboard();
-  }, [seedPhrase]);
 
   useEffect(() => {
     const keyboardShownSubscription = Keyboard.addListener(
@@ -89,27 +71,13 @@ export const ImportSeedPhraseSheet: React.FC = () => {
         setKeyboardVisibility(false);
       }
     );
-
     return () => {
       keyboardShownSubscription.remove();
       keyboardDismissedSubscription.remove();
     };
   }, []);
 
-  const { height: deviceHeight } = useDimensions();
-
-  const keyboardHeight = useKeyboardHeight();
-
-  const textStyle = useTextStyle({
-    align: 'center',
-    color: isSecretValid ? { custom: globalColors.purple60 } : 'label',
-    size: '17pt / 135%',
-    weight: 'semibold',
-  });
-
-  const labelTertiary = useForegroundColor('labelTertiary');
-
-  const buttonDisabled = seedPhrase ? !isSecretValid : !isClipboardValidInput;
+  const buttonDisabled = seedPhrase && !isSecretValid;
 
   const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
 
@@ -199,9 +167,13 @@ export const ImportSeedPhraseSheet: React.FC = () => {
               onPress={
                 seedPhrase
                   ? handlePressImportButton
-                  : () => handleSetSeedPhrase(copiedText)
+                  : () =>
+                      Clipboard.getString().then((text: string) =>
+                        handleSetSeedPhrase(text)
+                      )
               }
               overflowMargin={50}
+              testID="import-sheet-button"
             >
               <Box
                 alignItems="center"
@@ -225,6 +197,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
                       : { custom: globalColors.purple60 }
                   }
                   size="15pt"
+                  testID="import-sheet-button-label"
                   weight="bold"
                 >
                   {seedPhrase

@@ -25,7 +25,7 @@ describe('Watch address flow', () => {
     await Helpers.typeText('import-sheet-input', 'test.eth', false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
