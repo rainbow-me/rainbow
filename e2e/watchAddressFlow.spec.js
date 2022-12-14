@@ -21,7 +21,6 @@ describe('Watch address flow', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid address', async () => {
     await Helpers.clearField('import-sheet-input');
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Paste');
     await Helpers.typeText('import-sheet-input', 'test.eth', false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
