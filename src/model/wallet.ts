@@ -601,7 +601,7 @@ export const createWallet = async (
     } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
     let pkey = walletSeed;
-    if (!walletResult) return null;
+    if (!walletResult || !address) return null;
     const walletAddress = address;
     if (isHDWallet) {
       pkey = addHexPrefix(
