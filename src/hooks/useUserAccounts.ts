@@ -1,13 +1,14 @@
 import { values } from 'lodash';
-import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { useMemo } from 'react';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const { network } = useAccountSettings();
+  const network = useSelector((state: AppState) => state.settings.network);
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const userAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type !== walletTypes.readOnly
@@ -24,7 +25,6 @@ export default function useUserAccounts() {
     return addresses;
   }, [network, walletsWithBalancesAndNames]);
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const watchedAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type === walletTypes.readOnly

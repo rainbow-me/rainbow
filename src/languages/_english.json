@@ -285,7 +285,9 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
-      "eth": { "today": "today" },
+      "eth": {
+        "today": "today"
+      },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",
@@ -1428,6 +1430,8 @@
       }
     },
     "transaction_details": {
+      "from": "From",
+      "to": "To",
       "value": "Value",
       "hash": "Tx Hash",
       "network_fee": "Network Fee"

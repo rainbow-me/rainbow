@@ -4,8 +4,8 @@ import { TransactionDetailsSymbol } from '@/screens/transaction-details/componen
 import { RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { CoinIcon } from '@/components/coin-icon';
 import { Box, Stack } from '@/design-system';
-import lang from 'i18n-js';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
+import * as i18n from '@/languages';
 
 type Props = {
   coinAddress?: string;
@@ -32,7 +32,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
               leftComponent={
                 <CoinIcon address={coinAddress} symbol={coinSymbol} />
               }
-              title={lang.t('transaction_details.value')}
+              title={i18n.t(i18n.l.transaction_details.value)}
               value={value}
               secondaryValue={nativeCurrencyValue}
             />
@@ -42,7 +42,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
               leftComponent={
                 <TransactionDetailsSymbol icon="􀵟" withBackground />
               }
-              title={lang.t('transaction_details.network_fee')}
+              title={i18n.t(i18n.l.transaction_details.network_fee)}
               value={fee.value.display}
               secondaryValue={fee.native?.display ?? ''}
             />
