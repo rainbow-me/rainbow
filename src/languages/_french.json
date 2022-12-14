@@ -1430,6 +1430,10 @@
         }
       }
     },
+    "transaction_details": {
+      "hash": "Tx Hash",
+      "network_fee": "Network Fee"
+    },
     "time": {
       "days": {
         "long": {
