@@ -26,7 +26,7 @@ type Props = {
   nftShadows?: boolean;
   onPress?: () => void;
   scaleTo?: number;
-  size?: 'big';
+  size?: string;
   testID?: string;
   textColor?: string;
   /**
@@ -41,7 +41,7 @@ const addChartsStyling = (isCharts: boolean) =>
   isCharts ? { position: 'absolute', width: '100%' } : {};
 
 const Button = styled(Centered)(
-  ({ isCharts, size }: Pick<Props, 'isCharts' | 'size'>) => ({
+  ({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
     ...addChartsStyling(!!isCharts),
     height: size === 'big' ? 56 : 46,
   })
@@ -96,6 +96,7 @@ const SheetActionButton: React.FC<Props> = ({
   truncate = false,
   weight = 'semibold',
   marginBottom,
+  ...props
 }) => {
   const { isDarkMode, colors } = useTheme();
   const color = givenColor || colors.appleBlue;
@@ -144,9 +145,12 @@ const SheetActionButton: React.FC<Props> = ({
       size={size}
       testID={`${testID}-action-button`}
       marginBottom={marginBottom}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
     >
       {/*  @ts-expect-error JavaScript component with an improper typing for children prop */}
       <ShadowStack
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...position.coverAsObject}
         backgroundColor={color}
         borderRadius={borderRadius}
