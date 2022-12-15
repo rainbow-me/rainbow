@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { TransactionDetailsContent } from './components/TransactionDetailsContent';
 import { useRoute } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { useNavigation } from '@/navigation';
-import { View } from 'react-native';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, Box } from '@/design-system';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
+import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 
 type Params = {
   transaction: RainbowTransaction;
@@ -54,18 +54,21 @@ export const TransactionDetails: React.FC = () => {
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
         >
-          <View
+          <Box
+            background="surfacePrimary"
+            paddingHorizontal="20px"
+            paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
-            <TransactionDetailsContent
-              txHash={hash}
-              fee={fee}
-              value={value}
-              nativeCurrencyValue={nativeCurrencyValue}
-              coinSymbol={coinSymbol}
+            <TransactionDetailsValueAndFeeSection
               coinAddress={coinAddress}
+              coinSymbol={coinSymbol}
+              fee={fee}
+              nativeCurrencyValue={nativeCurrencyValue}
+              value={value}
             />
-          </View>
+            <TransactionDetailsHashAndActionsSection hash={hash} />
+          </Box>
         </SlackSheet>
       )}
     </BackgroundProvider>
