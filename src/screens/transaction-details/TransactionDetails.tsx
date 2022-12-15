@@ -67,7 +67,10 @@ export const TransactionDetails: React.FC = () => {
               nativeCurrencyValue={nativeCurrencyValue}
               value={value}
             />
-            <TransactionDetailsHashAndActionsSection hash={hash} />
+            <TransactionDetailsHashAndActionsSection
+              hash={hash}
+              network={transaction.network}
+            />
           </Box>
         </SlackSheet>
       )}
