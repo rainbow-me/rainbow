@@ -17,6 +17,7 @@ import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix } from '@/handlers/web3';
 import { logger } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
+import { logger as Logger, RainbowError } from '@/logger';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
@@ -25,8 +26,13 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
     const walletSeed = generateMnemonic();
     const { wallet, address } = await deriveAccountFromWalletInput(walletSeed);
 
-    // @ts-ignore need to handle types in case wallet or address are null
-    if (!wallet || !address) return null;
+    if (!wallet || !address) {
+      Logger.error(
+        new RainbowError('signingWallet - wallet or address undefined')
+      );
+      // @ts-ignore need to handle types in case wallet or address are null
+      return null;
+    }
 
     const privateKey = addHexPrefix(
       (wallet as LibWallet).getPrivateKey().toString('hex')

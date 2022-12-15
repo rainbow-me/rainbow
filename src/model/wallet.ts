@@ -213,6 +213,7 @@ export const getHdPath = ({
   index: number;
 }): string => {
   switch (type) {
+    // @see https://github.com/LedgerHQ/ledger-live/wiki/LLC:derivation for info in BIP-44 and ledger derivations
     case WalletLibraryType.ledger:
       return `m/44'/60'/${index}'/0/0`;
     default:

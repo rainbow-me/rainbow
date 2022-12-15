@@ -33,6 +33,7 @@ import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
+import { logger as Logger, RainbowError } from '@/logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -213,9 +214,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             const walletResult = await deriveAccountFromWalletInput(input);
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
-            const ens = await fetchReverseRecord(
-              walletResult.address as string
-            );
+            if (!walletResult.address) {
+              Logger.error(
+                new RainbowError(
+                  'useImportingWallet - walletResult address is undefined'
+                )
+              );
+              return null;
+            }
+            const ens = await fetchReverseRecord(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
               if (!avatarUrl && profilesEnabled) {
