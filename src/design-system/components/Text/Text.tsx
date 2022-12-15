@@ -1,5 +1,5 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
-import { Text as NativeText } from 'react-native';
+import { Text as NativeText, TextProps as NativeTextProps } from 'react-native';
 import { TextColor } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
@@ -35,7 +35,8 @@ export type TextProps = {
       children: string | (string | null)[];
     }
   | { containsEmoji?: false; children: ReactNode }
-);
+) &
+  Pick<NativeTextProps, 'ellipsizeMode'>;
 
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
@@ -50,6 +51,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       weight,
       tabularNumbers,
       uppercase,
+      ellipsizeMode,
     },
     ref
   ) {
@@ -89,6 +91,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
         ref={ref}
         style={textStyle}
         testID={testID}
+        ellipsizeMode={ellipsizeMode}
       >
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderStringWithEmoji(children)
