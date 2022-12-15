@@ -48,7 +48,6 @@ import {
   restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
-  transactionDetailsConfig,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -73,10 +72,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import {
-  TRANSACTION_DETAILS_SHEET_HEIGHT,
-  TransactionDetails,
-} from '@/screens/transaction-details/TransactionDetails';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -393,7 +389,6 @@ function BSNavigator() {
         component={TransactionDetails}
         options={{
           ...bottomSheetPreset,
-          height: TRANSACTION_DETAILS_SHEET_HEIGHT,
         }}
       />
     </BSStack.Navigator>

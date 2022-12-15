@@ -38,6 +38,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import logger from '@/utils/logger';
+import { Box } from '@/design-system';
+import { deviceUtils } from '@/utils';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -237,41 +239,43 @@ export default function RestoreCloudStep({
   }, [onSubmit, validPassword]);
 
   return (
-    <BackupSheetKeyboardLayout
-      footerButtonDisabled={!validPassword}
-      footerButtonLabel={label}
-      onSubmit={onSubmit}
-      type="restore"
-    >
-      <Masthead>
-        {(isTinyPhone || samsungGalaxy || isScaleMoreThanDefault) &&
-        isKeyboardOpen ? null : (
-          <MastheadIcon>􀙶</MastheadIcon>
-        )}
-        <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>
-        <DescriptionText>
-          {lang.t('back_up.restore_cloud.enter_backup_password_description')}
-        </DescriptionText>
-      </Masthead>
-      <Column align="center" flex={1}>
-        <PasswordField
-          autoFocus
-          isInvalid={
-            (password !== '' &&
-              password.length < cloudBackupPasswordMinLength &&
-              !passwordRef?.current?.isFocused?.()) ||
-            incorrectPassword
-          }
-          onChange={onPasswordChange}
-          onSubmitEditing={onPasswordSubmit}
-          password={password}
-          placeholder={lang.t(
-            'back_up.restore_cloud.backup_password_placeholder'
+    <Box height={{ custom: deviceUtils.dimensions.height }}>
+      <BackupSheetKeyboardLayout
+        footerButtonDisabled={!validPassword}
+        footerButtonLabel={label}
+        onSubmit={onSubmit}
+        type="restore"
+      >
+        <Masthead>
+          {(isTinyPhone || samsungGalaxy || isScaleMoreThanDefault) &&
+          isKeyboardOpen ? null : (
+            <MastheadIcon>􀙶</MastheadIcon>
           )}
-          ref={passwordRef}
-          returnKeyType="next"
-        />
-      </Column>
-    </BackupSheetKeyboardLayout>
+          <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>
+          <DescriptionText>
+            {lang.t('back_up.restore_cloud.enter_backup_password_description')}
+          </DescriptionText>
+        </Masthead>
+        <Column align="center" flex={1}>
+          <PasswordField
+            autoFocus
+            isInvalid={
+              (password !== '' &&
+                password.length < cloudBackupPasswordMinLength &&
+                !passwordRef?.current?.isFocused?.()) ||
+              incorrectPassword
+            }
+            onChange={onPasswordChange}
+            onSubmitEditing={onPasswordSubmit}
+            password={password}
+            placeholder={lang.t(
+              'back_up.restore_cloud.backup_password_placeholder'
+            )}
+            ref={passwordRef}
+            returnKeyType="next"
+          />
+        </Column>
+      </BackupSheetKeyboardLayout>
+    </Box>
   );
 }

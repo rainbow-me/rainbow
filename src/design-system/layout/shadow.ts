@@ -64,7 +64,7 @@ const shadowHierarchy: Record<
         { x: 0, y: 4, blur: 12, color, opacity: 0.24 },
         { x: 0, y: 2, blur: 6, color: 'shadowNear', opacity: 0.02 },
       ],
-      android: { elevation: 36, color, opacity: 1 },
+      android: { elevation: 16, color, opacity: 1 },
     },
     dark: {
       ios: [

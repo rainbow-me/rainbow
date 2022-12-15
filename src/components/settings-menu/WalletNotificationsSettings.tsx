@@ -9,7 +9,7 @@ import Animated, {
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   NotificationRelationship,
@@ -17,36 +17,108 @@ import {
   NotificationTopicType,
   toggleGroupNotifications,
   toggleTopicForWallet,
-  useNotificationSettings,
+  updateGroupSettings,
   useWalletGroupNotificationSettings,
+  WalletNotificationSettings,
 } from '@/notifications/settings';
-import { NotificationLoadingIndicator } from '@/components/settings-menu/NotificationLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
   showOfflineAlert,
 } from '@/components/settings-menu/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { updateSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+
+const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
+  {
+    topic: NotificationTopic.SENT,
+    icon: '􀈟',
+    iconColor: colors.appleBlue,
+    text: lang.t('settings.notifications_section.sent'),
+  },
+  {
+    topic: NotificationTopic.RECEIVED,
+    icon: '􀅀',
+    iconColor: colors.green,
+    text: lang.t('settings.notifications_section.received'),
+  },
+  {
+    topic: NotificationTopic.PURCHASED,
+    icon: '􀑉',
+    iconColor: colors.pink,
+
+    text: lang.t('settings.notifications_section.purchased'),
+  },
+  {
+    topic: NotificationTopic.SOLD,
+    icon: '􀋡',
+    iconColor: colors.orange,
+    text: lang.t('settings.notifications_section.sold'),
+  },
+  {
+    topic: NotificationTopic.MINTED,
+    icon: '􀆿',
+    iconColor: colors.yellowOrange,
+    text: lang.t('settings.notifications_section.minted'),
+  },
+  {
+    topic: NotificationTopic.SWAPPED,
+    icon: '􀖅',
+    iconColor: colors.swapPurple,
+    text: lang.t('settings.notifications_section.swapped'),
+  },
+  {
+    topic: NotificationTopic.APPROVALS,
+    icon: '􀁢',
+    iconColor: colors.green,
+    text: lang.t('settings.notifications_section.approvals'),
+  },
+  {
+    topic: NotificationTopic.OTHER,
+    icon: '􀍡',
+    iconColor: colors.blueGreyDark60,
+    text: lang.t('settings.notifications_section.other'),
+  },
+];
 
 type RouteParams = {
   WalletNotificationsSettings: {
     address: string;
+    notificationSettings: WalletNotificationSettings;
   };
 };
 
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
+  const topicRowsData = useMemo(() => makeTopicRowsData(colors), [colors]);
   const route = useRoute<
     RouteProp<RouteParams, 'WalletNotificationsSettings'>
   >();
-  const { address } = route.params;
-  const { notifications, updateSettings } = useNotificationSettings(address);
   const { isConnected } = useNetInfo();
+  const { address, notificationSettings } = route.params;
+
+  const [
+    notifications,
+    setNotificationSettings,
+  ] = useState<WalletNotificationSettings>(notificationSettings);
+  const updateSettings = useCallback(
+    (options: Partial<WalletNotificationSettings>) => {
+      const newSettingsForWallet = updateSettingsForWalletWithAddress(
+        address,
+        options
+      );
+
+      if (newSettingsForWallet) {
+        setNotificationSettings(newSettingsForWallet);
+      }
+    },
+    [address]
+  );
 
   const {
     lastOwnedWalletEnabled,
     lastWatchedWalletEnabled,
     ownerEnabled,
-    updateSectionSettings,
     watcherEnabled,
   } = useWalletGroupNotificationSettings();
 
@@ -69,8 +141,7 @@ const WalletNotificationsSettings = () => {
       lastWalletEnabled,
     };
   }, [
-    notifications.type,
-    notifications.enabled,
+    notifications,
     ownerEnabled,
     watcherEnabled,
     lastOwnedWalletEnabled,
@@ -82,7 +153,9 @@ const WalletNotificationsSettings = () => {
     status: notificationsEnabled,
   });
 
-  const [topicState, setTopicState] = useState({ ...notifications.topics });
+  const [topicState, setTopicState] = useState({
+    ...(notifications?.topics ?? {}),
+  });
   const toggleStateForTopic = (topic: NotificationTopicType) =>
     setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
 
@@ -109,7 +182,7 @@ const WalletNotificationsSettings = () => {
           !notificationsSectionEnabled ||
           (notificationsSectionEnabled && lastWalletEnabled)
         ) {
-          updateSectionSettings({
+          updateGroupSettings({
             [notifications.type]: !notificationsEnabled,
           });
         }
@@ -128,7 +201,6 @@ const WalletNotificationsSettings = () => {
     updateSettings,
     notificationsEnabled,
     notifications,
-    updateSectionSettings,
     isConnected,
   ]);
 
@@ -202,7 +274,7 @@ const WalletNotificationsSettings = () => {
       rightComponent={
         <>
           {topicSubscriptionInProgress === topic && (
-            <NotificationLoadingIndicator />
+            <SettingsLoadingIndicator />
           )}
           <Switch
             disabled={allState.loading || topicSubscriptionInProgress !== null}
@@ -223,7 +295,7 @@ const WalletNotificationsSettings = () => {
           disabled
           rightComponent={
             <>
-              {allState.loading && <NotificationLoadingIndicator />}
+              {allState.loading && <SettingsLoadingIndicator />}
               <Switch
                 disabled={
                   allState.loading || topicSubscriptionInProgress !== null
@@ -246,54 +318,15 @@ const WalletNotificationsSettings = () => {
       </Menu>
       <Animated.View style={animatedStyle}>
         <Menu>
-          <IndividualTopicItemRow
-            topic={NotificationTopic.SENT}
-            icon="􀈟"
-            iconColor={colors.appleBlue}
-            text={lang.t('settings.notifications_section.sent')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.RECEIVED}
-            icon="􀅀"
-            iconColor={colors.green}
-            text={lang.t('settings.notifications_section.received')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.PURCHASED}
-            icon="􀑉"
-            iconColor={colors.green}
-            text={lang.t('settings.notifications_section.purchased')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.SOLD}
-            icon="􀋡"
-            iconColor={colors.orange}
-            text={lang.t('settings.notifications_section.sold')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.MINTED}
-            icon="􀆿"
-            iconColor={colors.yellowOrange}
-            text={lang.t('settings.notifications_section.minted')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.SWAPPED}
-            icon="􀖅"
-            iconColor={colors.swapPurple}
-            text={lang.t('settings.notifications_section.swapped')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.APPROVALS}
-            icon="􀁢"
-            iconColor={colors.green}
-            text={lang.t('settings.notifications_section.approvals')}
-          />
-          <IndividualTopicItemRow
-            topic={NotificationTopic.OTHER}
-            icon="􀍡"
-            iconColor={colors.blueGreyDark60}
-            text={lang.t('settings.notifications_section.other')}
-          />
+          {topicRowsData.map(({ topic, icon, iconColor, text }) => (
+            <IndividualTopicItemRow
+              key={topic}
+              topic={topic}
+              icon={icon}
+              iconColor={iconColor}
+              text={text}
+            />
+          ))}
         </Menu>
       </Animated.View>
     </MenuContainer>

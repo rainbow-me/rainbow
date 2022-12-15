@@ -16,7 +16,7 @@ module.exports = {
     '\\.tsx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@react-native(-community)?)/)',
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@rainbow-me/react-native-payments|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
   ],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>',
