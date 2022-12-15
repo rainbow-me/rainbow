@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
@@ -11,15 +11,23 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-type Params = {
-  transaction: RainbowTransaction;
+type RouteParams = {
+  TransactionDetails: {
+    transaction: RainbowTransaction;
+    longFormHeight: number;
+  };
 };
 
-export const TransactionDetails: React.FC = () => {
-  const route = useRoute();
-  const { setParams } = useNavigation();
-  const { transaction } = route.params as Params;
+type Props = {
+  route: RouteProp<RouteParams, 'TransactionDetails'>;
+  navigation: StackNavigationProp<RouteParams, 'TransactionDetails'>;
+};
+
+export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
+  const { setParams } = navigation;
+  const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
 
   const type = transaction.type;
