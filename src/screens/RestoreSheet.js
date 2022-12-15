@@ -64,8 +64,8 @@ export function RestoreSheet() {
         } finally {
           if (!proceed) {
             Alert.alert(
-              i18n.t(TRANSLATIONS.no_backups),
-              i18n.t(TRANSLATIONS.no_google_backups)
+              i18n.t(TRANSLATIONS.cloud.no_backups),
+              i18n.t(TRANSLATIONS.cloud.no_google_backups)
             );
             await RNCloudFs.logout();
           }
