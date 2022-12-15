@@ -251,31 +251,6 @@ const transactions: Record<string, RainbowTransaction> = {
     type: TransactionType.send,
     value: '0x02c4d78c0b8800',
   },
-  'Pending': {
-    address: 'eth',
-    balance: { amount: '0.00077938', display: '0.000779 ETH' },
-    data: '0x',
-    description: 'Ethereum',
-    from: '0x5e087b61Aad29559E31565079FCdAbe384B44614',
-    gasLimit: '21000',
-    hash:
-      '0xcec794006dcd59227822b75de46f265a9e43243310bba59ae7d1d01c1c34426d-0',
-    maxFeePerGas: '0x0342770c00',
-    maxPriorityFeePerGas: '0x3b9aca00',
-    minedAt: null,
-    name: 'Ethereum',
-    native: { amount: '0.9999990966', display: '$1.00' },
-    network: Network.mainnet,
-    nonce: 114,
-    pending: true,
-    status: TransactionStatus.sending,
-    symbol: 'ETH',
-    title: 'Sending',
-    to: '0x3c74D5D6E0F55d75cc850c9AeE0Dda99Fbfd5415',
-    txTo: '0x3c74D5D6E0F55d75cc850c9AeE0Dda99Fbfd5415',
-    type: TransactionType.send,
-    value: '0x02c4d78c0b8800',
-  },
 };
 
 const TxItem: React.FC<{
