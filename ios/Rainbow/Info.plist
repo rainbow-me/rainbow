@@ -150,6 +150,8 @@
 	<string>This allows Rainbow to save images to your Camera Roll</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This allows Rainbow to display selected photos as avatars across each of your wallet addresses</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+ 	<string>This allows Rainbow to find and pair a Ledger Nano X</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.me.rainbow</key>
