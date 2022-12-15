@@ -182,6 +182,7 @@ PODS:
   - MMKV (1.2.13):
     - MMKVCore (~> 1.2.13)
   - MMKVCore (1.2.13)
+  - MultiplatformBleAdapter (0.1.9)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -423,6 +424,9 @@ PODS:
   - React-logger (0.68.5):
     - glog
   - react-native-aes-crypto (2.0.2):
+    - React-Core
+  - react-native-ble-plx (2.0.3):
+    - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
   - react-native-blur (0.8.0):
     - React
@@ -765,6 +769,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
+  - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
@@ -882,6 +887,7 @@ SPEC REPOS:
     - libwebp
     - MMKV
     - MMKVCore
+    - MultiplatformBleAdapter
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
@@ -957,6 +963,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-aes-crypto:
     :path: "../node_modules/react-native-aes-crypto"
+  react-native-ble-plx:
+    :path: "../node_modules/react-native-ble-plx"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
   react-native-branch:
@@ -1164,6 +1172,7 @@ SPEC CHECKSUMS:
   lottie-react-native: b561920bba7ec727ec94a473b683cffba00faece
   MMKV: aac95d817a100479445633f2b3ed8961b4ac5043
   MMKVCore: 3388952ded307e41b3ed8a05892736a236ed1b8e
+  MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
@@ -1187,6 +1196,7 @@ SPEC CHECKSUMS:
   React-jsinspector: eb202e43b3879aba9a14f3f65788aec85d4e1ea9
   React-logger: 98f663b292a60967ebbc6d803ae96c1381183b6d
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
+  react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
@@ -1275,6 +1285,6 @@ SPEC CHECKSUMS:
   Yoga: c4d61225a466f250c35c1ee78d2d0b3d41fe661c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: a612bbfcb1d4cde60ba215aa6218c6f2cbadbbe4
+PODFILE CHECKSUM: 04f98d755bb6e3ef0671386e4fdb5ccc08264127
 
 COCOAPODS: 1.11.2
