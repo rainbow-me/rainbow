@@ -14,6 +14,7 @@ import {
   getHdPath,
 } from '@/model/wallet';
 import { mnemonicToSeed } from 'bip39';
+import { IS_IOS } from '@/env';
 
 const { RNBip39 } = NativeModules;
 
@@ -48,7 +49,7 @@ export const deriveAccountFromMnemonic = async (
   index = 0
 ) => {
   let seed;
-  if (ios) {
+  if (IS_IOS) {
     seed = await mnemonicToSeed(mnemonic);
   } else {
     const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
