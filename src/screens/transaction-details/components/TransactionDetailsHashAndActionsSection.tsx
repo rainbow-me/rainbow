@@ -39,6 +39,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
           {formattedHash && (
             <ButtonPressAnimation
               onPress={onHashPress}
+              scaleTo={0.96}
               hapticType="notificationSuccess"
               enableHapticFeedback
             >

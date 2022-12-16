@@ -13,6 +13,7 @@ import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-d
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
+import * as i18n from '@/languages';
 
 type RouteParams = {
   TransactionDetails: {
@@ -115,12 +116,12 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           <ToastPositionContainer>
             <Toast
               isVisible={presentedToast === 'address'}
-              text="􀁣 Address Copied"
+              text={i18n.t(i18n.l.transaction_details.address_copied)}
               testID="address-copied-toast"
             />
             <Toast
               isVisible={presentedToast === 'hash'}
-              text="􀁣 Hash Copied"
+              text={i18n.t(i18n.l.transaction_details.hash_copied)}
               testID="address-copied-toast"
             />
           </ToastPositionContainer>
