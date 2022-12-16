@@ -14,27 +14,25 @@ export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
   value,
 }) => {
   return (
-    <Box paddingVertical="20px">
-      <Inline alignVertical="center" wrap={false}>
-        <Columns alignVertical="center">
-          <Inline space="10px" alignVertical="center">
-            <TransactionDetailsSymbol icon={icon} />
-            <Text color="label" size="17pt" weight="semibold">
-              {title}
-            </Text>
-          </Inline>
-          <Inline alignHorizontal="right">
-            <Text
-              color="labelTertiary"
-              size="17pt"
-              weight="medium"
-              numberOfLines={1}
-            >
-              {value}
-            </Text>
-          </Inline>
-        </Columns>
-      </Inline>
-    </Box>
+    <Inline alignVertical="center" wrap={false}>
+      <Columns alignVertical="center">
+        <Inline space="10px" alignVertical="center">
+          <TransactionDetailsSymbol icon={icon} />
+          <Text color="label" size="17pt" weight="semibold">
+            {title}
+          </Text>
+        </Inline>
+        <Inline alignHorizontal="right">
+          <Text
+            color="labelTertiary"
+            size="17pt"
+            weight="medium"
+            numberOfLines={1}
+          >
+            {value}
+          </Text>
+        </Inline>
+      </Columns>
+    </Inline>
   );
 };

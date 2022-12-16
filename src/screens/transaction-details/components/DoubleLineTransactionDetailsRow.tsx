@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Column, Columns, Inline, Stack, Text } from '@/design-system';
 
 type Props = {
   leftComponent: React.ReactNode;
