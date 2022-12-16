@@ -18,9 +18,10 @@ jest.mock('react-native-device-info', () => ({
 }));
 
 jest.mock('@segment/analytics-react-native', () => ({
-  identify: () => null,
-  reset: () => null,
-  setup: () => null,
+  createClient: jest.fn(),
+  identify: jest.fn(),
+  reset: jest.fn(),
+  setup: jest.fn(),
 }));
 
 jest.mock('@sentry/react-native', () => ({
@@ -34,4 +35,14 @@ jest.mock('react-native-keychain', () => ({
   getGenericPassword: jest.fn(),
   resetGenericPassword: jest.fn(),
   setGenericPassword: jest.fn(),
+}));
+
+jest.mock('react-native/Libraries/EventEmitter/NativeEventEmitter');
+
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+
+jest.mock('react-native-permissions', () => ({
+  requestNotifications: jest.fn(),
 }));

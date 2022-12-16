@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
-import { parseWalletConnectUri } from '@walletconnect/utils';
+import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
@@ -136,7 +136,7 @@ type WalletconnectResultType =
 /**
  * Route parameters sent to a WalletConnect approval sheet.
  */
-interface WalletconnectApprovalSheetRouteParams {
+export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
     chainId: number,

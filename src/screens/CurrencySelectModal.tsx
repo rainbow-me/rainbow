@@ -487,7 +487,10 @@ export default function CurrencySelectModal() {
       const assetWithType =
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
-          : item;
+          : {
+              ...item,
+              decimals: item?.networks?.[chainId]?.decimals || item.decimals,
+            };
 
       const selectAsset = () => {
         dispatch(emitChartsRequest(item.mainnet_address || item.address));
@@ -515,6 +518,7 @@ export default function CurrencySelectModal() {
       checkForRequiredAssets,
       currentChainId,
       type,
+      chainId,
       checkForSameNetwork,
       dispatch,
       callback,

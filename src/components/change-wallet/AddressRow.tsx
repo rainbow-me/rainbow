@@ -194,7 +194,7 @@ export default function AddressRow({
       ? [
           {
             actionKey: ContextMenuKeys.Notifications,
-            actionTitle: lang.t('wallet.action.notifications'),
+            actionTitle: lang.t('wallet.action.notifications.action_title'),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'bell.fill',

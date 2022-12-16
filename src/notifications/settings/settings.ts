@@ -1,6 +1,5 @@
 import {
   NOTIFICATIONS_DEFAULT_CHAIN_ID,
-  NotificationTopic,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
@@ -8,79 +7,15 @@ import {
   NotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
-import Logger from 'logger';
-import messaging from '@react-native-firebase/messaging';
-import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import {
   getAllNotificationSettingsFromStorage,
   notificationSettingsStorage,
 } from '@/notifications/settings/storage';
-
-/**
- Firebase functions for subscribing/unsubscribing to topics.
- */
-export const subscribeWalletToAllNotificationTopics = (
-  type: string,
-  chainId: number,
-  address: string
-): Promise<void[]> => {
-  return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      subscribeWalletToSingleNotificationTopic(type, chainId, address, topic)
-    )
-  );
-};
-
-export const unsubscribeWalletFromAllNotificationTopics = (
-  type: string,
-  chainId: number,
-  address: string
-): Promise<void[]> => {
-  return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      unsubscribeWalletFromSingleNotificationTopic(
-        type,
-        chainId,
-        address,
-        topic
-      )
-    )
-  );
-};
-
-export const subscribeWalletToSingleNotificationTopic = (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-): Promise<void> => {
-  Logger.log(
-    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`
-  );
-  return messaging()
-    .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
-    .then(() =>
-      trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
-    );
-};
-
-export const unsubscribeWalletFromSingleNotificationTopic = async (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-) => {
-  Logger.log(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`
-  );
-  return messaging()
-    .unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    )
-    .then(() => {
-      trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
-    });
-};
+import {
+  subscribeWalletToSingleNotificationTopic,
+  unsubscribeWalletFromAllNotificationTopics,
+  unsubscribeWalletFromSingleNotificationTopic,
+} from '@/notifications/settings/firebase';
 
 /**
  1. Reads notification settings for all wallets from storage.
@@ -88,24 +23,32 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
  3. Excludes that wallet from the array and saves the new array.
  4. Unsubscribes the wallet from all notification topics on Firebase.
  */
-export const removeNotificationSettingsForWallet = (address: string) => {
+export const removeNotificationSettingsForWallet = (
+  address: string
+): Promise<void> => {
   const allSettings = getAllNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
+
+  if (!settingsForWallet) {
+    return Promise.resolve();
+  }
+
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  unsubscribeWalletFromAllNotificationTopics(
+  return unsubscribeWalletFromAllNotificationTopics(
     settingsForWallet.type,
     NOTIFICATIONS_DEFAULT_CHAIN_ID,
     address
-  );
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
+  ).then(() => {
+    notificationSettingsStorage.set(
+      WALLET_TOPICS_STORAGE_KEY,
+      JSON.stringify(newSettings)
+    );
+  });
 };
 
 /**

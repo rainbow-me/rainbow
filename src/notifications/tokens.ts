@@ -1,7 +1,7 @@
 import messaging from '@react-native-firebase/messaging';
 import { getLocal, saveLocal } from '@/handlers/localstorage/common';
 import { getPermissionStatus } from '@/notifications/permissions';
-import logger from 'logger';
+import { logger, RainbowError } from '@/logger';
 
 export const registerTokenRefreshListener = () =>
   messaging().onTokenRefresh(fcmToken => {
@@ -21,7 +21,9 @@ export const saveFCMToken = async () => {
       }
     }
   } catch (error) {
-    logger.log('error while getting & saving FCM token', error);
+    logger.error(new RainbowError('Error while getting and saving FCM token'), {
+      error,
+    });
   }
 };
 

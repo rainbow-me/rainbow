@@ -9,10 +9,8 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import logger from '@/utils/logger';
 
-// @ts-ignore
-const Spacer = styled(View)<{ height: number }>({
-  // @ts-ignore
-  height: ({ height }) => height,
+const Spacer = styled(View)({
+  height: ({ height }: { height: number }) => height,
 });
 
 const Container = styled(View)({
@@ -70,11 +68,8 @@ export default function Fallback() {
           <SheetActionButton
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
-            // @ts-expect-error `SheetActionButton` is untyped so `label`
-            // is expected to be `null`.
             label={`🌈 ${lang.t('error_boundary.restart_rainbow')}`}
             onPress={handleRestart}
-            // @ts-ignore
             size="big"
             textColor={colors.appleBlue}
             weight="heavy"

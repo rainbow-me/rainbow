@@ -18,7 +18,6 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { TRANSACTION_DETAILS_SHEET_HEIGHT } from '@/screens/transaction-details/TransactionDetails';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -109,13 +108,13 @@ export const swapDetailsSheetConfig = {
 };
 
 export const transactionDetailsConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
+  options: ({ route }) => {
+    return buildCoolModalConfig({
+      longFormHeight: 0,
+      ...route.params,
       scrollEnabled: false,
-      longFormHeight: TRANSACTION_DETAILS_SHEET_HEIGHT,
-    }),
-  }),
+    });
+  },
 };
 
 export const customGasSheetConfig = {
@@ -328,22 +327,22 @@ export const restoreSheetConfig = {
       } = {},
     } = route;
 
-    let heightForStep = restoreSheetSizes.short;
-    if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-      heightForStep = restoreSheetSizes.medium;
-    } else if (step === WalletBackupStepTypes.cloud) {
-      heightForStep = restoreSheetSizes.long;
-    }
+    // let heightForStep = restoreSheetSizes.short;
+    // if (enableCloudRestore && step === WalletBackupStepTypes.first) {
+    //   heightForStep = restoreSheetSizes.medium;
+    // } else if (step === WalletBackupStepTypes.cloud) {
+    //   heightForStep = restoreSheetSizes.long;
+    // }
 
-    if (longFormHeight !== heightForStep) {
-      navigation.setParams({
-        longFormHeight: heightForStep,
-      });
-    }
+    // if (longFormHeight !== heightForStep) {
+    //   navigation.setParams({
+    //     longFormHeight: heightForStep,
+    //   });
+    // }
 
     return buildCoolModalConfig({
       ...params,
-      longFormHeight: heightForStep,
+      longFormHeight: longFormHeight,
     });
   },
 };
