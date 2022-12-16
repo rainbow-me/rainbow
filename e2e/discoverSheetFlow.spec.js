@@ -190,22 +190,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('lists-section-stablecoins');
   });
 
-  it('Should cycle through pools lists', async () => {
-    await Helpers.swipeUntilVisible(
-      'pools-list-liquidity',
-      'discover-sheet',
-      'up'
-    );
-    await Helpers.waitAndTap('pools-list-liquidity');
-    await Helpers.checkIfVisible('pools-section-liquidity');
-    await Helpers.waitAndTap('pools-list-annualized_fees');
-    await Helpers.checkIfVisible('pools-section-annualized_fees');
-    await Helpers.waitAndTap('pools-list-profit30d');
-    await Helpers.checkIfVisible('pools-section-profit30d');
-    await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
-    await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
