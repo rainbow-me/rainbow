@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
@@ -20,12 +20,19 @@ import Clipboard from '@react-native-community/clipboard';
 import { haptics } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Contact } from '@/redux/contacts';
+import { RainbowAccount } from '@/model/wallet';
+import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@/helpers/emojiHandler';
 
 type Props = {
   address: string;
   title: string;
   onAddressCopied?: () => void;
   contact?: Contact;
+  account?: RainbowAccount;
 };
 
 export const TransactionDetailsAddressRow: React.FC<Props> = ({
@@ -33,33 +40,56 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   title,
   onAddressCopied,
   contact,
+  account,
 }) => {
   const formattedAddress = formatAddressForDisplay(address, 4, 16);
-  const [ensName, setEnsName] = useState<string | undefined>(contact?.ens);
-  const ensNameSharedValue = useTiming(!!ensName, {
-    duration: contact?.ens ? 0 : 420,
+  const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
+  const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
+  const ensNameSharedValue = useTiming(!!fetchedEnsName, {
+    duration: 420,
     easing: Easing.linear,
   });
-  const color = contact?.color ?? addressHashedColorIndex(address);
-  const emoji = addressHashedEmoji(address);
 
-  const { data: avatar } = useENSAvatar(ensName ?? '', {
-    enabled: isENSAddressFormat(ensName),
-  });
-  const imageUrl = avatar?.imageUrl;
+  const accountEmoji = useMemo(() => returnStringFirstEmoji(account?.label), [
+    account,
+  ]);
+  const accountName = useMemo(
+    () => removeFirstEmojiFromString(account?.label),
+    []
+  );
+  const color =
+    account?.color ?? contact?.color ?? addressHashedColorIndex(address);
+  const emoji = accountEmoji || addressHashedEmoji(address);
+  const name =
+    accountName || contact?.ens || fetchedEnsName || formattedAddress;
 
+  const imageUrl = fetchedEnsImage ?? account?.image;
   const ensAvatarSharedValue = useTiming(!!imageUrl, {
-    duration: 420,
+    duration: account?.image ? 0 : 420,
   });
 
   useEffect(() => {
-    if (!contact)
+    if (!contact?.nickname && !accountName) {
       fetchReverseRecord(address).then(name => {
         if (name) {
-          setEnsName(name);
+          setFetchedEnsName(name);
         }
       });
+    }
   }, []);
+
+  useEffect(() => {
+    if (!account?.image && (name || contact?.ens)) {
+      const ens = name ?? contact?.ens;
+      if (ens) {
+        fetchENSAvatar(ens, { cacheFirst: true }).then(avatar => {
+          if (avatar?.imageUrl) {
+            setFetchedEnsImage(avatar.imageUrl);
+          }
+        });
+      }
+    }
+  }, [name]);
 
   const addressAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(ensNameSharedValue.value, [0, 0.5, 1], [1, 0, 0]),
@@ -120,7 +150,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                   numberOfLines={1}
                   ellipsizeMode="middle"
                 >
-                  {contact?.nickname || formattedAddress}
+                  {name}
                 </Text>
               </Animated.View>
               <Cover>
@@ -132,7 +162,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                     numberOfLines={1}
                     ellipsizeMode="middle"
                   >
-                    {ensName}
+                    {fetchedEnsName}
                   </Text>
                 </Animated.View>
               </Cover>

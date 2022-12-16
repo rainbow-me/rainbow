@@ -4,6 +4,8 @@ import walletTypes from '@/helpers/walletTypes';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useMemo } from 'react';
+import { RainbowAccount } from '@/model/wallet';
+import { Network } from '@/helpers';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -13,9 +15,9 @@ export default function useUserAccounts() {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type !== walletTypes.readOnly
     );
-    const addresses: any = [];
+    const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach((account: any) => {
+      wallet.addresses.forEach(account => {
         addresses.push({
           ...account,
           network,
@@ -29,9 +31,9 @@ export default function useUserAccounts() {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type === walletTypes.readOnly
     );
-    const addresses: any = [];
+    const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach((account: any) => {
+      wallet.addresses.forEach(account => {
         addresses.push({
           ...account,
           network,
