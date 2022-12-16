@@ -287,12 +287,9 @@ export default function ENSSearchSheet() {
         <SheetActionButtonRow>
           {showFinishButton && (
             <SheetActionButton
-              // @ts-expect-error JavaScript component
               label={lang.t('profiles.search.finish')}
               onPress={handlePressFinish}
-              // @ts-expect-error JavaScript component
               size="big"
-              // @ts-expect-error JavaScript component
               testID="ens-search-continue"
               weight="heavy"
             />
@@ -300,12 +297,9 @@ export default function ENSSearchSheet() {
           {showContinueButton && (
             <SheetActionButton
               color={colors.green}
-              // @ts-expect-error JavaScript component
               label={lang.t('profiles.search.continue')}
               onPress={handlePressContinue}
-              // @ts-expect-error JavaScript component
               size="big"
-              // @ts-expect-error JavaScript component
               testID="ens-search-continue"
               weight="heavy"
             />
