@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
@@ -12,6 +12,7 @@ import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-deta
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
 
 type RouteParams = {
   TransactionDetails: {
@@ -29,6 +30,10 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const { setParams } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
+  const [presentedToast, setPresentedToast] = useState<
+    'address' | 'hash' | null
+  >(null);
+  const toastTimeout = useRef<NodeJS.Timeout>();
 
   const type = transaction.type;
   const from = transaction.from ?? undefined;
@@ -55,6 +60,22 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
     sheetHeight,
   ]);
 
+  const presentToastFor = (type: 'address' | 'hash') => {
+    setPresentedToast(type);
+    if (toastTimeout.current) {
+      clearTimeout(toastTimeout.current);
+    }
+    toastTimeout.current = setTimeout(() => setPresentedToast(null), 2000);
+  };
+
+  const presentAddressToast = useCallback(() => {
+    presentToastFor('address');
+  }, []);
+
+  const presentHashToast = useCallback(() => {
+    presentToastFor('hash');
+  }, []);
+
   return (
     <BackgroundProvider color="surfacePrimary">
       {({ backgroundColor }) => (
@@ -73,7 +94,11 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
-            <TransactionDetailsFromToSection from={from} to={to} />
+            <TransactionDetailsFromToSection
+              from={from}
+              to={to}
+              presentToast={presentAddressToast}
+            />
             <TransactionDetailsValueAndFeeSection
               coinAddress={coinAddress}
               coinSymbol={coinSymbol}
@@ -84,8 +109,21 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             <TransactionDetailsHashAndActionsSection
               hash={hash}
               network={transaction.network}
+              presentToast={presentHashToast}
             />
           </Box>
+          <ToastPositionContainer>
+            <Toast
+              isVisible={presentedToast === 'address'}
+              text="􀁣 Address Copied"
+              testID="address-copied-toast"
+            />
+            <Toast
+              isVisible={presentedToast === 'hash'}
+              text="􀁣 Hash Copied"
+              testID="address-copied-toast"
+            />
+          </ToastPositionContainer>
         </SlackSheet>
       )}
     </BackgroundProvider>

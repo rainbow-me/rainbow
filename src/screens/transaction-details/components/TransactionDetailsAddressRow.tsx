@@ -15,12 +15,16 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
+import { ButtonPressAnimation } from '@/components/animations';
+import Clipboard from '@react-native-community/clipboard';
+import { haptics } from '@/utils';
 
-type Props = { address: string; title: string };
+type Props = { address: string; title: string; onAddressCopied?: () => void };
 
 export const TransactionDetailsAddressRow: React.FC<Props> = ({
   address,
   title,
+  onAddressCopied,
 }) => {
   const [ensName, setEnsName] = useState<string | undefined>();
   const ensNameSharedValue = useTiming(!!ensName, {
@@ -61,56 +65,70 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     opacity: ensAvatarSharedValue.value,
   }));
 
+  const onRowPress = () => {
+    onAddressCopied?.();
+    haptics.notificationSuccess();
+    Clipboard.setString(address);
+  };
+
   return (
-    <Columns space="10px" alignVertical="center">
-      <Column width="content">
-        <Box>
-          <Animated.View style={ensAvatarAnimatedStyle}>
-            <ImageAvatar image={imageUrl} size="medium" />
-          </Animated.View>
-          <Cover>
-            <Animated.View style={emojiAvatarAnimatedStyle}>
-              <ContactAvatar color={color} size="medium" value={emoji} />
-            </Animated.View>
-          </Cover>
-        </Box>
-      </Column>
-      <Stack space="10px">
-        <Text
-          color="labelTertiary"
-          size="13pt"
-          numberOfLines={1}
-          weight="semibold"
-        >
-          {title}
-        </Text>
-        <Box>
-          <Animated.View style={addressAnimatedStyle}>
+    <ButtonPressAnimation
+      onPress={onRowPress}
+      hapticType="notificationSuccess"
+      enableHapticFeedback
+    >
+      <Box paddingVertical="10px">
+        <Columns space="10px" alignVertical="center">
+          <Column width="content">
+            <Box>
+              <Animated.View style={ensAvatarAnimatedStyle}>
+                <ImageAvatar image={imageUrl} size="medium" />
+              </Animated.View>
+              <Cover>
+                <Animated.View style={emojiAvatarAnimatedStyle}>
+                  <ContactAvatar color={color} size="medium" value={emoji} />
+                </Animated.View>
+              </Cover>
+            </Box>
+          </Column>
+          <Stack space="10px">
             <Text
-              color="label"
-              size="17pt"
-              weight="semibold"
+              color="labelTertiary"
+              size="13pt"
               numberOfLines={1}
-              ellipsizeMode="middle"
+              weight="semibold"
             >
-              {address}
+              {title}
             </Text>
-          </Animated.View>
-          <Cover>
-            <Animated.View style={ensNameAnimatedStyle}>
-              <Text
-                color="label"
-                size="17pt"
-                weight="semibold"
-                numberOfLines={1}
-                ellipsizeMode="middle"
-              >
-                {ensName}
-              </Text>
-            </Animated.View>
-          </Cover>
-        </Box>
-      </Stack>
-    </Columns>
+            <Box>
+              <Animated.View style={addressAnimatedStyle}>
+                <Text
+                  color="label"
+                  size="17pt"
+                  weight="semibold"
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                >
+                  {address}
+                </Text>
+              </Animated.View>
+              <Cover>
+                <Animated.View style={ensNameAnimatedStyle}>
+                  <Text
+                    color="label"
+                    size="17pt"
+                    weight="semibold"
+                    numberOfLines={1}
+                    ellipsizeMode="middle"
+                  >
+                    {ensName}
+                  </Text>
+                </Animated.View>
+              </Cover>
+            </Box>
+          </Stack>
+        </Columns>
+      </Box>
+    </ButtonPressAnimation>
   );
 };
