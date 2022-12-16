@@ -17,6 +17,7 @@ import {
   isCloudBackupAvailable,
 } from '@/handlers/cloudBackup';
 import { logger } from '@/logger';
+// @ts-ignore ts is complaining about this import
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
