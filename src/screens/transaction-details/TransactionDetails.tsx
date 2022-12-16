@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
@@ -12,13 +12,6 @@ import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-deta
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
-import { useENSAvatar, useUserAccounts } from '@/hooks';
-import { isENSAddressFormat } from '@/helpers/validators';
 
 type RouteParams = {
   TransactionDetails: {
