@@ -14,6 +14,7 @@ import { TransactionDetailsFromToSection } from '@/screens/transaction-details/c
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
+import { useContacts } from '@/hooks';
 
 type RouteParams = {
   TransactionDetails: {
@@ -35,6 +36,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
     'address' | 'hash' | null
   >(null);
   const toastTimeout = useRef<NodeJS.Timeout>();
+  const { contacts } = useContacts();
 
   const type = transaction.type;
   const from = transaction.from ?? undefined;
@@ -99,6 +101,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
               from={from}
               to={to}
               presentToast={presentAddressToast}
+              contacts={contacts}
             />
             <TransactionDetailsValueAndFeeSection
               coinAddress={coinAddress}

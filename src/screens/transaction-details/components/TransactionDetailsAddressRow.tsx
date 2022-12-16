@@ -18,20 +18,29 @@ import { useTiming } from 'react-native-redash';
 import { ButtonPressAnimation } from '@/components/animations';
 import Clipboard from '@react-native-community/clipboard';
 import { haptics } from '@/utils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { Contact } from '@/redux/contacts';
 
-type Props = { address: string; title: string; onAddressCopied?: () => void };
+type Props = {
+  address: string;
+  title: string;
+  onAddressCopied?: () => void;
+  contact?: Contact;
+};
 
 export const TransactionDetailsAddressRow: React.FC<Props> = ({
   address,
   title,
   onAddressCopied,
+  contact,
 }) => {
-  const [ensName, setEnsName] = useState<string | undefined>();
+  const formattedAddress = formatAddressForDisplay(address, 4, 16);
+  const [ensName, setEnsName] = useState<string | undefined>(contact?.ens);
   const ensNameSharedValue = useTiming(!!ensName, {
-    duration: 420,
+    duration: contact?.ens ? 0 : 420,
     easing: Easing.linear,
   });
-  const color = addressHashedColorIndex(address);
+  const color = contact?.color ?? addressHashedColorIndex(address);
   const emoji = addressHashedEmoji(address);
 
   const { data: avatar } = useENSAvatar(ensName ?? '', {
@@ -44,11 +53,12 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    fetchReverseRecord(address).then(name => {
-      if (name) {
-        setEnsName(name);
-      }
-    });
+    if (!contact)
+      fetchReverseRecord(address).then(name => {
+        if (name) {
+          setEnsName(name);
+        }
+      });
   }, []);
 
   const addressAnimatedStyle = useAnimatedStyle(() => ({
@@ -110,7 +120,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                   numberOfLines={1}
                   ellipsizeMode="middle"
                 >
-                  {address}
+                  {contact?.nickname || formattedAddress}
                 </Text>
               </Animated.View>
               <Cover>
