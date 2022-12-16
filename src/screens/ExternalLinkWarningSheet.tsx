@@ -106,10 +106,8 @@ const ExternalLinkWarningSheet = () => {
               <SheetActionButton
                 color={colors.alpha(colors.appleBlue, 0.04)}
                 isTransparent
-                // @ts-expect-error
                 label={`Visit ${formatURLForDisplay(url)}`}
                 onPress={handleLink}
-                // @ts-expect-error
                 size="big"
                 textColor={colors.appleBlue}
                 truncate
@@ -119,10 +117,8 @@ const ExternalLinkWarningSheet = () => {
             <SheetActionButton
               color={colors.blueGreyDarkLight}
               isTransparent
-              // @ts-expect-error
               label={lang.t('modal.external_link_warning.go_back')}
               onPress={handleClose}
-              // @ts-expect-error
               size="big"
               textColor={colors.blueGreyDark60}
               weight="heavy"

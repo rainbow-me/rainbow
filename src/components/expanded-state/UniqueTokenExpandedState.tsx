@@ -541,13 +541,11 @@ const UniqueTokenExpandedState = ({
                         {hasEditButton ? (
                           <SheetActionButton
                             color={imageColor}
-                            // @ts-expect-error JavaScript component
                             label={`􀉮 ${lang.t(
                               'expanded_state.unique_expanded.edit'
                             )}`}
                             nftShadows
                             onPress={handlePressEdit}
-                            // @ts-expect-error JavaScript component
                             testID="edit"
                             textColor={textColor}
                             weight="heavy"
@@ -555,7 +553,6 @@ const UniqueTokenExpandedState = ({
                         ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
-                            // @ts-expect-error JavaScript component
                             label={
                               hasSendButton
                                 ? `􀮶 ${marketplaceName}`
@@ -568,7 +565,6 @@ const UniqueTokenExpandedState = ({
                             }
                             nftShadows
                             onPress={handlePressMarketplaceName}
-                            // @ts-expect-error JavaScript component
                             testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"

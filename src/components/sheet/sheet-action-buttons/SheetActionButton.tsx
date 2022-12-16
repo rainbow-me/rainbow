@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../../theme/ThemeContext';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
@@ -10,20 +10,50 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
-const addChartsStyling = isCharts =>
+type Props = {
+  borderRadius?: number;
+  color?: string;
+  disabled?: boolean;
+  elevation?: number;
+  emoji?: string;
+  forceShadows?: boolean;
+  icon?: string;
+  isCharts?: boolean;
+  isTransparent?: boolean;
+  label?: string;
+  lightShadows?: boolean;
+  marginBottom?: number;
+  nftShadows?: boolean;
+  onPress?: () => void;
+  scaleTo?: number;
+  size?: string;
+  testID?: string;
+  textColor?: string;
+  /**
+   * textSize accepts every key of fonts.size object which is a legacy dictionary of font sizes
+   */
+  textSize?: string | number;
+  truncate?: boolean;
+  weight?: string;
+};
+
+const addChartsStyling = (isCharts: boolean) =>
   isCharts ? { position: 'absolute', width: '100%' } : {};
 
-const Button = styled(Centered)(({ isCharts, size }) => ({
-  ...addChartsStyling(isCharts),
-  height: size === 'big' ? 56 : 46,
-}));
+const Button = styled(Centered)(
+  ({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
+    ...addChartsStyling(!!isCharts),
+    height: size === 'big' ? 56 : 46,
+  })
+);
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
-  height: ({ size }) => (size === 'big' ? 56 : 46),
-  paddingBottom: ({ label }) => (label && containsEmoji(label) ? 2.5 : 1),
+  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 56 : 46),
+  paddingBottom: ({ label }: Pick<Props, 'label'>) =>
+    label && containsEmoji(label) ? 2.5 : 1,
   paddingHorizontal: 19,
   zIndex: 1,
 });
@@ -31,21 +61,19 @@ const Content = styled(RowWithMargins).attrs({
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const WhiteButtonGradient = React.memo(
-  ({ colors }) => (
+  ({ colors }: { colors: ThemeContextProps['colors'] }) => (
     <LinearGradient
-      borderRadius={49}
       colors={colors.gradients.whiteButton}
       end={{ x: 0.5, y: 1 }}
-      opacity={0.5}
       pointerEvents="none"
       start={{ x: 0.5, y: 0 }}
-      style={position.coverAsObject}
+      style={[position.coverAsObject, { borderRadius: 49, opacity: 0.5 }]}
     />
   ),
   neverRerender
 );
 
-const SheetActionButton = ({
+const SheetActionButton: React.FC<Props> = ({
   borderRadius = 56,
   children,
   color: givenColor,
@@ -67,6 +95,7 @@ const SheetActionButton = ({
   textSize,
   truncate = false,
   weight = 'semibold',
+  marginBottom,
   ...props
 }) => {
   const { isDarkMode, colors } = useTheme();
@@ -115,9 +144,13 @@ const SheetActionButton = ({
       scaleTo={disabled ? 1 : scaleTo}
       size={size}
       testID={`${testID}-action-button`}
+      marginBottom={marginBottom}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
+      {/*  @ts-expect-error JavaScript component with an improper typing for children prop */}
       <ShadowStack
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...position.coverAsObject}
         backgroundColor={color}
         borderRadius={borderRadius}
@@ -135,6 +168,7 @@ const SheetActionButton = ({
         )}
       </ShadowStack>
       <Content label={label} size={size}>
+        {/* @ts-expect-error JavaScript component with an improper type inferred for lineHeight */}
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         {label ? (
