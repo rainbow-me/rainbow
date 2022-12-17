@@ -19,6 +19,7 @@ import {
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
 import { getSupportedBiometryType } from 'react-native-keychain';
+import { MMKV } from 'react-native-mmkv';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -199,6 +200,18 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
+
+const allWalletsStorage = new MMKV({
+  id: 'ALL_WALLETS',
+});
+
+const currentAddressStorage = new MMKV({
+  id: 'CURRENT_ADDRESS',
+});
+
+const selectedWalletStorage = new MMKV({
+  id: 'SELECTED_WALLET',
+});
 
 export const walletInit = async (
   seedPhrase = undefined,
@@ -467,8 +480,11 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
   return seedPhrase as string | null;
 };
 
-export const loadAddress = (): Promise<null | EthereumAddress> =>
-  keychain.loadString(addressKey) as Promise<string | null>;
+// this is next
+export const loadAddress = (): Promise<null | EthereumAddress> => {
+  const currentAddress = currentAddressStorage.getString('currentAddress');
+  return (currentAddress as unknown) as Promise<string | null>;
+};
 
 const loadPrivateKey = async (
   address?: EthereumAddress | undefined
@@ -527,7 +543,7 @@ export const saveAddress = async (
   address: EthereumAddress,
   accessControlOptions = keychain.publicAccessControlOptions
 ): Promise<void> => {
-  return keychain.saveString(addressKey, address, accessControlOptions);
+  currentAddressStorage.set('currentAddress', address);
 };
 
 export const identifyWalletType = (
@@ -1016,6 +1032,7 @@ export const getSeedPhrase = async (
   }
 };
 
+// why is selected in keychain ??
 export const setSelectedWallet = async (
   wallet: RainbowWallet
 ): Promise<void> => {
@@ -1024,18 +1041,15 @@ export const setSelectedWallet = async (
     wallet,
   };
 
-  return keychain.saveObject(
-    selectedWalletKey,
-    val,
-    keychain.publicAccessControlOptions
-  );
+  selectedWalletStorage.set('selected', JSON.stringify(val));
 };
 
 export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
-    const selectedWalletData = await keychain.loadObject(selectedWalletKey);
+    const selectedWalletData = selectedWalletStorage.getString('selected');
+
     if (selectedWalletData) {
-      return selectedWalletData as RainbowSelectedWalletData;
+      return await JSON.parse(selectedWalletData);
     }
     return null;
   } catch (error) {
@@ -1051,19 +1065,19 @@ export const saveAllWallets = async (wallets: AllRainbowWallets) => {
     wallets,
   };
 
-  await keychain.saveObject(
-    allWalletsKey,
-    val,
-    keychain.publicAccessControlOptions
-  );
+  allWalletsStorage.set('all_wallets', JSON.stringify(val));
 };
 
 export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => {
   try {
-    const allWallets = await keychain.loadObject(allWalletsKey);
-    if (allWallets) {
-      return allWallets as AllRainbowWalletsData;
+    const allWalletsMMKV = allWalletsStorage.getString('all_wallets');
+
+    if (allWalletsMMKV) {
+      const parsedWallets = await JSON.parse(allWalletsMMKV);
+      console.log('parsed wallets: ', parsedWallets);
+      return parsedWallets;
     }
+
     return null;
   } catch (error) {
     logger.sentry('Error in getAllWallets');
