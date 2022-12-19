@@ -3,8 +3,6 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '@/utils/profileUtils';
-import { useENSAvatar } from '@/hooks';
-import { isENSAddressFormat } from '@/helpers/validators';
 import { fetchReverseRecord } from '@/handlers/ens';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
@@ -153,7 +151,6 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                   size="17pt"
                   weight="semibold"
                   numberOfLines={1}
-                  ellipsizeMode="middle"
                 >
                   {name}
                 </Text>
@@ -165,7 +162,6 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                     size="17pt"
                     weight="semibold"
                     numberOfLines={1}
-                    ellipsizeMode="middle"
                   >
                     {fetchedEnsName}
                   </Text>
