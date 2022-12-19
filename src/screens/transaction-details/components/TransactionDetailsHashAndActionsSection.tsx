@@ -27,6 +27,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
 
   const onHashPress = () => {
     presentToast?.();
+    haptics.notificationSuccess();
     Clipboard.setString(hash);
   };
 
@@ -37,12 +38,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
       <Box paddingTop="8px" paddingBottom="20px">
         <Stack space="20px">
           {formattedHash && (
-            <ButtonPressAnimation
-              onPress={onHashPress}
-              scaleTo={0.96}
-              hapticType="notificationSuccess"
-              enableHapticFeedback
-            >
+            <ButtonPressAnimation onPress={onHashPress} scaleTo={0.96}>
               <Box paddingVertical="12px">
                 <SingleLineTransactionDetailsRow
                   icon="􀆃"

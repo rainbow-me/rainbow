@@ -112,12 +112,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   };
 
   return (
-    <ButtonPressAnimation
-      onPress={onRowPress}
-      scaleTo={0.96}
-      hapticType="notificationSuccess"
-      enableHapticFeedback
-    >
+    <ButtonPressAnimation onPress={onRowPress} scaleTo={0.96}>
       <Box paddingVertical="10px">
         <Columns space="10px" alignVertical="center">
           <Column width="content">

@@ -67,7 +67,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
     if (toastTimeout.current) {
       clearTimeout(toastTimeout.current);
     }
-    toastTimeout.current = setTimeout(() => setPresentedToast(null), 2000);
+    toastTimeout.current = setTimeout(() => setPresentedToast(null), 1000);
   };
 
   const presentAddressToast = useCallback(() => {
