@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
@@ -14,7 +14,7 @@ import { TransactionDetailsFromToSection } from '@/screens/transaction-details/c
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
-import { useContacts, useUserAccounts } from '@/hooks';
+import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 
 type RouteParams = {
   TransactionDetails: {
@@ -96,6 +96,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
+            <TransactionDetailsStatusActionsAndTimestampSection type={type} />
             <TransactionDetailsFromToSection
               from={from}
               to={to}
