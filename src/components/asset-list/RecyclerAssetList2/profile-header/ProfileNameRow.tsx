@@ -126,7 +126,9 @@ export function ProfileNameRow({
         size={50}
         wiggleFactor={0}
         // @ts-expect-error – JS component
-        setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
+        setOnNunstewEmoji={newOnNewEmoji =>
+          (onNewEmoji.current = newOnNewEmoji)
+        }
       />
     </Box>
   );
