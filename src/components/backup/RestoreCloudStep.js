@@ -24,6 +24,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,
+  useKeyboardHeight,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
@@ -40,6 +41,7 @@ import { margin, padding } from '@/styles';
 import logger from '@/utils/logger';
 import { Box } from '@/design-system';
 import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -238,8 +240,15 @@ export default function RestoreCloudStep({
     validPassword && onSubmit();
   }, [onSubmit, validPassword]);
 
+  const keyboardHeight = useKeyboardHeight();
+
   return (
-    <Box height={{ custom: deviceUtils.dimensions.height }}>
+    <Box
+      height={{
+        custom:
+          deviceUtils.dimensions.height - (IS_ANDROID ? keyboardHeight : 0),
+      }}
+    >
       <BackupSheetKeyboardLayout
         footerButtonDisabled={!validPassword}
         footerButtonLabel={label}

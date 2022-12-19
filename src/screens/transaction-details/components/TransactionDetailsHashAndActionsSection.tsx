@@ -40,7 +40,6 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
             onPress={() => {
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
             }}
-            // @ts-expect-error JS component
             label={i18n.t(i18n.l.wallet.action.view_on, {
               blockExplorerName: startCase(
                 ethereumUtils.getBlockExplorer(network)
