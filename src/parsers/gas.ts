@@ -376,8 +376,3 @@ export const weiToGwei = (weiAmount: BigNumberish) => {
   const gweiAmount = divide(weiAmount, ethUnits.gwei);
   return gweiAmount;
 };
-
-export const weiToEth = (weiAmount: BigNumberish) => {
-  const ethAmount = divide(weiAmount, ethUnits.ether);
-  return ethAmount;
-};
