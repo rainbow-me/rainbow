@@ -1,27 +1,51 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { TransactionDetailsContent } from './components/TransactionDetailsContent';
-import { useRoute } from '@react-navigation/native';
-import { RainbowTransaction } from '@/entities';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RainbowTransaction, TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { useNavigation } from '@/navigation';
-import { View } from 'react-native';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, Box } from '@/design-system';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
+import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-type Params = {
-  transaction: RainbowTransaction;
+type RouteParams = {
+  TransactionDetails: {
+    transaction: RainbowTransaction;
+    longFormHeight: number;
+  };
 };
 
-export const TransactionDetails: React.FC = () => {
-  const route = useRoute();
-  const { setParams } = useNavigation();
-  const { transaction } = route.params as Params;
+type Props = {
+  route: RouteProp<RouteParams, 'TransactionDetails'>;
+  navigation: StackNavigationProp<RouteParams, 'TransactionDetails'>;
+};
+
+export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
+  const { setParams } = navigation;
+  const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
 
+  const type = transaction.type;
   const hash = ethereumUtils.getHash(transaction);
   const fee = transaction.fee;
+  const value = transaction.balance?.display;
+  const nativeCurrencyValue = transaction.native?.display;
+  const coinSymbol =
+    type === TransactionType.contract_interaction
+      ? 'eth'
+      : transaction.symbol ?? undefined;
+  const mainnetCoinAddress = useSelector(
+    (state: AppState) =>
+      state.data.accountAssetsData?.[
+        `${transaction.address}_${transaction.network}`
+      ]?.mainnet_address
+  );
+  const coinAddress = mainnetCoinAddress ?? transaction.address ?? undefined;
 
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [
     setParams,
@@ -38,11 +62,24 @@ export const TransactionDetails: React.FC = () => {
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
         >
-          <View
+          <Box
+            background="surfacePrimary"
+            paddingHorizontal="20px"
+            paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
-            <TransactionDetailsContent txHash={hash} fee={fee} />
-          </View>
+            <TransactionDetailsValueAndFeeSection
+              coinAddress={coinAddress}
+              coinSymbol={coinSymbol}
+              fee={fee}
+              nativeCurrencyValue={nativeCurrencyValue}
+              value={value}
+            />
+            <TransactionDetailsHashAndActionsSection
+              hash={hash}
+              network={transaction.network}
+            />
+          </Box>
         </SlackSheet>
       )}
     </BackgroundProvider>

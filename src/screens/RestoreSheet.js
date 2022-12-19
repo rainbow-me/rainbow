@@ -1,26 +1,13 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import RNCloudFs from 'react-native-cloud-fs';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import { SlackSheet } from '../components/sheet';
-import {
-  fetchUserDataFromCloud,
-  isCloudBackupAvailable,
-} from '@/handlers/cloudBackup';
 import { BackgroundProvider } from '@/design-system';
-import { cloudPlatform } from '@/utils/platform';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analyticsV2 } from '@/analytics';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import { AddFirstWalletStep } from '@/components/backup/AddFirstWalletStep';
-import { Logger } from '@/logger';
-import * as i18n from '@/languages';
-
-const TRANSLATIONS = i18n.l.wallet.new.add_first_wallet;
 
 export function RestoreSheet() {
   const { setParams } = useNavigation();
@@ -32,52 +19,6 @@ export function RestoreSheet() {
       fromSettings,
     } = {},
   } = useRoute();
-
-  const onCloudRestore = useCallback(async () => {
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: true,
-      type: 'seed',
-    });
-    let proceed = false;
-    if (IS_ANDROID) {
-      const isAvailable = await isCloudBackupAvailable();
-      if (isAvailable) {
-        try {
-          const data = await fetchUserDataFromCloud();
-          if (data?.wallets) {
-            Object.values(data.wallets).forEach(wallet => {
-              if (
-                wallet.backedUp &&
-                wallet.backupType === WalletBackupTypes.cloud
-              ) {
-                proceed = true;
-              }
-            });
-
-            if (proceed) {
-              setParams({ userData: data });
-            }
-          }
-          Logger.log(`Downloaded ${cloudPlatform} backup info`);
-        } catch (e) {
-          Logger.log(e);
-        } finally {
-          if (!proceed) {
-            Alert.alert(
-              i18n.t(TRANSLATIONS.no_backups),
-              i18n.t(TRANSLATIONS.no_google_backups)
-            );
-            await RNCloudFs.logout();
-          }
-        }
-      }
-    } else {
-      proceed = true;
-    }
-    if (proceed) {
-      setParams({ step: WalletBackupStepTypes.cloud });
-    }
-  }, [setParams]);
 
   const [sheetHeight, setSheetHeight] = useState(0);
 
@@ -106,10 +47,7 @@ export function RestoreSheet() {
                 userData={userData}
               />
             ) : (
-              <AddFirstWalletStep
-                onCloudRestore={onCloudRestore}
-                userData={userData}
-              />
+              <AddFirstWalletStep userData={userData} />
             )}
           </View>
         </SlackSheet>

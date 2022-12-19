@@ -191,13 +191,13 @@ const transactions: Record<string, RainbowTransaction> = {
     },
   },
   'Savings': {
-    address: '0x5e087b61aad29559e31565079fcdabe384b44614',
+    address: '0x6b175474e89094c44da98b954eedeac495271d0f',
     balance: {
       amount: '10',
       display: '10.00 DAI',
     },
     description: 'Withdrew Dai',
-    from: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
+    from: '0x5e087b61aad29559e31565079fcdabe384b44614',
     hash:
       '0x425d39c5b80b32f4278a408516459e5d2e2ec4462e1309f29debf53a7f2632cd-0',
     minedAt: 1666125239,

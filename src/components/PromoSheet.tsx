@@ -215,7 +215,6 @@ export function PromoSheet({
                   <Stack space="12px">
                     <SheetActionButton
                       color={primaryButtonProps.color || accentColor}
-                      // @ts-expect-error JavaScript component
                       label={primaryButtonProps.label}
                       lightShadows
                       onPress={primaryButtonOnPress}
@@ -228,7 +227,6 @@ export function PromoSheet({
                     <SheetActionButton
                       color={secondaryButtonProps.color || colors.transparent}
                       isTransparent
-                      // @ts-expect-error JavaScript component
                       label={secondaryButtonProps.label}
                       onPress={secondaryButtonProps.onPress || (() => {})}
                       textColor={secondaryButtonProps.textColor || accentColor}
