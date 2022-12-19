@@ -45,6 +45,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   const formattedAddress = formatAddressForDisplay(address, 4, 16);
   const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
   const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
+  const [imageLoaded, setImageLoaded] = useState(!!account?.image);
   const ensNameSharedValue = useTiming(!!fetchedEnsName, {
     duration: 420,
     easing: Easing.linear,
@@ -64,7 +65,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     accountName || contact?.ens || fetchedEnsName || formattedAddress;
 
   const imageUrl = fetchedEnsImage ?? account?.image;
-  const ensAvatarSharedValue = useTiming(!!imageUrl, {
+  const ensAvatarSharedValue = useTiming(!!imageUrl && imageLoaded, {
     duration: account?.image ? 0 : 420,
   });
 
@@ -111,6 +112,10 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     Clipboard.setString(address);
   };
 
+  const onImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   return (
     <ButtonPressAnimation onPress={onRowPress} scaleTo={0.96}>
       <Box paddingVertical="10px">
@@ -118,7 +123,12 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
           <Column width="content">
             <Box>
               <Animated.View style={ensAvatarAnimatedStyle}>
-                <ImageAvatar image={imageUrl} size="medium" />
+                <ImageAvatar
+                  image={imageUrl}
+                  size="medium"
+                  // @ts-expect-error JS component
+                  onLoad={onImageLoad}
+                />
               </Animated.View>
               <Cover>
                 <Animated.View style={emojiAvatarAnimatedStyle}>
