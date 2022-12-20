@@ -37,11 +37,10 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   >(null);
   const toastTimeout = useRef<NodeJS.Timeout>();
 
-  const type = transaction.type;
+  const { type, status, minedAt, fee, pending } = transaction;
   const from = transaction.from ?? undefined;
   const to = transaction.to ?? undefined;
   const hash = ethereumUtils.getHash(transaction);
-  const fee = transaction.fee;
   const value = transaction.balance?.display;
   const nativeCurrencyValue = transaction.native?.display;
   const coinSymbol =
@@ -96,7 +95,11 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
           >
-            <TransactionDetailsStatusActionsAndTimestampSection type={type} />
+            <TransactionDetailsStatusActionsAndTimestampSection
+              pending={pending}
+              status={status}
+              minedAt={minedAt ?? undefined}
+            />
             <TransactionDetailsFromToSection
               from={from}
               to={to}
