@@ -59,8 +59,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   const color =
     account?.color ?? contact?.color ?? addressHashedColorIndex(address);
   const emoji = accountEmoji || addressHashedEmoji(address);
-  const name =
-    accountName || contact?.ens || fetchedEnsName || formattedAddress;
+  const name = accountName || contact?.ens || formattedAddress;
 
   const imageUrl = fetchedEnsImage ?? account?.image;
   const ensAvatarSharedValue = useTiming(!!imageUrl && imageLoaded, {

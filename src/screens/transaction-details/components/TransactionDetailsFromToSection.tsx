@@ -4,6 +4,7 @@ import * as i18n from '@/languages';
 import { TransactionDetailsAddressRow } from '@/screens/transaction-details/components/TransactionDetailsAddressRow';
 import { useContacts, useUserAccounts } from '@/hooks';
 import { isLowerCaseMatch } from '@/utils';
+import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 
 type Props = {
   from?: string;
@@ -47,27 +48,30 @@ export const TransactionDetailsFromToSection: React.FC<Props> = ({
     return null;
   }
   return (
-    <Box paddingVertical="10px">
-      <Stack>
-        {from && (
-          <TransactionDetailsAddressRow
-            onAddressCopied={presentToast}
-            address={from}
-            title={i18n.t(i18n.l.transaction_details.from)}
-            contact={fromContact}
-            account={fromAccount}
-          />
-        )}
-        {to && (
-          <TransactionDetailsAddressRow
-            onAddressCopied={presentToast}
-            address={to}
-            title={i18n.t(i18n.l.transaction_details.to)}
-            contact={toContact}
-            account={toAccount}
-          />
-        )}
-      </Stack>
-    </Box>
+    <>
+      <TransactionDetailsDivider />
+      <Box paddingVertical="10px">
+        <Stack>
+          {from && (
+            <TransactionDetailsAddressRow
+              onAddressCopied={presentToast}
+              address={from}
+              title={i18n.t(i18n.l.transaction_details.from)}
+              contact={fromContact}
+              account={fromAccount}
+            />
+          )}
+          {to && (
+            <TransactionDetailsAddressRow
+              onAddressCopied={presentToast}
+              address={to}
+              title={i18n.t(i18n.l.transaction_details.to)}
+              contact={toContact}
+              account={toAccount}
+            />
+          )}
+        </Stack>
+      </Box>
+    </>
   );
 };
