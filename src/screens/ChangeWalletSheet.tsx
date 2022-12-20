@@ -55,7 +55,7 @@ import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 164 : 111;
+const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
@@ -560,11 +560,6 @@ export default function ChangeWalletSheet() {
     profilesEnabled,
   ]);
 
-  const onPressImportSeedPhrase = useCallback(() => {
-    analytics.track('Tapped "Add an existing wallet"');
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, { type: 'import' });
-  }, [navigate]);
-
   const onPressPairHardwareWallet = useCallback(() => {
     analytics.track('Tapped "Pair Hardware Wallet"');
     goBack();
@@ -618,7 +613,6 @@ export default function ChangeWalletSheet() {
         height={listHeight}
         onChangeAccount={onChangeAccount}
         onPressAddAccount={onPressAddAccount}
-        onPressImportSeedPhrase={onPressImportSeedPhrase}
         onPressPairHardwareWallet={onPressPairHardwareWallet}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}

@@ -1482,6 +1482,7 @@
     },
     "wallet": {
       "action": {
+        "add_another": "Add another wallet",
         "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
         "copy_contract_address": "Copy Contract Address",

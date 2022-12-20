@@ -31,6 +31,7 @@ import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { Inset, Stack } from '@/design-system';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -96,11 +97,6 @@ const WalletListDivider = styled(Divider).attrs(
   marginTop: -1,
 });
 
-const WalletListFooter = styled(Column)({
-  paddingBottom: 6,
-  paddingTop: 4,
-});
-
 interface Props {
   accountAddress: EthereumAddress;
   allWallets: any;
@@ -113,7 +109,6 @@ interface Props {
     address: EthereumAddress | undefined
   ) => void;
   onPressAddAccount: () => void;
-  onPressImportSeedPhrase: () => void;
   onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
   showDividers: boolean;
@@ -129,7 +124,6 @@ export default function WalletList({
   height,
   onChangeAccount,
   onPressAddAccount,
-  onPressImportSeedPhrase,
   onPressPairHardwareWallet,
   scrollEnabled,
   showDividers,
@@ -274,30 +268,27 @@ export default function WalletList({
         />
         {showDividers && <WalletListDivider />}
         {!watchOnly && (
-          <WalletListFooter>
-            <WalletOption
-              editMode={editMode}
-              label={`􀁍 ${lang.t('wallet.action.create_new')}`}
-              onPress={onPressAddAccount}
-            />
-            <WalletOption
-              editMode={editMode}
-              label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
-              onPress={() =>
-                navigate(Routes.ADD_WALLET_NAVIGATOR, {
-                  screen: Routes.ADD_WALLET_SHEET,
-                  params: { onPressAddAccount },
-                })
-              }
-            />
-            {hardwareWalletsEnabled && (
+          <Inset space="20px">
+            <Stack space="24px">
               <WalletOption
                 editMode={editMode}
-                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
-                onPress={onPressPairHardwareWallet}
+                label={`􀁍 ${lang.t('wallet.action.add_another')}`}
+                onPress={() =>
+                  navigate(Routes.ADD_WALLET_NAVIGATOR, {
+                    screen: Routes.ADD_WALLET_SHEET,
+                    params: { onPressAddAccount },
+                  })
+                }
               />
-            )}
-          </WalletListFooter>
+              {hardwareWalletsEnabled && (
+                <WalletOption
+                  editMode={editMode}
+                  label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                  onPress={onPressPairHardwareWallet}
+                />
+              )}
+            </Stack>
+          </Inset>
         )}
       </WalletsContainer>
     </Container>

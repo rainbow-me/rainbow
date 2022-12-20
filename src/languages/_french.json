@@ -1485,6 +1485,7 @@
     },
     "wallet": {
       "action": {
+        "add_another": "Add another wallet :)",
         "add_existing": "Ajouter un portefeuille existant",
         "cancel": "Annuler",
         "copy_contract_address": "Copy Contract Address :)",
@@ -1637,6 +1638,10 @@
             "title": "Restore from %{platform} :)",
             "no_backups": "No backups found :)",
             "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account. :)"
+          },
+          "create_new": {
+            "description": "Create a new wallet on one of your seed phrases :)",
+            "title": "Create a new wallet :)"
           },
           "hardware_wallet": {
             "description": "Add accounts from your Bluetooth hardware wallet :)",
