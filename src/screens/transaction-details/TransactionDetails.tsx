@@ -99,6 +99,8 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
               pending={pending}
               status={status}
               minedAt={minedAt ?? undefined}
+              // onSpeedUp={() => {}}
+              // onCancel={() => {}}
             />
             <TransactionDetailsFromToSection
               from={from}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TransactionStatus } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
@@ -6,17 +6,26 @@ import { capitalize } from 'lodash';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { StyleSheet } from 'react-native';
+import { ButtonPressAnimation } from '@/components/animations';
+
+const SIZE = 40;
 
 type Props = {
   pending?: boolean;
   status?: TransactionStatus;
   minedAt?: number;
+  onSpeedUp?: () => void;
+  onCancel?: () => void;
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({
   pending,
   status,
   minedAt,
+  onSpeedUp,
+  onCancel,
 }) => {
   const date = formatTransactionDetailsDate(minedAt);
   const { colors } = useTheme();
@@ -26,31 +35,73 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     pending
   );
 
+  const menuConfig = useMemo(
+    () => ({
+      menuTitle: '',
+      menuItems: [
+        ...(onSpeedUp
+          ? [
+              {
+                actionKey: 'speedUp',
+                actionTitle: 'Speed Up',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'speedometer',
+                },
+              },
+            ]
+          : []),
+        ...(onCancel
+          ? [
+              {
+                actionKey: 'cancel',
+                actionTitle: 'Cancel',
+                menuAttributes: ['destructive'],
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: 'xmark.circle',
+                },
+              },
+            ]
+          : []),
+      ],
+    }),
+    [onSpeedUp, onCancel]
+  );
+
+  const onMenuItemPress = useCallback(e => {
+    console.log(e.nativeEvent.actionKey);
+  }, []);
+
   return (
     <Stack>
-      <Box alignItems="flex-end">
-        <Box
-          style={{ overflow: 'hidden' }}
-          height={{ custom: 40 }}
-          width={{ custom: 40 }}
-          borderRadius={20}
-        >
-          <RadialGradient
-            style={{
-              width: 40,
-              height: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            colors={colors.gradients.lightestGrey}
-            center={[0, 20]}
-            radius={40}
+      <Box alignItems="flex-end" height="40px">
+        {(onSpeedUp || onCancel) && (
+          <ContextMenuButton
+            menuConfig={menuConfig}
+            onMenuItemPress={onMenuItemPress}
           >
-            <Text size="20pt" weight="bold" color="labelTertiary">
-              􀍠
-            </Text>
-          </RadialGradient>
-        </Box>
+            <ButtonPressAnimation>
+              <Box
+                style={styles.overflowHidden}
+                height={{ custom: SIZE }}
+                width={{ custom: SIZE }}
+                borderRadius={SIZE / 2}
+              >
+                <RadialGradient
+                  style={styles.gradient}
+                  colors={colors.gradients.lightestGrey}
+                  center={[0, SIZE / 2]}
+                  radius={SIZE}
+                >
+                  <Text size="20pt" weight="bold" color="labelTertiary">
+                    􀍠
+                  </Text>
+                </RadialGradient>
+              </Box>
+            </ButtonPressAnimation>
+          </ContextMenuButton>
+        )}
       </Box>
       <Box paddingBottom="24px">
         <Stack alignHorizontal="center" space="16px">
@@ -90,3 +141,13 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     </Stack>
   );
 };
+
+const styles = StyleSheet.create({
+  gradient: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overflowHidden: { overflow: 'hidden' },
+});
