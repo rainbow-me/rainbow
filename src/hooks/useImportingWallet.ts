@@ -129,7 +129,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
-      setBusy(true);
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -138,6 +137,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ? forceColor
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
+      setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
       // Validate ENS
@@ -150,6 +150,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
+            setBusy(false);
             Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
@@ -173,6 +174,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           const address = await resolveUnstoppableDomain(input);
           if (!address) {
+            setBusy(false);
             Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
             return;
           }

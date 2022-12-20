@@ -14,7 +14,7 @@ import {
 import { IS_ANDROID } from '@/env';
 import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';

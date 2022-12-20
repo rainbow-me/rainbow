@@ -1626,7 +1626,7 @@
       "my_account_address": "My account address:",
       "network_title": "Network",
       "new": {
-        "add_first_wallet": {
+        "add_wallet": {
           "cloud": {
             "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
             "description_ios_one_wallet": "You have 1 wallet backed up",
@@ -1635,6 +1635,10 @@
             "no_backups": "No backups found",
             "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
           },
+          "create_new": {
+            "description": "Create a new wallet on one of your seed phrases",
+            "title": "Create a new wallet"
+          },
           "hardware_wallet": {
             "description": "Add accounts from your Bluetooth hardware wallet",
             "title": "Connect your hardware wallet"
@@ -1642,6 +1646,10 @@
           "seed": {
             "description": "Use your recovery phrase from Rainbow or another crypto wallet",
             "title": "Restore with a recovery phrase or private key"
+          },
+          "sheet": {
+            "description": "Create a new wallet or add an existing one",
+            "title": "Add another wallet"
           },
           "watch": {
             "description": "Watch a public address or ENS name",

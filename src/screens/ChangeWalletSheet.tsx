@@ -434,6 +434,10 @@ export default function ChangeWalletSheet() {
             actionType: 'Create',
             asset: [],
             isNewProfile: true,
+            onCancel: () => {
+              creatingWallet.current = false;
+              setIsWalletLoading(null);
+            },
             onCloseModal: async (args: any) => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
@@ -558,7 +562,7 @@ export default function ChangeWalletSheet() {
 
   const onPressImportSeedPhrase = useCallback(() => {
     analytics.track('Tapped "Add an existing wallet"');
-    navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
+    navigate(Routes.IMPORT_SEED_PHRASE_FLOW, { type: 'import' });
   }, [navigate]);
 
   const onPressPairHardwareWallet = useCallback(() => {

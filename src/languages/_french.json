@@ -1629,7 +1629,7 @@
       "my_account_address": "My account address: :)",
       "network_title": "Network :)",
       "new": {
-        "add_first_wallet": {
+        "add_wallet": {
           "cloud": {
             "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it. :)",
             "description_ios_one_wallet": "You have 1 wallet backed up :)",
@@ -1645,6 +1645,10 @@
           "seed": {
             "description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
             "title": "Restore with a recovery phrase or private key :)"
+          },
+          "sheet": {
+            "description": "Create a new wallet or add an existing one :)",
+            "title": "Add another wallet :)"
           },
           "watch": {
             "description": "Watch a public address or ENS name :)",
