@@ -27,6 +27,6 @@ export function getIconColorAndGradientForTransactionStatus(
   return {
     icon: '􀆅',
     color: 'blue',
-    gradient: colors.gradients.completelyTransparentToAppleBlue,
+    gradient: colors.gradients.transparentToAppleBlue,
   };
 }

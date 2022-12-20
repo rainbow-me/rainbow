@@ -224,10 +224,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
       buildRgba(base.appleBlue, 0.02),
       buildRgba(base.appleBlue, 0.06),
     ],
-    completelyTransparentToAppleBlue: [
-      buildRgba(base.appleBlue, 0),
-      buildRgba(base.appleBlue, 0.06),
-    ],
     transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
     transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
     transparentToLightGrey: [
