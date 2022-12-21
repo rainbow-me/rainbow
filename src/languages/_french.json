@@ -1486,10 +1486,8 @@
     "wallet": {
       "action": {
         "add_another": "Add another wallet :)",
-        "add_existing": "Ajouter un portefeuille existant",
         "cancel": "Annuler",
         "copy_contract_address": "Copy Contract Address :)",
-        "create_new": "Créez un nouveau portefeuille",
         "delete": "Supprimer le Portefeuille",
         "delete_confirm": "Voulez-vous vraiment supprimer ce portefeuille",
         "edit": "Moadifier le Portefeuille",

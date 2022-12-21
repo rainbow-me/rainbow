@@ -1483,10 +1483,8 @@
     "wallet": {
       "action": {
         "add_another": "Add another wallet",
-        "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
         "copy_contract_address": "Copy Contract Address",
-        "create_new": "Create a new wallet",
         "delete": "Delete Wallet",
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
