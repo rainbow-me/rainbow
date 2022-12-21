@@ -39,6 +39,7 @@ export const AddWalletSheet = () => {
     description: i18n.t(TRANSLATIONS.create_new.description),
     icon: '􀁌',
     iconColor: globalColors.pink60,
+    testID: 'create-new-button',
     onPress: onPressAddAccount,
   };
 
@@ -73,6 +74,7 @@ export const AddWalletSheet = () => {
     description: i18n.t(TRANSLATIONS.hardware_wallet.description),
     icon: '􀕹',
     iconColor: globalColors.blue60,
+    testID: 'connect-hardware-wallet-button',
     onPress: () => {},
   };
 

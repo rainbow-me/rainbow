@@ -281,12 +281,14 @@ export default function WalletList({
                     params: { onPressAddAccount },
                   });
                 }}
+                testID="add-another-wallet-button"
               />
               {hardwareWalletsEnabled && (
                 <WalletOption
                   editMode={editMode}
                   label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
                   onPress={onPressPairHardwareWallet}
+                  testID="pair-hardware-wallet-button"
                 />
               )}
             </Stack>
