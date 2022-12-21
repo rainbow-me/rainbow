@@ -274,13 +274,12 @@ export default function WalletList({
               <WalletOption
                 editMode={editMode}
                 label={`􀁍 ${lang.t('wallet.action.add_another')}`}
-                onPress={() => {
-                  analytics.track('Tapped "Add an existing wallet"');
+                onPress={() =>
                   navigate(Routes.ADD_WALLET_NAVIGATOR, {
                     screen: Routes.ADD_WALLET_SHEET,
                     params: { onPressAddAccount },
-                  });
-                }}
+                  })
+                }
                 testID="add-another-wallet-button"
               />
               {hardwareWalletsEnabled && (

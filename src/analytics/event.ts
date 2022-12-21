@@ -71,6 +71,6 @@ export type EventProperties = {
   };
   [event.addWalletFlowStarted]: {
     isFirstWallet: boolean;
-    type: 'backup' | 'seed' | 'watch' | 'hardware_wallet';
+    type: 'backup' | 'seed' | 'watch' | 'hardware_wallet' | 'new';
   };
 };

@@ -171,7 +171,12 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     description: i18n.t(TRANSLATIONS.hardware_wallet.description),
     icon: '􀕹',
     iconColor: globalColors.blue60,
-    onPress: () => {},
+    onPress: () => {
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'hardware_wallet',
+      });
+    },
   };
 
   return (

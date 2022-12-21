@@ -17,6 +17,7 @@ import Routes from '@/navigation/routesNames';
 import React from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
+import { analytics, analyticsV2 } from '@/analytics';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
 
@@ -40,7 +41,13 @@ export const AddWalletSheet = () => {
     icon: '􀁌',
     iconColor: globalColors.pink60,
     testID: 'create-new-button',
-    onPress: onPressAddAccount,
+    onPress: () => {
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'new',
+      });
+      onPressAddAccount();
+    },
   };
 
   const restoreFromSeed: AddWalletItem = {
@@ -49,11 +56,17 @@ export const AddWalletSheet = () => {
     icon: '􀑚',
     iconColor: globalColors.purple60,
     testID: 'restore-with-key-button',
-    onPress: () =>
+    onPress: () => {
+      analytics.track('Tapped "Add an existing wallet"');
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'seed',
+      });
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
         screen: Routes.IMPORT_SEED_PHRASE_FLOW,
         params: { type: 'import' },
-      }),
+      });
+    },
   };
 
   const watchAddress: AddWalletItem = {
@@ -62,11 +75,17 @@ export const AddWalletSheet = () => {
     icon: '􀒒',
     iconColor: globalColors.green60,
     testID: 'watch-address-button',
-    onPress: () =>
+    onPress: () => {
+      analytics.track('Tapped "Add an existing wallet"');
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'watch',
+      });
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
         screen: Routes.IMPORT_SEED_PHRASE_FLOW,
         params: { type: 'watch' },
-      }),
+      });
+    },
   };
 
   const connectHardwareWallet: AddWalletItem = {
@@ -75,7 +94,12 @@ export const AddWalletSheet = () => {
     icon: '􀕹',
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',
-    onPress: () => {},
+    onPress: () => {
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'hardware_wallet',
+      });
+    },
   };
 
   return (
