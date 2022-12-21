@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.4)
+
+### Changed
+
+- fixed camera permissions
+
 ## [1.8.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.3)
 
 ### Changed
