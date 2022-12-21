@@ -30,9 +30,7 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { Inset, Stack } from '@/design-system';
-import { analytics } from '@/analytics';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -109,7 +107,7 @@ interface Props {
     walletId: string,
     address: EthereumAddress | undefined
   ) => void;
-  onPressAddAccount: () => void;
+  onPressAddAnotherWallet: () => void;
   onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
   showDividers: boolean;
@@ -124,7 +122,7 @@ export default function WalletList({
   editMode,
   height,
   onChangeAccount,
-  onPressAddAccount,
+  onPressAddAnotherWallet,
   onPressPairHardwareWallet,
   scrollEnabled,
   showDividers,
@@ -137,7 +135,7 @@ export default function WalletList({
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const { navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -274,12 +272,7 @@ export default function WalletList({
               <WalletOption
                 editMode={editMode}
                 label={`􀁍 ${lang.t('wallet.action.add_another')}`}
-                onPress={() =>
-                  navigate(Routes.ADD_WALLET_NAVIGATOR, {
-                    screen: Routes.ADD_WALLET_SHEET,
-                    params: { onPressAddAccount },
-                  })
-                }
+                onPress={onPressAddAnotherWallet}
                 testID="add-another-wallet-button"
               />
               {hardwareWalletsEnabled && (

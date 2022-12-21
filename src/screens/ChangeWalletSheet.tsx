@@ -26,7 +26,7 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import {
   getExperimetalFlag,
   HARDWARE_WALLETS,
@@ -561,12 +561,29 @@ export default function ChangeWalletSheet() {
   ]);
 
   const onPressPairHardwareWallet = useCallback(() => {
-    analytics.track('Tapped "Pair Hardware Wallet"');
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: false,
+      type: 'hardware_wallet',
+    });
     goBack();
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
     });
   }, [goBack, navigate]);
+
+  const onPressAddAnotherWallet = useCallback(() => {
+    analyticsV2.track(analyticsV2.event.pressedButton, {
+      buttonName: 'AddAnotherWalletButton',
+      action: 'Navigates from WalletList to AddWalletSheet',
+    });
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.ADD_WALLET_NAVIGATOR, {
+        screen: Routes.ADD_WALLET_SHEET,
+        params: { onPressAddAccount },
+      });
+    });
+  }, [goBack, navigate, onPressAddAccount]);
 
   const onPressEditMode = useCallback(() => {
     analytics.track('Tapped "Edit"');
@@ -612,7 +629,7 @@ export default function ChangeWalletSheet() {
         editMode={editMode}
         height={listHeight}
         onChangeAccount={onChangeAccount}
-        onPressAddAccount={onPressAddAccount}
+        onPressAddAnotherWallet={onPressAddAnotherWallet}
         onPressPairHardwareWallet={onPressPairHardwareWallet}
         scrollEnabled={scrollEnabled}
         showDividers={showDividers}
