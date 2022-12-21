@@ -79,6 +79,7 @@ export const AddWalletSheet = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
+        // @ts-expect-error js component
         <SlackSheet
           contentHeight={deviceUtils.dimensions.height}
           backgroundColor={backgroundColor}
