@@ -156,11 +156,11 @@ export default async function handleDeeplink(
 
 function handleWalletConnect(uri: any) {
   const { query } = new URL(uri);
-  const parsedUri = parseUri(uri);
+  const parsedUri = uri ? parseUri(uri) : null;
 
   logger.debug(`handleWalletConnect`, { uri, query, parsedUri });
 
-  if (uri && query && parsedUri.version === 1) {
+  if (uri && query && parsedUri && parsedUri.version === 1) {
     store.dispatch(walletConnectSetPendingRedirect());
     store.dispatch(
       walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
@@ -175,6 +175,7 @@ function handleWalletConnect(uri: any) {
   } else if (
     uri &&
     query &&
+    parsedUri &&
     parsedUri.version === 2 &&
     getExperimetalFlag(WC_V2)
   ) {
@@ -182,5 +183,6 @@ function handleWalletConnect(uri: any) {
     pairWalletConnect({ uri });
   } else {
     // This is when we get focused by WC due to a signing request
+    store.dispatch(walletConnectSetPendingRedirect());
   }
 }
