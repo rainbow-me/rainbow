@@ -32,6 +32,7 @@ import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Inset, Stack } from '@/design-system';
+import { analytics } from '@/analytics';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -273,12 +274,13 @@ export default function WalletList({
               <WalletOption
                 editMode={editMode}
                 label={`􀁍 ${lang.t('wallet.action.add_another')}`}
-                onPress={() =>
+                onPress={() => {
+                  analytics.track('Tapped "Add an existing wallet"');
                   navigate(Routes.ADD_WALLET_NAVIGATOR, {
                     screen: Routes.ADD_WALLET_SHEET,
                     params: { onPressAddAccount },
-                  })
-                }
+                  });
+                }}
               />
               {hardwareWalletsEnabled && (
                 <WalletOption
