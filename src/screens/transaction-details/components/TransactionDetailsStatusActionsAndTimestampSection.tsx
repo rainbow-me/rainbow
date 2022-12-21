@@ -79,7 +79,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
         {(onSpeedUp || onCancel) && (
           <ContextMenuButton
             menuConfig={menuConfig}
-            onMenuItemPress={onMenuItemPress}
+            onPressMenuItem={onMenuItemPress}
           >
             <ButtonPressAnimation>
               <Box

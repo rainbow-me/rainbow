@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		0299CE7B2886202800B5C7E7 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0299CE7A2886202800B5C7E7 /* NotificationService.m */; };
 		0299CE7F2886202800B5C7E7 /* ImageNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0299CE772886202800B5C7E7 /* ImageNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0B1DAF4AA0E86ED62452364B /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E4467A9EA5AB1525FEB0644 /* libPods-SelectTokenIntent.a */; };
-		0F1FE3BB110F7115AF21E8B7 /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 44C7A55F93B889A906FB321E /* libPods-Rainbow.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -31,6 +29,7 @@
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D098C2E2811A9A5006A801A /* RNStartTime.m */; };
+		61F71BFFCAF9E8362B3CBD85 /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3808C5B3C9F99B3A785418 /* libPods-Rainbow.a */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
@@ -68,6 +67,7 @@
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
 		AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */; };
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
+		ABF454CE44CA85A7F572D85E /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB64A57C65303514F079D26 /* libPods-PriceWidgetExtension.a */; };
 		B52242E628B1B11F0024D19D /* smol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E428B1B11F0024D19D /* smol@2x.png */; };
 		B52242E728B1B11F0024D19D /* smol@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E528B1B11F0024D19D /* smol@3x.png */; };
 		B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0C29358945007560D9 /* golddoge@3x.png */; };
@@ -140,9 +140,9 @@
 		C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
-		D2C27C4CDDD70EDF53A1F0F0 /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8E8686B1091FE184F87902C /* libPods-PriceWidgetExtension.a */; };
+		D050F41DFD9954D614C72EF9 /* libPods-ImageNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCAB67529CEE027A2D1AE513 /* libPods-ImageNotification.a */; };
+		EA796A9C3044289DB8AAC3A0 /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B642613FB6B3D0611DE52118 /* libPods-SelectTokenIntent.a */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
-		F407EFF49D02D371C2DFF3E0 /* libPods-ImageNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1427FE856C997220EC915074 /* libPods-ImageNotification.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -200,7 +200,6 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
-		1427FE856C997220EC915074 /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1539422724C7C7E100E4A9D1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBundleHelper.swift; sourceTree = "<group>"; };
 		153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListLoadingViewCell.swift; sourceTree = "<group>"; };
@@ -223,6 +222,7 @@
 		15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageViewWithPersistentAnimations.swift; sourceTree = "<group>"; };
 		15E531D8242DAB7100797B89 /* NotificationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationManager.h; sourceTree = "<group>"; };
 		15E531D9242DAB7100797B89 /* NotificationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationManager.m; sourceTree = "<group>"; };
+		1FB64A57C65303514F079D26 /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
 		24979E7420F84004007EB0DA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		24979E7520F84004007EB0DA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
@@ -235,13 +235,13 @@
 		24979E7C20F84004007EB0DA /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		24979E7D20F84005007EB0DA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Frameworks/module.modulemap; sourceTree = "<group>"; };
 		24979E7E20F84005007EB0DA /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
+		2B3808C5B3C9F99B3A785418 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33201222ED4B674D95D5A681 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		339896C1E709091CE1B4BCC6 /* Pods-ImageNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.debug.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.debug.xcconfig"; sourceTree = "<group>"; };
 		3ADE2C6E827E87D05CE931C1 /* Pods-ImageNotification.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.staging.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.staging.xcconfig"; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
 		405E306D36AF8C8E350B08C1 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
-		44C7A55F93B889A906FB321E /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D098C2D2811A979006A801A /* RNStartTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStartTime.h; sourceTree = "<group>"; };
 		4D098C2E2811A9A5006A801A /* RNStartTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStartTime.m; sourceTree = "<group>"; };
 		4D61F9B45755AD85D9E3770E /* Pods-PriceWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -268,7 +268,6 @@
 		872E2EAB5DE7F56ED5A5A24B /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
 		87E09CA957E90697E3F0562B /* Pods-SelectTokenIntent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.debug.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.debug.xcconfig"; sourceTree = "<group>"; };
 		8CA10DEBDA87323582898A77 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
-		8E4467A9EA5AB1525FEB0644 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		95F2888C850F40C8A26E083B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
@@ -309,6 +308,7 @@
 		B54C1D0F29358946007560D9 /* raindoge@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "raindoge@2x.png"; sourceTree = "<group>"; };
 		B54C1D142935A54F007560D9 /* zora@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zora@3x.png"; sourceTree = "<group>"; };
 		B54C1D152935A54F007560D9 /* zora@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zora@2x.png"; sourceTree = "<group>"; };
+		B642613FB6B3D0611DE52118 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
 		C11640E7274DC10B00C9120A /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		C1272389274EBBB6006AC743 /* CurrencyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyDetails.swift; sourceTree = "<group>"; };
@@ -339,7 +339,7 @@
 		C8279DA1CEFA03B62AEF5F4F /* Pods-PriceWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		CEC3DAF282E24857F78EB1B6 /* Pods-PriceWidgetExtension.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.localrelease.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.localrelease.xcconfig"; sourceTree = "<group>"; };
 		D755E71324B04FEE9C691D14 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
-		D8E8686B1091FE184F87902C /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCAB67529CEE027A2D1AE513 /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA1AA60DB7282F25147072F5 /* Pods-PriceWidgetExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.staging.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.staging.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -352,7 +352,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F407EFF49D02D371C2DFF3E0 /* libPods-ImageNotification.a in Frameworks */,
+				D050F41DFD9954D614C72EF9 /* libPods-ImageNotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,7 +362,7 @@
 			files = (
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
-				0F1FE3BB110F7115AF21E8B7 /* libPods-Rainbow.a in Frameworks */,
+				61F71BFFCAF9E8362B3CBD85 /* libPods-Rainbow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,7 +372,7 @@
 			files = (
 				C16DCF60272BA6EF00FF5C78 /* SwiftUI.framework in Frameworks */,
 				C16DCF5E272BA6EF00FF5C78 /* WidgetKit.framework in Frameworks */,
-				D2C27C4CDDD70EDF53A1F0F0 /* libPods-PriceWidgetExtension.a in Frameworks */,
+				ABF454CE44CA85A7F572D85E /* libPods-PriceWidgetExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,7 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCF81272BAB9500FF5C78 /* Intents.framework in Frameworks */,
-				0B1DAF4AA0E86ED62452364B /* libPods-SelectTokenIntent.a in Frameworks */,
+				EA796A9C3044289DB8AAC3A0 /* libPods-SelectTokenIntent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,10 +540,10 @@
 				C16DCF5F272BA6EF00FF5C78 /* SwiftUI.framework */,
 				C16DCF80272BAB9500FF5C78 /* Intents.framework */,
 				C16DCF8B272BAB9600FF5C78 /* IntentsUI.framework */,
-				1427FE856C997220EC915074 /* libPods-ImageNotification.a */,
-				D8E8686B1091FE184F87902C /* libPods-PriceWidgetExtension.a */,
-				44C7A55F93B889A906FB321E /* libPods-Rainbow.a */,
-				8E4467A9EA5AB1525FEB0644 /* libPods-SelectTokenIntent.a */,
+				DCAB67529CEE027A2D1AE513 /* libPods-ImageNotification.a */,
+				1FB64A57C65303514F079D26 /* libPods-PriceWidgetExtension.a */,
+				2B3808C5B3C9F99B3A785418 /* libPods-Rainbow.a */,
+				B642613FB6B3D0611DE52118 /* libPods-SelectTokenIntent.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
@@ -24,6 +24,10 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@/helpers/emojiHandler';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Navigation } from '@/navigation';
+import Routes from '@rainbow-me/routes';
+import { IS_IOS } from '@/env';
 
 type Props = {
   address: string;
@@ -59,7 +63,8 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   const color =
     account?.color ?? contact?.color ?? addressHashedColorIndex(address);
   const emoji = accountEmoji || addressHashedEmoji(address);
-  const name = accountName || contact?.ens || formattedAddress;
+  const name =
+    accountName || contact?.nickname || contact?.ens || formattedAddress;
 
   const imageUrl = fetchedEnsImage ?? account?.image;
   const ensAvatarSharedValue = useTiming(!!imageUrl && imageLoaded, {
@@ -77,8 +82,8 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    if (!account?.image && (name || contact?.ens)) {
-      const ens = name ?? contact?.ens;
+    if (!account?.image && (fetchedEnsName || contact?.ens)) {
+      const ens = fetchedEnsName ?? contact?.ens;
       if (ens) {
         fetchENSAvatar(ens, { cacheFirst: true }).then(avatar => {
           if (avatar?.imageUrl) {
@@ -87,7 +92,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
         });
       }
     }
-  }, [name]);
+  }, [fetchedEnsName]);
 
   const addressAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(ensNameSharedValue.value, [0, 0.5, 1], [1, 0, 0]),
@@ -103,73 +108,150 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     opacity: ensAvatarSharedValue.value,
   }));
 
-  const onRowPress = () => {
-    onAddressCopied?.();
-    haptics.notificationSuccess();
-    Clipboard.setString(address);
-  };
+  const menuConfig = useMemo(
+    () => ({
+      menuTitle: '',
+      menuItems: [
+        {
+          actionKey: 'send',
+          actionTitle: 'Send',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'paperplane',
+          },
+        },
+        ...(!account
+          ? [
+              {
+                actionKey: 'contact',
+                actionTitle: contact ? 'View Contact' : 'Add to Contacts',
+                icon: {
+                  iconType: 'SYSTEM',
+                  iconValue: contact
+                    ? 'person.crop.circle'
+                    : 'person.crop.circle.badge.plus',
+                },
+              },
+            ]
+          : []),
+        {
+          actionKey: 'copy',
+          actionTitle: 'Copy Address',
+          actionSubtitle: fetchedEnsName || name,
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'square.on.square',
+          },
+        },
+      ],
+    }),
+    [fetchedEnsName, address, contact, account]
+  );
+
+  const onPressMenuItem = useCallback(
+    e => {
+      switch (e.nativeEvent.actionKey) {
+        case 'copy':
+          onAddressCopied?.();
+          haptics.notificationSuccess();
+          Clipboard.setString(address);
+          return;
+        case 'contact':
+          Navigation.handleAction(Routes.MODAL_SCREEN, {
+            address: address,
+            color: color,
+            contact,
+            ens: fetchedEnsName || contact?.ens,
+            type: 'contact_profile',
+          });
+          return;
+        case 'send':
+          if (IS_IOS) {
+            Navigation.handleAction(Routes.SEND_FLOW, {
+              params: {
+                address,
+              },
+              screen: Routes.SEND_SHEET,
+            });
+          } else {
+            Navigation.handleAction(Routes.SEND_SHEET, {
+              address,
+            });
+          }
+
+          return;
+      }
+    },
+    [address, fetchedEnsName, contact]
+  );
 
   const onImageLoad = () => {
     setImageLoaded(true);
   };
 
   return (
-    <ButtonPressAnimation onPress={onRowPress} scaleTo={0.96}>
-      <Box paddingVertical="10px">
-        <Columns space="10px" alignVertical="center">
-          <Column width="content">
-            <Box>
-              <Animated.View style={ensAvatarAnimatedStyle}>
-                <ImageAvatar
-                  image={imageUrl}
-                  size="medium"
-                  // @ts-expect-error JS component
-                  onLoad={onImageLoad}
-                />
-              </Animated.View>
-              <Cover>
-                <Animated.View style={emojiAvatarAnimatedStyle}>
-                  <ContactAvatar color={color} size="medium" value={emoji} />
+    <ContextMenuButton
+      menuConfig={menuConfig}
+      onPressMenuItem={onPressMenuItem}
+      menuAlignmentOverride="left"
+    >
+      <ButtonPressAnimation scaleTo={0.96}>
+        <Box paddingVertical="10px">
+          <Columns space="10px" alignVertical="center">
+            <Column width="content">
+              <Box>
+                <Animated.View style={ensAvatarAnimatedStyle}>
+                  <ImageAvatar
+                    image={imageUrl}
+                    size="medium"
+                    // @ts-expect-error JS component
+                    onLoad={onImageLoad}
+                  />
                 </Animated.View>
-              </Cover>
-            </Box>
-          </Column>
-          <Stack space="10px">
-            <Text
-              color="labelTertiary"
-              size="13pt"
-              numberOfLines={1}
-              weight="semibold"
-            >
-              {title}
-            </Text>
-            <Box>
-              <Animated.View style={addressAnimatedStyle}>
-                <Text
-                  color="label"
-                  size="17pt"
-                  weight="semibold"
-                  numberOfLines={1}
-                >
-                  {name}
-                </Text>
-              </Animated.View>
-              <Cover>
-                <Animated.View style={ensNameAnimatedStyle}>
+                <Cover>
+                  <Animated.View style={emojiAvatarAnimatedStyle}>
+                    <ContactAvatar color={color} size="medium" value={emoji} />
+                  </Animated.View>
+                </Cover>
+              </Box>
+            </Column>
+            <Stack space="10px">
+              <Text
+                color="labelTertiary"
+                size="13pt"
+                numberOfLines={1}
+                weight="semibold"
+              >
+                {title}
+              </Text>
+              <Box>
+                <Animated.View style={addressAnimatedStyle}>
                   <Text
                     color="label"
                     size="17pt"
                     weight="semibold"
                     numberOfLines={1}
                   >
-                    {fetchedEnsName}
+                    {name}
                   </Text>
                 </Animated.View>
-              </Cover>
-            </Box>
-          </Stack>
-        </Columns>
-      </Box>
-    </ButtonPressAnimation>
+                <Cover>
+                  <Animated.View style={ensNameAnimatedStyle}>
+                    <Text
+                      color="label"
+                      size="17pt"
+                      weight="semibold"
+                      numberOfLines={1}
+                    >
+                      {fetchedEnsName}
+                    </Text>
+                  </Animated.View>
+                </Cover>
+              </Box>
+            </Stack>
+          </Columns>
+        </Box>
+      </ButtonPressAnimation>
+    </ContextMenuButton>
   );
 };
