@@ -10,8 +10,9 @@ export default function watchingAlert() {
     [
       {
         onPress: () => {
-          Navigation.handleAction(Routes.IMPORT_SEED_PHRASE_FLOW, {
-            type: 'import',
+          Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            params: { type: 'import' },
           });
         },
         text: lang.t('wallet.alert.finish_importing'),
