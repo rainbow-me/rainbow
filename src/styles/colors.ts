@@ -53,7 +53,8 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn(
-  (color = '') => color.toLowerCase().substring(0, 3) === 'rgb'
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  (color: string = '') => color.toLowerCase().substring(0, 3) === 'rgb'
 );
 
 const avatarBackgrounds = [
@@ -341,6 +342,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
         buildRgba(base.appleBlue, 0.02),
         buildRgba(base.appleBlue, 0.06),
       ],
+      transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
       transparentToGreen: [
         buildRgba(base.green, 0),
         buildRgba(base.green, 0.06),
