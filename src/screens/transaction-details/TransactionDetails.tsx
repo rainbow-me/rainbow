@@ -2,7 +2,11 @@ import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp } from '@react-navigation/native';
-import { RainbowTransaction, TransactionType } from '@/entities';
+import {
+  RainbowTransaction,
+  TransactionStatusTypes,
+  TransactionType,
+} from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -15,6 +19,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
+import Routes from '@/navigation/routesNames';
+import { Navigation } from '@/navigation';
 
 type RouteParams = {
   TransactionDetails: {
@@ -29,13 +35,16 @@ type Props = {
 };
 
 export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
-  const { setParams } = navigation;
+  const { setParams, navigate } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [presentedToast, setPresentedToast] = useState<
     'address' | 'hash' | null
   >(null);
   const toastTimeout = useRef<NodeJS.Timeout>();
+  const accountAddress = useSelector(
+    (state: AppState) => state.settings.accountAddress
+  );
 
   const { type, status, minedAt, fee, pending } = transaction;
   const from = transaction.from ?? undefined;
@@ -54,6 +63,23 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
       ]?.mainnet_address
   );
   const coinAddress = mainnetCoinAddress ?? transaction.address ?? undefined;
+
+  const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
+  const canBeResubmitted = isOutgoing && !minedAt;
+  const canBeCancelled =
+    canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+  const onSpeedUpPress = useCallback(() => {
+    Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+      tx: transaction,
+      type: 'speed_up',
+    });
+  }, [transaction]);
+  const onCancelPress = useCallback(() => {
+    Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+      tx: transaction,
+      type: 'speed_up',
+    });
+  }, [transaction]);
 
   // Dynamic settings sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [
@@ -99,8 +125,8 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
               pending={pending}
               status={status}
               minedAt={minedAt ?? undefined}
-              // onSpeedUp={() => {}}
-              // onCancel={() => {}}
+              onSpeedUp={canBeResubmitted ? onSpeedUpPress : undefined}
+              onCancel={canBeCancelled ? onCancelPress : undefined}
             />
             <TransactionDetailsFromToSection
               from={from}
