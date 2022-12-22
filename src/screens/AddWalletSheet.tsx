@@ -247,35 +247,37 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Inset horizontal="20px" top="36px" bottom="104px">
-      <Stack space="32px">
-        <Stack space="20px">
-          <Text align="center" size="26pt" weight="bold" color="label">
-            {i18n.t(TRANSLATIONS.sheet.title)}
-          </Text>
-          <Text
-            align="center"
-            size="15pt / 135%"
-            weight="semibold"
-            color="labelTertiary"
-          >
-            {i18n.t(TRANSLATIONS.sheet.description)}
-          </Text>
+    <Box height="full" background="surfaceSecondary">
+      <Inset horizontal="20px" top="36px" bottom="104px">
+        <Stack space="32px">
+          <Stack space="20px">
+            <Text align="center" size="26pt" weight="bold" color="label">
+              {i18n.t(TRANSLATIONS.sheet.title)}
+            </Text>
+            <Text
+              align="center"
+              size="15pt / 135%"
+              weight="semibold"
+              color="labelTertiary"
+            >
+              {i18n.t(TRANSLATIONS.sheet.description)}
+            </Text>
+          </Stack>
+          <Box background="surfacePrimary" borderRadius={18} shadow="12px">
+            <Inset vertical="24px" horizontal="20px">
+              <AddWalletList
+                totalHorizontalInset={40}
+                items={[
+                  create,
+                  ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
+                  watch,
+                  restore,
+                ]}
+              />
+            </Inset>
+          </Box>
         </Stack>
-        <Box background="surfacePrimary" borderRadius={18} shadow="12px">
-          <Inset vertical="24px" horizontal="20px">
-            <AddWalletList
-              totalHorizontalInset={40}
-              items={[
-                create,
-                ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                watch,
-                restore,
-              ]}
-            />
-          </Inset>
-        </Box>
-      </Stack>
-    </Inset>
+      </Inset>
+    </Box>
   );
 };

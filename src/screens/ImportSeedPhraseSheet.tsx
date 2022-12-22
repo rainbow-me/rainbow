@@ -16,7 +16,7 @@ import { colors } from '@/styles';
 import React from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 import { contentHeight } from '@/navigation/AddWalletNavigator';
@@ -54,6 +54,8 @@ export const ImportSeedPhraseSheet: React.FC = () => {
   });
   const labelTertiary = useForegroundColor('labelTertiary');
 
+  useFocusEffect(() => inputRef.current?.focus());
+
   const buttonDisabled = seedPhrase && !isSecretValid;
 
   return (
@@ -61,6 +63,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
       height={{
         custom: contentHeight,
       }}
+      background="surfaceSecondary"
     >
       <Box
         alignItems="center"
