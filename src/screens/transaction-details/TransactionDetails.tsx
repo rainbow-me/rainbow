@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp } from '@react-navigation/native';
 import { RainbowTransaction, TransactionType } from '@/entities';
@@ -40,7 +40,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const { type, status, minedAt, fee, pending } = transaction;
   const from = transaction.from ?? undefined;
   const to = transaction.to ?? undefined;
-  const hash = ethereumUtils.getHash(transaction);
+  const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const value = transaction.balance?.display;
   const nativeCurrencyValue = transaction.native?.display;
   const coinSymbol =
@@ -55,7 +55,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   );
   const coinAddress = mainnetCoinAddress ?? transaction.address ?? undefined;
 
-  // Dynamical settings sheet height based on content height
+  // Dynamic settings sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [
     setParams,
     sheetHeight,
@@ -118,6 +118,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
               hash={hash}
               network={transaction.network}
               presentToast={presentHashToast}
+              status={status}
             />
           </Box>
           <ToastPositionContainer>
