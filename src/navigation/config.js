@@ -199,10 +199,11 @@ export const registerENSNavigatorConfig = {
 };
 
 export const addWalletNavigatorConfig = {
-  options: ({ route: { params = {} } }) => ({
+  options: ({ route: { params: { sheetHeight, ...params } = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
+      longFormHeight: sheetHeight,
       springDamping: 1,
       transitionDuration: 0.3,
     }),
