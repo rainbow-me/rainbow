@@ -77,7 +77,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const onCancelPress = useCallback(() => {
     Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
       tx: transaction,
-      type: 'speed_up',
+      type: 'cancel',
     });
   }, [transaction]);
 

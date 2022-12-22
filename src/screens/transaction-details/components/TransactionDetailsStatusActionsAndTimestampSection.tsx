@@ -70,7 +70,15 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   );
 
   const onMenuItemPress = useCallback(e => {
-    console.log(e.nativeEvent.actionKey);
+    const { actionKey } = e.nativeEvent;
+    switch (actionKey) {
+      case 'speedUp':
+        onSpeedUp?.();
+        return;
+      case 'cancel':
+        onCancel?.();
+        return;
+    }
   }, []);
 
   return (

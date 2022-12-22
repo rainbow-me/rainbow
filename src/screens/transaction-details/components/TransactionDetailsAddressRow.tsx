@@ -174,7 +174,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
               screen: Routes.SEND_SHEET,
             });
           } else {
-            Navigation.handleAction(Routes.SEND_SHEET, {
+            Navigation.handleAction(Routes.SEND_FLOW, {
               address,
             });
           }
