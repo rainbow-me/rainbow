@@ -1,8 +1,7 @@
 import { Input } from '@/components/inputs';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
+import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import {
   AccentColorProvider,
-  BackgroundProvider,
   Box,
   globalColors,
   Inset,
@@ -12,15 +11,15 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
+import { useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Keyboard, StatusBar } from 'react-native';
+import React from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
+import { contentHeight } from '@/navigation/AddWalletNavigator';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
 
@@ -45,7 +44,6 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     isSecretValid,
     seedPhrase,
   } = useImportingWallet();
-  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({
@@ -56,83 +54,49 @@ export const ImportSeedPhraseSheet: React.FC = () => {
   });
   const labelTertiary = useForegroundColor('labelTertiary');
 
-  const [keyboardVisible, setKeyboardVisibility] = useState(true);
-
-  useEffect(() => {
-    const keyboardShownSubscription = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setKeyboardVisibility(true);
-      }
-    );
-    const keyboardDismissedSubscription = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisibility(false);
-      }
-    );
-    return () => {
-      keyboardShownSubscription.remove();
-      keyboardDismissedSubscription.remove();
-    };
-  }, []);
-
   const buttonDisabled = seedPhrase && !isSecretValid;
 
-  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight;
-
-  const bottomOffset = IS_ANDROID && keyboardVisible ? 0 : keyboardHeight;
-
   return (
-    <>
-      <BackgroundProvider color="surfaceSecondary">
-        {({ backgroundColor }) => (
-          // @ts-expect-error js component
-          <SlackSheet
-            additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-            contentHeight={contentHeight}
-            backgroundColor={backgroundColor}
-            scrollEnabled={false}
-            height="100%"
-            testID="import-sheet"
-          >
-            <Box
-              alignItems="center"
-              justifyContent="space-between"
-              paddingTop={{ custom: 38 }}
-              paddingHorizontal="20px"
-            >
-              <Stack space="20px">
-                <Text align="center" color="label" size="26pt" weight="bold">
-                  {i18n.t(TRANSLATIONS[type].title)}
-                </Text>
-                {type === 'import' && (
-                  <Text
-                    align="center"
-                    color="labelTertiary"
-                    size="15pt / 135%"
-                    weight="semibold"
-                  >
-                    {i18n.t(TRANSLATIONS.import.description)}
-                  </Text>
-                )}
-              </Stack>
-            </Box>
-          </SlackSheet>
-        )}
-      </BackgroundProvider>
+    <Box
+      height={{
+        custom: contentHeight,
+      }}
+    >
       <Box
         alignItems="center"
-        bottom={{ custom: bottomOffset }}
+        justifyContent="space-between"
+        paddingTop={{ custom: 38 }}
+        paddingHorizontal="20px"
+        testID="import-sheet"
+      >
+        <Stack space="20px">
+          <Text align="center" color="label" size="26pt" weight="bold">
+            {i18n.t(TRANSLATIONS[type].title)}
+          </Text>
+          {type === 'import' && (
+            <Text
+              align="center"
+              color="labelTertiary"
+              size="15pt / 135%"
+              weight="semibold"
+            >
+              {i18n.t(TRANSLATIONS.import.description)}
+            </Text>
+          )}
+        </Stack>
+      </Box>
+      <Box
+        alignItems="center"
+        bottom={{ custom: keyboardHeight }}
         justifyContent="center"
         position="absolute"
-        top="0px"
+        top={{ custom: -SheetHandleFixedToTopHeight }}
         width="full"
       >
         <Input
           autoCorrect={false}
           autoCompleteType={false}
-          autoFocus
+          autoFocus={false}
           autoCapitalize="none"
           textContentType="none"
           enablesReturnKeyAutomatically
@@ -157,7 +121,11 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           value={seedPhrase}
         />
       </Box>
-      <Box position="absolute" right="0px" bottom={{ custom: bottomOffset }}>
+      <Box
+        position="absolute"
+        right="0px"
+        bottom={{ custom: keyboardHeight + 20 }}
+      >
         <Inset bottom="20px" right="20px">
           <AccentColorProvider
             color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
@@ -210,6 +178,6 @@ export const ImportSeedPhraseSheet: React.FC = () => {
         </Inset>
       </Box>
       {busy && <LoadingOverlay />}
-    </>
+    </Box>
   );
 };

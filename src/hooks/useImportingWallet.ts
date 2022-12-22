@@ -56,13 +56,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    android &&
-      setTimeout(() => {
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
-        inputRef.current?.focus();
-      }, 500);
-  }, []);
+  // useEffect(() => {
+  //   android &&
+  //     setTimeout(() => {
+  //       // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
+  //       inputRef.current?.focus();
+  //     }, 500);
+  // }, []);
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 

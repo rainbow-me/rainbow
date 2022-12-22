@@ -96,7 +96,11 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(
-        () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW, { type: 'import' }),
+        () =>
+          navigate(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            params: { type: 'import' },
+          }),
         50
       );
     });
@@ -110,7 +114,11 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(
-        () => navigate(Routes.IMPORT_SEED_PHRASE_FLOW, { type: 'watch' }),
+        () =>
+          navigate(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            params: { type: 'watch' },
+          }),
         50
       );
     });

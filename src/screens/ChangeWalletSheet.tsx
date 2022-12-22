@@ -1,8 +1,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { useRoute } from '@react-navigation/core';
-import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -12,28 +11,16 @@ import WalletList from '../components/change-wallet/WalletList';
 import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import showWalletErrorAlert from '../helpers/support';
-import { WalletLoadingStates } from '../helpers/walletLoadingStates';
-import WalletTypes from '../helpers/walletTypes';
-import { cleanUpWalletKeys, createWallet } from '../model/wallet';
+import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
-  createAccountForWallet,
-  walletsLoadState,
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
-import {
-  getExperimetalFlag,
-  HARDWARE_WALLETS,
-  PROFILES,
-  useExperimentalFlag,
-} from '@/config';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
 import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import {
   useAccountSettings,
@@ -124,12 +111,7 @@ export type EditWalletContextMenuActions = {
 export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
-  const {
-    isDamaged,
-    selectedWallet,
-    setIsWalletLoading,
-    wallets,
-  } = useWallets();
+  const { selectedWallet, wallets } = useWallets();
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -138,8 +120,6 @@ export default function ChangeWalletSheet() {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const creatingWallet = useRef<boolean>();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(
@@ -418,148 +398,6 @@ export default function ChangeWalletSheet() {
     [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
   );
 
-  const onPressAddAccount = useCallback(async () => {
-    try {
-      analytics.track('Tapped "Create a new wallet"');
-      if (creatingWallet.current) return;
-      creatingWallet.current = true;
-
-      // Show naming modal
-      InteractionManager.runAfterInteractions(() => {
-        goBack();
-      });
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          navigate(Routes.MODAL_SCREEN, {
-            actionType: 'Create',
-            asset: [],
-            isNewProfile: true,
-            onCancel: () => {
-              creatingWallet.current = false;
-              setIsWalletLoading(null);
-            },
-            onCloseModal: async (args: any) => {
-              if (args) {
-                setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
-                const name = args?.name ?? '';
-                const color = args?.color ?? null;
-                // Check if the selected wallet is the primary
-                let primaryWalletKey = selectedWallet.primary
-                  ? selectedWallet.id
-                  : null;
-
-                // If it's not, then find it
-                !primaryWalletKey &&
-                  Object.keys(wallets as any).some(key => {
-                    const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.primary
-                    ) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
-
-                // If there's no primary wallet at all,
-                // we fallback to an imported one with a seed phrase
-                !primaryWalletKey &&
-                  Object.keys(wallets as any).some(key => {
-                    const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.imported
-                    ) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
-
-                try {
-                  // If we found it and it's not damaged use it to create the new account
-                  if (
-                    primaryWalletKey &&
-                    !wallets?.[primaryWalletKey].damaged
-                  ) {
-                    const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, color, name)
-                    );
-                    // @ts-ignore
-                    await initializeWallet();
-                    // If this wallet was previously backed up to the cloud
-                    // We need to update userData backup so it can be restored too
-                    if (
-                      wallets?.[primaryWalletKey].backedUp &&
-                      wallets[primaryWalletKey].backupType ===
-                        WalletBackupTypes.cloud
-                    ) {
-                      try {
-                        await backupUserDataIntoCloud({ wallets: newWallets });
-                      } catch (e) {
-                        logger.sentry(
-                          'Updating wallet userdata failed after new account creation'
-                        );
-                        captureException(e);
-                        throw e;
-                      }
-                    }
-
-                    // If doesn't exist, we need to create a new wallet
-                  } else {
-                    await createWallet(
-                      null,
-                      color,
-                      name,
-                      false,
-                      null,
-                      null,
-                      false,
-                      true
-                    );
-                    await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
-                    await initializeWallet();
-                  }
-                } catch (e) {
-                  logger.sentry('Error while trying to add account');
-                  captureException(e);
-                  if (isDamaged) {
-                    setTimeout(() => {
-                      showWalletErrorAlert();
-                    }, 1000);
-                  }
-                }
-              }
-              creatingWallet.current = false;
-              setIsWalletLoading(null);
-            },
-            profile: {
-              color: null,
-              name: ``,
-            },
-            type: 'wallet_profile',
-          });
-        }, 50);
-      });
-    } catch (e) {
-      setIsWalletLoading(null);
-      logger.log('Error while trying to add account', e);
-    }
-  }, [
-    dispatch,
-    goBack,
-    initializeWallet,
-    isDamaged,
-    navigate,
-    selectedWallet.id,
-    selectedWallet.primary,
-    setIsWalletLoading,
-    wallets,
-    profilesEnabled,
-  ]);
-
   const onPressPairHardwareWallet = useCallback(() => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet: false,
@@ -580,10 +418,9 @@ export default function ChangeWalletSheet() {
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
         screen: Routes.ADD_WALLET_SHEET,
-        params: { onPressAddAccount },
       });
     });
-  }, [goBack, navigate, onPressAddAccount]);
+  }, [goBack, navigate]);
 
   const onPressEditMode = useCallback(() => {
     analytics.track('Tapped "Edit"');
