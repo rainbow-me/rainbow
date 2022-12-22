@@ -25,13 +25,12 @@ const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
 
 type RouteParams = {
   ImportSeedPhraseSheetParams: {
-    // watch_or_import type is temporary, will be removed in followup PR
-    type: 'watch' | 'import' | 'watch_or_import';
+    type: 'watch' | 'import';
   };
 };
 
 export const ImportSeedPhraseSheet: React.FC = () => {
-  const { params: { type = 'watch_or_import' } = {} } = useRoute<
+  const { params: { type = 'watch' } = {} } = useRoute<
     RouteProp<RouteParams, 'ImportSeedPhraseSheetParams'>
   >();
 
