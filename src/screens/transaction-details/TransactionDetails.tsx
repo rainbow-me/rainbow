@@ -35,7 +35,7 @@ type Props = {
 };
 
 export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
-  const { setParams, navigate } = navigation;
+  const { setParams } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [presentedToast, setPresentedToast] = useState<

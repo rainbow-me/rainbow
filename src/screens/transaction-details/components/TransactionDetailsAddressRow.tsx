@@ -44,7 +44,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   contact,
   account,
 }) => {
-  const formattedAddress = formatAddressForDisplay(address, 4, 16);
+  const formattedAddress = formatAddressForDisplay(address);
   const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
   const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
   const [imageLoaded, setImageLoaded] = useState(!!account?.image);
