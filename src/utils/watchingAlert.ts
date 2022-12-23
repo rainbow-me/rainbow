@@ -11,7 +11,7 @@ export default function watchingAlert() {
       {
         onPress: () => {
           Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
-            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            screen: Routes.IMPORT_SEED_PHRASE_SHEET,
             params: { type: 'import' },
           });
         },

@@ -19,7 +19,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
-import { contentHeight } from '@/navigation/AddWalletNavigator';
+import { deviceUtils } from '@/utils';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
 
@@ -60,7 +60,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
   return (
     <Box
       height={{
-        custom: contentHeight,
+        custom: deviceUtils.dimensions.height,
       }}
       background="surfaceSecondary"
     >

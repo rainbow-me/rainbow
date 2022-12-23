@@ -98,7 +98,7 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
       setTimeout(
         () =>
           navigate(Routes.ADD_WALLET_NAVIGATOR, {
-            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            screen: Routes.IMPORT_SEED_PHRASE_SHEET,
             params: { type: 'import' },
           }),
         50
@@ -116,7 +116,7 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
       setTimeout(
         () =>
           navigate(Routes.ADD_WALLET_NAVIGATOR, {
-            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            screen: Routes.IMPORT_SEED_PHRASE_SHEET,
             params: { type: 'watch' },
           }),
         50

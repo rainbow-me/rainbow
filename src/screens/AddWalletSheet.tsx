@@ -228,7 +228,7 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+      screen: Routes.IMPORT_SEED_PHRASE_SHEET,
       params: { type: 'import' },
     });
   }, [navigate]);
@@ -240,7 +240,7 @@ export const AddWalletSheet = () => {
       type: 'watch',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+      screen: Routes.IMPORT_SEED_PHRASE_SHEET,
       params: { type: 'watch' },
     });
   }, [navigate]);

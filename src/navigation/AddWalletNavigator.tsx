@@ -13,9 +13,6 @@ import { useNavigation } from './Navigation';
 
 const Swipe = createMaterialTopTabNavigator();
 
-export const contentHeight =
-  deviceUtils.dimensions.height - SheetHandleFixedToTopHeight;
-
 export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, userData },
@@ -25,12 +22,17 @@ export const AddWalletNavigator = () => {
   const [sheetHeight, setSheetHeight] = useState(0);
 
   useEffect(() => {
-    setParams({ sheetHeight });
+    setParams({ sheetHeight, backgroundOpacity: sheetHeight ? undefined : 1 });
   }, [setParams, sheetHeight]);
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
+  const contentHeight =
+    (sheetHeight || deviceUtils.dimensions.height) -
+    SheetHandleFixedToTopHeight;
+
   return (
+    // wrapping in View prevents keyboard from pushing up sheet on android
     <View
       style={{
         height: deviceUtils.dimensions.height,
@@ -58,14 +60,14 @@ export const AddWalletNavigator = () => {
                 name={Routes.ADD_WALLET_SHEET}
                 listeners={{
                   focus: () => {
-                    setScrollEnabled(true);
+                    setScrollEnabled(!isFirstWallet);
                     setParams({ sheetHeight });
                   },
                 }}
               />
               <Swipe.Screen
                 component={ImportSeedPhraseSheet}
-                name={Routes.IMPORT_SEED_PHRASE_FLOW}
+                name={Routes.IMPORT_SEED_PHRASE_SHEET}
                 listeners={{
                   focus: () => {
                     setScrollEnabled(false);
