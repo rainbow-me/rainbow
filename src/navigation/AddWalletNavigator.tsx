@@ -2,21 +2,25 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useEffect, useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
+import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
 import { ImportSeedPhraseSheet } from '@/screens/ImportSeedPhraseSheet';
 import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
-import { useRoute } from '@react-navigation/core';
-import { useNavigation } from './Navigation';
+import { RouteProp, useRoute } from '@react-navigation/core';
+import { useNavigation } from '@/navigation';
 
 const Swipe = createMaterialTopTabNavigator();
+
+type RouteParams = {
+  AddWalletNavigatorParams: AddWalletSheetParams;
+};
 
 export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, userData },
-  } = useRoute();
+  } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
   const { setParams } = useNavigation();
 
   const [sheetHeight, setSheetHeight] = useState(0);

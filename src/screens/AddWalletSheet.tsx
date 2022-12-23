@@ -12,7 +12,7 @@ import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
 import {
@@ -32,12 +32,14 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
 
+export type AddWalletSheetParams = {
+  isFirstWallet: boolean;
+  setSheetHeight: (height: number | undefined) => void;
+  userData: { wallets: RainbowWallet[] };
+};
+
 type RouteParams = {
-  AddWalletSheetParams: {
-    isFirstWallet: boolean;
-    setSheetHeight: (height: number | undefined) => void;
-    userData: { wallets: RainbowWallet[] };
-  };
+  AddWalletSheetParams: AddWalletSheetParams;
 };
 
 export const AddWalletSheet = () => {
@@ -79,7 +81,7 @@ export const AddWalletSheet = () => {
   const onPressCreate = useCallback(async () => {
     try {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-        isFirstWallet: false,
+        isFirstWallet,
         type: 'new',
       });
       analytics.track('Tapped "Create a new wallet"');
@@ -160,9 +162,10 @@ export const AddWalletSheet = () => {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
-                        logger.sentry(
-                          'Updating wallet userdata failed after new account creation'
-                        );
+                        logger.error(e as RainbowError, {
+                          description:
+                            'Updating wallet userdata failed after new account creation',
+                        });
                         captureException(e);
                         throw e;
                       }
@@ -185,7 +188,9 @@ export const AddWalletSheet = () => {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  logger.sentry('Error while trying to add account');
+                  logger.error(e as RainbowError, {
+                    description: 'Error while trying to add account',
+                  });
                   captureException(e);
                   if (isDamaged) {
                     setTimeout(() => {
@@ -207,53 +212,56 @@ export const AddWalletSheet = () => {
       });
     } catch (e) {
       setIsWalletLoading(null);
-      logger.log('Error while trying to add account', e);
+      logger.error(e as RainbowError, {
+        description: 'Error while trying to add account',
+      });
     }
   }, [
-    dispatch,
+    isFirstWallet,
     goBack,
-    isDamaged,
     navigate,
-    selectedWallet.id,
-    selectedWallet.primary,
     setIsWalletLoading,
+    selectedWallet.primary,
+    selectedWallet.id,
     wallets,
+    dispatch,
     profilesEnabled,
+    isDamaged,
   ]);
 
   const onPressRestoreFromSeed = useCallback(() => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: false,
+      isFirstWallet,
       type: 'seed',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_SEED_PHRASE_SHEET,
       params: { type: 'import' },
     });
-  }, [navigate]);
+  }, [isFirstWallet, navigate]);
 
   const onPressWatch = useCallback(() => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: false,
+      isFirstWallet,
       type: 'watch',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_SEED_PHRASE_SHEET,
       params: { type: 'watch' },
     });
-  }, [navigate]);
+  }, [isFirstWallet, navigate]);
 
   const onPressRestoreFromCloud = useCallback(async () => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: true,
+      isFirstWallet,
       type: 'seed',
     });
-    let proceed = false;
     if (IS_ANDROID) {
       const isAvailable = await isCloudBackupAvailable();
       if (isAvailable) {
+        let proceed = false;
         try {
           const data = await fetchUserDataFromCloud();
           if (data?.wallets) {
@@ -265,9 +273,9 @@ export const AddWalletSheet = () => {
                 proceed = true;
               }
             });
-            // if (proceed) {
-            //   setParams({ userData: data });
-            // }
+            if (proceed) {
+              navigate(Routes.RESTORE_SHEET, { userData: data });
+            }
           }
           logger.info(`Downloaded ${cloudPlatform} backup info`);
         } catch (e) {
@@ -283,14 +291,11 @@ export const AddWalletSheet = () => {
         }
       }
     } else {
-      proceed = true;
+      navigate(Routes.RESTORE_SHEET, { userData });
     }
-    // if (proceed) {
-    //   setParams({ step: WalletBackupTypes.cloud });
-    // }
-  }, []);
+  }, [navigate, userData]);
 
-  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0;
+  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0 || true;
 
   let restoreFromCloudDescription;
   if (IS_IOS) {
@@ -357,7 +362,7 @@ export const AddWalletSheet = () => {
     testID: 'connect-hardware-wallet-button',
     onPress: () => {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-        isFirstWallet: false,
+        isFirstWallet,
         type: 'hardware_wallet',
       });
     },
@@ -369,7 +374,11 @@ export const AddWalletSheet = () => {
         <View
           onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
         >
-          <Inset top="36px" horizontal="30px (Deprecated)" bottom="80px">
+          <Inset
+            top="36px"
+            horizontal="30px (Deprecated)"
+            bottom={IS_ANDROID ? '104px' : '80px'}
+          >
             <AddWalletList
               items={[
                 ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
