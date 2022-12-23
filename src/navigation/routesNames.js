@@ -30,7 +30,7 @@ const Routes = {
   EXPLAIN_SHEET: 'ExplainSheet',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   IMPORT_SCREEN: 'ImportScreen',
-  IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',
+  IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',

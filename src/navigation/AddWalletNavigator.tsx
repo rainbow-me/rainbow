@@ -3,7 +3,10 @@ import React, { useEffect, useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
-import { ImportSeedPhraseSheet } from '@/screens/ImportSeedPhraseSheet';
+import {
+  ImportOrWatchWalletSheet,
+  ImportOrWatchWalletSheetParams,
+} from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
@@ -14,12 +17,13 @@ import { useNavigation } from '@/navigation';
 const Swipe = createMaterialTopTabNavigator();
 
 type RouteParams = {
-  AddWalletNavigatorParams: AddWalletSheetParams;
+  AddWalletNavigatorParams: AddWalletSheetParams &
+    ImportOrWatchWalletSheetParams;
 };
 
 export const AddWalletNavigator = () => {
   const {
-    params: { isFirstWallet, userData },
+    params: { isFirstWallet, type, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
   const { setParams } = useNavigation();
 
@@ -70,8 +74,9 @@ export const AddWalletNavigator = () => {
                 }}
               />
               <Swipe.Screen
-                component={ImportSeedPhraseSheet}
-                name={Routes.IMPORT_SEED_PHRASE_SHEET}
+                component={ImportOrWatchWalletSheet}
+                initialParams={{ type }}
+                name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
                 listeners={{
                   focus: () => {
                     setScrollEnabled(false);

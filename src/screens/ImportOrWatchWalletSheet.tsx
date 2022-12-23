@@ -21,17 +21,19 @@ import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 import { deviceUtils } from '@/utils';
 
-const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
+const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
-type RouteParams = {
-  ImportSeedPhraseSheetParams: {
-    type: 'watch' | 'import';
-  };
+export type ImportOrWatchWalletSheetParams = {
+  type: 'watch' | 'import';
 };
 
-export const ImportSeedPhraseSheet: React.FC = () => {
+type RouteParams = {
+  ImportOrWatchWalletSheetParams: ImportOrWatchWalletSheetParams;
+};
+
+export const ImportOrWatchWalletSheet = () => {
   const { params: { type = 'watch' } = {} } = useRoute<
-    RouteProp<RouteParams, 'ImportSeedPhraseSheetParams'>
+    RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
   >();
 
   const {

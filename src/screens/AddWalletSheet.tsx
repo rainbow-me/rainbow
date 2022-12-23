@@ -30,7 +30,7 @@ import { RouteProp, useRoute } from '@react-navigation/core';
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
-const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
@@ -236,7 +236,7 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_SHEET,
+      screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'import' },
     });
   }, [isFirstWallet, navigate]);
@@ -248,7 +248,7 @@ export const AddWalletSheet = () => {
       type: 'watch',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_SHEET,
+      screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'watch' },
     });
   }, [isFirstWallet, navigate]);
@@ -283,8 +283,8 @@ export const AddWalletSheet = () => {
         } finally {
           if (!proceed) {
             Alert.alert(
-              i18n.t(TRANSLATIONS.cloud.no_backups),
-              i18n.t(TRANSLATIONS.cloud.no_google_backups)
+              i18n.t(TRANSLATIONS.options.cloud.no_backups),
+              i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
             );
             await RNCloudFs.logout();
           }
@@ -293,7 +293,7 @@ export const AddWalletSheet = () => {
     } else {
       navigate(Routes.RESTORE_SHEET, { userData });
     }
-  }, [navigate, userData]);
+  }, [isFirstWallet, navigate, userData]);
 
   const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0 || true;
 
@@ -304,25 +304,25 @@ export const AddWalletSheet = () => {
     // would be false in that case.
     if (walletsBackedUp > 1) {
       restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.cloud.description_ios_multiple_wallets,
+        TRANSLATIONS.options.cloud.description_ios_multiple_wallets,
         {
           walletCount: walletsBackedUp,
         }
       );
     } else {
       restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.cloud.description_ios_one_wallet
+        TRANSLATIONS.options.cloud.description_ios_one_wallet
       );
     }
   } else {
     restoreFromCloudDescription = i18n.t(
-      TRANSLATIONS.cloud.description_android
+      TRANSLATIONS.options.cloud.description_android
     );
   }
 
   const create: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.create_new.title),
-    description: i18n.t(TRANSLATIONS.create_new.description),
+    title: i18n.t(TRANSLATIONS.options.create_new.title),
+    description: i18n.t(TRANSLATIONS.options.create_new.description),
     icon: '􀁌',
     iconColor: globalColors.pink60,
     testID: 'create-new-button',
@@ -330,15 +330,17 @@ export const AddWalletSheet = () => {
   };
 
   const restoreFromCloud: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.cloud.title, { platform: cloudPlatform }),
+    title: i18n.t(TRANSLATIONS.options.cloud.title, {
+      platform: cloudPlatform,
+    }),
     description: restoreFromCloudDescription,
     icon: '􀌍',
     onPress: onPressRestoreFromCloud,
   };
 
   const restoreFromSeed: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.seed.title),
-    description: i18n.t(TRANSLATIONS.seed.description),
+    title: i18n.t(TRANSLATIONS.options.seed.title),
+    description: i18n.t(TRANSLATIONS.options.seed.description),
     icon: '􀑚',
     iconColor: globalColors.purple60,
     testID: 'restore-with-key-button',
@@ -346,8 +348,8 @@ export const AddWalletSheet = () => {
   };
 
   const watch: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.watch.title),
-    description: i18n.t(TRANSLATIONS.watch.description),
+    title: i18n.t(TRANSLATIONS.options.watch.title),
+    description: i18n.t(TRANSLATIONS.options.watch.description),
     icon: '􀒒',
     iconColor: globalColors.green60,
     testID: 'watch-address-button',
@@ -355,8 +357,8 @@ export const AddWalletSheet = () => {
   };
 
   const connectHardwareWallet: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.hardware_wallet.title),
-    description: i18n.t(TRANSLATIONS.hardware_wallet.description),
+    title: i18n.t(TRANSLATIONS.options.hardware_wallet.title),
+    description: i18n.t(TRANSLATIONS.options.hardware_wallet.description),
     icon: '􀕹',
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',
@@ -395,7 +397,7 @@ export const AddWalletSheet = () => {
           <Stack space="32px">
             <Stack space="20px">
               <Text align="center" size="26pt" weight="bold" color="label">
-                {i18n.t(TRANSLATIONS.sheet.title)}
+                {i18n.t(TRANSLATIONS.title)}
               </Text>
               <Text
                 align="center"
@@ -403,7 +405,7 @@ export const AddWalletSheet = () => {
                 weight="semibold"
                 color="labelTertiary"
               >
-                {i18n.t(TRANSLATIONS.sheet.description)}
+                {i18n.t(TRANSLATIONS.description)}
               </Text>
             </Stack>
             <Box background="surfacePrimary" borderRadius={18} shadow="12px">
