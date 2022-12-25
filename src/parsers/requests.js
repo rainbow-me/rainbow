@@ -17,6 +17,7 @@ import {
   SIGN,
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
+import { isAddress } from '@ethersproject/address';
 
 export const getRequestDisplayDetails = (
   payload,
@@ -53,12 +54,12 @@ export const getRequestDisplayDetails = (
     );
   }
   if (payload.method === SIGN) {
-    const message = payload?.params?.[1];
+    const message = payload?.params?.find(p => !isAddress(p));
     const result = getMessageDisplayDetails(message, timestampInMs);
     return result;
   }
   if (payload.method === PERSONAL_SIGN) {
-    let message = payload?.params?.[0];
+    let message = payload?.params?.find(p => !isAddress(p));
     try {
       if (isHexString(message)) {
         message = convertHexToUtf8(message);

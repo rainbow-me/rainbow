@@ -428,12 +428,9 @@ export function ENSAssignRecordsBottomActions({
                         <SheetActionButton
                           color={accentColor}
                           disabled={isValidating || !isEmpty(errors)}
-                          // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}
-                          // @ts-expect-error JavaScript component
                           size="big"
-                          // @ts-expect-error JavaScript component
                           testID="ens-assign-records-review"
                           weight="heavy"
                         />

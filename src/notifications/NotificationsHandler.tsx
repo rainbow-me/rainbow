@@ -1,10 +1,4 @@
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { useContacts, usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
@@ -45,27 +39,26 @@ import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/tran
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { delay, isZero } from '@/helpers/utilities';
+import { isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
-import { notificationsSubscription } from '@/redux/explorer';
 import walletTypes from '@/helpers/walletTypes';
 import {
-  resolveAndTrackPushNotificationPermissionStatus,
   NotificationSubscriptionChangesListener,
   registerNotificationSubscriptionChangesListener,
+  resolveAndTrackPushNotificationPermissionStatus,
   trackTappedPushNotification,
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
 import {
-  addDefaultNotificationSettingsForWallet,
+  AddressWithRelationship,
   NotificationRelationship,
 } from '@/notifications/settings';
+import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
 
 type Callback = () => void;
 
 type Props = PropsWithChildren<{ walletReady: boolean }>;
-type ValueOf<T> = T[keyof T];
 
 export const NotificationsHandler = ({ walletReady }: Props) => {
   const wallets = useWallets();
@@ -83,6 +76,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   const appStateListener = useRef<NativeEventSubscription>();
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
+  const alreadyRanInitialization = useRef(false);
 
   /*
   We need to save some properties to a ref in order to have an up-to-date value
@@ -308,27 +302,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     }
   };
 
-  const addresses = useMemo(() => {
-    const addresses: {
-      address: string;
-      relationship: ValueOf<typeof NotificationRelationship>;
-    }[] = [];
-    Object.values(wallets.wallets || {}).forEach(wallet =>
-      wallet?.addresses.forEach(
-        ({ address, visible }: { address: string; visible: boolean }) =>
-          visible &&
-          addresses.push({
-            address,
-            relationship:
-              wallet.type === walletTypes.readOnly
-                ? NotificationRelationship.WATCHER
-                : NotificationRelationship.OWNER,
-          })
-      )
-    );
-    return addresses;
-  }, [wallets]);
-
   useEffect(() => {
     setupAndroidChannels();
     saveFCMToken();
@@ -372,12 +345,35 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     }
   }, [handleDeferredNotificationIfNeeded, prevWalletReady, walletReady]);
 
+  /*
+   * Initializing MMKV storage with empty settings for all wallets that weren't yet initialized
+   * and start subscribing for notifications with Firebase
+   */
   useEffect(() => {
-    addresses.forEach(({ address, relationship }) => {
-      dispatch(notificationsSubscription(address));
-      addDefaultNotificationSettingsForWallet(address, relationship);
-    });
-  }, [addresses, dispatch]);
+    // It is run only once per app session, that means on every app cold start
+    if (walletReady && !alreadyRanInitialization.current) {
+      const addresses: AddressWithRelationship[] = [];
+
+      Object.values(wallets.wallets ?? {}).forEach(wallet =>
+        wallet?.addresses.forEach(
+          ({ address, visible }: { address: string; visible: boolean }) =>
+            visible &&
+            addresses.push({
+              address,
+              relationship:
+                wallet.type === walletTypes.readOnly
+                  ? NotificationRelationship.WATCHER
+                  : NotificationRelationship.OWNER,
+            })
+        )
+      );
+
+      initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(
+        addresses
+      );
+      alreadyRanInitialization.current = true;
+    }
+  }, [dispatch, walletReady]);
 
   return null;
 };

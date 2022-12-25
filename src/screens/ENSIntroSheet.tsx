@@ -250,14 +250,12 @@ export default function ENSIntroSheet() {
                         <Inset bottom={android ? '10px' : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
-                            // @ts-expect-error JavaScript component
                             label={
                               '􀠎 ' + lang.t('profiles.intro.find_your_name')
                             }
                             lightShadows
                             marginBottom={15}
                             onPress={handleNavigateToSearch}
-                            // @ts-expect-error
                             testID="ens-intro-sheet-find-your-name-button"
                             weight="heavy"
                           />
@@ -267,7 +265,6 @@ export default function ENSIntroSheet() {
                           {uniqueDomain?.name ? (
                             <SheetActionButton
                               color={colors.appleBlue}
-                              // @ts-expect-error JavaScript component
                               label={lang.t(
                                 profileExists
                                   ? 'profiles.intro.edit_name'
@@ -286,7 +283,6 @@ export default function ENSIntroSheet() {
                           ) : (
                             <SheetActionButton
                               color={colors.appleBlue}
-                              // @ts-expect-error JavaScript component
                               label={lang.t('profiles.intro.use_existing_name')}
                               lightShadows
                               onPress={handleSelectExistingName}
@@ -304,7 +300,6 @@ export default function ENSIntroSheet() {
                               <SheetActionButton
                                 color={colors.transparent}
                                 isTransparent
-                                // @ts-expect-error JavaScript component
                                 label={lang.t(
                                   'profiles.intro.choose_another_name'
                                 )}
@@ -317,10 +312,8 @@ export default function ENSIntroSheet() {
                             <SheetActionButton
                               color={colors.transparent}
                               isTransparent
-                              // @ts-expect-error JavaScript component
                               label={lang.t('profiles.intro.search_new_name')}
                               onPress={handleNavigateToSearch}
-                              // @ts-expect-error
                               testID="ens-intro-sheet-search-new-name-button"
                               textColor={colors.appleBlue}
                               textSize="lmedium"

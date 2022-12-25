@@ -74,7 +74,6 @@ export const DPICard = () => {
               </Stack>
             </Column>
             <Column width="content">
-              {/* @ts-expect-error JavaScript component */}
               <CoinIcon
                 address={DPI_ADDRESS}
                 forcedShadowColor={globalColors.grey100}

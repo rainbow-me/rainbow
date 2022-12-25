@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.3-1",
+  "version": "1.8.5-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -87,7 +87,10 @@
     "@ethersproject/units": "5.6.1",
     "@ethersproject/wallet": "5.6.2",
     "@gorhom/bottom-sheet": "4.4.3",
+    "@json-rpc-tools/utils": "1.7.6",
     "@lavamoat/preinstall-always-fail": "1.0.0",
+    "@ledgerhq/hw-app-eth": "6.30.2",
+    "@ledgerhq/react-native-hw-transport-ble": "6.27.11",
     "@metamask/eth-sig-util": "4.0.0",
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",

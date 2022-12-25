@@ -109,7 +109,6 @@ const NetworkSwitcherv2 = ({
                     wrap={false}
                   >
                     {type === AssetType.token ? (
-                      // @ts-expect-error Javacript Component
                       <CoinIcon
                         address={ETH_ADDRESS}
                         size={20}

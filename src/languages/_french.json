@@ -48,6 +48,28 @@
         "testnet_label": "Your testnet transaction history starts now! :)"
       }
     },
+    "add_first_wallet": {
+      "cloud": {
+        "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
+        "description_ios_one_wallet": "You have 1 wallet backed up",
+        "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+        "title": "Restore from %{platform}",
+        "no_backups": "No backups found",
+        "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
+      },
+      "hardware_wallet": {
+        "description": "Add accounts from your Bluetooth hardware wallet",
+        "title": "Connect your hardware wallet"
+      },
+      "seed": {
+        "description": "Use your recovery phrase from Rainbow or another crypto wallet",
+        "title": "Restore with a recovery phrase or private key"
+      },
+      "watch": {
+        "description": "Watch a public address or ENS name",
+        "title": "Watch an Ethereum address"
+      }
+    },
     "add_funds": {
       "eth": {
         "or_send_eth": "or send ETH to your wallet :)",
@@ -148,28 +170,6 @@
         "error_while_restoring": "Error while restoring backup :)",
         "incorrect_password": "Incorrect Password :)",
         "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
-      },
-      "restore_sheet": {
-        "from_backup": {
-          "ios": {
-            "you_have_1_wallet": "You have 1 wallet backed up :)",
-            "you_have_multiple_wallets": "You have %{walletsBackedUpCount} wallets backed up :)"
-          },
-          "non_ios": {
-            "if_you_previously_backed_up": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it. :)"
-          },
-          "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
-        },
-        "from_key": {
-          "secret_phrase_description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
-          "secret_phrase_title": "Restore with a recovery phrase or private key :) "
-        },
-        "no_backups_found": "No Backups found :)",
-        "watch_address": {
-          "watch_description": "Watch a public address or ENS name :)",
-          "watch_title": "Watch an Ethereum address  :) "
-        },
-        "we_couldnt_find_google_drive": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account. :)"
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
@@ -285,7 +285,10 @@
         "title": "Create your ENS profile :)",
         "body": "Replace your wallet address with a profile owned entirely by you. :)"
       },
-      "eth": { "buy_ethereum": "Buy Ethereum :)", "today": "today :)" },
+      "eth": {
+        "buy_ethereum": "Buy Ethereum :)",
+        "today": "today :)"
+      },
       "gas": {
         "average": "Average :)",
         "gwei": "Gwei :)",
@@ -1349,7 +1352,9 @@
         "first_time_allow_notifications": "Allow Notifications :)",
         "error_alert_title": "Subscription Failed :)",
         "error_alert_content": "Please try again later. :)",
-        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)"
+        "offline_alert_content": "It appears you have no internet connection.\n\nPlease try again later. :)",
+        "no_settings_for_address_title": "No settings for this wallet",
+        "no_settings_for_address_content": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
       },
       "privacy": "Privacy :)",
       "privacy_section": {
@@ -1424,6 +1429,11 @@
           "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!"
         }
       }
+    },
+    "transaction_details": {
+      "value": "Value",
+      "hash": "Tx Hash",
+      "network_fee": "Network Fee"
     },
     "time": {
       "days": {
@@ -1507,7 +1517,11 @@
         "hide": "Hide :)",
         "import_wallet": "Importer un portefeuille",
         "input": "Transaction Input",
-        "notifications": "Notification Settings :)",
+        "notifications": {
+          "action_title": "Notification Settings",
+          "alert_title": "No settings for this wallet",
+          "alert_message": "There are no settings for this wallet.\nPlease try restarting the app or try again later."
+        },
         "pair_hardware_wallet": "Pair a Ledger Nano X :)",
         "paste": "Coller",
         "pin": "Pin :)",
@@ -1752,7 +1766,10 @@
         "transaction_canceled": "Transaction canceled! :)",
         "transaction_sent": "Transaction sent! :)"
       },
-      "unknown_application": "Unknown Application :)"
+      "unknown_application": "Unknown Application :)",
+      "connection_failed": "Connection failed :)",
+      "failed_to_connect_to": "Failed to connect to %{appName} :)",
+      "go_back": "Go back :)"
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",

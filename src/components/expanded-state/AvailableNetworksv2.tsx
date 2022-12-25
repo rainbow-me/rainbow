@@ -173,7 +173,6 @@ const AvailableNetworksv2 = ({
                             size="small"
                           />
                         ) : (
-                          // @ts-expect-error overloaded props RadialGradient
                           <CoinIcon
                             address={ETH_ADDRESS}
                             size={20}

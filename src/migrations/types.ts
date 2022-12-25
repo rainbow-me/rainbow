@@ -9,6 +9,8 @@ export const MIGRATIONS_STORAGE_ID = 'migrations';
  */
 export enum MigrationName {
   deleteImgixMMKVCache = 'migration_deleteImgixMMKVCache',
+  migrateNotificationSettingsToVersion2 = 'migration_migrateNotificationSettingsToVersion2',
+  prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
 }
 
 export type Migration = {
