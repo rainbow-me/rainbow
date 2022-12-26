@@ -47,10 +47,6 @@ export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = android
-  ? undefined
-  : heightWithoutChart;
-
 const formatTokenAddress = address => {
   if (!address || address.toLowerCase() === ETH_ADDRESS) {
     return 'ETH';
