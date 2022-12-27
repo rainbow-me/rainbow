@@ -122,11 +122,12 @@ const buildWalletSections = (
 };
 
 const buildBriefWalletSections = (
-  balanceSection: any,
+  balanceSectionData: any,
   savings: any,
   uniqueTokenFamiliesSection: any,
   uniswapSection: any
 ) => {
+  const { balanceSection, isEmpty } = balanceSectionData;
   const sections = [
     balanceSection,
     savings,
@@ -137,7 +138,11 @@ const buildBriefWalletSections = (
   const filteredSections = sections
     .filter(section => section.length !== 0)
     .flat(1);
-  return filteredSections;
+
+  return {
+    briefSectionsData: filteredSections,
+    isEmpty,
+  };
 };
 
 const withUniswapSection = (
@@ -473,7 +478,10 @@ const withBriefBalanceSection = (
     content = EMPTY_WALLET_CONTENT;
   }
 
-  return [...header, ...content];
+  return {
+    balanceSection: [...header, ...content],
+    isEmpty,
+  };
 };
 
 const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
