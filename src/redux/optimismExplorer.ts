@@ -137,7 +137,7 @@ const fetchAssetBalances = async (
       Network.optimism,
       e
     );
-    captureException(new Error('fallbackExplorer::balanceChecker failure'));
+    captureException(new Error('optimismExplorer::balanceChecker failure'));
     return null;
   }
 };
