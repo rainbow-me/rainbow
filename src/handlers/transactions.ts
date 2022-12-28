@@ -133,6 +133,7 @@ export const showTransactionDetailsSheet = (
   contacts: { [p: string]: Contact },
   accountAddress: string
 ) => {
+  // TODO: APP-298 Clean up old transaction details sheet code after releasing new one
   const isNewTransactionSheetEnabled = getExperimetalFlag(
     NEW_TRANSACTION_DETAILS
   );
@@ -141,6 +142,7 @@ export const showTransactionDetailsSheet = (
       transaction: transactionDetails,
     });
   }
+  // Old TX details action sheet code
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
   const network = transactionDetails.network ?? Network.mainnet;
 
