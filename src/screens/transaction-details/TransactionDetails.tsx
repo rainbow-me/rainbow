@@ -21,6 +21,7 @@ import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
+import { Network } from '@/helpers';
 
 type RouteParams = {
   TransactionDetails: {
@@ -52,9 +53,13 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const value = transaction.balance?.display;
   const nativeCurrencyValue = transaction.native?.display;
+
+  // FIXME: Doesn't fully support Layer 2 Networks yet and not all coin icons work properly.
   const coinSymbol =
     type === TransactionType.contract_interaction
-      ? 'eth'
+      ? ethereumUtils.getNetworkNativeAsset(
+          transaction?.network ?? Network.mainnet
+        )?.symbol
       : transaction.symbol ?? undefined;
   const mainnetCoinAddress = useSelector(
     (state: AppState) =>
