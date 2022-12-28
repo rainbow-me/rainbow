@@ -46,7 +46,6 @@ function useTabularNumsWhileScrubbing() {
 
 export default function ChartExpandedStateHeader({
   asset,
-  changeRef,
   color: givenColors,
   dateRef,
   isPool,
@@ -160,7 +159,6 @@ export default function ChartExpandedStateHeader({
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
-              changeRef={changeRef}
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
