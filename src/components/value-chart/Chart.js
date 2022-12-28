@@ -131,7 +131,6 @@ export default function ChartWrapper({
   showYear,
   testID,
   throttledData,
-  overrideValue = false,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -205,7 +204,6 @@ export default function ChartWrapper({
         chartType={chartType}
         color={color}
         isPool={isPool}
-        overrideValue={overrideValue}
         showChart={showChart}
         testID={testID}
       />

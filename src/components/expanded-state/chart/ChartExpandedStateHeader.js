@@ -54,7 +54,6 @@ export default function ChartExpandedStateHeader({
   priceRef,
   showChart,
   testID,
-  overrideValue = false,
   chartType,
 }) {
   const { colors } = useTheme();
@@ -160,7 +159,6 @@ export default function ChartExpandedStateHeader({
           {showPriceChange && (
             <ChartPercentChangeLabel
               latestChange={latestChange}
-              overrideValue={overrideValue}
               ratio={ratio}
             />
           )}

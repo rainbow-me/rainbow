@@ -212,9 +212,6 @@ const LiquidityPoolExpandedState = () => {
           fetchingCharts={fetchingCharts}
           isPool
           nativePoints={chart}
-          overrideValue={
-            chartType === chartTypes.month && params?.asset?.profit30d
-          }
           showChart={showChart}
           throttledData={throttledData}
         />
