@@ -9,7 +9,6 @@ import data from './data';
 import editOptions from './editOptions';
 import ensRegistration from './ensRegistration';
 import explorer from './explorer';
-import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
 import hiddenTokens from './hiddenTokens';
 import imageMetadata from './imageMetadata';
@@ -39,7 +38,6 @@ export default combineReducers({
   editOptions,
   ensRegistration,
   explorer,
-  fallbackExplorer,
   gas,
   hiddenTokens,
   imageMetadata,

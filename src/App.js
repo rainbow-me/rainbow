@@ -55,7 +55,6 @@ import {
 } from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import { explorerInitL2 } from './redux/explorer';
-import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -230,9 +229,7 @@ class OldApp extends Component {
             store.dispatch(explorerInitL2(network));
           }
         } else {
-          store.dispatch(
-            fetchOnchainBalances({ keepPolling: false, withPrices: false })
-          );
+          // TODO(jin) replace with new balance checker
         }
       }, timeout);
     };
