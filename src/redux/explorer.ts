@@ -28,7 +28,7 @@ import {
 } from './data';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { disableCharts, forceFallbackProvider } from '@/config/debug';
+import { disableCharts } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
   checkForTheMerge,
