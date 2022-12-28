@@ -159,9 +159,6 @@ export default function ChartExpandedStateHeader({
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
-              color={
-                isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
-              }
               latestChange={latestChange}
               overrideValue={overrideValue}
               ratio={ratio}
