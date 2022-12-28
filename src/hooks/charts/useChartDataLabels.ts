@@ -1,13 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import { useValue } from 'react-native-redash/src/v1';
 import ChartTypes from '@/helpers/chartTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
 
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 
 export default function useChartDataLabels({ asset, chartType, points }: any) {
-  const changeDirection = useValue(1);
-
   const latestPrice = asset?.native?.price?.amount;
 
   const getPercentChangeForPrice = useCallback(
@@ -28,7 +25,6 @@ export default function useChartDataLabels({ asset, chartType, points }: any) {
   );
 
   return {
-    changeDirection,
     latestChange,
     latestPrice,
   };
