@@ -5,18 +5,19 @@ import { TransactionDetailsAddressRow } from '@/screens/transaction-details/comp
 import { useContacts, useUserAccounts } from '@/hooks';
 import { isLowerCaseMatch } from '@/utils';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
+import { RainbowTransaction } from '@/entities';
 
 type Props = {
-  from?: string;
-  to?: string;
+  transaction: RainbowTransaction;
   presentToast?: () => void;
 };
 
 export const TransactionDetailsFromToSection: React.FC<Props> = ({
-  from,
-  to,
+  transaction,
   presentToast,
 }) => {
+  const from = transaction.from ?? undefined;
+  const to = transaction.to ?? undefined;
   const { contacts } = useContacts();
   const fromContact = from ? contacts[from] : undefined;
   const toContact = to ? contacts[to] : undefined;

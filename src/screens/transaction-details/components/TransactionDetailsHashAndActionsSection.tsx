@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
-import { Network } from '@/helpers';
 import { SheetActionButton } from '@/components/sheet';
 import { ethereumUtils, haptics } from '@/utils';
 import startCase from 'lodash/startCase';
@@ -11,7 +10,7 @@ import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import Clipboard from '@react-native-community/clipboard';
-import { TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
 import { Navigation } from '@/navigation';
@@ -21,23 +20,22 @@ import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
 
 type Props = {
-  hash?: string;
-  network?: Network;
-  status?: TransactionStatus;
+  transaction: RainbowTransaction;
   presentToast?: () => void;
 };
 
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
-  hash,
-  network,
-  status,
+  transaction,
   presentToast,
 }) => {
   const { colors } = useTheme();
+  const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
+  const { network, status } = transaction;
   const isReadOnly = useSelector(
     (state: AppState) =>
       state.wallets.selected?.type === WalletTypes.readOnly ?? true
-  ); // Retry swap related data
+  );
+  // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');
     const wrappedData = data ? JSON.parse(data) : {};
@@ -59,7 +57,8 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
         outputAsset: retrySwapMetadata?.outputAsset,
       },
     });
-  }, []);
+  }, [retrySwapMetadata]);
+
   if (!hash || !network) {
     return null;
   }

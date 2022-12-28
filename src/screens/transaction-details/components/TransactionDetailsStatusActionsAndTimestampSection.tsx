@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { capitalize } from 'lodash';
@@ -10,25 +10,26 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { haptics } from '@/utils';
+import Routes from '@rainbow-me/routes';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { useNavigation } from '@react-navigation/native';
 
 const SIZE = 40;
 
 type Props = {
-  pending?: boolean;
-  status?: TransactionStatus;
-  minedAt?: number;
-  onSpeedUp?: () => void;
-  onCancel?: () => void;
+  transaction: RainbowTransaction;
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({
-  pending,
-  status,
-  minedAt,
-  onSpeedUp,
-  onCancel,
+  transaction,
 }) => {
-  const date = formatTransactionDetailsDate(minedAt);
+  const { minedAt, status, pending, from } = transaction;
+  const { navigate } = useNavigation();
+  const accountAddress = useSelector(
+    (state: AppState) => state.settings.accountAddress
+  );
+  const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(
     colors,
@@ -36,11 +37,16 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     pending
   );
 
+  const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
+  const canBeResubmitted = isOutgoing && !minedAt;
+  const canBeCancelled =
+    canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+
   const menuConfig = useMemo(
     () => ({
       menuTitle: '',
       menuItems: [
-        ...(onSpeedUp
+        ...(canBeResubmitted
           ? [
               {
                 actionKey: 'speedUp',
@@ -52,7 +58,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               },
             ]
           : []),
-        ...(onCancel
+        ...(canBeCancelled
           ? [
               {
                 actionKey: 'cancel',
@@ -67,7 +73,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           : []),
       ],
     }),
-    [onSpeedUp, onCancel]
+    [canBeCancelled, canBeResubmitted]
   );
 
   const onMenuItemPress = useCallback(e => {
@@ -75,10 +81,16 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     haptics.selection();
     switch (actionKey) {
       case 'speedUp':
-        onSpeedUp?.();
+        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          tx: transaction,
+          type: 'speed_up',
+        });
         return;
       case 'cancel':
-        onCancel?.();
+        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          tx: transaction,
+          type: 'cancel',
+        });
         return;
     }
   }, []);
@@ -86,7 +98,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   return (
     <Stack>
       <Box alignItems="flex-end" height="40px">
-        {(onSpeedUp || onCancel) && (
+        {(canBeResubmitted || canBeCancelled) && (
           <ContextMenuButton
             menuConfig={menuConfig}
             onPressMenuItem={onMenuItemPress}
