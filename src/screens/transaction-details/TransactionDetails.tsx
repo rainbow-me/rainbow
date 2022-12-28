@@ -104,7 +104,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   }, []);
 
   return (
-    <BackgroundProvider color="surfacePrimary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         // @ts-ignore
         <SlackSheet
@@ -116,7 +116,6 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           showsVerticalScrollIndicator={false}
         >
           <Box
-            background="surfacePrimary"
             paddingHorizontal="20px"
             paddingBottom="20px"
             onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
