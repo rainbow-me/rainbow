@@ -9,6 +9,7 @@ import { useTheme } from '@/theme';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
+import { haptics } from '@/utils';
 
 const SIZE = 40;
 
@@ -71,6 +72,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 
   const onMenuItemPress = useCallback(e => {
     const { actionKey } = e.nativeEvent;
+    haptics.selection();
     switch (actionKey) {
       case 'speedUp':
         onSpeedUp?.();

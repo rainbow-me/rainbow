@@ -150,7 +150,11 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
 
   const onPressMenuItem = useCallback(
     e => {
-      switch (e.nativeEvent.actionKey) {
+      const actionKey = e.nativeEvent.actionKey;
+      if (actionKey !== 'copy') {
+        haptics.selection();
+      }
+      switch (actionKey) {
         case 'copy':
           onAddressCopied?.();
           haptics.notificationSuccess();
