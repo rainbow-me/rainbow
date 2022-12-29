@@ -424,19 +424,6 @@ const isEthAddress = (str: string) => {
   return isValidAddress(withHexPrefix);
 };
 
-const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
-  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
-  const cachedTxTime = await AsyncStorage.getItem(`first-tx-${address}`);
-  if (cachedTxTime) {
-    return cachedTxTime;
-  }
-  const response = await fetch(url);
-  const parsedResponse = await response.json();
-  const txTime = parsedResponse.result[0].timeStamp;
-  AsyncStorage.setItem(`first-tx-${address}`, txTime);
-  return txTime;
-};
-
 export const fetchContractABI = async (address: EthereumAddress) => {
   const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
   const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
@@ -448,22 +435,6 @@ export const fetchContractABI = async (address: EthereumAddress) => {
   const abi = parsedResponse.result;
   AsyncStorage.setItem(`abi-${address}`, abi);
   return abi;
-};
-
-export const daysFromTheFirstTx = (address: EthereumAddress) => {
-  return new Promise(async resolve => {
-    try {
-      if (address === 'eth') {
-        resolve(1000);
-        return;
-      }
-      const txTime = await fetchTxWithAlwaysCache(address);
-      const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
-      resolve(daysFrom);
-    } catch (e) {
-      resolve(1000);
-    }
-  });
 };
 
 /**
