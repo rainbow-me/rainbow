@@ -111,8 +111,6 @@ export default function ChartExpandedStateHeader({
     [data, latestPrice, nativeCurrency]
   );
 
-  const defaultPriceValue = isNoPriceData ? '' : price;
-
   const ratio = useMemo(() => {
     const firstValue = data?.points?.[0]?.y;
     const lastValue = data?.points?.[data.points.length - 1]?.y;
@@ -149,11 +147,11 @@ export default function ChartExpandedStateHeader({
           marginHorizontal={1}
         >
           <ChartPriceLabel
-            defaultValue={isNoPriceData ? title : price}
+            defaultValue={title}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
             priceRef={priceRef}
-            priceValue={defaultPriceValue}
+            priceValue={price}
             tabularNums={tabularNums}
           />
           {showPriceChange && (
