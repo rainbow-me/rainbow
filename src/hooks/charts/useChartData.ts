@@ -69,7 +69,7 @@ export default function useChartData(asset: any, secondStore: any) {
     if (asset.address) {
       fetchDays();
     }
-  }, [asset]);
+  }, [asset?.address]);
 
   useEffect(() => {
     if (!disableCharts) {
