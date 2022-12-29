@@ -8,7 +8,6 @@ import { ETH_ADDRESS } from '@/references';
 // -- Constants --------------------------------------- //
 
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
-const CHARTS_UPDATE_USD_DAY = 'charts/CHARTS_UPDATE_USD_DAY';
 
 export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
@@ -34,11 +33,6 @@ interface ChartsState {
   };
 
   /**
-   * Data for the ETH-USD day chart.
-   */
-  chartsEthUSDDay: ChartDataPoints;
-
-  /**
    * The first store's selected chart type.
    */
   chartType: ChartType;
@@ -52,9 +46,7 @@ interface ChartsState {
 /**
  * An action for the `charts` reducer.
  */
-type ChartsAction =
-  | ChartsUpdateAction
-  | ChartsUpdateUsdDayAction;
+type ChartsAction = ChartsUpdateAction;
 
 /**
  * The action for updating chart data.
@@ -62,14 +54,6 @@ type ChartsAction =
 interface ChartsUpdateAction {
   type: typeof CHARTS_UPDATE;
   payload: ChartsState['charts'];
-}
-
-/**
- * The action for updating the ETH-USD day chart data.
- */
-interface ChartsUpdateUsdDayAction {
-  type: typeof CHARTS_UPDATE_USD_DAY;
-  payload: ChartsState['chartsEthUSDDay'];
 }
 
 /**
@@ -93,7 +77,7 @@ export interface ChartsReceivedMessage {
  * @param message The `ChartsReceivedMessage`.
  */
 export const assetChartsReceived = (message: ChartsReceivedMessage) => (
-  dispatch: Dispatch<ChartsUpdateAction | ChartsUpdateUsdDayAction>,
+  dispatch: Dispatch<ChartsUpdateAction>,
   getState: AppGetState
 ) => {
   const chartType = message?.meta?.charts_type;
@@ -124,25 +108,12 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
       type: CHARTS_UPDATE,
     });
   }
-
-  if (
-    message?.meta?.currency === currenyTypes.usd &&
-    assetCharts[ETH_ADDRESS]
-  ) {
-    if (message?.meta?.charts_type === ChartTypes.day) {
-      dispatch({
-        payload: reverse(assetCharts[ETH_ADDRESS]),
-        type: CHARTS_UPDATE_USD_DAY,
-      });
-    }
-  }
 };
 
 // -- Reducer ----------------------------------------- //
 
 const INITIAL_STATE: ChartsState = {
   charts: {},
-  chartsEthUSDDay: [],
   chartType: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
 };
@@ -157,11 +128,6 @@ export default (
         ...state,
         charts: action.payload,
         fetchingCharts: false,
-      };
-    case CHARTS_UPDATE_USD_DAY:
-      return {
-        ...state,
-        chartsEthUSDDay: action.payload,
       };
     default:
       return state;
