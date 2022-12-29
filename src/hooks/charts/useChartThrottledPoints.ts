@@ -89,7 +89,6 @@ export default function useChartThrottledPoints({
   heightWithoutChart,
   isPool,
   uniBalance = true,
-  secondStore,
   shortHeightWithChart,
   shortHeightWithoutChart,
 }: any) {
@@ -105,8 +104,7 @@ export default function useChartThrottledPoints({
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { chart, chartType, fetchingCharts, ...chartData } = useChartData(
-    asset,
-    secondStore
+    asset
   );
 
   const [throttledPoints, setThrottledPoints] = useState(() =>

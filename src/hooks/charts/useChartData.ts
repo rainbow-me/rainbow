@@ -36,7 +36,7 @@ const chartSelector = createSelector(
   }
 );
 
-export default function useChartData(asset: any, secondStore: any) {
+export default function useChartData(asset: any) {
   const dispatch = useDispatch();
   const { setParams } = useNavigation();
 
@@ -51,10 +51,10 @@ export default function useChartData(asset: any, secondStore: any) {
 
   const { chart, chartsForAsset, fetchingCharts } = useSelector(
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(state: never) => { chart: any; ... Remove this comment to see the full error message
-    useCallbackOne(
-      state => chartSelector(state, { address, chartType, secondStore }),
-      [address, secondStore, chartType]
-    ),
+    useCallbackOne(state => chartSelector(state, { address, chartType }), [
+      address,
+      chartType,
+    ]),
     isEqual
   );
 
