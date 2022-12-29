@@ -7,7 +7,6 @@ import { ETH_ADDRESS } from '@/references';
 
 // -- Constants --------------------------------------- //
 
-const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_UPDATE_USD_DAY = 'charts/CHARTS_UPDATE_USD_DAY';
 
@@ -45,37 +44,17 @@ interface ChartsState {
   chartType: ChartType;
 
   /**
-   * The second store's selected chart type.
-   */
-  chartType2: ChartType;
-
-  /**
    * Whether or not the first store is fetching charts.
    */
   fetchingCharts: boolean;
-
-  /**
-   * Whether or not the second store is fetching charts.
-   */
-  fetchingCharts2: boolean;
 }
 
 /**
  * An action for the `charts` reducer.
  */
 type ChartsAction =
-  | ChartsUpdateChartTypeAction
   | ChartsUpdateAction
   | ChartsUpdateUsdDayAction;
-
-/**
- * The action for updating the current type of chart loaded.
- */
-interface ChartsUpdateChartTypeAction {
-  type: typeof CHARTS_UPDATE_CHART_TYPE;
-  payload: ChartType;
-  secondStore: boolean;
-}
 
 /**
  * The action for updating chart data.
@@ -107,23 +86,6 @@ export interface ChartsReceivedMessage {
     };
   };
 }
-
-/**
- * Updates the current chart type in state.
- *
- * @param chartType The new chart type.
- * @param secondStore Whether or not this change should update the second chart
- * store.
- */
-export const chartsUpdateChartType = (
-  chartType: ChartType,
-  secondStore: boolean
-) => (dispatch: Dispatch<ChartsUpdateChartTypeAction>) =>
-  dispatch({
-    payload: chartType,
-    secondStore,
-    type: CHARTS_UPDATE_CHART_TYPE,
-  });
 
 /**
  * Updates charts in state to reflect new data.
@@ -182,9 +144,7 @@ const INITIAL_STATE: ChartsState = {
   charts: {},
   chartsEthUSDDay: [],
   chartType: DEFAULT_CHART_TYPE,
-  chartType2: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
-  fetchingCharts2: false,
 };
 
 export default (
@@ -192,18 +152,11 @@ export default (
   action: ChartsAction
 ): ChartsState => {
   switch (action.type) {
-    case CHARTS_UPDATE_CHART_TYPE:
-      return {
-        ...state,
-        [action.secondStore ? 'chartType2' : 'chartType']: action.payload,
-        [action.secondStore ? 'fetchingCharts2' : 'fetchingCharts']: true,
-      };
     case CHARTS_UPDATE:
       return {
         ...state,
         charts: action.payload,
         fetchingCharts: false,
-        fetchingCharts2: false,
       };
     case CHARTS_UPDATE_USD_DAY:
       return {
