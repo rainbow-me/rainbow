@@ -1,6 +1,6 @@
 export {
-  useChartData,
   useChartDataLabels,
+  useChartInfo,
   useChartThrottledPoints,
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';

@@ -36,7 +36,7 @@ const chartSelector = createSelector(
   }
 );
 
-export default function useChartData(asset: any) {
+export default function useChartInfo(asset: any) {
   const dispatch = useDispatch();
   const { setParams } = useNavigation();
 
