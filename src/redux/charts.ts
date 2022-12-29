@@ -33,11 +33,6 @@ interface ChartsState {
   };
 
   /**
-   * The first store's selected chart type.
-   */
-  chartType: ChartType;
-
-  /**
    * Whether or not the first store is fetching charts.
    */
   fetchingCharts: boolean;
@@ -114,7 +109,6 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
 
 const INITIAL_STATE: ChartsState = {
   charts: {},
-  chartType: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
 };
 
