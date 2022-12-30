@@ -427,20 +427,24 @@ const chartsRetrieval = (
  * Emits an asset price request. The result is handled by a listener in
  * `listenOnAssetMessages`.
  *
- * @param assetAddress The address to fetch.
+ * @param assetAddress The address or addresses to fetch.
  */
-export const fetchAssetPrices = (assetAddress: string) => (
+export const fetchAssetPrices = (assetAddress: string | string[]) => (
   _: Dispatch,
   getState: AppGetState
 ) => {
   const { assetsSocket } = getState().explorer;
   const { nativeCurrency } = getState().settings;
 
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
+
   const payload: SocketEmitArguments = [
     'get',
     {
       payload: {
-        asset_codes: [assetAddress],
+        asset_codes: assetCodes,
         currency: toLower(nativeCurrency),
       },
       scope: ['prices'],
