@@ -63,14 +63,12 @@ import logger from '@/utils/logger';
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
-let assetInfoHandle: ReturnType<typeof setTimeout> | null = null;
 let hardhatAndTestnetHandle: ReturnType<typeof setTimeout> | null = null;
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
 const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
-const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
 const messages = {
   ADDRESS_ASSETS: {
@@ -100,9 +98,6 @@ const messages = {
     APPENDED: 'appended chart points',
     CHANGED: 'changed chart points',
     RECEIVED: 'received assets charts',
-  },
-  ASSET_INFO: {
-    RECEIVED: 'received assets info',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -351,32 +346,6 @@ const ethUSDSubscription: SocketEmitArguments = [
       currency: currencyTypes.usd,
     },
     scope: ['prices'],
-  },
-];
-
-/**
- * Configures an asset information request.
- *
- * @param currency The currency to use.
- * @param order The sort order.
- * @returns The arguments for an `emit` function call.
- */
-const assetInfoRequest = (
-  currency: string,
-  order: OrderType = 'desc'
-): SocketEmitArguments => [
-  'get',
-  {
-    payload: {
-      currency: toLower(currency),
-      limit: 12,
-      offset: 0,
-      order_by: {
-        'relative_changes.1d': order,
-      },
-      search_query: '#Token is:verified',
-    },
-    scope: ['info'],
   },
 ];
 
@@ -712,7 +681,6 @@ export const explorerInit = () => async (
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
 
-    dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
@@ -780,26 +748,6 @@ export const emitAssetRequest = (assetAddress: string | string[]) => (
     setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
-};
-
-/**
- * Emits an asset information request. The result is handled by a listener
- * in `listenOnAssetMessages`.
- */
-export const emitAssetInfoRequest = () => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  assetInfoHandle && clearTimeout(assetInfoHandle);
-
-  const { nativeCurrency } = getState().settings;
-  const { assetsSocket } = getState().explorer;
-  assetsSocket?.emit(...assetInfoRequest(nativeCurrency));
-  assetsSocket?.emit(...assetInfoRequest(nativeCurrency, 'asc'));
-
-  assetInfoHandle = setTimeout(() => {
-    dispatch(emitAssetInfoRequest());
-  }, ASSET_INFO_TIMEOUT);
 };
 
 /**
