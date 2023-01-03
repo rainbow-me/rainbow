@@ -401,7 +401,7 @@ export default function ChangeWalletSheet() {
   const onPressPairHardwareWallet = useCallback(() => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet: false,
-      type: 'hardware_wallet',
+      type: 'ledger_nano_x',
     });
     goBack();
     InteractionManager.runAfterInteractions(() => {

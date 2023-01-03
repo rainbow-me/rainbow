@@ -251,11 +251,6 @@ export const useEthUSDPrice = (): number => {
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
 };
 
-export const useEthUSDMonthChart = (): number => {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'charts' does not exist on type 'DefaultR... Remove this comment to see the full error message
-  return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
-};
-
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
   if (network === Network.polygon) {
     return getMaticPriceUnit();

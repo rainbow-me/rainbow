@@ -57,9 +57,7 @@ import {
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
-  overlayExpandedPreset,
   sheetPreset,
-  sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
 } from './effects';

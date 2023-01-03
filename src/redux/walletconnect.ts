@@ -149,6 +149,8 @@ export interface WalletconnectApprovalSheetRouteParams {
   receivedTimestamp: number;
   meta?: {
     chainId: number;
+    chainIds?: number[];
+    isWalletConnectV2?: boolean;
   } & Pick<
     RequestData,
     'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'

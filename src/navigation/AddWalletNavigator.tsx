@@ -13,6 +13,7 @@ import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@/navigation';
+import { useDimensions } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -28,6 +29,7 @@ export const AddWalletNavigator = () => {
   const { setParams } = useNavigation();
 
   const [sheetHeight, setSheetHeight] = useState(0);
+  const { height: deviceHeight } = useDimensions();
 
   useEffect(() => {
     setParams({ sheetHeight, backgroundOpacity: sheetHeight ? undefined : 1 });
@@ -36,14 +38,13 @@ export const AddWalletNavigator = () => {
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const contentHeight =
-    (sheetHeight || deviceUtils.dimensions.height) -
-    SheetHandleFixedToTopHeight;
+    (sheetHeight || deviceHeight) - SheetHandleFixedToTopHeight;
 
   return (
     // wrapping in View prevents keyboard from pushing up sheet on android
     <View
       style={{
-        height: deviceUtils.dimensions.height,
+        height: deviceHeight,
       }}
     >
       <BackgroundProvider color="surfaceSecondary">
