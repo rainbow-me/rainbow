@@ -1757,7 +1757,9 @@
       "failed_to_connect_to": "Failed to connect to %{appName}",
       "go_back": "Go back",
       "requesting_network": "Requesting %{num} network",
-      "requesting_networks": "Requesting %{num} networks"
+      "requesting_networks": "Requesting %{num} networks",
+      "unknown_dapp": "Unknown Dapp",
+      "unknown_url": "Unknown URL"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

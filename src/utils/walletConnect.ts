@@ -202,7 +202,9 @@ export function onSessionProposal(
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
   const peerMeta = proposer.metadata;
   const dappName =
-    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
+    dappNameOverride(peerMeta.url) ||
+    peerMeta.name ||
+    lang.t(lang.l.walletconnect.unknown_dapp);
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
@@ -211,7 +213,7 @@ export function onSessionProposal(
       chainIds,
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
-      dappUrl: peerMeta.url || 'Unknown URL',
+      dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
       imageUrl: maybeSignUri(
         dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0]
       ),
