@@ -4,22 +4,20 @@ import { StatusBar } from 'react-native';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { BackgroundProvider } from '@/design-system';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { IS_ANDROID } from '@/env';
-import { deviceUtils } from '@/utils';
+import { useDimensions } from '@/hooks';
 
 export function RestoreSheet() {
   const {
     params: { userData, backupSelected, fromSettings } = {},
   } = useRoute();
+  const { height: deviceHeight } = useDimensions();
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SlackSheet
-          contentHeight={
-            deviceUtils.dimensions.height - SheetHandleFixedToTopHeight
-          }
+          contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
           additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
           backgroundColor={backgroundColor}
           height="100%"
