@@ -21,7 +21,7 @@ import { logger } from '@/logger';
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
-const TRANSLATIONS = i18n.l.wallet.new.add_first_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
 
 type Props = {
   userData: { wallets: RainbowWallet[] };
@@ -95,7 +95,14 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     });
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
+      setTimeout(
+        () =>
+          navigate(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            params: { type: 'import' },
+          }),
+        50
+      );
     });
   }, [goBack, navigate]);
 
@@ -106,7 +113,14 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     });
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
+      setTimeout(
+        () =>
+          navigate(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+            params: { type: 'watch' },
+          }),
+        50
+      );
     });
   }, [goBack, navigate]);
 
@@ -165,7 +179,12 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     description: i18n.t(TRANSLATIONS.hardware_wallet.description),
     icon: '􀕹',
     iconColor: globalColors.blue60,
-    onPress: () => {},
+    onPress: () => {
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'ledger_nano_x',
+      });
+    },
   };
 
   return (

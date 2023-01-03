@@ -63,11 +63,11 @@ import {
   learnWebViewScreenConfig,
   transactionDetailsConfig,
   importSeedPhraseFlowNavigatorConfig,
+  addWalletNavigatorConfig,
 } from './config';
 import {
   emojiPreset,
   emojiPresetWallet,
-  exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -76,14 +76,13 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -383,7 +382,11 @@ function NativeStackNavigator() {
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
       />
-
+      <NativeStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
+        {...addWalletNavigatorConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen
