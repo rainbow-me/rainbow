@@ -1428,6 +1428,7 @@
       }
     },
     "transaction_details": {
+      "value": "Value",
       "hash": "Tx Hash",
       "network_fee": "Network Fee"
     },

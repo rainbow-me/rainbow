@@ -12,17 +12,24 @@ import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { cloudPlatform } from '@/utils/platform';
 import * as i18n from '@/languages';
+import {
+  fetchUserDataFromCloud,
+  isCloudBackupAvailable,
+} from '@/handlers/cloudBackup';
+import { logger } from '@/logger';
+// @ts-ignore ts is complaining about this import
+import RNCloudFs from 'react-native-cloud-fs';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 const TRANSLATIONS = i18n.l.add_first_wallet;
 
 type Props = {
-  onCloudRestore: () => void;
   userData: { wallets: RainbowWallet[] };
 };
 
-export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
+export const AddFirstWalletStep = ({ userData }: Props) => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate, setParams } = useNavigation();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -35,6 +42,51 @@ export const AddFirstWalletStep = ({ onCloudRestore, userData }: Props) => {
     }
     return count;
   }, [userData]);
+
+  const onCloudRestore = useCallback(async () => {
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: true,
+      type: 'seed',
+    });
+    let proceed = false;
+    if (IS_ANDROID) {
+      const isAvailable = await isCloudBackupAvailable();
+      if (isAvailable) {
+        try {
+          const data = await fetchUserDataFromCloud();
+          if (data?.wallets) {
+            Object.values(data.wallets as RainbowWallet[]).forEach(wallet => {
+              if (
+                wallet.backedUp &&
+                wallet.backupType === WalletBackupTypes.cloud
+              ) {
+                proceed = true;
+              }
+            });
+            if (proceed) {
+              setParams({ userData: data });
+            }
+          }
+          logger.info(`Downloaded ${cloudPlatform} backup info`);
+        } catch (e) {
+          logger.info((e as Error).message);
+        } finally {
+          if (!proceed) {
+            Alert.alert(
+              i18n.t(TRANSLATIONS.cloud.no_backups),
+              i18n.t(TRANSLATIONS.cloud.no_google_backups)
+            );
+            await RNCloudFs.logout();
+          }
+        }
+      }
+    } else {
+      proceed = true;
+    }
+    if (proceed) {
+      setParams({ step: WalletBackupTypes.cloud });
+    }
+  }, [setParams]);
 
   const onManualRestore = useCallback(() => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
