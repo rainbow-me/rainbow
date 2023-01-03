@@ -11,10 +11,7 @@ import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { AppState } from '@/redux/store';
-import {
-  buildBriefWalletSectionsSelector,
-  buildWalletSectionsSelector,
-} from '@/helpers/buildWalletSections';
+import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData({
@@ -66,16 +63,17 @@ export default function useWalletSectionsData({
       showcaseTokens,
     };
 
-    const sectionsData = buildWalletSectionsSelector(accountInfo);
-    const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
+      accountInfo
+    );
     const hasNFTs = allUniqueTokens.length > 0;
 
     return {
       hasNFTs,
+      isEmpty,
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
-      ...sectionsData,
       briefSectionsData,
     };
   }, [

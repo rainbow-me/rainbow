@@ -4,7 +4,6 @@ export {
   parseAssetSymbol,
   parseAsset,
   parseAssetNative,
-  parseAssetsNativeWithTotals,
   parseAssetsNative,
 } from './accounts';
 export {
