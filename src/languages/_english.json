@@ -690,7 +690,7 @@
         "title": "Connection failed"
       },
       "failed_wc_invalid_methods": {
-        "text": "Uh oh, something went wrong! The dapp requested wallet signing methods that are unsupported by Rainbow.",
+        "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow.",
         "title": "Connection failed"
       },
       "floor_price": {
