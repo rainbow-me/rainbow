@@ -4,16 +4,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
+import { CollectibleTokenFamily } from '../components/token-family';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
-import { tokenFamilyItem } from '@/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+
+const tokenFamilyItem = item => (
+  <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
+);
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {

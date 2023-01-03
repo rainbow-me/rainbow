@@ -68,7 +68,6 @@ import {
 import {
   emojiPreset,
   emojiPresetWallet,
-  exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -77,15 +76,12 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();

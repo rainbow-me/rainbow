@@ -5,7 +5,6 @@ import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
 import {
-  add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -88,22 +87,6 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   };
 
   return parsedAsset;
-};
-
-export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
-  const assetsNative = parseAssetsNative(assets, nativeCurrency);
-
-  let totalAmount = 0;
-  for (const asset of assetsNative) {
-    totalAmount = add(totalAmount, asset.native?.balance?.amount ?? 0);
-  }
-
-  const totalDisplay = convertAmountToNativeDisplay(
-    totalAmount,
-    nativeCurrency
-  );
-  const total = { amount: totalAmount, display: totalDisplay };
-  return { assetsNativePrices: assetsNative, total };
 };
 
 export const parseAssetsNative = (assets, nativeCurrency) =>
