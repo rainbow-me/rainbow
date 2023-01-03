@@ -11,15 +11,14 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useImportingWallet, useKeyboardHeight } from '@/hooks';
+import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React from 'react';
+import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
-import { contentHeight } from '@/navigation/AddWalletNavigator';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
 
@@ -43,6 +42,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     isSecretValid,
     seedPhrase,
   } = useImportingWallet();
+  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({
@@ -53,14 +53,14 @@ export const ImportSeedPhraseSheet: React.FC = () => {
   });
   const labelTertiary = useForegroundColor('labelTertiary');
 
-  useFocusEffect(() => inputRef.current?.focus());
+  useFocusEffect(useCallback(() => inputRef.current?.focus(), [inputRef]));
 
   const buttonDisabled = seedPhrase && !isSecretValid;
 
   return (
     <Box
       height={{
-        custom: contentHeight,
+        custom: deviceHeight - SheetHandleFixedToTopHeight,
       }}
       background="surfaceSecondary"
     >

@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
@@ -36,7 +36,7 @@ export const AddWalletSheet = () => {
     wallets,
   } = useWallets();
 
-  const onPressCreate = useCallback(async () => {
+  const onPressCreate = () => {
     try {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
         isFirstWallet: false,
@@ -169,19 +169,9 @@ export const AddWalletSheet = () => {
       setIsWalletLoading(null);
       logger.log('Error while trying to add account', e);
     }
-  }, [
-    dispatch,
-    goBack,
-    isDamaged,
-    navigate,
-    selectedWallet.id,
-    selectedWallet.primary,
-    setIsWalletLoading,
-    wallets,
-    profilesEnabled,
-  ]);
+  };
 
-  const onPressRestore = useCallback(() => {
+  const onPressRestore = () => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet: false,
@@ -191,9 +181,9 @@ export const AddWalletSheet = () => {
       screen: Routes.IMPORT_SEED_PHRASE_FLOW,
       params: { type: 'import' },
     });
-  }, [navigate]);
+  };
 
-  const onPressWatch = useCallback(() => {
+  const onPressWatch = () => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet: false,
@@ -203,7 +193,7 @@ export const AddWalletSheet = () => {
       screen: Routes.IMPORT_SEED_PHRASE_FLOW,
       params: { type: 'watch' },
     });
-  }, [navigate]);
+  };
 
   const create: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.create_new.title),
@@ -241,7 +231,7 @@ export const AddWalletSheet = () => {
     onPress: () => {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
         isFirstWallet: false,
-        type: 'hardware_wallet',
+        type: 'ledger_nano_x',
       });
     },
   };

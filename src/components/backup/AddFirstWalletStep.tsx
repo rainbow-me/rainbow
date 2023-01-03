@@ -182,7 +182,7 @@ export const AddFirstWalletStep = ({ userData }: Props) => {
     onPress: () => {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
         isFirstWallet: false,
-        type: 'hardware_wallet',
+        type: 'ledger_nano_x',
       });
     },
   };

@@ -8,26 +8,25 @@ import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
+import { useDimensions } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
-export const contentHeight =
-  deviceUtils.dimensions.height - SheetHandleFixedToTopHeight;
-
 export const AddWalletNavigator = () => {
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  const { height: deviceHeight } = useDimensions();
 
   return (
     <View
       style={{
-        height: deviceUtils.dimensions.height,
+        height: deviceHeight,
       }}
     >
       <BackgroundProvider color="surfaceSecondary">
         {({ backgroundColor }) => (
           // @ts-expect-error js component
           <SlackSheet
-            contentHeight={contentHeight}
+            contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
             additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
             backgroundColor={backgroundColor}
             height="100%"
