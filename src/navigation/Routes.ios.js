@@ -13,7 +13,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -62,6 +62,7 @@ import {
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  importSeedPhraseFlowNavigatorConfig,
 } from './config';
 import {
   emojiPreset,
@@ -430,6 +431,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ImportSeedPhraseFlowNavigator}
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+        {...importSeedPhraseFlowNavigatorConfig}
       />
       <NativeStack.Screen
         component={AddCashFlowNavigator}

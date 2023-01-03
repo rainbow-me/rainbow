@@ -21,7 +21,7 @@ import { logger } from '@/logger';
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
-const TRANSLATIONS = i18n.l.add_first_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_first_wallet;
 
 type Props = {
   userData: { wallets: RainbowWallet[] };
