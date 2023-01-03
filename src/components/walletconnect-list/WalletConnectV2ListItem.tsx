@@ -7,17 +7,13 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedText } from '../text';
+import { TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import {
-  changeConnectionMenuItems,
-  NETWORK_MENU_ACTION_KEY_FILTER,
-  networksMenuItems,
-} from '@/helpers/walletConnectNetworks';
-import { useWalletConnectConnections, useWallets } from '@/hooks';
+import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
+import { useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -34,12 +30,10 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
 
-const ContainerPadding = 15;
-const VendorLogoIconSize = 50;
-export const WalletConnectListItemHeight =
-  VendorLogoIconSize + ContainerPadding * 2;
-
-const networksAvailable = networksMenuItems();
+const CONTAINER_PADDING = 15;
+const VENDOR_LOGO_ICON_SIZE = 50;
+export const WALLET_CONNECT_LIST_ITEM_HEIGHT =
+  VENDOR_LOGO_ICON_SIZE + CONTAINER_PADDING * 2;
 
 const androidContextMenuActions = [
   lang.t('walletconnect.switch_wallet'),
@@ -52,10 +46,10 @@ const SessionRow = styled(Row)({
 });
 
 const rowStyle = padding.object(
-  ContainerPadding,
-  ContainerPadding,
-  ContainerPadding + 10,
-  ContainerPadding
+  CONTAINER_PADDING,
+  CONTAINER_PADDING,
+  CONTAINER_PADDING + 10,
+  CONTAINER_PADDING
 );
 
 const columnStyle = padding.object(0, 10, 0, 12);
@@ -209,14 +203,14 @@ export function WalletConnectV2ListItem({
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
-      <Row align="center" height={WalletConnectListItemHeight}>
+      <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
         <Row align="center" flex={1} style={rowStyle}>
           {/* @ts-expect-error */}
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={dappLogo}
-            size={VendorLogoIconSize}
+            size={VENDOR_LOGO_ICON_SIZE}
           />
           <ColumnWithMargins
             flex={1}
