@@ -3,6 +3,7 @@ import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
+import { fetchAssetsFromRefraction } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
@@ -32,7 +33,7 @@ export default function useRefreshAccountData() {
         ? dispatch(fetchWalletENSAvatars())
         : null;
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
-      // TODO(jin) - need to substitute for balances info
+      const balances = dispatch(fetchAssetsFromRefraction());
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
@@ -42,6 +43,7 @@ export default function useRefreshAccountData() {
         getWalletENSAvatars,
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
+        balances,
         wc,
         uniswapPositions,
       ]);
