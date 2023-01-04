@@ -53,6 +53,7 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn(
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   (color: string = '') => color.toLowerCase().substring(0, 3) === 'rgb'
 );
 
@@ -224,6 +225,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       buildRgba(base.appleBlue, 0.02),
       buildRgba(base.appleBlue, 0.06),
     ],
+    transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
     transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
     transparentToLightGrey: [
       buildRgba(base.blueGreyDark, 0),
@@ -340,6 +342,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
         buildRgba(base.appleBlue, 0.02),
         buildRgba(base.appleBlue, 0.06),
       ],
+      transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
       transparentToGreen: [
         buildRgba(base.green, 0),
         buildRgba(base.green, 0.06),
@@ -404,7 +407,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
  * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
  */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
-  //FIXME: sometimes receive non string value
+  // FIXME: sometimes receive non string value
   if (!colorString || typeof colorString !== 'string') return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
