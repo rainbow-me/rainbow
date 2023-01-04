@@ -14,6 +14,7 @@ import Routes from '@rainbow-me/routes';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
+import * as i18n from '@/languages';
 
 const SIZE = 40;
 
@@ -50,7 +51,9 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           ? [
               {
                 actionKey: 'speedUp',
-                actionTitle: 'Speed Up',
+                actionTitle: i18n.t(
+                  i18n.l.transaction_details.actions_menu.speed_up
+                ),
                 icon: {
                   iconType: 'SYSTEM',
                   iconValue: 'speedometer',
@@ -62,7 +65,9 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           ? [
               {
                 actionKey: 'cancel',
-                actionTitle: 'Cancel',
+                actionTitle: i18n.t(
+                  i18n.l.transaction_details.actions_menu.cancel
+                ),
                 menuAttributes: ['destructive'],
                 icon: {
                   iconType: 'SYSTEM',
