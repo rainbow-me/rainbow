@@ -204,7 +204,7 @@ export const addWalletNavigatorConfig = {
   }) => ({
     ...buildCoolModalConfig({
       ...params,
-      backgroundOpacity,
+      backgroundOpacity: backgroundOpacity ?? 1,
       longFormHeight: sheetHeight,
       springDamping: 1,
       transitionDuration: 0.3,

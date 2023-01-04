@@ -28,11 +28,14 @@ export const AddWalletNavigator = () => {
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
   const { setParams } = useNavigation();
 
-  const [sheetHeight, setSheetHeight] = useState(0);
+  const [sheetHeight, setSheetHeight] = useState(undefined);
   const { height: deviceHeight } = useDimensions();
 
   useEffect(() => {
-    setParams({ sheetHeight, backgroundOpacity: sheetHeight ? undefined : 1 });
+    setParams({
+      sheetHeight,
+    });
+    if (sheetHeight) setParams({ backgroundOpacity: 0.7 });
   }, [setParams, sheetHeight]);
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
