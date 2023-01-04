@@ -13,7 +13,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -62,11 +62,12 @@ import {
   swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  importSeedPhraseFlowNavigatorConfig,
+  addWalletNavigatorConfig,
 } from './config';
 import {
   emojiPreset,
   emojiPresetWallet,
-  exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -75,14 +76,13 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -382,7 +382,11 @@ function NativeStackNavigator() {
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
       />
-
+      <NativeStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
+        {...addWalletNavigatorConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen
@@ -430,6 +434,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ImportSeedPhraseFlowNavigator}
         name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
+        {...importSeedPhraseFlowNavigatorConfig}
       />
       <NativeStack.Screen
         component={AddCashFlowNavigator}

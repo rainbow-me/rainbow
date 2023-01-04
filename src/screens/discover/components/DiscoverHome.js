@@ -3,7 +3,6 @@ import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
-import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
@@ -21,7 +20,7 @@ import {
 } from '@/components/cards/utils/constants';
 
 export default function DiscoverHome() {
-  const { accountAddress, network } = useAccountSettings();
+  const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const testNetwork = isTestnetNetwork(network);
@@ -56,7 +55,6 @@ export default function DiscoverHome() {
           )}
         </Inset>
         <Lists />
-        {accountAddress ? <UniswapPools /> : null}
       </Stack>
     </Inset>
   );

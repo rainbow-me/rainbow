@@ -14,7 +14,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -73,6 +73,7 @@ import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -294,6 +295,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
+      />
+      <BSStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
       />
       {profilesEnabled && (
         <>

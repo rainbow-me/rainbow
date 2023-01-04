@@ -10,7 +10,6 @@ import { ETH_ADDRESS } from '@/references';
 const CHARTS_UPDATE_CHART_TYPE = 'charts/CHARTS_UPDATE_CHART_TYPE';
 const CHARTS_UPDATE = 'charts/CHARTS_UPDATE';
 const CHARTS_UPDATE_USD_DAY = 'charts/CHARTS_UPDATE_USD_DAY';
-const CHARTS_UPDATE_USD_MONTH = 'charts/CHARTS_UPDATE_USD_MONTH';
 
 export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
@@ -41,11 +40,6 @@ interface ChartsState {
   chartsEthUSDDay: ChartDataPoints;
 
   /**
-   * Data for the ETH-USD month chart.
-   */
-  chartsEthUSDMonth: ChartDataPoints;
-
-  /**
    * The first store's selected chart type.
    */
   chartType: ChartType;
@@ -72,8 +66,7 @@ interface ChartsState {
 type ChartsAction =
   | ChartsUpdateChartTypeAction
   | ChartsUpdateAction
-  | ChartsUpdateUsdDayAction
-  | ChartsUpdateUsdMonthAction;
+  | ChartsUpdateUsdDayAction;
 
 /**
  * The action for updating the current type of chart loaded.
@@ -98,14 +91,6 @@ interface ChartsUpdateAction {
 interface ChartsUpdateUsdDayAction {
   type: typeof CHARTS_UPDATE_USD_DAY;
   payload: ChartsState['chartsEthUSDDay'];
-}
-
-/**
- * The action for updating the ETH-USD month chart data.
- */
-interface ChartsUpdateUsdMonthAction {
-  type: typeof CHARTS_UPDATE_USD_MONTH;
-  payload: ChartsState['chartsEthUSDMonth'];
 }
 
 /**
@@ -146,9 +131,7 @@ export const chartsUpdateChartType = (
  * @param message The `ChartsReceivedMessage`.
  */
 export const assetChartsReceived = (message: ChartsReceivedMessage) => (
-  dispatch: Dispatch<
-    ChartsUpdateAction | ChartsUpdateUsdDayAction | ChartsUpdateUsdMonthAction
-  >,
+  dispatch: Dispatch<ChartsUpdateAction | ChartsUpdateUsdDayAction>,
   getState: AppGetState
 ) => {
   const chartType = message?.meta?.charts_type;
@@ -184,12 +167,7 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
     message?.meta?.currency === currenyTypes.usd &&
     assetCharts[ETH_ADDRESS]
   ) {
-    if (message?.meta?.charts_type === ChartTypes.month) {
-      dispatch({
-        payload: reverse(assetCharts[ETH_ADDRESS]),
-        type: CHARTS_UPDATE_USD_MONTH,
-      });
-    } else if (message?.meta?.charts_type === ChartTypes.day) {
+    if (message?.meta?.charts_type === ChartTypes.day) {
       dispatch({
         payload: reverse(assetCharts[ETH_ADDRESS]),
         type: CHARTS_UPDATE_USD_DAY,
@@ -203,7 +181,6 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
 const INITIAL_STATE: ChartsState = {
   charts: {},
   chartsEthUSDDay: [],
-  chartsEthUSDMonth: [],
   chartType: DEFAULT_CHART_TYPE,
   chartType2: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
@@ -232,11 +209,6 @@ export default (
       return {
         ...state,
         chartsEthUSDDay: action.payload,
-      };
-    case CHARTS_UPDATE_USD_MONTH:
-      return {
-        ...state,
-        chartsEthUSDMonth: action.payload,
       };
     default:
       return state;

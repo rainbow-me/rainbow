@@ -48,28 +48,6 @@
         "testnet_label": "Your testnet transaction history starts now!"
       }
     },
-    "add_first_wallet": {
-      "cloud": {
-        "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
-        "description_ios_one_wallet": "You have 1 wallet backed up",
-        "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
-        "title": "Restore from %{platform}",
-        "no_backups": "No backups found",
-        "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
-      },
-      "hardware_wallet": {
-        "description": "Add accounts from your Bluetooth hardware wallet",
-        "title": "Connect your hardware wallet"
-      },
-      "seed": {
-        "description": "Use your recovery phrase from Rainbow or another crypto wallet",
-        "title": "Restore with a recovery phrase or private key"
-      },
-      "watch": {
-        "description": "Watch a public address or ENS name",
-        "title": "Watch an Ethereum address"
-      }
-    },
     "add_funds": {
       "eth": {
         "or_send_eth": "or send ETH to your wallet",
@@ -1511,10 +1489,9 @@
     },
     "wallet": {
       "action": {
-        "add_existing": "Add an existing wallet",
+        "add_another": "Add another wallet",
         "cancel": "Cancel",
         "copy_contract_address": "Copy Contract Address",
-        "create_new": "Create a new wallet",
         "delete": "Delete Wallet",
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
@@ -1655,6 +1632,55 @@
       "my_account_address": "My account address:",
       "network_title": "Network",
       "new": {
+        "add_wallet": {
+          "cloud": {
+            "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
+            "description_ios_one_wallet": "You have 1 wallet backed up",
+            "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+            "title": "Restore from %{platform}",
+            "no_backups": "No backups found",
+            "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
+          },
+          "create_new": {
+            "description": "Create a new wallet on one of your seed phrases",
+            "title": "Create a new wallet"
+          },
+          "hardware_wallet": {
+            "description": "Add accounts from your Bluetooth hardware wallet",
+            "title": "Connect your hardware wallet"
+          },
+          "seed": {
+            "description": "Use your recovery phrase from Rainbow or another crypto wallet",
+            "title": "Restore with a recovery phrase or private key"
+          },
+          "sheet": {
+            "description": "Create a new wallet or add an existing one",
+            "title": "Add another wallet"
+          },
+          "watch": {
+            "description": "Watch a public address or ENS name",
+            "title": "Watch an Ethereum address"
+          }
+        },
+        "import_seed_phrase_sheet": {
+          "paste": "Paste",
+          "continue": "Continue",
+          "import": {
+            "title": "Restore a wallet",
+            "description": "Restore with a recovery phrase or private key from Rainbow or another crypto wallet",
+            "placeholder": "Enter a recovery phrase or private key",
+            "button": "Import"
+          },
+          "watch": {
+            "title": "Watch an address",
+            "placeholder": "Enter an Ethereum address or ENS name",
+            "button": "Watch"
+          },
+          "watch_or_import": {
+            "title": "Add a wallet",
+            "placeholder": "Enter a secret phrase, private key, Ethereum address, or ENS name"
+          }
+        },
         "alert": {
           "looks_like_already_imported": "Looks like you already imported this wallet!",
           "oops": "Oops!"
@@ -1773,7 +1799,11 @@
       "unknown_application": "Unknown Application",
       "connection_failed": "Connection failed",
       "failed_to_connect_to": "Failed to connect to %{appName}",
-      "go_back": "Go back"
+      "go_back": "Go back",
+      "requesting_network": "Requesting %{num} network",
+      "requesting_networks": "Requesting %{num} networks",
+      "unknown_dapp": "Unknown Dapp",
+      "unknown_url": "Unknown URL"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

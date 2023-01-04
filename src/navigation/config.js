@@ -198,6 +198,29 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
+export const addWalletNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const importSeedPhraseFlowNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const learnWebViewScreenConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -310,41 +333,13 @@ export const expandedAssetSheetConfigWithLimit = {
   }),
 };
 
-const restoreSheetSizes = {
-  ...backupSheetSizes,
-  medium: 505,
-  short: 363,
-};
-
 export const restoreSheetConfig = {
-  options: ({ navigation, route }) => {
-    const {
-      params: {
-        enableCloudRestore,
-        longFormHeight,
-        step = WalletBackupStepTypes.first,
-        ...params
-      } = {},
-    } = route;
-
-    // let heightForStep = restoreSheetSizes.short;
-    // if (enableCloudRestore && step === WalletBackupStepTypes.first) {
-    //   heightForStep = restoreSheetSizes.medium;
-    // } else if (step === WalletBackupStepTypes.cloud) {
-    //   heightForStep = restoreSheetSizes.long;
-    // }
-
-    // if (longFormHeight !== heightForStep) {
-    //   navigation.setParams({
-    //     longFormHeight: heightForStep,
-    //   });
-    // }
-
-    return buildCoolModalConfig({
+  options: ({ route: { params: { longFormHeight, ...params } = {} } }) => ({
+    ...buildCoolModalConfig({
       ...params,
-      longFormHeight: longFormHeight,
-    });
-  },
+      longFormHeight,
+    }),
+  }),
 };
 
 export const basicSheetConfig = {

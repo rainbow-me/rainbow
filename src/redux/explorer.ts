@@ -695,9 +695,6 @@ export const explorerInit = () => async (
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
       dispatch(
-        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
-      );
-      dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
       );
     }
