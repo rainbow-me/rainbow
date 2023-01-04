@@ -2,7 +2,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -54,15 +54,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<TextInput>(null);
 
-  useEffect(() => {
-    android &&
-      setTimeout(() => {
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
-        inputRef.current?.focus();
-      }, 500);
-  }, []);
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
@@ -129,6 +122,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
+      setBusy(true);
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -137,6 +131,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ? forceColor
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
+      setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
       // Validate ENS
@@ -149,6 +144,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
+            setBusy(false);
             Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
@@ -156,12 +152,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || avatar?.imageUrl;
+          setBusy(false);
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
             address,
             input,
           });
         } catch (e) {
+          setBusy(false);
           Alert.alert(lang.t('wallet.sorry_cannot_add_ens'));
           return;
         }
@@ -170,12 +168,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           const address = await resolveUnstoppableDomain(input);
           if (!address) {
+            setBusy(false);
             Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
             return;
           }
           // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          setBusy(false);
           // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
           startImportProfile(name, guardedForceColor, address);
           analytics.track('Show wallet profile modal for Unstoppable address', {
@@ -183,6 +183,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
+          setBusy(false);
           Alert.alert(lang.t('wallet.sorry_cannot_add_unstoppable'));
           return;
         }
@@ -203,11 +204,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         } catch (e) {
           logger.log(`Error resolving ENS during wallet import`, e);
         }
+        setBusy(false);
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
         startImportProfile(name, guardedForceColor, input);
       } else {
         try {
-          setBusy(true);
           setTimeout(async () => {
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input
@@ -330,7 +331,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 }
                 // Wait for error messages then refocus
                 setTimeout(() => {
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
                   inputRef.current?.focus();
                   // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
                   initializeWallet();
@@ -342,7 +342,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               android && handleSetImporting(false);
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
-                // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
                 inputRef.current?.focus();
                 // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
                 initializeWallet();

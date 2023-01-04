@@ -35,7 +35,6 @@ import {
 } from './fallbackExplorer';
 import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { updateTopMovers, ZerionAssetInfoResponse } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
@@ -46,7 +45,12 @@ import {
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_MAINNET_ADDRESS,
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
@@ -71,6 +75,7 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
+    RECEIVED_BSC: 'received address bsc-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -83,6 +88,7 @@ const messages = {
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
+    RECEIVED_BSC: 'received address bsc-transactions',
     REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
@@ -259,6 +265,30 @@ const addressSubscription = (
 ];
 
 /**
+ * Configures a subscription to get asset balances for a network
+ *
+ * @param address The address.
+ * @param currency The currency to use.
+ * @param action The subscription asset.
+ * @returns The arguments for the `emit` function call.
+ */
+const addressAssetBalanceSubscription = (
+  address: string,
+  currency: string,
+  network: Network,
+  action: SocketSubscriptionActionType = 'subscribe'
+): SocketEmitArguments => [
+  action,
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: [`${network === Network.mainnet ? '' : `${network}-`}assets`],
+  },
+];
+
+/**
  * Configures a portfolio subscription.
  *
  * @param address The address to subscribe to.
@@ -347,7 +377,8 @@ const assetPricesSubscription = (
     tokenAddresses,
     ETH_ADDRESS,
     DPI_ADDRESS,
-    MATIC_MAINNET_ADDRESS
+    MATIC_MAINNET_ADDRESS,
+    BNB_MAINNET_ADDRESS
   );
   return [
     action,
@@ -444,6 +475,7 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.arbitrum}-transactions`,
       `${Network.optimism}-transactions`,
       `${Network.polygon}-transactions`,
+      `${Network.bsc}-transactions`,
     ],
   },
 ];
@@ -514,6 +546,14 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
+    );
+    addressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        addressSubscribed!,
+        nativeCurrency,
+        Network.bsc,
+        'unsubscribe'
+      )
     );
     addressSocket.close();
   }
@@ -630,6 +670,13 @@ export const explorerInit = () => async (
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
     );
+    newAddressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        accountAddress,
+        nativeCurrency,
+        Network.bsc
+      )
+    );
   });
 
   dispatch(listenOnAssetMessages(newAssetsSocket));
@@ -640,13 +687,13 @@ export const explorerInit = () => async (
       disableGenericAssetsFallbackIfNeeded();
     }
 
+    // we want to get ETH info ASAP
+    dispatch(emitAssetRequest(ETH_ADDRESS));
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
-      dispatch(
-        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
-      );
       dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
       );
@@ -811,13 +858,6 @@ export const emitL2TransactionHistoryRequest = () => (
 const listenOnAssetMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  socket.on(
-    messages.ASSET_INFO.RECEIVED,
-    (message: ZerionAssetInfoResponse) => {
-      dispatch(updateTopMovers(message));
-    }
-  );
-
   socket.on(messages.ASSETS.RECEIVED, (message: AssetPricesReceivedMessage) => {
     dispatch(assetPricesReceived(message));
   });
@@ -847,6 +887,7 @@ export const explorerInitL2 = (network: Network | null = null) => (
   if (getState().settings.network === Network.mainnet) {
     switch (network) {
       case Network.arbitrum:
+      case Network.bsc:
       case Network.polygon:
         // Fetch all assets from refraction
         dispatch(fetchAssetsFromRefraction());
@@ -989,6 +1030,14 @@ const listenOnAddressMessages = (socket: Socket) => (
   );
 
   socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_BSC,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('bsc txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
+
+  socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
@@ -1039,6 +1088,12 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.polygon));
+    }
+  );
+  socket.on(
+    messages.ADDRESS_ASSETS.RECEIVED_BSC,
+    (message: L2AddressAssetsReceivedMessage) => {
+      dispatch(l2AddressAssetsReceived(message, Network.bsc));
     }
   );
 

@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import { createSelector } from 'reselect';
-import { parseAssetsNativeWithTotals } from '@/parsers';
+import { parseAssetsNative } from '@/parsers';
 
 const EMPTY_ARRAY: any = [];
 
@@ -16,14 +16,8 @@ const sortAssetsByNativeAmount = (
 ) => {
   let assetsNativePrices = Object.values(accountAssetsData);
 
-  let total = null;
   if (!isEmpty(assetsNativePrices)) {
-    const parsedAssets = parseAssetsNativeWithTotals(
-      assetsNativePrices,
-      nativeCurrency
-    );
-    assetsNativePrices = parsedAssets.assetsNativePrices;
-    total = parsedAssets.total;
+    assetsNativePrices = parseAssetsNative(assetsNativePrices, nativeCurrency);
   }
   const {
     hasValue = EMPTY_ARRAY,
@@ -47,11 +41,8 @@ const sortAssetsByNativeAmount = (
   const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
   return {
-    assetsTotal: total,
-    isBalancesSectionEmpty: isEmpty(sortedAssets),
     isLoadingAssets,
     sortedAssets,
-    sortedAssetsCount: sortedAssets.length,
   };
 };
 

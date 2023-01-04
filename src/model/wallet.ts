@@ -60,6 +60,11 @@ import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import {
+  AddressWithRelationship,
+  initializeNotificationSettingsForAddresses,
+  NotificationRelationship,
+} from '@/notifications/settings';
 
 const encryptor = new AesEncryptor();
 
@@ -87,8 +92,10 @@ interface MessageTypeProperty {
   name: string;
   type: string;
 }
+
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
+
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
@@ -163,6 +170,7 @@ export interface PrivateKeyData {
   privateKey: EthereumPrivateKey;
   version: string;
 }
+
 interface SeedPhraseData {
   seedphrase: EthereumPrivateKey;
   version: string;
@@ -550,8 +558,8 @@ export const createWallet = async (
   overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation: boolean = false
+  silent = false,
+  clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
@@ -879,6 +887,19 @@ export const createWallet = async (
       type,
     };
 
+    // create notifications settings entry for newly created wallet
+    const relationship =
+      type === EthereumWalletType.readOnly
+        ? NotificationRelationship.WATCHER
+        : NotificationRelationship.OWNER;
+    const addressesWithRelationship: AddressWithRelationship[] = addresses.map(
+      account => ({
+        relationship,
+        address: account.address,
+      })
+    );
+    initializeNotificationSettingsForAddresses(addressesWithRelationship);
+
     if (!silent) {
       await setSelectedWallet(allWallets[id]);
       logger.sentry('[createWallet] - setSelectedWallet');
@@ -1143,6 +1164,15 @@ export const generateAccount = async (
     }
     // Creating signature for this wallet
     await createSignature(walletAddress, walletPkey);
+
+    // Initialize settings for freshly created account
+    initializeNotificationSettingsForAddresses([
+      {
+        address: walletAddress,
+        // Wallet or account created from within the app is attached to a seed phrase so it's an owned wallet
+        relationship: NotificationRelationship.OWNER,
+      },
+    ]);
 
     return newAccount;
   } catch (error) {

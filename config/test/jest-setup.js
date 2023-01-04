@@ -18,9 +18,10 @@ jest.mock('react-native-device-info', () => ({
 }));
 
 jest.mock('@segment/analytics-react-native', () => ({
-  identify: () => null,
-  reset: () => null,
-  setup: () => null,
+  createClient: jest.fn(),
+  identify: jest.fn(),
+  reset: jest.fn(),
+  setup: jest.fn(),
 }));
 
 jest.mock('@sentry/react-native', () => ({
@@ -36,20 +37,12 @@ jest.mock('react-native-keychain', () => ({
   setGenericPassword: jest.fn(),
 }));
 
-jest.mock('react-native-mmkv', () => ({
-  MMKV: class MMKVMock {
-    _store = new Map();
+jest.mock('react-native/Libraries/EventEmitter/NativeEventEmitter');
 
-    set(key, value) {
-      this._store.set(key, value);
-    }
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
 
-    getString(key) {
-      return this._store.get(key);
-    }
-
-    delete(key) {
-      return this._store.delete(key);
-    }
-  },
+jest.mock('react-native-permissions', () => ({
+  requestNotifications: jest.fn(),
 }));

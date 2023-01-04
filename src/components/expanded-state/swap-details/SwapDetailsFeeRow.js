@@ -11,11 +11,7 @@ import { useAccountSettings, useStepper } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
-export default function SwapDetailsUniswapRow({
-  tradeDetails,
-  network,
-  testID,
-}) {
+export default function SwapDetailsFeeRow({ tradeDetails, network, testID }) {
   const { navigate } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
   const { rainbowFeeNative, rainbowFeePercentage } = useRainbowFee({

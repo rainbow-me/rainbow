@@ -58,7 +58,6 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import {
-  getTitle,
   parseAccountAssets,
   parseAsset,
   parseNewTransaction,
@@ -362,6 +361,17 @@ interface CoingeckoApiResponseWithLastUpdate {
  * https://docs.zerion.io/websockets/models#portfolio for details.
  */
 interface ZerionPortfolio {
+  arbitrum_assets_value: number;
+  aurora_assets_value: number;
+  avalanche_assets_value: number;
+  ethereum_assets_value: number;
+  fantom_assets_value: number;
+  loopring_assets_value: number;
+  nft_floor_price_value: number;
+  nft_last_price_value: number;
+  optimism_assets_value: number;
+  solana_assets_value: number;
+  xdai_assets_value: number;
   assets_value: number;
   deposited_value: number;
   borrowed_value: number;
@@ -1349,7 +1359,7 @@ export const dataWatchPendingTransactions = (
         status: TransactionStatus;
       } | null = {
         status: TransactionStatus.sending,
-        title: '',
+        title: tx?.title || TransactionStatus.sending,
         minedAt: null,
         pending: true,
       };
@@ -1385,7 +1395,14 @@ export const dataWatchPendingTransactions = (
             txObj
           );
 
-          if (updatedPendingTransaction?.swap?.type === SwapType.crossChain) {
+          // approvals are not via socket so we dont want to check their status with them.
+          const isApproveTx =
+            transactionStatus === TransactionStatus.approved ||
+            transactionStatus === TransactionStatus.approving;
+          if (
+            updatedPendingTransaction?.swap?.type === SwapType.crossChain &&
+            !isApproveTx
+          ) {
             pendingTransactionData = await getTransactionSocketStatus(
               updatedPendingTransaction
             );
@@ -1394,8 +1411,8 @@ export const dataWatchPendingTransactions = (
                 ...txObj,
                 internalType: tx.type,
               });
+              txStatusesDidChange = true;
             }
-            txStatusesDidChange = true;
           } else {
             pendingTransactionData = getPendingTransactionData(
               updatedPendingTransaction,

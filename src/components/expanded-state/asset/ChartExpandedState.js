@@ -13,10 +13,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
-import { CoinDividerHeight } from '../../coin-divider';
-import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../../EdgeFade';
-import UniswapPools from '../../discover/UniswapPoolsSection';
 import useExperimentalFlag, {
   CROSSCHAIN_SWAPS,
 } from '@/config/experimentalHooks';
@@ -324,31 +321,12 @@ export default function ChartExpandedState({ asset }) {
 
   const { layout } = useContext(ModalContext) || {};
 
-  const [morePoolsVisible, setMorePoolsVisible] = useState(false);
-
-  const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
-    morePoolsVisible
-  );
-
   const { colors } = useTheme();
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const AvailableNetworks = !crosschainEnabled
     ? AvailableNetworksv1
     : AvailableNetworksv2;
-
-  const MoreButton = useCallback(() => {
-    return (
-      <View marginTop={-10}>
-        <CoinDividerOpenButton
-          coinDividerHeight={CoinDividerHeight}
-          isActive
-          isSmallBalancesOpen={delayedMorePoolsVisible}
-          onPress={() => setMorePoolsVisible(prev => !prev)}
-        />
-      </View>
-    );
-  }, [delayedMorePoolsVisible]);
 
   const isDOG =
     assetWithPrice.address === DOG_ADDRESS ||
@@ -490,18 +468,6 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        {!isL2 && (
-          <UniswapPools
-            ShowMoreButton={MoreButton}
-            alwaysShowMoreButton
-            forceShowAll={delayedMorePoolsVisible}
-            hideIfEmpty
-            initialPageAmount={3}
-            marginTop={24}
-            token={asset?.address}
-          />
-        )}
-
         {!!delayedDescriptions && (
           <ExpandedStateSection
             isL2

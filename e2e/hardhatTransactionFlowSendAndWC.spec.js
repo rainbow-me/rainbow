@@ -2,7 +2,7 @@
 /* eslint-disable jest/expect-expect */
 import { Contract } from '@ethersproject/contracts';
 import WalletConnect from '@walletconnect/client';
-import { convertUtf8ToHex } from '@walletconnect/utils';
+import { convertUtf8ToHex } from '@walletconnect/legacy-utils';
 import * as Helpers from './helpers';
 import kittiesABI from '@/references/cryptokitties-abi.json';
 import erc20ABI from '@/references/erc20-abi.json';
@@ -73,7 +73,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');

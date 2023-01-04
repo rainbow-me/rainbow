@@ -17,6 +17,7 @@ export default function WalletProfileState({
   actionType,
   address,
   isNewProfile,
+  onCancel,
   onCloseModal,
   profile,
   forceColor,
@@ -45,12 +46,13 @@ export default function WalletProfileState({
   const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
+    onCancel?.();
     goBack();
     analytics.track('Tapped "Cancel" on Wallet Profile modal');
     if (actionType === 'Create') {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, goBack, navigate]);
+  }, [actionType, goBack, navigate, onCancel]);
 
   const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');

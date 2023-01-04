@@ -27,7 +27,7 @@ describe('Import from private key flow', () => {
     );
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');

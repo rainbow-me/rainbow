@@ -79,6 +79,9 @@ import {
 } from '@/analytics/utils';
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
+import { migrate } from '@/migrations';
+import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
+import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 
 const FedoraToastRef = createRef();
 
@@ -145,7 +148,11 @@ class OldApp extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
-    analyticsV2.track(analyticsV2.event.generic.applicationDidMount);
+    analyticsV2.track(analyticsV2.event.applicationDidMount);
+
+    if (getExperimetalFlag(WC_V2)) {
+      initWalletConnectListeners();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -196,7 +203,7 @@ class OldApp extends Component {
     }
     this.setState({ appState: nextAppState });
 
-    analyticsV2.track(analyticsV2.event.generic.appStateChange, {
+    analyticsV2.track(analyticsV2.event.appStateChange, {
       category: 'app state',
       label: nextAppState,
     });
@@ -242,21 +249,20 @@ class OldApp extends Component {
 
   render = () => (
     <Portal>
-      <NotificationsHandler walletReady={this.props.walletReady}>
-        <View style={containerStyle}>
-          {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
-          )}
-          <OfflineToast />
-          <FedoraToast ref={FedoraToastRef} />
-        </View>
-      </NotificationsHandler>
+      <View style={containerStyle}>
+        {this.state.initialRoute && (
+          <InitialRouteContext.Provider value={this.state.initialRoute}>
+            <RoutesComponent
+              onReady={this.handleSentryNavigationIntegration}
+              ref={this.handleNavigatorRef}
+            />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
+        )}
+        <OfflineToast />
+        <FedoraToast ref={FedoraToastRef} />
+      </View>
+      <NotificationsHandler walletReady={this.props.walletReady} />
     </Portal>
   );
 }
@@ -275,6 +281,9 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
+
+      // must happen immediately, but after Sentry
+      await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
@@ -322,7 +331,7 @@ function Root() {
         } = Dimensions.get('screen');
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
-        analyticsV2.track(analyticsV2.event.generic.firstAppOpen);
+        analyticsV2.track(analyticsV2.event.firstAppOpen);
       }
 
       /**

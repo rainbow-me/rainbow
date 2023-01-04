@@ -45,6 +45,22 @@ describe('general functionality', () => {
     expect(mockTransport).not.toHaveBeenCalled();
   });
 
+  test('disablement', () => {
+    const logger = new Logger({
+      enabled: true,
+      level: LogLevel.Debug,
+    });
+
+    logger.disable();
+
+    const mockTransport = jest.fn();
+
+    logger.addTransport(mockTransport);
+    logger.debug('message');
+
+    expect(mockTransport).not.toHaveBeenCalled();
+  });
+
   test('passing debug contexts automatically enables debug mode', () => {
     const logger = new Logger({ debug: 'specific' });
     expect(logger.level).toEqual(LogLevel.Debug);

@@ -25,6 +25,24 @@
         	<string>smol</string>
       	</array>
     	</dict>
+			<key>raindoge</key>
+    	<dict>
+      	<key>UIPrerenderedIcon</key>
+      	<false/>
+      	<key>CFBundleIconFiles</key>
+      	<array>
+        	<string>raindoge</string>
+      	</array>
+    	</dict>
+			<key>golddoge</key>
+    	<dict>
+      	<key>UIPrerenderedIcon</key>
+      	<false/>
+      	<key>CFBundleIconFiles</key>
+      	<array>
+        	<string>golddoge</string>
+      	</array>
+    	</dict>
 			<key>pixel</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
@@ -41,6 +59,15 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>optimism</string>
+				</array>
+			</dict>
+			<key>zora</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>zora</string>
 				</array>
 			</dict>
 			<key>og</key>
@@ -115,34 +142,14 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Used to scan QR codes</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Rainbow</string>
+	<string>Accesses the Camera to scan QR codes for connecting to dApps and discovering wallets</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions and access wallet keys</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Rainbow</string>
+	<string>This allows Rainbow to save images to your Camera Roll</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Rainbow</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Rainbow</string>
+	<string>This allows Rainbow to display selected photos as avatars across each of your wallet addresses</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.me.rainbow</key>

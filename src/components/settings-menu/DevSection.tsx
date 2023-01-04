@@ -49,11 +49,12 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import {
-  addDefaultNotificationGroupSettings,
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
+  addDefaultNotificationGroupSettings,
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
+import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -70,6 +71,11 @@ const DevSection = () => {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const [loadingStates, setLoadingStates] = useState({
+    clearLocalStorage: false,
+    clearAsyncStorage: false,
+    clearMmkvStorage: false,
+  });
 
   const onExperimentalKeyChange = useCallback(
     value => {
@@ -206,24 +212,41 @@ const DevSection = () => {
     // from firebase first or we’re gonna keep getting them even after
     // clearing storage and before changing settings
     if (notificationSettings.length > 0) {
-      notificationSettings.forEach(wallet => {
-        removeNotificationSettingsForWallet(wallet.address);
-      });
+      return Promise.all(
+        notificationSettings.map(wallet =>
+          removeNotificationSettingsForWallet(wallet.address)
+        )
+      );
     }
+    return Promise.resolve();
   }, [notificationSettings]);
 
-  const clearLocalStorage = useCallback(async () => {
-    clearAllNotificationSettings();
+  const clearLocalStorage = async () => {
+    setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
+
+    await clearAllNotificationSettings();
     await AsyncStorage.clear();
     clearAllStorages();
-    addDefaultNotificationGroupSettings();
-  }, [clearAllNotificationSettings]);
+    addDefaultNotificationGroupSettings(true);
 
-  const clearMMKVStorage = useCallback(async () => {
-    clearAllNotificationSettings();
+    setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
+  };
+
+  const clearAsyncStorage = async () => {
+    setLoadingStates(prev => ({ ...prev, clearAsyncStorage: true }));
+    await AsyncStorage.clear();
+    setLoadingStates(prev => ({ ...prev, clearAsyncStorage: false }));
+  };
+
+  const clearMMKVStorage = async () => {
+    setLoadingStates(prev => ({ ...prev, clearMmkvStorage: true }));
+
+    await clearAllNotificationSettings();
     clearAllStorages();
-    addDefaultNotificationGroupSettings();
-  }, [clearAllNotificationSettings]);
+    addDefaultNotificationGroupSettings(true);
+
+    setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
+  };
 
   // TODO: Remove after finishing work on APP-27
   const navigateToTransactionDetailsPlayground = () => {
@@ -260,6 +283,9 @@ const DevSection = () => {
               text={lang.t('developer_settings.clear_local_storage')}
             />
           }
+          rightComponent={
+            loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
+          }
         />
       </Menu>
       {(IS_DEV || isTestFlight) && (
@@ -267,12 +293,15 @@ const DevSection = () => {
           <Menu header="Rainbow Developer Settings">
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
-              onPress={async () => await AsyncStorage.clear()}
+              onPress={clearAsyncStorage}
               size={52}
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_async_storage')}
                 />
+              }
+              rightComponent={
+                loadingStates.clearAsyncStorage && <SettingsLoadingIndicator />
               }
             />
             <MenuItem
@@ -283,6 +312,9 @@ const DevSection = () => {
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_mmkv_storage')}
                 />
+              }
+              rightComponent={
+                loadingStates.clearMmkvStorage && <SettingsLoadingIndicator />
               }
             />
             <MenuItem

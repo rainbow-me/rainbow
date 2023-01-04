@@ -1,67 +1,76 @@
+import { CardType } from '@/components/cards/GenericCard';
+import { LearnCategory } from '@/components/cards/utils/types';
+
 /**
- * Uncategorized events
+ * All events, used by `analytics.track()`
  */
-export const genericEvent = {
-  // old
+export const event = {
   firstAppOpen: 'First App Open',
   applicationDidMount: 'React component tree finished initial mounting',
   pressedButton: 'Pressed Button',
   appStateChange: 'State change',
-
-  // new
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
+  swapSubmitted: 'Submitted Swap',
+  cardPressed: 'card.pressed',
+  learnArticleOpened: 'learn_article.opened',
+  learnArticleShared: 'learn_article.shared',
+  qrCodeViewed: 'qr_code.viewed',
+  buyButtonPressed: 'buy_button.pressed',
+  addWalletFlowStarted: 'add_wallet_flow.started',
 } as const;
 
 /**
- * Events relevant to or within the swaps product
+ * Properties corresponding to each event
  */
-export const swapEvent = {
-  submittedSwap: 'Submitted Swap',
-} as const;
-
-/**
- * A union of all event names. Use this when firing events via
- * `analytics.track`
- */
-export const event = {
-  generic: genericEvent,
-  swap: swapEvent,
-} as const;
-
-/**
- * Properties corresponding to our uncategorized event enum `GenericEvent`
- */
-type GenericEventProperties = {
-  // old
-  [event.generic.firstAppOpen]: undefined;
-  [event.generic.applicationDidMount]: undefined;
-  [event.generic.appStateChange]: {
+export type EventProperties = {
+  [event.firstAppOpen]: undefined;
+  [event.applicationDidMount]: undefined;
+  [event.appStateChange]: {
     category: 'app state';
     label: string;
   };
-  [event.generic.pressedButton]: {
+  [event.pressedButton]: {
     buttonName: string;
     action: string;
   };
-
-  // new
-  [event.generic.analyticsTrackingDisabled]: undefined;
-  [event.generic.analyticsTrackingEnabled]: undefined;
-};
-
-/**
- * Properties corresponding to our swaps event enum `GenericEvent`
- */
-type SwapEventProperties = {
-  [event.swap.submittedSwap]: {
+  [event.analyticsTrackingDisabled]: undefined;
+  [event.analyticsTrackingEnabled]: undefined;
+  [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
   };
+  [event.cardPressed]: {
+    cardName: string;
+    routeName: string;
+    cardType: CardType;
+  };
+  [event.learnArticleOpened]: {
+    durationSeconds: number;
+    url: string;
+    cardId: string;
+    category: LearnCategory;
+    displayType: CardType;
+    routeName: string;
+  };
+  [event.learnArticleShared]: {
+    url: string;
+    category: string;
+    cardId: string;
+    durationSeconds: number;
+  };
+  [event.qrCodeViewed]: {
+    component: string;
+  };
+  [event.buyButtonPressed]: {
+    amount?: number;
+    componentName: string;
+    newWallet?: boolean;
+    routeName: string;
+  };
+  [event.addWalletFlowStarted]: {
+    isFirstWallet: boolean;
+    type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
+  };
 };
-
-/**
- * A union of all event properties, used by `analytics.track`
- */
-export type EventProperties = GenericEventProperties & SwapEventProperties;

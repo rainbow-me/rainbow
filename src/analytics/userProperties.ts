@@ -34,6 +34,12 @@ export interface UserProperties {
   bsc_assets_value?: number;
   deposited_value?: number;
   polygon_assets_value?: number;
+  optimism_assets_value?: number;
+  arbitrum_assets_value?: number;
+  nft_floor_price_value?: number;
+  nft_last_price_value?: number;
+  avalanche_assets_value?: number;
+  xdai_assets_value?: number;
   locked_value?: number;
   staked_value?: number;
   total_value?: number;

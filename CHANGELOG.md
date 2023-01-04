@@ -13,6 +13,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.4)
+
+### Changed
+
+- Some learn card fixes
+- Notification improvments
+- Some NFT image fixes
+- Some small UI tweaks
+- Some Ledger stuff (behind feature flag)
+- Some BSC prep stuff (rugged for now)
+
+## [1.8.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.4)
+
+### Changed
+
+- fixed camera permissions
+
+## [1.8.3](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.3)
+
+### Changed
+
+- Added Doge app icon
+- Fixed duplicate eth balance issues
+- Updated photo permissions
+
+## [1.8.2](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.2)
+
+### Changed
+
+- Cross chain swaps
+- Update to discover home cards
+- Other bug fixes and improvements
+
+## [1.8.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.1)
+
+### Changed
+
+- Bug fixes
+- Small dev focused items
+- No new features or user facing items
+
 ## [1.8.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.7.10)
 
 ### Added

@@ -6,6 +6,8 @@ import OptimismBadge from '@/assets/badges/optimismBadge.png';
 import OptimismBadgeDark from '@/assets/badges/optimismBadgeDark.png';
 import PolygonBadge from '@/assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '@/assets/badges/polygonBadgeDark.png';
+import BscBadge from '@/assets/badges/bscBadge.png';
+import BscBadgeDark from '@/assets/badges/bscBadgeDark.png';
 import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
@@ -30,6 +32,10 @@ const AssetIconsByTheme: {
   [AssetType.polygon]: {
     dark: PolygonBadgeDark,
     light: PolygonBadge,
+  },
+  [AssetType.bsc]: {
+    dark: BscBadgeDark,
+    light: BscBadge,
   },
 };
 

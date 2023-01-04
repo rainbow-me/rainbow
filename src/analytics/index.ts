@@ -8,17 +8,20 @@ import {
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { LogLevel, logger } from '@/logger';
+import { device } from '@/storage';
 
 export class Analytics {
   client: SegmentClient;
   currentWalletAddressHash?: string;
   deviceId?: string;
   event = event;
-  disabled = false;
+  disabled = !!device.get(['doNotTrack']);
 
   constructor() {
     this.client = createClient({
-      debug: Boolean(LOG_DEBUG) || LOG_LEVEL === LogLevel.Debug,
+      debug:
+        (LOG_DEBUG || '').includes(logger.DebugContext.analytics) ||
+        LOG_LEVEL === LogLevel.Debug,
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
@@ -60,9 +63,8 @@ export class Analytics {
     params?: EventProperties[T]
   ) {
     if (this.disabled) return;
-    const category = this.getTrackingEventCategory(event);
     const metadata = this.getDefaultMetadata();
-    this.client.track(event, { ...params, category, ...metadata });
+    this.client.track(event, { ...params, ...metadata });
   }
 
   private getDefaultMetadata() {
@@ -93,8 +95,6 @@ export class Analytics {
    * Enable Segment tracking. Defaults to enabled.
    */
   enable() {
-    logger.debug(`Analytics tracking enabled`);
-    this.track(event.generic.analyticsTrackingEnabled);
     this.disabled = false;
   }
 
@@ -102,18 +102,7 @@ export class Analytics {
    * Disable Segment tracking. Defaults to enabled.
    */
   disable() {
-    logger.debug(`Analytics tracking disabled`);
-    this.track(event.generic.analyticsTrackingDisabled);
     this.disabled = true;
-  }
-
-  getTrackingEventCategory<T extends keyof EventProperties>(ev: T) {
-    for (const category of Object.keys(event)) {
-      // @ts-expect-error We know the index type of `event`
-      for (const e of Object.values(event[category])) {
-        if (e === ev) return category;
-      }
-    }
   }
 }
 

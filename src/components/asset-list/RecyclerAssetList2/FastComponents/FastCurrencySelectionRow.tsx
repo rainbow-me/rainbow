@@ -203,6 +203,7 @@ export default React.memo(function FastCurrencySelectionRow({
                   align="right"
                   color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
+                  weight="medium"
                 >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
@@ -211,6 +212,7 @@ export default React.memo(function FastCurrencySelectionRow({
                   align="right"
                   color={{ custom: theme.colors.blueGreyDark50 }}
                   size="14px / 19px (Deprecated)"
+                  weight="medium"
                 >
                   {item?.balance?.display ?? ''}
                 </Text>
@@ -349,7 +351,7 @@ const sx = StyleSheet.create({
     fontSize: getFontSize(fonts.size.lmedium),
     letterSpacing: 0.5,
     lineHeight: ios ? 16 : 17,
-    ...fontWithWidth(fonts.weight.regular),
+    ...fontWithWidth(fonts.weight.semibold),
   },
   nameWithBalances: {
     lineHeight: 18.5,
@@ -383,6 +385,6 @@ const sx = StyleSheet.create({
     letterSpacing: 0.5,
     lineHeight: ios ? 13.5 : 16,
     paddingTop: 5.5,
-    ...fontWithWidth(fonts.weight.regular),
+    ...fontWithWidth(fonts.weight.medium),
   },
 });

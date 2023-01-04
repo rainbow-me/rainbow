@@ -9,5 +9,8 @@ export default function getUrlForTrustIconFallback(
   if (type && type !== AssetType.token) {
     network = type;
   }
+  if (type && type === AssetType.bsc) {
+    network = 'smartchain';
+  }
   return `https://rainbowme-res.cloudinary.com/image/upload/assets/${network}/${address}.png`;
 }
