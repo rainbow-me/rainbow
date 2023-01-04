@@ -7,7 +7,7 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { TruncatedText } from '../text';
+import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';

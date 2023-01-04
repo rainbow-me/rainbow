@@ -600,6 +600,12 @@ export const explainers = (params, colors) => ({
     text: lang.t('explain.failed_walletconnect.text'),
     title: lang.t('explain.failed_walletconnect.title'),
   },
+  failed_wc_invalid_methods: {
+    emoji: '😵',
+    extraHeight: -50,
+    text: lang.t('explain.failed_wc_invalid_methods.text'),
+    title: lang.t('explain.failed_wc_invalid_methods.title'),
+  },
   backup: {
     emoji: '🔐',
     extraHeight: 20,

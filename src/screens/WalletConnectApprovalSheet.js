@@ -244,6 +244,7 @@ export default function WalletConnectApprovalSheet() {
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
+  const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainId = meta?.chainId || params?.chainId || 1;
   const chainIds = meta.chainIds;
   const currentNetwork = params?.currentNetwork;
@@ -417,7 +418,7 @@ export default function WalletConnectApprovalSheet() {
     if (!timedOut) return;
     goBack();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: 'failed_wc_connection',
+      type: failureExplainSheetVariant || 'failed_wc_connection',
     });
     return;
   }, [goBack, navigate, timedOut]);
