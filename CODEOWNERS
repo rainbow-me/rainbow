@@ -1,8 +1,8 @@
 # Rainbow CODEOWNERS file
-CODEOWNERS @salman-rb @estrattonbailey @skylarbarrera
+CODEOWNERS @salman-rb @estrattonbailey @skylarbarrera @jinchung
 LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
-README.md @nickbytes @salman-rb @estrattonbailey @skylarbarrera
-app.json @salman-rb @estrattonbailey @skylarbarrera
+README.md @nickbytes @salman-rb @estrattonbailey @skylarbarrera @jinchung
+app.json @salman-rb @estrattonbailey @skylarbarrera @jinchung
 
 # ANDROID
 android/ @brunobar79 @jkadamczyk @skylarbarrera
@@ -18,20 +18,20 @@ scripts/ @brunobar79 @jkadamczyk @skylarbarrera
 src/design-system @jxom @estrattonbailey
 
 # Handlers
-src/handlers/aesEncryption.ts @brunobar79 @estebanmino
-src/handlers/authentication.ts @brunobar79 @estebanmino
-src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino @jkadamczyk
-src/handlers/fedora.ts @estebanmino @brunobar79 
+src/handlers/aesEncryption.ts @brunobar79 @estebanmino @jinchung
+src/handlers/authentication.ts @brunobar79 @estebanmino @jinchung
+src/handlers/cloudBackup.ts @brunobar79 @skylarbarrera @estebanmino @jkadamczyk @jinchung
+src/handlers/fedora.ts @estebanmino @brunobar79
 
 # Model
-src/model/backup.ts @brunobar79 @estebanmino @salman-rb @jkadamczyk
-src/model/keychain.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
-src/model/migrations.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
-src/model/wallet.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera
+src/model/backup.ts @brunobar79 @estebanmino @salman-rb @jkadamczyk @jinchung
+src/model/keychain.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera @jinchung
+src/model/migrations.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera @jinchung
+src/model/wallet.ts @brunobar79 @estebanmino @salman-rb @estrattonbailey @skylarbarrera @jinchung
 
 # redux
-src/redux/gas.ts @estebanmino @skylarbarrera @estrattonbailey
-src/redux/nonceManager.ts @derHowie @skylarbarrera @estrattonbailey
+src/redux/gas.ts @estebanmino @skylarbarrera @estrattonbailey @jinchung
+src/redux/nonceManager.ts @derHowie @skylarbarrera @estrattonbailey @jinchung
 
 # navigation
 src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
@@ -40,26 +40,26 @@ src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
 src/analytics @estrattonbailey @skylarbarrera
 
 # APP INFRA
-package.json @salman-rb @skylarbarrera @estrattonbailey
-.eslintignore @salman-rb @estrattonbailey @skylarbarrera
-.eslintrc.js @salman-rb @estrattonbailey @skylarbarrera
-.gitattributes @brunobar79 @salman-rb @estrattonbailey @skylarbarrera
-.gitignore @salman-rb @estrattonbailey @skylarbarrera
-.nvmrc @salman-rb @estrattonbailey @skylarbarrera
-.prettierrc.js @salman-rb @estrattonbailey @skylarbarrera
-.yarnrc @estrattonbailey @skylarbarrera
-audit-ci.json @brunobar79 @salman-rb @skylarbarrera @estebanmino @estrattonbailey
+package.json @salman-rb @skylarbarrera @estrattonbailey @jinchung
+.eslintignore @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.eslintrc.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.gitattributes @brunobar79 @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.gitignore @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.nvmrc @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.prettierrc.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
+.yarnrc @estrattonbailey @skylarbarrera @jinchung
+audit-ci.json @brunobar79 @salman-rb @skylarbarrera @estebanmino @estrattonbailey @jinchung
 babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
 globals.d.ts @estrattonbailey @skylarbarrera
-yarn.lock @salman-rb @estrattonbailey @skylarbarrera
-tsconfig.json @salman-rb @estrattonbailey @skylarbarrera
-hardhat.config.js @salman-rb @skylarbarrera
+yarn.lock @salman-rb @estrattonbailey @skylarbarrera @jinchung
+tsconfig.json @salman-rb @estrattonbailey @skylarbarrera @jinchung
+hardhat.config.js @salman-rb @skylarbarrera @jinchung
 
 # APP INFRA
 globalVariables.js @estrattonbailey @skylarbarrera
 shim.js @brunobar79 @salman-rb @estrattonbailey @skylarbarrera @jkadamczyk
 index.js @salman-rb @estrattonbailey @jkadamczyk @skylarbarrera
-src/App.js @salman-rb @estrattonbailey @skylarbarrera
+src/App.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
 
 # SECURITY / APP INFRA
 metro.config.js @skylarbarrera @estrattonbailey @jkadamczyk @brunobar79 
