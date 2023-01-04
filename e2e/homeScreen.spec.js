@@ -8,7 +8,7 @@ describe('Home Screen', () => {
   it('imports wallet', async () => {
     await Helpers.checkIfVisible('welcome-screen');
     await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('restore-sheet');
+    await Helpers.checkIfExists('add-wallet-sheet');
     await Helpers.waitAndTap('restore-with-key-button');
     await Helpers.checkIfExists('import-sheet');
     await Helpers.clearField('import-sheet-input');
