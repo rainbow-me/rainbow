@@ -67,6 +67,7 @@ import useExperimentalFlag, {
   NOTIFICATIONS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
+import HardwareWalletConfirmSheet from '@/screens/HardwareWalletConfirmSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -268,6 +269,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={HardwareWalletSheet}
         name={Routes.HW_WALLET_SHEET}
+      />
+        <BSStack.Screen
+        component={HardwareWalletConfirmSheet}
+        name={Routes.HW_WALLET_CONFIRM_SHEET}
       />
       <BSStack.Screen
         component={ShowcaseSheet}

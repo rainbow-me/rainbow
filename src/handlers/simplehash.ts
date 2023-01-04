@@ -72,6 +72,7 @@ const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
 
+
 export async function getNFTByTokenId({
   chain = chains.ethereum,
   contractAddress,

@@ -223,6 +223,7 @@
       "hide": "Hide",
       "hold_to_authorize": {
         "authorizing": "Authorizing",
+        "confirming_on_ledger": "Confirming on Ledger",
         "hold_keyword": "Hold",
         "tap_keyword": "Tap"
       },

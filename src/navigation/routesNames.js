@@ -25,6 +25,7 @@ const Routes = {
   EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   EXPLAIN_SHEET: 'ExplainSheet',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
+  HW_WALLET_CONFIRM_SHEET: 'HardwareWalletConfirmSheet',
   HW_WALLET_SHEET: 'HardwareWalletSheet',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_SEED_PHRASE_SHEET: 'ImportSeedPhraseSheet',

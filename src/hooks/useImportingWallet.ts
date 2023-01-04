@@ -101,7 +101,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           if (image) setImage(image);
           handleSetImporting(true);
         });
-
+        console.log('howdy');
       if (showImportModal) {
         android && Keyboard.dismiss();
         navigate(Routes.MODAL_SCREEN, {
@@ -127,6 +127,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const handlePressImportButton = useCallback(
     async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
+      console.log('GOOD MORNING')
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
@@ -135,7 +136,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ? forceColor
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
+      console.log('sitizing seed phrase');
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
+      console.log('post: ', input);
       let name: any = null;
       // Validate ENS
       if (isENSAddressFormat(input)) {
@@ -205,11 +208,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         startImportProfile(name, guardedForceColor, input);
       } else {
         try {
+          console.log('fucler');
           setBusy(true);
           setTimeout(async () => {
             const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
               input
             );
+            console.log('walletResult: ', walletResult);
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             const ens = await fetchReverseRecord(walletResult.address);
@@ -223,8 +228,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }
             }
             if (!name && walletResult.type === walletTypes.bluetoothHardware) {
-              name = 'Ledger 1';
+              name = 'Ledger';
             }
+            console.log('3');
             setBusy(false);
             startImportProfile(
               name,

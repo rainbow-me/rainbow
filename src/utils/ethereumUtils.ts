@@ -520,6 +520,7 @@ const deriveAccountFromBluetoothHardwareWallet = async (
 
   return {
     address: wallet.address,
+    deviceId,
     isHDWallet: false,
     root: null,
     type: WalletTypes.bluetoothHardware,
@@ -542,6 +543,7 @@ const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
 
 const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
   const type = identifyWalletType(input);
+  console.log('deriving for type', type);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
   } else if (type === WalletTypes.readOnly) {

@@ -78,6 +78,7 @@ import useExperimentalFlag, {
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { omitFlatten } from '@rainbow-me/helpers/utilities';
 import createNativeStackNavigator from 'react-native-cool-modals/createNativeStackNavigator';
+import HardwareWalletConfirmSheet from '@/screens/HardwareWalletConfirmSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -295,12 +296,18 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
         {...expandedAssetSheetConfigWithLimit}
-      />
+      />  
       <NativeStack.Screen
         component={HardwareWalletSheet}
         name={Routes.HW_WALLET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
+          <NativeStack.Screen
+        component={HardwareWalletConfirmSheet}
+        name={Routes.HW_WALLET_CONFIRM_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+       
       <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}

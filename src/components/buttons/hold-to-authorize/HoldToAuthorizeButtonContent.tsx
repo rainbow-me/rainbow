@@ -103,6 +103,7 @@ function HoldToAuthorizeButtonContent2({
   disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
+  ledger,
   label,
   parentHorizontalPadding,
   shadows,
@@ -263,7 +264,7 @@ function HoldToAuthorizeButtonContent2({
                   <Label
                     label={
                       isAuthorizing
-                        ? lang.t('button.hold_to_authorize.authorizing')
+                        ? ledger ? 'Confirming on Ledger' : lang.t('button.hold_to_authorize.authorizing')
                         : label
                     }
                     showIcon={showBiometryIcon && !isAuthorizing}

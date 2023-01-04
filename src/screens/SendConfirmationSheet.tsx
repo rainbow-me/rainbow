@@ -36,6 +36,7 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
+import { hardwareStorage } from '@/model/wallet';
 import useExperimentalFlag, {
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
@@ -79,6 +80,7 @@ import { position } from '@rainbow-me/styles';
 import { useTheme } from '@rainbow-me/theme';
 import { getUniqueTokenType, promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import { privateKeyKey } from '@/utils/keychainConstants';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -478,6 +480,16 @@ export default function SendConfirmationSheet() {
     }
   }, [callback, canSubmit, checkboxes, isENS]);
 
+  const submitWrapper = useCallback(async () => {
+    if (hardwareStorage.getBoolean(accountAddress)) {
+      console.log('its a hardware wallet');
+      navigate(Routes.HW_WALLET_CONFIRM_SHEET, {
+        callback: handleSubmit,
+        colorForAsset: color,
+      });
+    }
+  }, [accountAddress, color, handleSubmit, navigate]);
+
   const existingAccount = useMemo(() => {
     let existingAcct = null;
     if (toAddress) {
@@ -495,6 +507,14 @@ export default function SendConfirmationSheet() {
     }
     return existingAcct;
   }, [toAddress, userAccounts, watchedAccounts]);
+
+  const isLedger = useMemo(async () => {
+    const key = `${accountAddress}_${privateKeyKey}`;
+    const data = hardwareStorage.getString(key);
+    console.log('data: ', data);
+    if (data) return true;
+    return false;
+  }, []);
 
   const avatarName =
     removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
@@ -762,7 +782,7 @@ export default function SendConfirmationSheet() {
               disabled={!canSubmit}
               insufficientEth={insufficientEth}
               isAuthorizing={isAuthorizing}
-              onLongPress={handleSubmit}
+              onLongPress={submitWrapper}
               requiresChecks={shouldShowChecks}
               smallButton={!isTinyPhone && (android || isSmallPhone)}
               testID="send-confirmation-button"

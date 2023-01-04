@@ -18,8 +18,8 @@ import {
 import { Emoji, Text } from '../components/text';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { useLedgerStatusCheck } from '@/hooks/useLedgerConnect';
-import { getHdPath, hardwareStorage, LEDGER_LIVE } from '@/model/wallet';
+import { LEDGER_CONNECTION_STATUS, useLedgerStatusCheck } from '@/hooks/useLedgerConnect';
+import { getHdPath, hardwareStorage, LEDGER_LIVE, loadPrivateKey } from '@/model/wallet';
 import { privateKeyKey } from '@/utils/keychainConstants';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
@@ -74,6 +74,7 @@ export default function HardwareWalletConfirmSheet() {
   const { height: deviceHeight } = useDimensions();
   const { accountAddress: currentAddress } = useAccountSettings();
 
+
   const offset = useSharedValue(0);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function HardwareWalletConfirmSheet() {
     }
   });
 
-  const { errorState } = useLedgerStatusCheck(deviceId);
+  const { errorMessage, connectionStatus } = useLedgerStatusCheck({address: currentAddress});
 
   return (
     <SheetKeyboardAnimation
@@ -153,7 +154,7 @@ export default function HardwareWalletConfirmSheet() {
                   >
                     {lang.t('hw_wallet.turn_on_ledger_and_open_app')}
                   </Text>
-                  {errorState !== 0 && (
+                  {connectionStatus === LEDGER_CONNECTION_STATUS.ERROR && (
                     <Text
                       align="center"
                       color={colors.alpha(colors.red, 0.5)}
@@ -161,7 +162,18 @@ export default function HardwareWalletConfirmSheet() {
                       size="large"
                       weight="regular"
                     >
-                      {ERROR_CODES[errorState]}
+                      {errorMessage}
+                    </Text>
+                  )}
+                    {connectionStatus === LEDGER_CONNECTION_STATUS.READY && (
+                    <Text
+                      align="center"
+                      color={colors.alpha(colors.green, 0.5)}
+                      lineHeight="looser"
+                      size="large"
+                      weight="regular"
+                    >
+                      {'device is ready'}
                     </Text>
                   )}
                 </Column>

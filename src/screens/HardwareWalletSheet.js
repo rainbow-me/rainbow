@@ -3,6 +3,7 @@ import lang from 'i18n-js';
 import { uniq } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { LogLevel } from 'react-native-ble-plx';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import Divider from '../components/Divider';
 import { Centered, Column } from '../components/layout';
@@ -85,8 +86,11 @@ export default function HardwareWalletSheet() {
   const importHardwareWallet = useCallback(
     async deviceId => {
       try {
+        console.log('setting seed as :', deviceId)
         handleSetSeedPhrase(deviceId);
+        console.log('1')
         handlePressImportButton(null, deviceId);
+        console.log(2)
       } catch (error) {
         Alert.alert(
           lang.t('hw_wallet.failed_to_connect'),
@@ -134,6 +138,7 @@ export default function HardwareWalletSheet() {
                             setStatus(lang.t('hw_wallet.connecting'));
                             const newList = uniq([...hw, device.id]);
                             setHw(newList);
+                            console.log('yo');
                             importHardwareWallet(device.id);
                           },
                           text: lang.t('hw_wallet.yes'),

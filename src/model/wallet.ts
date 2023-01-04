@@ -19,6 +19,7 @@ import {
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
 import { getSupportedBiometryType } from 'react-native-keychain';
+import { MMKV } from 'react-native-mmkv';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -37,6 +38,7 @@ import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@rainbow-me/entities';
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
@@ -56,7 +58,9 @@ import {
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+import walletTypes, {
+  EthereumWalletType,
+} from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
@@ -146,6 +150,7 @@ export interface RainbowWallet {
   backupDate?: string;
   backupType?: string;
   damaged?: boolean;
+  deviceId?: string;
 }
 
 export interface AllRainbowWallets {
@@ -195,6 +200,10 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
+
+export const hardwareStorage = new MMKV({
+  id: 'HARDWARE_WALLETS',
+});
 
 export const walletInit = async (
   seedPhrase = undefined,
@@ -263,7 +272,14 @@ export const loadWallet = async (
   showErrorIfNotLoaded = true,
   provider?: Provider
 ): Promise<null | Wallet | LedgerSigner> => {
+  // check if address from a hardware wallet, and get encrytped 'privatekey'
   const privateKey = await loadPrivateKey(address);
+  console.log(
+    'hardware ? ',
+    isHardwareWalletKey(privateKey as string),
+    ' - ',
+    privateKey
+  );
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
@@ -502,9 +518,19 @@ export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
 // @ts-ignore
-const loadPrivateKey = async (
+export const loadPrivateKey = async (
   address?: EthereumAddress | undefined
 ): Promise<null | EthereumPrivateKey | -1 | -2> => {
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return null;
+  }
+
+  // checks if the address is a hardware wallet
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const hardwareWallet = selectedWallet?.type === walletTypes.bluetoothHardware;
+  console.log('ishardware ? ', addressToUse, ' - ', hardwareWallet);
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -519,12 +545,7 @@ const loadPrivateKey = async (
     }
 
     if (!privateKey) {
-      const addressToUse = address || (await loadAddress());
-      if (!addressToUse) {
-        return null;
-      }
-
-      const privateKeyData = await getPrivateKey(addressToUse);
+      const privateKeyData = await getPrivateKey(addressToUse, hardwareWallet);
       if (privateKeyData === -1) {
         return -1;
       }
@@ -546,7 +567,6 @@ const loadPrivateKey = async (
         privateKey = await encryptor.decrypt(userPIN, privateKey);
       }
     }
-
     return privateKey;
   } catch (error) {
     logger.sentry('Error in loadPrivateKey');
@@ -736,13 +756,13 @@ export const createWallet = async (
       // Encrypt with the PIN
       const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
       if (encryptedPkey) {
-        await savePrivateKey(walletAddress, encryptedPkey);
+        await savePrivateKey(walletAddress, encryptedPkey, isHardwareWallet);
       } else {
         logger.sentry('Error encrypting pkey to save it');
         return null;
       }
     } else {
-      await savePrivateKey(walletAddress, pkey);
+      await savePrivateKey(walletAddress, pkey, isHardwareWallet);
     }
     logger.sentry('[createWallet] - saved private key');
 
@@ -787,11 +807,11 @@ export const createWallet = async (
     if ((isHDWallet && root && isImported) || (isHardwareWallet && seed)) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
-      let lookup = true;
+      let lookup = 0;
       // Starting on index 1, we are gonna hit etherscan API and check the tx history
       // for each account. If there's history we add it to the wallet.
       //(We stop once we find the first one with no history)
-      while (lookup) {
+      while (lookup < 2) {
         let nextWallet: any = null;
         if (isHardwareWallet) {
           const walletObj = await ethereumUtils.deriveAccountFromBluetoothHardwareWallet(
@@ -867,13 +887,21 @@ export const createWallet = async (
               nextWallet.privateKey
             );
             if (encryptedPkey) {
-              await savePrivateKey(nextWallet.address, encryptedPkey);
+              await savePrivateKey(
+                nextWallet.address,
+                encryptedPkey,
+                isHardwareWallet
+              );
             } else {
               logger.sentry('Error encrypting pkey to save it');
               return null;
             }
           } else {
-            await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+            await savePrivateKey(
+              nextWallet.address,
+              nextWallet.privateKey,
+              isHardwareWallet
+            );
           }
           logger.sentry(
             `[createWallet] - saved private key for next wallet ${index}`
@@ -918,7 +946,7 @@ export const createWallet = async (
 
           index++;
         } else {
-          lookup = false;
+          lookup++;
         }
       }
     }
@@ -959,6 +987,11 @@ export const createWallet = async (
       type,
     };
 
+    // add the device id(seed) to the wallet for hardware wallets
+    if (type === walletTypes.bluetoothHardware && seed) {
+      allWallets[id].deviceId = seed;
+    }
+
     if (!silent) {
       await setSelectedWallet(allWallets[id]);
       logger.sentry('[createWallet] - setSelectedWallet');
@@ -993,9 +1026,11 @@ export const createWallet = async (
 
 export const savePrivateKey = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey
+  privateKey: null | EthereumPrivateKey,
+  hardware?: boolean
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
+  const publicAccessControlOptions = keychain.publicAccessControlOptions;
 
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1003,18 +1038,25 @@ export const savePrivateKey = async (
     privateKey,
     version: privateKeyVersion,
   };
-
-  await keychain.saveObject(key, val, privateAccessControlOptions);
+  // if its a hardware wallet we dont want in the private keychain
+  await keychain.saveObject(
+    key,
+    val,
+    hardware ? publicAccessControlOptions : privateAccessControlOptions
+  );
 };
 
 export const getPrivateKey = async (
-  address: EthereumAddress
+  address: EthereumAddress,
+  hardware?: boolean
 ): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const pkey = (await keychain.loadObject(key, {
-      authenticationPrompt,
-    })) as PrivateKeyData | -2;
+    const options = hardware ? undefined : { authenticationPrompt };
+
+    const pkey = (await keychain.loadObject(key, options)) as
+      | PrivateKeyData
+      | -2;
 
     if (pkey === -2) {
       Alert.alert(
