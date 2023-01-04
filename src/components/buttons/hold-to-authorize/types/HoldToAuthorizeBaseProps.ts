@@ -13,6 +13,7 @@ export interface HoldToAuthorizeBaseProps {
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
   label: string;
+  ledger?: boolean;
   onLongPress: () => void;
   parentHorizontalPadding: number;
   shadows: [number, number, number, string, number][];
