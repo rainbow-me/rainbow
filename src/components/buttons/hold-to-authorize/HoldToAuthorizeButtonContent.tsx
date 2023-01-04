@@ -35,10 +35,10 @@ import {
   getButtonShadows,
 } from './helpers/buttonStyleValues';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
-import styled from '@rainbow-me/styled-components';
-import { padding, position } from '@rainbow-me/styles';
-import { ThemeContextProps } from '@rainbow-me/theme';
-import { haptics } from '@rainbow-me/utils';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { ThemeContextProps } from '@/theme';
+import { haptics } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 import * as lang from '@/languages';
 
