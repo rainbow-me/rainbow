@@ -779,7 +779,7 @@ export const explorerInitL2 = (network: Network | null = null) => (
  * Fetches the current wallet's assets. The result is handled by a listener
  * in `listenOnAddressMessages`.
  */
-const fetchAssetsFromRefraction = () => (
+export const fetchAssetsFromRefraction = () => (
   _: Dispatch,
   getState: AppGetState
 ) => {
