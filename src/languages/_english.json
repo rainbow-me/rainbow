@@ -1435,8 +1435,8 @@
       "value": "Value",
       "hash": "Tx Hash",
       "network_fee": "Network Fee",
-      "hash_copied": "\uDBC0\uDC63 Transaction Hash Copied",
-      "address_copied": "\uDBC0\uDC63 Address Copied"
+      "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
+      "address_copied": "\uDBC0\uDC63 Address copied"
     },
     "time": {
       "days": {
