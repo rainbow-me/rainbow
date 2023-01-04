@@ -270,7 +270,6 @@ export default function SendConfirmationSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
-    // @ts-expect-error From JavaScript hook
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
     });

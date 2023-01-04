@@ -28,7 +28,7 @@ export const DoubleLineTransactionDetailsRow: React.FC<Props> = ({
         </Text>
       </Inline>
       <Columns>
-        <Text color="label" size="17pt" weight="semibold">
+        <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
           {value}
         </Text>
         {secondaryValue !== undefined && (

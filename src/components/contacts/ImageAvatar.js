@@ -62,7 +62,12 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
   width: dimensions,
 }));
 
-const ImageAvatar = ({ image, size = 'medium', ...props }) => {
+const ImageAvatar = ({
+  image,
+  size = 'medium',
+  onLoad = undefined,
+  ...props
+}) => {
   const { colors, isDarkMode } = useTheme();
   const { dimensions, shadow } = useMemo(
     () => sizeConfigs(colors, isDarkMode)[size],
@@ -86,6 +91,7 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     >
       <Centered flex={1}>
         <Avatar
+          onLoad={onLoad}
           dimensions={dimensions}
           source={{
             uri: image,
