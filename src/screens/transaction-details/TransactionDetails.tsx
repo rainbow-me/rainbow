@@ -59,7 +59,6 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           backgroundColor={backgroundColor}
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
-          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
         >
           <Box
