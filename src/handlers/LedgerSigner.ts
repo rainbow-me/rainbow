@@ -55,14 +55,22 @@ export class LedgerSigner extends ethers.Signer {
     return new Promise(async (resolve, reject) => {
       if (timeout && timeout > 0) {
         setTimeout(() => {
-          logger.debug('Ledger: Signer timeout');
+          logger.debug(
+            'Ledger: Signer timeout',
+            {},
+            logger.DebugContext.ledger
+          );
           return reject(new RainbowError('Ledger: Signer timeout'));
         }, timeout);
       }
 
       const eth = await this._eth;
       if (!eth) {
-        logger.debug('Ledger: Eth app not open');
+        logger.debug(
+          'Ledger: Eth app not open',
+          {},
+          logger.DebugContext.ledger
+        );
         return reject(new Error('Ledger: Eth app not open'));
       }
 
