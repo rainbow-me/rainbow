@@ -19,8 +19,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
+import { StatusBar } from 'react-native';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
+const IOS_STATUS_BAR_HEIGHT = 20;
 
 type RouteParams = {
   ImportSeedPhraseSheetParams: {
@@ -56,11 +58,14 @@ export const ImportSeedPhraseSheet: React.FC = () => {
   useFocusEffect(useCallback(() => inputRef.current?.focus(), [inputRef]));
 
   const buttonDisabled = seedPhrase && !isSecretValid;
+  const statusBarHeight = IS_ANDROID
+    ? StatusBar?.currentHeight ?? 0
+    : IOS_STATUS_BAR_HEIGHT;
 
   return (
     <Box
       height={{
-        custom: deviceHeight - SheetHandleFixedToTopHeight,
+        custom: deviceHeight - SheetHandleFixedToTopHeight - statusBarHeight,
       }}
       background="surfaceSecondary"
     >
@@ -123,11 +128,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           value={seedPhrase}
         />
       </Box>
-      <Box
-        position="absolute"
-        right="0px"
-        bottom={{ custom: keyboardHeight + 20 }}
-      >
+      <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
         <Inset bottom="20px" right="20px">
           <AccentColorProvider
             color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
