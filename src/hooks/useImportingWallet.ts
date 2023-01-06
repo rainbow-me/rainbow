@@ -294,16 +294,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               if (success) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
-                  if (previousWalletCount === 0) {
-                    // on Android replacing is not working well, so we navigate and then remove the screen below
-                    const action = ios ? replace : navigate;
-                    action(Routes.SWIPE_LAYOUT, {
-                      params: { initialized: true },
-                      screen: Routes.WALLET_SCREEN,
-                    });
-                  } else {
-                    navigate(Routes.WALLET_SCREEN, { initialized: true });
-                  }
+                  // on Android replacing is not working well, so we navigate and then remove the screen below
+                  const action = ios ? replace : navigate;
+                  action(Routes.SWIPE_LAYOUT, {
+                    params: { initialized: true },
+                    screen: Routes.WALLET_SCREEN,
+                  });
                   if (android) {
                     handleSetImporting(false);
                     InteractionManager.runAfterInteractions(() =>
