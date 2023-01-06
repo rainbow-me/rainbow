@@ -11,17 +11,18 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useImportingWallet, useKeyboardHeight } from '@/hooks';
+import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React from 'react';
+import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
-import { deviceUtils } from '@/utils';
+import { StatusBar } from 'react-native';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
+const IOS_STATUS_BAR_HEIGHT = 20;
 
 export type ImportOrWatchWalletSheetParams = {
   type: 'watch' | 'import';
@@ -46,6 +47,7 @@ export const ImportOrWatchWalletSheet = () => {
     seedPhrase,
   } = useImportingWallet();
   const keyboardHeight = useKeyboardHeight();
+  const { height: deviceHeight } = useDimensions();
 
   const textStyle = useTextStyle({
     align: 'center',
@@ -55,14 +57,17 @@ export const ImportOrWatchWalletSheet = () => {
   });
   const labelTertiary = useForegroundColor('labelTertiary');
 
-  useFocusEffect(() => inputRef.current?.focus());
+  useFocusEffect(useCallback(() => inputRef.current?.focus(), [inputRef]));
 
   const buttonDisabled = seedPhrase && !isSecretValid;
+  const statusBarHeight = IS_ANDROID
+    ? StatusBar?.currentHeight ?? 0
+    : IOS_STATUS_BAR_HEIGHT;
 
   return (
     <Box
       height={{
-        custom: deviceUtils.dimensions.height,
+        custom: deviceHeight - SheetHandleFixedToTopHeight - statusBarHeight,
       }}
       background="surfaceSecondary"
     >
@@ -94,7 +99,7 @@ export const ImportOrWatchWalletSheet = () => {
         bottom={{ custom: keyboardHeight }}
         justifyContent="center"
         position="absolute"
-        top={{ custom: -SheetHandleFixedToTopHeight }}
+        top="0px"
         width="full"
       >
         <Input
@@ -125,11 +130,7 @@ export const ImportOrWatchWalletSheet = () => {
           value={seedPhrase}
         />
       </Box>
-      <Box
-        position="absolute"
-        right="0px"
-        bottom={{ custom: keyboardHeight + 20 }}
-      >
+      <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
         <Inset bottom="20px" right="20px">
           <AccentColorProvider
             color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
