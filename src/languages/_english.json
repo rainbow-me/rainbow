@@ -1419,7 +1419,17 @@
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
-      "try_again": "\uDBC0\uDD49 Try again"
+      "try_again": "\uDBC0\uDD49 Try again",
+      "context_menu": {
+        "copy_address": "Copy Address",
+        "send": "Send",
+        "add_contact": "Add to Contacts",
+        "view_contact": "View Contact"
+      },
+      "actions_menu": {
+        "speed_up": "Speed Up",
+        "cancel": "Cancel"
+      }
     },
     "time": {
       "days": {

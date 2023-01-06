@@ -28,6 +28,8 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { IS_IOS } from '@/env';
+import { isENSAddressFormat } from '@/helpers/validators';
+import * as i18n from '@/languages';
 
 type Props = {
   address: string;
@@ -114,7 +116,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
       menuItems: [
         {
           actionKey: 'send',
-          actionTitle: 'Send',
+          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.send),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'paperplane',
@@ -124,7 +126,9 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
           ? [
               {
                 actionKey: 'contact',
-                actionTitle: contact ? 'View Contact' : 'Add to Contacts',
+                actionTitle: contact
+                  ? i18n.t(i18n.l.transaction_details.context_menu.view_contact)
+                  : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
                 icon: {
                   iconType: 'SYSTEM',
                   iconValue: contact
@@ -136,8 +140,10 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
           : []),
         {
           actionKey: 'copy',
-          actionTitle: 'Copy Address',
-          actionSubtitle: fetchedEnsName || name,
+          actionTitle: i18n.t(
+            i18n.l.transaction_details.context_menu.copy_address
+          ),
+          actionSubtitle: isENSAddressFormat(name) ? name : formattedAddress,
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'square.on.square',
