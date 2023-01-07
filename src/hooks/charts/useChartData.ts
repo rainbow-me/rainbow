@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import isEqual from 'react-fast-compare';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -47,9 +47,8 @@ export default function useChartData(asset: any, secondStore: any) {
     name: string;
     params: any;
   }>();
-  const { address, price: priceObject } = asset;
+  const { address } = asset;
 
-  const { value: price } = priceObject || {};
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
 
   const { chart, chartsForAsset, fetchingCharts } = useSelector(
@@ -70,7 +69,7 @@ export default function useChartData(asset: any, secondStore: any) {
     if (asset.address) {
       fetchDays();
     }
-  }, [asset]);
+  }, [asset?.address]);
 
   useEffect(() => {
     if (!disableCharts) {
@@ -85,22 +84,8 @@ export default function useChartData(asset: any, secondStore: any) {
     [setParams]
   );
 
-  // TODO: @skylarbarrera APP-211
-  const filteredData = useMemo(() => {
-    const now = Math.floor(Date.now() / 1000);
-    // Filter tokens with no data
-    const validDataPoint =
-      (!!chart && chart.find(({ y }: any) => y > 0)) || false;
-    if (!validDataPoint) return null;
-
-    return chart
-      ?.filter(({ x }: any) => x <= now)
-      .slice(0, chart.length - 1)
-      .concat({ x: now, y: price });
-  }, [chart, price]);
-
   return {
-    chart: filteredData,
+    chart,
     charts: chartsForAsset,
     chartType,
     fetchingCharts,

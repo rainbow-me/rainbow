@@ -46,8 +46,6 @@ function useTabularNumsWhileScrubbing() {
 
 export default function ChartExpandedStateHeader({
   asset,
-  changeDirection,
-  changeRef,
   color: givenColors,
   dateRef,
   isPool,
@@ -56,7 +54,6 @@ export default function ChartExpandedStateHeader({
   priceRef,
   showChart,
   testID,
-  overrideValue = false,
   chartType,
 }) {
   const { colors } = useTheme();
@@ -114,8 +111,6 @@ export default function ChartExpandedStateHeader({
     [data, latestPrice, nativeCurrency]
   );
 
-  const defaultPriceValue = isNoPriceData ? '' : price;
-
   const ratio = useMemo(() => {
     const firstValue = data?.points?.[0]?.y;
     const lastValue = data?.points?.[data.points.length - 1]?.y;
@@ -152,22 +147,16 @@ export default function ChartExpandedStateHeader({
           marginHorizontal={1}
         >
           <ChartPriceLabel
-            defaultValue={isNoPriceData ? title : price}
+            defaultValue={title}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
             priceRef={priceRef}
-            priceValue={defaultPriceValue}
+            priceValue={price}
             tabularNums={tabularNums}
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
-              changeDirection={changeDirection}
-              changeRef={changeRef}
-              color={
-                isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
-              }
               latestChange={latestChange}
-              overrideValue={overrideValue}
               ratio={ratio}
             />
           )}
