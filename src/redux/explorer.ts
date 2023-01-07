@@ -36,7 +36,6 @@ import {
   transactionsRemoved,
   TransactionsRemovedMessage,
 } from './data';
-import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
@@ -874,37 +873,6 @@ const listenOnAssetMessages = (socket: Socket) => (
 };
 
 /**
- * Initializes the explorer for a given layer-2 network.
- *
- * @param network The `Network` to use.
- */
-export const explorerInitL2 = (network: Network | null = null) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  if (getState().settings.network === Network.mainnet) {
-    switch (network) {
-      case Network.arbitrum:
-      case Network.bsc:
-      case Network.polygon:
-        // Fetch all assets from refraction
-        dispatch(fetchAssetsFromRefraction());
-        break;
-      case Network.optimism:
-        // Start watching optimism assets
-        dispatch(fetchAssetsFromRefraction());
-        // Once covalent supports is official, we should get rid of the optimism explorer
-        dispatch(optimismExplorerInit());
-        break;
-      default:
-        // Start watching all L2 assets
-        dispatch(fetchAssetsFromRefraction());
-        dispatch(optimismExplorerInit());
-    }
-  }
-};
-
-/**
  * Fetches the current wallet's assets. The result is handled by a listener
  * in `listenOnAddressMessages`.
  */
@@ -1094,7 +1062,6 @@ const listenOnAddressMessages = (socket: Socket) => (
         logger.log(
           '😬 Cancelling fallback data provider listener. Zerion is good!'
         );
-        dispatch(optimismExplorerInit());
       }
     }
   );
