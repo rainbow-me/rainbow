@@ -137,7 +137,6 @@ export default function TokenIndexExpandedState({ asset }) {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    secondStore: true,
   });
 
   const needsEth =

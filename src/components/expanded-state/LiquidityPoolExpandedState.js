@@ -146,7 +146,6 @@ const LiquidityPoolExpandedState = () => {
       deviceUtils.dimensions.height
     ),
     isPool: true,
-    secondStore: true,
     uniBalance: !!uniBalance,
   });
 

@@ -8,7 +8,6 @@ import { useCallbackOne } from 'use-memo-one';
 import { disableCharts } from '../../config/debug';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
-import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
 import { useNavigation } from '@/navigation';
 import chartTypes, { ChartType } from '@/helpers/chartTypes';
 
@@ -37,8 +36,7 @@ const chartSelector = createSelector(
   }
 );
 
-export default function useChartData(asset: any, secondStore: any) {
-  const [daysFromFirstTx, setDaysFromFirstTx] = useState(1000);
+export default function useChartInfo(asset: any) {
   const dispatch = useDispatch();
   const { setParams } = useNavigation();
 
@@ -53,23 +51,12 @@ export default function useChartData(asset: any, secondStore: any) {
 
   const { chart, chartsForAsset, fetchingCharts } = useSelector(
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(state: never) => { chart: any; ... Remove this comment to see the full error message
-    useCallbackOne(
-      state => chartSelector(state, { address, chartType, secondStore }),
-      [address, secondStore, chartType]
-    ),
+    useCallbackOne(state => chartSelector(state, { address, chartType }), [
+      address,
+      chartType,
+    ]),
     isEqual
   );
-
-  useEffect(() => {
-    async function fetchDays() {
-      const days = await daysFromTheFirstTx(asset.address);
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
-      setDaysFromFirstTx(days);
-    }
-    if (asset.address) {
-      fetchDays();
-    }
-  }, [asset?.address]);
 
   useEffect(() => {
     if (!disableCharts) {
@@ -89,8 +76,6 @@ export default function useChartData(asset: any, secondStore: any) {
     charts: chartsForAsset,
     chartType,
     fetchingCharts,
-    showMonth: daysFromFirstTx > 7,
-    showYear: daysFromFirstTx > 30,
     updateChartType,
   };
 }
