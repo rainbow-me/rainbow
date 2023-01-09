@@ -148,8 +148,13 @@ export interface WalletconnectApprovalSheetRouteParams {
   ) => Promise<unknown>;
   receivedTimestamp: number;
   meta?: {
-    chainId: number;
-    chainIds?: number[];
+    /**
+     * WC v2 introduced multi-chain support, while v1 only supported a single
+     * chain at a time. To avoid confusion, we now send both as an array
+     * `chainIds`. WC v1 will always be an array with length `1`, while v2 can
+     * have more than one.
+     */
+    chainIds: number[];
     isWalletConnectV2?: boolean;
   } & Pick<
     RequestData,
@@ -405,7 +410,7 @@ export const walletConnectOnSessionRequest = (
         });
 
         meta = {
-          chainId,
+          chainIds: [chainId],
           dappName,
           dappScheme,
           dappUrl,
@@ -569,9 +574,9 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               });
             }
           },
-          chainId: Number(numericChainId),
           currentNetwork,
           meta: {
+            chainIds: [Number(numericChainId)],
             dappName,
             dappUrl,
             imageUrl,
