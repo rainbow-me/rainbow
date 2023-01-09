@@ -80,8 +80,6 @@ export const MATIC_MAINNET_ADDRESS =
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS =
   '0x0000000000000000000000000000000000001010';
-export const COVALENT_ETH_ADDRESS =
-  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WMATIC_POLYGON_ADDRESS =
