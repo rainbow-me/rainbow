@@ -14,6 +14,7 @@ import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { LayoutChangeEvent } from 'react-native';
+import { useDimensions } from '@/hooks';
 
 type RouteParams = {
   TransactionDetails: {
@@ -31,7 +32,9 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const { setParams } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
+  const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
+  const { height: deviceHeight } = useDimensions();
 
   // Dynamic sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [
@@ -39,8 +42,13 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
     sheetHeight,
   ]);
 
-  const onSheetContentLayout = (event: LayoutChangeEvent) =>
-    setSheetHeight(event.nativeEvent.layout.height);
+  const onSheetContentLayout = (event: LayoutChangeEvent) => {
+    const contentHeight = event.nativeEvent.layout.height;
+    if (contentHeight > deviceHeight) {
+      setStatusIconHidden(true);
+    }
+    setSheetHeight(contentHeight);
+  };
 
   const presentAddressToast = useCallback(() => {
     presentToastFor('address');
@@ -59,7 +67,6 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           backgroundColor={backgroundColor}
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
-          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
         >
           <Box
@@ -68,6 +75,7 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
             onLayout={onSheetContentLayout}
           >
             <TransactionDetailsStatusActionsAndTimestampSection
+              hideIcon={statusIconHidden}
               transaction={transaction}
             />
             <TransactionDetailsFromToSection
