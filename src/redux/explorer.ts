@@ -26,7 +26,6 @@ import {
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
-  disableGenericAssetsFallbackIfNeeded,
   DISPERSION_SUCCESS_CODE,
   MessageMeta,
   portfolioReceived,
@@ -708,10 +707,7 @@ export const explorerInit = () => async (
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    const newAssetsEmitted = dispatch(emitAssetRequest(keys(pairs)));
-    if (!newAssetsEmitted) {
-      disableGenericAssetsFallbackIfNeeded();
-    }
+    dispatch(emitAssetRequest(keys(pairs)));
 
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
