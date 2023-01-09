@@ -2910,10 +2910,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.7.tgz#3243a491f35c51493bd14f151e4047eb510053f9"
-  integrity sha512-xieYMUZ9tHhltHurwgKPDbFDZul7oH9gAUt3jJSrmeisFdujGNsp3+rD12FoFyAOPC8cwtqnJfjs11DpRZg/OA==
+"@rainbow-me/swaps@0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.1.17.tgz#90e29e5e15dee2af92cf1e8c58e95abeb2140a5a"
+  integrity sha512-D5XMoj2fVrmtsUMdL4Xztb/QOAusR7gxy28s4YsXnUJtTyLincJuSnJwyuXL9NebKE3PVJQMbr8Mv4DIGPfGtQ==
   dependencies:
     "@ethersproject/abi" "5.6.0"
     "@ethersproject/bignumber" "5.6.0"
