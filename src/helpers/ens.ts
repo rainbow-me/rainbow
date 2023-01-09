@@ -1,6 +1,7 @@
 import { formatsByName } from '@ensdomains/address-encoder';
 import { hash } from '@ensdomains/eth-ens-namehash';
-import { BigNumber, BigNumberish, Contract, Signer } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
+import { BigNumber, BigNumberish, Contract } from 'ethers';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
@@ -378,7 +379,7 @@ export const deprecatedTextRecordFields = {
 export const ENS_DOMAIN = '.eth';
 
 const getENSRegistrarControllerContract = async (
-  wallet?: Signer,
+  wallet?: Wallet,
   registrarAddress?: string
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
@@ -390,7 +391,7 @@ const getENSRegistrarControllerContract = async (
 };
 
 const getENSPublicResolverContract = async (
-  wallet?: Signer,
+  wallet?: Wallet,
   resolverAddress?: EthereumAddress
 ) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
@@ -401,7 +402,7 @@ const getENSPublicResolverContract = async (
   );
 };
 
-const getENSReverseRegistrarContract = async (wallet?: Signer) => {
+const getENSReverseRegistrarContract = async (wallet?: Wallet) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensReverseRegistrarAddress,
@@ -410,7 +411,7 @@ const getENSReverseRegistrarContract = async (wallet?: Signer) => {
   );
 };
 
-const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
+const getENSBaseRegistrarImplementationContract = async (wallet?: Wallet) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
   return new Contract(
     ensBaseRegistrarImplementationAddress,
@@ -419,7 +420,7 @@ const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
   );
 };
 
-const getENSRegistryContract = async (wallet?: Signer) => {
+const getENSRegistryContract = async (wallet?: Wallet) => {
   const signerOrProvider = wallet ?? (await getProviderForNetwork());
   return new Contract(
     ensRegistryAddress,
@@ -564,7 +565,7 @@ const getENSExecutionDetails = async ({
   duration?: number;
   records?: ENSRegistrationRecords;
   toAddress?: string;
-  wallet?: Signer;
+  wallet?: Wallet;
   salt?: string;
   resolverAddress?: EthereumAddress;
 }): Promise<{

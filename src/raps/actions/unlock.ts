@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { Signer } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
 import {
   ALLOWS_PERMIT,
   PermitSupportedTokenList,
@@ -99,11 +99,15 @@ const executeApprove = async (
         maxPriorityFeePerGas: string;
         gasPrice?: undefined;
       },
-  wallet: Signer,
+  wallet: Wallet,
   nonce: number | null = null,
   chainId = 1
 ) => {
-  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const provider = await getProviderForNetwork(network);
+  const walletToUse = new Wallet(wallet.privateKey, provider);
+
+  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
@@ -118,7 +122,7 @@ const executeApprove = async (
 const actionName = 'unlock';
 
 const unlock = async (
-  wallet: Signer,
+  wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
@@ -205,8 +209,8 @@ const unlock = async (
       throw e;
     }
   }
-  const walletAddress = await wallet.getAddress();
-  const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
+
+  const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();

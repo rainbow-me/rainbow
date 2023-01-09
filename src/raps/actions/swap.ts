@@ -1,4 +1,4 @@
-import { Signer } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
 import {
   ChainId,
   ETH_ADDRESS,
@@ -14,10 +14,16 @@ import {
   Rap,
   RapExchangeActionParameters,
   SwapActionParameters,
+  SwapMetadata,
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
-import { isL2Network, toHex } from '@/handlers/web3';
+import {
+  getFlashbotsProvider,
+  getProviderForNetwork,
+  isL2Network,
+  toHex,
+} from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
@@ -25,6 +31,8 @@ import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { Network } from '@/helpers';
+import { loadWallet } from '@/model/wallet';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -53,12 +61,30 @@ export const executeSwap = async ({
   gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
-  wallet: Signer | null;
+  wallet: Wallet | null;
   permit: boolean;
   flashbots: boolean;
 }) => {
-  if (!wallet || !tradeDetails) return null;
-  const walletAddress = await wallet.getAddress();
+  let walletToUse = wallet;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  let provider;
+
+  // Switch to the flashbots provider if enabled
+  if (flashbots && network === Network.mainnet) {
+    logger.debug('flashbots provider being set on mainnet');
+    provider = await getFlashbotsProvider();
+  } else {
+    logger.debug('normal provider being set', network);
+    provider = await getProviderForNetwork(network);
+  }
+
+  if (!walletToUse) {
+    walletToUse = await loadWallet(undefined, true, provider);
+  } else {
+    walletToUse = new Wallet(walletToUse.privateKey, provider);
+  }
+
+  if (!walletToUse || !tradeDetails) return null;
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
   const transactionParams = {
@@ -79,12 +105,12 @@ export const executeSwap = async ({
     logger.debug(
       'wrapping native asset',
       tradeDetails.buyAmount,
-      walletAddress,
+      walletToUse.address,
       chainId
     );
     return wrapNativeAsset(
       tradeDetails.buyAmount,
-      wallet,
+      walletToUse,
       chainId,
       transactionParams
     );
@@ -96,12 +122,12 @@ export const executeSwap = async ({
     logger.debug(
       'unwrapping native asset',
       tradeDetails.sellAmount,
-      walletAddress,
+      walletToUse.address,
       chainId
     );
     return unwrapNativeAsset(
       tradeDetails.sellAmount,
-      wallet,
+      walletToUse,
       chainId,
       transactionParams
     );
@@ -111,16 +137,22 @@ export const executeSwap = async ({
       'FILLQUOTE',
       tradeDetails,
       transactionParams,
-      walletAddress,
+      walletToUse.address,
       permit,
       chainId
     );
-    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId);
+    return fillQuote(
+      tradeDetails,
+      transactionParams,
+      walletToUse,
+      permit,
+      chainId
+    );
   }
 };
 
 const swap = async (
-  wallet: Signer,
+  wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
@@ -211,10 +243,9 @@ const swap = async (
     );
 
     if (permit) {
-      const walletAddress = await wallet.getAddress();
       // Clear the allowance
       const cacheKey = toLower(
-        `${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
+        `${wallet.address}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
       );
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete AllowancesCache.cache[cacheKey];

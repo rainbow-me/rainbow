@@ -1,5 +1,4 @@
 import { Wallet } from '@ethersproject/wallet';
-import { Signer } from 'ethers';
 import {
   ChainId,
   CrosschainQuote,
@@ -14,13 +13,20 @@ import {
 } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
-import { isL2Network, toHex } from '@/handlers/web3';
+import {
+  getFlashbotsProvider,
+  getProviderForNetwork,
+  isL2Network,
+  toHex,
+} from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { greaterThan } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { Network } from '@/helpers';
+import { loadWallet } from '@/model/wallet';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { swapMetadataStorage } from './swap';
@@ -46,12 +52,30 @@ export const executeCrosschainSwap = async ({
   gasPrice: string;
   nonce?: number;
   tradeDetails: CrosschainQuote | null;
-  wallet: Wallet | Signer | null;
+  wallet: Wallet | null;
   permit: boolean;
   flashbots: boolean;
 }) => {
-  if (!wallet || !tradeDetails) return null;
-  const walletAddress = await wallet.getAddress();
+  let walletToUse = wallet;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  let provider;
+
+  // Switch to the flashbots provider if enabled
+  if (flashbots && network === Network.mainnet) {
+    logger.debug('flashbots provider being set on mainnet');
+    provider = await getFlashbotsProvider();
+  } else {
+    logger.debug('normal provider being set', network);
+    provider = await getProviderForNetwork(network);
+  }
+
+  if (!walletToUse) {
+    walletToUse = await loadWallet(undefined, true, provider);
+  } else {
+    walletToUse = new Wallet(walletToUse.privateKey, provider);
+  }
+
+  if (!walletToUse || !tradeDetails) return null;
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
@@ -67,15 +91,15 @@ export const executeCrosschainSwap = async ({
     'FILLCROSSCHAINSWAP',
     tradeDetails,
     transactionParams,
-    walletAddress,
+    walletToUse.address,
     permit,
     chainId
   );
-  return fillCrosschainQuote(tradeDetails, transactionParams, wallet);
+  return fillCrosschainQuote(tradeDetails, transactionParams, walletToUse);
 };
 
 const crosschainSwap = async (
-  wallet: Signer,
+  wallet: Wallet,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,

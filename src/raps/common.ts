@@ -1,6 +1,6 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
-import { Signer } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
 import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import {
@@ -377,7 +377,7 @@ const parseError = (error: EthersError): string => {
 
 const executeAction = async (
   action: RapAction,
-  wallet: Signer,
+  wallet: Wallet,
   rap: Rap,
   index: number,
   rapName: string,
@@ -455,7 +455,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
 };
 
 export const executeRap = async (
-  wallet: Signer,
+  wallet: Wallet,
   type: RapActionType,
   parameters: SwapActionParameters | ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
