@@ -23,7 +23,6 @@ export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
-export { default as migratedTokens } from './migratedTokens';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
