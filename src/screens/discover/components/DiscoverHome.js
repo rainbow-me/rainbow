@@ -1,5 +1,6 @@
 import React from 'react';
 import useExperimentalFlag, {
+  OP_REWARDS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
@@ -18,11 +19,13 @@ import {
   backupsCard,
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
+import { OptimismRewardsCard } from '@/components/cards/OptimismRewardsCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const optimismRewardsEnabled = useExperimentalFlag(OP_REWARDS);
   const testNetwork = isTestnetNetwork(network);
 
   return (
@@ -37,6 +40,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 <ENSSearchCard />
               </Inline>
+              {optimismRewardsEnabled && <OptimismRewardsCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
