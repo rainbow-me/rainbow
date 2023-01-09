@@ -26,7 +26,6 @@ import {
   TransactionStatus,
   TransactionTypes,
   ZerionAsset,
-  ZerionAssetFallback,
   ZerionTransaction,
 } from '@/entities';
 import appEvents from '@/handlers/appEvents';
@@ -357,7 +356,7 @@ export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset | ZerionAssetFallback;
+        asset: ZerionAsset;
       };
     };
   };
@@ -403,7 +402,7 @@ export interface TransactionsRemovedMessage {
 export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
-      [id: string]: ZerionAsset | ZerionAssetFallback;
+      [id: string]: ZerionAsset;
     };
   };
   meta?: MessageMeta;
