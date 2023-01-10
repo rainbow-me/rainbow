@@ -199,20 +199,14 @@ export const registerENSNavigatorConfig = {
 };
 
 export const addWalletNavigatorConfig = {
-  options: ({
-    route: { params: { backgroundOpacity, sheetHeight, ...params } = {} },
-  }) => {
-    console.log(backgroundOpacity);
-    return {
-      ...buildCoolModalConfig({
-        ...params,
-        backgroundOpacity,
-        longFormHeight: sheetHeight,
-        springDamping: 1,
-        transitionDuration: 0.3,
-      }),
-    };
-  },
+  options: ({ route: { params: { sheetHeight = 0, ...params } = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: sheetHeight,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    }),
+  }),
 };
 
 export const learnWebViewScreenConfig = {

@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
@@ -48,12 +48,6 @@ export const AddWalletSheet = () => {
   } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
 
   const { goBack, navigate } = useNavigation();
-
-  useEffect(() => {
-    if (!isFirstWallet) {
-      setSheetHeight(undefined);
-    }
-  }, [isFirstWallet, setSheetHeight]);
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -284,7 +278,8 @@ export const AddWalletSheet = () => {
     }
   };
 
-  const cloudRestoreEnabled = IS_ANDROID || walletsBackedUp > 0 || true;
+  const cloudRestoreEnabled =
+    isFirstWallet && (IS_ANDROID || walletsBackedUp > 0);
 
   let restoreFromCloudDescription;
   if (IS_IOS) {

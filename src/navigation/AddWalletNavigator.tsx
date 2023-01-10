@@ -29,7 +29,6 @@ export const AddWalletNavigator = () => {
   const { setParams } = useNavigation();
 
   const [sheetHeight, setSheetHeight] = useState<number | undefined>(0);
-  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
   const { height: deviceHeight } = useDimensions();
 
   // console.log(deviceHeight);
@@ -40,14 +39,6 @@ export const AddWalletNavigator = () => {
         sheetHeight,
       }),
     [setParams, sheetHeight]
-  );
-
-  useEffect(
-    () =>
-      setParams({
-        backgroundOpacity: 1,
-      }),
-    [backgroundOpacity, setParams]
   );
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
@@ -85,7 +76,7 @@ export const AddWalletNavigator = () => {
                 listeners={{
                   focus: () => {
                     setScrollEnabled(!isFirstWallet);
-                    setBackgroundOpacity(0.7);
+                    setSheetHeight(isFirstWallet ? 0 : deviceHeight);
                   },
                 }}
               />
@@ -96,8 +87,7 @@ export const AddWalletNavigator = () => {
                 listeners={{
                   focus: () => {
                     setScrollEnabled(false);
-                    setSheetHeight(undefined);
-                    setBackgroundOpacity(1);
+                    setSheetHeight(deviceHeight);
                   },
                 }}
               />
