@@ -29,7 +29,6 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.polidea.reactnativeble.BlePackage;
 
 class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
     @Override
