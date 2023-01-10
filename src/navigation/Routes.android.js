@@ -361,9 +361,7 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
-        options={{
-          ...bottomSheetPreset,
-        }}
+        options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
     </BSStack.Navigator>
   );

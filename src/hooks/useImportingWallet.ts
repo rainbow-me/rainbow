@@ -30,8 +30,10 @@ import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, sanitizeSeedPhrase } from '@/utils';
+import { sanitizeSeedPhrase } from '@/utils';
 import logger from '@/utils/logger';
+import { deriveAccountFromWalletInput } from '@/utils/wallet';
+import { logger as Logger, RainbowError } from '@/logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -210,11 +212,17 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       } else {
         try {
           setTimeout(async () => {
-            const walletResult = await ethereumUtils.deriveAccountFromWalletInput(
-              input
-            );
+            const walletResult = await deriveAccountFromWalletInput(input);
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
+            if (!walletResult.address) {
+              Logger.error(
+                new RainbowError(
+                  'useImportingWallet - walletResult address is undefined'
+                )
+              );
+              return null;
+            }
             const ens = await fetchReverseRecord(walletResult.address);
             if (ens && ens !== input) {
               name = forceEmoji ? `${forceEmoji} ${ens}` : ens;

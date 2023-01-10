@@ -239,13 +239,18 @@ export default function WalletConnectApprovalSheet() {
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 
+  /**
+   * CAN BE UNDEFINED if we navigated here with no data. This is how we show a
+   * loading state.
+   */
   const meta = params?.meta || {};
   const timeout = params?.timeout;
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
-  const chainId = meta?.chainId || params?.chainId || 1;
-  const chainIds = meta.chainIds;
+  const failureExplainSheetVariant = params?.failureExplainSheetVariant;
+  const chainIds = meta?.chainIds; // WC v2 supports multi-chain
+  const chainId = chainIds?.[0] || 1; // WC v1 only supports 1
   const currentNetwork = params?.currentNetwork;
   const [approvalNetwork, setApprovalNetwork] = useState(
     currentNetwork || network
@@ -302,6 +307,12 @@ export default function WalletConnectApprovalSheet() {
     };
   }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
+  /**
+   * In WC v1 this was the network the dapp was requesting, which was editable
+   * by the end-user on this approval screen. In v2, the dapp choses one or
+   * more networks and the user can't change. So this data isn't applicable in
+   * v2.
+   */
   const approvalNetworkInfo = useMemo(() => {
     const value = networkInfo[approvalNetwork]?.value;
     return {
@@ -417,7 +428,7 @@ export default function WalletConnectApprovalSheet() {
     if (!timedOut) return;
     goBack();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: 'failed_wc_connection',
+      type: failureExplainSheetVariant || 'failed_wc_connection',
     });
     return;
   }, [goBack, navigate, timedOut]);

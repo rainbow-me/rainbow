@@ -61,6 +61,10 @@ import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import {
+  deriveAccountFromMnemonic,
+  deriveAccountFromWalletInput,
+} from '@/utils/wallet';
+import {
   AddressWithRelationship,
   initializeNotificationSettingsForAddresses,
   NotificationRelationship,
@@ -186,6 +190,7 @@ interface MigratedSecretsResult {
 export enum WalletLibraryType {
   ethers = 'ethers',
   bip39 = 'bip39',
+  ledger = 'ledger',
 }
 
 const privateKeyVersion = 1.0;
@@ -199,6 +204,22 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
+
+export const getHdPath = ({
+  type,
+  index,
+}: {
+  type: WalletLibraryType;
+  index: number;
+}): string => {
+  switch (type) {
+    // @see https://github.com/LedgerHQ/ledger-live/wiki/LLC:derivation for info in BIP-44 and ledger derivations
+    case WalletLibraryType.ledger:
+      return `m/44'/60'/${index}'/0/0`;
+    default:
+      return `${DEFAULT_HD_PATH}/${index}`;
+  }
+};
 
 export const walletInit = async (
   seedPhrase = undefined,
@@ -586,12 +607,10 @@ export const createWallet = async (
       wallet: walletResult,
       address,
       walletType,
-    } =
-      checkedWallet ||
-      (await ethereumUtils.deriveAccountFromWalletInput(walletSeed));
+    } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
     let pkey = walletSeed;
-    if (!walletResult) return null;
+    if (!walletResult || !address) return null;
     const walletAddress = address;
     if (isHDWallet) {
       pkey = addHexPrefix(
@@ -1134,9 +1153,10 @@ export const generateAccount = async (
       throw new Error(`Can't access secret phrase to create new accounts`);
     }
 
-    const {
-      wallet: ethereumJSWallet,
-    } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase, index);
+    const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(
+      seedphrase,
+      index
+    );
     if (!ethereumJSWallet) return null;
     const walletAddress = addHexPrefix(
       toChecksumAddress(ethereumJSWallet.getAddress().toString('hex'))
@@ -1213,9 +1233,9 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         break;
       case EthereumWalletType.mnemonic:
         {
-          const {
-            wallet: ethereumJSWallet,
-          } = await ethereumUtils.deriveAccountFromMnemonic(seedphrase);
+          const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(
+            seedphrase
+          );
           if (!ethereumJSWallet) return null;
           const walletPkey = addHexPrefix(
             ethereumJSWallet.getPrivateKey().toString('hex')

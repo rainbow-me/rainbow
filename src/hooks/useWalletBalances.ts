@@ -2,7 +2,6 @@ import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import { isEmpty, keys } from 'lodash';
 import { useCallback } from 'react';
-import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
@@ -14,11 +13,13 @@ import { queryClient } from '@/react-query';
 import { balanceCheckerContractAbi } from '@/references';
 import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const useWalletBalances = (wallets: AllRainbowWallets) => {
-  const { network } = useAccountSettings();
+  const network = useSelector((state: AppState) => state.settings.network);
 
   const fetchBalances = useCallback(async () => {
     const walletBalances: { [address: string]: string } = {};

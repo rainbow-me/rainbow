@@ -52,7 +52,7 @@ type Props = PropsWithChildren<{
   color?: string;
   distance?: number;
   targetTranslate?: number;
-  icon: any;
+  icon?: any;
   isVisible?: boolean;
   text: string;
   textColor?: string;

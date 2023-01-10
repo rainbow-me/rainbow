@@ -214,6 +214,7 @@
       "hide": "Hide",
       "hold_to_authorize": {
         "authorizing": "Authorizing",
+        "confirming_on_ledger": "Confirming on Ledger",
         "hold_keyword": "Hold",
         "tap_keyword": "Tap"
       },
@@ -263,7 +264,9 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
-      "eth": { "today": "today" },
+      "eth": {
+        "today": "today"
+      },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",
@@ -687,6 +690,10 @@
       },
       "failed_walletconnect": {
         "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
+        "title": "Connection failed"
+      },
+      "failed_wc_invalid_methods": {
+        "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow.",
         "title": "Connection failed"
       },
       "floor_price": {
@@ -1406,9 +1413,24 @@
       }
     },
     "transaction_details": {
+      "from": "From",
+      "to": "To",
       "value": "Value",
       "hash": "Tx Hash",
-      "network_fee": "Network Fee"
+      "network_fee": "Network Fee",
+      "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
+      "address_copied": "\uDBC0\uDC63 Address copied",
+      "try_again": "\uDBC0\uDD49 Try again",
+      "context_menu": {
+        "copy_address": "Copy Address",
+        "send": "Send",
+        "add_contact": "Add to Contacts",
+        "view_contact": "View Contact"
+      },
+      "actions_menu": {
+        "speed_up": "Speed Up",
+        "cancel": "Cancel"
+      }
     },
     "time": {
       "days": {
