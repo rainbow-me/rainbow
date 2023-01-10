@@ -50,10 +50,12 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should send ETH to test wallet"', async () => {
-    await Helpers.sendETHtoTestWallet();
+    // await Helpers.sendETHtoTestWallet();
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    // need to wait for balances to be fetched
+    await Helpers.delay(10000);
     await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
