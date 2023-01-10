@@ -6,6 +6,7 @@ import { NavigationContainerRef } from '@react-navigation/native';
 import Minimizer from 'react-native-minimizer';
 import { utils as ethersUtils } from 'ethers';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
+import { gretch } from 'gretchen';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -32,6 +33,7 @@ import {
   removeRequest,
 } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
+import { getFCMToken } from '@/notifications/tokens';
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -208,6 +210,31 @@ export async function initListeners() {
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
+
+  try {
+    const client_id = await client.core.crypto.getClientId();
+    const token = await getFCMToken();
+    const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
+      method: 'POST',
+      json: {
+        type: 'FCM',
+        client_id,
+        token,
+      },
+    }).json();
+
+    // https://github.com/WalletConnect/echo-server/blob/a0afc940e1fc3ea8efb765fff5f4daeedec46d2a/spec/spec.md?plain=1#L14
+    if (res.error || res.data?.status !== 'OK') {
+      logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
+        error: res.error,
+      });
+    }
+  } catch (e) {
+    logger.error(
+      new RainbowError(`WC v2: echo server FCM token retrieval failed`),
+      { error: e }
+    );
+  }
 }
 
 export async function onSessionProposal(
