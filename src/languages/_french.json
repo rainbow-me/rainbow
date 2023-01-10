@@ -214,6 +214,7 @@
       "hide": "Cacher",
       "hold_to_authorize": {
         "authorizing": "Authorizing :)",
+        "confirming_on_ledger": "Confirming on Ledger :)",
         "hold_keyword": "Tenir",
         "tap_keyword": "Tap :)"
       },
