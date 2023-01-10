@@ -228,7 +228,6 @@ export async function onSessionProposal(
   }
 
   const { chains, methods } = requiredNamespaces.eip155;
-  const chainId = parseInt(chains[0].split('eip155:')[1]);
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
   const peerMeta = proposer.metadata;
   const dappName =
@@ -247,7 +246,6 @@ export async function onSessionProposal(
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
     meta: {
-      chainId,
       chainIds,
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1

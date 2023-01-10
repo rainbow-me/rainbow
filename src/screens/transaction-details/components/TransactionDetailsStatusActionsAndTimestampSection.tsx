@@ -20,10 +20,12 @@ const SIZE = 40;
 
 type Props = {
   transaction: RainbowTransaction;
+  hideIcon?: boolean;
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({
   transaction,
+  hideIcon,
 }) => {
   const { minedAt, status, pending, from } = transaction;
   const { navigate } = useNavigation();
@@ -132,7 +134,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       </Box>
       <Box paddingBottom="24px">
         <Stack alignHorizontal="center" space="16px">
-          {status && (
+          {status && !hideIcon && (
             <Box borderRadius={30} style={{ overflow: 'hidden' }}>
               <RadialGradient
                 style={{

@@ -248,11 +248,6 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
-  // TODO: Remove after finishing work on APP-27
-  const navigateToTransactionDetailsPlayground = () => {
-    navigate('TransactionDetailsPlayground');
-  };
-
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
@@ -421,15 +416,6 @@ const DevSection = () => {
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush')}
                 />
-              }
-            />
-            {/* TODO: Remove after finishing work on APP-27*/}
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🛝" isEmoji />}
-              onPress={navigateToTransactionDetailsPlayground}
-              size={52}
-              titleComponent={
-                <MenuItem.Title text={'Transaction Details Playground'} />
               }
             />
           </Menu>
