@@ -58,21 +58,33 @@ export function ProfileActionButtonsRow() {
   }));
 
   if (!accentColorLoaded) return null;
+
+  const featuresConfig = (config.features as unknown) as {
+    [featureName: string]: boolean;
+  };
+
+  const addCashEnabled = featuresConfig.f2c_enabled;
+  const swapEnabled = featuresConfig.swagg_enabled;
+
   return (
     <Box width="full">
       <Inset horizontal={{ custom: 17 }}>
         <AccentColorProvider color={accentColor}>
           <Columns>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <BuyButton />
-              </Animated.View>
-            </Column>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <SwapButton />
-              </Animated.View>
-            </Column>
+            {addCashEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <BuyButton />
+                </Animated.View>
+              </Column>
+            )}
+            {swapEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <SwapButton />
+                </Animated.View>
+              </Column>
+            )}
             <Column>
               <Animated.View style={[expandStyle]}>
                 <SendButton />
