@@ -647,7 +647,9 @@ export default function ExchangeModal({
         ? NativeModules.NotificationManager
         : null;
       try {
-        let wallet = await loadWallet();
+        // load the correct network provider for the wallet
+        const provider = await getProviderForNetwork(currentNetwork);
+        let wallet = await loadWallet(accountAddress, false, provider);
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
