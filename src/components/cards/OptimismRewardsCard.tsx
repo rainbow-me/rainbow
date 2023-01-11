@@ -6,13 +6,25 @@ import { Image } from 'react-native';
 import OpRewardsCardOverlay from '../../assets/optimismRewardsCardOverlay.png';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const GRADIENT = ['#520907', '#B22824'];
 
 export const OptimismRewardsCard: React.FC = () => {
   const { colors } = useTheme();
+  const { navigate } = useNavigation();
+
+  const navigateToRewardsSheet = () => {
+    navigate(Routes.OP_REWARDS_SHEET);
+  };
+
   return (
-    <GenericCard type="stretch" gradient={GRADIENT} onPress={() => {}}>
+    <GenericCard
+      type="stretch"
+      gradient={GRADIENT}
+      onPress={navigateToRewardsSheet}
+    >
       <Cover>
         <Image
           source={OpRewardsCardOverlay}
@@ -44,7 +56,7 @@ export const OptimismRewardsCard: React.FC = () => {
             </Text>
           </Box>
         </Stack>
-        <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+        <ButtonPressAnimation onPress={navigateToRewardsSheet} scaleTo={0.96}>
           <Box
             height="36px"
             style={{ backgroundColor: colors.networkColors.optimism }}
