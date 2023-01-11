@@ -10,7 +10,7 @@
 
 🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
 
-## Setup
+## Setup test
 
 ### General
 
