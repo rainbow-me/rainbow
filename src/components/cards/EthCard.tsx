@@ -18,6 +18,7 @@ import {
   useGenericAsset,
   useWallets,
 } from '@/hooks';
+import config from '@/model/config';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -146,6 +147,12 @@ export const EthCard = () => {
       }
     }, 20000);
   }, [loadedChart]);
+
+  const featuresConfig = (config.features as unknown) as {
+    [featureName: string]: boolean;
+  };
+
+  const addCashEnabled = featuresConfig.f2c_enabled;
 
   return (
     <GenericCard
@@ -288,7 +295,7 @@ export const EthCard = () => {
               <FakeText width={CHART_WIDTH} height={36} />
             </Skeleton>
           </Box>
-        ) : (
+        ) : addCashEnabled ? (
           <ButtonPressAnimation
             onPress={handlePressBuy}
             testID="buy-eth-button"
@@ -314,7 +321,7 @@ export const EthCard = () => {
               </Box>
             </AccentColorProvider>
           </ButtonPressAnimation>
-        )}
+        ) : null}
       </Stack>
     </GenericCard>
   );

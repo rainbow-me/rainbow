@@ -49,6 +49,7 @@ import {
   useDimensions,
   useGenericAsset,
 } from '@/hooks';
+import config from '@/model/config';
 import { useNavigation } from '@/navigation';
 import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -350,6 +351,9 @@ export default function ChartExpandedState({ asset }) {
     );
   }, [delayedMorePoolsVisible]);
 
+  const swapEnabled = config.features.swagg_enabled;
+  const addCashEnabled = config.features.f2c_enabled;
+
   const isDOG =
     assetWithPrice.address === DOG_ADDRESS ||
     assetWithPrice?.mainnet_address === DOG_ADDRESS;
@@ -400,13 +404,9 @@ export default function ChartExpandedState({ asset }) {
           </TokenInfoRow>
         </TokenInfoSection>
       )}
-      {needsEth ? (
+      {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} />
-        </SheetActionButtonRow>
-      ) : (
-        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {hasBalance && !isTestnet && (
+          {hasBalance && !isTestnet && swapEnabled && (
             <SwapActionButton
               asset={ogAsset}
               color={color}
@@ -419,7 +419,7 @@ export default function ChartExpandedState({ asset }) {
               color={color}
               fromDiscover={fromDiscover}
             />
-          ) : (
+          ) : swapEnabled ? (
             <SwapActionButton
               asset={ogAsset}
               color={color}
@@ -432,9 +432,13 @@ export default function ChartExpandedState({ asset }) {
               verified={asset?.isVerified}
               weight="heavy"
             />
-          )}
+          ) : null}
         </SheetActionButtonRow>
-      )}
+      ) : addCashEnabled ? (
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
+          <BuyActionButton color={color} />
+        </SheetActionButtonRow>
+      ) : null}
       {isL2 && (
         <L2Disclaimer
           assetType={assetWithPrice.type}
