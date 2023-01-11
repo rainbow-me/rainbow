@@ -6,6 +6,7 @@
     "GHSA-2j79-8pqc-r7x6", // https://github.com/advisories/GHSA-2j79-8pqc-r7x6
     "GHSA-9pgh-qqpf-7wqj", // https://github.com/advisories/GHSA-9pgh-qqpf-7wqj
     "GHSA-w573-4hg7-7wgq", // https://github.com/advisories/GHSA-w573-4hg7-7wgq
-    "GHSA-hrpp-h998-j3pp" // https://github.com/advisories/GHSA-hrpp-h998-j3pp
+    "GHSA-hrpp-h998-j3pp", // https://github.com/advisories/GHSA-hrpp-h998-j3pp
+    "GHSA-9vvw-cc9w-f27h" // https://github.com/advisories/GHSA-9vvw-cc9w-f27h
   ]
 }
