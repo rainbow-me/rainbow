@@ -36,9 +36,10 @@ export interface RainbowConfig extends Record<string, any> {
   data_endpoint?: string;
   data_origin?: string;
   default_slippage_bips?: string;
-  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
   ethereum_mainnet_rpc?: string;
+  features: string;
+  flashbots_enabled?: boolean;
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
@@ -61,6 +62,10 @@ const DEFAULT_CONFIG = {
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
+  features: JSON.stringify({
+    f2c_enabled: true,
+    swagg_enabled: true,
+  }),
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
@@ -93,7 +98,7 @@ const init = async () => {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
+      if (key === 'default_slippage_bips' || key === 'features') {
         config[key] = JSON.parse(entry.asString());
       } else if (key === 'flashbots_enabled' || key === 'wyre_enabled') {
         config[key] = entry.asBoolean();
