@@ -64,7 +64,11 @@ export default function ConnectedDappsSheet() {
       client.on('session_delete', () => {
         const sessions = client.session.values;
         setSessions(sessions);
-        logger.debug(`ConnectedDappsSheet: handling session_delete`);
+        logger.debug(
+          `ConnectedDappsSheet: handling session_delete`,
+          {},
+          logger.DebugContext.walletconnect
+        );
       });
     }
 
