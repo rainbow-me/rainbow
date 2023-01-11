@@ -15,14 +15,20 @@ import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
+import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
   useAccountSettings,
   useColorForAsset,
   useGas,
   usePrevious,
+  useSwapCurrencies,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  BNB_BSC_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -107,19 +113,19 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 
 const TextContainer = styled(Column).attrs(() => ({}))({});
 
-const TransactionTimeLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   const { colors } = useTheme();
+  let color =
+    theme === 'dark'
+      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+      : colors.alpha(colors.blueGreyDark, 0.6);
+
+  if (isLongWait) {
+    color = colors.lightOrange;
+  }
+
   return (
-    <Label
-      align="right"
-      color={
-        theme === 'dark'
-          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-          : colors.alpha(colors.blueGreyDark, 0.6)
-      }
-      size="lmedium"
-      weight="bold"
-    >
+    <Label align="right" color={color} size="lmedium" weight="bold">
       {formatter()}
     </Label>
   );
@@ -138,11 +144,15 @@ const GasSpeedButton = ({
   canGoBack = true,
   validateGasParams,
   flashbotTransaction = false,
+  crossChainServiceTime,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const [isLongWait, setIsLongWait] = useState(false);
+
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const {
     gasFeeParamsBySpeed,
@@ -289,6 +299,16 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
+    // override time estimate for cross chain swaps
+    if (crossChainServiceTime) {
+      const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
+        serviceTime: crossChainServiceTime,
+        gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
+      });
+      setIsLongWait(isLongWait);
+      return timeEstimateDisplay;
+    }
+
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
       ' '
     );
@@ -300,14 +320,33 @@ const GasSpeedButton = ({
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [gasPriceReady, selectedGasFee?.estimatedTime?.display]);
+  }, [
+    crossChainServiceTime,
+    gasPriceReady,
+    selectedGasFee?.estimatedTime?.amount,
+    selectedGasFee?.estimatedTime?.display,
+  ]);
 
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
     const network = currentNetwork ?? networkTypes.mainnet;
     const networkName = networkInfo[network]?.name;
-    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
-  }, [currentNetwork, navigate]);
+    if (crossChainServiceTime) {
+      navigate(Routes.EXPLAIN_SHEET, {
+        inputCurrency,
+        outputCurrency,
+        type: 'crossChainGas',
+      });
+    } else {
+      navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+    }
+  }, [
+    crossChainServiceTime,
+    currentNetwork,
+    inputCurrency,
+    navigate,
+    outputCurrency,
+  ]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -320,6 +359,8 @@ const GasSpeedButton = ({
     switch (currentNetwork) {
       case networkTypes.polygon:
         return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
+      case networkTypes.bsc:
+        return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       default:
@@ -331,6 +372,7 @@ const GasSpeedButton = ({
     if (speeds) return speeds;
     switch (currentNetwork) {
       case networkTypes.polygon:
+      case networkTypes.bsc:
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
@@ -351,7 +393,8 @@ const GasSpeedButton = ({
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
       const gweiDisplay =
-        currentNetwork === networkTypes.polygon
+        currentNetwork === networkTypes.polygon ||
+        currentNetwork === networkTypes.bsc
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
           : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
           ? ''
@@ -509,6 +552,7 @@ const GasSpeedButton = ({
                 <TransactionTimeLabel
                   formatter={formatTransactionTime}
                   theme={theme}
+                  isLongWait={isLongWait}
                 />
               </Text>
             </TextContainer>

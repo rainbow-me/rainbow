@@ -270,7 +270,6 @@ export default function SendConfirmationSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
-    // @ts-expect-error From JavaScript hook
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
     });
@@ -722,7 +721,7 @@ export default function SendConfirmationSheet() {
                         <Box
                           background="accent"
                           borderRadius={20}
-                          shadow="12px heavy accent"
+                          shadow="12px heavy accent (Deprecated)"
                           style={{ height: 20, width: 20 }}
                         >
                           <ENSCircleIcon height={20} width={20} />

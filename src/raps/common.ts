@@ -1,12 +1,13 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
-import { Wallet } from '@ethersproject/wallet';
-import { Quote } from '@rainbow-me/swaps';
+import { Signer } from 'ethers';
+import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import {
   depositCompound,
   ens,
   swap,
+  crosschainSwap,
   unlock,
   withdrawCompound,
 } from './actions';
@@ -28,7 +29,7 @@ import {
   estimateWithdrawFromCompound,
 } from './withdrawFromCompound';
 import { analytics } from '@/analytics';
-import { Asset, EthereumAddress, Records } from '@/entities';
+import { Asset, EthereumAddress, Records, SwappableAsset } from '@/entities';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -39,6 +40,11 @@ import {
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
+import {
+  createUnlockAndCrosschainSwapRap,
+  estimateUnlockAndCrosschainSwap,
+} from './unlockAndCrosschainSwap';
+import { Source, SwapModalField } from '@/redux/swap';
 
 const {
   commitENS,
@@ -55,6 +61,7 @@ const {
 export enum RapActionType {
   depositCompound = 'depositCompound',
   swap = 'swap',
+  crosschainSwap = 'crosschainSwap',
   unlock = 'unlock',
   withdrawCompound = 'withdrawCompound',
   commitENS = 'commitENS',
@@ -79,6 +86,7 @@ export interface RapExchangeActionParameters {
   flashbots?: boolean;
   chainId?: number;
   requiresApprove?: boolean;
+  meta?: SwapMetadata;
 }
 
 export interface RapENSActionParameters {
@@ -99,16 +107,36 @@ export interface UnlockActionParameters {
   chainId: number;
 }
 
-export interface SwapActionParameters {
+export type SwapMetadata = {
+  flashbots: boolean;
+  slippage: number;
+  route: Source;
+  inputAsset: SwappableAsset;
+  outputAsset: SwappableAsset;
+  independentField: SwapModalField;
+  independentValue: string;
+};
+
+export interface BaseSwapActionParameters {
   inputAmount: string;
   nonce?: number;
   outputAmount: string;
-  tradeDetails: Quote;
   permit?: boolean;
   flashbots?: boolean;
   provider?: Provider;
-  chainId?: number;
+  chainId: number;
   requiresApprove?: boolean;
+  swapType?: SwapType;
+  meta?: SwapMetadata;
+}
+
+export interface SwapActionParameters extends BaseSwapActionParameters {
+  tradeDetails: Quote;
+}
+
+export interface CrosschainSwapActionParameters
+  extends BaseSwapActionParameters {
+  tradeDetails: CrosschainQuote;
 }
 
 export interface ENSActionParameters {
@@ -184,32 +212,42 @@ export const RapActionTypes = {
   setRecordsENS: 'setRecordsENS' as RapActionType,
   setTextENS: 'setTextENS' as RapActionType,
   swap: 'swap' as RapActionType,
+  crosschainSwap: 'crosschainSwap' as RapActionType,
   transferENS: 'transferENS' as RapActionType,
   unlock: 'unlock' as RapActionType,
   withdrawCompound: 'withdrawCompound' as RapActionType,
 };
 
-export const getSwapRapTypeByExchangeType = (type: string) => {
+export const getSwapRapTypeByExchangeType = (
+  type: string,
+  isCrosschainSwap: boolean
+) => {
   switch (type) {
     case ExchangeModalTypes.withdrawal:
       return RapActionTypes.withdrawCompound;
     case ExchangeModalTypes.deposit:
       return RapActionTypes.depositCompound;
-
     default:
+      if (isCrosschainSwap) {
+        return RapActionTypes.crosschainSwap;
+      }
       return RapActionTypes.swap;
   }
 };
 
 const createSwapRapByType = (
-  type: string,
-  swapParameters: SwapActionParameters
+  type: keyof typeof RapActionTypes,
+  swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.depositCompound:
       return createSwapAndDepositCompoundRap(swapParameters);
     case RapActionTypes.withdrawCompound:
       return createWithdrawFromCompoundRap(swapParameters);
+    case RapActionTypes.crosschainSwap:
+      return createUnlockAndCrosschainSwapRap(
+        swapParameters as CrosschainSwapActionParameters
+      );
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
@@ -237,14 +275,18 @@ const createENSRapByType = (
 };
 
 export const getSwapRapEstimationByType = (
-  type: string,
-  swapParameters: SwapActionParameters
+  type: keyof typeof RapActionTypes,
+  swapParameters: SwapActionParameters | CrosschainSwapActionParameters
 ) => {
   switch (type) {
     case RapActionTypes.depositCompound:
       return estimateSwapAndDepositCompound(swapParameters);
     case RapActionTypes.swap:
       return estimateUnlockAndSwap(swapParameters);
+    case RapActionTypes.crosschainSwap:
+      return estimateUnlockAndCrosschainSwap(
+        swapParameters as CrosschainSwapActionParameters
+      );
     case RapActionTypes.withdrawCompound:
       return estimateWithdrawFromCompound();
     default:
@@ -284,6 +326,8 @@ const findSwapActionByType = (type: RapActionType) => {
       return depositCompound;
     case RapActionTypes.withdrawCompound:
       return withdrawCompound;
+    case RapActionTypes.crosschainSwap:
+      return crosschainSwap;
     default:
       return NOOP;
   }
@@ -333,7 +377,7 @@ const parseError = (error: EthersError): string => {
 
 const executeAction = async (
   action: RapAction,
-  wallet: Wallet,
+  wallet: Signer,
   rap: Rap,
   index: number,
   rapName: string,
@@ -388,6 +432,7 @@ const executeAction = async (
 const getRapTypeFromActionType = (actionType: RapActionType) => {
   switch (actionType) {
     case RapActionTypes.swap:
+    case RapActionTypes.crosschainSwap:
     case RapActionTypes.unlock:
     case RapActionTypes.depositCompound:
     case RapActionTypes.withdrawCompound:
@@ -410,7 +455,7 @@ const getRapTypeFromActionType = (actionType: RapActionType) => {
 };
 
 export const executeRap = async (
-  wallet: Wallet,
+  wallet: Signer,
   type: RapActionType,
   parameters: SwapActionParameters | ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void

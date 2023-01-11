@@ -28,7 +28,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
@@ -84,6 +84,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Pools');
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
+    await Helpers.swipe('wallet-screen', 'down');
   });
 
   it('Should say correct address in the Profile Screen header', async () => {
@@ -92,8 +93,8 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left');
   });
 
-  it('Should open send sheet after tapping send fab', async () => {
-    await Helpers.waitAndTap('send-fab');
+  it('Should open send sheet after tapping send button', async () => {
+    await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 

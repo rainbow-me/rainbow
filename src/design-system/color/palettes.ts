@@ -403,9 +403,11 @@ export type ForegroundColor =
   | 'scrimTertiary'
   | 'separator'
   | 'separatorSecondary'
+  | 'separatorTertiary'
   | 'buttonStroke'
   | 'buttonStrokeSecondary'
-  | 'shadow'
+  | 'shadowNear'
+  | 'shadowFar'
   | 'action (Deprecated)'
   | 'divider20 (Deprecated)'
   | 'divider40 (Deprecated)'
@@ -492,6 +494,10 @@ export const foregroundColors: Record<
   'separatorSecondary': {
     light: globalColors.grey20,
     dark: 'rgba(245, 248, 255, 0.06)',
+  },
+  'separatorTertiary': {
+    light: 'rgba(9, 17, 31, 0.02)',
+    dark: 'rgba(245, 248, 255, 0.02)',
   },
   'buttonStroke': {
     light: 'rgba(0, 0, 0, 0.05)',
@@ -596,11 +602,10 @@ export const foregroundColors: Record<
     darkTinted: deprecatedColors.white80,
     light: deprecatedColors.grey80,
   },
-  'shadow': {
-    dark: deprecatedColors.black,
-    darkTinted: deprecatedColors.black,
-    light: deprecatedColors.greyDark,
-    lightTinted: deprecatedColors.greyDark,
+  'shadowNear': globalColors.grey100,
+  'shadowFar': {
+    dark: globalColors.grey100,
+    light: '#25292E',
   },
   'swap (Deprecated)': deprecatedColors.swapPurple,
 };
@@ -705,16 +710,21 @@ export const textColors = selectForegroundColors(
 export type TextColor = typeof textColors[number];
 
 export const shadowColors = selectForegroundColors(
-  'shadow',
   'accent',
-  'swap (Deprecated)',
-  'action (Deprecated)'
+  'blue',
+  'green',
+  'red',
+  'purple',
+  'pink',
+  'orange',
+  'yellow'
 );
 export type ShadowColor = typeof shadowColors[number];
 
 export const separatorColors = selectForegroundColors(
   'separator',
   'separatorSecondary',
+  'separatorTertiary',
   'divider20 (Deprecated)',
   'divider40 (Deprecated)',
   'divider60 (Deprecated)',

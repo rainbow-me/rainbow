@@ -6,6 +6,7 @@ const BottomRowText = styled(TruncatedText).attrs(
     align,
     color: color ?? colors.alpha(colors.blueGreyDark, 0.5),
     size: 'smedium',
+    weight: 'medium',
   })
 )({});
 export default BottomRowText;

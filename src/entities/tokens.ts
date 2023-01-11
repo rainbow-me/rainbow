@@ -114,3 +114,15 @@ export interface RainbowToken extends Asset {
 export interface IndexToken extends Asset {
   amount: string;
 }
+
+export interface TokenMetadata {
+  address: EthereumAddress;
+  name: string;
+  symbol: string;
+  color?: string;
+  isRainbowCurated?: boolean;
+  isVerified?: boolean;
+  shadowColor?: string;
+  chainId?: number;
+  decimals?: number;
+}

@@ -155,6 +155,7 @@ const MemoizedBalanceCoinRow = React.memo(
                     numberOfLines={1}
                     color="primary (Deprecated)"
                     size="16px / 22px (Deprecated)"
+                    weight="semibold"
                   >
                     {item.name}
                   </Text>
@@ -164,6 +165,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   align="right"
                   color={{ custom: valueColor }}
                   size="16px / 22px (Deprecated)"
+                  weight="medium"
                 >
                   {item?.native?.balance?.display ??
                     `${nativeCurrencySymbol}0.00`}
@@ -176,6 +178,7 @@ const MemoizedBalanceCoinRow = React.memo(
                     color={{ custom: theme.colors.blueGreyDark50 }}
                     numberOfLines={1}
                     size="14px / 19px (Deprecated)"
+                    weight="medium"
                   >
                     {nativeDisplay ?? ''}
                   </Text>
@@ -185,6 +188,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   align="right"
                   color={{ custom: changeColor }}
                   size="14px / 19px (Deprecated)"
+                  weight="medium"
                 >
                   {percentageChangeDisplay}
                 </Text>

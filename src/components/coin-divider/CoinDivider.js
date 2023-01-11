@@ -72,7 +72,7 @@ const useInterpolationRange = isCoinListEdited => {
     ref.current?.measureLayout?.(
       nativeScrollRef,
       (_left, top) => {
-        setRanges([top - 50, top]);
+        setRanges([top - (ios ? 100 : 50), top]);
       },
       () => {}
     );

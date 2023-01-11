@@ -29,6 +29,9 @@ export default function useUpdateEmoji() {
                     ...singleAddress,
                     ...(name && { label: name }),
                     ...(color !== undefined && { color }),
+                    // We need to call this in order to make sure
+                    // the profile picture is removed in "Remove Photo" flow
+                    image: null,
                   }
                 : singleAddress
           ),

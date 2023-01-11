@@ -68,12 +68,19 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box height="46px" width="full">
+      <Box
+        width="full"
+        testID={`network-switcher-${currentChainId}`}
+        paddingTop="8px"
+        paddingBottom="16px"
+      >
         <ScrollView
+          keyboardShouldPersistTaps="always"
           contentContainerStyle={{ paddingHorizontal: 20 }}
           horizontal
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
+          testID={'network-switcher-scroll-view'}
         >
           <Columns space="8px">
             {networkMenuItems.map(({ chainId, title, type, network }) => {
@@ -86,7 +93,7 @@ const NetworkSwitcherv2 = ({
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
                   padding="8px"
-                  testID={`${testID}-${title}`}
+                  testID={`${testID}-${network}`}
                 >
                   {isSelected && (
                     <RadialGradient
@@ -99,9 +106,9 @@ const NetworkSwitcherv2 = ({
                     alignHorizontal="center"
                     alignVertical="center"
                     horizontalSpace="4px"
+                    wrap={false}
                   >
                     {type === AssetType.token ? (
-                      // @ts-expect-error Javacript Component
                       <CoinIcon
                         address={ETH_ADDRESS}
                         size={20}
@@ -123,6 +130,7 @@ const NetworkSwitcherv2 = ({
                         }
                         size="16px / 22px (Deprecated)"
                         weight="bold"
+                        testID={`network-switcher-item-${network}`}
                       >
                         {title}
                       </Text>

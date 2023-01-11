@@ -10,6 +10,7 @@ import { Text } from '../text';
 import { delay } from '@/helpers/utilities';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
+import { Box } from '@/design-system';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,
@@ -24,14 +25,6 @@ const ButtonLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'semibold',
 }))({});
-
-const Container = styled(Centered).attrs({
-  direction: 'column',
-})({
-  ...padding.object(20, 50, 60, 50),
-  ...position.coverAsObject,
-  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
-});
 
 const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.mintDark,
@@ -65,13 +58,13 @@ export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
   }, [onGetBack]);
 
   return (
-    <Container>
+    <Box alignItems="center">
       <QRIcon />
       <Title>{lang.t('wallet.qr.scan_to_pay_or_connect')}</Title>
       <Subtitle>{lang.t('wallet.qr.camera_access_needed')}</Subtitle>
       <Button onPress={handlePressSettings}>
         <ButtonLabel>{lang.t('wallet.qr.enable_camera_access')} 􀄫</ButtonLabel>
       </Button>
-    </Container>
+    </Box>
   );
 }

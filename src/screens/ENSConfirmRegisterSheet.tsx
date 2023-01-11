@@ -416,7 +416,7 @@ export default function ENSConfirmRegisterSheet() {
                       background="body (Deprecated)"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
-                      shadow="15px light"
+                      shadow="15px light (Deprecated)"
                       width={{ custom: avatarSize }}
                     >
                       <Box

@@ -6,11 +6,17 @@ module.exports = {
   preset: 'react-native',
   setupFiles: ['./config/test/jest-setup.js'],
   testPathIgnorePatterns: ['node_modules', 'e2e'],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.jest.json',
+    },
+  },
   transform: {
+    // https://kulshekhar.github.io/ts-jest/docs/28.0/guides/react-native
     '\\.tsx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@react-native(-community)?)/)',
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|@rainbow-me/react-native-payments|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
   ],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>',

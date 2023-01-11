@@ -16,7 +16,7 @@ const sizeConfigs = (colors, isDarkMode) => ({
     textSize: 'large',
   },
   large: {
-    dimensions: 65,
+    dimensions: 60,
     shadow: [
       [0, 6, 10, colors.shadow, 0.12],
       [0, 2, 5, colors.shadow, 0.08],
@@ -50,6 +50,11 @@ const sizeConfigs = (colors, isDarkMode) => ({
     shadow: [[0, 4, android ? 5 : 12, colors.shadow, 0.4]],
     textSize: 'large',
   },
+  smedium_shadowless: {
+    dimensions: 36,
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+    textSize: 'large',
+  },
 });
 
 const Avatar = styled(ImgixImage)(({ dimensions }) => ({
@@ -57,7 +62,12 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
   width: dimensions,
 }));
 
-const ImageAvatar = ({ image, size = 'medium', ...props }) => {
+const ImageAvatar = ({
+  image,
+  size = 'medium',
+  onLoad = undefined,
+  ...props
+}) => {
   const { colors, isDarkMode } = useTheme();
   const { dimensions, shadow } = useMemo(
     () => sizeConfigs(colors, isDarkMode)[size],
@@ -81,6 +91,7 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
     >
       <Centered flex={1}>
         <Avatar
+          onLoad={onLoad}
           dimensions={dimensions}
           source={{
             uri: image,

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
+import dogSunglasses from '@/assets/partnerships/dogSunglasses.png';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -24,6 +25,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { DOG_ADDRESS } from '@/references';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -65,6 +67,13 @@ const InnerDot = styled.View({
   shadowOpacity: 0.6,
   shadowRadius: 4.5,
   width: 10,
+});
+
+const DogeDot = styled(ImgixImage).attrs({
+  resizeMode: ImgixImage.resizeMode.contain,
+  source: dogSunglasses,
+})({
+  ...position.sizeAsObject(35),
 });
 
 const Dot = styled(ChartDot)({
@@ -118,11 +127,8 @@ export default function ChartWrapper({
   isPool,
   updateChartType,
   showChart,
-  showMonth,
-  showYear,
   testID,
   throttledData,
-  overrideValue = false,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
@@ -187,6 +193,7 @@ export default function ChartWrapper({
       ],
     };
   });
+  const isDOG = props.asset.address === DOG_ADDRESS;
 
   return (
     <Container>
@@ -195,7 +202,6 @@ export default function ChartWrapper({
         chartType={chartType}
         color={color}
         isPool={isPool}
-        overrideValue={overrideValue}
         showChart={showChart}
         testID={testID}
       />
@@ -218,7 +224,7 @@ export default function ChartWrapper({
               width={WIDTH}
             />
             <Dot color={colors.alpha(color, 0.03)} size={65}>
-              <InnerDot color={color} />
+              {isDOG ? <DogeDot /> : <InnerDot color={color} />}
             </Dot>
             <Overlay style={overlayStyle}>
               <Animated.View style={spinnerStyle}>
@@ -232,11 +238,8 @@ export default function ChartWrapper({
         <TimespanSelector
           color={color}
           defaultIndex={timespanIndex}
-          // fixme temporary to fix animation
-          key={`ts_${showMonth}_${showYear}`}
+          key={`ts_${chartType}`}
           reloadChart={updateChartType}
-          showMonth={showMonth}
-          showYear={showYear}
           timespans={ChartTimespans}
         />
       ) : null}

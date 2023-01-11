@@ -2,46 +2,44 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { EthereumAddress } from '@/entities';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { AppState } from '@/redux/store';
+import { RainbowWallet } from '@/model/wallet';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 
-const walletSelector = createSelector(
-  ({ wallets: { selected = {}, walletNames } }) => ({
-    selectedWallet: selected as any,
-    walletNames,
-  }),
-  ({ selectedWallet, walletNames }) => ({
-    selectedWallet,
-    walletNames,
-  })
-);
-
-const settingsSelector = createSelector(
-  ({ settings: { accountAddress } }) => ({
-    accountAddress,
-  }),
-  ({ accountAddress }) => ({
-    accountAddress,
-  })
-);
+const walletSelector = (state: AppState) => ({
+  wallets: state.wallets.wallets,
+  selectedWallet: state.wallets.selected || ({} as RainbowWallet),
+  walletNames: state.wallets.walletNames,
+});
+const settingsSelector = (state: AppState) => ({
+  accountAddress: state.settings.accountAddress,
+});
 
 const buildAccountProfile = (
   wallet: {
-    selectedWallet: any;
+    wallets: { [id: string]: RainbowWallet } | null;
+    selectedWallet: RainbowWallet;
     walletNames: { [a: EthereumAddress]: string };
   },
   account: { accountAddress: string }
-) =>
-  getAccountProfileInfo(
-    wallet.selectedWallet,
+) => {
+  const selectedWallet = findWalletWithAccount(
+    wallet.wallets || {},
+    account.accountAddress
+  );
+  return getAccountProfileInfo(
+    selectedWallet || wallet.selectedWallet,
     wallet.walletNames,
     account.accountAddress
   );
+};
+
+const accountProfileSelector = createSelector(
+  [walletSelector, settingsSelector],
+  buildAccountProfile
+);
 
 export default function useAccountProfile() {
-  const accountProfileSelector = createSelector(
-    [walletSelector, settingsSelector],
-    buildAccountProfile
-  );
-
   const {
     accountAddress,
     accountColor,
@@ -49,7 +47,6 @@ export default function useAccountProfile() {
     accountImage,
     accountName,
     accountSymbol,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
   } = useSelector(accountProfileSelector);
 
   return {

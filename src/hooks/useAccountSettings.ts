@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { updateLanguageLocale } from '../languages';
+import { updateLanguageLocale, Language } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
   settingsChangeFlashbotsEnabled as changeFlashbotsEnabled,
@@ -17,7 +17,7 @@ const languageSelector = (state: AppState) => state.settings.language;
 
 const withLanguage = (language: string) => {
   if (language !== lang.locale) {
-    updateLanguageLocale(language);
+    updateLanguageLocale(language as Language);
   }
   return { language };
 };

@@ -7,4 +7,7 @@
  */
 export const DebugContext = {
   // e.g. swaps: 'swaps'
+  migrations: 'migrations',
+  analytics: 'analytics',
+  notifications: 'notifications',
 } as const;

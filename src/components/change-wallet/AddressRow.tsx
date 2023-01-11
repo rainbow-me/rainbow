@@ -161,7 +161,7 @@ export default function AddressRow({
   );
 
   const displayAddress = useMemo(
-    () => abbreviations.address(toChecksumAddress(address) || '', 4, 6),
+    () => abbreviations.address(toChecksumAddress(address) || address, 4, 6),
     [address]
   );
 
@@ -194,7 +194,7 @@ export default function AddressRow({
       ? [
           {
             actionKey: ContextMenuKeys.Notifications,
-            actionTitle: lang.t('wallet.action.notifications'),
+            actionTitle: lang.t('wallet.action.notifications.action_title'),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'bell.fill',
@@ -225,7 +225,7 @@ export default function AddressRow({
           contextMenuActions?.remove(walletId, address);
           break;
         case ContextMenuKeys.Notifications:
-          contextMenuActions?.notifications(walletName);
+          contextMenuActions?.notifications(walletName, address);
           break;
         case ContextMenuKeys.Edit:
           contextMenuActions?.edit(walletId, address);

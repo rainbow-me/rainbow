@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
-import { parseWalletConnectUri } from '@walletconnect/utils';
+import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
@@ -136,7 +136,7 @@ type WalletconnectResultType =
 /**
  * Route parameters sent to a WalletConnect approval sheet.
  */
-interface WalletconnectApprovalSheetRouteParams {
+export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
     chainId: number,
@@ -148,13 +148,21 @@ interface WalletconnectApprovalSheetRouteParams {
   ) => Promise<unknown>;
   receivedTimestamp: number;
   meta?: {
-    chainId: number;
+    /**
+     * WC v2 introduced multi-chain support, while v1 only supported a single
+     * chain at a time. To avoid confusion, we now send both as an array
+     * `chainIds`. WC v1 will always be an array with length `1`, while v2 can
+     * have more than one.
+     */
+    chainIds: number[];
+    isWalletConnectV2?: boolean;
   } & Pick<
     RequestData,
     'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'
   >;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
+  failureExplainSheetVariant?: string;
 }
 
 /**
@@ -402,7 +410,7 @@ export const walletConnectOnSessionRequest = (
         });
 
         meta = {
-          chainId,
+          chainIds: [chainId],
           dappName,
           dappScheme,
           dappUrl,
@@ -521,6 +529,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         networkTypes.mainnet,
         networkTypes.goerli,
         networkTypes.polygon,
+        networkTypes.bsc,
         networkTypes.optimism,
         networkTypes.arbitrum,
       ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
@@ -565,9 +574,9 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               });
             }
           },
-          chainId: Number(numericChainId),
           currentNetwork,
           meta: {
+            chainIds: [Number(numericChainId)],
             dappName,
             dappUrl,
             imageUrl,

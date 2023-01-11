@@ -28,7 +28,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
   const { nativeCurrency } = useAccountSettings();
 
-  if (type === 'annualized_fees' || type === 'profit30d') {
+  if (type === 'annualized_fees') {
     let percent = parseFloat(value);
     if (!percent || percent === 0) {
       formattedValue = '0%';

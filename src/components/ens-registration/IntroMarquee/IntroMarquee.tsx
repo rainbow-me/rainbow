@@ -114,7 +114,7 @@ function ENSAvatarPlaceholder({
             background="body (Deprecated)"
             borderRadius={80}
             height={{ custom: 80 }}
-            shadow="15px light"
+            shadow="15px light (Deprecated)"
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
           />

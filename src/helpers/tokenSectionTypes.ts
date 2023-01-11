@@ -1,6 +1,9 @@
 export default {
-  favoriteTokenSection: '􀋃 Favorites',
-  lowLiquidityTokenSection: '􀇿 Low Liquidity',
-  unverifiedTokenSection: '􀇿 Unverified',
-  verifiedTokenSection: '􀇻 Rainbow Verified',
+  bridgeTokenSection: 'bridgeTokenSection',
+  crosschainMatchSection: 'crosschainMatchSection',
+  favoriteTokenSection: 'favoriteTokenSection',
+  lowLiquidityTokenSection: 'lowLiquidityTokenSection',
+  unverifiedTokenSection: 'unverifiedTokenSection',
+  verifiedTokenSection: 'verifiedTokenSection',
+  unswappableTokenSection: 'unswappableTokenSection',
 };

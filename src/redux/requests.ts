@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import { SignClientTypes } from '@walletconnect/types';
 import { AppGetState } from './store';
 import { maybeSignUri } from '@/handlers/imgix';
 import {
@@ -14,7 +15,7 @@ import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
 
-const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
+export const REQUESTS_UPDATE_REQUESTS_TO_APPROVE =
   'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
 const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 
@@ -71,6 +72,16 @@ export interface RequestData {
    * The payload for the request.
    */
   payload: any;
+
+  /**
+   * Adds additional data to the request and serves as a notice that this
+   * request originated from a WC v2 session
+   */
+  walletConnectV2RequestValues?: {
+    sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
+    address: string;
+    chainId: number;
+  };
 }
 
 /**

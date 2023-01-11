@@ -1,6 +1,5 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import { nanoid } from 'nanoid/non-secure';
 import React, { Component, createRef } from 'react';
 import {
   AppRegistry,
@@ -14,17 +13,9 @@ import {
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import {
-  IS_TESTING,
-  SENTRY_ENDPOINT,
-  SENTRY_ENVIRONMENT,
-} from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
-// eslint-disable-next-line import/default
-import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
+import { IS_TESTING } from 'react-native-dotenv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import VersionNumber from 'react-native-version-number';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
@@ -50,7 +41,7 @@ import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
-import * as keychain from './model/keychain';
+import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
@@ -72,9 +63,7 @@ import { rainbowTokenList } from './references';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
-import { analyticsUserIdentifier } from './utils/keychainConstants';
-import { analytics } from '@/analytics';
-import { STORAGE_IDS } from './model/mmkv';
+import { addressKey } from './utils/keychainConstants';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -82,17 +71,19 @@ import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
+import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
+import { analyticsV2 } from '@/analytics';
+import {
+  getOrCreateDeviceId,
+  securelyHashWalletAddress,
+} from '@/analytics/utils';
+import { logger as loggr, RainbowError } from '@/logger';
+import * as ls from '@/storage';
+import { migrate } from '@/migrations';
+import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
+import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 
 const FedoraToastRef = createRef();
-
-const mmkv = new MMKV();
-
-// We need to disable React Navigation instrumentation for E2E tests
-// because detox doesn't like setTimeout calls that are used inside
-// When enabled detox hangs and timeouts on all test cases
-const routingInstrumentation = IS_TESTING
-  ? undefined
-  : new Sentry.ReactNavigationInstrumentation();
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -100,8 +91,7 @@ if (__DEV__) {
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
   // eslint-disable-next-line no-inner-declarations
-  async function initSentryAndCheckForFedoraMode() {
-    let metadata;
+  async function checkForFedoraMode() {
     try {
       const config = await codePush.getCurrentPackage();
       if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
@@ -113,38 +103,19 @@ if (__DEV__) {
         isCustomBuild.value = true;
         setTimeout(() => FedoraToastRef?.current?.show(), 300);
       }
-
-      metadata = await codePush.getUpdateMetadata();
     } catch (e) {
       logger.log('error initiating codepush settings', e);
     }
-    const sentryOptions = {
-      dsn: SENTRY_ENDPOINT,
-      enableAutoSessionTracking: true,
-      environment: SENTRY_ENVIRONMENT,
-      integrations: [
-        new Sentry.ReactNativeTracing({
-          routingInstrumentation,
-          tracingOrigins: ['localhost', /^\//],
-        }),
-      ],
-      tracesSampleRate: 0.2,
-      ...(metadata && {
-        dist: metadata.label,
-        release: `${metadata.appVersion} (${VersionNumber.buildVersion}) (CP ${metadata.label})`,
-      }),
-    };
-    Sentry.init(sentryOptions);
   }
 
-  initSentryAndCheckForFedoraMode();
+  checkForFedoraMode();
 }
 
 enableScreens();
 
 const containerStyle = { flex: 1 };
 
-class App extends Component {
+class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
   async componentDidMount() {
@@ -158,7 +129,6 @@ class App extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
-    await this.handleInitializeAnalytics();
     this.branchListener = branchListener(this.handleOpenLinkingURL);
     // Walletconnect uses direct deeplinks
     if (android) {
@@ -178,7 +148,11 @@ class App extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
-    analytics.track('React component tree finished initial mounting');
+    analyticsV2.track(analyticsV2.event.applicationDidMount);
+
+    if (getExperimetalFlag(WC_V2)) {
+      initWalletConnectListeners();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -219,33 +193,6 @@ class App extends Component {
     handleDeeplink(url, this.state.initialRoute);
   };
 
-  handleInitializeAnalytics = async () => {
-    // Comment the line below to debug analytics
-    if (__DEV__) return false;
-    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
-
-    if (!storedIdentifier) {
-      const identifier = await RNIOS11DeviceCheck.getToken()
-        .then(deviceId => deviceId)
-        .catch(() => nanoid());
-      await keychain.saveString(analyticsUserIdentifier, identifier);
-      analytics.identify(identifier);
-      analytics.track('First App Open');
-      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, true);
-    } else if (mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH)) {
-      mmkv.set(STORAGE_IDS.FIRST_APP_LAUNCH, false);
-      // track device dimensions
-      const screenWidth = Dimensions.get('screen').width;
-      const screenHeight = Dimensions.get('screen').height;
-      const screenScale = Dimensions.get('screen').scale;
-      analytics.identify(storedIdentifier, {
-        screenHeight,
-        screenWidth,
-        screenScale,
-      });
-    }
-  };
-
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
@@ -256,7 +203,7 @@ class App extends Component {
     }
     this.setState({ appState: nextAppState });
 
-    analytics.track('State change', {
+    analyticsV2.track(analyticsV2.event.appStateChange, {
       category: 'app state',
       label: nextAppState,
     });
@@ -295,64 +242,153 @@ class App extends Component {
   };
 
   handleSentryNavigationIntegration = () => {
-    routingInstrumentation?.registerNavigationContainer(this.navigatorRef);
+    sentryRoutingInstrumentation?.registerNavigationContainer(
+      this.navigatorRef
+    );
   };
 
   render = () => (
-    <MainThemeProvider>
-      <ReduxProvider store={store}>
-        <RainbowContextWrapper>
-          <ErrorBoundary>
-            <Portal>
-              <SafeAreaProvider>
-                <PersistQueryClientProvider
-                  client={queryClient}
-                  persistOptions={persistOptions}
-                >
-                  <RecoilRoot>
-                    <SharedValuesProvider>
-                      <NotificationsHandler
-                        walletReady={this.props.walletReady}
-                      >
-                        <View style={containerStyle}>
-                          {this.state.initialRoute && (
-                            <InitialRouteContext.Provider
-                              value={this.state.initialRoute}
-                            >
-                              <RoutesComponent
-                                onReady={this.handleSentryNavigationIntegration}
-                                ref={this.handleNavigatorRef}
-                              />
-                              <PortalConsumer />
-                            </InitialRouteContext.Provider>
-                          )}
-                          <OfflineToast />
-                          <FedoraToast ref={FedoraToastRef} />
-                        </View>
-                      </NotificationsHandler>
-                    </SharedValuesProvider>
-                  </RecoilRoot>
-                </PersistQueryClientProvider>
-              </SafeAreaProvider>
-            </Portal>
-          </ErrorBoundary>
-        </RainbowContextWrapper>
-      </ReduxProvider>
-    </MainThemeProvider>
+    <Portal>
+      <View style={containerStyle}>
+        {this.state.initialRoute && (
+          <InitialRouteContext.Provider value={this.state.initialRoute}>
+            <RoutesComponent
+              onReady={this.handleSentryNavigationIntegration}
+              ref={this.handleNavigatorRef}
+            />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
+        )}
+        <OfflineToast />
+        <FedoraToast ref={FedoraToastRef} />
+      </View>
+      <NotificationsHandler walletReady={this.props.walletReady} />
+    </Portal>
   );
 }
 
-const AppWithRedux = connect(({ appState: { walletReady } }) => ({
-  walletReady,
-}))(App);
+const OldAppWithRedux = connect(state => ({
+  walletReady: state.appState.walletReady,
+}))(OldApp);
 
-const AppWithReduxStore = () => <AppWithRedux store={store} />;
+function App() {
+  return <OldAppWithRedux />;
+}
 
-const AppWithSentry = Sentry.wrap(AppWithReduxStore);
+function Root() {
+  const [initializing, setInitializing] = React.useState(true);
 
-const codePushOptions = { checkFrequency: codePush.CheckFrequency.MANUAL };
+  React.useEffect(() => {
+    async function initializeApplication() {
+      await initSentry(); // must be set up immediately
 
-const AppWithCodePush = codePush(codePushOptions)(AppWithSentry);
+      // must happen immediately, but after Sentry
+      await migrate();
+
+      const isReturningUser = ls.device.get(['isReturningUser']);
+      const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
+      const currentWalletAddress = await keychain.loadString(addressKey);
+      const currentWalletAddressHash =
+        typeof currentWalletAddress === 'string'
+          ? securelyHashWalletAddress(currentWalletAddress)
+          : undefined;
+
+      Sentry.setUser({
+        id: deviceId,
+        currentWalletAddress: currentWalletAddressHash,
+      });
+
+      /**
+       * Add helpful values to `analyticsV2` instance
+       */
+      analyticsV2.setDeviceId(deviceId);
+      if (currentWalletAddressHash) {
+        analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
+      }
+
+      /**
+       * `analyticsv2` has all it needs to function.
+       */
+      analyticsV2.identify({});
+
+      /**
+       * We previously relied on the existence of a deviceId on keychain to
+       * determine if a user was new or not. For backwards compat, we do this
+       * still with `deviceIdWasJustCreated`, but we also set a new value on
+       * local storage `isReturningUser` so that other parts of the app can
+       * read from that, if necessary.
+       *
+       * This block of code will only run once.
+       */
+      if (deviceIdWasJustCreated && !isReturningUser) {
+        // on very first open, set some default data and fire event
+        loggr.info(`User opened application for the first time`);
+
+        const {
+          width: screenWidth,
+          height: screenHeight,
+          scale: screenScale,
+        } = Dimensions.get('screen');
+
+        analyticsV2.identify({ screenHeight, screenWidth, screenScale });
+        analyticsV2.track(analyticsV2.event.firstAppOpen);
+      }
+
+      /**
+       * Always set this — we may have just migrated deviceId with
+       * `getOrCreateDeviceId`, which would mean `deviceIdWasJustCreated` would
+       * be false and the new-user block of code above won't run.
+       *
+       * But by this point in the `initializeApplication`, we've handled new
+       * user events and migrations, so we need to make sure this is set to
+       * `true`.
+       */
+      ls.device.set(['isReturningUser'], true);
+    }
+
+    initializeApplication()
+      .then(() => {
+        loggr.debug(`Application initialized with Sentry and Segment`);
+
+        // init complete, load the rest of the app
+        setInitializing(false);
+      })
+      .catch(e => {
+        loggr.error(new RainbowError(`initializeApplication failed`));
+
+        // for failure, continue to rest of the app for now
+        setInitializing(false);
+      });
+  }, [setInitializing]);
+
+  return initializing ? null : (
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+        >
+          <SafeAreaProvider>
+            <MainThemeProvider>
+              <RainbowContextWrapper>
+                <SharedValuesProvider>
+                  <ErrorBoundary>
+                    <App />
+                  </ErrorBoundary>
+                </SharedValuesProvider>
+              </RainbowContextWrapper>
+            </MainThemeProvider>
+          </SafeAreaProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
+  );
+}
+
+const RootWithSentry = Sentry.wrap(Root);
+const RootWithCodePush = codePush({
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+})(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -361,5 +397,5 @@ const PlaygroundWithReduxStore = () => (
 );
 
 AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : AppWithCodePush
+  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
 );

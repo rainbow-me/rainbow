@@ -28,7 +28,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
@@ -93,7 +93,8 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
 
   it('Should open send sheet after tapping send fab', async () => {
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.swipe('wallet-screen', 'down');
+    await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
@@ -163,7 +164,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     } else {
       await Helpers.swipe('send-asset-form-field', 'down', 'slow');
     }
-    await Helpers.waitAndTap('send-fab');
+    await Helpers.waitAndTap('send-button');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 

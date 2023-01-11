@@ -13,10 +13,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
-import { CoinDividerHeight } from '../../coin-divider';
-import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
-import EdgeFade from '../../discover-sheet/EdgeFade';
-import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
+import EdgeFade from '../../EdgeFade';
 import useExperimentalFlag, {
   CROSSCHAIN_SWAPS,
 } from '@/config/experimentalHooks';
@@ -50,13 +47,14 @@ import {
   useGenericAsset,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS } from '@/references';
+import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
+import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -224,12 +222,16 @@ export default function ChartExpandedState({ asset }) {
     loading: additionalAssetDataLoading,
     links,
     networks,
-  } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
+  } = useAdditionalAssetData(
+    asset?.address,
+    assetWithPrice?.price?.value,
+    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.type)
+  );
 
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
     if (networks) {
-      let mappedNetworks = {};
+      const mappedNetworks = {};
       Object.keys(networks).forEach(
         chainId =>
           (mappedNetworks[
@@ -319,12 +321,6 @@ export default function ChartExpandedState({ asset }) {
 
   const { layout } = useContext(ModalContext) || {};
 
-  const [morePoolsVisible, setMorePoolsVisible] = useState(false);
-
-  const delayedMorePoolsVisible = useDelayedValueWithLayoutAnimation(
-    morePoolsVisible
-  );
-
   const { colors } = useTheme();
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
@@ -332,18 +328,9 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
-  const MoreButton = useCallback(() => {
-    return (
-      <View marginTop={-10}>
-        <CoinDividerOpenButton
-          coinDividerHeight={CoinDividerHeight}
-          isActive
-          isSmallBalancesOpen={delayedMorePoolsVisible}
-          onPress={() => setMorePoolsVisible(prev => !prev)}
-        />
-      </View>
-    );
-  }, [delayedMorePoolsVisible]);
+  const isDOG =
+    assetWithPrice.address === DOG_ADDRESS ||
+    assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -353,6 +340,7 @@ export default function ChartExpandedState({ asset }) {
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
+      {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
@@ -438,40 +426,38 @@ export default function ChartExpandedState({ asset }) {
           <AvailableNetworks asset={assetWithPrice} networks={networks} />
         </Box>
       )}
-      {!isL2 && (
-        <CarouselWrapper
-          isAnyItemLoading={additionalAssetDataLoading}
-          isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
-          setCarouselHeight={setCarouselHeight}
-        >
-          <Carousel>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              showDivider
-              title={lang.t('expanded_state.asset.volume_24_hours')}
-              weight="bold"
-            >
-              {totalVolume}
-            </CarouselItem>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              showDivider
-              title={lang.t('expanded_state.asset.uniswap_liquidity')}
-              weight="bold"
-            >
-              {totalLiquidity}
-            </CarouselItem>
-            <CarouselItem
-              loading={additionalAssetDataLoading}
-              title={lang.t('expanded_state.asset.market_cap')}
-              weight="bold"
-            >
-              {marketCap}
-            </CarouselItem>
-          </Carousel>
-          <EdgeFade />
-        </CarouselWrapper>
-      )}
+      <CarouselWrapper
+        isAnyItemLoading={additionalAssetDataLoading}
+        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+        setCarouselHeight={setCarouselHeight}
+      >
+        <Carousel>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            showDivider
+            title={lang.t('expanded_state.asset.volume_24_hours')}
+            weight="bold"
+          >
+            {totalVolume}
+          </CarouselItem>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            showDivider
+            title={lang.t('expanded_state.asset.uniswap_liquidity')}
+            weight="bold"
+          >
+            {totalLiquidity}
+          </CarouselItem>
+          <CarouselItem
+            loading={additionalAssetDataLoading}
+            title={lang.t('expanded_state.asset.market_cap')}
+            weight="bold"
+          >
+            {marketCap}
+          </CarouselItem>
+        </Carousel>
+        <EdgeFade />
+      </CarouselWrapper>
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {
@@ -482,18 +468,6 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        {!isL2 && (
-          <UniswapPools
-            ShowMoreButton={MoreButton}
-            alwaysShowMoreButton
-            forceShowAll={delayedMorePoolsVisible}
-            hideIfEmpty
-            initialPageAmount={3}
-            marginTop={24}
-            token={asset?.address}
-          />
-        )}
-
         {!!delayedDescriptions && (
           <ExpandedStateSection
             isL2

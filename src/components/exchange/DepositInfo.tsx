@@ -108,7 +108,6 @@ export default function DepositInfo({
           <Inset left="2px" right="10px" vertical={android ? '6px' : '10px'}>
             <Inline alignHorizontal="center" alignVertical="center">
               <Box paddingRight="5px (Deprecated)">
-                {/* @ts-expect-error - Javascript Component */}
                 <CoinIcon
                   address={asset?.address}
                   size={20}

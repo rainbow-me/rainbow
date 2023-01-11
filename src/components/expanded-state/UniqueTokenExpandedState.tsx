@@ -226,10 +226,10 @@ interface UniqueTokenExpandedStateProps {
   external: boolean;
 }
 
+// TODO(RNBW-4552): renable polygon once remote allowlist is updated on web.
 const getIsSupportedOnRainbowWeb = (network: Network) => {
   switch (network) {
     case Network.mainnet:
-    case Network.polygon:
       return true;
     default:
       return false;
@@ -541,13 +541,11 @@ const UniqueTokenExpandedState = ({
                         {hasEditButton ? (
                           <SheetActionButton
                             color={imageColor}
-                            // @ts-expect-error JavaScript component
                             label={`􀉮 ${lang.t(
                               'expanded_state.unique_expanded.edit'
                             )}`}
                             nftShadows
                             onPress={handlePressEdit}
-                            // @ts-expect-error JavaScript component
                             testID="edit"
                             textColor={textColor}
                             weight="heavy"
@@ -555,7 +553,6 @@ const UniqueTokenExpandedState = ({
                         ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
-                            // @ts-expect-error JavaScript component
                             label={
                               hasSendButton
                                 ? `􀮶 ${marketplaceName}`
@@ -568,7 +565,6 @@ const UniqueTokenExpandedState = ({
                             }
                             nftShadows
                             onPress={handlePressMarketplaceName}
-                            // @ts-expect-error JavaScript component
                             testID="unique-expanded-state-send"
                             textColor={textColor}
                             weight="heavy"

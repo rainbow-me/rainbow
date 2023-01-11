@@ -1,7 +1,11 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { Wallet } from '@ethersproject/wallet';
-import { ALLOWS_PERMIT, PermitSupportedTokenList } from '@rainbow-me/swaps';
+import { Signer } from 'ethers';
+import {
+  ALLOWS_PERMIT,
+  PermitSupportedTokenList,
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+} from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
@@ -24,12 +28,12 @@ export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
   spender: string,
-  chainId = 1
+  chainId = 1,
+  allowsPermit = true
 ): Promise<number | string> => {
   try {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const provider = await getProviderForNetwork(network);
     if (
+      allowsPermit &&
       ALLOWS_PERMIT[
         tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
       ]
@@ -37,6 +41,8 @@ export const estimateApprove = async (
       return '0';
     }
 
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const provider = await getProviderForNetwork(network);
     logger.sentry('exchange estimate approve', {
       owner,
       spender,
@@ -93,15 +99,11 @@ const executeApprove = async (
         maxPriorityFeePerGas: string;
         gasPrice?: undefined;
       },
-  wallet: Wallet,
+  wallet: Signer,
   nonce: number | null = null,
   chainId = 1
 ) => {
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  const provider = await getProviderForNetwork(network);
-  const walletToUse = new Wallet(wallet.privateKey, provider);
-
-  const exchange = new Contract(tokenAddress, erc20ABI, walletToUse);
+  const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
     // In case it's an L2 with legacy gas price like arbitrum
@@ -116,7 +118,7 @@ const executeApprove = async (
 const actionName = 'unlock';
 
 const unlock = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapExchangeActionParameters,
@@ -141,11 +143,14 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
+    const contractAllowsPermit =
+      contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS;
     gasLimit = await estimateApprove(
       accountAddress,
       assetAddress,
       contractAddress,
-      chainId
+      chainId,
+      contractAllowsPermit
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
@@ -200,8 +205,8 @@ const unlock = async (
       throw e;
     }
   }
-
-  const cacheKey = `${wallet.address}|${assetAddress}|${contractAddress}`.toLowerCase();
+  const walletAddress = await wallet.getAddress();
+  const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
@@ -245,21 +250,12 @@ export const assetNeedsUnlocking = async (
 
   const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
-  // Check on cache first
-  // if (AllowancesCache.cache[cacheKey]) {
-  //   allowance = AllowancesCache.cache[cacheKey];
-  // } else {
   const allowance = await getRawAllowance(
     accountAddress,
     assetToUnlock,
     contractAddress,
     chainId
   );
-
-  // Cache that value
-  // if (!isNull(allowance)) {
-  //   AllowancesCache.cache[cacheKey] = allowance;
-  // }
 
   logger.log('raw allowance', allowance.toString());
   // Cache that value

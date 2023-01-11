@@ -17,7 +17,7 @@ let action = null;
 const isOnSwipeScreen = name =>
   [
     Routes.WALLET_SCREEN,
-    Routes.QR_SCANNER_SCREEN,
+    Routes.DISCOVER_SCREEN,
     Routes.PROFILE_SCREEN,
   ].includes(name);
 
@@ -35,7 +35,7 @@ export function onHandleStatusBar(currentState, prevState) {
     StatusBarHelper.setLightContent();
     return;
   }
-  const isFromWalletScreen = Navigation.getActiveRoute().params
+  const isFromWalletScreen = Navigation.getActiveRoute()?.params
     ?.isFromWalletScreen;
 
   const isRoutesLengthDecrease =
@@ -64,6 +64,7 @@ export function onHandleStatusBar(currentState, prevState) {
       break;
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
+    case Routes.DISCOVER_SCREEN:
     case Routes.WYRE_WEBVIEW:
     case Routes.SAVINGS_SHEET:
     case Routes.WELCOME_SCREEN:

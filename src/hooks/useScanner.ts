@@ -4,6 +4,7 @@ import qs from 'qs';
 import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
+import { parseUri } from '@walletconnect/utils';
 import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { useNavigation } from '../navigation/Navigation';
@@ -21,9 +22,11 @@ import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
+import { pair as pairWalletConnect } from '@/utils/walletConnect';
+import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
@@ -116,15 +119,20 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
-
+      goBack();
       onSuccess();
       try {
-        await walletConnectOnSessionRequest(qrCodeData, () => {});
+        const { version } = parseUri(qrCodeData);
+        if (version === 1) {
+          await walletConnectOnSessionRequest(qrCodeData, () => {});
+        } else if (version === 2 && getExperimetalFlag(WC_V2)) {
+          await pairWalletConnect({ uri: qrCodeData });
+        }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
       }
     },
-    [walletConnectOnSessionRequest, onSuccess]
+    [goBack, onSuccess, walletConnectOnSessionRequest]
   );
 
   const handleScanInvalid = useCallback(

@@ -1,4 +1,7 @@
-export { AccentColorProvider } from './color/AccentColorContext';
+export {
+  AccentColorProvider,
+  useAccentColor,
+} from './color/AccentColorContext';
 export { BackgroundProvider } from './components/BackgroundProvider/BackgroundProvider';
 export { Bleed } from './components/Bleed/Bleed';
 export { Box } from './components/Box/Box';
@@ -28,6 +31,7 @@ export type { BleedProps } from './components/Bleed/Bleed';
 export type { BoxProps } from './components/Box/Box';
 export type { ColumnsProps, ColumnProps } from './components/Columns/Columns';
 export type { CoverProps } from './components/Cover/Cover';
+export type { CustomShadow } from './layout/shadow';
 export type { HeadingProps } from './components/Heading/Heading';
 export type { InlineProps } from './components/Inline/Inline';
 export type { InsetProps } from './components/Inset/Inset';

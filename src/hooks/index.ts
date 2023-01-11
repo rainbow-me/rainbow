@@ -1,6 +1,6 @@
 export {
-  useChartData,
   useChartDataLabels,
+  useChartInfo,
   useChartThrottledPoints,
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
@@ -129,13 +129,12 @@ export { default as useSwapIsSufficientBalance } from './useSwapIsSufficientBala
 export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useSwapDerivedValues } from './useSwapDerivedValues';
+export { default as useSwapRefuel } from './useSwapRefuel';
 export { default as useTimeout } from './useTimeout';
-export { default as useTopMovers } from './useTopMovers';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useAssetsInWallet } from './useAssetsInWallet';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
-export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
@@ -158,7 +157,6 @@ export { default as useCurrentNonce } from './useCurrentNonce';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
-export { default as useAsyncEffect } from './useAsyncEffect';
 export {
   default as useHardwareBack,
   useHardwareBackOnFocus,
@@ -168,3 +166,5 @@ export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
+export { useSwappableUserAssets } from './useSwappableUserAssets';
+export { useAccountAccentColor } from './useAccountAccentColor';

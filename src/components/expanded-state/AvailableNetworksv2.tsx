@@ -137,6 +137,7 @@ const AvailableNetworksv2 = ({
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
           marginHorizontal={{ custom: marginHorizontal }}
+          testID={'available-networks-v2'}
         >
           <Box
             borderRadius={99}
@@ -172,7 +173,6 @@ const AvailableNetworksv2 = ({
                             size="small"
                           />
                         ) : (
-                          // @ts-expect-error overloaded props RadialGradient
                           <CoinIcon
                             address={ETH_ADDRESS}
                             size={20}

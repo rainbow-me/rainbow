@@ -142,6 +142,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
+      testID={`${testID}-${symbol || 'empty'}-${type || 'empty'}`}
     >
       <TouchableWithoutFeedback
         onPress={onTapWhileDisabled ?? handleFocusField}
@@ -158,7 +159,6 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              /* @ts-expect-error — JavaScript component */
               <CoinIcon
                 address={address}
                 mainnet_address={mainnetAddress}

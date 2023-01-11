@@ -428,12 +428,9 @@ export function ENSAssignRecordsBottomActions({
                         <SheetActionButton
                           color={accentColor}
                           disabled={isValidating || !isEmpty(errors)}
-                          // @ts-expect-error JavaScript component
                           label={lang.t('profiles.create.review')}
                           onPress={handlePressContinue}
-                          // @ts-expect-error JavaScript component
                           size="big"
-                          // @ts-expect-error JavaScript component
                           testID="ens-assign-records-review"
                           weight="heavy"
                         />
@@ -493,7 +490,7 @@ function HideKeyboardButton({ color }: { color: string }) {
             background="accent"
             borderRadius={15}
             height={{ custom: 30 }}
-            shadow="15px light"
+            shadow="15px light (Deprecated)"
             width={{ custom: 30 }}
           >
             <Cover alignHorizontal="center" alignVertical="center">
@@ -526,15 +523,15 @@ function Shadow() {
             custom: {
               android: {
                 elevation: 30,
+                color: 'shadowFar',
                 opacity: 0.08,
               },
               ios: [
                 {
                   blur: 30,
-                  offset: {
-                    x: 0,
-                    y: -10,
-                  },
+                  x: 0,
+                  y: -10,
+                  color: 'shadowFar',
                   opacity: 0.08,
                 },
               ],
