@@ -2,8 +2,8 @@ import React from 'react';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Box, Cover, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Image } from 'react-native';
-import OpRewardsCardOverlay from '../../assets/optimismRewardsCardOverlay.png';
+import { Image, StyleSheet } from 'react-native';
+import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 
 const GRADIENT = ['#520907', '#B22824'];
 
-export const OptimismRewardsCard: React.FC = () => {
+export const OpRewardsCard: React.FC = () => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
 
@@ -27,14 +27,9 @@ export const OptimismRewardsCard: React.FC = () => {
     >
       <Cover>
         <Image
-          source={OpRewardsCardOverlay}
+          source={OpRewardsCardBackgroundImage}
           resizeMode="cover"
-          style={{
-            width: '100%',
-            overflow: 'hidden',
-            height: '100%',
-            borderRadius: 20,
-          }}
+          style={styles.opRewardsCardOverlay}
         />
       </Cover>
       <Stack space="32px">
@@ -73,3 +68,12 @@ export const OptimismRewardsCard: React.FC = () => {
     </GenericCard>
   );
 };
+
+const styles = StyleSheet.create({
+  opRewardsCardOverlay: {
+    width: '100%',
+    overflow: 'hidden',
+    height: '100%',
+    borderRadius: 20,
+  },
+});

@@ -19,7 +19,7 @@ import {
   backupsCard,
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
-import { OptimismRewardsCard } from '@/components/cards/OptimismRewardsCard';
+import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
@@ -40,7 +40,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 <ENSSearchCard />
               </Inline>
-              {optimismRewardsEnabled && <OptimismRewardsCard />}
+              {optimismRewardsEnabled && <OpRewardsCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
