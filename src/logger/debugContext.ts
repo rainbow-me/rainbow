@@ -7,7 +7,9 @@
  */
 export const DebugContext = {
   // e.g. swaps: 'swaps'
-  migrations: 'migrations',
   analytics: 'analytics',
+  ledger: 'ledger',
+  migrations: 'migrations',
   notifications: 'notifications',
+  walletconnect: 'walletconnect',
 } as const;

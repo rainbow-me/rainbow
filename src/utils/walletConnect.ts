@@ -168,7 +168,7 @@ async function rejectProposal({
 }
 
 export async function pair({ uri }: { uri: string }) {
-  logger.debug(`WC v2: pair`, { uri });
+  logger.debug(`WC v2: pair`, { uri }, logger.DebugContext.walletconnect);
 
   try {
     // show loading state as feedback for user
@@ -206,7 +206,11 @@ export async function initListeners() {
 
   syncSignClient = client;
 
-  logger.debug(`WC v2: signClient initialized, initListeners`);
+  logger.debug(
+    `WC v2: signClient initialized, initListeners`,
+    {},
+    logger.DebugContext.walletconnect
+  );
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
@@ -240,7 +244,11 @@ export async function initListeners() {
 export async function onSessionProposal(
   proposal: SignClientTypes.EventArguments['session_proposal']
 ) {
-  logger.debug(`WC v2: session_proposal`);
+  logger.debug(
+    `WC v2: session_proposal`,
+    {},
+    logger.DebugContext.walletconnect
+  );
 
   const receivedTimestamp = Date.now();
   const { proposer, requiredNamespaces } = proposal.params;
@@ -289,11 +297,15 @@ export async function onSessionProposal(
       const { id, proposer, requiredNamespaces } = proposal.params;
 
       if (approved) {
-        logger.debug(`WC v2: session approved`, {
-          approved,
-          approvedChainId,
-          accountAddress,
-        });
+        logger.debug(
+          `WC v2: session approved`,
+          {
+            approved,
+            approvedChainId,
+            accountAddress,
+          },
+          logger.DebugContext.walletconnect
+        );
 
         const namespaces: Parameters<
           typeof client.approve
@@ -314,7 +326,11 @@ export async function onSessionProposal(
           }
         }
 
-        logger.debug(`WC v2: session approved namespaces`);
+        logger.debug(
+          `WC v2: session approved namespaces`,
+          {},
+          logger.DebugContext.walletconnect
+        );
 
         try {
           /**
@@ -337,7 +353,11 @@ export async function onSessionProposal(
             Minimizer.goBack();
           }
 
-          logger.debug(`WC v2: session created`);
+          logger.debug(
+            `WC v2: session created`,
+            {},
+            logger.DebugContext.walletconnect
+          );
 
           analytics.track('Approved new WalletConnect session', {
             dappName: proposer.metadata.name,
@@ -385,7 +405,7 @@ export async function onSessionRequest(
 ) {
   const client = await signClient;
 
-  logger.debug(`WC v2: session_request`);
+  logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
 
   const { id, topic } = event;
   const { method, params } = event.params.request;
@@ -426,7 +446,9 @@ export async function onSessionRequest(
 
       if (!selectedWallet || selectedWallet?.type === WalletTypes.readOnly) {
         logger.debug(
-          `WC v2: session_request exited, selectedWallet was falsy or read only`
+          `WC v2: session_request exited, selectedWallet was falsy or read only`,
+          {},
+          logger.DebugContext.walletconnect
         );
 
         await client.respond({
@@ -471,7 +493,11 @@ export async function onSessionRequest(
       },
     };
 
-    logger.debug(`WC v2: handling request`);
+    logger.debug(
+      `WC v2: handling request`,
+      {},
+      logger.DebugContext.walletconnect
+    );
 
     const { requests: pendingRequests } = store.getState().requests;
 
@@ -486,7 +512,11 @@ export async function onSessionRequest(
       });
       saveLocalRequests(updatedRequests, address, network);
 
-      logger.debug(`WC v2: navigating to CONFIRM_REQUEST sheet`);
+      logger.debug(
+        `WC v2: navigating to CONFIRM_REQUEST sheet`,
+        {},
+        logger.DebugContext.walletconnect
+      );
 
       Navigation.handleAction(Routes.CONFIRM_REQUEST, {
         openAutomatically: true,
@@ -538,14 +568,22 @@ export async function handleSessionRequestResponse(
       topic,
       response: formatJsonRpcResult(id, result),
     };
-    logger.debug(`WC v2: handleSessionRequestResponse success`);
+    logger.debug(
+      `WC v2: handleSessionRequestResponse success`,
+      {},
+      logger.DebugContext.walletconnect
+    );
     await client.respond(payload);
   } else {
     const payload = {
       topic,
       response: formatJsonRpcError(id, error),
     };
-    logger.debug(`WC v2: handleSessionRequestResponse reject`);
+    logger.debug(
+      `WC v2: handleSessionRequestResponse reject`,
+      {},
+      logger.DebugContext.walletconnect
+    );
     await client.respond(payload);
   }
 
