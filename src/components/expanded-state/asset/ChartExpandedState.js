@@ -205,7 +205,7 @@ export default function ChartExpandedState({ asset }) {
   }, [asset, genericAsset, hasBalance, nativeCurrency]);
 
   if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = assetWithPrice.address;
+    assetWithPrice.l2Address = asset?.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
