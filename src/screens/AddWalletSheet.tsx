@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { useWallets } from '@/hooks';
+import { useInitializeWallet, useWallets } from '@/hooks';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
 
@@ -28,6 +28,7 @@ export const AddWalletSheet = () => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
+  const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
   const {
     isDamaged,
@@ -36,7 +37,7 @@ export const AddWalletSheet = () => {
     wallets,
   } = useWallets();
 
-  const onPressCreate = () => {
+  const onPressCreate = async () => {
     try {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
         isFirstWallet: false,
@@ -98,7 +99,6 @@ export const AddWalletSheet = () => {
                     }
                     return false;
                   });
-
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (
