@@ -493,7 +493,7 @@
       "@lavamoat/preinstall-always-fail": false,
       "@sentry/react-native>@sentry/cli": true,
       "@sentry/react-native>@sentry/wizard>@sentry/cli": false,
-      "@shopify/react-native-skia": true,
+      "@shopify/react-native-skia": false,
       "cloudinary>core-js": false,
       "detox": false,
       "detox>bunyan>dtrace-provider": false,
