@@ -1426,7 +1426,7 @@
         "copy_address": "Copy Address :)",
         "send": "Send :)",
         "add_contact": "Add to Contacts :)",
-        "view_contact": "View Contact :)"
+        "edit_contact": "Edit Contact :)"
       },
       "actions_menu": {
         "speed_up": "Speed Up :)",
