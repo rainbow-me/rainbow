@@ -282,6 +282,17 @@ export const isValidMnemonic = (value: string): boolean =>
   ethersIsValidMnemonic(value);
 
 /**
+ * @desc is valid bluetooth device id
+ * @param value The string to check.
+ * @return Whether or not the string was a valid bluetooth device id
+ */
+export const isValidBluetoothDeviceId = (value: string): boolean => {
+  return (
+    value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
+  );
+};
+
+/**
  * @desc Converts an address to a checksummed address.
  * @param address The address
  * @return The checksum address, or `null` if the conversion fails.
@@ -619,6 +630,7 @@ export const getTransferTokenTransaction = async (
 export const createSignableTransaction = async (
   transaction: NewTransactionNonNullable
 ): Promise<TransactionDetailsReturned> => {
+  // handle native assets seperately
   if (
     transaction.asset.address === ETH_ADDRESS ||
     transaction.asset.address === ARBITRUM_ETH_ADDRESS ||

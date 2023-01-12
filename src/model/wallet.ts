@@ -35,32 +35,38 @@ import profileUtils, {
 } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { EthereumAddress } from '@/entities';
-import AesEncryptor from '@/handlers/aesEncryption';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { EthereumAddress } from '@rainbow-me/entities';
+import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
-} from '@/handlers/authentication';
-import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+} from '@rainbow-me/handlers/authentication';
+import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
   isHexStringIgnorePrefix,
+  isValidBluetoothDeviceId,
   isValidMnemonic,
   web3Provider,
-} from '@/handlers/web3';
-import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { EthereumWalletType } from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import store from '@/redux/store';
-import { setIsWalletLoading } from '@/redux/wallets';
-import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
+} from '@rainbow-me/handlers/web3';
+import { createSignature } from '@rainbow-me/helpers/signingWallet';
+import showWalletErrorAlert from '@rainbow-me/helpers/support';
+import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
+import walletTypes, {
+  EthereumWalletType,
+} from '@rainbow-me/helpers/walletTypes';
+import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+import store from '@rainbow-me/redux/store';
+import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
+import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 import {
+  deriveAccountFromBluetoothHardwareWallet,
   deriveAccountFromMnemonic,
   deriveAccountFromWalletInput,
 } from '@/utils/wallet';
@@ -99,7 +105,6 @@ interface MessageTypeProperty {
 
 interface TypedDataTypes {
   EIP712Domain: MessageTypeProperty[];
-
   [additionalProperties: string]: MessageTypeProperty[];
 }
 
@@ -155,6 +160,7 @@ export interface RainbowWallet {
   backupDate?: string;
   backupType?: string;
   damaged?: boolean;
+  deviceId?: string;
 }
 
 export interface AllRainbowWallets {
@@ -198,12 +204,21 @@ const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
+export const LEDGER_LIVE = `LEDGER_LIVE`;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
+
+const isHardwareWalletKey = (key: string | null) => {
+  const data = key?.split('/');
+  if (data && data.length > 1) {
+    return true;
+  }
+  return false;
+};
 
 export const getHdPath = ({
   type,
@@ -271,12 +286,29 @@ export const loadWallet = async (
   address?: EthereumAddress | undefined,
   showErrorIfNotLoaded = true,
   provider?: Provider
-): Promise<null | Wallet> => {
+): Promise<null | Wallet | LedgerSigner> => {
+  // check if address from a hardware wallet, and get encrytped 'privatekey'
   const privateKey = await loadPrivateKey(address);
+  console.log(
+    'hardware ? ',
+    isHardwareWalletKey(privateKey as string),
+    ' - ',
+    privateKey
+  );
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
-  if (privateKey) {
+  if (isHardwareWalletKey(privateKey)) {
+    const index = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[0];
+    if (typeof index !== undefined && provider && deviceId) {
+      return new LedgerSigner(
+        provider,
+        getHdPath({ type: LEDGER_LIVE, index: Number(index) }),
+        deviceId
+      );
+    }
+  } else if (privateKey) {
     // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
@@ -436,7 +468,6 @@ export const signTypedDataMessage = async (
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
-      const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
       let parsedData = message;
       try {
         parsedData = typeof message === 'string' && JSON.parse(message);
@@ -457,13 +488,23 @@ export const signTypedDataMessage = async (
         version = 'v4';
       }
 
-      return {
-        result: signTypedData({
-          data: parsedData as TypedMessage<TypedDataTypes>,
-          privateKey: pkeyBuffer,
-          version: version.toUpperCase() as SignTypedDataVersion,
-        }),
-      };
+      // Hardware wallets
+      if (!wallet?.privateKey) {
+        const result = await (wallet as LedgerSigner).signTypedDataMessage(
+          parsedData,
+          version === 'v1'
+        );
+        return { result };
+      } else {
+        const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
+        return {
+          result: signTypedData({
+            data: parsedData as TypedMessage<TypedDataTypes>,
+            privateKey: pkeyBuffer,
+            version: version.toUpperCase() as SignTypedDataVersion,
+          }),
+        };
+      }
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
@@ -491,9 +532,19 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
-const loadPrivateKey = async (
+export const loadPrivateKey = async (
   address?: EthereumAddress | undefined
 ): Promise<null | EthereumPrivateKey | -1 | -2> => {
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return null;
+  }
+
+  // checks if the address is a hardware wallet for proper handling
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -508,12 +559,10 @@ const loadPrivateKey = async (
     }
 
     if (!privateKey) {
-      const addressToUse = address || (await loadAddress());
-      if (!addressToUse) {
-        return null;
-      }
-
-      const privateKeyData = await getPrivateKey(addressToUse);
+      const privateKeyData = await getPrivateKey(
+        addressToUse,
+        isHardwareWallet
+      );
       if (privateKeyData === -1) {
         return -1;
       }
@@ -560,6 +609,10 @@ export const identifyWalletType = (
   ) {
     return EthereumWalletType.privateKey;
   }
+  // Bluetooth device id (Ledger nano x)
+  if (isValidBluetoothDeviceId(walletSeed)) {
+    return EthereumWalletType.bluetooth;
+  }
   // 12 or 24 words seed phrase
   if (isValidMnemonic(walletSeed)) {
     return EthereumWalletType.mnemonic;
@@ -576,10 +629,10 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite = false,
+  overwrite: boolean = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent = false,
+  silent: boolean = false,
   clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
@@ -592,7 +645,7 @@ export const createWallet = async (
     logger.sentry('Generating a new seed phrase');
   }
   const walletSeed = seed || generateMnemonic();
-  const addresses: RainbowAccount[] = [];
+  let addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
 
@@ -609,6 +662,7 @@ export const createWallet = async (
       walletType,
     } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
+    const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
     const walletAddress = address;
@@ -616,6 +670,9 @@ export const createWallet = async (
       pkey = addHexPrefix(
         (walletResult as LibWallet).getPrivateKey().toString('hex')
       );
+    } else if (isHardwareWallet) {
+      // hardware pkey format is ${bluetooth device id}/${index}
+      pkey = `${seed}/0`;
     }
     logger.sentry('[createWallet] - getWallet from seed');
 
@@ -669,7 +726,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
-    if (android && !isReadOnlyType) {
+    if (android && !isReadOnlyType && !isHardwareWallet) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
@@ -720,28 +777,38 @@ export const createWallet = async (
       // Encrypt with the PIN
       const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
       if (encryptedPkey) {
-        await savePrivateKey(walletAddress, encryptedPkey);
+        await savePrivateKey(walletAddress, encryptedPkey, isHardwareWallet);
       } else {
         logger.sentry('Error encrypting pkey to save it');
         return null;
       }
     } else {
-      await savePrivateKey(walletAddress, pkey);
+      await savePrivateKey(walletAddress, pkey, isHardwareWallet);
     }
     logger.sentry('[createWallet] - saved private key');
 
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
+
+    let label = name || '';
+    if (!label && isHardwareWallet) {
+      //  TODO(@skylarbarrera}: add support for multiple hardware wallets
+      label = `Ledger 1`;
+    }
+
     addresses.push({
       address: walletAddress,
       avatar: null,
       color: colorIndexForWallet,
       image,
       index: 0,
-      label: name || '',
+      label,
       visible: true,
     });
-    if (type !== EthereumWalletType.readOnly) {
+    if (
+      type !== EthereumWalletType.readOnly &&
+      type !== EthereumWalletType.bluetooth
+    ) {
       // Creating signature for this wallet
       logger.sentry(`[createWallet] - generating signature`);
       await createSignature(walletAddress, pkey);
@@ -757,21 +824,41 @@ export const createWallet = async (
       logger.sentry(`[createWallet] - enabled web profile`);
     }
 
-    if (isHDWallet && root && isImported) {
+    // Initiate auto account discovery for imported wallets via seedphrase
+    // or for hardware wallets
+    if ((isHDWallet && root && isImported) || (isHardwareWallet && seed)) {
       logger.sentry('[createWallet] - isHDWallet && isImported');
       let index = 1;
-      let lookup = true;
-      // Starting on index 1, we are gonna hit an API and check the tx history
+      let lookup = 0;
+      // Starting on index 1, we check the tx history
       // for each account. If there's history we add it to the wallet.
-      // (We stop once we find the first one with no history)
-      while (lookup) {
-        const child = root.deriveChild(index);
-        const walletObj = child.getWallet();
-        const nextWallet = new Wallet(
-          addHexPrefix(walletObj.getPrivateKey().toString('hex'))
-        );
+      // We stop once we 2 accounts with no history
+      while (lookup < 2) {
+        let nextWallet: any = null;
+        if (isHardwareWallet) {
+          const walletObj = await deriveAccountFromBluetoothHardwareWallet(
+            seed,
+            index
+          );
+          nextWallet = {
+            address: walletObj.wallet.address,
+            privateKey: walletObj.wallet.privateKey,
+          };
+        } else {
+          const child = root?.deriveChild(index);
+          const walletObj = child?.getWallet();
+          const pkey = walletObj?.getPrivateKey()?.toString('hex');
+          if (pkey) {
+            nextWallet = new Wallet(addHexPrefix(pkey));
+          }
+        }
+
         let hasTxHistory = false;
         try {
+          logger.sentry(
+            '[createWallet] - checking tx history for address',
+            nextWallet.address
+          );
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
             nextWallet.address
           );
@@ -821,17 +908,31 @@ export const createWallet = async (
               nextWallet.privateKey
             );
             if (encryptedPkey) {
-              await savePrivateKey(nextWallet.address, encryptedPkey);
+              await savePrivateKey(
+                nextWallet.address,
+                encryptedPkey,
+                isHardwareWallet
+              );
             } else {
               logger.sentry('Error encrypting pkey to save it');
               return null;
             }
           } else {
-            await savePrivateKey(nextWallet.address, nextWallet.privateKey);
+            await savePrivateKey(
+              nextWallet.address,
+              nextWallet.privateKey,
+              isHardwareWallet
+            );
           }
           logger.sentry(
             `[createWallet] - saved private key for next wallet ${index}`
           );
+
+          if (!label && isHardwareWallet) {
+            //  TODO(@skylarbarrera}: add support for multiple hardware wallets
+            label = `Ledger ${index + 1}`;
+          }
+
           addresses.push({
             address: nextWallet.address,
             avatar: null,
@@ -842,30 +943,32 @@ export const createWallet = async (
             visible: true,
           });
 
-          // Creating signature for this wallet
-          await createSignature(nextWallet.address, nextWallet.privateKey);
-          // Enable web profile
-          store.dispatch(updateWebDataEnabled(true, nextWallet.address));
+          if (!isHardwareWallet) {
+            // Creating signature for this wallet
+            await createSignature(nextWallet.address, nextWallet.privateKey);
+            // Enable web profile
+            store.dispatch(updateWebDataEnabled(true, nextWallet.address));
 
-          // Save the color
-          setPreference(
-            PreferenceActionType.init,
-            'profile',
-            nextWallet.address,
-            {
-              accountColor:
-                lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
-              accountSymbol: addressHashedEmoji(nextWallet.address),
-            }
-          );
+            // Save the color
+            setPreference(
+              PreferenceActionType.init,
+              'profile',
+              nextWallet.address,
+              {
+                accountColor:
+                  lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
+                accountSymbol: addressHashedEmoji(nextWallet.address),
+              }
+            );
 
-          logger.sentry(
-            `[createWallet] - enabled web profile for wallet ${index}`
-          );
+            logger.sentry(
+              `[createWallet] - enabled web profile for wallet ${index}`
+            );
+          }
 
-          index++;
+          index += 1;
         } else {
-          lookup = false;
+          lookup += 1;
         }
       }
     }
@@ -919,6 +1022,11 @@ export const createWallet = async (
     );
     initializeNotificationSettingsForAddresses(addressesWithRelationship);
 
+    // add the device id (seed) to the wallet object for hardware wallets
+    if (type === walletTypes.bluetooth && seed) {
+      allWallets[id].deviceId = seed;
+    }
+
     if (!silent) {
       await setSelectedWallet(allWallets[id]);
       logger.sentry('[createWallet] - setSelectedWallet');
@@ -928,8 +1036,9 @@ export const createWallet = async (
     logger.sentry('[createWallet] - saveAllWallets');
 
     if (walletResult && walletAddress) {
-      const ethersWallet =
-        walletType === WalletLibraryType.ethers
+      const walletRes =
+        walletType === WalletLibraryType.ethers ||
+        walletType === WalletLibraryType.ledger
           ? (walletResult as Wallet)
           : new Wallet(pkey);
       setTimeout(() => {
@@ -940,7 +1049,7 @@ export const createWallet = async (
         }
       }, 2000);
 
-      return ethersWallet;
+      return walletRes;
     }
     return null;
   } catch (error) {
@@ -952,9 +1061,11 @@ export const createWallet = async (
 
 export const savePrivateKey = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey
+  privateKey: null | EthereumPrivateKey,
+  hardware?: boolean
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
+  const publicAccessControlOptions = keychain.publicAccessControlOptions;
 
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -962,18 +1073,25 @@ export const savePrivateKey = async (
     privateKey,
     version: privateKeyVersion,
   };
-
-  await keychain.saveObject(key, val, privateAccessControlOptions);
+  // if its a hardware wallet we dont want in the private keychain
+  await keychain.saveObject(
+    key,
+    val,
+    hardware ? publicAccessControlOptions : privateAccessControlOptions
+  );
 };
 
 export const getPrivateKey = async (
-  address: EthereumAddress
+  address: EthereumAddress,
+  hardware?: boolean
 ): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const pkey = (await keychain.loadObject(key, {
-      authenticationPrompt,
-    })) as PrivateKeyData | -2;
+    const options = hardware ? undefined : { authenticationPrompt };
+
+    const pkey = (await keychain.loadObject(key, options)) as
+      | PrivateKeyData
+      | -2;
 
     if (pkey === -2) {
       Alert.alert(
@@ -1152,7 +1270,6 @@ export const generateAccount = async (
     if (!seedphrase) {
       throw new Error(`Can't access secret phrase to create new accounts`);
     }
-
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(
       seedphrase,
       index
@@ -1252,7 +1369,9 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
 
     if (!existingAccount && hdnode) {
       logger.sentry('No existing account, so we have to derive it');
-      node = hdnode.derivePath(`${DEFAULT_HD_PATH}/0`);
+      node = hdnode.derivePath(
+        getHdPath({ type: WalletLibraryType.ethers, index: 0 })
+      );
       existingAccount = new Wallet(node.privateKey);
       logger.sentry('Got existing account');
     }
