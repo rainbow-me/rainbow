@@ -204,7 +204,6 @@ const seedPhraseVersion = 1.0;
 const selectedWalletVersion = 1.0;
 export const allWalletsVersion = 1.0;
 
-export const LEDGER_LIVE = `LEDGER_LIVE`;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
@@ -304,7 +303,7 @@ export const loadWallet = async (
     if (typeof index !== undefined && provider && deviceId) {
       return new LedgerSigner(
         provider,
-        getHdPath({ type: LEDGER_LIVE, index: Number(index) }),
+        getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }),
         deviceId
       );
     }

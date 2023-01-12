@@ -26,7 +26,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (
   const eth = new AppEth(transport);
   const path = getHdPath({
     type: WalletLibraryType.ledger,
-    index: Number(index),
+    index: Number(index)
   });
   const { address } = await eth.getAddress(path, false);
   const wallet = {
