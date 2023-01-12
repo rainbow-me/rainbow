@@ -294,7 +294,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               if (success) {
                 goBack();
                 InteractionManager.runAfterInteractions(async () => {
-                  if (previousWalletCount === 0) {
+                  if (previousWalletCount === 0 || android) {
                     // on Android replacing is not working well, so we navigate and then remove the screen below
                     const action = ios ? replace : navigate;
                     action(Routes.SWIPE_LAYOUT, {
