@@ -262,7 +262,7 @@ export const AddWalletSheet = () => {
           }
           logger.info(`Downloaded ${cloudPlatform} backup info`);
         } catch (e) {
-          logger.info((e as Error).message);
+          logger.error(e as RainbowError);
         } finally {
           if (!proceed) {
             Alert.alert(
