@@ -32,6 +32,7 @@ import {
   removeRequest,
 } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
+import { events } from '@/handlers/appEvents';
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -320,6 +321,9 @@ export async function onSessionProposal(
           });
 
           await acknowledged();
+
+          // let the ConnectedDappsSheet know we've got a new one
+          events.emit('walletConnectV2SessionCreated');
 
           if (hasDeeplinkPendingRedirect) {
             setHasPendingDeeplinkPendingRedirect(false);

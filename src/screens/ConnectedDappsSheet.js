@@ -13,6 +13,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { signClient, getAllActiveSessionsSync } from '@/utils/walletConnect';
 import { logger } from '@/logger';
+import { events } from '@/handlers/appEvents';
 
 const MAX_VISIBLE_DAPPS = 7;
 
@@ -52,12 +53,14 @@ export default function ConnectedDappsSheet() {
   }, [loadSessions, setLoadSessions, setSessions]);
 
   /**
-   * Listen for disconnected sessions and remove from list. Really only needed
-   * if the list is already opened, since we otherwise lazily check for
-   * sessions when the user clicks on the overflow menu button.
+   * Listen for new or disconnected sessions to add or remove from list.
+   *
+   * Really only needed if the list is already opened, since we otherwise
+   * lazily check for sessions when the user clicks on the overflow menu
+   * button.
    */
   React.useEffect(() => {
-    async function listen() {
+    (async function listenForDeletedSessions() {
       const client = await signClient;
 
       // client handles disconnected sessions
@@ -70,9 +73,11 @@ export default function ConnectedDappsSheet() {
           logger.DebugContext.walletconnect
         );
       });
-    }
+    })();
 
-    listen();
+    events.on('walletConnectV2SessionCreated', () => {
+      setLoadSessions(true); // force reload
+    });
   }, []);
 
   useEffect(() => {
