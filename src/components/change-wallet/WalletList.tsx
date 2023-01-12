@@ -29,7 +29,6 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
-import { useNavigation } from '@/navigation';
 import { Inset, Stack } from '@/design-system';
 
 const listTopPadding = 7.5;
@@ -135,7 +134,6 @@ export default function WalletList({
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const { goBack, navigate } = useNavigation();
 
   // Update the rows when allWallets changes
   useEffect(() => {
