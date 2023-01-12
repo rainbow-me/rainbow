@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
@@ -12,7 +12,6 @@ import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/core';
-import { useNavigation } from '@/navigation';
 import { useDimensions } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
@@ -26,25 +25,9 @@ export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, type, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
-  const { setParams } = useNavigation();
-
-  const [sheetHeight, setSheetHeight] = useState<number | undefined>(0);
   const { height: deviceHeight } = useDimensions();
 
-  // console.log(deviceHeight);
-
-  useEffect(
-    () =>
-      setParams({
-        sheetHeight,
-      }),
-    [setParams, sheetHeight]
-  );
-
   const [scrollEnabled, setScrollEnabled] = useState(false);
-
-  const contentHeight =
-    (sheetHeight || deviceHeight) - SheetHandleFixedToTopHeight;
 
   return (
     // wrapping in View prevents keyboard from pushing up sheet on android
@@ -57,7 +40,7 @@ export const AddWalletNavigator = () => {
         {({ backgroundColor }) => (
           // @ts-expect-error js component
           <SlackSheet
-            contentHeight={contentHeight}
+            contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
             additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
             backgroundColor={backgroundColor}
             height="100%"
@@ -71,12 +54,11 @@ export const AddWalletNavigator = () => {
             >
               <Swipe.Screen
                 component={AddWalletSheet}
-                initialParams={{ isFirstWallet, setSheetHeight, userData }}
+                initialParams={{ isFirstWallet, userData }}
                 name={Routes.ADD_WALLET_SHEET}
                 listeners={{
                   focus: () => {
                     setScrollEnabled(!isFirstWallet);
-                    setSheetHeight(isFirstWallet ? 0 : deviceHeight);
                   },
                 }}
               />
@@ -87,7 +69,6 @@ export const AddWalletNavigator = () => {
                 listeners={{
                   focus: () => {
                     setScrollEnabled(false);
-                    setSheetHeight(deviceHeight);
                   },
                 }}
               />

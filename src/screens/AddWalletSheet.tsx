@@ -44,7 +44,7 @@ type RouteParams = {
 
 export const AddWalletSheet = () => {
   const {
-    params: { isFirstWallet, setSheetHeight, userData },
+    params: { isFirstWallet, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
 
   const { goBack, navigate } = useNavigation();
@@ -356,58 +356,45 @@ export const AddWalletSheet = () => {
 
   return (
     <Box height="full" background="surfaceSecondary">
-      {isFirstWallet ? (
-        <View
-          onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
-        >
-          <Inset
-            top="36px"
-            horizontal="30px (Deprecated)"
-            bottom={IS_ANDROID ? '104px' : '80px'}
-          >
-            <AddWalletList
-              items={[
-                ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
-                restoreFromSeed,
-                ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                watch,
-              ]}
-              totalHorizontalInset={30}
-            />
-          </Inset>
-        </View>
-      ) : (
-        <Inset horizontal="20px" top="36px" bottom="104px">
-          <Stack space="32px">
-            <Stack space="20px">
-              <Text align="center" size="26pt" weight="bold" color="label">
-                {i18n.t(TRANSLATIONS.title)}
-              </Text>
-              <Text
-                align="center"
-                size="15pt / 135%"
-                weight="semibold"
-                color="labelTertiary"
-              >
-                {i18n.t(TRANSLATIONS.description)}
-              </Text>
-            </Stack>
-            <Box background="surfacePrimary" borderRadius={18} shadow="12px">
-              <Inset vertical="24px" horizontal="20px">
-                <AddWalletList
-                  totalHorizontalInset={40}
-                  items={[
-                    create,
-                    ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                    watch,
-                    restoreFromSeed,
-                  ]}
-                />
-              </Inset>
-            </Box>
+      <Inset horizontal="20px" top="36px" bottom="104px">
+        <Stack space="32px">
+          <Stack space="20px">
+            <Text align="center" size="26pt" weight="bold" color="label">
+              {i18n.t(
+                TRANSLATIONS[
+                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                ].title
+              )}
+            </Text>
+            <Text
+              align="center"
+              size="15pt / 135%"
+              weight="semibold"
+              color="labelTertiary"
+            >
+              {i18n.t(
+                TRANSLATIONS[
+                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                ].description
+              )}
+            </Text>
           </Stack>
-        </Inset>
-      )}
+          <Box background="surfacePrimary" borderRadius={18} shadow="12px">
+            <Inset vertical="24px" horizontal="20px">
+              <AddWalletList
+                totalHorizontalInset={40}
+                items={[
+                  ...(!isFirstWallet ? [create] : []),
+                  ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                  restoreFromSeed,
+                  ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
+                  watch,
+                ]}
+              />
+            </Inset>
+          </Box>
+        </Stack>
+      </Inset>
     </Box>
   );
 };

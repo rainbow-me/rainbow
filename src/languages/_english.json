@@ -1674,8 +1674,14 @@
               "title": "Watch an Ethereum address"
             }
           },
-          "description": "Create a new wallet or add an existing one",
-          "title": "Add another wallet"
+          "first_wallet": {
+            "description": "Import your own wallet or watch someone else's",
+            "title": "Add your first wallet"
+          },
+          "additional_wallet": {
+            "description": "Create a new wallet or add an existing one",
+            "title": "Add another wallet"
+          }
         },
         "import_or_watch_wallet_sheet": {
           "paste": "Paste",
