@@ -22,13 +22,13 @@ import {
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { useWallets } from '@/hooks';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/core';
 // @ts-ignore ts is complaining about this import
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useInitializeWallet, useWallets } from '@/hooks';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -52,6 +52,7 @@ export const AddWalletSheet = () => {
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
+  const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
   const {
     isDamaged,
@@ -134,7 +135,6 @@ export const AddWalletSheet = () => {
                     }
                     return false;
                   });
-
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (
