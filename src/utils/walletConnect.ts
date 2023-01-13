@@ -197,7 +197,7 @@ export async function pair({ uri }: { uri: string }) {
 
     client.on('session_proposal', handler);
   } catch (e) {
-    logger.error(new RainbowError(`WC v2: pairing failed`), { uri });
+    logger.error(new RainbowError(`WC v2: pairing failed`), { error: e });
     showErrorSheet();
   }
 }
