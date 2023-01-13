@@ -216,8 +216,8 @@ export async function initListeners() {
   client.on('session_request', onSessionRequest);
 
   try {
+    const token = await getFCMToken(); // will throw
     const client_id = await client.core.crypto.getClientId();
-    const token = await getFCMToken();
     const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
       method: 'POST',
       json: {
