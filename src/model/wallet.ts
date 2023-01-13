@@ -558,7 +558,7 @@ export const loadPrivateKey = async (
     }
 
     if (!privateKey) {
-      const privateKeyData = await getPrivateKey(
+      const privateKeyData = await getKeyForWallet(
         addressToUse,
         isHardwareWallet
       );
@@ -776,13 +776,13 @@ export const createWallet = async (
       // Encrypt with the PIN
       const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
       if (encryptedPkey) {
-        await savePrivateKey(walletAddress, encryptedPkey, isHardwareWallet);
+        await saveKeyForWallet(walletAddress, encryptedPkey, isHardwareWallet);
       } else {
         logger.sentry('Error encrypting pkey to save it');
         return null;
       }
     } else {
-      await savePrivateKey(walletAddress, pkey, isHardwareWallet);
+      await saveKeyForWallet(walletAddress, pkey, isHardwareWallet);
     }
     logger.sentry('[createWallet] - saved private key');
 
@@ -907,7 +907,7 @@ export const createWallet = async (
               nextWallet.privateKey
             );
             if (encryptedPkey) {
-              await savePrivateKey(
+              await saveKeyForWallet(
                 nextWallet.address,
                 encryptedPkey,
                 isHardwareWallet
@@ -917,7 +917,7 @@ export const createWallet = async (
               return null;
             }
           } else {
-            await savePrivateKey(
+            await saveKeyForWallet(
               nextWallet.address,
               nextWallet.privateKey,
               isHardwareWallet
@@ -1058,13 +1058,53 @@ export const createWallet = async (
   }
 };
 
-export const savePrivateKey = async (
+/**
+ * @desc Saves wallet keys for the given address depending wallet type
+ * @param address The wallet address.
+ * @param privateKey The private key for the given address.
+ * @param hardware If the wallet is a hardware wallet.
+ * @return null
+ */
+export const saveKeyForWallet = async (
   address: EthereumAddress,
   privateKey: null | EthereumPrivateKey,
-  hardware?: boolean
+  hardware: boolean
+) => {
+  if (hardware) {
+    return await saveHardwareKey(address, privateKey);
+  } else {
+    return await savePrivateKey(address, privateKey);
+  }
+};
+
+/**
+ * @desc Gets wallet keys for the given address depending wallet type
+ * @param address The wallet address.
+ * @param hardware If the wallet is a hardware wallet.
+ * @return null | PrivateKeyData | -1
+ */
+export const getKeyForWallet = async (
+  address: EthereumAddress,
+  hardware: boolean
+): Promise<null | PrivateKeyData | -1> => {
+  if (hardware) {
+    return await getHardwareKey(address);
+  } else {
+    return await getPrivateKey(address);
+  }
+};
+
+/**
+ * @desc Saves wallet private key to private keychain for a given address.
+ * @param address The wallet address.
+ * @param privateKey The private key for the given address.
+ * @return null
+ */
+export const savePrivateKey = async (
+  address: EthereumAddress,
+  privateKey: null | EthereumPrivateKey
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
-  const publicAccessControlOptions = keychain.publicAccessControlOptions;
 
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1073,20 +1113,40 @@ export const savePrivateKey = async (
     version: privateKeyVersion,
   };
   // if its a hardware wallet we dont want in the private keychain
-  await keychain.saveObject(
-    key,
-    val,
-    hardware ? publicAccessControlOptions : privateAccessControlOptions
-  );
+  await keychain.saveObject(key, val, privateAccessControlOptions);
 };
 
-export const getPrivateKey = async (
+/**
+ * @desc Saves hardware wallet details to public keychain for a given address.
+ * @param address The wallet address for the hardware wallet.
+ * @param privateKey The hardware wallet key for the given address.
+ * @return null
+ */
+export const saveHardwareKey = async (
   address: EthereumAddress,
-  hardware?: boolean
+  privateKey: null | EthereumPrivateKey
+) => {
+  const key = `${address}_${privateKeyKey}`;
+  const val = {
+    address,
+    privateKey,
+    version: privateKeyVersion,
+  };
+
+  await keychain.saveObject(key, val, keychain.publicAccessControlOptions);
+};
+
+/**
+ * @desc Gets wallet private key for a given address.
+ * @param address The wallet address.
+ * @return null | PrivateKeyData | -1
+ */
+export const getPrivateKey = async (
+  address: EthereumAddress
 ): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const options = hardware ? undefined : { authenticationPrompt };
+    const options = { authenticationPrompt };
 
     const pkey = (await keychain.loadObject(key, options)) as
       | PrivateKeyData
@@ -1105,6 +1165,28 @@ export const getPrivateKey = async (
     return pkey || null;
   } catch (error) {
     logger.sentry('Error in getPrivateKey');
+    captureException(error);
+    return null;
+  }
+};
+
+/**
+ * @desc Gets the hardware wallet details for a given address.
+ * @param address The wallet address for the hardware wallet.
+ * @return PrivateKeyData | null
+ */
+export const getHardwareKey = async (
+  address: EthereumAddress
+): Promise<null | PrivateKeyData> => {
+  try {
+    const key = `${address}_${privateKeyKey}`;
+    const harwarePrivateKey = (await keychain.loadObject(
+      key
+    )) as PrivateKeyData;
+
+    return harwarePrivateKey || null;
+  } catch (error) {
+    logger.sentry('Error in getHardwareKey');
     captureException(error);
     return null;
   }
@@ -1287,7 +1369,7 @@ export const generateAccount = async (
       try {
         const encryptedPkey = await encryptor.encrypt(userPIN, walletPkey);
         if (encryptedPkey) {
-          await savePrivateKey(walletAddress, encryptedPkey);
+          await saveKeyForWallet(walletAddress, encryptedPkey, false);
         } else {
           logger.sentry('Error encrypting pkey to save it');
           return null;
@@ -1296,7 +1378,7 @@ export const generateAccount = async (
         return null;
       }
     } else {
-      await savePrivateKey(walletAddress, walletPkey);
+      await saveKeyForWallet(walletAddress, walletPkey, false);
     }
     // Creating signature for this wallet
     await createSignature(walletAddress, walletPkey);
@@ -1386,7 +1468,11 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     if (!pkeyExists) {
       logger.sentry('new pkey didnt exist so we should save it');
       // Save the private key in the new format
-      await savePrivateKey(existingAccount.address, existingAccount.privateKey);
+      await saveKeyForWallet(
+        existingAccount.address,
+        existingAccount.privateKey,
+        false
+      );
       logger.sentry('new pkey saved');
     }
 
