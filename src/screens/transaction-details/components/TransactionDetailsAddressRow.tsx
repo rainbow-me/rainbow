@@ -127,7 +127,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
               {
                 actionKey: 'contact',
                 actionTitle: contact
-                  ? i18n.t(i18n.l.transaction_details.context_menu.view_contact)
+                  ? i18n.t(i18n.l.transaction_details.context_menu.edit_contact)
                   : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
                 icon: {
                   iconType: 'SYSTEM',
