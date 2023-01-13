@@ -355,7 +355,7 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box height="full" background="surfaceSecondary">
+    <Box height="full" background="surfaceSecondary" testID="add-wallet-sheet">
       <Inset horizontal="20px" top="36px" bottom="104px">
         <Stack space="32px">
           <Stack space="20px">
