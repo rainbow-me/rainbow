@@ -5,25 +5,20 @@ import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
 
-export function PairHardwareWalletIntroSheet() {
+export function PairHardwareWalletSigningSheet() {
   const buttonColor = useForegroundColor('purple');
 
-  const { navigate } = useNavigation();
-  const handleNavigateToSearch = React.useCallback(() => {
-    navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
-  }, [navigate]);
-
+  const { dangerouslyGetParent } = useNavigation();
   return (
     <Layout
       header={
         <Inset horizontal="36px">
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
-              {i18n.t(TRANSLATIONS.pair_your_nano)}
+              {i18n.t(TRANSLATIONS.enable_blind_signing)}
             </Text>
             <Stack space="10px">
               <Text
@@ -32,10 +27,14 @@ export function PairHardwareWalletIntroSheet() {
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {i18n.t(TRANSLATIONS.connect_your_ledger)}
+                {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
               <ButtonPressAnimation
-                onPress={() => Linking.openURL('https://www.ledger.com')}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
+                  )
+                }
                 scaleTo={0.9}
               >
                 <Text
@@ -44,7 +43,7 @@ export function PairHardwareWalletIntroSheet() {
                   weight="semibold"
                   size="15pt / 135%"
                 >
-                  {i18n.t(TRANSLATIONS.learn_more_about_ledger)}
+                  {i18n.t(TRANSLATIONS.learn_more)}
                 </Text>
               </ButtonPressAnimation>
             </Stack>
@@ -55,9 +54,9 @@ export function PairHardwareWalletIntroSheet() {
         <Inset horizontal="20px" bottom="20px">
           <SheetActionButton
             color={buttonColor}
-            label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
+            label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
             lightShadows
-            onPress={handleNavigateToSearch}
+            onPress={() => dangerouslyGetParent()?.goBack()}
             size="big"
             weight="heavy"
           />
