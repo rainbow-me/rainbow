@@ -237,7 +237,13 @@ export async function initListeners() {
   }
 }
 
-async function subscriveToEchoServer({ client_id, token }: { client_id: string; token: string }) {
+async function subscriveToEchoServer({
+  client_id,
+  token,
+}: {
+  client_id: string;
+  token: string;
+}) {
   const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
     method: 'POST',
     json: {
