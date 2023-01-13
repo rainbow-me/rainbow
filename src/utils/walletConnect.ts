@@ -7,6 +7,7 @@ import Minimizer from 'react-native-minimizer';
 import { utils as ethersUtils } from 'ethers';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
+import messaging from '@react-native-firebase/messaging';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -218,26 +219,39 @@ export async function initListeners() {
   try {
     const token = await getFCMToken(); // will throw
     const client_id = await client.core.crypto.getClientId();
-    const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
-      method: 'POST',
-      json: {
-        type: 'FCM',
-        client_id,
-        token,
-      },
-    }).json();
 
-    // https://github.com/WalletConnect/echo-server/blob/a0afc940e1fc3ea8efb765fff5f4daeedec46d2a/spec/spec.md?plain=1#L14
-    if (res.error || res.data?.status !== 'OK') {
-      logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
-        error: res.error,
-      });
-    }
+    // initial subscription
+    await subscriveToEchoServer({ token, client_id });
+
+    /**
+     * Ensure that if the FCM token changes we update the echo server
+     */
+    messaging().onTokenRefresh(async token => {
+      await subscriveToEchoServer({ token, client_id });
+    });
   } catch (e) {
     logger.error(
       new RainbowError(`WC v2: echo server FCM token retrieval failed`),
       { error: e }
     );
+  }
+}
+
+async function subscriveToEchoServer({ client_id, token }: { client_id: string; token: string }) {
+  const res = await gretch(`https://wcpush.p.rainbow.me/clients`, {
+    method: 'POST',
+    json: {
+      type: 'FCM',
+      client_id,
+      token,
+    },
+  }).json();
+
+  // https://github.com/WalletConnect/echo-server/blob/a0afc940e1fc3ea8efb765fff5f4daeedec46d2a/spec/spec.md?plain=1#L14
+  if (res.error || res.data?.status !== 'OK') {
+    logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
+      error: res.error,
+    });
   }
 }
 
