@@ -34,7 +34,6 @@ const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
-  setSheetHeight: (height: number | undefined) => void;
   userData: { wallets: RainbowWallet[] };
 };
 
@@ -355,46 +354,42 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box height="full" background="surfaceSecondary" testID="add-wallet-sheet">
-      <Inset horizontal="20px" top="36px" bottom="104px">
-        <Stack space="32px">
-          <Stack space="20px">
-            <Text align="center" size="26pt" weight="bold" color="label">
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].title
-              )}
-            </Text>
-            <Text
-              align="center"
-              size="15pt / 135%"
-              weight="semibold"
-              color="labelTertiary"
-            >
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].description
-              )}
-            </Text>
-          </Stack>
-          <Box background="surfacePrimary" borderRadius={18} shadow="12px">
-            <Inset vertical="24px" horizontal="20px">
-              <AddWalletList
-                totalHorizontalInset={40}
-                items={[
-                  ...(!isFirstWallet ? [create] : []),
-                  ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
-                  restoreFromSeed,
-                  ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                  watch,
-                ]}
-              />
-            </Inset>
-          </Box>
+    <Inset horizontal="20px" top="36px" bottom="104px">
+      <Stack space="32px">
+        <Stack space="20px">
+          <Text align="center" size="26pt" weight="bold" color="label">
+            {i18n.t(
+              TRANSLATIONS[isFirstWallet ? 'first_wallet' : 'additional_wallet']
+                .title
+            )}
+          </Text>
+          <Text
+            align="center"
+            size="15pt / 135%"
+            weight="semibold"
+            color="labelTertiary"
+          >
+            {i18n.t(
+              TRANSLATIONS[isFirstWallet ? 'first_wallet' : 'additional_wallet']
+                .description
+            )}
+          </Text>
         </Stack>
-      </Inset>
-    </Box>
+        <Box background="surfacePrimary" borderRadius={18} shadow="12px">
+          <Inset vertical="24px" horizontal="20px">
+            <AddWalletList
+              totalHorizontalInset={40}
+              items={[
+                ...(!isFirstWallet ? [create] : []),
+                ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                restoreFromSeed,
+                ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
+                watch,
+              ]}
+            />
+          </Inset>
+        </Box>
+      </Stack>
+    </Inset>
   );
 };

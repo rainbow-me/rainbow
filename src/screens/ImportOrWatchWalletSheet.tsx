@@ -71,7 +71,6 @@ export const ImportOrWatchWalletSheet = () => {
           custom:
             deviceHeight - SheetHandleFixedToTopHeight - safeAreaTopPadding,
         }}
-        background="surfaceSecondary"
       >
         <Box
           alignItems="center"
@@ -124,7 +123,7 @@ export const ImportOrWatchWalletSheet = () => {
             placeholderTextColor={labelTertiary}
             ref={inputRef}
             selectionColor={globalColors.purple60}
-            // scrollEnabled={false}
+            scrollEnabled={false}
             spellCheck={false}
             width={232}
             returnKeyType="done"
