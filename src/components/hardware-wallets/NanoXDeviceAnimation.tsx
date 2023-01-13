@@ -21,30 +21,30 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
+import { useDimensions } from '@/hooks';
 
 export function NanoXDeviceAnimation({
   height,
-  show,
   state,
   width,
 }: {
   height: number;
-  show: boolean;
   state: 'idle' | 'loading';
   width: number;
 }) {
   const { colorMode } = useColorMode();
+  const { isSmallPhone } = useDimensions();
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
 
-  const ledgerNanoHeight = 292;
-  const ledgerNanoWidth = 216;
+  const scaleFactor = isSmallPhone ? 0.9 : 1;
 
-  const showLedgerNano = show;
+  const ledgerNanoHeight = 292 * scaleFactor;
+  const ledgerNanoWidth = 216 * scaleFactor;
 
   const animatedLedgerNanoWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showLedgerNano ? 1 : 0),
+    opacity: withTiming(1),
     position: 'absolute',
     top: (height - ledgerNanoHeight) / 2,
     left: (width - ledgerNanoWidth) / 2,
@@ -53,13 +53,11 @@ export function NanoXDeviceAnimation({
   // //////////////////////////////////////////////////////////////////
   // Grid Dots Image
 
-  const gridDotsWidth = width;
+  const gridDotsWidth = width * scaleFactor;
   const gridDotsHeight = gridDotsWidth;
 
-  const showGridDots = show && state === 'loading';
-
   const animatedGridDotsWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showGridDots ? 1 : 0, { duration: 200 }),
+    opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
     position: 'absolute',
     top: (height - gridDotsHeight) / 2,
     left: (width - gridDotsWidth) / 2,
@@ -68,13 +66,11 @@ export function NanoXDeviceAnimation({
   // //////////////////////////////////////////////////////////////////
   // Circles Wrapper
 
-  const circlesWidth = width;
+  const circlesWidth = width * scaleFactor;
   const circlesHeight = circlesWidth;
 
-  const showCircles = show && state === 'loading';
-
   const animatedCirclesWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showCircles ? 1 : 0, { duration: 200 }),
+    opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
     position: 'absolute',
     top: (height - circlesHeight) / 2,
     left: (width - circlesWidth) / 2,
