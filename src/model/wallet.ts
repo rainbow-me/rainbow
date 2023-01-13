@@ -211,7 +211,7 @@ const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
-const isHardwareWalletKey = (key: string | null) => {
+const isHardwareWalletPrivateKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
     return true;
@@ -286,18 +286,21 @@ export const loadWallet = async (
   showErrorIfNotLoaded = true,
   provider?: Provider
 ): Promise<null | Wallet | LedgerSigner> => {
-  // check if address from a hardware wallet, and get encrytped 'privatekey'
-  const privateKey = await loadPrivateKey(address);
-  console.log(
-    'hardware ? ',
-    isHardwareWalletKey(privateKey as string),
-    ' - ',
-    privateKey
-  );
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return null;
+  }
+
+  // checks if the address is a hardware wallet for proper handling
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+
+  const privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
-  if (isHardwareWalletKey(privateKey)) {
+  if (isHardwareWalletPrivateKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
     if (typeof index !== undefined && provider && deviceId) {
@@ -532,18 +535,9 @@ export const loadAddress = (): Promise<null | EthereumAddress> =>
   keychain.loadString(addressKey) as Promise<string | null>;
 
 export const loadPrivateKey = async (
-  address?: EthereumAddress | undefined
+  address: EthereumAddress,
+  hardware: boolean
 ): Promise<null | EthereumPrivateKey | -1 | -2> => {
-  const addressToUse = address || (await loadAddress());
-  if (!addressToUse) {
-    return null;
-  }
-
-  // checks if the address is a hardware wallet for proper handling
-  const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
-  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
-
   try {
     const isSeedPhraseMigrated = await keychain.loadString(
       oldSeedPhraseMigratedKey
@@ -558,10 +552,7 @@ export const loadPrivateKey = async (
     }
 
     if (!privateKey) {
-      const privateKeyData = await getKeyForWallet(
-        addressToUse,
-        isHardwareWallet
-      );
+      const privateKeyData = await getKeyForWallet(address, hardware);
       if (privateKeyData === -1) {
         return -1;
       }
@@ -854,10 +845,6 @@ export const createWallet = async (
 
         let hasTxHistory = false;
         try {
-          logger.sentry(
-            '[createWallet] - checking tx history for address',
-            nextWallet.address
-          );
           hasTxHistory = await ethereumUtils.hasPreviousTransactions(
             nextWallet.address
           );
