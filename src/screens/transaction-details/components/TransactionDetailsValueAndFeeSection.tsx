@@ -39,7 +39,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
       ? ethereumUtils.getNetworkNativeAsset(network ?? Network.mainnet)?.symbol
       : assetData?.symbol ?? symbol ?? undefined;
   const coinType =
-    assetData?.type ?? network !== Network.mainnet ? network : undefined;
+    assetData?.type ?? network !== Network.mainnet ? network : AssetTypes.token;
 
   const value = transaction.balance?.display;
   const nativeCurrencyValue = transaction.native?.display;
