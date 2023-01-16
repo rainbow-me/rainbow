@@ -1,6 +1,6 @@
 import React from 'react';
 import { GenericCard } from '@/components/cards/GenericCard';
-import { Box, Cover, Stack, Text } from '@/design-system';
+import { Box, Cover, globalColors, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Image, StyleSheet } from 'react-native';
 import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
@@ -24,12 +24,17 @@ export const OpRewardsCard: React.FC = () => {
       type="stretch"
       gradient={GRADIENT}
       onPress={navigateToRewardsSheet}
+      color={colors.networkColors.optimism}
     >
       <Cover>
-        <Image
+        <Box
+          as={Image}
           source={OpRewardsCardBackgroundImage}
           resizeMode="cover"
-          style={styles.opRewardsCardOverlay}
+          width="full"
+          height="full"
+          borderRadius={20}
+          overflow="hidden"
         />
       </Cover>
       <Stack space="32px">
@@ -44,7 +49,7 @@ export const OpRewardsCard: React.FC = () => {
           <Box width="4/5">
             <Text
               size="15pt / 135%"
-              color={{ custom: '#FFFFFF' }}
+              color={{ custom: globalColors.white100 }}
               weight="bold"
             >
               {i18n.t(i18n.l.discover.op_rewards.card_subtitle)}
@@ -68,12 +73,3 @@ export const OpRewardsCard: React.FC = () => {
     </GenericCard>
   );
 };
-
-const styles = StyleSheet.create({
-  opRewardsCardOverlay: {
-    width: '100%',
-    overflow: 'hidden',
-    height: '100%',
-    borderRadius: 20,
-  },
-});
