@@ -6,7 +6,6 @@ import { Network } from '@/helpers/networkTypes';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chains } from './chains.json';
 export { default as chainAssets } from './chain-assets.json';
-export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { DefaultTokenListsSource as DefaultTokenLists };
 export {
@@ -66,7 +65,6 @@ export const UNIV3_NFT_CONTRACT_ADDRESS =
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
-export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';
 export const ARBITRUM_ETH_ADDRESS =
