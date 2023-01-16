@@ -54,8 +54,7 @@ import {
   queryClient,
 } from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
-import { explorerInitL2 } from './redux/explorer';
-import { fetchOnchainBalances } from './redux/fallbackExplorer';
+import { fetchAssetsFromRefraction } from './redux/explorer';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -227,12 +226,10 @@ class OldApp extends Component {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
           } else if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
-            store.dispatch(explorerInitL2(network));
+            store.dispatch(fetchAssetsFromRefraction());
           }
         } else {
-          store.dispatch(
-            fetchOnchainBalances({ keepPolling: false, withPrices: false })
-          );
+          store.dispatch(fetchAssetsFromRefraction());
         }
       }, timeout);
     };
