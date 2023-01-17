@@ -34,6 +34,7 @@ import {
   removeRequest,
 } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
+import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
 
 /**
@@ -367,6 +368,9 @@ export async function onSessionProposal(
           });
 
           await acknowledged();
+
+          // let the ConnectedDappsSheet know we've got a new one
+          events.emit('walletConnectV2SessionCreated');
 
           if (hasDeeplinkPendingRedirect) {
             setHasPendingDeeplinkPendingRedirect(false);

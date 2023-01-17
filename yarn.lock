@@ -16369,6 +16369,11 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
+smitter@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/smitter/-/smitter-1.1.1.tgz#cade535ccd3b2cc8ad274a9fe9b02937f50a316f"
+  integrity sha512-6AwxCy1VfHVBpCljZb/QCGUcRmZKL6s3o5NRjJfJKAQxtiC8GCJUpy1OFs3RcJinykoj/p7jIkPrM3Z3bYmgZg==
+
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
