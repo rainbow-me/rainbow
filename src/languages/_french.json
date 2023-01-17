@@ -1506,9 +1506,23 @@
       "pair_successful": "Pair successful :)",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",
-      "blind_signing_description": "Blind signing enable your device to approve signing a smart contract transactions. :)",
+      "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
       "learn_more": "Learn More :)",
-      "blind_signing_enabled": "Blind signing is enabled :)"
+      "blind_signing_enabled": "Blind signing is enabled :)",
+      "blind_signing_instructions": {
+        "step_1": {
+          "title": "On Ledger, open the ETH app :)",
+          "description": "Connect and unlock your device and open the Ethereum (ETH) application. :)"
+        },
+        "step_2": {
+          "title": "Navigate to settings :)",
+          "description": "Press the right button to navigate to Settings. Then press both buttons to validate your Ledger device displays Blind Signing. :)"
+        },
+        "step_3": {
+          "title": "Enable blind signing :)",
+          "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go. :)"
+        }
+      }
     },
     "wallet": {
       "action": {
