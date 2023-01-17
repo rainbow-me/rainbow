@@ -787,7 +787,7 @@ export const createWallet = async (
     } else {
       await saveKeyForWallet(walletAddress, pkey, isHardwareWallet);
     }
-    logger.debug('[createWallet] - saved private key');
+    logger.debug('[createWallet] - saved private key', {}, DebugContext.wallet);
 
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
@@ -942,7 +942,9 @@ export const createWallet = async (
             );
           }
           logger.debug(
-            `[createWallet] - saved private key for wallet index: ${index}`
+            `[createWallet] - saved private key for wallet index: ${index}`,
+            {},
+            DebugContext.wallet
           );
 
           if (!label && isHardwareWallet) {
@@ -1488,13 +1490,19 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
 
     if (!existingAccount && hdnode) {
       logger.debug(
-        '[migrateSecrets] - No existing account, so we have to derive it'
+        '[migrateSecrets] - No existing account, so we have to derive it',
+        {},
+        DebugContext.wallet
       );
       node = hdnode.derivePath(
         getHdPath({ type: WalletLibraryType.ethers, index: 0 })
       );
       existingAccount = new Wallet(node.privateKey);
-      logger.debug('[migrateSecrets] - Got existing account');
+      logger.debug(
+        '[migrateSecrets] - Got existing account',
+        {},
+        DebugContext.wallet
+      );
     }
 
     if (!existingAccount) {
