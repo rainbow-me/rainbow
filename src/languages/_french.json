@@ -1251,6 +1251,27 @@
         },
         "header": "Swaps on Rainbow :)",
         "subheader": "REINTRODUCING :)"
+      },
+      "notifications_launch": {
+        "primary_button": {
+          "permissions_enabled": "Configure",
+          "permissions_not_enabled": "Enable"
+        },
+        "secondary_button": "Not Now",
+        "info_row_1": {
+          "title": "For all your wallet activity",
+          "description": "Get notified about activity in your wallets or wallets you’re watching."
+        },
+        "info_row_2": {
+          "title": "Lightning fast",
+          "description": "Know the instant a transaction confirms on the blockchain."
+        },
+        "info_row_3": {
+          "title": "Customizable",
+          "description": "Sends, receives, sales, mints, swaps, and more. Choose what you want."
+        },
+        "header": "Notifications",
+        "subheader": "INTRODUCING"
       }
     },
     "review": {

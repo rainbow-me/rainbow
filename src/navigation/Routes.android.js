@@ -31,6 +31,7 @@ import SettingsSheet, {
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
+import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -344,6 +345,11 @@ function BSNavigator() {
       <BSStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
+        options={bottomSheetPreset}
+      />
+      <BSStack.Screen
+        component={NotificationsPromoSheet}
+        name={Routes.NOTIFICATIONS_PROMO_SHEET}
         options={bottomSheetPreset}
       />
       <BSStack.Screen
