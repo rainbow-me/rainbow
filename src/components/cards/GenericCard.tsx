@@ -5,6 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { globalColors } from '@/design-system/color/palettes';
 import { deviceUtils } from '@/utils';
 import ConditionalWrap from 'conditional-wrap';
+import { IS_IOS } from '@/env';
 
 // (device width - (horizontal inset * 2 + padding between cards)) / # of cards in row
 export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
@@ -37,6 +38,7 @@ export const GenericCard = ({
         disabled={disabled}
         scaleTo={0.96}
         overflowMargin={50}
+        skipTopMargin
       >
         {children}
       </ButtonPressAnimation>
@@ -59,6 +61,7 @@ export const GenericCard = ({
         }
         borderRadius={20}
         shadow={color ? '18px accent' : '18px'}
+        style={{ flex: IS_IOS ? 0 : undefined }}
         padding="20px"
         testID={testID}
       >

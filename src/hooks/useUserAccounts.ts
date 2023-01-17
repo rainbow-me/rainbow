@@ -1,20 +1,23 @@
 import { values } from 'lodash';
-import useAccountSettings from './useAccountSettings';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import walletTypes from '@/helpers/walletTypes';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { useMemo } from 'react';
+import { RainbowAccount } from '@/model/wallet';
+import { Network } from '@/helpers';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const { network } = useAccountSettings();
+  const network = useSelector((state: AppState) => state.settings.network);
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const userAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type !== walletTypes.readOnly
     );
-    const addresses: any = [];
+    const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach((account: any) => {
+      wallet.addresses.forEach(account => {
         addresses.push({
           ...account,
           network,
@@ -24,14 +27,13 @@ export default function useUserAccounts() {
     return addresses;
   }, [network, walletsWithBalancesAndNames]);
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const watchedAccounts = useMemo(() => {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(
       wallet => wallet.type === walletTypes.readOnly
     );
-    const addresses: any = [];
+    const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach((account: any) => {
+      wallet.addresses.forEach(account => {
         addresses.push({
           ...account,
           network,

@@ -28,10 +28,12 @@ export const event = {
     'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
-  cardPressed: 'Card Pressed',
-  learnArticleOpened: 'Learn Article Opened',
-  learnArticleShared: 'Learn Article Shared',
-  qrCodeViewed: 'QR Code Viewed',
+  cardPressed: 'card.pressed',
+  learnArticleOpened: 'learn_article.opened',
+  learnArticleShared: 'learn_article.shared',
+  qrCodeViewed: 'qr_code.viewed',
+  buyButtonPressed: 'buy_button.pressed',
+  addWalletFlowStarted: 'add_wallet_flow.started',
 } as const;
 
 /**
@@ -63,7 +65,7 @@ export type EventProperties = {
   [event.notificationsPromoDismissed]: undefined;
   [event.cardPressed]: {
     cardName: string;
-    fromScreen: string;
+    routeName: string;
     cardType: CardType;
   };
   [event.learnArticleOpened]: {
@@ -72,7 +74,7 @@ export type EventProperties = {
     cardId: string;
     category: LearnCategory;
     displayType: CardType;
-    fromScreen: string;
+    routeName: string;
   };
   [event.learnArticleShared]: {
     url: string;
@@ -82,5 +84,15 @@ export type EventProperties = {
   };
   [event.qrCodeViewed]: {
     component: string;
+  };
+  [event.buyButtonPressed]: {
+    amount?: number;
+    componentName: string;
+    newWallet?: boolean;
+    routeName: string;
+  };
+  [event.addWalletFlowStarted]: {
+    isFirstWallet: boolean;
+    type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
   };
 };

@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Share, StatusBar } from 'react-native';
+import { Share, StatusBar, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
@@ -19,7 +19,7 @@ const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
-    params: { key, displayType, category, url, fromScreen },
+    params: { key, displayType, category, url, routeName },
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   any = useRoute();
   const { isDarkMode } = useTheme();
@@ -35,11 +35,11 @@ export default function LearnWebViewScreen() {
         cardId: key,
         category,
         displayType,
-        fromScreen,
+        routeName,
       });
       return;
     },
-    [category, displayType, fromScreen, key, url]
+    [category, displayType, key, routeName, url]
   );
 
   const onPressShare = useCallback(async () => {
@@ -83,45 +83,60 @@ export default function LearnWebViewScreen() {
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
+  const surfacePrimaryElevated = isDarkMode
+    ? globalColors.white10
+    : globalColors.white100;
+
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JS component
     <SlackSheet
       renderHeader={renderHeader}
-      backgroundColor={
-        isDarkMode ? globalColors.grey100 : globalColors.white100
-      }
+      backgroundColor={surfacePrimaryElevated}
       contentContainerStyle={{ flexGrow: 1 }}
       contentHeight={contentHeight}
       height="100%"
       removeTopPadding
       additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
     >
-      <WebView
-        startInLoadingState
-        renderLoading={() => (
-          <Box
-            background="surfacePrimaryElevated"
-            width="full"
-            height={{ custom: contentHeight }}
-            paddingBottom={{ custom: HEADER_HEIGHT }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-            /* @ts-ignore - JS component */}
-            <LoadingSpinner />
-          </Box>
-        )}
-        onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
-        injectedJavaScript="window.ReactNativeWebView.postMessage(document.body.scrollHeight)"
-        style={{
-          height: webViewHeight,
-        }}
-        source={{
-          uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
-        }}
-      />
+      <View pointerEvents="none">
+        <WebView
+          startInLoadingState
+          renderLoading={() => (
+            <Box
+              background="surfacePrimaryElevated"
+              width="full"
+              height={{ custom: contentHeight }}
+              paddingBottom={{ custom: HEADER_HEIGHT }}
+              alignItems="center"
+              justifyContent="center"
+            >
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+              /* @ts-ignore - JS component */}
+              <LoadingSpinner />
+            </Box>
+          )}
+          onMessage={event => setWebViewHeight(Number(event.nativeEvent.data))}
+          // set scrollview height
+          // set bg color
+          // remove header + icon
+          // remove leftover whitespace from removing header + icon
+          // @ts-ignore ts is yelling for some reason
+          injectedJavaScript={`
+            window.document.querySelector('body').style.backgroundColor = '${surfacePrimaryElevated}';
+            window.document.querySelector('body').style.marginTop = '-170px';
+            window.ReactNativeWebView.postMessage(document.body.scrollHeight);
+            document.getElementsByClassName('super-navbar simple')[0].style.display = 'none';
+            document.getElementsByClassName('notion-header__icon-wrapper')[0].style.display = 'none';
+         `}
+          style={{
+            height: webViewHeight,
+          }}
+          source={{
+            uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
+          }}
+        />
+      </View>
     </SlackSheet>
   );
 }

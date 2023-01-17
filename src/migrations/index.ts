@@ -1,5 +1,6 @@
 import { InteractionManager } from 'react-native';
 
+import * as env from '@/env';
 import { Storage } from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
@@ -10,6 +11,8 @@ import {
   Migration,
 } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
+import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
+import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -25,12 +28,27 @@ const storage = new Storage<
  * All migrations should be added here IN the ORDER in which we need them to
  * run.
  */
-const migrations: Migration[] = [deleteImgixMMKVCache()];
+const migrations: Migration[] = [
+  deleteImgixMMKVCache(),
+  prepareDefaultNotificationGroupSettingsState(),
+  migrateNotificationSettingsToV2(),
+];
 
 /**
  * @private Only exported for testing
  */
-export async function runMigration({ name, migrate, defer }: Migration) {
+export async function runMigration({ debug, name, migrate, defer }: Migration) {
+  /**
+   * If we're in prod and a migration is in debug mode, that's a mistake and we
+   * should exit early
+   */
+  if (debug && env.IS_PROD) {
+    logger.error(new RainbowError(`Migration is in debug mode`), {
+      migration: name,
+    });
+    return;
+  }
+
   const handler = migrate || defer;
 
   if (handler) {
@@ -43,7 +61,7 @@ export async function runMigration({ name, migrate, defer }: Migration) {
         MIGRATIONS_DEBUG_CONTEXT
       );
       await handler();
-      storage.set([name], new Date().toUTCString());
+      if (!debug) storage.set([name], new Date().toUTCString());
       logger.debug(
         `Migrating complete`,
         {

@@ -34,12 +34,12 @@ const buildAccountProfile = (
   );
 };
 
-export default function useAccountProfile() {
-  const accountProfileSelector = createSelector(
-    [walletSelector, settingsSelector],
-    buildAccountProfile
-  );
+const accountProfileSelector = createSelector(
+  [walletSelector, settingsSelector],
+  buildAccountProfile
+);
 
+export default function useAccountProfile() {
   const {
     accountAddress,
     accountColor,

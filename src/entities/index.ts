@@ -11,7 +11,6 @@ export type {
   GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
-  GasFeesPolygonGasStationData,
   LegacyGasFee,
   LegacyGasFeeParams,
   LegacyGasFeeParamsBySpeed,
@@ -20,6 +19,7 @@ export type {
   MaxPriorityFeeSuggestions,
   TransactionGasParams,
   RainbowMeteorologyData,
+  RainbowMeteorologyLegacyData,
   SelectedGasFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
@@ -37,7 +37,6 @@ export type {
   RainbowToken,
   SwappableAsset,
   ZerionAsset,
-  ZerionAssetFallback,
   ZerionAssetPrice,
 } from './tokens';
 export type {
@@ -66,11 +65,6 @@ export type {
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
 export type { UniswapFavoriteTokenData } from './uniswap';
-export type {
-  UniswapPoolData,
-  UniswapPairData,
-  UniswapPairHistoricalData,
-} from './dispersion';
 export type {
   ENSRegistrationRecords,
   ENSRegistrations,

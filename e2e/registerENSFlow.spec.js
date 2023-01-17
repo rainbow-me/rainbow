@@ -27,7 +27,7 @@ const RECORD_TWITTER = 'twitter123';
 const RECORD_EMAIL = 'abc@abc.com';
 const RECORD_INSTAGRAM = 'insta123';
 const RECORD_DISCORD = 'abc#8133';
-const RECORD_GITHUB = 'github123';
+const RECORD_GITHUB = 'github-123';
 const RECORD_SNAPCHAT = 'snapchat123';
 const RECORD_TELEGRAM = 'telegram123';
 const RECORD_REDDIT = 'reddit123';
@@ -182,7 +182,7 @@ describe('Register ENS Flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');

@@ -6,6 +6,8 @@ import OptimismBadge from '../../assets/badges/optimismBadge.png';
 import OptimismBadgeDark from '../../assets/badges/optimismBadgeDark.png';
 import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
+import BscBadge from '../../assets/badges/bscBadge.png';
+import BscBadgeDark from '../../assets/badges/bscBadgeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
@@ -48,6 +50,8 @@ export default function ChainIcon({ assetType, size = 'small' }) {
       val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
     } else if (assetType === AssetType.polygon) {
       val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
+    } else if (assetType === AssetType.bsc) {
+      val = isDarkMode ? BscBadgeDark : BscBadge;
     }
     return val;
   }, [assetType, isDarkMode]);

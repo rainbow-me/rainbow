@@ -45,7 +45,8 @@ describe('Wallet avatar options', () => {
 
   it('import wallet without ENS', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-    await Helpers.tapByText('􀁍 Create a new wallet');
+    await Helpers.waitAndTap('add-another-wallet-button');
+    await Helpers.waitAndTap('create-new-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
@@ -75,11 +76,8 @@ describe('Wallet avatar options', () => {
 
   it('watch wallet with ENS but without ENS avatar', async () => {
     await Helpers.tapAtPoint('profile-screen', WALLET_ADDRESS_COORDS);
-    if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    } else {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    }
+    await Helpers.waitAndTap('add-another-wallet-button');
+    await Helpers.waitAndTap('watch-address-button');
     await Helpers.typeText('import-sheet-input', RAINBOW_TEST_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
@@ -108,11 +106,8 @@ describe('Wallet avatar options', () => {
 
   it('import wallet with ens but without ens avatar', async () => {
     await Helpers.tapAtPoint('wallet-screen', PROFILE_ADDRESS_COORDS);
-    if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    } else {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    }
+    await Helpers.waitAndTap('add-another-wallet-button');
+    await Helpers.waitAndTap('restore-with-key-button');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
@@ -146,11 +141,8 @@ describe('Wallet avatar options', () => {
 
   it('import wallet with ens avatar', async () => {
     await Helpers.tapAtPoint('wallet-screen', PROFILE_ADDRESS_COORDS);
-    if (android) {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    } else {
-      await Helpers.tapByText('􀂍 Add an existing wallet');
-    }
+    await Helpers.waitAndTap('add-another-wallet-button');
+    await Helpers.waitAndTap('watch-address-button');
     await Helpers.typeText('import-sheet-input', RAINBOW_WALLET, false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');

@@ -3,6 +3,7 @@ export enum EthereumWalletType {
   privateKey = 'privateKey',
   readOnly = 'readOnly',
   seed = 'seed',
+  bluetooth = 'bluetooth',
 }
 
 // We need to keep this one until
@@ -12,4 +13,5 @@ export default {
   privateKey: 'privateKey' as EthereumWalletType,
   readOnly: 'readOnly' as EthereumWalletType,
   seed: 'seed' as EthereumWalletType,
+  bluetooth: 'bluetooth' as EthereumWalletType,
 };

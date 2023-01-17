@@ -53,6 +53,7 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn(
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   (color: string = '') => color.toLowerCase().substring(0, 3) === 'rgb'
 );
 
@@ -84,7 +85,8 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
-    appleBlue: '#0E76FD', // '13, 13, 13'
+    appleBlue: '#0E76FD', // '14, 118, 253'
+    appleBlue06: 'rgba(14, 118, 253, 0.06)',
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
     blueGreyDark04: '#222326', // this color is blueGreyDark at 4% over white
@@ -102,6 +104,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
     darkModeDark: '#404656',
+    dogeGold: '#FCAC34', // '252, 172, 52'
+    dogeGold06: 'rgba(252, 172, 52, 0.06)',
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
@@ -131,6 +135,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     purpleLight: '#FFD9FE', // '255, 217, 254'
     purpleUniswap: '#FF007A', // '255,0,122',
     rainbowBlue: '#001E59', // '0, 30, 89',
+    rainbowBlue06: 'rgba(0, 30, 89, 0.06)', // '0, 30, 89, 0.06'
     red: '#FF494A', // '255, 73, 74'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
@@ -220,6 +225,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       buildRgba(base.appleBlue, 0.02),
       buildRgba(base.appleBlue, 0.06),
     ],
+    transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
     transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
     transparentToLightGrey: [
       buildRgba(base.blueGreyDark, 0),
@@ -336,6 +342,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
         buildRgba(base.appleBlue, 0.02),
         buildRgba(base.appleBlue, 0.06),
       ],
+      transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
       transparentToGreen: [
         buildRgba(base.green, 0),
         buildRgba(base.green, 0.06),
@@ -400,7 +407,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
  * @deprecated used for safely retrieving color values in JS not needed with TypeScript anymore
  */
 const getColorForString = (colorString = '', providedThemeColors = colors) => {
-  //FIXME: sometimes receive non string value
+  // FIXME: sometimes receive non string value
   if (!colorString || typeof colorString !== 'string') return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);

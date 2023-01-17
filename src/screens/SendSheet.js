@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager, Keyboard, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
@@ -81,6 +81,8 @@ import {
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { NoResults } from '@/components/list';
+import { NoResultsType } from '@/components/list/NoResults';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -325,7 +327,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -337,6 +339,10 @@ export default function SendSheet(props) {
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
+            break;
+          case AssetTypes.bsc:
+            setCurrentNetwork(Network.bsc);
+            provider = await getProviderForNetwork(Network.bsc);
             break;
           case AssetTypes.arbitrum:
             setCurrentNetwork(Network.arbitrum);
@@ -580,11 +586,16 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          const { result: txResult } = await sendTransaction({
+          const { result: txResult, error } = await sendTransaction({
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
           });
+
+          if (error) {
+            throw new Error(`SendSheet sendTransaction failed`);
+          }
+
           const { hash, nonce } = txResult;
           const { data, value } = signableTransaction;
           if (!isEmpty(hash)) {
@@ -601,11 +612,11 @@ export default function SendSheet(props) {
           }
         }
       } catch (error) {
+        submitSuccess = false;
         logger.sentry('TX Details', txDetails);
         logger.sentry('SendSheet onSubmit error');
         logger.sentry(error);
         captureException(error);
-        submitSuccess = false;
       }
       return submitSuccess;
     },
@@ -703,10 +714,6 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
-    let nativeToken = 'ETH';
-    if (currentNetwork === Network.polygon) {
-      nativeToken = 'MATIC';
-    }
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -720,9 +727,13 @@ export default function SendSheet(props) {
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: nativeToken,
-      });
+      if (currentNetwork === Network.polygon) {
+        label = lang.t('button.confirm_exchange.insufficient_matic');
+      } else if (currentNetwork === Network.bsc) {
+        label = lang.t('button.confirm_exchange.insufficient_bnb');
+      } else {
+        label = lang.t('button.confirm_exchange.insufficient_eth');
+      }
     } else if (!isValidGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.invalid_fee');
@@ -940,6 +951,8 @@ export default function SendSheet(props) {
     [ensSuggestions]
   );
 
+  const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -978,19 +991,34 @@ export default function SendSheet(props) {
             watchedAccounts={watchedAccounts}
           />
         )}
-        {showAssetList && (
-          <SendAssetList
-            hiddenCoins={hiddenCoinsObj}
-            nativeCurrency={nativeCurrency}
-            network={network}
-            onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoinsObj}
-            savings={savings}
-            sortedAssets={sortedAssets}
-            theme={theme}
-            uniqueTokens={sendableUniqueTokens}
-          />
-        )}
+        {showAssetList &&
+          (!isEmptyWallet ? (
+            <SendAssetList
+              hiddenCoins={hiddenCoinsObj}
+              nativeCurrency={nativeCurrency}
+              network={network}
+              onSelectAsset={sendUpdateSelected}
+              pinnedCoins={pinnedCoinsObj}
+              savings={savings}
+              sortedAssets={sortedAssets}
+              theme={theme}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          ) : (
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: sheetHeight,
+                alignItems: 'center',
+                justifyContent: 'center',
+                bottom: 0,
+              }}
+            >
+              <NoResults type={NoResultsType.Send} />
+            </View>
+          ))}
         {showAssetForm && (
           <SendAssetForm
             {...props}

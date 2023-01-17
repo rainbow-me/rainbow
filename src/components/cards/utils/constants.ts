@@ -93,60 +93,88 @@ export const getLearnCardColorway: (
   switch (category) {
     case LearnCategory.Essentials:
       return colorways.purple;
-    case LearnCategory.Safety:
+    case LearnCategory.StayingSafe:
       return colorways.pink;
-    case LearnCategory.Rainbow:
+    case LearnCategory.AppsAndConnections:
       return colorways.blue;
     case LearnCategory.BeginnersGuides:
       return colorways.yellow;
-    case LearnCategory.Blockchains:
+    case LearnCategory.BlockchainsAndFees:
       return colorways.darkGreen;
-    case LearnCategory.Web3:
+    case LearnCategory.WhatIsWeb3:
       return colorways.green;
+    case LearnCategory.NavigatingYourWallet:
     default:
       return colorways.darkBlue;
   }
 };
 
-const getStartedCard: LearnCardDetails = {
+export const getStartedCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/get-started-with-rainbow',
   category: LearnCategory.Essentials,
   key: 'get_started',
   emoji: '🌈',
 };
 
-const backupsCard: LearnCardDetails = {
+export const backupsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/the-importance-of-backups',
   category: LearnCategory.Essentials,
   key: 'backups',
   emoji: '☮️',
 };
 
-const protectWalletCard: LearnCardDetails = {
+export const protectWalletCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/protect-your-wallet',
-  category: LearnCategory.Safety,
+  category: LearnCategory.StayingSafe,
   key: 'protect_wallet',
   emoji: '🔒',
 };
 
-const connectToDappCard: LearnCardDetails = {
+export const connectToDappCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/connect-to-a-website-or-app',
   category: LearnCategory.Essentials,
   key: 'connect_to_dapp',
   emoji: '🔌',
 };
 
-const avoidScamsCard: LearnCardDetails = {
+export const avoidScamsCard: LearnCardDetails = {
   url: 'https://learn.rainbow.me/avoid-crypto-scams',
-  category: LearnCategory.Safety,
+  category: LearnCategory.StayingSafe,
   key: 'avoid_scams',
   emoji: '🤬',
 };
 
-export const learnCards: LearnCardDetails[] = [
-  getStartedCard,
-  backupsCard,
-  protectWalletCard,
-  connectToDappCard,
-  avoidScamsCard,
-];
+export const cryptoAndWalletsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/crypto-and-wallets',
+  category: LearnCategory.BeginnersGuides,
+  key: 'crypto_and_wallets',
+  emoji: '🤔',
+};
+
+export const web3Card: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/understanding-web3',
+  category: LearnCategory.WhatIsWeb3,
+  key: 'understanding_web3',
+  emoji: '🧠',
+};
+
+export const manageConnectionsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/manage-connections-and-networks',
+  category: LearnCategory.AppsAndConnections,
+  key: 'manage_connections',
+  emoji: '⚙️',
+};
+
+export const supportedNetworksCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/supported-networks',
+  category: LearnCategory.NavigatingYourWallet,
+  key: 'supported_networks',
+  emoji: '⛑️',
+};
+
+export const collectNFTsCard: LearnCardDetails = {
+  url: 'https://learn.rainbow.me/collect-nfts-on-opensea',
+  category: LearnCategory.BeginnersGuides,
+  key: 'collect_nfts',
+  emoji: '⛵️',
+};

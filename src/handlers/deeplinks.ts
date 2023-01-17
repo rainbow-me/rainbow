@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import qs from 'qs';
 import URL from 'url-parse';
+import { parseUri } from '@walletconnect/utils';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
 import store from '../redux/store';
 import {
@@ -11,7 +12,11 @@ import {
 } from '../redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { defaultConfig } from '@/config/experimental';
+import {
+  defaultConfig,
+  getExperimetalFlag,
+  WC_V2,
+} from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@/handlers/fedora';
 import { delay } from '@/helpers/utilities';
@@ -25,6 +30,11 @@ import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
+import { logger } from '@/logger';
+import {
+  pair as pairWalletConnect,
+  setHasPendingDeeplinkPendingRedirect,
+} from '@/utils/walletConnect';
 
 // initial research into refactoring deep links
 //                         eip      native deeplink  rainbow.me profiles
@@ -145,17 +155,34 @@ export default async function handleDeeplink(
 }
 
 function handleWalletConnect(uri: any) {
-  const { dispatch } = store;
-  dispatch(walletConnectSetPendingRedirect());
   const { query } = new URL(uri);
-  if (uri && query) {
-    dispatch(
+  const parsedUri = uri ? parseUri(uri) : null;
+
+  logger.debug(`handleWalletConnect`, { uri, query, parsedUri });
+
+  if (uri && query && parsedUri && parsedUri.version === 1) {
+    store.dispatch(walletConnectSetPendingRedirect());
+    store.dispatch(
       walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
+        logger.debug(`walletConnectOnSessionRequest callback`, {
+          status,
+          dappScheme,
+        });
         const type = status === 'approved' ? 'connect' : status;
-        dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+        store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
       })
     );
+  } else if (
+    uri &&
+    query &&
+    parsedUri &&
+    parsedUri.version === 2 &&
+    getExperimetalFlag(WC_V2)
+  ) {
+    setHasPendingDeeplinkPendingRedirect(true);
+    pairWalletConnect({ uri });
   } else {
     // This is when we get focused by WC due to a signing request
+    store.dispatch(walletConnectSetPendingRedirect());
   }
 }

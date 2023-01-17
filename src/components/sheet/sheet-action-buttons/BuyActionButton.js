@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import {
   useAccountSettings,
@@ -12,6 +12,7 @@ import config from '@/model/config';
 import { useNavigation } from '@/navigation';
 
 import Routes from '@/navigation/routesNames';
+import { useRoute } from '@react-navigation/core';
 
 function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
@@ -20,6 +21,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
   const { navigate: appNavigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
+  const { name: routeName } = useRoute();
 
   const handlePress = useCallback(() => {
     if (isDamaged) {
@@ -43,17 +45,17 @@ function BuyActionButton({ color: givenColor, ...props }) {
       }));
     }
 
-    analytics.track('Tapped Add Cash', {
-      category: 'add cash',
-      source: 'expanded state',
+    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      componentName: 'BuyActionButton',
+      routeName,
     });
-  }, [accountAddress, isDamaged, navigate]);
+  }, [accountAddress, appNavigate, isDamaged, navigate, routeName]);
 
   return (
     <SheetActionButton
       {...props}
       color={color}
-      label={`􀍰 ${lang.t('button.buy_more_eth')}`}
+      label={`􀍰 ${lang.t('button.buy_eth')}`}
       onPress={handlePress}
       weight="bold"
     />

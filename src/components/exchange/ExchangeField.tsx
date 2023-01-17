@@ -159,7 +159,6 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              /* @ts-expect-error — JavaScript component */
               <CoinIcon
                 address={address}
                 mainnet_address={mainnetAddress}

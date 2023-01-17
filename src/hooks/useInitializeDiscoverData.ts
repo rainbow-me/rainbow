@@ -4,7 +4,6 @@ import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { userListsLoadState } from '../redux/userLists';
 import { AppState } from '@/redux/store';
-import { topMoversLoadState } from '@/redux/topMovers';
 import logger from '@/utils/logger';
 
 export default function useInitializeDiscoverData() {
@@ -21,7 +20,6 @@ export default function useInitializeDiscoverData() {
       InteractionManager.runAfterInteractions(() => {
         // Other discover related actions should be triggered here
         dispatch(userListsLoadState());
-        dispatch(topMoversLoadState());
       });
     } catch (error) {
       logger.sentry('Error initializing account data');

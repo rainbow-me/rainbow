@@ -21,6 +21,8 @@ import {
   OPTIMISM_MAINNET_RPC,
   // @ts-ignore
   POLYGON_MAINNET_RPC,
+  // @ts-ignore
+  BSC_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
   getNetwork,
@@ -36,12 +38,14 @@ export interface RainbowConfig extends Record<string, any> {
   data_endpoint?: string;
   data_origin?: string;
   default_slippage_bips?: string;
-  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
   ethereum_mainnet_rpc?: string;
+  features: string;
+  flashbots_enabled?: boolean;
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
+  bsc_mainnet_rpc?: string;
   trace_call_block_number_offset?: number;
   wyre_enabled?: boolean;
 }
@@ -56,15 +60,21 @@ const DEFAULT_CONFIG = {
     mainnet: 100,
     optimism: 200,
     polygon: 200,
+    bsc: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
+  features: JSON.stringify({
+    f2c_enabled: true,
+    swagg_enabled: true,
+  }),
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+  bsc_mainnet_rpc: BSC_MAINNET_RPC,
   trace_call_block_number_offset: 20,
   wyre_enabled: true,
 };
@@ -93,7 +103,7 @@ const init = async () => {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
+      if (key === 'default_slippage_bips' || key === 'features') {
         config[key] = JSON.parse(entry.asString());
       } else if (key === 'flashbots_enabled' || key === 'wyre_enabled') {
         config[key] = entry.asBoolean();

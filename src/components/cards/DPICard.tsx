@@ -39,7 +39,7 @@ export const DPICard = () => {
 
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'DPICard',
-      fromScreen: routeName,
+      routeName,
       cardType,
     });
 
@@ -74,7 +74,6 @@ export const DPICard = () => {
               </Stack>
             </Column>
             <Column width="content">
-              {/* @ts-expect-error JavaScript component */}
               <CoinIcon
                 address={DPI_ADDRESS}
                 forcedShadowColor={globalColors.grey100}

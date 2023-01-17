@@ -14,7 +14,7 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
+import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -49,7 +49,6 @@ import {
   restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
-  transactionDetailsConfig,
   wyreWebviewOptions,
 } from './config';
 import {
@@ -74,10 +73,8 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import {
-  TRANSACTION_DETAILS_SHEET_HEIGHT,
-  TransactionDetails,
-} from '@/screens/transaction-details/TransactionDetails';
+import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletNavigator } from './AddWalletNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -300,6 +297,10 @@ function BSNavigator() {
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
       />
+      <BSStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
+      />
       {profilesEnabled && (
         <>
           <BSStack.Screen
@@ -397,10 +398,7 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
-        options={{
-          ...bottomSheetPreset,
-          height: TRANSACTION_DETAILS_SHEET_HEIGHT,
-        }}
+        options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
     </BSStack.Navigator>
   );

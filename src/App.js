@@ -54,8 +54,7 @@ import {
   queryClient,
 } from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
-import { explorerInitL2 } from './redux/explorer';
-import { fetchOnchainBalances } from './redux/fallbackExplorer';
+import { fetchAssetsFromRefraction } from './redux/explorer';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -80,6 +79,8 @@ import {
 import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
+import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
+import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 
 const FedoraToastRef = createRef();
 
@@ -147,6 +148,10 @@ class OldApp extends Component {
       PerformanceMetrics.loadRootAppComponent
     );
     analyticsV2.track(analyticsV2.event.applicationDidMount);
+
+    if (getExperimetalFlag(WC_V2)) {
+      initWalletConnectListeners();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -221,12 +226,10 @@ class OldApp extends Component {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
           } else if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
-            store.dispatch(explorerInitL2(network));
+            store.dispatch(fetchAssetsFromRefraction());
           }
         } else {
-          store.dispatch(
-            fetchOnchainBalances({ keepPolling: false, withPrices: false })
-          );
+          store.dispatch(fetchAssetsFromRefraction());
         }
       }, timeout);
     };
@@ -243,21 +246,20 @@ class OldApp extends Component {
 
   render = () => (
     <Portal>
-      <NotificationsHandler walletReady={this.props.walletReady}>
-        <View style={containerStyle}>
-          {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
-          )}
-          <OfflineToast />
-          <FedoraToast ref={FedoraToastRef} />
-        </View>
-      </NotificationsHandler>
+      <View style={containerStyle}>
+        {this.state.initialRoute && (
+          <InitialRouteContext.Provider value={this.state.initialRoute}>
+            <RoutesComponent
+              onReady={this.handleSentryNavigationIntegration}
+              ref={this.handleNavigatorRef}
+            />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
+        )}
+        <OfflineToast />
+        <FedoraToast ref={FedoraToastRef} />
+      </View>
+      <NotificationsHandler walletReady={this.props.walletReady} />
     </Portal>
   );
 }

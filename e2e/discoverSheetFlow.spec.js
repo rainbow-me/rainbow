@@ -25,7 +25,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
@@ -152,6 +152,7 @@ describe('Discover Screen Flow', () => {
   });
 
   it('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.swipeUntilVisible('dpi-button', 'discover-sheet', 'up');
     await Helpers.waitAndTap('dpi-button');
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
@@ -187,22 +188,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('lists-section-defi');
     await Helpers.waitAndTap('list-stablecoins');
     await Helpers.checkIfVisible('lists-section-stablecoins');
-  });
-
-  it('Should cycle through pools lists', async () => {
-    await Helpers.swipeUntilVisible(
-      'pools-list-liquidity',
-      'discover-sheet',
-      'up'
-    );
-    await Helpers.waitAndTap('pools-list-liquidity');
-    await Helpers.checkIfVisible('pools-section-liquidity');
-    await Helpers.waitAndTap('pools-list-annualized_fees');
-    await Helpers.checkIfVisible('pools-section-annualized_fees');
-    await Helpers.waitAndTap('pools-list-profit30d');
-    await Helpers.checkIfVisible('pools-section-profit30d');
-    await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
-    await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
   });
 
   afterAll(async () => {

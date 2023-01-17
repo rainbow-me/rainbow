@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
@@ -113,7 +112,9 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
-import logger from '@/utils/logger';
+import { handleSessionRequestResponse } from '@/utils/walletConnect';
+import { isAddress } from '@ethersproject/address';
+import { logger, RainbowError } from '@/logger';
 
 const springConfig = {
   damping: 500,
@@ -228,6 +229,7 @@ export default function TransactionConfirmationScreen() {
       payload: { method, params },
       peerId,
       requestId,
+      walletConnectV2RequestValues,
     },
   } = routeParams;
   const isMessageRequest = isMessageDisplayType(method);
@@ -236,7 +238,9 @@ export default function TransactionConfirmationScreen() {
   const walletConnector = walletConnectors[peerId];
 
   const accountInfo = useMemo(() => {
-    const address = walletConnector?._accounts?.[0];
+    // TODO where do we get address for sign/send transaction?
+    const address =
+      walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets, address);
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
@@ -247,7 +251,12 @@ export default function TransactionConfirmationScreen() {
       ...profileInfo,
       address,
     };
-  }, [walletConnector?._accounts, walletNames, wallets]);
+  }, [
+    walletConnector?._accounts,
+    walletNames,
+    wallets,
+    walletConnectV2RequestValues,
+  ]);
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
@@ -260,9 +269,13 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     setCurrentNetwork(
-      ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
+      ethereumUtils.getNetworkFromChainId(
+        Number(
+          walletConnectV2RequestValues?.chainId || walletConnector?._chainId
+        )
+      )
     );
-  }, [walletConnector?._chainId]);
+  }, [walletConnector?._chainId, walletConnectV2RequestValues]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -435,11 +448,17 @@ export default function TransactionConfirmationScreen() {
         }
         setTimeout(async () => {
           if (requestId) {
-            await dispatch(
-              walletConnectSendStatus(peerId, requestId, {
+            if (walletConnectV2RequestValues) {
+              await handleSessionRequestResponse(walletConnectV2RequestValues, {
                 error: error || 'User cancelled the request',
-              })
-            );
+              });
+            } else {
+              await dispatch(
+                walletConnectSendStatus(peerId, requestId, {
+                  error: error || 'User cancelled the request',
+                })
+              );
+            }
             dispatch(removeRequest(requestId));
           }
           const rejectionType =
@@ -447,7 +466,10 @@ export default function TransactionConfirmationScreen() {
           analytics.track(`Rejected WalletConnect ${rejectionType} request`);
         }, 300);
       } catch (error) {
-        logger.log('error while handling cancel request', error);
+        logger.error(
+          new RainbowError('WC: error while handling cancel request'),
+          { error }
+        );
         closeScreen(true);
       }
     },
@@ -460,6 +482,7 @@ export default function TransactionConfirmationScreen() {
       removeRequest,
       requestId,
       walletConnectSendStatus,
+      walletConnectV2RequestValues,
     ]
   );
 
@@ -468,7 +491,7 @@ export default function TransactionConfirmationScreen() {
   useEffect(() => {
     if (
       isFocused &&
-      (!peerId || !walletConnector) &&
+      (!peerId || (!walletConnector && !walletConnectV2RequestValues)) &&
       (ios || IS_TESTING !== 'true')
     ) {
       Alert.alert(
@@ -481,7 +504,14 @@ export default function TransactionConfirmationScreen() {
         ]
       );
     }
-  }, [isFocused, goBack, onCancel, peerId, walletConnector]);
+  }, [
+    isFocused,
+    goBack,
+    onCancel,
+    peerId,
+    walletConnector,
+    walletConnectV2RequestValues,
+  ]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -490,16 +520,28 @@ export default function TransactionConfirmationScreen() {
     let gas = txPayload.gasLimit || txPayload.gas;
     try {
       // attempt to re-run estimation
-      logger.log('Estimating gas limit');
+      logger.debug(
+        'WC: Estimating gas limit',
+        { gas },
+        logger.DebugContext.walletconnect
+      );
       const rawGasLimit = await estimateGas(txPayload, provider);
-      logger.log('Estimated gas limit', rawGasLimit);
+      logger.debug(
+        'WC: Estimated gas limit',
+        { rawGasLimit },
+        logger.DebugContext.walletconnect
+      );
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
-      logger.log('error estimating gas', error);
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
     } finally {
-      logger.log('Setting gas limit to', convertHexToString(gas));
+      logger.debug(
+        'WC: Setting gas limit to',
+        { gas: convertHexToString(gas) },
+        logger.DebugContext.walletconnect
+      );
 
       if (currentNetwork === networkTypes.optimism) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
@@ -607,10 +649,14 @@ export default function TransactionConfirmationScreen() {
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
 
     try {
-      logger.log('⛽ gas suggested by dapp', {
-        gas: convertHexToString(gas),
-        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
-      });
+      logger.debug(
+        'WC: gas suggested by dapp',
+        {
+          gas: convertHexToString(gas),
+          gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+        },
+        logger.DebugContext.walletconnect
+      );
 
       if (currentNetwork === networkTypes.mainnet) {
         // Estimate the tx with gas limit padding before sending
@@ -629,12 +675,16 @@ export default function TransactionConfirmationScreen() {
           (!isNil(gasLimitFromPayload) &&
             greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
         ) {
-          logger.log('⛽ using padded estimation!', rawGasLimit.toString());
+          logger.debug(
+            'WC: using padded estimation!',
+            { gas: rawGasLimit.toString() },
+            logger.DebugContext.walletconnect
+          );
           gas = toHex(rawGasLimit);
         }
       }
     } catch (error) {
-      logger.log('⛽ error estimating gas', error);
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
     }
     // clean gas prices / fees sent from the dapp
     const cleanTxPayload = omitFlatten(txPayload, [
@@ -681,9 +731,12 @@ export default function TransactionConfirmationScreen() {
         });
       }
     } catch (e) {
-      logger.log(
-        `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
-        e
+      logger.error(
+        new RainbowError(
+          `WC: Error while ${
+            sendInsteadOfSign ? 'sending' : 'signing'
+          } transaction`
+        )
       );
     }
 
@@ -719,10 +772,16 @@ export default function TransactionConfirmationScreen() {
         dappUrl,
       });
       if (isFocused && requestId) {
+        if (walletConnectV2RequestValues) {
+          await handleSessionRequestResponse(walletConnectV2RequestValues, {
+            result,
+          });
+        } else {
+          await dispatch(
+            walletConnectSendStatus(peerId, requestId, { result: result.hash })
+          );
+        }
         dispatch(removeRequest(requestId));
-        await dispatch(
-          walletConnectSendStatus(peerId, requestId, { result: result.hash })
-        );
       }
       closeScreen(false);
       // When the tx is sent from a different wallet,
@@ -734,25 +793,14 @@ export default function TransactionConfirmationScreen() {
         });
       }
     } else {
-      try {
-        logger.sentry('Error with WC transaction. See previous logs...');
-        const dappInfo = {
-          dappName,
-          dappScheme,
-          dappUrl,
-          formattedDappUrl,
-          isAuthenticated,
-        };
-        logger.sentry('Dapp info:', dappInfo);
-        logger.sentry('Request info:', {
-          method,
-          params,
-        });
-        logger.sentry('TX payload:', txPayloadUpdated);
-        const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
-        captureException(error);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
+        dappName,
+        dappScheme,
+        dappUrl,
+        formattedDappUrl,
+        isAuthenticated,
+        rpcMethod: method,
+      });
 
       await onCancel(error);
     }
@@ -780,6 +828,7 @@ export default function TransactionConfirmationScreen() {
     dataAddNewTransaction,
     removeRequest,
     walletConnectSendStatus,
+    walletConnectV2RequestValues,
     peerId,
     switchToWalletWithAddress,
     onCancel,
@@ -790,13 +839,8 @@ export default function TransactionConfirmationScreen() {
   ]);
 
   const handleSignMessage = useCallback(async () => {
-    let message = null;
+    const message = params.find(p => !isAddress(p));
     let response = null;
-    if (isSignFirstParamType(method)) {
-      message = params?.[0];
-    } else if (isSignSecondParamType(method)) {
-      message = params?.[1];
-    }
     const existingWallet = await loadWallet(
       accountInfo.address,
       true,
@@ -823,8 +867,14 @@ export default function TransactionConfirmationScreen() {
         dappUrl,
       });
       if (requestId) {
+        if (walletConnectV2RequestValues) {
+          await handleSessionRequestResponse(walletConnectV2RequestValues, {
+            result,
+          });
+        } else {
+          await dispatch(walletConnectSendStatus(peerId, requestId, response));
+        }
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, response));
       }
       if (callback) {
         callback({ sig: result });
@@ -846,6 +896,7 @@ export default function TransactionConfirmationScreen() {
     dispatch,
     removeRequest,
     walletConnectSendStatus,
+    walletConnectV2RequestValues,
     peerId,
     onCancel,
   ]);

@@ -175,18 +175,6 @@ export default function CurrencySelectModal() {
     }
   }, [chainId]);
 
-  useEffect(() => {
-    if (currentChainId !== prevChainId) {
-      listRef?.current?.scrollToLocation({
-        animated: false,
-        itemIndex: 0,
-        sectionIndex: 0,
-        viewOffset: 0,
-        viewPosition: 0,
-      });
-    }
-  }, [currentChainId, prevChainId]);
-
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   // TODO: remove this value when crosschain swaps is released
@@ -222,7 +210,7 @@ export default function CurrencySelectModal() {
     swapCurrencyList,
     swapCurrencyListLoading,
     updateFavorites,
-  } = useSwapCurrencyList(searchQueryForSearch, currentChainId);
+  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
   const {
     swappableUserAssets,
@@ -499,7 +487,10 @@ export default function CurrencySelectModal() {
       const assetWithType =
         isMainnet && type === CurrencySelectionTypes.output
           ? { ...item, type: 'token' }
-          : item;
+          : {
+              ...item,
+              decimals: item?.networks?.[chainId]?.decimals || item.decimals,
+            };
 
       const selectAsset = () => {
         dispatch(emitChartsRequest(item.mainnet_address || item.address));
@@ -527,6 +518,7 @@ export default function CurrencySelectModal() {
       checkForRequiredAssets,
       currentChainId,
       type,
+      chainId,
       checkForSameNetwork,
       dispatch,
       callback,
@@ -622,6 +614,20 @@ export default function CurrencySelectModal() {
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
+
+  useEffect(() => {
+    // check if list has items before attempting to scroll
+    if (!currencyList[0]?.data) return;
+    if (currentChainId !== prevChainId) {
+      listRef?.current?.scrollToLocation({
+        animated: false,
+        itemIndex: 0,
+        sectionIndex: 0,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+    }
+  }, [currencyList, currentChainId, prevChainId]);
 
   return (
     <Wrapper>

@@ -9,9 +9,18 @@ export const MIGRATIONS_STORAGE_ID = 'migrations';
  */
 export enum MigrationName {
   deleteImgixMMKVCache = 'migration_deleteImgixMMKVCache',
+  migrateNotificationSettingsToVersion2 = 'migration_migrateNotificationSettingsToVersion2',
+  prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
 }
 
 export type Migration = {
+  /**
+   * Set to true to run the migration every time when writing your migration
+   * code. DELETE THIS PROP or set to `false` before merging your code,
+   * otherwise your migration will not run in production.
+   */
+  debug?: boolean;
+
   /**
    * Must be a UNIQUE name of the migration.
    */

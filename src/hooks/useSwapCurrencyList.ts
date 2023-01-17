@@ -51,6 +51,7 @@ type CrosschainVerifiedAssets = {
   [Network.mainnet]: RT[];
   [Network.optimism]: RT[];
   [Network.polygon]: RT[];
+  [Network.bsc]: RT[];
   [Network.arbitrum]: RT[];
 };
 
@@ -96,7 +97,8 @@ const searchCurrencyList = async (searchParams: {
 
 const useSwapCurrencyList = (
   searchQuery: string,
-  searchChainId = MAINNET_CHAINID
+  searchChainId = MAINNET_CHAINID,
+  isDiscover = false
 ) => {
   const previousChainId = usePrevious(searchChainId);
 
@@ -127,6 +129,7 @@ const useSwapCurrencyList = (
     [Network.mainnet]: [],
     [Network.optimism]: [],
     [Network.polygon]: [],
+    [Network.bsc]: [],
     [Network.arbitrum]: [],
   });
 
@@ -141,11 +144,12 @@ const useSwapCurrencyList = (
     if (
       inputChainId &&
       inputChainId !== searchChainId &&
-      crosschainSwapsEnabled
+      crosschainSwapsEnabled &&
+      !isDiscover
     ) {
       return true;
     }
-  }, [searchChainId, inputChainId, crosschainSwapsEnabled]);
+  }, [inputChainId, searchChainId, crosschainSwapsEnabled, isDiscover]);
 
   const isFavorite = useCallback(
     (address: EthereumAddress) =>

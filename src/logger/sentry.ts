@@ -4,6 +4,7 @@ import VersionNumber from 'react-native-version-number';
 
 import { IS_PROD } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import isTestFlight from '@/helpers/isTestFlight';
 
 /**
  * We need to disable React Navigation instrumentation for E2E tests because
@@ -17,7 +18,7 @@ export const sentryRoutingInstrumentation = IS_PROD
 export const defaultOptions = {
   dsn: SENTRY_ENDPOINT,
   enableAutoSessionTracking: true,
-  environment: SENTRY_ENVIRONMENT,
+  environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
   integrations: [
     new Sentry.ReactNativeTracing({
       routingInstrumentation: sentryRoutingInstrumentation,

@@ -1,5 +1,11 @@
 import { unlockableAppIconCheck } from './unlockableAppIconCheck';
-import { OptimismIcon, SmolIcon } from './unlockableAppIcons';
+import {
+  GoldDogeIcon,
+  OptimismIcon,
+  RainDogeIcon,
+  SmolIcon,
+  ZoraIcon,
+} from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 
 // a FeatureUnlockCheck fn should take in a list of wallet addresses to check for feature unlockability
@@ -14,4 +20,10 @@ export const featureUnlockChecks: FeatureUnlockCheck[] = [
     await unlockableAppIconCheck(OptimismIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
     await unlockableAppIconCheck(SmolIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(ZoraIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(GoldDogeIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(RainDogeIcon, walletsToCheck),
 ];

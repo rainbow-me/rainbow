@@ -8,9 +8,9 @@ export function Layout({
   header,
   footer,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   header: React.ReactElement;
-  footer: React.ReactElement;
+  footer?: React.ReactElement;
 }) {
   return (
     <Box background="surfaceSecondary">

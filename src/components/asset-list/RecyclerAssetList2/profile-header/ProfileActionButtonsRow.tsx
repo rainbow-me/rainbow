@@ -19,18 +19,15 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
-  usePersistentDominantColorFromImage,
   useSwapCurrencyHandlers,
   useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
@@ -39,39 +36,15 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { getAllActiveSessionsSync } from '@/utils/walletConnect';
 
 export const ProfileActionButtonsRowHeight = 80;
 
 export function ProfileActionButtonsRow() {
-  // ////////////////////////////////////////////////////
-  // Account
-  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
-  // ////////////////////////////////////////////////////
-  // Colors
-
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
-
-  const { colors } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  } else if (typeof accountColor === 'string') {
-    accentColor = accountColor;
-  }
-
-  // ////////////////////////////////////////////////////
-  // Animations
-
-  const hasAvatarLoaded = !!accountImage || accountSymbol;
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
-
-  const scale = useDerivedValue(() => (hasLoaded ? 1 : 0.9));
+  const scale = useDerivedValue(() => (accentColorLoaded ? 1 : 0.9));
   const expandStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -85,22 +58,34 @@ export function ProfileActionButtonsRow() {
     ],
   }));
 
-  if (!hasLoaded) return null;
+  if (!accentColorLoaded) return null;
+
+  const featuresConfig = (config.features as unknown) as {
+    [featureName: string]: boolean;
+  };
+
+  const addCashEnabled = featuresConfig.f2c_enabled;
+  const swapEnabled = featuresConfig.swagg_enabled;
+
   return (
     <Box width="full">
       <Inset horizontal={{ custom: 17 }}>
         <AccentColorProvider color={accentColor}>
           <Columns>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <BuyButton />
-              </Animated.View>
-            </Column>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <SwapButton />
-              </Animated.View>
-            </Column>
+            {addCashEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <BuyButton />
+                </Animated.View>
+              </Column>
+            )}
+            {swapEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <SwapButton />
+                </Animated.View>
+              </Column>
+            )}
             <Column>
               <Animated.View style={[expandStyle]}>
                 <SendButton />
@@ -295,6 +280,9 @@ function MoreButton() {
   );
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
+  const [activeWCV2Sessions, setActiveWCV2Sessions] = React.useState(
+    getAllActiveSessionsSync()
+  );
 
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {
@@ -323,31 +311,28 @@ function MoreButton() {
 
   const { mostRecentWalletConnectors } = useWalletConnectConnections();
 
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: [
-        {
-          actionKey: 'copy',
-          actionTitle: lang.t('wallet.copy_address'),
-          icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
-        },
-        {
-          actionKey: 'qrCode',
-          actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
-        mostRecentWalletConnectors.length > 0
-          ? {
-              actionKey: 'connectedApps',
-              actionTitle: lang.t('wallet.connected_apps'),
-              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-            }
-          : null,
-      ].filter(Boolean),
-      ...(ios ? { menuTitle: '' } : {}),
-    }),
-    [mostRecentWalletConnectors.length]
-  );
+  const menuConfig = {
+    menuItems: [
+      {
+        actionKey: 'copy',
+        actionTitle: lang.t('wallet.copy_address'),
+        icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
+      },
+      {
+        actionKey: 'qrCode',
+        actionTitle: lang.t('button.my_qr_code'),
+        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+      },
+      mostRecentWalletConnectors.length > 0 || activeWCV2Sessions.length > 0
+        ? {
+            actionKey: 'connectedApps',
+            actionTitle: lang.t('wallet.connected_apps'),
+            icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+          }
+        : null,
+    ].filter(Boolean),
+    ...(ios ? { menuTitle: '' } : {}),
+  };
 
   const handlePressMenuItem = React.useCallback(
     e => {
@@ -364,8 +349,14 @@ function MoreButton() {
     [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
   );
 
+  const onMenuWillShow = React.useCallback(() => {
+    // update state to potentially hide the menu button
+    setActiveWCV2Sessions(getAllActiveSessionsSync());
+  }, [setActiveWCV2Sessions]);
+
   return (
     <ContextMenuButton
+      onMenuWillShow={onMenuWillShow}
       menuConfig={menuConfig}
       onPressMenuItem={handlePressMenuItem}
     >

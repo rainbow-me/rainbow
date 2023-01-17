@@ -48,6 +48,8 @@ import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics } from '@/analytics';
+import { logger, RainbowError } from '@/logger';
+import { getExperimetalFlag, NEW_TRANSACTION_DETAILS } from '@/config';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
@@ -131,6 +133,16 @@ export const showTransactionDetailsSheet = (
   contacts: { [p: string]: Contact },
   accountAddress: string
 ) => {
+  // TODO: APP-298 Clean up old transaction details sheet code after releasing new one
+  const isNewTransactionSheetEnabled = getExperimetalFlag(
+    NEW_TRANSACTION_DETAILS
+  );
+  if (isNewTransactionSheetEnabled) {
+    return void Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+      transaction: transactionDetails,
+    });
+  }
+  // Old TX details action sheet code
   const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
   const network = transactionDetails.network ?? Network.mainnet;
 
@@ -403,17 +415,21 @@ export const getTransactionSocketStatus = async (
         pending = false;
       }
     } else if (socketResponse.error) {
+      logger.warn(
+        'getTransactionSocketStatus transaction check failed',
+        socketResponse.error
+      );
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
+    logger.error(
+      new RainbowError('getTransactionSocketStatus transaction check caught')
+    );
     if (IS_TEST) {
       status = swap?.isBridge
         ? TransactionStatus.bridged
         : TransactionStatus.swapped;
-      pending = false;
-    } else {
-      status = TransactionStatus.failed;
       pending = false;
     }
   }

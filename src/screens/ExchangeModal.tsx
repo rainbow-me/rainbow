@@ -50,7 +50,11 @@ import {
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import {
+  getProviderForNetwork,
+  getHasMerged,
+  getFlashbotsProvider,
+} from '@/handlers/web3';
 import {
   divide,
   fromWei,
@@ -97,20 +101,19 @@ import {
   SwapActionParameters,
 } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import useSwapRefuel, { RefuelState } from '@/hooks/useSwapRefuel';
-import networkInfo from '@/helpers/networkInfo';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
+import { Wallet } from 'ethers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
+  [Network.bsc]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
-  [Network.bsc]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -199,7 +202,6 @@ export default function ExchangeModal({
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
-  const [hasDeductedRefuel, setHasDeductedRefuel] = useState(false);
   const {
     navigate,
     setParams,
@@ -412,7 +414,6 @@ export default function ExchangeModal({
     },
     loading,
     resetSwapInputs,
-    setRefuel,
     quoteError,
   } = useSwapDerivedOutputs(type);
 
@@ -646,11 +647,25 @@ export default function ExchangeModal({
         ? NativeModules.NotificationManager
         : null;
       try {
-        const wallet = await loadWallet();
+        // load the correct network provider for the wallet
+        const provider = await getProviderForNetwork(currentNetwork);
+        let wallet = await loadWallet(accountAddress, false, provider);
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
           return false;
+        }
+
+        // Switch to the flashbots provider if enabled
+        // TODO(skylarbarrera): need to check if ledger and handle differently here
+        if (
+          flashbots &&
+          currentNetwork === Network.mainnet &&
+          wallet instanceof Wallet
+        ) {
+          logger.debug('flashbots provider being set on mainnet');
+          const flashbotsProvider = await getFlashbotsProvider();
+          wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         const callback = (
@@ -929,11 +944,6 @@ export default function ExchangeModal({
     swapSupportsFlashbots,
   ]);
 
-  const resetRefuelState = useCallback(() => {
-    setHasDeductedRefuel(false);
-    setRefuel(false);
-  }, [setRefuel]);
-
   const navigateToSwapDetailsModal = useCallback(
     (isRefuelTx = false) => {
       android && Keyboard.dismiss();
@@ -950,9 +960,6 @@ export default function ExchangeModal({
           currentNetwork,
           flashbotTransaction: flashbots,
           isRefuelTx,
-          onClose: () => {
-            resetRefuelState();
-          },
           restoreFocusOnSwapModal: () => {
             android &&
               (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -989,141 +996,10 @@ export default function ExchangeModal({
       outputCurrency?.name,
       outputCurrency?.symbol,
       outputFieldRef,
-      resetRefuelState,
       setParams,
       type,
     ]
   );
-
-  const {
-    showRefuelSheet,
-    refuelState,
-    outputNativeAsset,
-    minRefuelAmount,
-  } = useSwapRefuel({
-    inputCurrency,
-    outputCurrency,
-    tradeDetails,
-  });
-
-  const navigateToRefuelModal = useCallback(() => {
-    const networkDetails = networkInfo[outputNetwork];
-    android && Keyboard.dismiss();
-
-    if (refuelState === RefuelState.Add) {
-      return navigate(Routes.EXPLAIN_SHEET, {
-        network: outputNetwork,
-        networkName: networkDetails?.name,
-        gasToken: networkDetails?.gasToken,
-        nativeAsset: {
-          mainnet_address: outputNativeAsset?.mainnet_address,
-          address: outputNativeAsset?.address,
-          type: outputNativeAsset?.type,
-          symbol: outputNativeAsset?.symbol,
-        },
-        onRefuel: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          setRefuel(true);
-          handleClose();
-          navigateToSwapDetailsModal(true);
-        },
-        onContinue: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          handleClose();
-          navigateToSwapDetailsModal();
-        },
-        type: 'swap_refuel_add',
-      });
-    }
-
-    if (refuelState === RefuelState.Deduct) {
-      return navigate(Routes.EXPLAIN_SHEET, {
-        network: outputNetwork,
-        networkName: networkDetails?.name,
-        gasToken: networkDetails?.gasToken,
-        nativeAsset: {
-          address: outputNativeAsset?.address,
-          mainnet_address: outputNativeAsset?.mainnet_address,
-          type: outputNativeAsset?.type,
-          symbol: outputNativeAsset?.symbol,
-        },
-        onRefuel: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          // new input is sellAmount - minRefuelAmount if sellAmount > minRefuelAmount
-          const newSellAmountAfterRefuel = subtract(
-            tradeDetails?.sellAmount?.toString() || '0',
-            minRefuelAmount?.toString() || '0'
-          );
-
-          // if user press adjust and add 3 go back to exchange modal and update the input token amount
-          updateAndFocusInputAmount(fromWei(newSellAmountAfterRefuel));
-          setHasDeductedRefuel(true);
-          setRefuel(true);
-          handleClose();
-        },
-        onContinue: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          handleClose();
-          navigateToSwapDetailsModal();
-        },
-        type: 'swap_refuel_deduct',
-      });
-    }
-
-    if (refuelState === RefuelState.Notice) {
-      return navigate(Routes.EXPLAIN_SHEET, {
-        network: outputNetwork,
-        networkName: networkDetails?.name,
-        gasToken: networkDetails?.gasToken,
-        nativeAsset: {
-          mainnet_address: outputNativeAsset?.mainnet_address,
-          type: outputNativeAsset?.type,
-          symbol: outputNativeAsset?.symbol,
-        },
-        onProceed: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          handleClose();
-          navigateToSwapDetailsModal();
-        },
-        onContinue: (
-          navigate: () => void,
-          goBack: () => void,
-          handleClose: () => void
-        ) => {
-          handleClose();
-        },
-        type: 'swap_refuel_notice',
-      });
-    }
-  }, [
-    outputNetwork,
-    refuelState,
-    navigate,
-    outputNativeAsset?.mainnet_address,
-    outputNativeAsset?.type,
-    outputNativeAsset?.symbol,
-    setRefuel,
-    navigateToSwapDetailsModal,
-    tradeDetails?.sellAmount,
-    minRefuelAmount,
-    updateAndFocusInputAmount,
-    handleFocus,
-  ]);
 
   const handleTapWhileDisabled = useCallback(() => {
     const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
@@ -1161,17 +1037,9 @@ export default function ExchangeModal({
 
   const handleConfirmExchangePress = useCallback(() => {
     if (loading) return NOOP();
-    if (showRefuelSheet && !hasDeductedRefuel) {
-      return navigateToRefuelModal();
-    }
+
     return navigateToSwapDetailsModal();
-  }, [
-    loading,
-    showRefuelSheet,
-    navigateToSwapDetailsModal,
-    navigateToRefuelModal,
-    hasDeductedRefuel,
-  ]);
+  }, [loading, navigateToSwapDetailsModal]);
 
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
@@ -1208,7 +1076,6 @@ export default function ExchangeModal({
                 onFocus={handleFocus}
                 onPressMaxBalance={updateMaxInputAmount}
                 onPressSelectInputCurrency={chainId => {
-                  resetRefuelState();
                   navigateToSelectInputCurrency(chainId);
                 }}
                 setInputAmount={updateInputAmount}
@@ -1228,7 +1095,6 @@ export default function ExchangeModal({
                   network={outputNetwork}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
-                    resetRefuelState();
                     navigateToSelectOutputCurrency(chainId);
                   }}
                   {...((currentNetwork === Network.arbitrum ||
