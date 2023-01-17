@@ -25,7 +25,12 @@ export const OpRewardsSheet: React.FC = () => {
   return (
     // @ts-ignore
     <SlackSheet height="100%" contentHeight={height - top} scrollEnabled>
-      <Box flexGrow={1}>
+      <Box
+        flexGrow={1}
+        alignItems="center"
+        justifyContent="center"
+        padding="20px"
+      >
         <Text size="15pt" color="label">
           {loading ? 'Loading...' : JSON.stringify(rewardsData)}
         </Text>
