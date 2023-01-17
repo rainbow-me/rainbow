@@ -9,20 +9,12 @@ import {
   resolveUnstoppableDomain,
 } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils';
+// @ts-ignore
+import {udTlds} from '@unstoppabledomains/tldsresolverkeys'
+
 
 // Currently supported Top Level Domains from Unstoppable Domains
-const supportedUnstoppableDomains = [
-  '888',
-  'bitcoin',
-  'blockchain',
-  'coin',
-  'crypto',
-  'dao',
-  'nft',
-  'wallet',
-  'x',
-  'zil',
-];
+const supportedUnstoppableDomains = udTlds;
 
 /**
  * @desc validate email
