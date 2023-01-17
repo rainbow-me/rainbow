@@ -178,7 +178,7 @@ interface RainbowSelectedWalletData {
 }
 
 export interface PrivateKeyData {
-  privateKey: EthereumPrivateKey;
+  privateKey: EthereumPrivateKey | HardwareKey;
   version: string;
 }
 
@@ -1097,7 +1097,7 @@ export const saveKeyForWallet = async (
   hardware: boolean
 ) => {
   if (hardware) {
-    return await saveHardwareKey(address, walletKey);
+    return await saveHardwareKey(address, walletKey as HardwareKey);
   } else {
     return await savePrivateKey(address, walletKey);
   }
@@ -1150,7 +1150,7 @@ export const savePrivateKey = async (
  */
 export const saveHardwareKey = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey
+  privateKey: null | HardwareKey
 ) => {
   const key = `${address}_${privateKeyKey}`;
   const val = {
