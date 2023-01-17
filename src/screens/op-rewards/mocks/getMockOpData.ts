@@ -1,5 +1,7 @@
 // Mock data is based on schema provided by Alexey
-const MOCK_DATA = {
+import { OpRewardsResponseType } from '@/screens/op-rewards/types/OpRewardsResponseType';
+
+const MOCK_DATA: OpRewardsResponseType = {
   meta: {
     title: 'Optimism Rewards',
     // Unix timestamp in UTC. "Next Airdrop" in Figma.
@@ -96,11 +98,11 @@ const MOCK_DATA = {
       earnings: {
         base: {
           usd: 2504.37,
-          op: 2201.25,
+          token: 2201.25,
         },
         bonus: {
           usd: 11377.06,
-          op: 10000,
+          token: 10000,
         },
       },
     },

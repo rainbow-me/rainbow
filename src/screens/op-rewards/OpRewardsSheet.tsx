@@ -5,11 +5,14 @@ import { Box, Text } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { getMockOpData } from '@/screens/op-rewards/mocks/getMockOpData';
+import { OpRewardsResponseType } from '@/screens/op-rewards/types/OpRewardsResponseType';
 
 export const OpRewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const [rewardsData, setRewardsData] = useState<any>(null);
+  const [rewardsData, setRewardsData] = useState<OpRewardsResponseType | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
