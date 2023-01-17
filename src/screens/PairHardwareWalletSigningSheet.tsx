@@ -141,7 +141,7 @@ export function PairHardwareWalletSigningSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px" bottom="20px">
+        <Inset horizontal="20px">
           <SheetActionButton
             color={buttonColor}
             label={i18n.t(TRANSLATIONS.blind_signing_enabled)}

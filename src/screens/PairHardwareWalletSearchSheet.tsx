@@ -29,7 +29,7 @@ export function PairHardwareWalletSearchSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px" bottom="20px">
+        <Inset horizontal="20px">
           <TintButton onPress={() => dangerouslyGetParent()?.goBack()}>
             {i18n.t(i18n.l.button.cancel)}
           </TintButton>

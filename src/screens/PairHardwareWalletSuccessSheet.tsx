@@ -37,7 +37,7 @@ export function PairHardwareWalletSuccessSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px" bottom="20px">
+        <Inset horizontal="20px">
           <SheetActionButton
             color={buttonColor}
             label={i18n.t(i18n.l.button.next)}

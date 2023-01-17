@@ -52,7 +52,7 @@ export function PairHardwareWalletIntroSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px" bottom="20px">
+        <Inset horizontal="20px">
           <SheetActionButton
             color={buttonColor}
             label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
