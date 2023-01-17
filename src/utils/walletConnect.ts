@@ -221,13 +221,13 @@ export async function initListeners() {
     const client_id = await client.core.crypto.getClientId();
 
     // initial subscription
-    await subscriveToEchoServer({ token, client_id });
+    await subscribeToEchoServer({ token, client_id });
 
     /**
      * Ensure that if the FCM token changes we update the echo server
      */
     messaging().onTokenRefresh(async token => {
-      await subscriveToEchoServer({ token, client_id });
+      await subscribeToEchoServer({ token, client_id });
     });
   } catch (e) {
     logger.error(
@@ -237,7 +237,7 @@ export async function initListeners() {
   }
 }
 
-async function subscriveToEchoServer({
+async function subscribeToEchoServer({
   client_id,
   token,
 }: {
