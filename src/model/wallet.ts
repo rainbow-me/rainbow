@@ -484,7 +484,7 @@ export const signTypedDataMessage = async (
       }
 
       // Hardware wallets
-      if (!wallet?.privateKey) {
+      if (wallet instanceof LedgerSigner) {
         const result = await (wallet as LedgerSigner).signTypedDataMessage(
           parsedData,
           version === 'v1'
