@@ -3,9 +3,6 @@ import React from 'react';
 import { Linking } from 'react-native';
 import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
-import { ImgixImage } from '@/components/images';
-import ledgerNano from '@/assets/ledger-nano.png';
-import { Source } from 'react-native-fast-image';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -65,14 +62,6 @@ export function PairHardwareWalletIntroSheet() {
           />
         </Inset>
       }
-    >
-      <Inset top="52px">
-        <ImgixImage
-          source={ledgerNano as Source}
-          style={{ width: 216, height: 292 }}
-          size={292}
-        />
-      </Inset>
-    </Layout>
+    />
   );
 }
