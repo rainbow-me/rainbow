@@ -75,7 +75,6 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
-import { LongPressGestureHandler } from 'react-native-gesture-handler';
 
 const encryptor = new AesEncryptor();
 
@@ -87,6 +86,7 @@ export type EthereumWalletSeed =
   | EthereumPrivateKey
   | EthereumMnemonic
   | EthereumSeed;
+type HardwareKey = `${string}/${number}`;
 
 interface WalletInitialized {
   isNew: boolean;
@@ -1093,13 +1093,13 @@ export const createWallet = async (
  */
 export const saveKeyForWallet = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey,
+  walletKey: null | EthereumPrivateKey | HardwareKey,
   hardware: boolean
 ) => {
   if (hardware) {
-    return await saveHardwareKey(address, privateKey);
+    return await saveHardwareKey(address, walletKey);
   } else {
-    return await savePrivateKey(address, privateKey);
+    return await savePrivateKey(address, walletKey);
   }
 };
 
