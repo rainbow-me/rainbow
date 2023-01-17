@@ -37,6 +37,7 @@ export type {
   RainbowToken,
   SwappableAsset,
   ZerionAsset,
+  ZerionAssetFallback,
   ZerionAssetPrice,
 } from './tokens';
 export type {
