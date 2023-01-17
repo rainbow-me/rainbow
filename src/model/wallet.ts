@@ -876,7 +876,7 @@ export const createWallet = async (
             new RainbowError(
               '[createWallet] - Error getting txn history for address'
             ),
-            error
+            { error }
           );
         }
 
