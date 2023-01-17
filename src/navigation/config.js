@@ -221,7 +221,7 @@ export const learnWebViewScreenConfig = {
   }),
 };
 
-export const swapsPromoSheetConfig = {
+export const promoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

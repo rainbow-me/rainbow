@@ -40,6 +40,7 @@ const Routes = {
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
+  NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   PAIR_HARDWARE_WALLET_INTRO_SHEET: 'PairHardwareWalletIntroSheet',
   PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
   PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',

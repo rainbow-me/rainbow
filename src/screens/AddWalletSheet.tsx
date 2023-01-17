@@ -303,6 +303,17 @@ export const AddWalletSheet = () => {
     );
   }
 
+  const onPressConnectHardwareWallet = () => {
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: false,
+      type: 'ledger_nano_x',
+    });
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+    });
+  };
+
   const create: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.options.create_new.title),
     description: i18n.t(TRANSLATIONS.options.create_new.description),
@@ -345,12 +356,7 @@ export const AddWalletSheet = () => {
     icon: '􀕹',
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',
-    onPress: () => {
-      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-        isFirstWallet,
-        type: 'ledger_nano_x',
-      });
-    },
+    onPress: onPressConnectHardwareWallet,
   };
 
   return (

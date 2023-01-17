@@ -8,7 +8,6 @@ import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
 import { uniswapLiquidityResetState } from '../redux/uniswapLiquidity';
 import { promiseUtils } from '../utils';
-import { optimismExplorerClearState } from '@/redux/optimismExplorer';
 
 export default function useResetAccountState() {
   const dispatch = useDispatch();
@@ -21,9 +20,8 @@ export default function useResetAccountState() {
     const p4 = dispatch(uniswapResetState());
     const p5 = dispatch(uniswapLiquidityResetState());
     const p6 = dispatch(addCashClearState());
-    const p7 = dispatch(optimismExplorerClearState());
     // @ts-expect-error ts-migrate(2739) FIXME: Type '(dispatch: any) => void' is missing the foll... Remove this comment to see the full error message
-    await promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6, p7]);
+    await promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6]);
   }, [dispatch]);
 
   return resetAccountState;
