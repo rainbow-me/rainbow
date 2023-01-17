@@ -9,7 +9,6 @@ import {
   SignTypedDataVersion,
   TypedMessage,
 } from '@metamask/eth-sig-util';
-import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
@@ -64,7 +63,7 @@ import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import store from '@rainbow-me/redux/store';
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
 import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { logger, RainbowError } from '@/logger';
 import {
   deriveAccountFromBluetoothHardwareWallet,
   deriveAccountFromMnemonic,
@@ -75,6 +74,8 @@ import {
   initializeNotificationSettingsForAddresses,
   NotificationRelationship,
 } from '@/notifications/settings';
+import { DebugContext } from '@/logger/debugContext';
+import { LongPressGestureHandler } from 'react-native-gesture-handler';
 
 const encryptor = new AesEncryptor();
 
@@ -329,28 +330,24 @@ export const sendTransaction = async ({
   error?: any;
 }> => {
   try {
-    logger.sentry('about to send transaction', transaction);
+    logger.info('wallet: sending transaction', { transaction });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
-      logger.log('tx result', result);
+      logger.debug('send - tx result', { result }, DebugContext.wallet);
       return { result };
     } catch (error) {
-      logger.log('Failed to SEND transaction', error);
+      logger.error(new RainbowError('Failed to send transaction'), { error });
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Error', error);
-      const fakeError = new Error('Failed to send transaction');
-      captureException(fakeError);
       return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.sentry(
-      'Failed to SEND transaction due to authentication, alerted user'
-    );
-    captureException(error);
+    logger.error(new RainbowError('Failed to SEND transaction due to auth'), {
+      error,
+    });
     return null;
   }
 };
@@ -364,7 +361,7 @@ export const signTransaction = async ({
   error?: any;
 }> => {
   try {
-    logger.sentry('about to sign transaction', transaction);
+    logger.info('wallet: signing transaction', { transaction });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
@@ -373,17 +370,14 @@ export const signTransaction = async ({
       return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Error', error);
-      const fakeError = new Error('Failed to sign transaction');
-      captureException(fakeError);
+      logger.error(new RainbowError('Failed to sign transaction'), { error });
       return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.sentry(
-      'Failed to SIGN transaction due to authentication, alerted user'
-    );
-    captureException(error);
+    logger.error(new RainbowError('Failed to sign transaction due to auth'), {
+      error,
+    });
     return null;
   }
 };
@@ -397,7 +391,7 @@ export const signMessage = async (
   error?: any;
 }> => {
   try {
-    logger.sentry('about to sign message', message);
+    logger.info('wallet: signing message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
@@ -406,15 +400,14 @@ export const signMessage = async (
       return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Error', error);
-      const fakeError = new Error('Failed to sign message');
-      captureException(fakeError);
+      logger.error(new RainbowError('Failed to sign message'), { error });
       return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.sentry('Failed to SIGN message due to authentication, alerted user');
-    captureException(error);
+    logger.error(new RainbowError('Failed to sign message due to auth'), {
+      error,
+    });
     return null;
   }
 };
@@ -428,7 +421,7 @@ export const signPersonalMessage = async (
   error?: any;
 }> => {
   try {
-    logger.sentry('about to sign personal message', message);
+    logger.info('wallet: signing personal message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
@@ -441,17 +434,17 @@ export const signPersonalMessage = async (
       return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Error', error);
-      const fakeError = new Error('Failed to sign personal message');
-      captureException(fakeError);
+      logger.error(new RainbowError('Failed to sign personal message'), {
+        error,
+      });
       return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.sentry(
-      'Failed to SIGN personal message due to authentication, alerted user'
+    logger.error(
+      new RainbowError('Failed to sign personal message due to auth'),
+      { error }
     );
-    captureException(error);
     return null;
   }
 };
@@ -465,7 +458,7 @@ export const signTypedDataMessage = async (
   error?: any;
 }> => {
   try {
-    logger.sentry('about to sign typed data  message', message);
+    logger.info('wallet: signing typed data message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
@@ -509,17 +502,17 @@ export const signTypedDataMessage = async (
       }
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Error', error);
-      const fakeError = new Error('Failed to sign typed data');
-      captureException(fakeError);
+      logger.error(new RainbowError('Failed to sign typed data message'), {
+        error,
+      });
       return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.sentry(
-      'Failed to SIGN typed data message due to authentication, alerted user'
+    logger.error(
+      new RainbowError('Failed to sign typed data message due to auth'),
+      { error }
     );
-    captureException(error);
     return null;
   }
 };
@@ -577,8 +570,7 @@ export const loadPrivateKey = async (
 
     return privateKey;
   } catch (error) {
-    logger.sentry('Error in loadPrivateKey');
-    captureException(error);
+    logger.error(new RainbowError('Error loading private key'), { error });
     return null;
   }
 };
@@ -630,9 +622,9 @@ export const createWallet = async (
     callbackAfterSeeds = null;
   }
   const isImported = !!seed;
-  logger.sentry('Creating wallet, isImported?', isImported);
+  logger.info('Importing new wallet');
   if (!seed) {
-    logger.sentry('Generating a new seed phrase');
+    logger.info('Creating new wallet');
   }
   const walletSeed = seed || generateMnemonic();
   let addresses: RainbowAccount[] = [];
@@ -664,17 +656,25 @@ export const createWallet = async (
       // hardware pkey format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
     }
-    logger.sentry('[createWallet] - getWallet from seed');
+    logger.debug(
+      '[createWallet] - getWallet from seed',
+      {},
+      DebugContext.wallet
+    );
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
-    logger.sentry('[createWallet] - getAllWallets');
+    logger.debug('[createWallet] - getAllWallets', {}, DebugContext.wallet);
     const allWallets: AllRainbowWallets = allWalletsResult?.wallets ?? {};
 
     let existingWalletId = null;
     if (isImported) {
       // Checking if the generated account already exists and is visible
-      logger.sentry('[createWallet] - isImported >> true');
+      logger.debug(
+        '[createWallet] - checking if account already exists',
+        {},
+        DebugContext.wallet
+      );
       const alreadyExistingWallet = Object.values(allWallets).find(
         (someWallet: RainbowWallet) => {
           return !!someWallet.addresses.find(
@@ -706,13 +706,17 @@ export const createWallet = async (
             ),
           1
         );
-        logger.sentry('[createWallet] - already imported this wallet');
+        logger.debug(
+          '[createWallet] - already imported this wallet',
+          {},
+          DebugContext.wallet
+        );
         return null;
       }
     }
 
     const id = existingWalletId || `wallet_${Date.now()}`;
-    logger.sentry('[createWallet] - wallet ID', { id });
+    logger.debug('[createWallet] - wallet ID', { id }, DebugContext.wallet);
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
@@ -749,18 +753,22 @@ export const createWallet = async (
       if (encryptedSeed) {
         await saveSeedPhrase(encryptedSeed, id);
       } else {
-        logger.sentry('Error encrypting seed to save it');
+        logger.error(
+          new RainbowError(
+            '[createWallet] - Error encrypting seed with user pin'
+          )
+        );
         return null;
       }
     } else {
       await saveSeedPhrase(walletSeed, id);
     }
 
-    logger.sentry('[createWallet] - saved seed phrase');
+    logger.debug('[createWallet] - saved seed phrase', {}, DebugContext.wallet);
 
     // Save address
     await saveAddress(walletAddress);
-    logger.sentry('[createWallet] - saved address');
+    logger.debug('[createWallet] - saved address', {}, DebugContext.wallet);
 
     // Save private key
     if (userPIN) {
@@ -769,13 +777,17 @@ export const createWallet = async (
       if (encryptedPkey) {
         await saveKeyForWallet(walletAddress, encryptedPkey, isHardwareWallet);
       } else {
-        logger.sentry('Error encrypting pkey to save it');
+        logger.error(
+          new RainbowError(
+            '[createWallet] - Error encrypting private key with user pin'
+          )
+        );
         return null;
       }
     } else {
       await saveKeyForWallet(walletAddress, pkey, isHardwareWallet);
     }
-    logger.sentry('[createWallet] - saved private key');
+    logger.debug('[createWallet] - saved private key');
 
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
@@ -800,10 +812,18 @@ export const createWallet = async (
       type !== EthereumWalletType.bluetooth
     ) {
       // Creating signature for this wallet
-      logger.sentry(`[createWallet] - generating signature`);
+      logger.debug(
+        `[createWallet] - generating signature`,
+        {},
+        DebugContext.wallet
+      );
       await createSignature(walletAddress, pkey);
       // Enable web profile
-      logger.sentry(`[createWallet] - enabling web profile`);
+      logger.debug(
+        `[createWallet] - enabling web profile`,
+        {},
+        DebugContext.wallet
+      );
       store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
       setPreference(PreferenceActionType.init, 'profile', address, {
@@ -811,13 +831,16 @@ export const createWallet = async (
           lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
         accountSymbol: profileUtils.addressHashedEmoji(address),
       });
-      logger.sentry(`[createWallet] - enabled web profile`);
     }
 
     // Initiate auto account discovery for imported wallets via seedphrase
     // or for hardware wallets
     if ((isHDWallet && root && isImported) || (isHardwareWallet && seed)) {
-      logger.sentry('[createWallet] - isHDWallet && isImported');
+      logger.debug(
+        '[createWallet] - initializing account auto discovery',
+        {},
+        DebugContext.wallet
+      );
       let index = 1;
       let lookup = 0;
       // Starting on index 1, we check the tx history
@@ -849,8 +872,12 @@ export const createWallet = async (
             nextWallet.address
           );
         } catch (error) {
-          logger.sentry('[createWallet] - Error getting txn history');
-          captureException(error);
+          logger.error(
+            new RainbowError(
+              '[createWallet] - Error getting txn history for address'
+            ),
+            error
+          );
         }
 
         let discoveredAccount: RainbowAccount | undefined;
@@ -900,7 +927,11 @@ export const createWallet = async (
                 isHardwareWallet
               );
             } else {
-              logger.sentry('Error encrypting pkey to save it');
+              logger.error(
+                new RainbowError(
+                  '[createWallet] - Error encrypting private key with user pin'
+                )
+              );
               return null;
             }
           } else {
@@ -910,8 +941,8 @@ export const createWallet = async (
               isHardwareWallet
             );
           }
-          logger.sentry(
-            `[createWallet] - saved private key for next wallet ${index}`
+          logger.debug(
+            `[createWallet] - saved private key for wallet index: ${index}`
           );
 
           if (!label && isHardwareWallet) {
@@ -931,6 +962,11 @@ export const createWallet = async (
 
           if (!isHardwareWallet) {
             // Creating signature for this wallet
+            logger.debug(
+              `[createWallet] - enabling web profile`,
+              {},
+              DebugContext.wallet
+            );
             await createSignature(nextWallet.address, nextWallet.privateKey);
             // Enable web profile
             store.dispatch(updateWebDataEnabled(true, nextWallet.address));
@@ -945,10 +981,6 @@ export const createWallet = async (
                   lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
                 accountSymbol: addressHashedEmoji(nextWallet.address),
               }
-            );
-
-            logger.sentry(
-              `[createWallet] - enabled web profile for wallet ${index}`
             );
           }
 
@@ -1014,12 +1046,20 @@ export const createWallet = async (
     }
 
     if (!silent) {
+      logger.debug(
+        '[createWallet] - setting selected wallet',
+        {},
+        DebugContext.wallet
+      );
       await setSelectedWallet(allWallets[id]);
-      logger.sentry('[createWallet] - setSelectedWallet');
     }
 
+    logger.debug(
+      '[createWallet] - saving all wallets',
+      {},
+      DebugContext.wallet
+    );
     await saveAllWallets(allWallets);
-    logger.sentry('[createWallet] - saveAllWallets');
 
     if (walletResult && walletAddress) {
       const walletRes =
@@ -1039,8 +1079,7 @@ export const createWallet = async (
     }
     return null;
   } catch (error) {
-    logger.sentry('Error in createWallet');
-    captureException(error);
+    logger.error(new RainbowError('Error in createWallet'), { error });
     return null;
   }
 };
@@ -1151,8 +1190,7 @@ export const getPrivateKey = async (
 
     return pkey || null;
   } catch (error) {
-    logger.sentry('Error in getPrivateKey');
-    captureException(error);
+    logger.error(new RainbowError('Error in getPrivateKey'), { error });
     return null;
   }
 };
@@ -1173,8 +1211,7 @@ export const getHardwareKey = async (
 
     return harwarePrivateKey || null;
   } catch (error) {
-    logger.sentry('Error in getHardwareKey');
-    captureException(error);
+    logger.error(new RainbowError('Error in getHardwareKey'), { error });
     return null;
   }
 };
@@ -1215,8 +1252,7 @@ export const getSeedPhrase = async (
 
     return seedPhraseData || null;
   } catch (error) {
-    logger.sentry('Error in getSeedPhrase');
-    captureException(error);
+    logger.error(new RainbowError('Error in getSeedPhrase'), { error });
     return null;
   }
 };
@@ -1244,8 +1280,7 @@ export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletD
     }
     return null;
   } catch (error) {
-    logger.sentry('Error in getSelectedWallet');
-    captureException(error);
+    logger.error(new RainbowError('Error in getSelectedWallet'), { error });
     return null;
   }
 };
@@ -1271,8 +1306,7 @@ export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => 
     }
     return null;
   } catch (error) {
-    logger.sentry('Error in getAllWallets');
-    captureException(error);
+    logger.error(new RainbowError('Error in getAllWallets'), { error });
     return null;
   }
 };
@@ -1358,7 +1392,11 @@ export const generateAccount = async (
         if (encryptedPkey) {
           await saveKeyForWallet(walletAddress, encryptedPkey, false);
         } else {
-          logger.sentry('Error encrypting pkey to save it');
+          logger.error(
+            new RainbowError(
+              '[generateAccount] - Error encrypting pkey with user pin'
+            )
+          );
           return null;
         }
       } catch (e) {
@@ -1381,34 +1419,47 @@ export const generateAccount = async (
 
     return newAccount;
   } catch (error) {
-    logger.sentry('Error generating account for keychain', id);
-    captureException(error);
+    logger.error(
+      new RainbowError(
+        '[generateAccount] - Error generating account for keychain'
+      ),
+      { error }
+    );
     return null;
   }
 };
 
 const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
   try {
-    logger.sentry('migrating secrets!');
+    logger.info('Migrating wallet secrets');
     const seedphrase = await oldLoadSeedPhrase();
 
     if (!seedphrase) {
-      logger.sentry('old seed doesnt exist!');
+      logger.debug(
+        '[migrateSecrets] - old seed doesnt exist!',
+        {},
+        DebugContext.wallet
+      );
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(
         oldSeedPhraseMigratedKey,
         'true',
         keychain.publicAccessControlOptions
       );
-      logger.sentry(
-        'Saved the migration flag to prevent this flow in the future'
+      logger.debug(
+        '[migrateSecrets] - marking secrets as migrated',
+        {},
+        DebugContext.wallet
       );
       return null;
     }
 
-    logger.sentry('Got secret, now idenfifying wallet type');
     const type = identifyWalletType(seedphrase);
-    logger.sentry('Got type: ', type);
+    logger.debug(
+      `[migrateSecrets] - wallet type: ${type}`,
+      {},
+      DebugContext.wallet
+    );
     let hdnode: undefined | HDNode,
       node: undefined | HDNode,
       existingAccount: undefined | Wallet;
@@ -1436,12 +1487,14 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     }
 
     if (!existingAccount && hdnode) {
-      logger.sentry('No existing account, so we have to derive it');
+      logger.debug(
+        '[migrateSecrets] - No existing account, so we have to derive it'
+      );
       node = hdnode.derivePath(
         getHdPath({ type: WalletLibraryType.ethers, index: 0 })
       );
       existingAccount = new Wallet(node.privateKey);
-      logger.sentry('Got existing account');
+      logger.debug('[migrateSecrets] - Got existing account');
     }
 
     if (!existingAccount) {
@@ -1453,14 +1506,22 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       `${existingAccount.address}_${privateKeyKey}`
     );
     if (!pkeyExists) {
-      logger.sentry('new pkey didnt exist so we should save it');
+      logger.debug(
+        '[migrateSecrets] - new pkey didnt exist so we should save it',
+        {},
+        DebugContext.wallet
+      );
       // Save the private key in the new format
       await saveKeyForWallet(
         existingAccount.address,
         existingAccount.privateKey,
         false
       );
-      logger.sentry('new pkey saved');
+      logger.debug(
+        '[migrateSecrets] - new pkey saved',
+        {},
+        DebugContext.wallet
+      );
     }
 
     const selectedWalletData = await getSelectedWallet();
@@ -1472,9 +1533,17 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     // Save the seedphrase in the new format
     const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
     if (!seedExists) {
-      logger.sentry('new seed didnt exist so we should save it');
+      logger.debug(
+        '[migrateSecrets] - new seed didnt exist so we should save it',
+        {},
+        DebugContext.wallet
+      );
       await saveSeedPhrase(seedphrase, wallet.id);
-      logger.sentry('new seed saved');
+      logger.debug(
+        '[migrateSecrets] - new seed saved',
+        {},
+        DebugContext.wallet
+      );
     }
     // Save the migration flag to prevent this flow in the future
     await keychain.saveString(
@@ -1482,16 +1551,22 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       'true',
       keychain.publicAccessControlOptions
     );
-    logger.sentry('saved migrated key');
+    logger.debug(
+      '[migrateSecrets] - saved migrated key',
+      {},
+      DebugContext.wallet
+    );
     return {
       hdnode,
       privateKey: existingAccount.privateKey,
       seedphrase,
       type,
     };
-  } catch (e) {
-    logger.sentry('Error while migrating secrets');
-    captureException(e);
+  } catch (error) {
+    logger.error(
+      new RainbowError('[migrateSecrets] - Error while migrating secrets'),
+      { error }
+    );
     return null;
   }
 };
@@ -1510,9 +1585,12 @@ export const cleanUpWalletKeys = async (): Promise<boolean> => {
       keys.map(key => {
         try {
           keychain.remove(key);
-        } catch (e) {
+        } catch (error) {
           // key might not exists
-          logger.log('failure to delete key', key);
+          logger.warn('[cleanUpWalletKeys] - failure to delete key', {
+            key,
+            error,
+          });
         }
         return true;
       })
@@ -1531,12 +1609,20 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
     // First we need to check if that key already exists
     const keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
     if (!keyFound) {
-      logger.sentry('key not found, we should have a migration pending...');
+      logger.debug(
+        '[loadAndMigrate] - key not found, should need migration',
+        {},
+        DebugContext.wallet
+      );
       // if it doesn't we might have a migration pending
       const isSeedPhraseMigrated = await keychain.loadString(
         oldSeedPhraseMigratedKey
       );
-      logger.sentry('Migration pending?', !isSeedPhraseMigrated);
+      logger.debug(
+        `[loadAndMigrate] - Migration pending? ${!isSeedPhraseMigrated}`,
+        {},
+        DebugContext.wallet
+      );
 
       // We need to migrate the seedphrase & private key first
       // In that case we regenerate the existing private key to store it with the new format
@@ -1544,19 +1630,29 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
         const migratedSecrets = await migrateSecrets();
         seedPhrase = migratedSecrets?.seedphrase ?? null;
       } else {
-        logger.sentry('Migrated flag was set but there is no key!', id);
-        captureMessage('Missing seed for wallet');
+        logger.error(
+          new RainbowError(
+            '[loadAndMigrate] - Migrated flag was set but there is no key!'
+          ),
+          { id }
+        );
       }
     } else {
-      logger.sentry('Getting seed directly');
+      logger.debug(
+        '[loadAndMigrate] - Getting seed directly',
+        {},
+        DebugContext.wallet
+      );
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
-          logger.sentry(
-            'Wallet is created with biometric data, there is no access to the seed'
+          logger.debug(
+            '[loadAndMigrate] - Wallet is created with biometric data, there is no access to the seed',
+            {},
+            DebugContext.wallet
           );
           throw new Error(createdWithBiometricError);
         }
@@ -1578,18 +1674,28 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       }
 
       if (seedPhrase) {
-        logger.sentry('got seed succesfully');
+        logger.debug(
+          '[loadAndMigrate] - got seed succesfully',
+          {},
+          DebugContext.wallet
+        );
       } else {
-        captureMessage(
-          'Missing seed for wallet - (Key exists but value isnt valid)!'
+        logger.error(
+          new RainbowError(
+            '[loadAndMigrate] - Missing seed for wallet - (Key exists but value isnt valid)!'
+          )
         );
       }
     }
 
     return seedPhrase;
   } catch (error) {
-    logger.sentry('Error in loadSeedPhraseAndMigrateIfNeeded');
-    captureException(error);
+    logger.error(
+      new RainbowError(
+        '[loadAndMigrate] - Error in loadSeedPhraseAndMigrateIfNeeded'
+      ),
+      { error }
+    );
     throw error;
   }
 };
