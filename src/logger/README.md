@@ -63,6 +63,7 @@ import { logger } from '@/logger'
 
 logger.debug(message[, metadata, debugContext])
 logger.info(message[, metadata])
+logger.log(message[, metadata])
 logger.warn(message[, metadata])
 logger.error(error[, metadata])
 ```
@@ -72,13 +73,17 @@ logger.error(error[, metadata])
 - Use `logger.error` for all exceptions, and always pass it a descriptive
   `RainbowError`.
 - Use `logger.warn` for anything that might be an exception now or in the future,
-  or something we _need_ to know about, but isn't critical at the moment.
+  or something we _need_ to know about, but isn't critical at the moment. These
+  show up as separate Issues in Sentry _as well as_ breadcrumbs.
+- Use `logger.info` for events or messages that you want to keep track of in
+  Sentry. These show up as separate Issues in Sentry _as well as_ breadcrumbs.
 - Use `logger.info` for anything you think would be helpful when tracing errors in
   Sentry. Think about what your coworkers might find helpful, and use these
-  frequently.
+  frequently. These show up as breadcrumbs.
 - Use `logger.debug` for noisy lower-level stuff that's only helpful locally when
   developing or debugging. We have the option to send these to Sentry, but by
-  default they aren't, so use these frequently as you see fit.
+  default they aren't, so use these frequently as you see fit. These show up as
+  breadcrumbs, if enabled.
 - Use `console.log` _locally only_. We strip these out when building for
   production.
 
@@ -92,10 +97,10 @@ Basically, the booleans `IS_DEV`, `IS_TEST`, and `IS_PROD`.
 Log levels are used to filter which logs are either printed to the console
 and/or sent to Sentry and other reporting services.
 
-In dev mode, our log level defaults to `warn`, meaning `debug` and `info` are
-ignored. We do this to prevent spamming the console. To configure this, set the
+In dev mode, our log level defaults to `info`, meaning `debug` are ignored. We
+do this to prevent spamming the console. To configure this, set the
 `LOG_LEVEL` environment variable to one of `debug`,
-`info`, `warn`, or `error`.
+`info`, `log`, `warn`, or `error`.
 
 In production mode, the log level defaults to `info`, so that `info` logs are
 sent to our reporting services.
@@ -154,7 +159,7 @@ information from being sent in these logs.
 logger.info(message);
 ```
 
-`info`, along with `warn` and `error` support an additional parameter, `metadata: Record<string, unknown>`. Use this to provide values to the [Sentry
+`info`, along with `log`, `warn`, and `error` support an additional parameter, `metadata: Record<string, unknown>`. Use this to provide values to the [Sentry
 breadcrumb](https://docs.sentry.io/platforms/react-native/enriching-events/breadcrumbs/#manual-breadcrumbs).
 The object will also be pretty printed to the console in dev mode if
 `LOG_LEVEL=info`.
@@ -163,6 +168,18 @@ The object will also be pretty printed to the console in dev mode if
 logger.info(message, {
   duration: '256ms',
 });
+```
+
+### `logger.log`
+
+The `log` level should be used sparingly because these messages will show up as
+separate Issues in Sentry. They also get sent as breadcrumbs for convenience.
+
+Use them a little like Segment event, but one that will only be used by
+devs. They support the optional second param, `metadata`.
+
+```typescript
+logger.log(message, { ...metadata });
 ```
 
 ### `logger.warn`
@@ -175,8 +192,9 @@ first failure, retry, and throw an error if it fails again.
 used to deprecate code paths, by firing a warning into the local console that
 directs the engineer towards the new recommended codepath.
 
-These logs will also be sent as Sentry breadcrumbs, with a severity level of
-`warning`, and they also support the optional second parameter, `metadata`.
+These logs will be sent to Sentry as a separate Issue with level `warning`, as
+well as as breadcrumbs, with a severity level of `warning`. They also support
+the optional second parameter, `metadata`.
 
 ```typescript
 logger.warn(message, { ...metadata });
