@@ -564,6 +564,7 @@ const ensAction = async (
     nonce: tx?.nonce,
     to: tx?.to,
     value: toHex(tx.value),
+    network: NetworkTypes.mainnet,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`

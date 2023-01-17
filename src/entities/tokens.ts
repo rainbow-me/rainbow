@@ -24,22 +24,10 @@ export interface ZerionAsset {
   name: string;
   symbol: string;
   decimals: number;
-  type: AssetType | null;
+  type?: AssetType | null;
   icon_url?: string | null;
   price?: ZerionAssetPrice | null;
 }
-
-// Fields that may or may not be present in a `ZerionAssetFallback` but are
-// present in a `ZerionAsset`.
-type ZerionAssetFallbackOmittedFields = 'decimals' | 'type';
-
-// An asset fallback for a `ZerionAsset`, which has
-// the additional `coingecko_id` property but may or may not have the
-// fields specified in `ZerionAssetFallbackOmittedFields`.
-export type ZerionAssetFallback = {
-  coingecko_id: string;
-} & Omit<ZerionAsset, ZerionAssetFallbackOmittedFields> &
-  Partial<Pick<ZerionAsset, ZerionAssetFallbackOmittedFields>>;
 
 export interface SavingsAsset extends Asset {
   contractAddress: string;

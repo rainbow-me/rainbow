@@ -7,6 +7,7 @@ import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
   captureException: jest.fn(),
+  captureMessage: jest.fn(),
   Severity: {
     Debug: 'debug',
     Info: 'info',
@@ -130,7 +131,6 @@ describe('general functionality', () => {
     const message = 'message';
 
     sentryTransport(LogLevel.Debug, message, {});
-
     expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
       message,
       data: {},
@@ -140,13 +140,39 @@ describe('general functionality', () => {
     });
 
     sentryTransport(LogLevel.Info, message, { type: 'info', prop: true });
-
     expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
       message,
       data: { prop: true },
       type: 'info',
       level: LogLevel.Info,
       timestamp: Date.now(),
+    });
+
+    sentryTransport(LogLevel.Log, message, {});
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      message,
+      data: {},
+      type: 'default',
+      level: undefined, // Sentry bug, undefined
+      timestamp: Date.now(),
+    });
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
+      tags: undefined,
+      extra: {},
+    });
+
+    sentryTransport(LogLevel.Warn, message, {});
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      message,
+      data: {},
+      type: 'default',
+      level: Sentry.Severity.Warning,
+      timestamp: Date.now(),
+    });
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
+      level: Sentry.Severity.Warning,
+      tags: undefined,
+      extra: {},
     });
 
     const e = new RainbowError('error');

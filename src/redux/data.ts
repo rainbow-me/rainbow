@@ -3,16 +3,7 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  mapValues,
-  partition,
-  toUpper,
-  uniqBy,
-} from 'lodash';
+import { find, isEmpty, isNil, keys, mapValues, partition } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -35,7 +26,6 @@ import {
   TransactionStatus,
   TransactionTypes,
   ZerionAsset,
-  ZerionAssetFallback,
   ZerionTransaction,
 } from '@/entities';
 import appEvents from '@/handlers/appEvents';
@@ -64,16 +54,10 @@ import {
   parseTransactions,
 } from '@/parsers';
 import { setHiddenCoins } from '@/redux/editOptions';
-import {
-  coingeckoIdsFallback,
-  DPI_ADDRESS,
-  ETH_ADDRESS,
-  ETH_COINGECKO_ID,
-  shitcoins,
-} from '@/references';
+import { ETH_ADDRESS, shitcoins } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { delay, pickBy } from '@/helpers/utilities';
-import { ethereumUtils, isLowerCaseMatch, TokensListenedCache } from '@/utils';
+import { pickBy } from '@/helpers/utilities';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import logger from '@/utils/logger';
 import {
   fetchWalletENSDataAfterRegistration,
@@ -115,15 +99,10 @@ function addHiddenCoins(
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
 let pendingTransactionsHandle: ReturnType<typeof setTimeout> | null = null;
-let genericAssetsHandle: ReturnType<typeof setTimeout> | null = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
-const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
 const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
-
-export const COINGECKO_IDS_ENDPOINT =
-  'https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum';
 
 // -- Constants --------------------------------------- //
 
@@ -340,20 +319,6 @@ interface DataClearStateAction {
   type: typeof DATA_CLEAR_STATE;
 }
 
-// Coingecko types:
-
-/**
- * Data loaded from the Coingecko API when the `last_updated_at` field is
- * requested. Keys of the format `[currency_id]` and `[currency_id]_24h_change`
- * are also included.
- */
-interface CoingeckoApiResponseWithLastUpdate {
-  [coingeckoId: string]: {
-    [currencyIdOr24hChange: string]: number;
-    last_updated_at: number;
-  };
-}
-
 // Zerion types:
 
 /**
@@ -391,7 +356,7 @@ export interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
       [id: string]: {
-        asset: ZerionAsset | ZerionAssetFallback;
+        asset: ZerionAsset;
       };
     };
   };
@@ -437,7 +402,7 @@ export interface TransactionsRemovedMessage {
 export interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
-      [id: string]: ZerionAsset | ZerionAssetFallback;
+      [id: string]: ZerionAsset;
     };
   };
   meta?: MessageMeta;
@@ -539,163 +504,6 @@ export const dataLoadState = () => async (
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
-  genericAssetsHandle = setTimeout(() => {
-    dispatch(genericAssetsFallback());
-  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
-};
-
-/**
- * Fetches asset prices from the Coingecko API.
- *
- * @param coingeckoIds The Coingecko IDs to fetch asset prices for.
- * @param nativeCurrency The native currency use for reporting asset prices.
- * @returns The Coingecko API response, or undefined if the fetch is
- * unsuccessful.
- */
-export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: (string | undefined)[],
-  nativeCurrency: string
-): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
-  try {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
-      .filter(val => !!val)
-      .sort()
-      .join(
-        ','
-      )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
-    const priceRequest = await fetch(url);
-    return priceRequest.json();
-  } catch (e) {
-    logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
-  }
-};
-
-/**
- * Loads generic asset prices from fallback data and updates state, in the
- * event that Zerion is unavailable.
- */
-const genericAssetsFallback = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
-  const { nativeCurrency } = getState().settings;
-  const formattedNativeCurrency = nativeCurrency.toLowerCase();
-  let ids: typeof coingeckoIdsFallback;
-  try {
-    const request = await fetch(COINGECKO_IDS_ENDPOINT);
-    ids = await request.json();
-  } catch (e) {
-    ids = coingeckoIdsFallback;
-  }
-
-  const allAssets: ZerionAssetFallback[] = [
-    {
-      asset_code: ETH_ADDRESS,
-      coingecko_id: ETH_COINGECKO_ID,
-      decimals: 18,
-      name: 'Ethereum',
-      symbol: 'ETH',
-    },
-    {
-      asset_code: DPI_ADDRESS,
-      coingecko_id: 'defipulse-index',
-      decimals: 18,
-      name: 'DefiPulse Index',
-      symbol: 'DPI',
-    },
-  ];
-
-  keys(TokensListenedCache?.[nativeCurrency]).forEach(address => {
-    const coingeckoAsset = ids.find(
-      ({ platforms: { ethereum: tokenAddress } }) =>
-        tokenAddress.toLowerCase() === address
-    );
-
-    if (coingeckoAsset) {
-      allAssets.push({
-        asset_code: address,
-        coingecko_id: coingeckoAsset?.id,
-        name: coingeckoAsset.name,
-        symbol: toUpper(coingeckoAsset.symbol),
-      });
-    }
-  });
-
-  const allAssetsUnique = uniqBy(allAssets, token => token.asset_code);
-
-  let prices: CoingeckoApiResponseWithLastUpdate = {};
-  const pricePageSize = 80;
-  const pages = Math.ceil(allAssetsUnique.length / pricePageSize);
-  try {
-    for (let currentPage = 0; currentPage < pages; currentPage++) {
-      const from = currentPage * pricePageSize;
-      const to = from + pricePageSize;
-      const currentPageIds = allAssetsUnique
-        .slice(from, to)
-        .map(({ coingecko_id }) => coingecko_id);
-
-      const pricesForCurrentPage = await fetchAssetPricesWithCoingecko(
-        currentPageIds,
-        formattedNativeCurrency
-      );
-      await delay(1000);
-      prices = { ...prices, ...pricesForCurrentPage };
-    }
-  } catch (e) {
-    logger.sentry('error loading generic asset prices from coingecko', e);
-  }
-
-  if (!isEmpty(prices)) {
-    Object.keys(prices).forEach(key => {
-      for (const uniqueAsset of allAssetsUnique) {
-        if (uniqueAsset.coingecko_id.toLowerCase() === key.toLowerCase()) {
-          uniqueAsset.price = {
-            changed_at: prices[key].last_updated_at,
-            relative_change_24h:
-              prices[key][`${formattedNativeCurrency}_24h_change`],
-            value: prices[key][`${formattedNativeCurrency}`],
-          };
-          break;
-        }
-      }
-    });
-  }
-
-  const allPrices: {
-    [id: string]: ZerionAssetFallback;
-  } = {};
-
-  allAssetsUnique.forEach(asset => {
-    allPrices[asset.asset_code] = asset;
-  });
-
-  dispatch(
-    assetPricesReceived(
-      {
-        meta: {
-          currency: 'usd',
-          status: DISPERSION_SUCCESS_CODE,
-        },
-        payload: { prices: allPrices },
-      },
-      true
-    )
-  );
-
-  genericAssetsHandle = setTimeout(() => {
-    logger.log('updating generic assets via fallback');
-    dispatch(genericAssetsFallback());
-  }, GENERIC_ASSETS_REFRESH_INTERVAL);
-};
-
-/**
- * Disables the generic asset fallback timeout if one is set.
- */
-export const disableGenericAssetsFallbackIfNeeded = () => {
-  if (genericAssetsHandle) {
-    clearTimeout(genericAssetsHandle);
-  }
 };
 
 /**
@@ -709,7 +517,6 @@ export const dataResetState = () => (
   cancelDebouncedUpdateGenericAssets();
 
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
-  genericAssetsHandle && clearTimeout(genericAssetsHandle);
 
   dispatch({ type: DATA_CLEAR_STATE });
 };
@@ -1145,18 +952,13 @@ export function scheduleActionOnAssetReceived(
  * Handles a `AssetPricesReceivedMessage` from Zerion and updates state.
  *
  * @param message The message, or undefined.
- * @param fromFallback Whether or not this message is provided as a fallback.
  */
 export const assetPricesReceived = (
-  message: AssetPricesReceivedMessage | undefined,
-  fromFallback = false
+  message: AssetPricesReceivedMessage | undefined
 ) => (
   dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
   getState: AppGetState
 ) => {
-  if (!fromFallback) {
-    disableGenericAssetsFallbackIfNeeded();
-  }
   const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
