@@ -345,7 +345,7 @@ export const sendTransaction = async ({
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    logger.error(new RainbowError('Failed to SEND transaction due to auth'), {
+    logger.error(new RainbowError('Failed to send transaction due to auth'), {
       error,
     });
     return null;
@@ -361,7 +361,7 @@ export const signTransaction = async ({
   error?: any;
 }> => {
   try {
-    logger.info('wallet: signing transaction', { transaction });
+    logger.info('wallet: signing transaction');
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
