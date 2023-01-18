@@ -80,6 +80,7 @@ export const ReconnectHardwareWalletSheet = () => {
 
   const indicatorAnimation = useAnimatedStyle(() => ({
     opacity: indicatorOpacity.value,
+    zIndex: 2,
   }));
 
   return (
@@ -134,32 +135,34 @@ export const ReconnectHardwareWalletSheet = () => {
                 <Text color="label" weight="semibold" size="17pt">
                   Nano X 7752
                 </Text>
-                <Box
-                  alignItems="center"
-                  as={Animated.View}
-                  borderRadius={7}
-                  // entering={circleEntering}
-                  height={{ custom: 7 }}
-                  justifyContent="center"
-                  style={!connected ? [indicatorAnimation] : []}
-                  width={{ custom: 7 }}
-                >
+                <Box>
+                  <Box
+                    alignItems="center"
+                    as={Animated.View}
+                    borderRadius={3.5}
+                    height={{ custom: 7 }}
+                    justifyContent="center"
+                    style={!connected ? [indicatorAnimation] : []}
+                    width={{ custom: 7 }}
+                  >
+                    <Box
+                      width={{ custom: 7 }}
+                      height={{ custom: 7 }}
+                      background="yellow"
+                      shadow="30px yellow"
+                      position="absolute"
+                      borderRadius={3.5}
+                    />
+                  </Box>
                   <Box
                     width={{ custom: 7 }}
                     height={{ custom: 7 }}
-                    background="yellow"
-                    shadow="30px yellow"
-                    borderRadius={7}
+                    background="surfaceSecondary"
+                    position="absolute"
+                    style={{ zIndex: 1 }}
+                    borderRadius={3.5}
                   />
                 </Box>
-                <Box
-                  width={{ custom: 7 }}
-                  height={{ custom: 7 }}
-                  marginLeft={{ custom: -8 }}
-                  background="blue"
-                  shadow="30px blue"
-                  borderRadius={7}
-                />
               </Inline>
             </Box>
           </Box>
