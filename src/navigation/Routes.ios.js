@@ -13,7 +13,6 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -63,7 +62,6 @@ import {
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
-  importSeedPhraseFlowNavigatorConfig,
   addWalletNavigatorConfig,
 } from './config';
 import {
@@ -103,25 +101,6 @@ function SendFlowNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ImportSeedPhraseFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.IMPORT_SEED_PHRASE_SHEET}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={ImportSeedPhraseSheet}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
     </Stack.Navigator>
   );
@@ -436,11 +415,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
-        component={ImportSeedPhraseFlowNavigator}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-        {...importSeedPhraseFlowNavigatorConfig}
       />
       <NativeStack.Screen
         component={AddCashFlowNavigator}

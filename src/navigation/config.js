@@ -199,22 +199,10 @@ export const registerENSNavigatorConfig = {
 };
 
 export const addWalletNavigatorConfig = {
-  options: ({ route: { params = {} } }) => ({
+  options: ({ route: { params } }) => ({
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
-      springDamping: 1,
-      transitionDuration: 0.3,
-    }),
-  }),
-};
-
-export const importSeedPhraseFlowNavigatorConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      scrollEnabled: true,
       springDamping: 1,
       transitionDuration: 0.3,
     }),
