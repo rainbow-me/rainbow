@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
-  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
@@ -267,8 +266,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const disableFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const disableFlashbotsPostMerge = !config.flashbots_enabled;
   const flashbotsEnabled =
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
