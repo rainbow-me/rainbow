@@ -6,7 +6,6 @@
 export const disableCharts = false;
 export const enableActionsOnReadOnlyWallet = false;
 export const debugLayoutAnimations = false;
-export const forceFallbackProvider = false;
 export const alwaysRequireApprove = false;
 export const showReloadButton = false;
 export const showSwitchModeButton = false;

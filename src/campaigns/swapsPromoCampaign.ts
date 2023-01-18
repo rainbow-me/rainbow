@@ -48,7 +48,6 @@ export const swapsCampaignAction = async () => {
 export enum SwapsPromoCampaignExclusion {
   noAssets = 'no_assets',
   alreadySwapped = 'already_swapped',
-  firstLaunch = 'first_launch',
   wrongNetwork = 'wrong_network',
 }
 
@@ -56,9 +55,7 @@ export const swapsCampaignCheck = async (): Promise<
   SwapsPromoCampaignExclusion | GenericCampaignCheckResponse
 > => {
   const hasShownCampaign = mmkv.getBoolean(CampaignKey.swapsLaunch);
-
-  // we only want to show this campaign once
-  if (hasShownCampaign) return GenericCampaignCheckResponse.nonstarter;
+  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
   const {
     selected: currentWallet,
@@ -66,13 +63,21 @@ export const swapsCampaignCheck = async (): Promise<
     selected: RainbowWallet | undefined;
   } = store.getState().wallets;
 
-  // if there's no wallet or the current wallet is read only then stop
-  if (!currentWallet || currentWallet.type === WalletTypes.readOnly)
+  /**
+   * stop if:
+   * there's no wallet
+   * the current wallet is read only
+   * the campaign has already been activated
+   * the user is launching Rainbow for the first time
+   */
+  if (
+    !currentWallet ||
+    currentWallet.type === WalletTypes.readOnly ||
+    isFirstLaunch ||
+    hasShownCampaign
+  ) {
     return GenericCampaignCheckResponse.nonstarter;
-
-  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
-
-  if (isFirstLaunch) return SwapsPromoCampaignExclusion.firstLaunch;
+  }
 
   const {
     accountAddress,

@@ -14,7 +14,6 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import { ImportSeedPhraseSheet } from '../screens/ImportSeedPhraseSheet.tsx';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
@@ -31,6 +30,7 @@ import SettingsSheet, {
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
+import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -51,15 +51,14 @@ import {
   wyreWebviewOptions,
 } from './config';
 import {
+  addWalletNavigatorPreset,
   androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
   expandedPresetWithSmallGestureResponseDistance,
-  overlayExpandedPreset,
   sheetPreset,
-  sheetPresetWithSmallGestureResponseDistance,
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
 } from './effects';
@@ -79,26 +78,6 @@ const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
-
-function ImportSeedPhraseFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.IMPORT_SEED_PHRASE_SHEET}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={ImportSeedPhraseSheet}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
 
 function AddCashFlowNavigator() {
   const { colors } = useTheme();
@@ -179,11 +158,6 @@ function MainNavigator() {
         options={addTokenSheetConfig}
       />
       <Stack.Screen
-        component={ImportSeedPhraseSheet}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
-        options={sheetPreset}
-      />
-      <Stack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         options={bottomSheetPreset}
@@ -208,11 +182,6 @@ function MainNavigator() {
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
         options={bottomSheetPreset}
-      />
-      <Stack.Screen
-        component={ImportSeedPhraseFlowNavigator}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-        options={sheetPresetWithSmallGestureResponseDistance}
       />
       <Stack.Screen
         component={WelcomeScreen}
@@ -299,6 +268,7 @@ function BSNavigator() {
       <BSStack.Screen
         component={AddWalletNavigator}
         name={Routes.ADD_WALLET_NAVIGATOR}
+        options={addWalletNavigatorPreset}
       />
       {profilesEnabled && (
         <>
@@ -344,6 +314,11 @@ function BSNavigator() {
       <BSStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
+        options={bottomSheetPreset}
+      />
+      <BSStack.Screen
+        component={NotificationsPromoSheet}
+        name={Routes.NOTIFICATIONS_PROMO_SHEET}
         options={bottomSheetPreset}
       />
       <BSStack.Screen

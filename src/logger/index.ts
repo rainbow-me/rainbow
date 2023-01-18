@@ -9,6 +9,7 @@ import { device } from '@/storage';
 export enum LogLevel {
   Debug = 'debug',
   Info = 'info',
+  Log = 'log',
   Warn = 'warn',
   Error = 'error',
 }
@@ -70,10 +71,12 @@ const enabledLogLevels: {
   [LogLevel.Debug]: [
     LogLevel.Debug,
     LogLevel.Info,
+    LogLevel.Log,
     LogLevel.Warn,
     LogLevel.Error,
   ],
-  [LogLevel.Info]: [LogLevel.Info, LogLevel.Warn, LogLevel.Error],
+  [LogLevel.Info]: [LogLevel.Info, LogLevel.Log, LogLevel.Warn, LogLevel.Error],
+  [LogLevel.Log]: [LogLevel.Log, LogLevel.Warn, LogLevel.Error],
   [LogLevel.Warn]: [LogLevel.Warn, LogLevel.Error],
   [LogLevel.Error]: [LogLevel.Error],
 };
@@ -120,6 +123,7 @@ export const consoleTransport: Transport = (level, message, metadata) => {
   const color = {
     [LogLevel.Debug]: colors.magenta,
     [LogLevel.Info]: colors.default,
+    [LogLevel.Log]: colors.default,
     [LogLevel.Warn]: colors.yellow,
     [LogLevel.Error]: colors.red,
   }[level];
@@ -145,6 +149,7 @@ export const sentryTransport: Transport = (
     const severity = {
       [LogLevel.Debug]: Sentry.Severity.Debug,
       [LogLevel.Info]: Sentry.Severity.Info,
+      [LogLevel.Log]: Sentry.Severity.Log, // Sentry value here is undefined
       [LogLevel.Warn]: Sentry.Severity.Warning,
       [LogLevel.Error]: Sentry.Severity.Error,
     }[level];
@@ -156,6 +161,27 @@ export const sentryTransport: Transport = (
       level: severity,
       timestamp: Date.now(),
     });
+
+    /**
+     * If a log, also capture as a message
+     */
+    if (level === LogLevel.Log) {
+      Sentry.captureMessage(message, {
+        tags,
+        extra: metadata,
+      });
+    }
+
+    /**
+     * If warn, also capture as a message, but with level warning
+     */
+    if (level === LogLevel.Warn) {
+      Sentry.captureMessage(message, {
+        level: Sentry.Severity.Warning,
+        tags,
+        extra: metadata,
+      });
+    }
   } else {
     /**
      * It's otherwise an Error and should be reported as onReady
@@ -207,6 +233,10 @@ export class Logger {
 
   info(message: string, metadata: Metadata = {}) {
     this.transport(LogLevel.Info, message, metadata);
+  }
+
+  log(message: string, metadata: Metadata = {}) {
+    this.transport(LogLevel.Log, message, metadata);
   }
 
   warn(message: string, metadata: Metadata = {}) {

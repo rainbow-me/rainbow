@@ -2,21 +2,35 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
-import { AddWalletSheet } from '@/screens/AddWalletSheet';
-import { ImportSeedPhraseSheet } from '@/screens/ImportSeedPhraseSheet';
+import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
+import {
+  ImportOrWatchWalletSheet,
+  ImportOrWatchWalletSheetParams,
+} from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/core';
 import { useDimensions } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
+type RouteParams = {
+  AddWalletNavigatorParams: AddWalletSheetParams &
+    ImportOrWatchWalletSheetParams;
+};
+
 export const AddWalletNavigator = () => {
-  const [scrollEnabled, setScrollEnabled] = useState(false);
+  const {
+    params: { isFirstWallet, type, userData },
+  } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
   const { height: deviceHeight } = useDimensions();
 
+  const [scrollEnabled, setScrollEnabled] = useState(false);
+
   return (
+    // wrapping in View prevents keyboard from pushing up sheet on android
     <View
       style={{
         height: deviceHeight,
@@ -40,14 +54,23 @@ export const AddWalletNavigator = () => {
             >
               <Swipe.Screen
                 component={AddWalletSheet}
+                initialParams={{ isFirstWallet, userData }}
                 name={Routes.ADD_WALLET_SHEET}
                 listeners={{
-                  focus: () => setScrollEnabled(true),
+                  focus: () => {
+                    setScrollEnabled(!isFirstWallet);
+                  },
                 }}
               />
               <Swipe.Screen
-                component={ImportSeedPhraseSheet}
-                name={Routes.IMPORT_SEED_PHRASE_FLOW}
+                component={ImportOrWatchWalletSheet}
+                initialParams={{ type }}
+                name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
+                listeners={{
+                  focus: () => {
+                    setScrollEnabled(false);
+                  },
+                }}
               />
             </Swipe.Navigator>
           </SlackSheet>

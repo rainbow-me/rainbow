@@ -3,26 +3,49 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { createWallet } from '@/model/wallet';
+import { createWallet, RainbowWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  fetchUserDataFromCloud,
+  isCloudBackupAvailable,
+} from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { cloudPlatform } from '@/utils/platform';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { RouteProp, useRoute } from '@react-navigation/core';
+// @ts-ignore ts is complaining about this import
+import RNCloudFs from 'react-native-cloud-fs';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 
-const TRANSLATIONS = i18n.l.wallet.new.add_wallet;
+const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
+
+export type AddWalletSheetParams = {
+  isFirstWallet: boolean;
+  userData: { wallets: RainbowWallet[] };
+};
+
+type RouteParams = {
+  AddWalletSheetParams: AddWalletSheetParams;
+};
 
 export const AddWalletSheet = () => {
+  const {
+    params: { isFirstWallet, userData },
+  } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
+
   const { goBack, navigate } = useNavigation();
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -37,10 +60,22 @@ export const AddWalletSheet = () => {
     wallets,
   } = useWallets();
 
+  const walletsBackedUp = useMemo(() => {
+    let count = 0;
+    if (userData?.wallets) {
+      Object.values(userData.wallets as RainbowWallet[]).forEach(wallet => {
+        if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
+          count += 1;
+        }
+      });
+    }
+    return count;
+  }, [userData]);
+
   const onPressCreate = async () => {
     try {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-        isFirstWallet: false,
+        isFirstWallet,
         type: 'new',
       });
       analytics.track('Tapped "Create a new wallet"');
@@ -120,9 +155,10 @@ export const AddWalletSheet = () => {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
-                        logger.sentry(
-                          'Updating wallet userdata failed after new account creation'
-                        );
+                        logger.error(e as RainbowError, {
+                          description:
+                            'Updating wallet userdata failed after new account creation',
+                        });
                         captureException(e);
                         throw e;
                       }
@@ -145,7 +181,9 @@ export const AddWalletSheet = () => {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  logger.sentry('Error while trying to add account');
+                  logger.error(e as RainbowError, {
+                    description: 'Error while trying to add account',
+                  });
                   captureException(e);
                   if (isDamaged) {
                     setTimeout(() => {
@@ -167,18 +205,20 @@ export const AddWalletSheet = () => {
       });
     } catch (e) {
       setIsWalletLoading(null);
-      logger.log('Error while trying to add account', e);
+      logger.error(e as RainbowError, {
+        description: 'Error while trying to add account',
+      });
     }
   };
 
-  const onPressRestore = () => {
+  const onPressRestoreFromSeed = () => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: false,
+      isFirstWallet,
       type: 'seed',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+      screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'import' },
     });
   };
@@ -186,36 +226,124 @@ export const AddWalletSheet = () => {
   const onPressWatch = () => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: false,
+      isFirstWallet,
       type: 'watch',
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_SEED_PHRASE_FLOW,
+      screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'watch' },
     });
   };
 
+  const onPressRestoreFromCloud = async () => {
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet,
+      type: 'seed',
+    });
+    if (IS_ANDROID) {
+      const isAvailable = await isCloudBackupAvailable();
+      if (isAvailable) {
+        let proceed = false;
+        try {
+          const data = await fetchUserDataFromCloud();
+          if (data?.wallets) {
+            Object.values(data.wallets as RainbowWallet[]).forEach(wallet => {
+              if (
+                wallet.backedUp &&
+                wallet.backupType === WalletBackupTypes.cloud
+              ) {
+                proceed = true;
+              }
+            });
+            if (proceed) {
+              navigate(Routes.RESTORE_SHEET, { userData: data });
+            }
+          }
+          logger.info(`Downloaded ${cloudPlatform} backup info`);
+        } catch (e) {
+          logger.error(e as RainbowError);
+        } finally {
+          if (!proceed) {
+            Alert.alert(
+              i18n.t(TRANSLATIONS.options.cloud.no_backups),
+              i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
+            );
+            await RNCloudFs.logout();
+          }
+        }
+      }
+    } else {
+      navigate(Routes.RESTORE_SHEET, { userData });
+    }
+  };
+
+  const cloudRestoreEnabled =
+    isFirstWallet && (IS_ANDROID || walletsBackedUp > 0);
+
+  let restoreFromCloudDescription;
+  if (IS_IOS) {
+    // It is not possible for the user to be on iOS and have
+    // no backups at this point, since `cloudRestoreEnabled`
+    // would be false in that case.
+    if (walletsBackedUp > 1) {
+      restoreFromCloudDescription = i18n.t(
+        TRANSLATIONS.options.cloud.description_ios_multiple_wallets,
+        {
+          walletCount: walletsBackedUp,
+        }
+      );
+    } else {
+      restoreFromCloudDescription = i18n.t(
+        TRANSLATIONS.options.cloud.description_ios_one_wallet
+      );
+    }
+  } else {
+    restoreFromCloudDescription = i18n.t(
+      TRANSLATIONS.options.cloud.description_android
+    );
+  }
+
+  const onPressConnectHardwareWallet = () => {
+    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      isFirstWallet: false,
+      type: 'ledger_nano_x',
+    });
+    goBack();
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+    });
+  };
+
   const create: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.create_new.title),
-    description: i18n.t(TRANSLATIONS.create_new.description),
+    title: i18n.t(TRANSLATIONS.options.create_new.title),
+    description: i18n.t(TRANSLATIONS.options.create_new.description),
     icon: '􀁌',
     iconColor: globalColors.pink60,
     testID: 'create-new-button',
     onPress: onPressCreate,
   };
 
-  const restore: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.seed.title),
-    description: i18n.t(TRANSLATIONS.seed.description),
+  const restoreFromCloud: AddWalletItem = {
+    title: i18n.t(TRANSLATIONS.options.cloud.title, {
+      platform: cloudPlatform,
+    }),
+    description: restoreFromCloudDescription,
+    icon: '􀌍',
+    onPress: onPressRestoreFromCloud,
+  };
+
+  const restoreFromSeed: AddWalletItem = {
+    title: i18n.t(TRANSLATIONS.options.seed.title),
+    description: i18n.t(TRANSLATIONS.options.seed.description),
     icon: '􀑚',
     iconColor: globalColors.purple60,
     testID: 'restore-with-key-button',
-    onPress: onPressRestore,
+    onPress: onPressRestoreFromSeed,
   };
 
   const watch: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.watch.title),
-    description: i18n.t(TRANSLATIONS.watch.description),
+    title: i18n.t(TRANSLATIONS.options.watch.title),
+    description: i18n.t(TRANSLATIONS.options.watch.description),
     icon: '􀒒',
     iconColor: globalColors.green60,
     testID: 'watch-address-button',
@@ -223,26 +351,25 @@ export const AddWalletSheet = () => {
   };
 
   const connectHardwareWallet: AddWalletItem = {
-    title: i18n.t(TRANSLATIONS.hardware_wallet.title),
-    description: i18n.t(TRANSLATIONS.hardware_wallet.description),
+    title: i18n.t(TRANSLATIONS.options.hardware_wallet.title),
+    description: i18n.t(TRANSLATIONS.options.hardware_wallet.description),
     icon: '􀕹',
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',
-    onPress: () => {
-      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-        isFirstWallet: false,
-        type: 'ledger_nano_x',
-      });
-    },
+    onPress: onPressConnectHardwareWallet,
   };
 
   return (
-    <Box height="full" background="surfaceSecondary">
+    <Box height="full" width="full" testID="add-wallet-sheet">
       <Inset horizontal="20px" top="36px" bottom="104px">
         <Stack space="32px">
           <Stack space="20px">
             <Text align="center" size="26pt" weight="bold" color="label">
-              {i18n.t(TRANSLATIONS.sheet.title)}
+              {i18n.t(
+                TRANSLATIONS[
+                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                ].title
+              )}
             </Text>
             <Text
               align="center"
@@ -250,7 +377,11 @@ export const AddWalletSheet = () => {
               weight="semibold"
               color="labelTertiary"
             >
-              {i18n.t(TRANSLATIONS.sheet.description)}
+              {i18n.t(
+                TRANSLATIONS[
+                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                ].description
+              )}
             </Text>
           </Stack>
           <Box background="surfacePrimary" borderRadius={18} shadow="12px">
@@ -258,10 +389,11 @@ export const AddWalletSheet = () => {
               <AddWalletList
                 totalHorizontalInset={40}
                 items={[
-                  create,
+                  ...(!isFirstWallet ? [create] : []),
+                  ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                  restoreFromSeed,
                   ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
                   watch,
-                  restore,
                 ]}
               />
             </Inset>

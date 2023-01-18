@@ -9,13 +9,11 @@ import data from './data';
 import editOptions from './editOptions';
 import ensRegistration from './ensRegistration';
 import explorer from './explorer';
-import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
 import hiddenTokens from './hiddenTokens';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import nonceManager from './nonceManager';
-import optimismExplorer from './optimismExplorer';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
@@ -39,13 +37,11 @@ export default combineReducers({
   editOptions,
   ensRegistration,
   explorer,
-  fallbackExplorer,
   gas,
   hiddenTokens,
   imageMetadata,
   keyboardHeight,
   nonceManager,
-  optimismExplorer,
   requests,
   settings,
   showcaseTokens,
