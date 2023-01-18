@@ -360,7 +360,12 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Inset horizontal="20px" top="36px" bottom="104px">
+    <Box
+      paddingHorizontal="20px"
+      paddingTop="36px"
+      paddingBottom="104px"
+      testID="add-wallet-sheet"
+    >
       <Stack space="32px">
         <Stack space="20px">
           <Text align="center" size="26pt" weight="bold" color="label">
@@ -396,6 +401,6 @@ export const AddWalletSheet = () => {
           </Inset>
         </Box>
       </Stack>
-    </Inset>
+    </Box>
   );
 };
