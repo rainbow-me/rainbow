@@ -29,7 +29,7 @@ export const defaultConfig = {
   [REVIEW_ANDROID]: { settings: false, value: false },
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
   [WC_V2]: { settings: true, value: false },
-  [NEW_TRANSACTION_DETAILS]: { settings: true, value: false },
+  [NEW_TRANSACTION_DETAILS]: { settings: true, value: true },
 };
 
 const storageKey = 'config';
