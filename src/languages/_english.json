@@ -1286,6 +1286,11 @@
         "yes": "Yes"
       }
     },
+    "rewards": {
+      "total_earnings": "Total Earnings",
+      "multiplier": "Multiplier",
+      "you_earned": "You've earned "
+    },
     "savings": {
       "deposit": "Deposit",
       "deposit_from_wallet": "Deposit from Wallet",

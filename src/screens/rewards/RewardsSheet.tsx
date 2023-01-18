@@ -4,15 +4,15 @@ import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { getMockOpData } from '@/screens/op-rewards/mocks/getMockOpData';
-import { OpRewardsResponseType } from '@/screens/op-rewards/types/OpRewardsResponseType';
-import { OpRewardsContent } from '@/screens/op-rewards/components/OpRewardsContent';
-import { OpRewardsFakeContent } from '@/screens/op-rewards/components/OpRewardsFakeContent';
+import { getMockData } from '@/screens/rewards/mocks/getMockData';
+import { RewardsResponseType } from '@/screens/rewards/types/RewardsResponseType';
+import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
+import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 
-export const OpRewardsSheet: React.FC = () => {
+export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const [rewardsData, setRewardsData] = useState<OpRewardsResponseType | null>(
+  const [rewardsData, setRewardsData] = useState<RewardsResponseType | null>(
     null
   );
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ export const OpRewardsSheet: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      getMockOpData().then(data => {
+      getMockData().then(data => {
         setRewardsData(data);
         setLoading(false);
       });
@@ -39,9 +39,9 @@ export const OpRewardsSheet: React.FC = () => {
         >
           <Box padding="20px">
             {loading || rewardsData === null ? (
-              <OpRewardsFakeContent />
+              <RewardsFakeContent />
             ) : (
-              <OpRewardsContent data={rewardsData} loading={loading} />
+              <RewardsContent data={rewardsData} />
             )}
           </Box>
         </SlackSheet>

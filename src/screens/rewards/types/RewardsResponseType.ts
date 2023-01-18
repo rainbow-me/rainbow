@@ -77,7 +77,7 @@ type OpRewardsLeaderboardItem = {
   };
 };
 
-export type OpRewardsResponseType = {
+export type RewardsResponseType = {
   meta: OpRewardsMeta;
   earnings: OpRewardsEarnings;
   stats: OpRewardsStats;

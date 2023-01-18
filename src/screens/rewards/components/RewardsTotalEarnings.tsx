@@ -1,50 +1,69 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { OpRewardsSectionCard } from '@/screens/op-rewards/components/OpRewardsSectionCard';
+import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { Box, Columns, Inline, Rows, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import { OpRewardsProgressBar } from '@/screens/op-rewards/components/OpRewardsProgressBar';
+import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
+import * as i18n from '@/languages';
 
-export const OpRewardsTotalEarnings: React.FC = () => {
+const TOTAL_SUPPLY = 2000;
+
+type Props = {
+  totalEarningsUsd: number;
+  totalEarningsToken: number;
+  multiplier: number;
+  tokenSymbol: string;
+  tokenImageUrl: string;
+};
+
+export const RewardsTotalEarnings: React.FC<Props> = ({
+  totalEarningsUsd,
+  multiplier,
+  tokenImageUrl,
+  totalEarningsToken,
+  tokenSymbol,
+}) => {
   const { colors } = useTheme();
 
   return (
-    <OpRewardsSectionCard>
+    <RewardsSectionCard>
       <Rows space="16px">
         <Columns>
           <Stack space="12px" alignHorizontal="left">
-            {/* TODO: Use Translations */}
             <Text color="labelTertiary" size="15pt" weight="semibold">
-              Total Earnings
+              {i18n.t(i18n.l.rewards.total_earnings)}
             </Text>
             <Text color="label" size="26pt" weight="heavy">
-              $229.25
+              {`$${totalEarningsUsd}`}
             </Text>
           </Stack>
           <Stack space="12px" alignHorizontal="right">
             <Text color="labelTertiary" size="15pt" weight="semibold">
-              Multiplier
+              {i18n.t(i18n.l.rewards.multiplier)}
             </Text>
             <Text
               size="26pt"
               color={{ custom: colors.networkColors.optimism }}
               weight="bold"
             >
-              2x
+              {multiplier}x
             </Text>
           </Stack>
         </Columns>
-        <OpRewardsProgressBar />
+        <RewardsProgressBar
+          progress={Math.min(totalEarningsToken / TOTAL_SUPPLY, 1)}
+        />
         <Inline space="6px" alignVertical="center">
           <Box
             as={Image}
             source={{
-              uri:
-                'https://rainbowme-res.cloudinary.com/image/upload/v1668486694/assets/optimism/0x4200000000000000000000000000000000000042.png',
+              uri: tokenImageUrl,
             }}
             width={{ custom: 16 }}
             height={{ custom: 16 }}
-            // TODO: Add shadows
+            borderRadius={8}
+            background="surfaceSecondaryElevated"
+            shadow="12px"
           />
           <Text
             color={{ custom: colors.networkColors.optimism }}
@@ -56,18 +75,18 @@ export const OpRewardsTotalEarnings: React.FC = () => {
               size="15pt"
               weight="semibold"
             >
-              {"You've earned "}
+              {i18n.t(i18n.l.rewards.you_earned)}
             </Text>
             <Text
               color={{ custom: colors.networkColors.optimism }}
               size="15pt"
               weight="heavy"
             >
-              201.502 OP
+              {`${totalEarningsToken} ${tokenSymbol}`}
             </Text>
           </Text>
         </Inline>
       </Rows>
-    </OpRewardsSectionCard>
+    </RewardsSectionCard>
   );
 };

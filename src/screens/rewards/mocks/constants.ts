@@ -1,6 +1,6 @@
-import { OpRewardsResponseType } from '@/screens/op-rewards/types/OpRewardsResponseType';
+import { RewardsResponseType } from '@/screens/rewards/types/RewardsResponseType';
 
-export const MOCK_OP_REWARDS_DATA: OpRewardsResponseType = {
+export const MOCK_REWARDS_DATA: RewardsResponseType = {
   meta: {
     title: 'Optimism Rewards',
     // Unix timestamp in UTC. "Next Airdrop" in Figma.

@@ -83,7 +83,7 @@ import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
-import { OpRewardsSheet } from '@/screens/op-rewards/OpRewardsSheet';
+import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -439,7 +439,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen
         name={Routes.OP_REWARDS_SHEET}
-        component={OpRewardsSheet}
+        component={RewardsSheet}
         {...opRewardsSheetConfig}
       />
     </NativeStack.Navigator>

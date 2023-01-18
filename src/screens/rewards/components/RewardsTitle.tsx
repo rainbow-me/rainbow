@@ -3,7 +3,7 @@ import { Box, Text } from '@/design-system';
 
 type Props = { text: string };
 
-export const OpRewardsTitle: React.FC<Props> = ({ text }) => {
+export const RewardsTitle: React.FC<Props> = ({ text }) => {
   return (
     <Box paddingBottom="24px">
       <Text color="label" size="30pt" weight="heavy">

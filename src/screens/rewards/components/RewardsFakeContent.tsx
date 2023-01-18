@@ -25,7 +25,7 @@ const FakeElement: React.FC<BoxProps> = props => (
   <Box {...props} background="accent" borderRadius={BORDER_RADIUS} />
 );
 
-export const OpRewardsFakeContent: React.FC = () => {
+export const RewardsFakeContent: React.FC = () => {
   const shimmerColor = useForegroundColor('fillSecondary');
   const { height } = useDimensions();
 
