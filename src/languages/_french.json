@@ -1252,6 +1252,27 @@
         },
         "header": "Swaps on Rainbow :)",
         "subheader": "REINTRODUCING :)"
+      },
+      "notifications_launch": {
+        "primary_button": {
+          "permissions_enabled": "Configure",
+          "permissions_not_enabled": "Enable"
+        },
+        "secondary_button": "Not Now",
+        "info_row_1": {
+          "title": "For all your wallet activity",
+          "description": "Get notified about activity in your wallets or wallets you’re watching."
+        },
+        "info_row_2": {
+          "title": "Lightning fast",
+          "description": "Know the instant a transaction confirms on the blockchain."
+        },
+        "info_row_3": {
+          "title": "Customizable",
+          "description": "Sends, receives, sales, mints, swaps, and more. Choose what you want."
+        },
+        "header": "Notifications",
+        "subheader": "INTRODUCING"
       }
     },
     "review": {
@@ -1669,37 +1690,43 @@
       "my_account_address": "My account address: :)",
       "network_title": "Network :)",
       "new": {
-        "add_wallet": {
-          "cloud": {
-            "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it. :)",
-            "description_ios_one_wallet": "You have 1 wallet backed up :)",
-            "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up :)",
-            "title": "Restore from %{platform} :)",
-            "no_backups": "No backups found :)",
-            "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account. :)"
+        "add_wallet_sheet": {
+          "options": {
+            "cloud": {
+              "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it. :)",
+              "description_ios_one_wallet": "You have 1 wallet backed up :)",
+              "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up :)",
+              "title": "Restore from %{platform} :)",
+              "no_backups": "No backups found :)",
+              "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account. :)"
+            },
+            "create_new": {
+              "description": "Create a new wallet on one of your seed phrases :)",
+              "title": "Create a new wallet :)"
+            },
+            "hardware_wallet": {
+              "description": "Add accounts from your Bluetooth hardware wallet :)",
+              "title": "Connect your hardware wallet :)"
+            },
+            "seed": {
+              "description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
+              "title": "Restore with a recovery phrase or private key :)"
+            },
+            "watch": {
+              "description": "Watch a public address or ENS name :)",
+              "title": "Watch an Ethereum address :)"
+            }
           },
-          "create_new": {
-            "description": "Create a new wallet on one of your seed phrases :)",
-            "title": "Create a new wallet :)"
+          "first_wallet": {
+            "description": "Import your own wallet or watch someone else's :)",
+            "title": "Add your first wallet :)"
           },
-          "hardware_wallet": {
-            "description": "Add accounts from your Bluetooth hardware wallet :)",
-            "title": "Connect your hardware wallet :)"
-          },
-          "seed": {
-            "description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
-            "title": "Restore with a recovery phrase or private key :)"
-          },
-          "sheet": {
+          "additional_wallet": {
             "description": "Create a new wallet or add an existing one :)",
             "title": "Add another wallet :)"
-          },
-          "watch": {
-            "description": "Watch a public address or ENS name :)",
-            "title": "Watch an Ethereum address :)"
           }
         },
-        "import_seed_phrase_sheet": {
+        "import_or_watch_wallet_sheet": {
           "paste": "Paste :)",
           "continue": "Continue :)",
           "import": {

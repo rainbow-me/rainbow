@@ -101,7 +101,6 @@
   [(PanModalViewController*) [_controller parentVC] rejump];
 }
 
-
 - (void)onTouchTopWrapper:(NSNumber*)dismissing {
   if (_onTouchTop) {
     _onTouchTop(@{ @"dismissing": dismissing });

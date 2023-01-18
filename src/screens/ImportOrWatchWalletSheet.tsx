@@ -22,17 +22,19 @@ import { LoadingOverlay } from '@/components/modal';
 import { StatusBar } from 'react-native';
 import { safeAreaInsetValues } from '@/utils';
 
-const TRANSLATIONS = i18n.l.wallet.new.import_seed_phrase_sheet;
+const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
-type RouteParams = {
-  ImportSeedPhraseSheetParams: {
-    type: 'watch' | 'import';
-  };
+export type ImportOrWatchWalletSheetParams = {
+  type: 'watch' | 'import';
 };
 
-export const ImportSeedPhraseSheet: React.FC = () => {
+type RouteParams = {
+  ImportOrWatchWalletSheetParams: ImportOrWatchWalletSheetParams;
+};
+
+export const ImportOrWatchWalletSheet = () => {
   const { params: { type = 'watch' } = {} } = useRoute<
-    RouteProp<RouteParams, 'ImportSeedPhraseSheetParams'>
+    RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
   >();
 
   const {
@@ -44,8 +46,8 @@ export const ImportSeedPhraseSheet: React.FC = () => {
     isSecretValid,
     seedPhrase,
   } = useImportingWallet();
-  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { height: deviceHeight } = useDimensions();
 
   const textStyle = useTextStyle({
     align: 'center',
@@ -69,7 +71,6 @@ export const ImportSeedPhraseSheet: React.FC = () => {
           custom:
             deviceHeight - SheetHandleFixedToTopHeight - safeAreaTopPadding,
         }}
-        background="surfaceSecondary"
       >
         <Box
           alignItems="center"
@@ -122,7 +123,7 @@ export const ImportSeedPhraseSheet: React.FC = () => {
             placeholderTextColor={labelTertiary}
             ref={inputRef}
             selectionColor={globalColors.purple60}
-            // scrollEnabled={false}
+            scrollEnabled={false}
             spellCheck={false}
             width={232}
             returnKeyType="done"
