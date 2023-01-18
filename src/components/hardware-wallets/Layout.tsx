@@ -18,7 +18,7 @@ export function Layout({
         top={{ custom: SheetHandleFixedToTopHeight }}
         bottom={{ custom: safeAreaInsetValues.bottom }}
       >
-        <Inset top="36px" bottom="52px">
+        <Inset top="36px" bottom="20px">
           <Box height="full">
             <Rows>
               <Row height="content">{header}</Row>

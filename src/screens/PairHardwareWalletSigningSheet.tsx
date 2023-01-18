@@ -14,7 +14,10 @@ import { SheetActionButton } from '@/components/sheet';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
+import {
+  contentHeight,
+  TRANSLATIONS,
+} from '@/navigation/PairHardwareWalletNavigator';
 import { useDimensions } from '@/hooks';
 
 const NUMBER_BOX_SIZE = 28;
@@ -104,6 +107,7 @@ export function PairHardwareWalletSigningSheet() {
   const { isSmallPhone } = useDimensions();
   return (
     <Layout
+      contentHeight={contentHeight}
       header={
         <Inset horizontal="36px">
           <Stack alignHorizontal="center" space="20px">

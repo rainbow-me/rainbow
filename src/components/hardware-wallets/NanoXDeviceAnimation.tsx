@@ -21,7 +21,12 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { deviceUtils } from '@/utils';
+
+const scaleFactor = deviceUtils.isSmallPhone ? 0.9 : 1;
+
+export const ledgerNanoHeight = 292 * scaleFactor;
+export const ledgerNanoWidth = 216 * scaleFactor;
 
 export function NanoXDeviceAnimation({
   height,
@@ -33,15 +38,9 @@ export function NanoXDeviceAnimation({
   width: number;
 }) {
   const { colorMode } = useColorMode();
-  const { isSmallPhone } = useDimensions();
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
-
-  const scaleFactor = isSmallPhone ? 0.9 : 1;
-
-  const ledgerNanoHeight = 292 * scaleFactor;
-  const ledgerNanoWidth = 216 * scaleFactor;
 
   const animatedLedgerNanoWrapperStyle = useAnimatedStyle(() => ({
     opacity: withTiming(1),

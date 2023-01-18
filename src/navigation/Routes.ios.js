@@ -40,6 +40,7 @@ import {
   addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  confirmHardwareWalletTxNavigatorConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
@@ -82,6 +83,7 @@ import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
+import { ConfirmHardwareWalletTxNavigator } from './ConfirmHardwareWalletTxNavigator';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -366,6 +368,11 @@ function NativeStackNavigator() {
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
+      />
+      <NativeStack.Screen
+        component={ConfirmHardwareWalletTxNavigator}
+        name={Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR}
+        {...confirmHardwareWalletTxNavigatorConfig}
       />
       <NativeStack.Screen
         component={AddWalletNavigator}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Dimensions, StatusBar, View } from 'react-native';
-import { SlackSheet } from '../components/sheet';
+import { Dimensions, StatusBar } from 'react-native';
+import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
@@ -30,106 +30,101 @@ const renderPager = (props: any) => (
   />
 );
 
+export const contentHeight =
+  deviceUtils.dimensions.height -
+  (!deviceUtils.isSmallPhone ? sharedCoolModalTopOffset : 0);
+
 export function PairHardwareWalletNavigator() {
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
-
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
+    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
   );
 
   return (
-    <>
-      {/* @ts-expect-error JavaScript component */}
-      <SlackSheet
-        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-        contentHeight={contentHeight}
-        height="100%"
-        removeTopPadding
-        scrollEnabled={false}
+    // @ts-expect-error JavaScript component
+    <SlackSheet
+      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+      contentHeight={contentHeight}
+      height="100%"
+      removeTopPadding
+      scrollEnabled={false}
+    >
+      <StatusBar barStyle="light-content" />
+      <Box
+        style={{
+          height: contentHeight,
+        }}
       >
-        <StatusBar barStyle="light-content" />
-        <Box
-          style={{
-            height: contentHeight,
-          }}
+        <Swipe.Navigator
+          initialLayout={deviceUtils.dimensions}
+          initialRouteName={currentRouteName}
+          pager={renderPager}
+          swipeEnabled={false}
+          tabBar={renderTabBar}
+          lazy
         >
-          <Swipe.Navigator
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={currentRouteName}
-            pager={renderPager}
-            swipeEnabled={false}
-            tabBar={renderTabBar}
-            lazy
+          <Swipe.Screen
+            component={PairHardwareWalletIntroSheet}
+            name={Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
+              },
+            }}
+          />
+          <Swipe.Screen
+            component={PairHardwareWalletSearchSheet}
+            name={Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
+              },
+            }}
+          />
+          <Swipe.Screen
+            component={PairHardwareWalletSuccessSheet}
+            name={Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET);
+              },
+            }}
+          />
+          <Swipe.Screen
+            component={PairHardwareWalletSigningSheet}
+            name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
+            listeners={{
+              focus: () => {
+                setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET);
+              },
+            }}
+          />
+        </Swipe.Navigator>
+        {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
+          currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
+          <NanoXDeviceAnimation
+            height={contentHeight}
+            state={
+              currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
+                ? 'loading'
+                : 'idle'
+            }
+            width={deviceUtils.dimensions.width}
+          />
+        )}
+        {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
+          <Box
+            width={{ custom: deviceUtils.dimensions.width }}
+            height={{ custom: contentHeight }}
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
           >
-            <Swipe.Screen
-              component={PairHardwareWalletIntroSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletSearchSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletSuccessSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(
-                    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
-                  );
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletSigningSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(
-                    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
-                  );
-                },
-              }}
-            />
-          </Swipe.Navigator>
-          {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
-            currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
-            <NanoXDeviceAnimation
-              height={contentHeight}
-              state={
-                currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
-                  ? 'loading'
-                  : 'idle'
-              }
-              width={deviceUtils.dimensions.width}
-            />
-          )}
-          {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
-            <Box
-              width={{ custom: deviceUtils.dimensions.width }}
-              height={{ custom: contentHeight }}
-              alignItems="center"
-              justifyContent="center"
-              position="absolute"
-            >
-              <CheckmarkAnimation />
-            </Box>
-          )}
-        </Box>
-      </SlackSheet>
-    </>
+            <CheckmarkAnimation />
+          </Box>
+        )}
+      </Box>
+    </SlackSheet>
   );
 }

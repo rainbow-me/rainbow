@@ -186,6 +186,19 @@ export const pairHardwareWalletNavigatorConfig = {
   }),
 };
 
+export const confirmHardwareWalletTxNavigatorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 580,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
+      springDamping: 1,
+      transitionDuration: 0.2,
+    }),
+  }),
+};
+
 export const registerENSNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

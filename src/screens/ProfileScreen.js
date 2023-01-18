@@ -59,9 +59,14 @@ export default function ProfileScreen({ navigation }) {
     navigate,
   ]);
 
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
-    navigate,
-  ]);
+  // const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
+  //   navigate,
+  // ]);
+
+  const onPressSettings = useCallback(
+    () => navigate(Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR),
+    [navigate]
+  );
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

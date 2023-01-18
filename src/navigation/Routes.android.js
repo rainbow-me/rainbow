@@ -73,6 +73,7 @@ import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
+import { ConfirmHardwareWalletTxNavigator } from './ConfirmHardwareWalletTxNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -287,6 +288,10 @@ function BSNavigator() {
           <BSStack.Screen
             component={PairHardwareWalletNavigator}
             name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+          />
+          <BSStack.Screen
+            component={ConfirmHardwareWalletTxNavigator}
+            name={Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR}
           />
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
