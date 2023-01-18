@@ -1504,7 +1504,7 @@
       "errors": {
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
-        "unknown":"Unknown Error, close and reopen this sheet"
+        "unknown": "Unknown Error, close and reopen this sheet"
       }
     },
     "wallet": {
