@@ -20,7 +20,7 @@ export const TRANSLATIONS = i18n.l.hardware_wallets;
 const Swipe = createMaterialTopTabNavigator();
 const renderTabBar = () => null;
 
-export function PairHardwareWalletNavigator() {
+export const PairHardwareWalletNavigator = () => {
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
@@ -100,4 +100,4 @@ export function PairHardwareWalletNavigator() {
       </Box>
     </SlackSheet>
   );
-}
+};

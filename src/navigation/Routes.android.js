@@ -54,6 +54,7 @@ import {
   addWalletNavigatorPreset,
   androidRecievePreset,
   bottomSheetPreset,
+  confirmHardwareWalletTxNavigatorPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
@@ -271,6 +272,15 @@ function BSNavigator() {
         name={Routes.ADD_WALLET_NAVIGATOR}
         options={addWalletNavigatorPreset}
       />
+      <BSStack.Screen
+        component={PairHardwareWalletNavigator}
+        name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+      />
+      <BSStack.Screen
+        component={ConfirmHardwareWalletTxNavigator}
+        name={Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR}
+        options={confirmHardwareWalletTxNavigatorPreset}
+      />
       {profilesEnabled && (
         <>
           <BSStack.Screen
@@ -284,14 +294,6 @@ function BSNavigator() {
           <BSStack.Screen
             component={RegisterENSNavigator}
             name={Routes.REGISTER_ENS_NAVIGATOR}
-          />
-          <BSStack.Screen
-            component={PairHardwareWalletNavigator}
-            name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
-          />
-          <BSStack.Screen
-            component={ConfirmHardwareWalletTxNavigator}
-            name={Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR}
           />
           <BSStack.Screen
             component={ENSAdditionalRecordsSheet}
