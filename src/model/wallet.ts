@@ -793,10 +793,6 @@ export const createWallet = async (
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
     let label = name || '';
-    if (!label && isHardwareWallet) {
-      //  TODO(@skylarbarrera}: add support for multiple hardware wallets
-      label = `Ledger 1`;
-    }
 
     addresses.push({
       address: walletAddress,
@@ -946,11 +942,6 @@ export const createWallet = async (
             {},
             DebugContext.wallet
           );
-
-          if (!label && isHardwareWallet) {
-            //  TODO(@skylarbarrera}: add support for multiple hardware wallets
-            label = `Ledger ${index + 1}`;
-          }
 
           addresses.push({
             address: nextWallet.address,
