@@ -8,6 +8,8 @@ import { getMockData } from '@/screens/rewards/mocks/getMockData';
 import { RewardsResponseType } from '@/screens/rewards/types/RewardsResponseType';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
+import { IS_ANDROID } from '@/env';
+import { StatusBar } from 'react-native';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
@@ -35,7 +37,8 @@ export const RewardsSheet: React.FC = () => {
           backgroundColor={backgroundColor}
           height="100%"
           contentHeight={height - top}
-          scrollEnabled={!loading && rewardsData}
+          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+          scrollEnabled
         >
           <Box padding="20px">
             {loading || rewardsData === null ? (
