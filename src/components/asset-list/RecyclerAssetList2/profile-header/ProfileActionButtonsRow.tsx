@@ -60,12 +60,8 @@ export function ProfileActionButtonsRow() {
 
   if (!accentColorLoaded) return null;
 
-  const featuresConfig = (config.features as unknown) as {
-    [featureName: string]: boolean;
-  };
-
-  const addCashEnabled = featuresConfig.f2c_enabled;
-  const swapEnabled = featuresConfig.swagg_enabled;
+  const addCashEnabled = config.f2c_enabled;
+  const swapEnabled = config.swagg_enabled;
 
   return (
     <Box width="full">
