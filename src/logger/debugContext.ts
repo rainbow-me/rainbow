@@ -12,4 +12,5 @@ export const DebugContext = {
   migrations: 'migrations',
   notifications: 'notifications',
   walletconnect: 'walletconnect',
+  wallet: 'wallet',
 } as const;
