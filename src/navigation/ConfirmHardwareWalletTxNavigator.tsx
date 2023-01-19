@@ -1,52 +1,37 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useState } from 'react';
+import React from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
-import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
-import {
-  ImportOrWatchWalletSheet,
-  ImportOrWatchWalletSheetParams,
-} from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
-import { BackgroundProvider, Box } from '@/design-system';
+import { SlackSheet } from '@/components/sheet';
+import { Box } from '@/design-system';
 import { StatusBar } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/core';
 import { useDimensions } from '@/hooks';
 import { ReconnectHardwareWalletSheet } from '@/screens/ReconnectHardwareWalletSheet';
-import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
 import { sharedCoolModalTopOffset } from './config';
+import * as i18n from '@/languages';
 
 const Swipe = createMaterialTopTabNavigator();
-
-type RouteParams = {
-  AddWalletNavigatorParams: AddWalletSheetParams &
-    ImportOrWatchWalletSheetParams;
-};
-
-export const contentHeight =
-  580 - (!deviceUtils.isSmallPhone ? sharedCoolModalTopOffset : 0);
+export const TRANSLATIONS = i18n.l.hardware_wallets;
+export const CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
 
 export const ConfirmHardwareWalletTxNavigator = () => {
-  const { params } = useRoute<
-    RouteProp<RouteParams, 'AddWalletNavigatorParams'>
-  >();
-  const { height: deviceHeight } = useDimensions();
+  const { isSmallPhone } = useDimensions();
 
-  const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.RECONNECT_HARDWARE_WALLET_SHEET
-  );
+  const contentHeight =
+    CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT -
+    (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   return (
-    // @ts-expect-error js component
+    // @ts-expect-error JavaScript component
     <SlackSheet
-      contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
+      contentHeight={contentHeight}
       additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
       height="100%"
       scrollEnabled={false}
       removeTopPadding
     >
-      <Box height="full" background="surfaceSecondary">
+      <Box background="surfaceSecondary" height="full">
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
           initialRouteName={Routes.ADD_WALLET_SHEET}
@@ -55,13 +40,7 @@ export const ConfirmHardwareWalletTxNavigator = () => {
         >
           <Swipe.Screen
             component={ReconnectHardwareWalletSheet}
-            initialParams={{}}
             name={Routes.RECONNECT_HARDWARE_WALLET_SHEET}
-            listeners={{
-              focus: () => {
-                setCurrentRouteName(Routes.RECONNECT_HARDWARE_WALLET_SHEET);
-              },
-            }}
           />
         </Swipe.Navigator>
       </Box>
