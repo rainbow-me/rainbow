@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, StatusBar } from 'react-native';
+import { Dimensions, StatusBar, View } from 'react-native';
 import { SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@/design-system';
@@ -12,8 +12,13 @@ import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletIntroSheet } from '@/screens/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/PairHardwareWalletSearchSheet';
 import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
+import { PairHardwareWalletSuccessSheet } from '@/screens/PairHardwareWalletSuccessSheet';
+import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
+import * as i18n from '@/languages';
+import { PairHardwareWalletSigningSheet } from '@/screens/PairHardwareWalletSigningSheet';
 
 const Swipe = createMaterialTopTabNavigator();
+export const TRANSLATIONS = i18n.l.hardware_wallets;
 
 const renderTabBar = () => null;
 const renderPager = (props: any) => (
@@ -32,7 +37,7 @@ export function PairHardwareWalletNavigator() {
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
+    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
   );
 
   return (
@@ -77,20 +82,52 @@ export function PairHardwareWalletNavigator() {
                 },
               }}
             />
+            <Swipe.Screen
+              component={PairHardwareWalletSuccessSheet}
+              name={Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET}
+              listeners={{
+                focus: () => {
+                  setCurrentRouteName(
+                    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
+                  );
+                },
+              }}
+            />
+            <Swipe.Screen
+              component={PairHardwareWalletSigningSheet}
+              name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
+              listeners={{
+                focus: () => {
+                  setCurrentRouteName(
+                    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
+                  );
+                },
+              }}
+            />
           </Swipe.Navigator>
-          <NanoXDeviceAnimation
-            height={contentHeight}
-            state={
-              currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
-                ? 'loading'
-                : 'idle'
-            }
-            show={
-              currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
-              currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
-            }
-            width={deviceUtils.dimensions.width}
-          />
+          {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
+            currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
+            <NanoXDeviceAnimation
+              height={contentHeight}
+              state={
+                currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
+                  ? 'loading'
+                  : 'idle'
+              }
+              width={deviceUtils.dimensions.width}
+            />
+          )}
+          {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
+            <Box
+              width={{ custom: deviceUtils.dimensions.width }}
+              height={{ custom: contentHeight }}
+              alignItems="center"
+              justifyContent="center"
+              position="absolute"
+            >
+              <CheckmarkAnimation />
+            </Box>
+          )}
         </Box>
       </SlackSheet>
     </>

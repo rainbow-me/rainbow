@@ -225,6 +225,7 @@
       "loading": "Se charge",
       "more": "More",
       "my_qr_code": "My QR Code",
+      "next": "Next :)",
       "no_thanks": "No thanks",
       "notify_me": "Recevoir des notifications",
       "offline": "Hors connexion",
@@ -1522,12 +1523,32 @@
       "invalid_paste": "You can't paste that here :)"
     },
     "hardware_wallets": {
-      "pair_your_nano": "Pair your Nano X",
-      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
-      "learn_more_about_ledger": "Learn more about Ledger",
-      "pair_a_new_ledger": "Pair a new Ledger",
-      "looking_for_devices": "Looking for devices",
-      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+      "pair_your_nano": "Pair your Nano X :)",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access. :)",
+      "learn_more_about_ledger": "Learn more about Ledger :)",
+      "pair_a_new_ledger": "Pair a new Ledger :)",
+      "looking_for_devices": "Looking for devices :)",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
+      "pair_successful": "Pair successful :)",
+      "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
+      "enable_blind_signing": "Enable blind signing :)",
+      "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
+      "learn_more": "Learn More :)",
+      "blind_signing_enabled": "Blind signing is enabled :)",
+      "blind_signing_instructions": {
+        "step_1": {
+          "title": "On Ledger, open the ETH app :)",
+          "description": "Connect and unlock your device and open the Ethereum (ETH) application. :)"
+        },
+        "step_2": {
+          "title": "Navigate to settings :)",
+          "description": "Press the right button to navigate to Settings. Then press both buttons to validate your Ledger device displays Blind Signing. :)"
+        },
+        "step_3": {
+          "title": "Enable blind signing :)",
+          "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go. :)"
+        }
+      }
     },
     "wallet": {
       "action": {
