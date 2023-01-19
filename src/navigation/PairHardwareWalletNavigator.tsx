@@ -22,7 +22,7 @@ const renderTabBar = () => null;
 
 export function PairHardwareWalletNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
+    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
 
   const { height: deviceHeight, width: deviceWidth } = useDimensions();

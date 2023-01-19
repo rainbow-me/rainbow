@@ -23,7 +23,7 @@ import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
 
-const scaleFactor = deviceUtils.isSmallPhone ? 0.9 : 1;
+export const scaleFactor = deviceUtils.isSmallPhone ? 0.9 : 1;
 
 export const ledgerNanoHeight = 292 * scaleFactor;
 export const ledgerNanoWidth = 216 * scaleFactor;

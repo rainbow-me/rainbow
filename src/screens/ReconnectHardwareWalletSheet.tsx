@@ -7,6 +7,7 @@ import ledgerNano from '@/assets/ledger-nano.png';
 import {
   ledgerNanoHeight,
   ledgerNanoWidth,
+  scaleFactor,
 } from '@/components/hardware-wallets/NanoXDeviceAnimation';
 import { Source } from 'react-native-fast-image';
 import Animated, {
@@ -19,10 +20,17 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
 import { CancelButton } from '@/components/hardware-wallets/CancelButton';
+import gridDotsLight from '@/assets/dot-grid-light.png';
+import gridDotsDark from '@/assets/dot-grid-dark.png';
+import { useTheme } from '@/theme';
+
+const INDICATOR_SIZE = 7;
 
 export const ReconnectHardwareWalletSheet = () => {
-  const { isSmallPhone } = useDimensions();
+  const { width: deviceWidth } = useDimensions();
+  const { isDarkMode } = useTheme();
   const connected = false;
+  const gridDotsSize = deviceWidth * scaleFactor;
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -36,85 +44,110 @@ export const ReconnectHardwareWalletSheet = () => {
 
   const indicatorAnimation = useAnimatedStyle(() => ({
     opacity: indicatorOpacity.value,
-    zIndex: 2,
   }));
 
   return (
-    <Box justifyContent="space-between" alignItems="center" height="full">
-      <Stack space={{ custom: isSmallPhone ? 20 : 0 }}>
-        <Inset horizontal="36px" top={{ custom: 55 }}>
-          <Stack alignHorizontal="center" space="20px">
-            <Text align="center" color="label" weight="bold" size="26pt">
-              {i18n.t(TRANSLATIONS.looking_for_devices)}
-            </Text>
-            <Stack space="10px">
-              <Text
-                align="center"
-                color="labelTertiary"
-                weight="semibold"
-                size="15pt / 135%"
-              >
-                {i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+    <Box
+      justifyContent="space-between"
+      alignItems="center"
+      height="full"
+      background="surfaceSecondary"
+    >
+      <Box alignItems="center">
+        <Box style={{ zIndex: 1 }}>
+          <Inset horizontal="36px" top={{ custom: 55 }}>
+            <Stack alignHorizontal="center" space="20px">
+              <Text align="center" color="label" weight="bold" size="26pt">
+                {i18n.t(TRANSLATIONS.looking_for_devices)}
               </Text>
-            </Stack>
-          </Stack>
-        </Inset>
-        <Box alignItems="center">
-          <ImgixImage
-            source={ledgerNano as Source}
-            style={{
-              width: ledgerNanoWidth,
-              height: ledgerNanoHeight,
-            }}
-            size={ledgerNanoHeight}
-          />
-          <Box
-            height={{ custom: 36 }}
-            width={{ custom: 149 }}
-            borderRadius={18}
-            marginTop={{ custom: -60 }}
-            background="surfacePrimary"
-            shadow="12px"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Inline alignVertical="center" space="8px">
-              <Text color="label" weight="semibold" size="17pt">
-                Nano X 7752
-              </Text>
-              <Box>
-                <Box
-                  alignItems="center"
-                  as={Animated.View}
-                  borderRadius={3.5}
-                  height={{ custom: 7 }}
-                  justifyContent="center"
-                  style={!connected ? [indicatorAnimation] : []}
-                  width={{ custom: 7 }}
+              <Stack space="10px">
+                <Text
+                  align="center"
+                  color="labelTertiary"
+                  weight="semibold"
+                  size="15pt / 135%"
                 >
-                  <Box
-                    width={{ custom: 7 }}
-                    height={{ custom: 7 }}
-                    background="yellow"
-                    shadow="30px yellow"
-                    position="absolute"
-                    borderRadius={3.5}
-                  />
-                </Box>
-                <Box
-                  width={{ custom: 7 }}
-                  height={{ custom: 7 }}
-                  background={connected ? 'green' : 'surfaceSecondary'}
-                  shadow={connected ? '30px green' : undefined}
-                  position="absolute"
-                  style={{ zIndex: 1 }}
-                  borderRadius={3.5}
-                />
-              </Box>
-            </Inline>
-          </Box>
+                  {i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+                </Text>
+              </Stack>
+            </Stack>
+          </Inset>
         </Box>
-      </Stack>
+        <Box
+          alignItems="center"
+          position="absolute"
+          top={{
+            custom: 90 + ((1 - scaleFactor) * gridDotsSize) / 2,
+          }}
+        >
+          <ImgixImage
+            source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
+            style={{
+              width: gridDotsSize,
+              height: gridDotsSize,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            size={gridDotsSize}
+          >
+            <ImgixImage
+              source={ledgerNano as Source}
+              style={{
+                width: ledgerNanoWidth,
+                height: ledgerNanoHeight,
+                alignItems: 'center',
+              }}
+              size={ledgerNanoHeight}
+            >
+              <Inset top={{ custom: 230 * scaleFactor }}>
+                <Box
+                  height={{ custom: 36 }}
+                  width={{ custom: 149 }}
+                  borderRadius={18}
+                  background="surfaceSecondaryElevated"
+                  shadow="12px"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Inline alignVertical="center" space="8px">
+                    <Text color="label" weight="semibold" size="17pt">
+                      Nano X 7752
+                    </Text>
+                    <Box>
+                      <Animated.View
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: INDICATOR_SIZE,
+                          width: INDICATOR_SIZE,
+                          borderRadius: INDICATOR_SIZE / 2,
+                          ...(!connected ? indicatorAnimation : {}),
+                        }}
+                      >
+                        <Box
+                          width={{ custom: INDICATOR_SIZE }}
+                          height={{ custom: INDICATOR_SIZE }}
+                          background="yellow"
+                          shadow="30px yellow"
+                          position="absolute"
+                          borderRadius={INDICATOR_SIZE / 2}
+                        />
+                      </Animated.View>
+                      <Box
+                        width={{ custom: INDICATOR_SIZE }}
+                        height={{ custom: INDICATOR_SIZE }}
+                        background={connected ? 'green' : 'surfaceSecondary'}
+                        shadow={connected ? '30px green' : undefined}
+                        borderRadius={INDICATOR_SIZE / 2}
+                      />
+                    </Box>
+                  </Inline>
+                </Box>
+              </Inset>
+            </ImgixImage>
+          </ImgixImage>
+        </Box>
+      </Box>
       <Box position="absolute" top={{ custom: 510 }}>
         <Inset horizontal="20px">
           <CancelButton />
