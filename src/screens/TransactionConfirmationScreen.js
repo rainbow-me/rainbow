@@ -195,7 +195,12 @@ export default function TransactionConfirmationScreen() {
   const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
   const [nativeAsset, setNativeAsset] = useState(null);
   const { height: deviceHeight } = useDimensions();
-  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
+  const {
+    wallets,
+    walletNames,
+    switchToWalletWithAddress,
+    isHardwareWallet,
+  } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
@@ -926,6 +931,14 @@ export default function TransactionConfirmationScreen() {
     }
   }, [isAuthorizing, onConfirm]);
 
+  const submitFn = useCallback(async () => {
+    if (isHardwareWallet) {
+      // nav here
+    } else {
+      await onPressSend();
+    }
+  }, [isHardwareWallet, onPressSend]);
+
   const renderTransactionButtons = useCallback(() => {
     let ready = true;
     const isMessage = isMessageRequest;
@@ -967,7 +980,7 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.appleBlue}
           label={`􀎽 ${lang.t('button.confirm')}`}
-          onPress={ready ? onPressSend : NOOP}
+          onPress={ready ? submitFn : NOOP}
           size="big"
           testID="wc-confirm"
           weight="heavy"
@@ -983,7 +996,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressCancel,
-    onPressSend,
+    submitFn,
   ]);
 
   const renderTransactionSection = useCallback(() => {
