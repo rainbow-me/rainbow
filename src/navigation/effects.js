@@ -466,6 +466,7 @@ export const addWalletNavigatorPreset = ({ route }) => ({
 
 export const confirmHardwareWalletTxNavigatorPreset = {
   height: CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
+  backdropOpacity: 1,
 };
 
 export const sheetPreset = ({ route }) => {
