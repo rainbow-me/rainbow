@@ -27,7 +27,7 @@ export const RewardsPendingEarnings: React.FC<Props> = ({
           <Text color="labelTertiary" size="15pt" weight="semibold">
             {i18n.t(i18n.l.rewards.pending_earnings)}
           </Text>
-          <Text color="label" size="26pt" weight="heavy">
+          <Text color="label" size="22pt" weight="heavy">
             {`$${pendingEarningsUsd}`}
           </Text>
         </Stack>
