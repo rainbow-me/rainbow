@@ -23,7 +23,6 @@ const COLUMNS_PADDING = 20;
 
 const NumberBox = ({ number }: { number: number }) => {
   const itemBorderColor = useForegroundColor('buttonStrokeSecondary');
-
   return (
     <Box
       width={{ custom: NUMBER_BOX_SIZE }}
