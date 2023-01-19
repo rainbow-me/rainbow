@@ -22,6 +22,7 @@ import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
   allWalletsKey,
+  hardwareKeyKey,
   oldSeedPhraseMigratedKey,
   pinKey,
   privateKeyKey,
@@ -1154,7 +1155,7 @@ export const saveHardwareKey = async (
   address: EthereumAddress,
   privateKey: null | HardwareKey
 ) => {
-  const key = `${address}_${privateKeyKey}`;
+  const key = `${address}_${hardwareKeyKey}`;
   const val = {
     address,
     privateKey,
@@ -1206,7 +1207,7 @@ export const getHardwareKey = async (
   address: EthereumAddress
 ): Promise<null | PrivateKeyData> => {
   try {
-    const key = `${address}_${privateKeyKey}`;
+    const key = `${address}_${hardwareKeyKey}`;
     const hardwareKey = (await keychain.loadObject(key)) as PrivateKeyData;
 
     return hardwareKey || null;
