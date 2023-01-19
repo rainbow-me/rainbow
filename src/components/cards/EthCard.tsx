@@ -148,11 +148,7 @@ export const EthCard = () => {
     }, 20000);
   }, [loadedChart]);
 
-  const featuresConfig = (config.features as unknown) as {
-    [featureName: string]: boolean;
-  };
-
-  const addCashEnabled = featuresConfig.f2c_enabled;
+  const addCashEnabled = config.f2c_enabled;
 
   return (
     <GenericCard

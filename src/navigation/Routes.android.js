@@ -75,6 +75,7 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { ConfirmHardwareWalletTxNavigator } from './ConfirmHardwareWalletTxNavigator';
+import { OpRewardsSheet } from '@/screens/op-rewards/OpRewardsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -375,6 +376,11 @@ function BSNavigator() {
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
         options={{ ...bottomSheetPreset, scrollEnabled: false }}
+      />
+      <BSStack.Screen
+        name={Routes.OP_REWARDS_SHEET}
+        component={OpRewardsSheet}
+        options={{ ...bottomSheetPreset }}
       />
     </BSStack.Navigator>
   );

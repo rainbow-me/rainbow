@@ -424,6 +424,11 @@
         "error_loading_uniswap": "There was an error loading Uniswap pool data",
         "show_more": "Show more",
         "title_pools": "Uniswap Pools"
+      },
+      "op_rewards": {
+        "card_subtitle": "Earn OP tokens every time you bridge to or swap on Optimism.",
+        "card_title": "$OP Rewards",
+        "button_title": "\uDBC1\uDC1A View My Earnings"
       }
     },
     "error_boundary": {

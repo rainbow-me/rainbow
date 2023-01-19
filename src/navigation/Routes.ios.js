@@ -64,6 +64,7 @@ import {
   learnWebViewScreenConfig,
   transactionDetailsConfig,
   addWalletNavigatorConfig,
+  opRewardsSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -84,6 +85,7 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { ConfirmHardwareWalletTxNavigator } from './ConfirmHardwareWalletTxNavigator';
+import { OpRewardsSheet } from '@/screens/op-rewards/OpRewardsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -441,6 +443,11 @@ function NativeStackNavigator() {
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
         {...transactionDetailsConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.OP_REWARDS_SHEET}
+        component={OpRewardsSheet}
+        {...opRewardsSheetConfig}
       />
     </NativeStack.Navigator>
   );

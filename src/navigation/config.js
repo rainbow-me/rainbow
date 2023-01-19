@@ -118,6 +118,17 @@ export const transactionDetailsConfig = {
   },
 };
 
+export const opRewardsSheetConfig = {
+  options: ({ route }) => {
+    return buildCoolModalConfig({
+      ...route.params,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    });
+  },
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
