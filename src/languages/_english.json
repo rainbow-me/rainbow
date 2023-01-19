@@ -378,6 +378,7 @@
       "crash_app_render_error": "Crash app (render error)",
       "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",
+      "navigation_entry_point": "Navigation entry point",
       "no_update": "No update",
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",

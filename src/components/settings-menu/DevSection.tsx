@@ -248,6 +248,9 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
+  const onPressNavigationEntryPoint = () =>
+    navigate(Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR);
+
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
@@ -415,6 +418,16 @@ const DevSection = () => {
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.sync_codepush')}
+                />
+              }
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🗺️" isEmoji />}
+              onPress={onPressNavigationEntryPoint}
+              size={52}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('developer_settings.navigation_entry_point')}
                 />
               }
             />
