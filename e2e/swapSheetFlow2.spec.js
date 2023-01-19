@@ -14,9 +14,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
-  it('Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('restore-sheet');
+    await Helpers.checkIfExists('add-wallet-sheet');
   });
 
   it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
@@ -54,6 +54,8 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    // need to wait for balances to be fetched
+    await Helpers.delay(10000);
     await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });

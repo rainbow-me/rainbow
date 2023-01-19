@@ -39,8 +39,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
-  const { goBack, navigate, replace, setParams } = useNavigation();
+  const {
+    dangerouslyGetParent,
+    navigate,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
+    replace,
+    setParams,
+  } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
@@ -292,7 +297,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
-                goBack();
+                dangerouslyGetParent()?.goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
                     // on Android replacing is not working well, so we navigate and then remove the screen below
@@ -363,7 +368,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     color,
     isWalletEthZero,
     handleSetImporting,
-    goBack,
     initializeWallet,
     isImporting,
     name,
@@ -382,6 +386,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     setIsWalletLoading,
+    dangerouslyGetParent,
   ]);
 
   useEffect(() => {

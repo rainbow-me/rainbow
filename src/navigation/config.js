@@ -117,6 +117,17 @@ export const transactionDetailsConfig = {
   },
 };
 
+export const opRewardsSheetConfig = {
+  options: ({ route }) => {
+    return buildCoolModalConfig({
+      ...route.params,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    });
+  },
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -199,22 +210,10 @@ export const registerENSNavigatorConfig = {
 };
 
 export const addWalletNavigatorConfig = {
-  options: ({ route: { params = {} } }) => ({
+  options: ({ route: { params } }) => ({
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
-      springDamping: 1,
-      transitionDuration: 0.3,
-    }),
-  }),
-};
-
-export const importSeedPhraseFlowNavigatorConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      scrollEnabled: true,
       springDamping: 1,
       transitionDuration: 0.3,
     }),
@@ -233,7 +232,7 @@ export const learnWebViewScreenConfig = {
   }),
 };
 
-export const swapsPromoSheetConfig = {
+export const promoSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

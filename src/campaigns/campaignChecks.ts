@@ -2,11 +2,13 @@ import {
   SwapsPromoCampaign,
   SwapsPromoCampaignExclusion,
 } from './swapsPromoCampaign';
+import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
 export enum CampaignKey {
   swapsLaunch = 'swaps_launch',
+  notificationsLaunch = 'notifications_launch',
 }
 
 export enum CampaignCheckType {
@@ -32,7 +34,10 @@ export interface Campaign {
 }
 
 // the ordering of this list is IMPORTANT, this is the order that campaigns will be run
-export const activeCampaigns: Campaign[] = [SwapsPromoCampaign];
+export const activeCampaigns: Campaign[] = [
+  SwapsPromoCampaign,
+  NotificationsPromoCampaign,
+];
 
 export const runCampaignChecks = async (): Promise<boolean> => {
   logger.log('Campaigns: Running Checks');
@@ -51,8 +56,6 @@ export const runCampaignChecks = async (): Promise<boolean> => {
         type: campaign.checkType,
       });
     }
-
-    return false;
   }
   return false;
 };

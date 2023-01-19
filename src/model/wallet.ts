@@ -212,7 +212,7 @@ const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
-const isHardwareWalletPrivateKey = (key: string | null) => {
+const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
     return true;
@@ -301,7 +301,7 @@ export const loadWallet = async (
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
-  if (isHardwareWalletPrivateKey(privateKey)) {
+  if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
     if (typeof index !== undefined && provider && deviceId) {
@@ -1207,11 +1207,9 @@ export const getHardwareKey = async (
 ): Promise<null | PrivateKeyData> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const harwarePrivateKey = (await keychain.loadObject(
-      key
-    )) as PrivateKeyData;
+    const hardwareKey = (await keychain.loadObject(key)) as PrivateKeyData;
 
-    return harwarePrivateKey || null;
+    return hardwareKey || null;
   } catch (error) {
     logger.error(new RainbowError('Error in getHardwareKey'), { error });
     return null;

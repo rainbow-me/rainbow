@@ -76,6 +76,7 @@ export type BoxProps = {
   right?: PositionSpace;
   top?: PositionSpace;
   width?: Width;
+  overflow?: 'hidden' | 'visible' | 'scroll';
 } & (
   | {
       borderBottomRadius?: number;
@@ -114,8 +115,8 @@ export const Box = forwardRef(function Box(
     alignItems,
     as: Component = View,
     background,
-    borderBottomRadius,
     borderBottomLeftRadius,
+    borderBottomRadius,
     borderBottomRightRadius,
     borderLeftRadius,
     borderRadius,
@@ -130,8 +131,8 @@ export const Box = forwardRef(function Box(
     flexGrow,
     flexShrink,
     flexWrap,
-    justifyContent,
     height: heightProp,
+    justifyContent,
     left: leftProp,
     margin: marginProp,
     marginBottom: marginBottomProp,
@@ -140,6 +141,7 @@ export const Box = forwardRef(function Box(
     marginRight: marginRightProp,
     marginTop: marginTopProp,
     marginVertical: marginVerticalProp,
+    overflow,
     padding: paddingProp,
     paddingBottom: paddingBottomProp,
     paddingHorizontal: paddingHorizontalProp,
@@ -147,9 +149,9 @@ export const Box = forwardRef(function Box(
     paddingRight: paddingRightProp,
     paddingTop: paddingTopProp,
     paddingVertical: paddingVerticalProp,
-    shadow,
     position,
     right: rightProp,
+    shadow,
     style: styleProp,
     top: topProp,
     width: widthProp,
@@ -238,9 +240,9 @@ export const Box = forwardRef(function Box(
     alignItems,
     borderBottomLeftRadius,
     borderBottomRadius,
+    borderBottomRightRadius,
     borderLeftRadius,
     borderRadius,
-    borderBottomRightRadius,
     borderRightRadius,
     borderTopLeftRadius,
     borderTopRadius,

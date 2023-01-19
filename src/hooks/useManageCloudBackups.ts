@@ -8,7 +8,6 @@ import {
   fetchAllBackups,
   fetchUserDataFromCloud,
 } from '@/handlers/cloudBackup';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useNavigation } from '@/navigation/Navigation';
 import { walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
@@ -90,7 +89,6 @@ export default function useManageCloudBackups() {
                       navigate(Routes.RESTORE_SHEET, {
                         backupSelected,
                         fromSettings: true,
-                        step: walletBackupStepTypes.cloud,
                         userData,
                       });
                     }
@@ -102,7 +100,6 @@ export default function useManageCloudBackups() {
             const userData = await fetchUserDataFromCloud();
             navigate(Routes.RESTORE_SHEET, {
               fromSettings: true,
-              step: walletBackupStepTypes.cloud,
               userData: userData,
             });
           }

@@ -46,6 +46,7 @@ import {
   useDimensions,
   useGenericAsset,
 } from '@/hooks';
+import config from '@/model/config';
 import { useNavigation } from '@/navigation';
 import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -205,7 +206,7 @@ export default function ChartExpandedState({ asset }) {
   }, [asset, genericAsset, hasBalance, nativeCurrency]);
 
   if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = assetWithPrice.address;
+    assetWithPrice.l2Address = asset?.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
@@ -328,6 +329,9 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
+  const swapEnabled = config.swagg_enabled;
+  const addCashEnabled = config.f2c_enabled;
+
   const isDOG =
     assetWithPrice.address === DOG_ADDRESS ||
     assetWithPrice?.mainnet_address === DOG_ADDRESS;
@@ -378,13 +382,9 @@ export default function ChartExpandedState({ asset }) {
           </TokenInfoRow>
         </TokenInfoSection>
       )}
-      {needsEth ? (
+      {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} />
-        </SheetActionButtonRow>
-      ) : (
-        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {hasBalance && !isTestnet && (
+          {hasBalance && !isTestnet && swapEnabled && (
             <SwapActionButton
               asset={ogAsset}
               color={color}
@@ -397,7 +397,7 @@ export default function ChartExpandedState({ asset }) {
               color={color}
               fromDiscover={fromDiscover}
             />
-          ) : (
+          ) : swapEnabled ? (
             <SwapActionButton
               asset={ogAsset}
               color={color}
@@ -410,9 +410,13 @@ export default function ChartExpandedState({ asset }) {
               verified={asset?.isVerified}
               weight="heavy"
             />
-          )}
+          ) : null}
         </SheetActionButtonRow>
-      )}
+      ) : addCashEnabled ? (
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
+          <BuyActionButton color={color} />
+        </SheetActionButtonRow>
+      ) : null}
       {isL2 && (
         <L2Disclaimer
           assetType={assetWithPrice.type}

@@ -24,7 +24,6 @@ import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { additionalDataCoingeckoIds } from '@/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from '@/utils/logger';
 
@@ -146,7 +145,6 @@ export default function useInitializeWallet() {
 
         if (!switching) {
           dispatch(uniswapPairsInit());
-          dispatch(additionalDataCoingeckoIds);
         }
 
         logger.sentry('💰 Wallet initialized');
