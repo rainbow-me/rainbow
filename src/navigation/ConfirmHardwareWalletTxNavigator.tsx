@@ -15,6 +15,20 @@ const Swipe = createMaterialTopTabNavigator();
 export const TRANSLATIONS = i18n.l.hardware_wallets;
 export const CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
 
+type Props = {
+  children: React.ReactNode;
+};
+
+export const SheetContainer = ({ children }: Props) => (
+  <Box
+    justifyContent="space-between"
+    alignItems="center"
+    height="full"
+    background="surfaceSecondary"
+  >
+    {children}
+  </Box>
+);
 export const ConfirmHardwareWalletTxNavigator = () => {
   const { isSmallPhone } = useDimensions();
 

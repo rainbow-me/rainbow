@@ -24,6 +24,7 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { SheetContainer } from '@/navigation/ConfirmHardwareWalletTxNavigator';
 
 const INDICATOR_SIZE = 7;
 
@@ -49,12 +50,7 @@ export const ReconnectHardwareWalletSheet = () => {
   }));
 
   return (
-    <Box
-      justifyContent="space-between"
-      alignItems="center"
-      height="full"
-      background="surfaceSecondary"
-    >
+    <SheetContainer>
       <Box alignItems="center">
         <Box style={{ zIndex: 1 }}>
           <Inset horizontal="36px" top={{ custom: 55 }}>
@@ -157,6 +153,6 @@ export const ReconnectHardwareWalletSheet = () => {
           <CancelButton />
         </Inset>
       </Box>
-    </Box>
+    </SheetContainer>
   );
 };
