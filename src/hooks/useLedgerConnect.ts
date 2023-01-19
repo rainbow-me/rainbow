@@ -150,11 +150,11 @@ export function useLedgerStatusCheck({
           {},
           DebugContext.ledger
         );
-        let deviceIdToUse = selectedWallet?.deviceId;
-        if (!deviceIdToUse) {
-          deviceIdToUse = await getDeviceId();
+        let deviceId = selectedWallet?.deviceId;
+        if (!deviceId) {
+          deviceId = await getDeviceId();
         }
-        const newTransport = TransportBLE.open(deviceIdToUse);
+        const newTransport = TransportBLE.open(deviceId);
         newTransport.then(newTransport => {
           setTransport(newTransport);
 
@@ -176,7 +176,6 @@ export function useLedgerStatusCheck({
       }
       if (ethApp) {
         handleLedgerSuccess();
-        console.log('we have eth app');
         const path = getHdPath({ type: WalletLibraryType.ledger, index: 1 });
         const addressResult = ethApp.getAddress(path);
         addressResult.then(res => {
@@ -192,12 +191,12 @@ export function useLedgerStatusCheck({
           handleLedgerError(e);
         });
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       logger.error(
         new RainbowError('[LedgerConnect] - ledger status check error'),
         { error: e }
       );
-      handleLedgerError(e);
+      handleLedgerError(e as Error);
     }
   }, [
     transport,
