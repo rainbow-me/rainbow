@@ -154,7 +154,6 @@ export function useLedgerStatusCheck({
         if (!deviceIdToUse) {
           deviceIdToUse = await getDeviceId();
         }
-        console.log('deviceId: ', deviceIdToUse);
         const newTransport = TransportBLE.open(deviceIdToUse);
         newTransport.then(newTransport => {
           setTransport(newTransport);
