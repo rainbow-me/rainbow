@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Dimensions, StatusBar } from 'react-native';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
+import { StatusBar } from 'react-native';
+import { SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
@@ -13,33 +11,24 @@ import { PairHardwareWalletIntroSheet } from '@/screens/PairHardwareWalletIntroS
 import { PairHardwareWalletSearchSheet } from '@/screens/PairHardwareWalletSearchSheet';
 import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
 import { PairHardwareWalletSuccessSheet } from '@/screens/PairHardwareWalletSuccessSheet';
-import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 import * as i18n from '@/languages';
 import { PairHardwareWalletSigningSheet } from '@/screens/PairHardwareWalletSigningSheet';
+import { useDimensions } from '@/hooks';
 
-const Swipe = createMaterialTopTabNavigator();
 export const TRANSLATIONS = i18n.l.hardware_wallets;
 
+const Swipe = createMaterialTopTabNavigator();
 const renderTabBar = () => null;
-const renderPager = (props: any) => (
-  <ScrollPagerWrapper
-    {...props}
-    {...(android && {
-      style: { height: Dimensions.get('window').height },
-    })}
-  />
-);
-
-export const contentHeight =
-  deviceUtils.dimensions.height -
-  (!deviceUtils.isSmallPhone ? sharedCoolModalTopOffset : 0);
 
 export function PairHardwareWalletNavigator() {
-  const { height: deviceHeight, isSmallPhone } = useDimensions();
-
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
   );
+
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+
+  const contentHeight =
+    deviceHeight - (!deviceUtils.isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   return (
     // @ts-expect-error JavaScript component
@@ -51,15 +40,10 @@ export function PairHardwareWalletNavigator() {
       scrollEnabled={false}
     >
       <StatusBar barStyle="light-content" />
-      <Box
-        style={{
-          height: contentHeight,
-        }}
-      >
+      <Box height={{ custom: contentHeight }}>
         <Swipe.Navigator
-          initialLayout={deviceUtils.dimensions}
+          initialLayout={{ height: deviceHeight, width: deviceWidth }}
           initialRouteName={currentRouteName}
-          pager={renderPager}
           swipeEnabled={false}
           tabBar={renderTabBar}
           lazy
@@ -110,19 +94,8 @@ export function PairHardwareWalletNavigator() {
                 ? 'loading'
                 : 'idle'
             }
-            width={deviceUtils.dimensions.width}
+            width={deviceWidth}
           />
-        )}
-        {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
-          <Box
-            width={{ custom: deviceUtils.dimensions.width }}
-            height={{ custom: contentHeight }}
-            alignItems="center"
-            justifyContent="center"
-            position="absolute"
-          >
-            <CheckmarkAnimation />
-          </Box>
         )}
       </Box>
     </SlackSheet>

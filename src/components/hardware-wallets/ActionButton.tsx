@@ -1,0 +1,26 @@
+import { Box, Text } from '@/design-system';
+import React from 'react';
+import { ButtonPressAnimation } from '../animations';
+
+type Props = {
+  onPress: () => void;
+  label: string;
+};
+
+export const ActionButton = ({ onPress, label }: Props) => (
+  <Box
+    as={ButtonPressAnimation}
+    background="purple"
+    borderRadius={99}
+    alignItems="center"
+    justifyContent="center"
+    width="full"
+    height={{ custom: 56 }}
+    // @ts-expect-error js component
+    onPress={onPress}
+  >
+    <Text size="20pt" weight="heavy" color="label" align="center">
+      {label}
+    </Text>
+  </Box>
+);

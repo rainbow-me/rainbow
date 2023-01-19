@@ -10,15 +10,12 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { SheetActionButton } from '@/components/sheet';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import {
-  contentHeight,
-  TRANSLATIONS,
-} from '@/navigation/PairHardwareWalletNavigator';
+import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
 import { useDimensions } from '@/hooks';
+import { ActionButton } from '@/components/hardware-wallets/ActionButton';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -26,13 +23,14 @@ const COLUMNS_PADDING = 20;
 
 const NumberBox = ({ number }: { number: number }) => {
   const itemBorderColor = useForegroundColor('buttonStrokeSecondary');
+
   return (
     <Box
       width={{ custom: NUMBER_BOX_SIZE }}
       height={{ custom: NUMBER_BOX_SIZE }}
       alignItems="center"
       justifyContent="center"
-      background="surfacePrimary"
+      background="surfaceSecondaryElevated"
       shadow="24px"
       borderRadius={8}
       style={{ borderWidth: 1, borderColor: itemBorderColor }}
@@ -79,8 +77,9 @@ const Item = ({ item, rank }: ItemProps) => {
   );
 };
 
-export function PairHardwareWalletSigningSheet() {
-  const buttonColor = useForegroundColor('purple');
+export const PairHardwareWalletSigningSheet = () => {
+  const { dangerouslyGetParent } = useNavigation();
+  const { isSmallPhone } = useDimensions();
 
   const items: ItemDetails[] = [
     {
@@ -103,11 +102,8 @@ export function PairHardwareWalletSigningSheet() {
     },
   ];
 
-  const { dangerouslyGetParent } = useNavigation();
-  const { isSmallPhone } = useDimensions();
   return (
     <Layout
-      contentHeight={contentHeight}
       header={
         <Inset horizontal="36px">
           <Stack alignHorizontal="center" space="20px">
@@ -146,13 +142,9 @@ export function PairHardwareWalletSigningSheet() {
       }
       footer={
         <Inset horizontal="20px">
-          <SheetActionButton
-            color={buttonColor}
+          <ActionButton
             label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-            lightShadows
             onPress={() => dangerouslyGetParent()?.goBack()}
-            size="big"
-            weight="heavy"
           />
         </Inset>
       }
@@ -169,4 +161,4 @@ export function PairHardwareWalletSigningSheet() {
       </Inset>
     </Layout>
   );
-}
+};

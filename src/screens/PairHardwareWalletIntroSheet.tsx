@@ -1,21 +1,16 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Linking } from 'react-native';
-import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
-import { SheetActionButton } from '@/components/sheet';
+import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
+import { ActionButton } from '@/components/hardware-wallets/ActionButton';
 
-export function PairHardwareWalletIntroSheet() {
-  const buttonColor = useForegroundColor('purple');
-
+export const PairHardwareWalletIntroSheet = () => {
   const { navigate } = useNavigation();
-  const handleNavigateToSearch = React.useCallback(() => {
-    navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
-  }, [navigate]);
 
   return (
     <Layout
@@ -53,16 +48,12 @@ export function PairHardwareWalletIntroSheet() {
       }
       footer={
         <Inset horizontal="20px">
-          <SheetActionButton
-            color={buttonColor}
+          <ActionButton
+            onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET)}
             label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
-            lightShadows
-            onPress={handleNavigateToSearch}
-            size="big"
-            weight="heavy"
           />
         </Inset>
       }
     />
   );
-}
+};
