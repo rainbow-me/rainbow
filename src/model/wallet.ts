@@ -1207,11 +1207,9 @@ export const getHardwareKey = async (
 ): Promise<null | PrivateKeyData> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const harwarePrivateKey = (await keychain.loadObject(
-      key
-    )) as PrivateKeyData;
+    const hardwareKey = (await keychain.loadObject(key)) as PrivateKeyData;
 
-    return harwarePrivateKey || null;
+    return hardwareKey || null;
   } catch (error) {
     logger.error(new RainbowError('Error in getHardwareKey'), { error });
     return null;
