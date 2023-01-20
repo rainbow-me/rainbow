@@ -200,32 +200,16 @@ const AddFundsInterstitial = ({ network }) => {
         return;
       }
 
-      if (ios) {
-        navigate(Routes.ADD_CASH_FLOW, {
-          params: !isNaN(amount) ? { amount } : null,
-          screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
-        });
-        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-          amount,
-          componentName: 'AddFundsInterstitial',
-          newWallet: true,
-          routeName,
-        });
-      } else {
-        navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-          params: {
-            address: accountAddress,
-            amount: !isNaN(amount) ? amount : null,
-          },
-          screen: Routes.WYRE_WEBVIEW,
-        });
-        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-          amount,
-          componentName: 'AddFundsInterstitial',
-          newWallet: true,
-          routeName,
-        });
-      }
+      navigate(Routes.ADD_CASH_FLOW, {
+        params: !isNaN(amount) ? { amount } : null,
+        screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
+      });
+      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+        amount,
+        componentName: 'AddFundsInterstitial',
+        newWallet: true,
+        routeName,
+      });
     },
     [isDamaged, navigate, routeName, accountAddress]
   );

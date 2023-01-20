@@ -34,16 +34,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
       return;
     }
 
-    if (ios) {
-      navigate(Routes.ADD_CASH_FLOW, params => params);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, () => ({
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
-      }));
-    }
+    navigate(Routes.ADD_CASH_FLOW, params => params);
 
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
