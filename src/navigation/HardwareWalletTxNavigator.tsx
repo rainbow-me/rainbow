@@ -12,13 +12,13 @@ import { PairHardwareWalletErrorSheet } from '@/screens/PairHardwareWalletErrorS
 import { SheetContainer } from '@/components/sheet/SheetContainer';
 
 const Swipe = createMaterialTopTabNavigator();
-export const CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
+export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
 
-export const ConfirmHardwareWalletTxNavigator = () => {
+export const HardwareWalletTxNavigator = () => {
   const { isSmallPhone, width, height } = useDimensions();
 
   const contentHeight =
-    CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT -
+    HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT -
     (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   return (
@@ -34,7 +34,7 @@ export const ConfirmHardwareWalletTxNavigator = () => {
           backgroundColor={backgroundColor}
         >
           <SheetContainer
-            sheetHeight={CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT}
+            sheetHeight={HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT}
           >
             <Swipe.Navigator
               initialLayout={{ width, height }}

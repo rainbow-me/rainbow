@@ -54,7 +54,7 @@ import {
   addWalletNavigatorPreset,
   androidRecievePreset,
   bottomSheetPreset,
-  confirmHardwareWalletTxNavigatorPreset,
+  hardwareWalletTxNavigatorPreset,
   emojiPreset,
   exchangePreset,
   expandedPreset,
@@ -74,7 +74,7 @@ import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
-import { ConfirmHardwareWalletTxNavigator } from './ConfirmHardwareWalletTxNavigator';
+import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { OpRewardsSheet } from '@/screens/op-rewards/OpRewardsSheet';
 
 const Stack = createStackNavigator();
@@ -278,9 +278,9 @@ function BSNavigator() {
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
       />
       <BSStack.Screen
-        component={ConfirmHardwareWalletTxNavigator}
-        name={Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR}
-        options={confirmHardwareWalletTxNavigatorPreset}
+        component={HardwareWalletTxNavigator}
+        name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
+        options={hardwareWalletTxNavigatorPreset}
       />
       {profilesEnabled && (
         <>

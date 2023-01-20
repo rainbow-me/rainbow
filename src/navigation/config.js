@@ -18,7 +18,7 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './ConfirmHardwareWalletTxNavigator';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -198,11 +198,11 @@ export const pairHardwareWalletNavigatorConfig = {
   }),
 };
 
-export const confirmHardwareWalletTxNavigatorConfig = {
+export const hardwareWalletTxNavigatorConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
+      longFormHeight: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
       backgroundOpacity: 1,
       scrollEnabled: false,
       springDamping: 1,

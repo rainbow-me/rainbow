@@ -12,7 +12,7 @@ const Routes = {
   BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
-  CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR: 'ConfirmHardwareWalletTxNavigator',
+  HARDWARE_WALLET_TX_NAVIGATOR: 'HardwareWalletTxNavigator',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',

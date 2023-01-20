@@ -11,7 +11,7 @@ import {
   EmojiAvatar,
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './ConfirmHardwareWalletTxNavigator';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
@@ -464,8 +464,8 @@ export const addWalletNavigatorPreset = ({ route }) => ({
   height: route.params?.sheetHeight,
 });
 
-export const confirmHardwareWalletTxNavigatorPreset = {
-  height: CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
+export const hardwareWalletTxNavigatorPreset = {
+  height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
 };
 
 export const sheetPreset = ({ route }) => {
