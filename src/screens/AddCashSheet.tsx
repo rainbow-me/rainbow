@@ -1,25 +1,18 @@
-import lang from 'i18n-js';
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  RatioComponent,
-  RatioOrderStatus,
-} from '@ratio.me/ratio-react-native-library';
+import { RatioComponent } from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { useSelector } from 'react-redux';
 
-import { ColumnWithMargins, FlexItem } from '../components/layout';
-import { SheetHandle, SheetTitle } from '../components/sheet';
+import { SheetHandle } from '../components/sheet';
 import { deviceUtils } from '../utils';
 import { useDimensions } from '@/hooks';
-import styled from '@/styled-thing';
 import { borders } from '@/styles';
-import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
-import { Box, Text, Stack, Columns, Column, Inline } from '@/design-system';
+import { Box, Text, Stack, Inline } from '@/design-system';
 import { AppState } from '../redux/store';
-import { loadWallet, signMessage, signPersonalMessage } from '@/model/wallet';
+import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { Ratio } from '@/components/icons/svg/Ratio';
 
 const deviceHeight = deviceUtils.dimensions.height;
