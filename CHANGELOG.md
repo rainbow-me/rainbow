@@ -24,12 +24,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- Some learn card fixes
-- Notification improvments
-- Some NFT image fixes
-- Some small UI tweaks
-- Some Ledger stuff (behind feature flag)
-- Some BSC prep stuff (rugged for now)
+* Some learn card fixes
+* Notification improvments
+* Some NFT image fixes
+* Some small UI tweaks
+* Some Ledger stuff (behind feature flag)
+* Some BSC prep stuff (rugged for now)
 
 ## [1.8.4](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.4)
 
