@@ -107,9 +107,7 @@ export const NATIVE_ROUTES = [
 
 const RoutesWithPlatformDifferences = {
   ...Routes,
-  ADD_CASH_FLOW: IS_IOS
-    ? Routes.ADD_CASH_SCREEN_NAVIGATOR
-    : Routes.ADD_CASH_SHEET,
+  ADD_CASH_FLOW: Routes.ADD_CASH_SHEET,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 

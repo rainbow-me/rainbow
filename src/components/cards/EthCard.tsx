@@ -63,16 +63,8 @@ export const EthCard = () => {
       return;
     }
 
-    if (IS_IOS) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
-      });
-    }
+    navigate(Routes.ADD_CASH_FLOW);
+
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'EthCard',
       routeName,
