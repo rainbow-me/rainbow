@@ -276,6 +276,9 @@ function BSNavigator() {
       <BSStack.Screen
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
+        options={{
+          backdropOpacity: 1,
+        }}
       />
       <BSStack.Screen
         component={HardwareWalletTxNavigator}

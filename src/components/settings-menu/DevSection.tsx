@@ -250,8 +250,8 @@ const DevSection = () => {
 
   const onPressNavigationEntryPoint = () =>
     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-      screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
-      params: { errorType: 'no_eth_app' },
+      screen: Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET,
+      // params: { errorType: 'off_or_locked' },
     });
 
   return (

@@ -103,48 +103,45 @@ export const PairHardwareWalletSigningSheet = () => {
 
   return (
     <Layout>
-      <Inset horizontal="36px">
-        <Stack alignHorizontal="center" space="20px">
-          <Text align="center" color="label" weight="bold" size="26pt">
-            {i18n.t(TRANSLATIONS.enable_blind_signing)}
-          </Text>
-          <Stack space="10px">
-            <Text
-              align="center"
-              color="labelTertiary"
-              weight="semibold"
-              size="15pt / 135%"
-            >
-              {i18n.t(TRANSLATIONS.blind_signing_description)}
+      <Inset horizontal={{ custom: HORIZONTAL_INSET }}>
+        <Stack space={isSmallPhone ? '36px' : '80px'}>
+          <Stack alignHorizontal="center" space="20px">
+            <Text align="center" color="label" weight="bold" size="26pt">
+              {i18n.t(TRANSLATIONS.enable_blind_signing)}
             </Text>
-            <ButtonPressAnimation
-              onPress={() =>
-                Linking.openURL(
-                  'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
-                )
-              }
-              scaleTo={0.9}
-            >
+            <Stack space="10px">
               <Text
                 align="center"
-                color="blue"
+                color="labelTertiary"
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {i18n.t(TRANSLATIONS.learn_more)}
+                {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
-            </ButtonPressAnimation>
+              <ButtonPressAnimation
+                onPress={() =>
+                  Linking.openURL(
+                    'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
+                  )
+                }
+                scaleTo={0.9}
+              >
+                <Text
+                  align="center"
+                  color="blue"
+                  weight="semibold"
+                  size="15pt / 135%"
+                >
+                  {i18n.t(TRANSLATIONS.learn_more)}
+                </Text>
+              </ButtonPressAnimation>
+            </Stack>
           </Stack>
-        </Stack>
-      </Inset>
-      <Inset
-        horizontal={{ custom: HORIZONTAL_INSET }}
-        top={isSmallPhone ? undefined : '80px'}
-      >
-        <Stack space={isSmallPhone ? '32px' : '44px'}>
-          {items.map((item, index) => (
-            <Item item={item} rank={index + 1} key={index} />
-          ))}
+          <Stack space={isSmallPhone ? '32px' : '44px'}>
+            {items.map((item, index) => (
+              <Item item={item} rank={index + 1} key={index} />
+            ))}
+          </Stack>
         </Stack>
       </Inset>
       <ActionButton

@@ -23,13 +23,15 @@ type RouteParams = {
 };
 
 export const PairHardwareWalletErrorSheet = () => {
-  const {
-    params: { errorType },
-  } = useRoute<RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>>();
+  const route = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
+  >();
   const { width: deviceWidth } = useDimensions();
 
   const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
+
+  const errorType = route?.params?.errorType;
 
   return (
     <Layout>
