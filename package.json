@@ -96,6 +96,7 @@
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
     "@rainbow-me/swaps": "0.2.0",
+    "@ratio.me/ratio-react-native-library": "0.5.0",
     "@react-native-async-storage/async-storage": "1.17.7",
     "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.1.2",
