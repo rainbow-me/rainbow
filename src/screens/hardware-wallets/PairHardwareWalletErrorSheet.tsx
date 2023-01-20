@@ -67,7 +67,7 @@ export const PairHardwareWalletErrorSheet = () => {
             marginLeft: IMAGE_LEFT_OFFSET,
           }}
           size={imageHeight}
-        ></ImgixImage>
+        />
         <Box paddingHorizontal="36px" top={{ custom: -35 }}>
           <Text
             align="center"
