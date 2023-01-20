@@ -6,10 +6,10 @@ import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar } from 'react-native';
 import { useDimensions } from '@/hooks';
-import { PairHardwareWalletAgainSheet } from '@/screens/PairHardwareWalletAgainSheet';
+import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
+import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { sharedCoolModalTopOffset } from './config';
-import { PairHardwareWalletErrorSheet } from '@/screens/PairHardwareWalletErrorSheet';
-import { SheetContainer } from '@/components/sheet/SheetContainer';
+import { NavigatorContainer } from './NavigatorContainer';
 
 const Swipe = createMaterialTopTabNavigator();
 export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
@@ -33,7 +33,7 @@ export const HardwareWalletTxNavigator = () => {
           removeTopPadding
           backgroundColor={backgroundColor}
         >
-          <SheetContainer
+          <NavigatorContainer
             sheetHeight={HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT}
           >
             <Swipe.Navigator
@@ -52,7 +52,7 @@ export const HardwareWalletTxNavigator = () => {
                 name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
               />
             </Swipe.Navigator>
-          </SheetContainer>
+          </NavigatorContainer>
         </SlackSheet>
       )}
     </BackgroundProvider>

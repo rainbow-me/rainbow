@@ -7,14 +7,14 @@ import { IS_ANDROID } from '@/env';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
-import { PairHardwareWalletIntroSheet } from '@/screens/PairHardwareWalletIntroSheet';
-import { PairHardwareWalletSearchSheet } from '@/screens/PairHardwareWalletSearchSheet';
+import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
+import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
+import { PairHardwareWalletSuccessSheet } from '@/screens/hardware-wallets/PairHardwareWalletSuccessSheet';
+import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
+import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
-import { PairHardwareWalletSuccessSheet } from '@/screens/PairHardwareWalletSuccessSheet';
-import { PairHardwareWalletSigningSheet } from '@/screens/PairHardwareWalletSigningSheet';
 import { useDimensions } from '@/hooks';
-import { SheetContainer } from '@/components/sheet/SheetContainer';
-import { PairHardwareWalletErrorSheet } from '@/screens/PairHardwareWalletErrorSheet';
+import { NavigatorContainer } from './NavigatorContainer';
 
 const Swipe = createMaterialTopTabNavigator();
 const renderTabBar = () => null;
@@ -41,7 +41,7 @@ export const PairHardwareWalletNavigator = () => {
           scrollEnabled={false}
           backgroundColor={backgroundColor}
         >
-          <SheetContainer>
+          <NavigatorContainer>
             <Swipe.Navigator
               initialLayout={{ height: deviceHeight, width: deviceWidth }}
               initialRouteName={currentRouteName}
@@ -119,7 +119,7 @@ export const PairHardwareWalletNavigator = () => {
                 width={deviceWidth}
               />
             )}
-          </SheetContainer>
+          </NavigatorContainer>
         </SlackSheet>
       )}
     </BackgroundProvider>

@@ -1,19 +1,19 @@
+import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import React from 'react';
 import { View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 
-type SheetContainerProps = {
+type NavigatorContainerProps = {
   children: React.ReactNode;
   sheetHeight?: number;
 };
 
-export const SheetContainer = ({
+export const NavigatorContainer = ({
   children,
   sheetHeight,
-}: SheetContainerProps) => {
+}: NavigatorContainerProps) => {
   const { bottom: safeAreaInsetBottom } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const statusBarHeight = getStatusBarHeight(true);
