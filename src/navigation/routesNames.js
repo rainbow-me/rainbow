@@ -43,6 +43,7 @@ const Routes = {
   NETWORK_SWITCHER: 'NetworkSection',
   NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
+  PAIR_HARDWARE_WALLET_ERROR_SHEET: 'PairHardwareWalletErrorSheet',
   PAIR_HARDWARE_WALLET_INTRO_SHEET: 'PairHardwareWalletIntroSheet',
   PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
   PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',

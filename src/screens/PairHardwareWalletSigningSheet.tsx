@@ -13,9 +13,9 @@ import {
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
 import { useDimensions } from '@/hooks';
 import { ActionButton } from '@/components/hardware-wallets/ActionButton';
+import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -102,62 +102,55 @@ export const PairHardwareWalletSigningSheet = () => {
   ];
 
   return (
-    <Layout
-      header={
-        <Inset horizontal="36px">
-          <Stack alignHorizontal="center" space="20px">
-            <Text align="center" color="label" weight="bold" size="26pt">
-              {i18n.t(TRANSLATIONS.enable_blind_signing)}
+    <Layout>
+      <Inset horizontal="36px">
+        <Stack alignHorizontal="center" space="20px">
+          <Text align="center" color="label" weight="bold" size="26pt">
+            {i18n.t(TRANSLATIONS.enable_blind_signing)}
+          </Text>
+          <Stack space="10px">
+            <Text
+              align="center"
+              color="labelTertiary"
+              weight="semibold"
+              size="15pt / 135%"
+            >
+              {i18n.t(TRANSLATIONS.blind_signing_description)}
             </Text>
-            <Stack space="10px">
+            <ButtonPressAnimation
+              onPress={() =>
+                Linking.openURL(
+                  'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
+                )
+              }
+              scaleTo={0.9}
+            >
               <Text
                 align="center"
-                color="labelTertiary"
+                color="blue"
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {i18n.t(TRANSLATIONS.blind_signing_description)}
+                {i18n.t(TRANSLATIONS.learn_more)}
               </Text>
-              <ButtonPressAnimation
-                onPress={() =>
-                  Linking.openURL(
-                    'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
-                  )
-                }
-                scaleTo={0.9}
-              >
-                <Text
-                  align="center"
-                  color="blue"
-                  weight="semibold"
-                  size="15pt / 135%"
-                >
-                  {i18n.t(TRANSLATIONS.learn_more)}
-                </Text>
-              </ButtonPressAnimation>
-            </Stack>
+            </ButtonPressAnimation>
           </Stack>
-        </Inset>
-      }
-      footer={
-        <Inset horizontal="20px">
-          <ActionButton
-            label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-            onPress={() => dangerouslyGetParent()?.goBack()}
-          />
-        </Inset>
-      }
-    >
+        </Stack>
+      </Inset>
       <Inset
         horizontal={{ custom: HORIZONTAL_INSET }}
-        top={isSmallPhone ? '36px' : '80px'}
+        top={isSmallPhone ? undefined : '80px'}
       >
-        <Stack space={isSmallPhone ? '36px' : '44px'}>
+        <Stack space={isSmallPhone ? '32px' : '44px'}>
           {items.map((item, index) => (
             <Item item={item} rank={index + 1} key={index} />
           ))}
         </Stack>
       </Inset>
+      <ActionButton
+        label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
+        onPress={() => dangerouslyGetParent()?.goBack()}
+      />
     </Layout>
   );
 };

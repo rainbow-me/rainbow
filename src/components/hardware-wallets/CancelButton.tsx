@@ -7,7 +7,7 @@ import * as i18n from '@/languages';
 export const CancelButton = () => {
   const { dangerouslyGetParent } = useNavigation();
   return (
-    <Box width="full" alignItems="center">
+    <Box width="full" alignItems="center" paddingBottom={{ custom: 5 }}>
       <Box
         as={ButtonPressAnimation}
         background="fillSecondary"

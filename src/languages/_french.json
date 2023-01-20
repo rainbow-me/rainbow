@@ -1549,7 +1549,11 @@
           "title": "Enable blind signing :)",
           "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go. :)"
         }
-      }
+      },
+      "unlock_ledger": "Unlock Ledger :)",
+      "open_eth_app": "Open the ETH app :)",
+      "open_eth_app_description": "The Ethereum app needs to be open on your Ledger to proceed with the transaction. :)",
+      "enter_passcode": "Enter your passcode to unlock your Ledger. Once unlocked, open the Ethereum app by pressing both buttons at once. :)"
     },
     "wallet": {
       "action": {

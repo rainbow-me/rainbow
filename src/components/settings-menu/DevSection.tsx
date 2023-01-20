@@ -249,7 +249,10 @@ const DevSection = () => {
   };
 
   const onPressNavigationEntryPoint = () =>
-    navigate(Routes.CONFIRM_HARDWARE_WALLET_TX_NAVIGATOR);
+    navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+      screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
+      params: { errorType: 'no_eth_app' },
+    });
 
   return (
     <MenuContainer testID="developer-settings-sheet">

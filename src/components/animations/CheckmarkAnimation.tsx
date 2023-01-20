@@ -13,8 +13,6 @@ import { LargeCheckmarkIcon } from '../icons/svg/LargeCheckmarkIcon';
 import { Box } from '@/design-system';
 import { colors } from '@/styles';
 
-export const CHECKMARK_SIZE = 100;
-
 export function CheckmarkAnimation() {
   const circleEntering = () => {
     'worklet';
@@ -194,13 +192,13 @@ export function CheckmarkAnimation() {
           as={Animated.View}
           borderRadius={100}
           entering={circleEntering}
-          height={{ custom: CHECKMARK_SIZE }}
+          height={{ custom: 100 }}
           justifyContent="center"
           style={[
             { overflow: 'hidden', position: 'absolute' },
             pulseCircleStyle,
           ]}
-          width={{ custom: CHECKMARK_SIZE }}
+          width={{ custom: 100 }}
         >
           <RadialGradient
             center={[60, 60]}
@@ -212,9 +210,9 @@ export function CheckmarkAnimation() {
             }
             stops={[1, 0.5]}
             style={{
-              height: CHECKMARK_SIZE,
+              height: 100,
               position: 'absolute',
-              width: CHECKMARK_SIZE,
+              width: 100,
             }}
           />
         </Box>
