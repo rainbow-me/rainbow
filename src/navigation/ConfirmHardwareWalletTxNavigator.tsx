@@ -6,7 +6,7 @@ import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar } from 'react-native';
 import { useDimensions } from '@/hooks';
-import { ReconnectHardwareWalletSheet } from '@/screens/ReconnectHardwareWalletSheet';
+import { PairHardwareWalletAgainSheet } from '@/screens/PairHardwareWalletAgainSheet';
 import { sharedCoolModalTopOffset } from './config';
 import { PairHardwareWalletErrorSheet } from '@/screens/PairHardwareWalletErrorSheet';
 import { SheetContainer } from '@/components/sheet/SheetContainer';
@@ -44,8 +44,8 @@ export const ConfirmHardwareWalletTxNavigator = () => {
               tabBar={() => null}
             >
               <Swipe.Screen
-                component={ReconnectHardwareWalletSheet}
-                name={Routes.RECONNECT_HARDWARE_WALLET_SHEET}
+                component={PairHardwareWalletAgainSheet}
+                name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET}
               />
               <Swipe.Screen
                 component={PairHardwareWalletErrorSheet}

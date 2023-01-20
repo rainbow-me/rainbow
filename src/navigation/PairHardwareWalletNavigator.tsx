@@ -41,7 +41,6 @@ export const PairHardwareWalletNavigator = () => {
           scrollEnabled={false}
           backgroundColor={backgroundColor}
         >
-          <StatusBar barStyle="light-content" />
           <SheetContainer>
             <Swipe.Navigator
               initialLayout={{ height: deviceHeight, width: deviceWidth }}

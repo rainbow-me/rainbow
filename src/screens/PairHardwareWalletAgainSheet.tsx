@@ -28,7 +28,7 @@ import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
 
 const INDICATOR_SIZE = 7;
 
-export const ReconnectHardwareWalletSheet = () => {
+export const PairHardwareWalletAgainSheet = () => {
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useTheme();
   const connected = false;
