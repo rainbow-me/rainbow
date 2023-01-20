@@ -1,7 +1,6 @@
-// Mock data is based on schema provided by Alexey
-import { OpRewardsResponseType } from '@/screens/op-rewards/types/OpRewardsResponseType';
+import { RewardsResponseType } from '@/screens/rewards/types/RewardsResponseType';
 
-const MOCK_DATA: OpRewardsResponseType = {
+export const MOCK_REWARDS_DATA: RewardsResponseType = {
   meta: {
     title: 'Optimism Rewards',
     // Unix timestamp in UTC. "Next Airdrop" in Figma.
@@ -108,9 +107,3 @@ const MOCK_DATA: OpRewardsResponseType = {
     },
   ],
 };
-
-export async function getMockOpData() {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  return MOCK_DATA;
-}
