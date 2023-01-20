@@ -110,25 +110,6 @@ function SendFlowNavigator() {
   );
 }
 
-function AddCashFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
 
@@ -425,10 +406,7 @@ function NativeStackNavigator() {
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
-      <NativeStack.Screen
-        component={AddCashFlowNavigator}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-      />
+      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
