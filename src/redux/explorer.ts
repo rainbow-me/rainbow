@@ -72,14 +72,11 @@ const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
   ADDRESS_ASSETS: {
-    APPENDED: 'appended address assets',
-    CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
     RECEIVED_BSC: 'received address bsc-assets',
-    REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
@@ -1011,27 +1008,6 @@ const listenOnAddressMessages = (socket: Socket) => (
           '😬 Cancelling fallback data provider listener. Zerion is good!'
         );
       }
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.APPENDED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.CHANGED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, false, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.REMOVED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, false, false, true));
     }
   );
 };
