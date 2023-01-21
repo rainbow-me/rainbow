@@ -826,16 +826,10 @@ export const transactionsRemoved = (
  * account local storage.
  *
  * @param message The message.
- * @param append Whether or not the asset data is being appended.
- * @param change Whether or not an existing asset is being changed.
- * @param removed Whether or not an asset is being removed.
  * @param assetsNetwork The asset's network.
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  append = false,
-  change = false,
-  removed = false,
   assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
@@ -863,15 +857,6 @@ export const addressAssetsReceived = (
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
-  if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
-  }
-
   let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
     [id: string]: ParsedAddressAsset;
   };
@@ -888,10 +873,7 @@ export const addressAssetsReceived = (
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
-    dispatch(
-      // @ts-ignore
-      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
-    );
+    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;

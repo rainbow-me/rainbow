@@ -611,7 +611,7 @@ const fetchTestnetOrHardhatBalances = (
     payload: newPayload,
   };
 
-  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+  dispatch(addressAssetsReceived(updatedMessage, network));
   hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
   hardhatAndTestnetHandle = setTimeout(
     () =>
@@ -886,7 +886,7 @@ const l2AddressAssetsReceived = (
     },
   };
 
-  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+  dispatch(addressAssetsReceived(updatedMessage, network));
 };
 
 /**
