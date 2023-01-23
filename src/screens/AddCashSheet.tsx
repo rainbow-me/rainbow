@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RatioComponent } from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { useSelector } from 'react-redux';
+import { nanoid } from 'nanoid/non-secure';
 
 import { SheetHandle } from '../components/sheet';
 import { deviceUtils } from '../utils';
@@ -17,6 +18,7 @@ import { Ratio } from '@/components/icons/svg/Ratio';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
+import { analyticsV2 } from '@/analytics';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -28,6 +30,7 @@ const sheetHeight =
 function RatioButton({ accountAddress }: { accountAddress: string }) {
   // TODO
   const [isLoading, setIsLoading] = React.useState(false);
+  const sessionId = React.useMemo(() => nanoid(), []);
 
   return (
     <RatioComponent
@@ -71,8 +74,12 @@ function RatioButton({ accountAddress }: { accountAddress: string }) {
         return { signature: result };
       }}
       onPress={() => {
-        logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
         setIsLoading(true);
+        logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+          provider: 'ratio',
+          sessionId,
+        });
       }}
       onOpen={() => {
         logger.debug(`Ratio: opened`, {}, logger.DebugContext.f2c);
@@ -83,6 +90,10 @@ function RatioButton({ accountAddress }: { accountAddress: string }) {
           { order },
           logger.DebugContext.f2c
         );
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          provider: 'ratio',
+          sessionId,
+        });
       }}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
@@ -99,6 +110,10 @@ function RatioButton({ accountAddress }: { accountAddress: string }) {
           new RainbowError(`Ratio component threw an error: ${error}`),
           { error }
         );
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
+          provider: 'ratio',
+          sessionId,
+        });
         WrappedAlert.alert(
           lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
           lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
