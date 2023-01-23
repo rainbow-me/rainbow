@@ -360,7 +360,12 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box height="full" width="full" testID="add-wallet-sheet">
+    <Box
+      height="full"
+      width="full"
+      background="surfaceSecondary"
+      testID="add-wallet-sheet"
+    >
       <Inset horizontal="20px" top="36px" bottom="104px">
         <Stack space="32px">
           <Stack space="20px">
