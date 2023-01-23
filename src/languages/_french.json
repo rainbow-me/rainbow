@@ -1630,6 +1630,13 @@
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}? :)",
         "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
+      "add_cash_v2": {
+        "generic_error": {
+          "title": "Something went wrong :)",
+          "message": "Our team has been notified and will look into it ASAP. :)",
+          "button": "OK :)"
+        }
+      },
       "alert": {
         "finish_importing": "Finish Importing :)",
         "looks_like_imported_public_address": "\nIt looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first. :)",
