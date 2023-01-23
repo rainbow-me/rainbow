@@ -249,8 +249,8 @@ const DevSection = () => {
   };
 
   const onPressNavigationEntryPoint = () =>
-    navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-      screen: Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET,
+    navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+      screen: Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET,
       // params: { errorType: 'off_or_locked' },
     });
 

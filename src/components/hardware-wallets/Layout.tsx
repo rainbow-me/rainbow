@@ -11,7 +11,7 @@ export const Layout = ({ children }: Props) => (
     width="full"
     justifyContent="space-between"
     alignItems="center"
-    paddingTop={{ custom: 36 }}
+    paddingTop={{ custom: 55 }}
     paddingBottom={{ custom: 54 }}
   >
     {children}
