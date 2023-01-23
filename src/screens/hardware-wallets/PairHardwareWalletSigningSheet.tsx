@@ -11,7 +11,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { Layout } from '@/components/hardware-wallets/Layout';
-import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
 import { ActionButton } from '@/components/hardware-wallets/ActionButton';
@@ -77,7 +76,6 @@ const Item = ({ item, rank }: ItemProps) => {
 };
 
 export const PairHardwareWalletSigningSheet = () => {
-  const { dangerouslyGetParent } = useNavigation();
   const { isSmallPhone } = useDimensions();
 
   const items: ItemDetails[] = [
@@ -146,7 +144,7 @@ export const PairHardwareWalletSigningSheet = () => {
       </Inset>
       <ActionButton
         label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-        onPress={() => dangerouslyGetParent()?.goBack()}
+        onPress={() => null}
       />
     </Layout>
   );
