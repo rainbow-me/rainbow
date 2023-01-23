@@ -1552,6 +1552,11 @@
           "title": "Enable blind signing",
           "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go."
         }
+      },
+      "errors": {
+        "off_or_locked": "Make sure your device is unlocked",
+        "no_eth_app": "Open the Eth App on your device",
+        "unknown": "Unknown Error, close and reopen this sheet"
       }
     },
     "wallet": {
