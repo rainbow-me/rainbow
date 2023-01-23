@@ -630,6 +630,7 @@ export const getTransferTokenTransaction = async (
 export const createSignableTransaction = async (
   transaction: NewTransactionNonNullable
 ): Promise<TransactionDetailsReturned> => {
+  // handle native assets seperately
   if (
     transaction.asset.address === ETH_ADDRESS ||
     transaction.asset.address === ARBITRUM_ETH_ADDRESS ||
