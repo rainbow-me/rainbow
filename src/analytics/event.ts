@@ -137,6 +137,10 @@ export type EventProperties = {
      * get transaction data we can emit an event with this sessionId.
      */
     sessionId: string;
+    /**
+     * Whether or not the order was successful
+     */
+    success: boolean;
   };
   [event.f2cProviderFlowErrored]: {
     /**

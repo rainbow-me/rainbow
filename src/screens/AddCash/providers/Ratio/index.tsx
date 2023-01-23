@@ -76,6 +76,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         );
         analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
           provider: 'ratio',
+          success: order.status === 'success',
           sessionId,
         });
       }}
