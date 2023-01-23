@@ -34,6 +34,26 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
+  /**
+   * Called either on click or during an open event callback. We want this as
+   * early in the flow as possible.
+   */
+  f2cProviderFlowStarted: 'f2c.provider.flow_opened',
+  /**
+   * Called when the provider flow is completed and the user can close the
+   * modal. This event DOES NOT mean we have transaction data.
+   */
+  f2cProviderFlowCompleted: 'f2c.provider.flow_completed',
+  /**
+   * Called if a provider flow throws an error.
+   */
+  f2cProviderFlowErrored: 'f2c.provider.flow_errored',
+  /**
+   * Called when we have transaction data. This is fired a while after a
+   * provider flow completes because we need to wait for the transaction to hit
+   * the blockchain.
+   */
+  f2cTransactionReceived: 'f2c.transaction_received',
 } as const;
 
 /**
@@ -94,5 +114,50 @@ export type EventProperties = {
   [event.addWalletFlowStarted]: {
     isFirstWallet: boolean;
     type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
+  };
+  [event.f2cProviderFlowStarted]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: 'ratio';
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     */
+    sessionId: string;
+  };
+  [event.f2cProviderFlowCompleted]: {
+    /**
+     * Name of the provider that was selected. This should be saved along with
+     * the pending transaction.
+     */
+    provider: 'ratio';
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     * This should be saved along with the pending transaction so that when we
+     * get transaction data we can emit an event with this sessionId.
+     */
+    sessionId: string;
+  };
+  [event.f2cProviderFlowErrored]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: 'ratio';
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     */
+    sessionId: string;
+  };
+  [event.f2cTransactionReceived]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: 'ratio';
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     * This should have been saved along with the pending transaction so that
+     * when we get transaction data we can emit an event with this sessionId.
+     */
+    sessionId: string;
   };
 };
