@@ -49,6 +49,7 @@ export interface UniqueAsset {
   marketplaceCollectionUrl?: string | null;
   marketplaceId: string | null;
   marketplaceName: string | null;
+  spamScore: number;
   type: AssetType;
   uniqueId: string;
   /**

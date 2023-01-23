@@ -351,7 +351,6 @@ export const parseSimplehashNfts = nftData => {
     );
 
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
-
     const parsedNft = {
       animation_url: simplehashNft.extra_metadata?.animation_original_url,
       asset_contract: {
@@ -388,12 +387,13 @@ export const parseSimplehashNfts = nftData => {
       marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
       marketplaceId: marketplaceInfo?.marketplaceId,
       marketplaceName: marketplaceInfo?.marketplaceName,
-      name: simplehashNft.name,
-      network: simplehashNft.chain,
+      name: `${simplehashNft.name} - ${collection.spam_score}`,
+      network: simplehashNft.chain === 'ethereum' ? Network.mainnet : simplehashNft.chain,
       permalink: marketplaceInfo?.permalink,
+      spamScore: collection.spam_score,
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
-      uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      uniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address.toLowerCase()}_${simplehashNft.token_id}`,
       urlSuffixForAsset: `${simplehashNft.contract_address}/${simplehashNft.token_id}`,
     };
     return parsedNft;

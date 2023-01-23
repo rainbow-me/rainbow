@@ -17,6 +17,7 @@ import {
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
 import { Network } from '@/helpers/networkTypes';
+import { getNftsByWalletAddress } from '@/handlers/simplehash';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
@@ -65,7 +66,7 @@ export default function useFetchUniqueTokens({
 
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
-        uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
+        uniqueTokens = await getNftsByWalletAddress(address)
       }
 
       // If there are any "unknown" ENS names, fallback to the ENS
@@ -101,11 +102,7 @@ export default function useFetchUniqueTokens({
         uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
         uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
       ) {
-        let moreUniqueTokens = await apiGetAccountUniqueTokens(
-          network,
-          address as string,
-          page
-        );
+        let moreUniqueTokens = await getNftsByWalletAddress(address as string);
 
         // If there are any "unknown" ENS names, fallback to the ENS
         // metadata service.
@@ -122,11 +119,6 @@ export default function useFetchUniqueTokens({
                 : moreUniqueTokens
           );
         }
-        return fetchMore({
-          network,
-          page: page + 1,
-          uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
-        });
       }
       return uniqueTokens;
     }

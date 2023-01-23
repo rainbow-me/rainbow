@@ -247,90 +247,12 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   let uniqueTokens: UniqueAsset[] = [];
-  let errorCheck = false;
 
-  const fetchNetwork = async (network: Network) => {
-    let shouldStopFetching = false;
-    let page = 0;
-    while (!shouldStopFetching) {
-      shouldStopFetching = await fetchPage(page, network);
-      // check that the account address to fetch for has not changed while fetching
-      const isCurrentAccountAddress =
-        accountAddress ===
-        (showcaseAddress || getState().settings.accountAddress);
-      if (!isCurrentAccountAddress) {
-        shouldStopFetching = true;
-      }
-
-      page++;
-    }
-  };
-
-  const fetchPage = async (page: number, network: Network) => {
-    let shouldStopFetching = false;
-    try {
-      let newPageResults;
-      try {
-        newPageResults = await apiGetAccountUniqueTokens(
-          network,
-          accountAddress,
-          page
-        );
-      } catch (e) {
-        newPageResults = [];
-      }
-
-      // If there are any "unknown" ENS names, fallback to the ENS
-      // metadata service.
-      newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
-
-      uniqueTokens = uniqueTokens.concat(newPageResults);
-      shouldStopFetching =
-        newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
-        uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
-
-      if (shouldStopFetching) {
-        const isCurrentAccountAddress =
-          accountAddress ===
-          (showcaseAddress || getState().settings.accountAddress);
-        if (isCurrentAccountAddress) {
-          const existingFamilies = getFamilies(existingUniqueTokens);
-          const newFamilies = getFamilies(uniqueTokens);
-          const incomingFamilies = without(newFamilies, ...existingFamilies);
-          if (incomingFamilies.length) {
-            const dedupedAssets = dedupeAssetsWithFamilies(
-              getState().data.accountAssetsData,
-              incomingFamilies
-            );
-            dispatch(dataUpdateAssets(dedupedAssets));
-          }
-        }
-      }
-    } catch (error) {
-      dispatch({
-        showcase: !!showcaseAddress,
-        type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
-      });
-      captureException(error);
-      // stop fetching if there is an error & dont save results
-      shouldStopFetching = true;
-      errorCheck = true;
-    }
-    return shouldStopFetching;
-  };
-
-  await fetchNetwork(currentNetwork);
+ 
 
   // Only include poaps and L2 nft's on mainnet
-  if (currentNetwork === Network.mainnet) {
-    const poaps = (await fetchPoaps(accountAddress)) ?? [];
-    if (poaps.length > 0) {
-      analytics.identify(undefined, { poaps: poaps.length });
-      uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
-      uniqueTokens = uniqueTokens.concat(poaps);
-    }
+ 
 
     // Fetch Optimism and Arbitrum NFTs
     const layer2NFTs = await getNftsByWalletAddress(accountAddress);
@@ -351,16 +273,15 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
     if (ensTokens.length > 0) {
       uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
     }
-  }
 
   // NFT Fetching clean up
   // check that the account address to fetch for has not changed while fetching before updating state
   const isCurrentAccountAddress =
     accountAddress === (showcaseAddress || getState().settings.accountAddress);
-  if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
+  if (!showcaseAddress && isCurrentAccountAddress) {
     saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
   }
-  if (isCurrentAccountAddress && !errorCheck) {
+  if (isCurrentAccountAddress) {
     dispatch({
       payload: uniqueTokens,
       showcase: !!showcaseAddress,

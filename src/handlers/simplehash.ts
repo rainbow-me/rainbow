@@ -107,7 +107,7 @@ export async function getNFTByTokenId({
 export async function getNftsByWalletAddress(walletAddress: string) {
   let rawResponseNfts: SimplehashNft[] = [];
   try {
-    const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon}`;
+    const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon},${chains.ethereum}`;
 
     let cursor = START_CURSOR;
     while (cursor) {
@@ -152,8 +152,17 @@ export async function getNftsByWalletAddress(walletAddress: string) {
   );
 
   return parseSimplehashNfts(rawResponseNfts).filter(
-    (token: UniqueAsset) =>
-      token.network !== Network.polygon ||
-      polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())
+    (token: UniqueAsset) => {
+      if (token.network !== Network.polygon  &&   token?.spamScore <= 85) {
+        return true
+      }
+      
+      else if (false && polygonAllowlist.includes(token.asset_contract?.address?.toLowerCase())){
+        return true;
+      }
+
+      return false;
+     
+    }
   );
 }
