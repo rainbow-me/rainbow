@@ -9,22 +9,22 @@ import * as i18n from '@/languages';
 const TOTAL_SUPPLY = 2000;
 
 type Props = {
-  totalEarningsUsd: number;
-  totalEarningsToken: number;
   multiplier: number;
-  tokenSymbol: string;
   tokenImageUrl: string;
+  tokenSymbol: string;
+  totalEarningsToken: number;
+  totalEarningsUsd: number;
+  color: string;
 };
 
 export const RewardsTotalEarnings: React.FC<Props> = ({
-  totalEarningsUsd,
+  color,
   multiplier,
   tokenImageUrl,
-  totalEarningsToken,
   tokenSymbol,
+  totalEarningsToken,
+  totalEarningsUsd,
 }) => {
-  const { colors } = useTheme();
-
   return (
     <Box paddingBottom="12px">
       <RewardsSectionCard>
@@ -42,11 +42,7 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
               <Text color="labelTertiary" size="15pt" weight="semibold">
                 {i18n.t(i18n.l.rewards.multiplier)}
               </Text>
-              <Text
-                size="26pt"
-                color={{ custom: colors.networkColors.optimism }}
-                weight="bold"
-              >
+              <Text size="26pt" color={{ custom: color }} weight="bold">
                 {multiplier}x
               </Text>
             </Stack>
@@ -68,23 +64,11 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
                 shadow="12px"
               />
             </Bleed>
-            <Text
-              color={{ custom: colors.networkColors.optimism }}
-              size="15pt"
-              weight="semibold"
-            >
-              <Text
-                color={{ custom: colors.networkColors.optimism }}
-                size="15pt"
-                weight="semibold"
-              >
+            <Text color={{ custom: color }} size="15pt" weight="semibold">
+              <Text color={{ custom: color }} size="15pt" weight="semibold">
                 {i18n.t(i18n.l.rewards.you_earned)}
               </Text>
-              <Text
-                color={{ custom: colors.networkColors.optimism }}
-                size="15pt"
-                weight="heavy"
-              >
+              <Text color={{ custom: color }} size="15pt" weight="heavy">
                 {`${totalEarningsToken} ${tokenSymbol}`}
               </Text>
             </Text>

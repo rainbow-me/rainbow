@@ -1,32 +1,31 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { getMockData } from '@/screens/rewards/mocks/getMockData';
-import { RewardsResponseType } from '@/screens/rewards/types/RewardsResponseType';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { IS_ANDROID } from '@/env';
 import { StatusBar } from 'react-native';
+import { useRewards } from '@/resources/rewards/rewardsQuery';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const [rewardsData, setRewardsData] = useState<RewardsResponseType | null>(
-    null
+  const accountAddress = useSelector(
+    (state: AppState) => state.settings.accountAddress
   );
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, refetch } = useRewards({
+    address: accountAddress,
+  });
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
-      getMockData().then(data => {
-        setRewardsData(data);
-        setLoading(false);
-      });
-    }, [])
+      refetch();
+    }, [refetch])
   );
 
   return (
@@ -41,10 +40,10 @@ export const RewardsSheet: React.FC = () => {
           scrollEnabled
         >
           <Box padding="20px">
-            {loading || rewardsData === null ? (
+            {isLoading || data === undefined || !data.rewards ? (
               <RewardsFakeContent />
             ) : (
-              <RewardsContent data={rewardsData} />
+              <RewardsContent data={data.rewards} />
             )}
           </Box>
         </SlackSheet>

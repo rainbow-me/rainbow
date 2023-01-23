@@ -5,3 +5,87 @@ query getContractFunction($chainID: Int!, $hex: String!) {
     text
   }
 }
+
+fragment amount on RewardsAmount {
+  usd
+  token
+}
+
+fragment baseQuery on Rewards {
+  meta {
+    title
+    distribution {
+      next
+      total
+      left
+    }
+    status
+    end
+    token {
+      asset {
+        assetCode
+        decimals
+        iconURL
+        name
+        chainID
+        symbol
+      }
+    }
+    color
+  }
+  leaderboard {
+    address
+    ens
+    avatarURL
+    earnings {
+      base {
+        ...amount
+      }
+      bonus {
+        ...amount
+      }
+    }
+  }
+}
+
+query getRewardsLeaderboard {
+  rewards(project: OPTIMISM) {
+    ...baseQuery
+  }
+}
+
+query getRewardsDataForWallet($address: String!) {
+  rewards(project: OPTIMISM, address: $address) {
+    ...baseQuery
+    earnings {
+      total {
+        ...amount
+      }
+      multiplier {
+        amount
+        breakdown {
+          amount
+          qualifier
+        }
+      }
+      pending {
+        ...amount
+      }
+    }
+    stats {
+      position {
+        current
+        change {
+          h24
+        }
+      }
+      actions {
+        type
+        amount {
+          ...amount
+        }
+        rewardPercent
+      }
+    }
+  }
+}

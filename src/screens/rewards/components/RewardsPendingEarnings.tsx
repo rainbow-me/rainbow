@@ -3,10 +3,11 @@ import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionC
 import { Columns, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import {
+  addDays,
   differenceInDays,
   differenceInHours,
   fromUnixTime,
-  subDays,
+  isPast,
 } from 'date-fns';
 
 type Props = { pendingEarningsUsd: number; nextAirdropTimestamp: number };
@@ -17,8 +18,9 @@ export const RewardsPendingEarnings: React.FC<Props> = ({
 }) => {
   const today = new Date();
   const dayOfNextDistribution = fromUnixTime(nextAirdropTimestamp);
-  const days = differenceInDays(today, dayOfNextDistribution);
-  const hours = differenceInHours(subDays(today, days), dayOfNextDistribution);
+  const days = differenceInDays(dayOfNextDistribution, today);
+  const hours = differenceInHours(dayOfNextDistribution, addDays(today, days));
+  const nextAirdropIsInThePast = isPast(dayOfNextDistribution);
 
   return (
     <RewardsSectionCard>
@@ -33,13 +35,15 @@ export const RewardsPendingEarnings: React.FC<Props> = ({
         </Stack>
         <Stack space="12px" alignHorizontal="right">
           <Text color="labelTertiary" size="15pt" weight="semibold">
-            {i18n.t(i18n.l.rewards.next_airdrop)}
+            {nextAirdropIsInThePast
+              ? i18n.t(i18n.l.rewards.last_airdrop)
+              : i18n.t(i18n.l.rewards.next_airdrop)}
           </Text>
           <Text
             size="22pt"
             color="labelSecondary"
             weight="semibold"
-          >{`􀧞 ${days}d ${hours}h`}</Text>
+          >{`􀧞 ${Math.abs(days)}d ${Math.abs(hours)}h`}</Text>
         </Stack>
       </Columns>
     </RewardsSectionCard>
