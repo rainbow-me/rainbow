@@ -17,7 +17,11 @@ import {
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
 import { Network } from '@/helpers/networkTypes';
+<<<<<<< Updated upstream
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
+=======
+import { getNftsByWalletAddressStart } from '@/handlers/simplehash';
+>>>>>>> Stashed changes
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
@@ -27,7 +31,7 @@ export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
 export default function useFetchUniqueTokens({
   address,
   infinite = false,
-  staleTime = 10000,
+  staleTime = 0,
 }: {
   address?: string;
   infinite?: boolean;
@@ -37,6 +41,7 @@ export default function useFetchUniqueTokens({
   const mounted = useIsMounted();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
+  const [localCursor, setCursor] = useState<string>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -64,9 +69,18 @@ export default function useFetchUniqueTokens({
         network,
       });
 
+<<<<<<< Updated upstream
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
         uniqueTokens = await getNftsByWalletAddress(address)
+=======
+      let uniqueTokens = [];
+      if (true) {
+        const res = await getNftsByWalletAddressStart({walletAddress: address, cursor: 'start'});
+        console.log('start + cursor: ', res?.cursor);
+        setCursor(res?.cursor);
+        uniqueTokens = res?.nfts;
+>>>>>>> Stashed changes
       }
 
       // If there are any "unknown" ENS names, fallback to the ENS
@@ -91,18 +105,30 @@ export default function useFetchUniqueTokens({
     async function fetchMore({
       network,
       uniqueTokens = [],
-      page = 0,
+      cursor = undefined,
     }: {
       network: Network;
       uniqueTokens?: UniqueAsset[];
-      page?: number;
+      cursor?: string;
     }): Promise<UniqueAsset[]> {
       if (
         mounted.current &&
-        uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
-        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
+        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL &&
+        cursor &&
+        address
       ) {
+<<<<<<< Updated upstream
         let moreUniqueTokens = await getNftsByWalletAddress(address as string);
+=======
+ 
+     
+        const res = await getNftsByWalletAddressStart({walletAddress: address, cursor})
+        let moreUniqueTokens = res?.nfts || [];
+        console.log('more unique tokens: ', moreUniqueTokens.length);
+        console.log('total: ', uniqueTokens.length)
+
+        const newCursor = res?.cursor;
+>>>>>>> Stashed changes
 
         // If there are any "unknown" ENS names, fallback to the ENS
         // metadata service.
@@ -110,16 +136,29 @@ export default function useFetchUniqueTokens({
           moreUniqueTokens
         );
 
-        if (!hasStoredTokens) {
+        if (!hasStoredTokens && moreUniqueTokens.length) {
+          console.log('saving more')
+
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
+        
             tokens =>
-              tokens
-                ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
-                : moreUniqueTokens
+            tokens
+              ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
+              : moreUniqueTokens
           );
         }
+<<<<<<< Updated upstream
+=======
+        return fetchMore({
+          network,
+          cursor: newCursor,
+          uniqueTokens: uniqBy([...uniqueTokens, ...moreUniqueTokens], 'uniqueId'),
+        });
+>>>>>>> Stashed changes
       }
+      console.log('FIN');
+      console.log('total tokens: ', uniqueTokens.length)
       return uniqueTokens;
     }
 
@@ -128,30 +167,22 @@ export default function useFetchUniqueTokens({
       infinite &&
       shouldFetchMore &&
       uniqueTokens &&
-      uniqueTokens.length > 0
+      uniqueTokens.length > 0 
     ) {
       setShouldFetchMore(false);
+
       (async () => {
-        // Fetch more Ethereum tokens until all have fetched
+        // Fetch more tokens until all have fetched
+        console.log('fetchignn moarrr : ', localCursor);
         let tokens = (
           await fetchMore({
             network,
             // If there are stored tokens in storage, then we want
             // to do a background refresh.
-            page: hasStoredTokens ? 0 : 1,
-            uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
+            cursor: 'start',
+            uniqueTokens: uniqueTokens,
           })
-        ).filter((token: any) => token.familyName !== 'POAP');
-
-        // Fetch poaps
-        const poaps = await fetchPoaps(address);
-        if (poaps) {
-          tokens = [...tokens, ...poaps];
-        }
-
-        // Fetch Polygon tokens until all have fetched
-        const polygonTokens = await fetchMore({ network: Network.polygon });
-        tokens = [...tokens, ...polygonTokens];
+        );
 
         // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
         // We will fetch tokens registered in the past 48 hours to be safe.
@@ -162,27 +193,19 @@ export default function useFetchUniqueTokens({
         if (ensTokens.length > 0) {
           tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
         }
-
+        console.log('4');
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
             tokens
           );
         }
-
+        console.log('FIUNN 2')
+        console.log('total tokens: ', tokens.length);
         await saveUniqueTokens(tokens, address, network);
       })();
     }
-  }, [
-    address,
-    shouldFetchMore,
-    network,
-    uniqueTokens,
-    queryClient,
-    hasStoredTokens,
-    infinite,
-    mounted,
-  ]);
+  }, [address, shouldFetchMore, network, uniqueTokens, queryClient, hasStoredTokens, infinite, mounted, localCursor]);
 
   return uniqueTokensQuery;
 }

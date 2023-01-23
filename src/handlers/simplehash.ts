@@ -1,13 +1,15 @@
 import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
-import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
+import { rainbowFetch, RainbowFetchClient } from '../rainbow-fetch';
 
+import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import { parseSimplehashNfts } from '@/parsers';
 import { queryClient } from '@/react-query/queryClient';
 
 import { logger } from '@/utils';
-import { UniqueAsset } from '@/entities';
+import { qs } from 'url-parse';
+import { POAP_ADDRESS } from '@/parsers/uniqueTokens';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -28,14 +30,15 @@ interface SimplehashCollection {
   twitter_username: string | null;
   discord_url: string | null;
   marketplace_pages: SimplehashMarketplace[];
+  spam_score: number;
 }
 
-interface SimplehashNft {
+export interface SimplehashNft {
   nft_id: string;
-  chain: string;
+  chain: Network;
   contract_address: string;
   token_id: string;
-  name: string | null;
+  name: string;
   description: string | null;
   image_url: string | null;
   video_url: string | null;
@@ -60,12 +63,14 @@ interface SimplehashNft {
     symbol: string;
   };
   collection: SimplehashCollection;
-  extra_metadata: Record<string, string> | null;
+  extra_metadata: any | null;
 }
 
 const chains = {
   arbitrum: 'arbitrum',
+  bsc: 'bsc',
   ethereum: 'ethereum',
+  gnosis: 'gnosis',
   optimism: 'optimism',
   polygon: 'polygon',
 } as const;
@@ -104,13 +109,18 @@ export async function getNFTByTokenId({
   }
 }
 
-export async function getNftsByWalletAddress(walletAddress: string) {
+export async function getNftsByWalletAddressStart({walletAddress, cursor}: {walletAddress: string, cursor?: string}) {
   let rawResponseNfts: SimplehashNft[] = [];
+  console.log('fetching with cursor: ', cursor);
   try {
+<<<<<<< Updated upstream
     const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon},${chains.ethereum}`;
+=======
+    const chainsParam = `${chains.ethereum},${chains.arbitrum},${chains.optimism},${
+      chains.polygon
+    },${chains.bsc},${(chains.gnosis)}`;
+>>>>>>> Stashed changes
 
-    let cursor = START_CURSOR;
-    while (cursor) {
       const response = await simplehashApi.get(`/v0/nfts/owners`, {
         headers: {
           'Accept': 'application/json',
@@ -123,19 +133,14 @@ export async function getNftsByWalletAddress(walletAddress: string) {
           wallet_addresses: walletAddress,
         },
       });
-      cursor = response.data.next;
+      console.log('response: ', response.data.next);
+      const newCursor = (qs.parse(response.data.next) as any)?.cursor;
+      console.log('new cursor: ', newCursor)
       if (response.data?.nfts?.length > 0) {
         rawResponseNfts = rawResponseNfts.concat(response.data.nfts);
       }
-    }
-  } catch (error) {
-    logger.sentry(
-      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
-    );
-    captureException(error);
-  }
 
-  // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
+        // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.
   const polygonAllowlist = await queryClient.fetchQuery(
     ['polygon-allowlist'],
     async () => {
@@ -151,6 +156,7 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     }
   );
 
+<<<<<<< Updated upstream
   return parseSimplehashNfts(rawResponseNfts).filter(
     (token: UniqueAsset) => {
       if (token.network !== Network.polygon  &&   token?.spamScore <= 85) {
@@ -165,4 +171,72 @@ export async function getNftsByWalletAddress(walletAddress: string) {
      
     }
   );
+=======
+
+      const parsedNfts: UniqueAsset[] = parseSimplehashNfts(rawResponseNfts).filter((nft: UniqueAsset)=>{
+        if (nft.collection.name === null) return false;
+
+        // filter out spam
+        if (nft.spamScore >= 85) return false;
+    
+        // filter gnosis NFTs that are not POAPs
+        if (
+          nft.network === Network.gnosis &&
+          nft.asset_contract && 
+          nft?.asset_contract?.address.toLowerCase() !== POAP_ADDRESS
+        )
+          return false;
+    
+          if (nft.network == Network.polygon &&
+            !polygonAllowlist.includes(nft.asset_contract?.address?.toLowerCase())){
+              return false;
+            }
+    
+        return true;
+      });
+      console.log('is it the same ? ', cursor === newCursor)
+    return { nfts: parsedNfts, cursor: newCursor}
+  } catch (error) {
+    logger.sentry(
+      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
+    );
+    captureException(error);
+  }
+>>>>>>> Stashed changes
 }
+
+export async function getNftsByWalletAddress(walletAddress: string, cursor: string) {
+  let rawResponseNfts: SimplehashNft[] = [];
+  try {
+    const chainsParam = `${chains.arbitrum},${chains.optimism},${
+      chains.polygon
+    },${chains.bsc},${chains.gnosis}`;
+
+    let cursor = START_CURSOR;
+    while (cursor) {
+      const response = await simplehashApi.get(`/v0/nfts/owners`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': SIMPLEHASH_API_KEY,
+        },
+        params: {
+          chains: chainsParam,
+          ...(cursor !== START_CURSOR && { cursor }),
+          wallet_addresses: walletAddress,
+        },
+      });
+      cursor = (qs.parse(response.data.next) as any)['cursor'];
+      if (response.data?.nfts?.length > 0) {
+        rawResponseNfts = rawResponseNfts.concat(response.data.nfts);
+      }
+    }
+  } catch (error) {
+    logger.sentry(
+      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
+    );
+    captureException(error);
+  }
+
+  return parseSimplehashNfts(rawResponseNfts);
+};
