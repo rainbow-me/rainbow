@@ -13,15 +13,14 @@ import { metadataClient } from '@/graphql';
 // Query Types
 
 export type RewardsArgs = {
-  project?: 'OPTIMISM';
   address: string;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-const rewardsQueryKey = ({ project = 'OPTIMISM', address }: RewardsArgs) =>
-  createQueryKey('rewards', { project, address }, { persisterVersion: 1 });
+const rewardsQueryKey = ({ address }: RewardsArgs) =>
+  createQueryKey('rewards', { address }, { persisterVersion: 1 });
 
 type RewardsQueryKey = ReturnType<typeof rewardsQueryKey>;
 
@@ -41,11 +40,11 @@ type RewardsResult = QueryFunctionResult<typeof rewardsQueryFunction>;
 // Query Prefetcher (Optional)
 
 export async function prefetchRewards(
-  { project = 'OPTIMISM', address }: RewardsArgs,
+  { address }: RewardsArgs,
   config: QueryConfig<RewardsResult, Error, RewardsQueryKey> = {}
 ) {
   return await queryClient.prefetchQuery(
-    rewardsQueryKey({ project, address }),
+    rewardsQueryKey({ address }),
     rewardsQueryFunction,
     config
   );
@@ -55,11 +54,11 @@ export async function prefetchRewards(
 // Query Fetcher (Optional)
 
 export async function fetchRewards(
-  { project = 'OPTIMISM', address }: RewardsArgs,
+  { address }: RewardsArgs,
   config: QueryConfig<RewardsResult, Error, RewardsQueryKey> = {}
 ) {
   return await queryClient.fetchQuery(
-    rewardsQueryKey({ project, address }),
+    rewardsQueryKey({ address }),
     rewardsQueryFunction,
     config
   );
@@ -69,12 +68,8 @@ export async function fetchRewards(
 // Query Hook
 
 export function useRewards(
-  { project = 'OPTIMISM', address }: RewardsArgs,
+  { address }: RewardsArgs,
   config: QueryConfig<RewardsResult, Error, RewardsQueryKey> = {}
 ) {
-  return useQuery(
-    rewardsQueryKey({ project, address }),
-    rewardsQueryFunction,
-    config
-  );
+  return useQuery(rewardsQueryKey({ address }), rewardsQueryFunction, config);
 }
