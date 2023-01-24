@@ -1,8 +1,12 @@
 import React from 'react';
-import { RatioComponent } from '@ratio.me/ratio-react-native-library';
+import {
+  RatioComponent,
+  RatioOrderStatus,
+} from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
 import { Wallet } from '@ethersproject/wallet';
+import { useDispatch } from 'react-redux';
 
 import { Box, Text, Inline } from '@/design-system';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
@@ -11,11 +15,103 @@ import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
 import { analyticsV2 } from '@/analytics';
+import {
+  NewTransactionOrAddCashTransaction,
+  TransactionStatus,
+  TransactionType,
+} from '@/entities';
+import { ethereumUtils } from '@/utils';
+import { AddCashCurrencies } from '@/references';
+import { dataAddNewTransaction } from '@/redux/data';
+import { FiatProviderName } from '@/entities/f2c';
+
+export function ratioOrderToNewTransaction(
+  order: RatioOrderStatus
+): NewTransactionOrAddCashTransaction {
+  const { data } = order;
+  const destAssetAddress = AddCashCurrencies['mainnet']?.[
+    data.crypto.currency
+  ]?.toLowerCase();
+
+  if (!destAssetAddress) {
+    throw new RainbowError(`Ratio: could not determine asset address`);
+  }
+
+  const asset = ethereumUtils.getAccountAsset(destAssetAddress);
+
+  if (!asset) {
+    throw new RainbowError(`Ratio: could not get account asset`);
+  }
+
+  return {
+    amount: data.crypto.amount,
+    asset,
+    from: null,
+    hash: null,
+    nonce: null,
+    sourceAmount: data.fiat.amount,
+    status: TransactionStatus.purchasing,
+    timestamp: Date.now(),
+    to: data.crypto.wallet.address,
+    type: TransactionType.purchase,
+    fiatProvider: {
+      name: FiatProviderName.Ratio,
+      orderId: data.id,
+      userId: data.id,
+    },
+  };
+}
 
 export function Ratio({ accountAddress }: { accountAddress: string }) {
   // TODO
   const [isLoading, setIsLoading] = React.useState(false);
   const sessionId = React.useMemo(() => nanoid(), []);
+  const dispatch = useDispatch();
+
+  const onTransactionComplete = React.useCallback(
+    (order: RatioOrderStatus) => {
+      const success = order.status === 'success';
+
+      logger.debug(
+        `Ratio: transaction complete`,
+        { success, order },
+        logger.DebugContext.f2c
+      );
+
+      analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+        provider: 'ratio',
+        success,
+        sessionId,
+      });
+
+      if (success) {
+        try {
+          const transaction = ratioOrderToNewTransaction(order);
+          dispatch(
+            dataAddNewTransaction(
+              transaction,
+              order.data.crypto.wallet.address,
+              true
+            )
+          );
+        } catch (e) {
+          if (e instanceof RainbowError) {
+            logger.error(e);
+          } else {
+            logger.error(
+              new RainbowError(
+                `Ratio: failed to parse an order into a transaction`
+              ),
+              { error: e }
+            );
+          }
+        }
+      } else {
+        // TODO idk what until we test this
+      }
+    },
+    [dispatch]
+  );
 
   return (
     <RatioComponent
@@ -69,18 +165,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       onOpen={() => {
         logger.debug(`Ratio: opened`, {}, logger.DebugContext.f2c);
       }}
-      onTransactionComplete={order => {
-        logger.debug(
-          `Ratio: transaction complete`,
-          { order },
-          logger.DebugContext.f2c
-        );
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
-          provider: 'ratio',
-          success: order.status === 'success',
-          sessionId,
-        });
-      }}
+      onTransactionComplete={onTransactionComplete}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
       }}

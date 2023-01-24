@@ -3,10 +3,20 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import { find, isEmpty, isNil, keys, mapValues, partition } from 'lodash';
+import {
+  find,
+  isEmpty,
+  isNil,
+  keys,
+  mapValues,
+  partition,
+  update,
+} from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import { gretch } from 'gretchen';
+import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
 import {
@@ -67,6 +77,8 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
+import { FiatProviderName } from '@/entities/f2c';
+import { logger as loggr, RainbowError } from '@/logger';
 
 const storage = new MMKV();
 
@@ -748,7 +760,12 @@ export const transactionsReceived = (
     }, 60000);
   }
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = pendingTransactions.filter(
+  const decoratedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
+    {
+      pendingTransactions,
+    }
+  );
+  const updatedPendingTransactions = decoratedPendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -782,6 +799,56 @@ export const transactionsReceived = (
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
+};
+
+export const maybeFetchF2CHashForPendingTransactions = async ({
+  pendingTransactions,
+}: {
+  pendingTransactions: RainbowTransaction[];
+}) => {
+  const updatedPendingTransactions = await Promise.all(
+    pendingTransactions
+      .filter(tx => Boolean(tx.fiatProvider))
+      .map(async tx => {
+        switch (tx.fiatProvider?.name) {
+          case FiatProviderName.Ratio: {
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions`,
+              { provider: tx.fiatProvider?.name },
+              loggr.DebugContext.f2c
+            );
+
+            const { userId, orderId } = tx.fiatProvider;
+            const { data, error } = await gretch<ActivityItem>(
+              `https://f2c.rainbow.me/v1/ratio/users/${userId}/activity/${orderId}`
+            ).json();
+
+            if (!data || error) {
+              loggr.error(
+                new RainbowError(
+                  `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
+                ),
+                {
+                  error,
+                  provider: tx.fiatProvider.name,
+                }
+              );
+            } else if (data.crypto.transactionHash) {
+              tx.hash = data.crypto.transactionHash;
+            } else {
+              loggr.info(
+                `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
+              );
+            }
+            break;
+          }
+        }
+
+        return tx;
+      })
+  );
+
+  return updatedPendingTransactions;
 };
 
 /**
