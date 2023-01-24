@@ -1,8 +1,8 @@
 import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
+import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
 import { ScrollView, StatusBar } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import SlackSheet from './SlackSheet';
 
 type SimpleSheetProps = {
@@ -19,8 +19,7 @@ export const SimpleSheet = ({
   scrollEnabled = true,
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
-  const statusBarHeight = getStatusBarHeight(true);
-  const fullSheetHeight = deviceHeight - statusBarHeight;
+  const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
 
   return (
     // @ts-expect-error JavaScript component
