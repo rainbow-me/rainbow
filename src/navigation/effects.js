@@ -459,14 +459,16 @@ export const expandedPresetWithSmallGestureResponseDistance = {
   gestureResponseDistance: smallGestureResponseDistance,
 };
 
+export const addWalletNavigatorPreset = ({ route }) => ({
+  height: route.params?.sheetHeight,
+});
+
 export const sheetPreset = ({ route }) => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
     route.params?.type === 'unique_token' ||
-    route.name === Routes.SEND_SHEET_NAVIGATOR ||
-    route.name === Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR ||
-    route.name === Routes.IMPORT_SEED_PHRASE_SHEET;
+    route.name === Routes.SEND_SHEET_NAVIGATOR;
   return {
     cardOverlayEnabled: true,
     cardShadowEnabled: true,

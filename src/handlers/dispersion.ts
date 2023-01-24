@@ -77,17 +77,3 @@ export const getAdditionalAssetData = async (
     return null;
   }
 };
-
-export const getCoingeckoIds = async (): Promise<Record<
-  EthereumAddress,
-  string
-> | null> => {
-  try {
-    const res = await dispersionApi.get('/dispersion/v1/coingecko/ids/1');
-    return res?.data?.data?.ids ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching coingecko ids: ${error}`);
-    captureException(error);
-    return null;
-  }
-};

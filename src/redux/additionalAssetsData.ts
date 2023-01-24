@@ -2,27 +2,19 @@ import { EthereumAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { dataUpdateAsset } from './data';
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
-import { getOnchainAssetBalance, isL2Asset } from '@/handlers/assets';
-import { getCoingeckoIds } from '@/handlers/dispersion';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProviderForNetwork, isL2Network } from '@/handlers/web3';
 import { Network } from '@/helpers';
-import { AppDispatch, AppGetState, AppState } from '@/redux/store';
-import { ETH_ADDRESS } from '@/references';
+import { AppDispatch, AppGetState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //
-const ADDITIONAL_ASSET_DATA_COINGECKO_IDS =
-  'additionalAssetData/ADDITIONAL_ASSET_DATA_COINGOCKO_IDS';
 const ADDITIONAL_ASSET_DATA_UPDATE_L2_ASSETS_TO_WATCH =
   'additionalAssetData/ADDITIONAL_ASSET_DATA_UPDATE_L2_ASSETS_TO_WATCH';
 const ADDITIONAL_ASSET_DATA_DELETE_L2_ASSETS_TO_WATCH =
   'additionalAssetData/ADDITIONAL_ASSET_DATA_DELETE_L2_ASSETS_TO_WATCH';
 
-type AdditionalAssetCoingeckoIdsAction = {
-  type: typeof ADDITIONAL_ASSET_DATA_COINGECKO_IDS;
-  payload: CoingeckoMappingState;
-};
 type AdditionalAssetDataUpdateL2AssetToWatch = {
   type: typeof ADDITIONAL_ASSET_DATA_UPDATE_L2_ASSETS_TO_WATCH;
   payload: L2AssetToWatch;
@@ -33,7 +25,6 @@ type AdditionalAssetDataDeleteL2AssetToWatch = {
 };
 
 type AdditionalAssetDataAction =
-  | AdditionalAssetCoingeckoIdsAction
   | AdditionalAssetDataUpdateL2AssetToWatch
   | AdditionalAssetDataDeleteL2AssetToWatch;
 
@@ -47,30 +38,12 @@ type L2AssetToWatch = {
 type L2AssetsToWatch = {
   [key: string]: L2AssetToWatch;
 };
-type CoingeckoMappingState = {
-  [key: string]: string;
-};
 
 export interface AdditionalAssetsDataState {
   l2AssetsToWatch: L2AssetsToWatch;
-  coingeckoIds: CoingeckoMappingState;
 }
 
 // -- Actions --------------------------------------------------------------- //
-export const additionalDataCoingeckoIds = async (
-  dispatch: AppDispatch,
-  getState: () => AppState
-) => {
-  // @ts-ignore
-  if (Object.keys(getState().additionalAssetsData.coingeckoIds).length === 0) {
-    const idMap = await getCoingeckoIds();
-    if (idMap) {
-      idMap[ETH_ADDRESS] = 'ethereum';
-      dispatch({ payload: idMap, type: ADDITIONAL_ASSET_DATA_COINGECKO_IDS });
-    }
-  }
-};
-
 export const additionalDataUpdateL2AssetToWatch = (data: {
   inputCurrency: SwappableAsset;
   outputCurrency: SwappableAsset;
@@ -189,7 +162,6 @@ export const additionalDataUpdateL2AssetBalance = (tx: any) => async (
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNIQUE_TOKENS_STATE = {
-  coingeckoIds: {},
   l2AssetsToWatch: {},
 };
 
@@ -198,14 +170,6 @@ export default (
   action: AdditionalAssetDataAction
 ) => {
   switch (action.type) {
-    case ADDITIONAL_ASSET_DATA_COINGECKO_IDS:
-      return {
-        ...state,
-        coingeckoIds: {
-          ...state.coingeckoIds,
-          ...action.payload,
-        },
-      };
     case ADDITIONAL_ASSET_DATA_UPDATE_L2_ASSETS_TO_WATCH:
       return {
         ...state,

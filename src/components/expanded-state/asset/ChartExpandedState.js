@@ -329,8 +329,8 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
-  const swapEnabled = config.features.swagg_enabled;
-  const addCashEnabled = config.features.f2c_enabled;
+  const swapEnabled = config.swagg_enabled;
+  const addCashEnabled = config.f2c_enabled;
 
   const isDOG =
     assetWithPrice.address === DOG_ADDRESS ||

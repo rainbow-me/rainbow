@@ -4,10 +4,8 @@ import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
-export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
 export { default as chainAssets } from './chain-assets.json';
-export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { DefaultTokenListsSource as DefaultTokenLists };
 export {
@@ -23,7 +21,6 @@ export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
-export { default as migratedTokens } from './migratedTokens';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
@@ -68,7 +65,6 @@ export const UNIV3_NFT_CONTRACT_ADDRESS =
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
-export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';
 export const ARBITRUM_ETH_ADDRESS =
@@ -81,8 +77,6 @@ export const MATIC_MAINNET_ADDRESS =
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS =
   '0x0000000000000000000000000000000000001010';
-export const COVALENT_ETH_ADDRESS =
-  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WMATIC_POLYGON_ADDRESS =

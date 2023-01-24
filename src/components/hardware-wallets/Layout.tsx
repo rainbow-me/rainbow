@@ -8,9 +8,9 @@ export function Layout({
   header,
   footer,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   header: React.ReactElement;
-  footer: React.ReactElement;
+  footer?: React.ReactElement;
 }) {
   return (
     <Box background="surfaceSecondary">
@@ -18,7 +18,7 @@ export function Layout({
         top={{ custom: SheetHandleFixedToTopHeight }}
         bottom={{ custom: safeAreaInsetValues.bottom }}
       >
-        <Inset top="36px" bottom="20px">
+        <Inset top="36px" bottom="52px">
           <Box height="full">
             <Rows>
               <Row height="content">{header}</Row>
