@@ -19,8 +19,8 @@ import {
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import { deviceUtils } from '@/utils';
-import { IS_ANDROID } from '@/env';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSelector } from 'react-redux';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
@@ -85,7 +85,9 @@ export default function CustomGasState({ asset }) {
         removeTopPadding: true,
       })}
       backgroundColor={colors.transparent}
-      contentHeight={longFormHeight}
+      contentHeight={
+        IS_IOS ? longFormHeight : deviceHeight - safeAreaInsetValues.top
+      }
       radius={0}
       scrollEnabled={false}
     >

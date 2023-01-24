@@ -10,7 +10,6 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -78,14 +77,19 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+  safeAreaInsetValues,
+} from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = safeAreaInsetValues.top;
 
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

@@ -1,18 +1,17 @@
 import React from 'react';
 import { Animated, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import {
   EmojiAvatar,
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = safeAreaInsetValues.top;
 export const sheetVerticalOffset = statusBarHeight;
 
 export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
