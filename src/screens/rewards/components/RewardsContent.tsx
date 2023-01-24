@@ -29,6 +29,7 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
         position={data.stats?.position.current ?? 1}
         positionChange={data.stats?.position.change.h24 ?? 0}
         actions={data.stats?.actions ?? []}
+        color={data.meta.color}
       />
     </>
   );
