@@ -1,12 +1,12 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/components/hardware-wallets/Layout';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
-import { ActionButton } from '@/components/hardware-wallets/ActionButton';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 export const PairHardwareWalletSuccessSheet = () => {
   const { navigate } = useNavigation();

@@ -1,15 +1,15 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-import { CancelButton } from '@/components/hardware-wallets/CancelButton';
-import { Layout } from '@/components/hardware-wallets/Layout';
+import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
 import { ImgixImage } from '@/components/images';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;

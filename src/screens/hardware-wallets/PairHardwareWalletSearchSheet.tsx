@@ -1,9 +1,9 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/components/hardware-wallets/Layout';
-import { CancelButton } from '@/components/hardware-wallets/CancelButton';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 export const PairHardwareWalletSearchSheet = () => (
   <Layout>

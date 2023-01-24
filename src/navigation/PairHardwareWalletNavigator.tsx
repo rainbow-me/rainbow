@@ -7,7 +7,7 @@ import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHa
 import { PairHardwareWalletSuccessSheet } from '@/screens/hardware-wallets/PairHardwareWalletSuccessSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
-import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
+import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 

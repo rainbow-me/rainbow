@@ -2,12 +2,12 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Linking } from 'react-native';
 import { Inset, Stack, Text } from '@/design-system';
-import { Layout } from '@/components/hardware-wallets/Layout';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
-import { ActionButton } from '@/components/hardware-wallets/ActionButton';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 export const PairHardwareWalletIntroSheet = () => {
   const { navigate } = useNavigation();

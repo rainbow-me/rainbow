@@ -10,11 +10,11 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { Layout } from '@/components/hardware-wallets/Layout';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
-import { ActionButton } from '@/components/hardware-wallets/ActionButton';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;

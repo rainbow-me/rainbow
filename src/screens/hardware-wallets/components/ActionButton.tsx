@@ -1,6 +1,6 @@
 import { Box, Text } from '@/design-system';
 import React from 'react';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation } from '@/components/animations';
 
 type Props = {
   onPress: () => void;

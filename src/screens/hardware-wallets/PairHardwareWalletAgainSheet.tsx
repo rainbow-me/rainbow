@@ -7,7 +7,7 @@ import {
   LEDGER_NANO_HEIGHT,
   LEDGER_NANO_WIDTH,
   GRID_DOTS_SIZE,
-} from '@/components/hardware-wallets/NanoXDeviceAnimation';
+} from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { Source } from 'react-native-fast-image';
 import Animated, {
   useAnimatedStyle,
@@ -17,13 +17,13 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { CancelButton } from '@/components/hardware-wallets/CancelButton';
+import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
-import { Layout } from '@/components/hardware-wallets/Layout';
-import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 const INDICATOR_SIZE = 7;
 
