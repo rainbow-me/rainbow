@@ -4,9 +4,9 @@ import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import {
-  ledgerNanoHeight,
-  ledgerNanoWidth,
-  scaleFactor,
+  LEDGER_NANO_HEIGHT,
+  LEDGER_NANO_WIDTH,
+  GRID_DOTS_SIZE,
 } from '@/components/hardware-wallets/NanoXDeviceAnimation';
 import { Source } from 'react-native-fast-image';
 import Animated, {
@@ -17,7 +17,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { useDimensions } from '@/hooks';
 import { CancelButton } from '@/components/hardware-wallets/CancelButton';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
@@ -29,10 +28,8 @@ import { TRANSLATIONS } from '@/components/hardware-wallets/constants';
 const INDICATOR_SIZE = 7;
 
 export const PairHardwareWalletAgainSheet = () => {
-  const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useTheme();
   const connected = false;
-  const gridDotsSize = deviceWidth * scaleFactor;
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -73,26 +70,26 @@ export const PairHardwareWalletAgainSheet = () => {
         <ImgixImage
           source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
           style={{
-            width: gridDotsSize,
-            height: gridDotsSize,
+            width: GRID_DOTS_SIZE,
+            height: GRID_DOTS_SIZE,
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          size={gridDotsSize}
+          size={GRID_DOTS_SIZE}
         >
           <ImgixImage
             source={ledgerNano as Source}
             style={{
-              width: ledgerNanoWidth,
-              height: ledgerNanoHeight,
+              width: LEDGER_NANO_WIDTH,
+              height: LEDGER_NANO_HEIGHT,
               alignItems: 'center',
             }}
-            size={ledgerNanoHeight}
+            size={LEDGER_NANO_HEIGHT}
           >
             <Box
               height={{ custom: 36 }}
               width={{ custom: 149 }}
-              top={{ custom: ledgerNanoHeight / 2 + 80 }}
+              top={{ custom: LEDGER_NANO_HEIGHT / 2 + 80 }}
               borderRadius={18}
               background="surfaceSecondaryElevated"
               shadow="12px"

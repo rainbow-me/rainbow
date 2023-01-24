@@ -88,13 +88,11 @@ export const PairHardwareWalletNavigator = () => {
           {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
             currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
             <NanoXDeviceAnimation
-              height={height}
               state={
                 currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
                   ? 'loading'
                   : 'idle'
               }
-              width={width}
             />
           )}
         </SimpleSheet>
