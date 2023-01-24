@@ -2,6 +2,7 @@ import React from 'react';
 import { RatioComponent } from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
+import { Wallet } from '@ethersproject/wallet';
 
 import { Box, Text, Inline } from '@/design-system';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
@@ -44,7 +45,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
         const existingWallet = await loadWallet(accountAddress, true);
 
-        if (!existingWallet) {
+        if (!existingWallet || !(existingWallet instanceof Wallet)) {
           throw new Error('No wallet found');
         }
 
