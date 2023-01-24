@@ -36,7 +36,6 @@ export const RewardsProgressBar: React.FC<Props> = ({ progress, color }) => {
       padding="2px"
       onLayout={onLayout}
       style={{
-        // TODO: Fix the color when backend schema changes
         backgroundColor: colors.alpha(color, 0.16),
       }}
     >
