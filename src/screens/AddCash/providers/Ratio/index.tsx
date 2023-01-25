@@ -26,7 +26,10 @@ import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
 
 export function ratioOrderToNewTransaction(
-  order: RatioOrderStatus
+  order: RatioOrderStatus,
+  extra: {
+    userId: string;
+  }
 ): NewTransactionOrAddCashTransaction {
   const { data } = order;
   const destAssetAddress = AddCashCurrencies['mainnet']?.[
@@ -58,7 +61,7 @@ export function ratioOrderToNewTransaction(
     fiatProvider: {
       name: FiatProviderName.Ratio,
       orderId: data.id,
-      userId: data.id,
+      userId: extra.userId,
     },
   };
 }
@@ -66,6 +69,7 @@ export function ratioOrderToNewTransaction(
 export function Ratio({ accountAddress }: { accountAddress: string }) {
   // TODO
   const [isLoading, setIsLoading] = React.useState(false);
+  const [userId, setUserId] = React.useState('');
   const sessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
 
@@ -87,7 +91,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
       if (success) {
         try {
-          const transaction = ratioOrderToNewTransaction(order);
+          const transaction = ratioOrderToNewTransaction(order, { userId });
           dispatch(
             dataAddNewTransaction(
               transaction,
@@ -111,7 +115,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         // TODO idk what until we test this
       }
     },
-    [dispatch]
+    [dispatch, userId]
   );
 
   return (
@@ -155,6 +159,11 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
         return { signature: result };
       }}
+      onLogin={async user => {
+        logger.debug(`Ratio: onLogin`, {}, logger.DebugContext.f2c);
+        setUserId(user.id);
+      }}
+      onTransactionComplete={onTransactionComplete}
       onPress={() => {
         setIsLoading(true);
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
@@ -166,7 +175,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       onOpen={() => {
         logger.debug(`Ratio: opened`, {}, logger.DebugContext.f2c);
       }}
-      onTransactionComplete={onTransactionComplete}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
       }}
