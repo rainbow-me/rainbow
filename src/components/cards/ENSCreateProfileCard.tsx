@@ -83,10 +83,10 @@ export const ENSCreateProfileCard = () => {
         testID="ens-create-profile-card"
         type={cardType}
       >
-        <Stack space="28px">
+        <Stack space={28}>
           <Columns>
             <Column>
-              <Stack space={{ custom: 14 }}>
+              <Stack space={14}>
                 <Text weight="heavy" color="label" size="20pt">
                   {i18n.t(TRANSLATIONS.title)}
                 </Text>
@@ -96,28 +96,24 @@ export const ENSCreateProfileCard = () => {
               </Stack>
             </Column>
             <Column width="content">
-              <Box
-                alignItems="center"
-                width={{ custom: ORB_SIZE }}
-                height={{ custom: ORB_SIZE }}
-              >
+              <Box alignItems="center" width={ORB_SIZE} height={ORB_SIZE}>
                 {/* @ts-expect-error JavaScript component */}
                 <Box
                   as={ImgixImage}
-                  marginTop="-12px"
+                  marginTop={-12}
                   source={ENSIcon}
                   // doing some weird stuff here to fit the image into a properly sized container
-                  width={{ custom: ORB_SIZE * 2 }}
-                  height={{ custom: ORB_SIZE * 2 }}
+                  width={ORB_SIZE * 2}
+                  height={ORB_SIZE * 2}
                 />
               </Box>
             </Column>
           </Columns>
-          <Bleed horizontal="20px">
+          <Bleed horizontal={20}>
             <Box
-              paddingTop="10px"
-              height={{ custom: imageWidth * ASPECT_RATIO }}
-              width={{ custom: imageWidth }}
+              paddingTop={10}
+              height={imageWidth * ASPECT_RATIO}
+              width={imageWidth}
               alignItems="center"
               justifyContent="center"
             >
@@ -126,9 +122,9 @@ export const ENSCreateProfileCard = () => {
                 as={ImgixImage}
                 alignItems="center"
                 resizeMode="contain"
-                width={{ custom: imageWidth }}
+                width={imageWidth}
                 // doing some weird stuff here to fit the image into a properly sized container
-                height={{ custom: ARBITRARILY_LARGE_NUMBER }}
+                height={ARBITRARILY_LARGE_NUMBER}
                 source={ENSAvatarGrid}
               />
             </Box>

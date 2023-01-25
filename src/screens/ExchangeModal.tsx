@@ -1049,7 +1049,7 @@ export default function ExchangeModal({
             <FloatingPanel
               borderRadius={39}
               overflow="visible"
-              paddingBottom={{ custom: showOutputField ? 0 : 24 }}
+              paddingBottom={showOutputField ? 0 : 24}
               style={{
                 ...(android && {
                   left: -1,
@@ -1146,12 +1146,12 @@ export default function ExchangeModal({
               />
             )}
 
-            {isWithdrawal && <Box height="30px" />}
+            {isWithdrawal && <Box height={30} />}
           </>
         </FloatingPanels>
 
         <Box>
-          <Rows alignVertical="bottom" space="19px (Deprecated)">
+          <Rows alignVertical="bottom" space={19}>
             <Row height="content">
               {showConfirmButton && (
                 <ConfirmExchangeButton

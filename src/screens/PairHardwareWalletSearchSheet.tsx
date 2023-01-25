@@ -12,8 +12,8 @@ export function PairHardwareWalletSearchSheet() {
   return (
     <Layout
       header={
-        <Inset horizontal="36px">
-          <Stack alignHorizontal="center" space="20px">
+        <Inset horizontal={36}>
+          <Stack alignHorizontal="center" space={20}>
             <Text align="center" color="label" weight="bold" size="26pt">
               {i18n.t(TRANSLATIONS.looking_for_devices)}
             </Text>
@@ -29,7 +29,7 @@ export function PairHardwareWalletSearchSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px">
+        <Inset horizontal={20}>
           <TintButton onPress={() => dangerouslyGetParent()?.goBack()}>
             {i18n.t(i18n.l.button.cancel)}
           </TintButton>

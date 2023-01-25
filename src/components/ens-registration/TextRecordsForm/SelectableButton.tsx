@@ -41,7 +41,7 @@ export default function SelectableButton({
           borderRadius={12}
           height={`${height}px`}
           justifyContent="center"
-          paddingHorizontal="8px"
+          paddingHorizontal={8}
           style={{
             borderColor: borderColor,
             borderWidth: 2,

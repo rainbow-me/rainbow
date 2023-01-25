@@ -83,7 +83,7 @@ export function ProfileNameRow({
     (caretIconWidth + accountNameLeftOffset) -
     horizontalInset * 2;
 
-  const hitSlop: Space = '16px';
+  const hitSlop = 16;
   return (
     <Box pointerEvents={disableOnPress ? 'none' : 'auto'}>
       {name && (
@@ -95,7 +95,7 @@ export function ProfileNameRow({
             testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
           >
             <Inset space={hitSlop}>
-              <Inline alignVertical="center" space="4px" wrap={false}>
+              <Inline alignVertical="center" space={4} wrap={false}>
                 <Box style={{ maxWidth }}>
                   <Text
                     color="label"

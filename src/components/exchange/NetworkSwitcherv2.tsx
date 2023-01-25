@@ -71,8 +71,8 @@ const NetworkSwitcherv2 = ({
       <Box
         width="full"
         testID={`network-switcher-${currentChainId}`}
-        paddingTop="8px"
-        paddingBottom="16px"
+        paddingTop={8}
+        paddingBottom={16}
       >
         <ScrollView
           keyboardShouldPersistTaps="always"
@@ -82,17 +82,17 @@ const NetworkSwitcherv2 = ({
           showsHorizontalScrollIndicator={false}
           testID={'network-switcher-scroll-view'}
         >
-          <Columns space="8px">
+          <Columns space={8}>
             {networkMenuItems.map(({ chainId, title, type, network }) => {
               const isSelected = currentChainId === chainId;
               return (
                 <Box
                   as={ButtonPressAnimation}
-                  height="36px"
+                  height={36}
                   key={`${testID}-${title}`}
                   // @ts-expect-error overloaded props from ButtonPressAnimation
                   onPress={() => setCurrentChainId(chainId)}
-                  padding="8px"
+                  padding={8}
                   testID={`${testID}-${network}`}
                 >
                   {isSelected && (
@@ -105,7 +105,7 @@ const NetworkSwitcherv2 = ({
                   <Inline
                     alignHorizontal="center"
                     alignVertical="center"
-                    horizontalSpace="4px"
+                    horizontalspace={4}
                     wrap={false}
                   >
                     {type === AssetType.token ? (
@@ -121,7 +121,7 @@ const NetworkSwitcherv2 = ({
                         size="small"
                       />
                     )}
-                    <Bleed top={{ custom: android ? 2 : 0 }}>
+                    <Bleed top={android ? 2 : 0}>
                       <Text
                         color={
                           isSelected

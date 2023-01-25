@@ -543,8 +543,8 @@ const UniqueTokenExpandedStateHeader = ({
   const familyNameHitSlop: Space = '19px (Deprecated)';
 
   return (
-    <Stack space="15px (Deprecated)">
-      <Columns space="24px">
+    <Stack space={15}>
+      <Columns space={24}>
         <Heading
           containsEmoji
           color="primary (Deprecated)"
@@ -589,15 +589,15 @@ const UniqueTokenExpandedStateHeader = ({
           >
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>
-                <Inline alignVertical="center" space="6px" wrap={false}>
+                <Inline alignVertical="center" space={6} wrap={false}>
                   {asset.familyImage ? (
-                    <Bleed vertical="6px">
+                    <Bleed vertical={6}>
                       <FamilyImageWrapper>
                         <FamilyImage source={{ uri: asset.familyImage }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
-                  <Inline space="4px" wrap={false}>
+                  <Inline space={4} wrap={false}>
                     <View
                       style={{
                         maxWidth: deviceWidth - paddingHorizontal * 6,

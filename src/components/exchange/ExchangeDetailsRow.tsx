@@ -94,12 +94,7 @@ export default function ExchangeDetailsRow({
   ]);
 
   return (
-    <Box
-      alignItems="center"
-      height={{ custom: 60 }}
-      justifyContent="center"
-      width="full"
-    >
+    <Box alignItems="center" height={60} justifyContent="center" width="full">
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
         onPress={onPressImpactWarning}
@@ -114,7 +109,7 @@ export default function ExchangeDetailsRow({
         as={Animated.View}
         flexDirection="row"
         justifyContent="space-between"
-        padding="10px"
+        padding={10}
         pointerEvents={isHighPriceImpact ? 'none' : 'auto'}
         style={detailsRowAnimatedStyle}
         width="full"

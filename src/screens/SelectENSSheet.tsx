@@ -91,13 +91,13 @@ export default function SelectENSSheet() {
                   alignItems="center"
                   background="accent"
                   borderRadius={rowHeight / 2}
-                  height={{ custom: rowHeight }}
+                  height={rowHeight}
                   justifyContent="center"
-                  width={{ custom: rowHeight }}
+                  width={rowHeight}
                 >
                   <ENSAvatar name={item.name} />
                 </Box>
-                <Box paddingLeft="10px">
+                <Box paddingLeft={10}>
                   <Text
                     numberOfLines={1}
                     color="primary (Deprecated)"
@@ -119,8 +119,8 @@ export default function SelectENSSheet() {
   return (
     // @ts-expect-error JavaScript component
     <Sheet>
-      <Inset top="6px">
-        <Stack space="24px">
+      <Inset top={6}>
+        <Stack space={24}>
           <Heading
             align="center"
             color="primary (Deprecated)"
@@ -130,18 +130,16 @@ export default function SelectENSSheet() {
             {lang.t('profiles.select_ens_name')}
           </Heading>
           {isSuccess && (
-            <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
+            <Bleed bottom={scrollEnabled ? 34 : 26}>
               <Box
-                ItemSeparatorComponent={() => (
-                  <Box height={{ custom: rowPadding }} />
-                )}
+                ItemSeparatorComponent={() => <Box height={rowPadding} />}
                 as={FlatList}
                 contentContainerStyle={{
                   paddingBottom: 50,
                   paddingHorizontal: 19,
                 }}
                 data={controlledDomains}
-                height={{ custom: listHeight }}
+                height={listHeight}
                 initialNumToRender={15}
                 keyExtractor={({ domain }: { domain: string }) => domain}
                 maxToRenderPerBatch={10}
@@ -167,9 +165,9 @@ function ENSAvatar({ name }: { name: string }) {
       <Box
         as={ImgixImage}
         borderRadius={rowHeight / 2}
-        height={{ custom: rowHeight }}
+        height={rowHeight}
         source={{ uri: avatar?.imageUrl }}
-        width={{ custom: rowHeight }}
+        width={rowHeight}
       />
     );
   }

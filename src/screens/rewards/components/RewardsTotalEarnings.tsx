@@ -26,11 +26,11 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
   const { colors } = useTheme();
 
   return (
-    <Box paddingBottom="12px">
+    <Box paddingBottom={12}>
       <RewardsSectionCard>
-        <Stack space="16px">
+        <Stack space={16}>
           <Columns>
-            <Stack space="12px" alignHorizontal="left">
+            <Stack space={12} alignHorizontal="left">
               <Text color="labelTertiary" size="15pt" weight="semibold">
                 {i18n.t(i18n.l.rewards.total_earnings)}
               </Text>
@@ -38,7 +38,7 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
                 {`$${totalEarningsUsd}`}
               </Text>
             </Stack>
-            <Stack space="12px" alignHorizontal="right">
+            <Stack space={12} alignHorizontal="right">
               <Text color="labelTertiary" size="15pt" weight="semibold">
                 {i18n.t(i18n.l.rewards.multiplier)}
               </Text>
@@ -54,15 +54,15 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
           <RewardsProgressBar
             progress={Math.min(totalEarningsToken / TOTAL_SUPPLY, 1)}
           />
-          <Inline space="6px" alignVertical="center">
-            <Bleed vertical="3px">
+          <Inline space={6} alignVertical="center">
+            <Bleed vertical={3}>
               <Box
                 as={Image}
                 source={{
                   uri: tokenImageUrl,
                 }}
-                width={{ custom: 16 }}
-                height={{ custom: 16 }}
+                width={16}
+                height={16}
                 borderRadius={8}
                 background="surfaceSecondaryElevated"
                 shadow="12px"

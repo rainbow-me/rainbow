@@ -18,12 +18,12 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
   <Box
     as={ImgixImage}
     borderRadius={size / 2}
-    height={{ custom: size }}
-    marginLeft={{ custom: -12 }}
-    marginRight={{ custom: -12 }}
-    marginTop={{ custom: 8 }}
+    height={size}
+    marginLeft={-12}
+    marginRight={-12}
+    marginTop={8}
     source={source as Source}
-    width={{ custom: size }}
+    width={size}
   />
 );
 
@@ -42,7 +42,7 @@ const TextIcon = ({
   isLink,
   isEmoji = false,
 }: TextIconProps) => (
-  <Box paddingLeft={{ custom: isEmoji ? 7 : 0 }}>
+  <Box paddingLeft={isEmoji ? 7 : 0}>
     <Text
       color={
         colorOverride
@@ -184,9 +184,9 @@ const MenuItem = ({
 
   const Item = () => (
     <Box
-      height={{ custom: size }}
+      height={size}
       justifyContent="center"
-      paddingHorizontal={{ custom: 16 }}
+      paddingHorizontal={16}
       testID={disabled ? testID : undefined}
       width="full"
     >
@@ -194,9 +194,9 @@ const MenuItem = ({
         <Box flexShrink={1}>
           <Inline alignVertical="center" wrap={false}>
             {leftComponent && (
-              <Box width={{ custom: hasSfSymbol ? 34 : 46 }}>
+              <Box width={hasSfSymbol ? 34 : 46}>
                 {hasSfSymbol ? (
-                  <Box alignItems="center" width={{ custom: 28 }}>
+                  <Box alignItems="center" width={28}>
                     {leftComponent}
                   </Box>
                 ) : (
@@ -206,32 +206,32 @@ const MenuItem = ({
             )}
 
             <Box flexShrink={1}>
-              <Stack space="8px">
+              <Stack space={8}>
                 {titleComponent}
                 {labelComponent}
               </Stack>
             </Box>
           </Inline>
         </Box>
-        <Box paddingLeft="8px">
-          <Inline alignVertical="center" space={{ custom: 9 }}>
+        <Box paddingLeft={8}>
+          <Inline alignVertical="center" space={9}>
             {rightComponent}
             {hasRightArrow && (
               <Box
                 as={ImgixImage}
-                height={{ custom: 16 }}
+                height={16}
                 source={Caret as Source}
                 tintColor={colors.blueGreyDark60}
-                width={{ custom: 7 }}
+                width={7}
               />
             )}
             {hasChevron && (
               <Box
                 as={ImgixImage}
-                height={{ custom: 17 }}
+                height={17}
                 source={Chevron as Source}
                 tintColor={colors.blueGreyDark60}
-                width={{ custom: 16 }}
+                width={16}
               />
             )}
           </Inline>

@@ -148,7 +148,7 @@ export default function LargeCountdownClock({
       alignItems="center"
       as={Animated.View}
       entering={entering}
-      height={{ custom: 132 }}
+      height={132}
       justifyContent="center"
       width="full"
     >
@@ -159,12 +159,12 @@ export default function LargeCountdownClock({
           alignItems="center"
           as={Animated.View}
           exiting={clockExiting}
-          height={{ custom: 132 }}
+          height={132}
           justifyContent="center"
           style={{
             position: 'absolute',
           }}
-          width={{ custom: 132 }}
+          width={132}
         >
           {displayMinutes ? (
             <Box

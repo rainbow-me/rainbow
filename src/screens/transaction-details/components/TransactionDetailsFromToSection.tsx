@@ -51,7 +51,7 @@ export const TransactionDetailsFromToSection: React.FC<Props> = ({
   return (
     <>
       <TransactionDetailsDivider />
-      <Box paddingVertical="10px">
+      <Box paddingVertical={10}>
         <Stack>
           {from && (
             <TransactionDetailsAddressRow

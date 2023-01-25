@@ -65,7 +65,7 @@ export function ProfileActionButtonsRow() {
 
   return (
     <Box width="full">
-      <Inset horizontal={{ custom: 17 }}>
+      <Inset horizontal={17}>
         <AccentColorProvider color={accentColor}>
           <Columns>
             {addCashEnabled && (
@@ -113,12 +113,12 @@ function ActionButton({
   const { colorMode } = useColorMode();
   return (
     <ButtonPressAnimation onPress={onPress} scale={0.8} testID={testID}>
-      <Stack alignHorizontal="center" space="10px">
+      <Stack alignHorizontal="center" space={10}>
         <Box
           alignItems="center"
           background="accent"
           borderRadius={60}
-          height={{ custom: 60 }}
+          height={60}
           justifyContent="center"
           shadow={{
             custom: {
@@ -145,7 +145,7 @@ function ActionButton({
               },
             },
           }}
-          width={{ custom: 60 }}
+          width={60}
         >
           <Text align="center" color="label" size="icon 23px" weight="bold">
             {icon}

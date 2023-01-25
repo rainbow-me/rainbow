@@ -22,16 +22,16 @@ const WaitCommitmentConfirmationContent = ({
 
   return (
     <>
-      <Box paddingTop="24px">
+      <Box paddingTop={24}>
         <StepIndicator currentStep={1} steps={3} />
       </Box>
       <Rows alignHorizontal="center">
         <Row>
           <Box flexGrow={1} justifyContent="center">
-            <Inset horizontal="12px">
-              <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
+            <Inset horizontal={12}>
+              <Stack space={isSmallPhone ? 24 : 34}>
                 <HourglassAnimation />
-                <Stack alignHorizontal="center" space="19px (Deprecated)">
+                <Stack alignHorizontal="center" space={19}>
                   <Heading
                     align="center"
                     color="primary (Deprecated)"

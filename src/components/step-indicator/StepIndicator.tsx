@@ -64,8 +64,8 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   }));
 
   return (
-    <Box padding="10px" width="full">
-      <Columns space={{ custom: STEP_SPACING }}>
+    <Box padding={10} width="full">
+      <Columns space={STEP_SPACING}>
         {Array.from({ length: steps }).map((_, index) => {
           const stepIndex = index + 1;
           const isCurrentStep = stepIndex === currentStep;
@@ -76,7 +76,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
           return (
             <Box
               borderRadius={16}
-              height={{ custom: 4 }}
+              height={4}
               key={index}
               style={{
                 backgroundColor: accentColorTint,
@@ -88,7 +88,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
                 <Box
                   as={Animated.View}
                   borderRadius={16}
-                  height={{ custom: 4 }}
+                  height={4}
                   style={[
                     {
                       backgroundColor: accentColor,
@@ -102,7 +102,7 @@ const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
                 <Box
                   as={Animated.View}
                   borderRadius={16}
-                  height={{ custom: 4 }}
+                  height={4}
                   style={[
                     {
                       backgroundColor: accentColor,

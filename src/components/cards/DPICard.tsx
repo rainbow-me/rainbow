@@ -61,10 +61,10 @@ export const DPICard = () => {
         testID="dpi-button"
         type={cardType}
       >
-        <Stack space="36px">
-          <Columns space="20px">
+        <Stack space={36}>
+          <Columns space={20}>
             <Column>
-              <Stack space={{ custom: 14 }}>
+              <Stack space={14}>
                 <Text size="20pt" weight="heavy" color="label">
                   {i18n.t(TRANSLATIONS.title)}
                 </Text>
@@ -95,7 +95,7 @@ export const DPICard = () => {
               start={{ x: 0, y: 0.5 }}
               background="accent"
               borderRadius={99}
-              height="36px"
+              height={36}
               width="full"
               alignItems="center"
               justifyContent="center"

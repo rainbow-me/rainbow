@@ -10,7 +10,7 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="separator" />
       </Box>
     ),
@@ -20,7 +20,7 @@ export const secondary: Example = {
   name: 'Secondary',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="separatorSecondary" />
       </Box>
     ),
@@ -30,7 +30,7 @@ export const divider80: Example = {
   name: 'Color: divider80 (Deprecated)',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="divider80 (Deprecated)" />
       </Box>
     ),
@@ -40,7 +40,7 @@ export const divider60: Example = {
   name: 'Color: divider60 (Deprecated)',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="divider60 (Deprecated)" />
       </Box>
     ),
@@ -50,7 +50,7 @@ export const divider40: Example = {
   name: 'Color: divider40 (Deprecated)',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="divider40 (Deprecated)" />
       </Box>
     ),
@@ -60,7 +60,7 @@ export const divider20: Example = {
   name: 'Color: divider20 (Deprecated)',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
         <Separator color="divider20 (Deprecated)" />
       </Box>
     ),
@@ -70,8 +70,8 @@ export const vertical: Example = {
   name: 'Vertical',
   Example: () =>
     source(
-      <Box background="surfacePrimary" borderRadius={8} padding="20px">
-        <Inline space="20px" wrap={false}>
+      <Box background="surfacePrimary" borderRadius={8} padding={20}>
+        <Inline space={20} wrap={false}>
           <Placeholder width={20} />
           <Separator color="separator" direction="vertical" />
           <Placeholder width={20} />

@@ -58,9 +58,9 @@ export default function TextRecordsForm({
   return (
     <Box>
       {isLoading ? (
-        <Box paddingTop="19px (Deprecated)" style={{ height: 300 }}>
+        <Box paddingTop={19} style={{ height: 300 }}>
           <Skeleton animated>
-            <Stack space="30px (Deprecated)">
+            <Stack space={30}>
               <FakeField />
               <FakeField />
               <FakeField />
@@ -142,7 +142,7 @@ function Field({ defaultValue, ...props }: InlineFieldProps) {
 
 function FakeField() {
   return (
-    <Columns space="10px">
+    <Columns space={10}>
       <Column width="1/3">
         <FakeText height={16} width="100%" />
       </Column>

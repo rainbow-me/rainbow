@@ -42,12 +42,12 @@ export default function ExchangeNotch({ testID }: ExchangeNotchProps) {
   return (
     <Box
       flexDirection="row"
-      height={{ custom: notchHeight }}
-      left="0px"
+      height={notchHeight}
+      left={0}
       pointerEvents="none"
       position="absolute"
       testID={`${testID}-notch`}
-      top={{ custom: 132 }}
+      top={132}
     >
       <NotchSide
         source={isDarkMode ? ExchangeNotchLeftDark : ExchangeNotchLeft}

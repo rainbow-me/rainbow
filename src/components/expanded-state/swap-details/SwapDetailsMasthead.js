@@ -18,7 +18,7 @@ const DoubleChevron = () => (
       >
         􀯻
       </Text>
-      <Bleed left="6px">
+      <Bleed left={6}>
         <Text
           color="secondary40 (Deprecated)"
           size="16px / 22px (Deprecated)"
@@ -45,13 +45,8 @@ export default function SwapDetailsMasthead({
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   return (
-    <Box
-      {...props}
-      alignItems="center"
-      paddingHorizontal="19px (Deprecated)"
-      paddingTop="42px (Deprecated)"
-    >
-      <Columns space={{ custom: 9 }}>
+    <Box {...props} alignItems="center" paddingHorizontal={19} paddingTop={42}>
+      <Columns space={9}>
         <CurrencyTile
           amount={inputAmount}
           amountDisplay={inputAmountDisplay}
@@ -74,7 +69,7 @@ export default function SwapDetailsMasthead({
       <Box
         background="body (Deprecated)"
         borderRadius={16}
-        height={{ custom: 32 }}
+        height={32}
         shadow="21px light (Deprecated)"
         style={{
           alignItems: 'center',
@@ -84,7 +79,7 @@ export default function SwapDetailsMasthead({
           top: '50%',
           transform: [{ translateX: 3 }, { translateY: 24 }],
         }}
-        width={{ custom: 32 }}
+        width={32}
       >
         <DoubleChevron />
       </Box>

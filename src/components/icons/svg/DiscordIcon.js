@@ -8,7 +8,7 @@ const DiscordIcon = ({
   ...props
 }) => (
   <Svg
-    height="256px"
+    height={256}
     preserveAspectRatio="xMidYMid"
     viewBox="0 -28.5 256 256"
     width="256px"

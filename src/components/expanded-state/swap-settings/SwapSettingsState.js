@@ -133,8 +133,8 @@ export default function SwapSettingsState({ asset }) {
     >
       <FloatingPanel borderRadius={android ? 30 : 39} testID="swap-settings">
         <ExchangeHeader testID="swap-settings" />
-        <Inset bottom="24px" horizontal="24px" top="10px">
-          <Stack space="24px">
+        <Inset bottom={24} horizontal={24} top={10}>
+          <Stack space={24}>
             <Text
               align="center"
               color="primary (Deprecated)"
@@ -155,10 +155,10 @@ export default function SwapSettingsState({ asset }) {
                   <Box
                     as={ButtonPressAnimation}
                     testID="swap-settings-flashbots-label"
-                    {...(ios ? { marginVertical: '-12px' } : {})}
+                    {...(ios ? { marginVertical: -12 } : {})}
                     // @ts-expect-error
                     onPress={openFlashbotsExplainer}
-                    paddingVertical="12px"
+                    paddingVertical={12}
                   >
                     <Text
                       color="primary (Deprecated)"
@@ -195,7 +195,7 @@ export default function SwapSettingsState({ asset }) {
         </Inset>
       </FloatingPanel>
       <ColorModeProvider value="dark">
-        <Inset horizontal="24px" top="24px">
+        <Inset horizontal={24} top={24}>
           <Columns alignHorizontal="justify">
             <Column width="content">
               <ButtonPressAnimation
@@ -206,7 +206,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
+                  <Inset space={8} top={android ? 6 : 8}>
                     <Text
                       color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
@@ -229,7 +229,7 @@ export default function SwapSettingsState({ asset }) {
                   borderRadius={20}
                   style={{ borderColor: colorForAsset, borderWidth: 2 }}
                 >
-                  <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
+                  <Inset space={8} top={android ? 6 : 8}>
                     <Text
                       color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"

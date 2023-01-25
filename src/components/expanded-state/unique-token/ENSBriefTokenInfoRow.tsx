@@ -59,7 +59,7 @@ export default function ENSBriefTokenInfoRow({
   ]);
 
   return (
-    <Columns space="10px">
+    <Columns space={10}>
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         color={colors.whiteLabel}
@@ -85,7 +85,7 @@ export default function ENSBriefTokenInfoRow({
                 scaleTo={0.75}
                 testID="unique-token-expanded-state-extend-duration"
               >
-                <Inset left="4px">
+                <Inset left={4}>
                   <TokenInfoValue
                     activeOpacity={0}
                     align="right"

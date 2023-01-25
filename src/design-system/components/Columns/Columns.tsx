@@ -6,13 +6,12 @@ import {
   AlignVertical,
   alignVerticalToFlexAlign,
 } from '../../layout/alignment';
-import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
 type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 
 export interface ColumnProps {
-  width?: Width | 'content';
+  width?: number | 'content';
   children?: ReactNode;
 }
 
@@ -112,7 +111,7 @@ export function Columns({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={space ? negateSpace(space) : undefined}
+      marginRight={space ? -space : undefined}
     >
       {Children.map(flattenChildren(children), child => {
         const columnProps = getColumnProps(child);

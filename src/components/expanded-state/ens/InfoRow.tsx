@@ -29,7 +29,7 @@ import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
   return (
-    <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
+    <Inline alignHorizontal="justify" horizontalspace={24} wrap={false}>
       <Box
         style={{
           backgroundColor: colors.alpha(colors.blueGreyDark, 0.04),
@@ -118,10 +118,10 @@ export default function InfoRow({
   ) : null;
 
   return (
-    <Inline alignHorizontal="justify" horizontalSpace="24px" wrap={false}>
+    <Inline alignHorizontal="justify" horizontalspace={24} wrap={false}>
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
-        <Inset top={isMultiline ? '15px (Deprecated)' : '10px'}>
-          <Inline space="4px">
+        <Inset top={isMultiline ? 15 : 10}>
+          <Inline space={4}>
             <Text
               color="secondary60 (Deprecated)"
               size="16px / 22px (Deprecated)"
@@ -149,13 +149,7 @@ export default function InfoRow({
               setIsMultiline(height > 40);
               setShow(true);
             }}
-            padding={
-              isSwitch
-                ? undefined
-                : isMultiline
-                ? ('15px (Deprecated)' as const)
-                : ('10px' as const)
-            }
+            padding={isSwitch ? undefined : isMultiline ? 15 : 10}
             style={{
               backgroundColor: isSwitch
                 ? 'transparent'
@@ -166,9 +160,9 @@ export default function InfoRow({
               opacity: show ? 1 : 0,
             }}
           >
-            <Inline alignVertical="center" space="6px">
+            <Inline alignVertical="center" space={6}>
               {icon ? (
-                <Bleed vertical="6px">
+                <Bleed vertical={6}>
                   <Icon
                     color={colors.whiteLabel}
                     height="18"

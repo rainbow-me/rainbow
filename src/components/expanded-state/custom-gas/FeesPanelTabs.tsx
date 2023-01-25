@@ -43,7 +43,7 @@ const TabPill = ({
       onPress={handleOnPress}
       scaleTo={0.8}
       testID={testID}
-      paddingHorizontal="5px (Deprecated)"
+      paddingHorizontal={5}
     >
       <AccentColorProvider
         color={
@@ -54,8 +54,8 @@ const TabPill = ({
       >
         <Box
           background="accent"
-          height="30px"
-          paddingHorizontal="10px"
+          height={30}
+          paddingHorizontal={10}
           borderRadius={15}
           alignItems="center"
           style={{
@@ -66,7 +66,7 @@ const TabPill = ({
             elevation: 5,
           }}
         >
-          <Inset vertical={{ custom: IS_ANDROID ? 8 : 9 }}>
+          <Inset vertical={IS_ANDROID ? 8 : 9}>
             <Text
               size="16px / 22px (Deprecated)"
               color={{

@@ -22,7 +22,7 @@ const docs: DocsType = {
       name: 'Weights',
       Example: () =>
         source(
-          <Stack space="12px">
+          <Stack space={12}>
             <Text color="label" size="17pt" weight="regular">
               Regular
             </Text>

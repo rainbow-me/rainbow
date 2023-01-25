@@ -4,7 +4,6 @@ import {
   AlignVertical,
   alignVerticalToFlexAlign,
 } from '../../layout/alignment';
-import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
 type Height = Exclude<NonNullable<BoxProps['height']>, 'full'>;
@@ -43,7 +42,7 @@ const getRowProps = (node: NonNullable<ReactNode>): RowProps | null =>
     : null;
 
 interface PrivateRowProps extends RowProps {
-  space?: Space;
+  space?: number;
   alignHorizontal: AlignHorizontal | undefined;
 }
 
@@ -83,7 +82,7 @@ const alignHorizontalToFlexAlign = {
 type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
 
 export interface RowsProps {
-  space?: Space;
+  space?: number;
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
@@ -122,7 +121,7 @@ export function Rows({
       justifyContent={
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
       }
-      marginBottom={space ? negateSpace(space) : undefined}
+      marginBottom={space ? -space : undefined}
     >
       {Children.map(flattenedChildren, child => {
         const rowProps = getRowProps(child);

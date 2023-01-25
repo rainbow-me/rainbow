@@ -7,7 +7,7 @@ export function ProfileRowWrapper({ children }: { children: React.ReactNode }) {
     <Box
       alignItems="center"
       width="full"
-      marginTop={{ custom: -ProfileStickyHeaderHeight }}
+      marginTop={-ProfileStickyHeaderHeight}
     >
       {children}
     </Box>

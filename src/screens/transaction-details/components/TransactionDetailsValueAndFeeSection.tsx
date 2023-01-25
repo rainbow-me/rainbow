@@ -54,8 +54,8 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   return (
     <>
       <TransactionDetailsDivider />
-      <Box paddingVertical="20px">
-        <Stack space="20px">
+      <Box paddingVertical={20}>
+        <Stack space={20}>
           {value && (
             <DoubleLineTransactionDetailsRow
               leftComponent={

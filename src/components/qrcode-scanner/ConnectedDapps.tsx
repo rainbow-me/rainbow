@@ -32,16 +32,16 @@ function ConnectedDapps() {
           alignItems="center"
           justifyContent="center"
           background="accent"
-          height={{ custom: 44 }}
+          height={44}
         >
           <ColorModeProvider value="darkTinted">
-            <Inset left="8px" right={{ custom: 16 }}>
-              <Inline alignVertical="center" space="8px">
+            <Inset left={8} right={16}>
+              <Inline alignVertical="center" space={8}>
                 <Box
                   as={ImgixImage}
                   source={rainbowIconCircle as Source}
-                  height={{ custom: 28 }}
-                  width={{ custom: 28 }}
+                  height={28}
+                  width={28}
                 />
                 <Text color="label" weight="bold" size="17pt">
                   {walletConnectorsByDappName.length === 1

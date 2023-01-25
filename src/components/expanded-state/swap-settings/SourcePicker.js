@@ -85,10 +85,10 @@ export default function SourcePicker({ onSelect, currentSource }) {
       <Column width="content">
         <Box
           as={ButtonPressAnimation}
-          {...(ios ? { marginVertical: '-12px' } : {})}
+          {...(ios ? { marginVertical: -12 } : {})}
           // @ts-expect-error
           onPress={openRoutesExplainer}
-          paddingVertical="12px"
+          paddingVertical={12}
           testID="swap-settings-routes-label"
         >
           <Text
@@ -117,12 +117,12 @@ export default function SourcePicker({ onSelect, currentSource }) {
           <Box
             background="body (Deprecated)"
             borderRadius={40}
-            paddingHorizontal="10px"
-            paddingVertical="6px"
+            paddingHorizontal={10}
+            paddingVertical={6}
             shadow="21px light (Deprecated)"
             // shadow clipped on android by ButtonPressAnimation.android.tsx inside <ContextMenuButton>
           >
-            <Inline alignVertical="center" horizontalSpace="4px">
+            <Inline alignVertical="center" horizontalspace={4}>
               <ImgixImage
                 height={20}
                 source={imageSource}

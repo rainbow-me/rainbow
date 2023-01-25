@@ -25,7 +25,7 @@ export default function ActionButton({
   children,
   icon,
   onPress,
-  paddingHorizontal = '12px',
+  paddingHorizontal = 12,
   variant = 'solid',
   testID,
 }: ActionButtonProps) {
@@ -48,7 +48,7 @@ export default function ActionButton({
           alignItems="center"
           background="action (Deprecated)"
           borderRadius={18}
-          height="36px"
+          height={36}
           justifyContent="center"
           {...(variant === 'solid' && {
             shadow: '30px light accent (Deprecated)',
@@ -63,7 +63,7 @@ export default function ActionButton({
             },
           })}
           {...(isIconOnly && {
-            width: { custom: 36 },
+            width: 36,
           })}
         >
           <Inset horizontal={isIconOnly ? undefined : paddingHorizontal}>

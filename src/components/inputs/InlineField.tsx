@@ -117,8 +117,8 @@ export default function InlineField({
   return (
     <Columns>
       <Column width="1/3">
-        <Inset top="19px (Deprecated)">
-          <Inline space="4px">
+        <Inset top={19}>
+          <Inline space={4}>
             <Text
               color={
                 errorMessage ? { custom: colors.red } : 'primary (Deprecated)'
@@ -129,12 +129,12 @@ export default function InlineField({
               {label}
             </Text>
             {errorMessage && (
-              <Bleed space="10px">
+              <Bleed space={10}>
                 <ButtonPressAnimation
                   onPress={() => Alert.alert(errorMessage)}
                   testID={`${testID}-error`}
                 >
-                  <Inset space="10px">
+                  <Inset space={10}>
                     <Text
                       color={{ custom: colors.red }}
                       size={textSize}
@@ -150,9 +150,9 @@ export default function InlineField({
         </Inset>
       </Column>
       <Column>
-        <Inline alignVertical="center" space="2px" wrap={false}>
+        <Inline alignVertical="center" space={2} wrap={false}>
           {startsWith && (
-            <Inset top={ios ? '2px' : '1px (Deprecated)'}>
+            <Inset top={ios ? 2 : 1}>
               <Text
                 color="secondary30 (Deprecated)"
                 size="16px / 22px (Deprecated)"

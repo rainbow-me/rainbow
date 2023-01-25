@@ -170,7 +170,7 @@ export default function ConfirmExchangeButton({
 
   return (
     <Box>
-      <Rows alignHorizontal="center" alignVertical="bottom" space="8px">
+      <Rows alignHorizontal="center" alignVertical="bottom" space={8}>
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}

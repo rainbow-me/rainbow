@@ -18,12 +18,12 @@ export function PairHardwareWalletSuccessSheet() {
   return (
     <Layout
       header={
-        <Inset horizontal="36px">
-          <Stack alignHorizontal="center" space="20px">
+        <Inset horizontal={36}>
+          <Stack alignHorizontal="center" space={20}>
             <Text align="center" color="label" weight="bold" size="26pt">
               {i18n.t(TRANSLATIONS.pair_successful)}
             </Text>
-            <Stack space="10px">
+            <Stack space={10}>
               <Text
                 align="center"
                 color="labelTertiary"
@@ -37,7 +37,7 @@ export function PairHardwareWalletSuccessSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px">
+        <Inset horizontal={20}>
           <SheetActionButton
             color={buttonColor}
             label={i18n.t(i18n.l.button.next)}

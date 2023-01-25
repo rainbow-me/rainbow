@@ -16,7 +16,7 @@ export const basicUsage = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Stack space="12px">
+      <Stack space={12}>
         <Placeholder />
         <Placeholder />
         <Placeholder />
@@ -28,7 +28,7 @@ export const customSpace = {
   name: 'Custom space',
   Example: () =>
     source(
-      <Stack space={{ custom: 5 }}>
+      <Stack space={5}>
         <Placeholder />
         <Placeholder />
         <Placeholder />
@@ -40,14 +40,14 @@ export const nested: Example = {
   name: 'Nested',
   Example: () =>
     source(
-      <Inset horizontal="20px" vertical="24px">
-        <Stack space="44px">
-          <Stack space="12px">
+      <Inset horizontal={20} vertical={24}>
+        <Stack space={44}>
+          <Stack space={12}>
             <Placeholder />
             <Placeholder />
             <Placeholder />
           </Stack>
-          <Stack space="12px">
+          <Stack space={12}>
             <Placeholder />
             <Placeholder />
             <Placeholder />
@@ -60,7 +60,7 @@ export const withText: Example = {
   name: 'With text',
   Example: () =>
     source(
-      <Stack space="16px">
+      <Stack space={16}>
         <Text color="label" size="17pt">
           Lorem ipsum
         </Text>
@@ -78,7 +78,7 @@ export const withCenterAlignment: Example = {
   name: 'With center alignment',
   Example: () =>
     source(
-      <Stack alignHorizontal="center" space="20px">
+      <Stack alignHorizontal="center" space={20}>
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />
@@ -90,7 +90,7 @@ export const withSeparators: Example = {
   name: 'With separators',
   Example: () =>
     source(
-      <Stack separator={<MockDivider />} space="20px">
+      <Stack separator={<MockDivider />} space={20}>
         <Placeholder />
         <Placeholder />
         <Placeholder />
@@ -102,7 +102,7 @@ export const withCenterAlignmentAndDividers: Example = {
   name: 'With center alignment and dividers',
   Example: () =>
     source(
-      <Stack alignHorizontal="center" separator={<MockDivider />} space="20px">
+      <Stack alignHorizontal="center" separator={<MockDivider />} space={20}>
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />
@@ -114,7 +114,7 @@ export const withRightAlignmentAndDividers: Example = {
   name: 'With right alignment and dividers',
   Example: () =>
     source(
-      <Stack alignHorizontal="right" separator={<MockDivider />} space="20px">
+      <Stack alignHorizontal="right" separator={<MockDivider />} space={20}>
         <Placeholder width={30} />
         <Placeholder width={90} />
         <Placeholder width={60} />

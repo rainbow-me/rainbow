@@ -37,8 +37,8 @@ export const OpRewardsCard: React.FC = () => {
           overflow="hidden"
         />
       </Cover>
-      <Stack space="32px">
-        <Stack space="10px">
+      <Stack space={32}>
+        <Stack space={10}>
           <Text
             color={{ custom: colors.networkColors.optimism }}
             size="20pt"
@@ -58,7 +58,7 @@ export const OpRewardsCard: React.FC = () => {
         </Stack>
         <ButtonPressAnimation onPress={navigateToRewardsSheet} scaleTo={0.96}>
           <Box
-            height="36px"
+            height={36}
             style={{ backgroundColor: colors.networkColors.optimism }}
             borderRadius={18}
             justifyContent="center"

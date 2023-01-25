@@ -11,7 +11,7 @@ const ProfileDescription = ({ description }: { description?: string }) => {
   const text = description.replace(LINK_REGEX, DIVIDER).split(DIVIDER);
 
   return (
-    <Inline alignVertical="center" verticalSpace="10px">
+    <Inline alignVertical="center" verticalSpace={10}>
       {text?.map((t, i) => (
         <>
           <Text

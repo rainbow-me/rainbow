@@ -12,7 +12,6 @@ import MarkdownDisplay, {
   ASTNode,
   RenderRules,
 } from 'react-native-markdown-display';
-import { negateSpace, Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
 import { Box } from '../Box/Box';
@@ -27,18 +26,18 @@ const styles = StyleSheet.create({
 });
 
 const defaultProps: {
-  listSpace: Space;
-  paragraphSpace: Space;
+  listSpace: number;
+  paragraphSpace: number;
   size: NonNullable<TextProps['size']>;
 } = {
-  listSpace: '19px (Deprecated)',
-  paragraphSpace: '30px (Deprecated)',
+  listSpace: 19,
+  paragraphSpace: 30,
   size: '16px / 22px (Deprecated)',
 };
 
 interface MarkdownStackContextObject {
-  paragraphSpace: Space;
-  listSpace: Space;
+  paragraphSpace: number;
+  listSpace: number;
   depth: number;
 }
 const MarkdownStackContext = createContext<MarkdownStackContextObject>({
@@ -48,8 +47,8 @@ const MarkdownStackContext = createContext<MarkdownStackContextObject>({
 });
 
 interface MarkdownStackProps {
-  paragraphSpace?: Space;
-  listSpace?: Space;
+  paragraphSpace?: number;
+  listSpace?: number;
   children: ReactNode;
 }
 
@@ -68,7 +67,7 @@ function MarkdownStack({
         listSpace,
       ])}
     >
-      <Box marginBottom={negateSpace(depth === 1 ? paragraphSpace : listSpace)}>
+      <Box marginBottom={depth === 1 ? -paragraphSpace : -listSpace}>
         {children}
       </Box>
     </MarkdownStackContext.Provider>
@@ -121,8 +120,8 @@ export type MarkdownTextProps = {
   color: TextProps['color'];
   heading1Color?: TextProps['color'];
   heading2Color?: TextProps['color'];
-  paragraphSpace: Space;
-  listSpace: Space;
+  paragraphSpace: number;
+  listSpace: number;
   handleLinkPress?: (url: string) => void;
 };
 

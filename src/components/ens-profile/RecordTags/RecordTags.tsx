@@ -68,8 +68,8 @@ export default function RecordTags({
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <Inset horizontal="19px (Deprecated)">
-        <Inline space="10px">
+      <Inset horizontal={19}>
+        <Inline space={10}>
           {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
             recordValue ? (
               <RecordTag
@@ -140,14 +140,14 @@ function Tag({
       borderRadius={46}
       colors={gradients[color]}
       end={{ x: 1, y: 0 }}
-      height="30px"
+      height={30}
       justifyContent="center"
       start={{ x: 0, y: 0 }}
     >
-      <Inset horizontal="10px">
-        <Inline alignVertical="center" space="6px">
+      <Inset horizontal={10}>
+        <Inline alignVertical="center" space={6}>
           {icon && (
-            <Bleed vertical="2px">
+            <Bleed vertical={2}>
               <Icon
                 color={iconColors[color]}
                 height="17"
@@ -199,10 +199,10 @@ function RecordTag({
 
 export function Placeholder() {
   return (
-    <Box height={{ custom: 30 }}>
+    <Box height={30}>
       <Skeleton animated>
-        <Inset horizontal="19px (Deprecated)">
-          <Inline space="8px" wrap={false}>
+        <Inset horizontal={19}>
+          <Inline space={8} wrap={false}>
             <PlaceholderItem />
             <PlaceholderItem />
             <PlaceholderItem />
@@ -219,8 +219,8 @@ export function PlaceholderItem() {
     <Box
       background="body (Deprecated)"
       borderRadius={30}
-      height={{ custom: 30 }}
-      width={{ custom: 140 }}
+      height={30}
+      width={140}
     />
   );
 }

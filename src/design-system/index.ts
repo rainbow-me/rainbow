@@ -38,7 +38,6 @@ export type { InsetProps } from './components/Inset/Inset';
 export type { MarkdownTextProps } from './components/MarkdownText/MarkdownText';
 export type { RowsProps, RowProps } from './components/Rows/Rows';
 export type { SeparatorProps } from './components/Separator/Separator';
-export type { Space } from './layout/space';
 export type { StackProps } from './components/Stack/Stack';
 export type { TextLinkProps } from './components/TextLink/TextLink';
 export type { TextProps } from './components/Text/Text';

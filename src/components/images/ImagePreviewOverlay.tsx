@@ -317,14 +317,14 @@ function ImagePreview({
                       ? deviceHeight
                       : deviceHeight - safeAreaInsetValues.top,
                   }}
-                  left="0px"
+                  left={0}
                   position="absolute"
                   shouldRasterizeIOS
                   style={{
                     backgroundColor: colors.trueBlack,
                     overflow: 'hidden',
                   }}
-                  width={{ custom: deviceWidth }}
+                  width={deviceWidth}
                 >
                   <Box style={position.coverAsObject}>
                     <Box

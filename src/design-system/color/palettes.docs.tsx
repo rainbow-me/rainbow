@@ -16,7 +16,7 @@ import {
 } from './palettes';
 
 const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
-  <Stack space="24px">
+  <Stack space={24}>
     <Text color="label" size="17pt" weight="bold">
       {mode} mode
     </Text>
@@ -26,7 +26,7 @@ const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
           backgroundColors
         ) as (keyof typeof backgroundColors)[]).map(
           (color: BackgroundColor) => (
-            <Box background={color} key={color} padding="24px">
+            <Box background={color} key={color} padding={24}>
               <Text color="label" size="17pt" weight="bold">
                 {color}
               </Text>
@@ -39,13 +39,13 @@ const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
 );
 
 const ForegroundColors = ({ mode }: { mode: ColorMode }) => (
-  <Stack space="24px">
+  <Stack space={24}>
     <Text color="label" size="17pt" weight="bold">
       {mode} mode
     </Text>
     <ColorModeProvider value={mode}>
-      <Box background="body (Deprecated)" padding="24px">
-        <Stack space="12px">
+      <Box background="body (Deprecated)" padding={24}>
+        <Stack space={12}>
           {textColors.map(color => (
             <Text color={color} key={color} size="17pt" weight="bold">
               {color}
@@ -69,7 +69,7 @@ const docs: DocsType = {
       enablePlayroom: false,
       Example: () =>
         source(
-          <Columns space="24px">
+          <Columns space={24}>
             <BackgroundColors mode="light" />
             <BackgroundColors mode="dark" />
           </Columns>
@@ -81,7 +81,7 @@ const docs: DocsType = {
       enablePlayroom: false,
       Example: () =>
         source(
-          <Columns space="24px">
+          <Columns space={24}>
             <ForegroundColors mode="light" />
             <ForegroundColors mode="dark" />
           </Columns>

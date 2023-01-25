@@ -5,7 +5,6 @@ import React, {
   ReactNode,
 } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -19,7 +18,7 @@ type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
 export type StackProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
-  space?: Space;
+  space?: number;
   separator?: ReactElement;
 };
 

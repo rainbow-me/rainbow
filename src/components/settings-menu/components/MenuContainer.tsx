@@ -9,7 +9,7 @@ interface MenuContainerProps {
 const MenuContainer = ({ children, testID }: MenuContainerProps) => {
   return (
     // ios scroll fix
-    <Inset {...(ios && { bottom: '42px (Deprecated)', top: '12px' })}>
+    <Inset {...(ios && { bottom: 42, top: 12 })}>
       <ScrollView
         scrollEventThrottle={32}
         // ios scroll fix
@@ -17,14 +17,14 @@ const MenuContainer = ({ children, testID }: MenuContainerProps) => {
         testID={testID}
       >
         <Box
-          paddingHorizontal="19px (Deprecated)"
+          paddingHorizontal={19}
           // fix clipped shadows on android
           {...(android && {
-            paddingBottom: { custom: 22 },
-            paddingTop: { custom: 7 },
+            paddingBottom: 22,
+            paddingTop: 7,
           })}
         >
-          <Stack space="36px">{children}</Stack>
+          <Stack space={36}>{children}</Stack>
         </Box>
       </ScrollView>
     </Inset>

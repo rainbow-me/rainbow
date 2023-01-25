@@ -158,16 +158,16 @@ export default function ENSIntroSheet() {
   return (
     <Box
       background="body (Deprecated)"
-      paddingTop={{ custom: topPadding }}
+      paddingTop={topPadding}
       style={{ height: contentHeight }}
       testID="ens-intro-sheet"
     >
-      <Inset top={isSmallPhone ? '15px (Deprecated)' : '36px'}>
+      <Inset top={isSmallPhone ? 15 : 36}>
         <Box height="full">
           <Rows>
             <Row>
-              <Stack space={{ custom: isSmallPhone ? 30 : 38 }}>
-                <Stack alignHorizontal="center" space={{ custom: 17 }}>
+              <Stack space={isSmallPhone ? 30 : 38}>
+                <Stack alignHorizontal="center" space={17}>
                   <Heading
                     align="center"
                     color="primary (Deprecated)"
@@ -185,20 +185,20 @@ export default function ENSIntroSheet() {
                     {lang.t('profiles.intro.ens_profile')}
                   </Heading>
                 </Stack>
-                <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
-                  <Bleed left="10px">
+                <Stack space={isSmallPhone ? 30 : 40}>
+                  <Bleed left={10}>
                     {IS_TESTING !== 'true' && (
                       <IntroMarquee isSmallPhone={isSmallPhone} />
                     )}
                   </Bleed>
-                  <Inset horizontal="34px (Deprecated)">
+                  <Inset horizontal={34}>
                     <Separator color="divider60 (Deprecated)" />
                   </Inset>
                 </Stack>
                 <Stack alignHorizontal="center">
-                  <Box width={{ custom: contentWidth }}>
-                    <Inset top="6px">
-                      <Stack space={isSmallPhone ? '24px' : '36px'}>
+                  <Box width={contentWidth}>
+                    <Inset top={6}>
+                      <Stack space={isSmallPhone ? 24 : 36}>
                         <InfoRow
                           description={lang.t(
                             'profiles.intro.wallet_address_info.description'
@@ -233,13 +233,10 @@ export default function ENSIntroSheet() {
               </Stack>
             </Row>
             <Row height="content">
-              <Box paddingBottom="4px">
-                <Inset
-                  space="19px (Deprecated)"
-                  {...(isSmallPhone && { bottom: '8px' })}
-                >
+              <Box paddingBottom={4}>
+                <Inset space={19} {...(isSmallPhone && { bottom: 8 })}>
                   {isLoading && (
-                    <Box alignItems="center" paddingBottom="15px (Deprecated)">
+                    <Box alignItems="center" paddingBottom={15}>
                       {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
@@ -247,7 +244,7 @@ export default function ENSIntroSheet() {
                   {isFetched && (
                     <>
                       {controlledDomains?.length === 0 ? (
-                        <Inset bottom={android ? '10px' : undefined}>
+                        <Inset bottom={android ? 10 : undefined}>
                           <SheetActionButton
                             color={colors.appleBlue}
                             label={
@@ -261,7 +258,7 @@ export default function ENSIntroSheet() {
                           />
                         </Inset>
                       ) : (
-                        <Stack space="12px">
+                        <Stack space={12}>
                           {uniqueDomain?.name ? (
                             <SheetActionButton
                               color={colors.appleBlue}
@@ -346,13 +343,13 @@ function InfoRow({
   const { colors } = useTheme();
 
   return (
-    <Columns space={{ custom: 13 }}>
+    <Columns space={13}>
       <Column width="content">
         <MaskedView
           maskElement={
             <Box
               {...(android && {
-                paddingTop: '6px',
+                paddingTop: 6,
               })}
             >
               <Heading
@@ -371,15 +368,15 @@ function InfoRow({
             as={LinearGradient}
             colors={colors.gradients.appleBlueTintToAppleBlue}
             end={{ x: 0.5, y: 1 }}
-            height={{ custom: 50 }}
-            marginTop="-10px"
+            height={50}
+            marginTop={-10}
             start={{ x: 0, y: 0 }}
             width="full"
           />
         </MaskedView>
       </Column>
-      <Bleed top="3px">
-        <Stack space="12px">
+      <Bleed top={3}>
+        <Stack space={12}>
           <Text
             color="primary (Deprecated)"
             size="16px / 22px (Deprecated)"

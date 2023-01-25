@@ -42,7 +42,7 @@ const docs: DocsType = {
         Example={() =>
           source(
             <AccentColorProvider color="#ff0000">
-              <Box background="accent" padding="19px (Deprecated)">
+              <Box background="accent" padding={19}>
                 <Text color="label" size="17pt">
                   This text will be inverted automatically.
                 </Text>

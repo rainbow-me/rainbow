@@ -5,25 +5,14 @@ import {
   useForegroundColors,
 } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
-import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
-import {
-  NegativeSpace,
-  negativeSpace,
-  positionSpace,
-  PositionSpace,
-  Space,
-  space,
-} from '../../layout/space';
+import { Shadow, shadows } from '../../layout/shadow';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
 } from '../BackgroundProvider/BackgroundProvider';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
-
-const positions = ['absolute'] as const;
-type Position = typeof positions[number];
 
 export function resolveToken<TokenName extends string, TokenValue, CustomValue>(
   scale: Record<TokenName, TokenValue>,
@@ -43,39 +32,39 @@ export type BoxProps = {
   borderTopRightRadius?: number;
   borderBottomLeftRadius?: number;
   borderBottomRightRadius?: number;
-  bottom?: PositionSpace;
+  bottom?: number;
   children?: ReactNode;
   flexBasis?: 0;
   flexDirection?: 'row' | 'row-reverse' | 'column';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
   flexWrap?: 'wrap';
-  height?: Height;
-  left?: PositionSpace;
+  height?: Height | number;
+  left?: number;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
     | 'center'
     | 'space-between'
     | 'space-around';
-  margin?: NegativeSpace;
-  marginBottom?: NegativeSpace;
-  marginHorizontal?: NegativeSpace;
-  marginLeft?: NegativeSpace;
-  marginRight?: NegativeSpace;
-  marginTop?: NegativeSpace;
-  marginVertical?: NegativeSpace;
-  padding?: Space;
-  paddingBottom?: Space;
-  paddingHorizontal?: Space;
-  paddingLeft?: Space;
-  paddingRight?: Space;
-  paddingTop?: Space;
-  paddingVertical?: Space;
-  position?: Position;
-  right?: PositionSpace;
-  top?: PositionSpace;
-  width?: Width;
+  margin?: number;
+  marginBottom?: number;
+  marginHorizontal?: number;
+  marginLeft?: number;
+  marginRight?: number;
+  marginTop?: number;
+  marginVertical?: number;
+  padding?: number;
+  paddingBottom?: number;
+  paddingHorizontal?: number;
+  paddingLeft?: number;
+  paddingRight?: number;
+  paddingTop?: number;
+  paddingVertical?: number;
+  position?: number;
+  right?: number;
+  top?: number;
+  width?: Width | number;
   overflow?: 'hidden' | 'visible' | 'scroll';
 } & (
   | {
@@ -124,7 +113,7 @@ export const Box = forwardRef(function Box(
     borderTopLeftRadius,
     borderTopRadius,
     borderTopRightRadius,
-    bottom: bottomProp,
+    bottom,
     children,
     flexBasis,
     flexDirection,
@@ -133,55 +122,38 @@ export const Box = forwardRef(function Box(
     flexWrap,
     height: heightProp,
     justifyContent,
-    left: leftProp,
-    margin: marginProp,
-    marginBottom: marginBottomProp,
-    marginHorizontal: marginHorizontalProp,
-    marginLeft: marginLeftProp,
-    marginRight: marginRightProp,
-    marginTop: marginTopProp,
-    marginVertical: marginVerticalProp,
+    left,
+    margin,
+    marginBottom,
+    marginHorizontal,
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginVertical,
     overflow,
-    padding: paddingProp,
-    paddingBottom: paddingBottomProp,
-    paddingHorizontal: paddingHorizontalProp,
-    paddingLeft: paddingLeftProp,
-    paddingRight: paddingRightProp,
-    paddingTop: paddingTopProp,
-    paddingVertical: paddingVerticalProp,
+    padding,
+    paddingBottom,
+    paddingHorizontal,
+    paddingLeft,
+    paddingRight,
+    paddingTop,
+    paddingVertical,
     position,
-    right: rightProp,
+    right,
     shadow,
     style: styleProp,
-    top: topProp,
+    top,
     width: widthProp,
     ...restProps
   },
   ref
 ) {
-  const margin = resolveToken(negativeSpace, marginProp);
-  const marginBottom = resolveToken(negativeSpace, marginBottomProp);
-  const marginHorizontal = resolveToken(negativeSpace, marginHorizontalProp);
-  const marginLeft = resolveToken(negativeSpace, marginLeftProp);
-  const marginRight = resolveToken(negativeSpace, marginRightProp);
-  const marginTop = resolveToken(negativeSpace, marginTopProp);
-  const marginVertical = resolveToken(negativeSpace, marginVerticalProp);
-
-  const padding = resolveToken(space, paddingProp);
-  const paddingBottom = resolveToken(space, paddingBottomProp);
-  const paddingHorizontal = resolveToken(space, paddingHorizontalProp);
-  const paddingLeft = resolveToken(space, paddingLeftProp);
-  const paddingRight = resolveToken(space, paddingRightProp);
-  const paddingTop = resolveToken(space, paddingTopProp);
-  const paddingVertical = resolveToken(space, paddingVerticalProp);
-
-  const bottom = resolveToken(positionSpace, bottomProp);
-  const left = resolveToken(positionSpace, leftProp);
-  const right = resolveToken(positionSpace, rightProp);
-  const top = resolveToken(positionSpace, topProp);
-
-  const width = resolveToken(widths, widthProp);
-  const height = resolveToken(heights, heightProp);
+  const width =
+    typeof widthProp === 'number' ? widthProp : resolveToken(widths, widthProp);
+  const height =
+    typeof heightProp === 'number'
+      ? heightProp
+      : resolveToken(heights, heightProp);
 
   const shadows = useShadow(shadow);
 

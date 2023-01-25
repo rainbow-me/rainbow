@@ -93,7 +93,7 @@ export default function NeedsBackupView() {
 
   return (
     <Box alignItems="center" height="full" width="full">
-      <Box marginTop="-10px">
+      <Box marginTop={-10}>
         <Text
           color={{ custom: colors.orangeLight }}
           size="14px / 19px (Deprecated)"
@@ -106,11 +106,11 @@ export default function NeedsBackupView() {
         alignItems="center"
         height="full"
         justifyContent="center"
-        marginTop="-36px"
+        marginTop={-36}
         width="full"
       >
         <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-        <Stack alignHorizontal="center" space="19px (Deprecated)">
+        <Stack alignHorizontal="center" space={19}>
           <Text
             color="primary (Deprecated)"
             size="20px / 24px (Deprecated)"
@@ -118,7 +118,7 @@ export default function NeedsBackupView() {
           >
             {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
           </Text>
-          <Box paddingBottom="24px" paddingHorizontal="42px (Deprecated)">
+          <Box paddingBottom={24} paddingHorizontal={42}>
             <Text
               align="center"
               color="secondary50 (Deprecated)"
@@ -133,7 +133,7 @@ export default function NeedsBackupView() {
             })}`}
             onPress={onIcloudBackup}
           />
-          <Box width={{ custom: ios ? 221 : 270 }}>
+          <Box width={ios ? 221 : 270}>
             <SheetActionButton
               color={colors.white}
               // @ts-ignore

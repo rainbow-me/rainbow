@@ -26,7 +26,7 @@ export default function ActionButtons({
   }, [primaryAddress, wallets]);
 
   return (
-    <Inline alignHorizontal="right" space="8px">
+    <Inline alignHorizontal="right" space={8}>
       <MoreButton address={primaryAddress} ensName={ensName} />
       {isOwner ? (
         <EditButton ensName={ensName} />

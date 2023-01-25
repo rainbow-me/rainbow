@@ -70,8 +70,8 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           showsVerticalScrollIndicator={false}
         >
           <Box
-            paddingHorizontal="20px"
-            paddingBottom="20px"
+            paddingHorizontal={20}
+            paddingBottom={20}
             onLayout={onSheetContentLayout}
           >
             <TransactionDetailsStatusActionsAndTimestampSection

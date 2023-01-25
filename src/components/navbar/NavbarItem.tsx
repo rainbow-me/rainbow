@@ -10,7 +10,7 @@ type NavbarItemProps = {
 };
 
 export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
-  const hitSlop: Space = '10px';
+  const hitSlop = 10;
   return (
     <Bleed space={hitSlop}>
       <Box

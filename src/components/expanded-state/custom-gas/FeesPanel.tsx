@@ -209,13 +209,13 @@ export default function FeesPanel({
       return (
         <Box
           as={ButtonPressAnimation}
-          paddingVertical="8px"
-          marginVertical="-8px"
+          paddingVertical={8}
+          marginVertical={-8}
           // @ts-expect-error
           onPress={openHelper}
           backgroundColor="accent"
         >
-          <Inline horizontalSpace="4px" alignVertical="center">
+          <Inline horizontalspace={4} alignVertical="center">
             <Text
               color="primary (Deprecated)"
               size="16px / 22px (Deprecated)"
@@ -223,7 +223,7 @@ export default function FeesPanel({
             >
               {label}
             </Text>
-            <Box marginBottom={IS_ANDROID ? '-4px' : undefined}>
+            <Box marginBottom={IS_ANDROID ? -14 : undefined}>
               <Text size="icon 16px" color={{ custom: color }} weight="bold">
                 {text}
               </Text>
@@ -410,7 +410,7 @@ export default function FeesPanel({
 
       return (
         (error && (
-          <Box paddingTop="8px">
+          <Box paddingTop={8}>
             <Text
               color={{ custom: colors.red }}
               size="16px / 22px (Deprecated)"
@@ -428,7 +428,7 @@ export default function FeesPanel({
           </Box>
         )) ||
         (warning && (
-          <Box paddingTop="8px">
+          <Box paddingTop={8}>
             <Text
               color={{ custom: colors.yellowFavorite }}
               size="16px / 22px (Deprecated)"
@@ -702,12 +702,12 @@ export default function FeesPanel({
 
   return (
     <Box as={KeyboardAvoidingView}>
-      <Inset bottom="12px">
+      <Inset bottom={12}>
         <Inline alignHorizontal="right">
           <Box
             as={ButtonPressAnimation}
-            paddingVertical="8px"
-            marginVertical="-8px"
+            paddingVertical={8}
+            marginVertical={-8}
             // @ts-expect-error
             onPress={() => openGasHelper(trendType)}
             scaleTo={1}
@@ -724,9 +724,9 @@ export default function FeesPanel({
           </Box>
         </Inline>
       </Inset>
-      <Rows space={{ custom: 16 }}>
+      <Rows space={16}>
         <Row>
-          <Box paddingBottom={{ custom: 14 }}>
+          <Box paddingBottom={14}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Box>
                 {renderRowLabel(lang.t('gas.current_base_fee'), trendType)}
@@ -761,7 +761,7 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
               </Box>
-              <Box marginRight="-5px (Deprecated)">
+              <Box marginRight={-5}>
                 <FeesGweiInput
                   buttonColor={colorForAsset}
                   inputRef={maxBaseFieldRef}
@@ -791,7 +791,7 @@ export default function FeesPanel({
                 )}
                 {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
               </Box>
-              <Box marginRight="-5px (Deprecated)">
+              <Box marginRight={-5}>
                 <FeesGweiInput
                   buttonColor={colorForAsset}
                   editable={!flashbotTransaction}
@@ -810,7 +810,7 @@ export default function FeesPanel({
         </Row>
 
         <Row>
-          <Box paddingTop={{ custom: 14 }}>
+          <Box paddingTop={14}>
             <Inline alignVertical="center" alignHorizontal="justify">
               <Text
                 color="primary (Deprecated)"

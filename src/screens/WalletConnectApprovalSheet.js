@@ -156,8 +156,8 @@ const NetworkPill = ({ chainIds }) => {
       >
         <Box
           borderRadius={99}
-          paddingVertical="8px"
-          paddingHorizontal="12px"
+          paddingVertical={8}
+          paddingHorizontal={12}
           justifyContent="center"
         >
           <RadialGradient
@@ -173,7 +173,7 @@ const NetworkPill = ({ chainIds }) => {
                   <Box
                     background="body (Deprecated)"
                     key={`availableNetwork-${network}`}
-                    marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                    marginLeft={index > 0 ? -4 : 0}
                     style={{
                       backgroundColor: colors.transparent,
                       zIndex: availableNetworks?.length - index,
@@ -199,7 +199,7 @@ const NetworkPill = ({ chainIds }) => {
               })}
             </Box>
 
-            <Box paddingHorizontal="12px">
+            <Box paddingHorizontal={12}>
               <Text
                 color="secondary60 (Deprecated)"
                 size="14px / 19px (Deprecated)"

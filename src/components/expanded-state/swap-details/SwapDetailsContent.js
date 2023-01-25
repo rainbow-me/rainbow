@@ -63,7 +63,7 @@ export default function SwapDetailsContent({
         testID="swap-details-state"
         {...props}
       >
-        <Rows space="24px">
+        <Rows space={24}>
           <SwapDetailsRow
             label={receivedSoldLabel}
             testID="swaps-details-value-row"
@@ -144,7 +144,7 @@ export default function SwapDetailsContent({
             </Box>
           )}
           {detailsExpanded && (
-            <Rows space="24px">
+            <Rows space={24}>
               <Separator color="divider80 (Deprecated)" />
               <SwapDetailsPriceRow
                 testID="swaps-details-price-row"

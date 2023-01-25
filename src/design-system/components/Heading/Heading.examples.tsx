@@ -20,7 +20,7 @@ export const sizes: Example[] = (Object.keys(
   Example: () =>
     source(
       <>
-        <Stack space="10px">
+        <Stack space={10}>
           <View>
             <Guide />
             <Heading color="primary (Deprecated)" size={size} weight="bold">
@@ -38,7 +38,7 @@ export const sizes: Example[] = (Object.keys(
             </Heading>
             <Guide />
           </View>
-          <Inline alignVertical="center" space="10px">
+          <Inline alignVertical="center" space={10}>
             <View style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
               <Heading color="primary (Deprecated)" size={size} weight="bold">
                 Bounding Box
@@ -117,7 +117,7 @@ export const withColor: Example = {
             padding: 24,
           }}
         >
-          <Stack space="24px">
+          <Stack space={24}>
             <ColorModeProvider value="dark">
               <Heading
                 color="primary (Deprecated)"

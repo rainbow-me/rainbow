@@ -16,7 +16,7 @@ export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
   return (
     <Inline alignVertical="center" wrap={false}>
       <Columns alignVertical="center">
-        <Inline space="10px" alignVertical="center">
+        <Inline space={10} alignVertical="center">
           <TransactionDetailsSymbol icon={icon} />
           <Text color="label" size="17pt" weight="semibold">
             {title}

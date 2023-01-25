@@ -11,20 +11,20 @@ const WaitENSConfirmationContent = ({
   seconds: number | undefined;
 }) => (
   <>
-    <Box paddingTop="24px">
+    <Box paddingTop={24}>
       <StepIndicator currentStep={2} steps={3} />
     </Box>
     <Rows alignHorizontal="center">
       <Row>
         <Box flexGrow={1} justifyContent="center">
-          <Inset horizontal="34px (Deprecated)">
-            <Stack space="34px (Deprecated)">
+          <Inset horizontal={34}>
+            <Stack space={34}>
               <LargeCountdownClock
                 initialSeconds={ENS_SECONDS_WAIT}
                 onFinished={() => {}}
                 seconds={seconds || ENS_SECONDS_WAIT}
               />
-              <Stack alignHorizontal="center" space="19px (Deprecated)">
+              <Stack alignHorizontal="center" space={19}>
                 <Heading
                   color="primary (Deprecated)"
                   size="23px / 27px (Deprecated)"

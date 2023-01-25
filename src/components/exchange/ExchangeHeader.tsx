@@ -10,8 +10,8 @@ interface ExchangeHeaderProps {
 export default function ExchangeHeader({ testID, title }: ExchangeHeaderProps) {
   return (
     <Box testID={`${testID}-header`}>
-      <Inset space="6px">
-        <Stack alignHorizontal="center" space="10px">
+      <Inset space={6}>
+        <Stack alignHorizontal="center" space={10}>
           {/* @ts-expect-error - Javascript Component */}
           <SheetHandle />
           {title && (

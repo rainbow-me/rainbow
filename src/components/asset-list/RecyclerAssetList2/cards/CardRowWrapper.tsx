@@ -3,7 +3,7 @@ import { Box, Inset } from '@/design-system';
 
 export const CardRowWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Inset horizontal="20px">
+    <Inset horizontal={20}>
       <Box alignItems="center">{children}</Box>
     </Inset>
   );

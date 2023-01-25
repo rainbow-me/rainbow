@@ -142,13 +142,13 @@ const TextButton = ({
 const headingSize: HeadingProps['size'] = '18px / 21px (Deprecated)';
 const textSize: TextProps['size'] = '18px / 27px (Deprecated)';
 const textColor: TextProps['color'] = 'secondary50 (Deprecated)';
-const sectionSpace: Space = '30px (Deprecated)';
-const paragraphSpace: Space = { custom: 22 };
-const listSpace: Space = '19px (Deprecated)';
+const sectionSpace = 30;
+const paragraphSpace = 22;
+const listSpace = 19;
 
 const Section = ({
   addonComponent,
-  paragraphSpace = '24px',
+  paragraphSpace = 24,
   title,
   titleEmoji,
   titleImageUrl,
@@ -163,21 +163,21 @@ const Section = ({
 }) => (
   <Stack space={paragraphSpace}>
     <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
-      <Inline alignVertical="center" space="8px">
-        <Box width={{ custom: 24 }}>
+      <Inline alignVertical="center" space={8}>
+        <Box width={24}>
           {titleImageUrl && (
-            <Bleed vertical="8px">
+            <Bleed vertical={8}>
               <Box
                 as={ImgixImage}
                 borderRadius={24}
-                height={{ custom: 24 }}
+                height={24}
                 source={{ uri: titleImageUrl }}
-                width={{ custom: 24 }}
+                width={24}
               />
             </Bleed>
           )}
           {titleEmoji && (
-            <Bleed right="1px (Deprecated)">
+            <Bleed right={1}>
               <Heading
                 containsEmoji
                 color="primary (Deprecated)"
@@ -480,7 +480,7 @@ const UniqueTokenExpandedState = ({
               opacity={ensCoverOpacity}
               yPosition={yPosition}
             >
-              <Inset bottom={sectionSpace} top={{ custom: 33 }}>
+              <Inset bottom={sectionSpace} top={33}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
                     {/* @ts-expect-error JavaScript component */}
@@ -505,9 +505,9 @@ const UniqueTokenExpandedState = ({
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>
-                <Inset horizontal="24px" vertical={sectionSpace}>
+                <Inset horizontal={24} vertical={sectionSpace}>
                   <Stack space={sectionSpace}>
-                    <Stack space="42px (Deprecated)">
+                    <Stack space={42}>
                       <Inline alignHorizontal="justify" wrap={false}>
                         {isActionsEnabled ? (
                           <TextButton onPress={handlePressShowcase}>
@@ -537,7 +537,7 @@ const UniqueTokenExpandedState = ({
                       />
                     </Stack>
                     {isNFT || isENS ? (
-                      <Columns space="15px (Deprecated)">
+                      <Columns space={15}>
                         {hasEditButton ? (
                           <SheetActionButton
                             color={imageColor}
@@ -599,8 +599,8 @@ const UniqueTokenExpandedState = ({
                     >
                       {(isNFT || isENS) && isSaleInfoSupported ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                          bottom={android ? '15px (Deprecated)' : '6px'}
-                          top={android ? '10px' : '4px'}
+                          bottom={android ? 15 : 6}
+                          top={android ? 10 : 4}
                         >
                           {isNFT && (
                             <NFTBriefTokenInfoRow
@@ -674,7 +674,7 @@ const UniqueTokenExpandedState = ({
                                   </TextButton>
                                 )
                               }
-                              paragraphSpace={{ custom: 22 }}
+                              paragraphspace={22}
                               title={`${lang.t(
                                 'expanded_state.unique_expanded.profile_info'
                               )}`}
@@ -691,7 +691,7 @@ const UniqueTokenExpandedState = ({
                             </Section>
                           )}
                           <Section
-                            paragraphSpace={{ custom: 22 }}
+                            paragraphspace={22}
                             title={`${lang.t(
                               'expanded_state.unique_expanded.configuration'
                             )}`}
@@ -715,7 +715,7 @@ const UniqueTokenExpandedState = ({
                       )}
                       {familyDescription ? (
                         <Section
-                          paragraphSpace={{ custom: 26 }}
+                          paragraphspace={26}
                           title={`${lang.t(
                             'expanded_state.unique_expanded.about',
                             { assetFamilyName: familyName }
@@ -729,7 +729,7 @@ const UniqueTokenExpandedState = ({
                                 bottom={
                                   android ? '15px (Deprecated)' : undefined
                                 }
-                                top="15px (Deprecated)"
+                                top={15}
                               >
                                 {/* @ts-expect-error JavaScript component */}
                                 <Link

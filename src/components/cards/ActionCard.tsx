@@ -41,7 +41,7 @@ export const ActionCard = ({
           icon={sfSymbolIcon}
           shadowColor="accent"
         />
-        <Stack space="10px">
+        <Stack space={10}>
           <Text color={{ custom: primaryTextColor }} size="20pt" weight="heavy">
             {title}
           </Text>

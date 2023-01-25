@@ -56,9 +56,9 @@ export default function LearnWebViewScreen() {
 
   const renderHeader = () => (
     <Box
-      top="0px"
+      top={0}
       background="surfacePrimaryElevated"
-      height={{ custom: HEADER_HEIGHT }}
+      height={HEADER_HEIGHT}
       width="full"
       justifyContent="center"
       alignItems="center"
@@ -66,7 +66,7 @@ export default function LearnWebViewScreen() {
       <Text align="center" color="label" size="20pt" weight="heavy">
         {i18n.t(i18n.l.cards.learn.learn)}
       </Text>
-      <Box position="absolute" right={{ custom: 20 }}>
+      <Box position="absolute" right={20}>
         <ButtonPressAnimation onPress={onPressShare}>
           <Text align="center" color="label" size="20pt" weight="bold">
             􀈂
@@ -106,8 +106,8 @@ export default function LearnWebViewScreen() {
             <Box
               background="surfacePrimaryElevated"
               width="full"
-              height={{ custom: contentHeight }}
-              paddingBottom={{ custom: HEADER_HEIGHT }}
+              height={contentHeight}
+              paddingBottom={HEADER_HEIGHT}
               alignItems="center"
               justifyContent="center"
             >

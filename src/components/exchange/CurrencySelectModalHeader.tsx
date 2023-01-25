@@ -36,7 +36,7 @@ export default function CurrencySelectModalHeader({
 
   return (
     <Box
-      height={{ custom: CurrencySelectModalHeaderHeight }}
+      height={CurrencySelectModalHeaderHeight}
       justifyContent="center"
       alignItems="center"
       width="full"
@@ -47,9 +47,9 @@ export default function CurrencySelectModalHeader({
       {showBackButton && (
         <Box
           position="absolute"
-          bottom="0px"
-          left="0px"
-          top={{ custom: 3 }}
+          bottom={0}
+          left={0}
+          top={3}
           justifyContent="center"
           alignItems="center"
         >
@@ -65,7 +65,7 @@ export default function CurrencySelectModalHeader({
         </Box>
       )}
       {showCoinIcon && (
-        <Inset right="4px">
+        <Inset right={4}>
           <CoinIcon
             size={20}
             {...defaultOutputAsset}

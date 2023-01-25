@@ -99,7 +99,7 @@ const docs: Docs = {
         source(
           <>
             <Guide />
-            <MarkdownText color="label" listSpace="20px" paragraphSpace="32px">
+            <MarkdownText color="label" listspace={20} paragraphspace={32}>
               {markdown}
             </MarkdownText>
             <Guide />
@@ -112,11 +112,7 @@ const docs: Docs = {
         source(
           <>
             <Guide />
-            <MarkdownText
-              color="label"
-              listSpace={{ custom: 30 }}
-              paragraphSpace="44px"
-            >
+            <MarkdownText color="label" listspace={30} paragraphspace={44}>
               {customSpaceMarkdown}
             </MarkdownText>
             <Guide />
@@ -131,8 +127,8 @@ const docs: Docs = {
             <Guide />
             <MarkdownText
               color="labelSecondary"
-              listSpace="20px"
-              paragraphSpace="32px"
+              listspace={20}
+              paragraphspace={32}
             >
               {headingsAndParagraphMarkdown}
             </MarkdownText>
@@ -150,8 +146,8 @@ const docs: Docs = {
               color="labelTertiary"
               heading1Color="label"
               heading2Color="labelSecondary"
-              listSpace="20px"
-              paragraphSpace="32px"
+              listspace={20}
+              paragraphspace={32}
             >
               {headingsAndParagraphMarkdown}
             </MarkdownText>

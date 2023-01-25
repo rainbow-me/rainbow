@@ -426,7 +426,7 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
       {networks && !hasBalance && (
-        <Box paddingBottom={{ custom: 27 }}>
+        <Box paddingBottom={27}>
           <AvailableNetworks asset={assetWithPrice} networks={networks} />
         </Box>
       )}

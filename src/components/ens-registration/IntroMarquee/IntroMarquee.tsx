@@ -66,7 +66,7 @@ export default function IntroMarquee({
   );
 
   return (
-    <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
+    <Box height={isSmallPhone ? 90 : 100}>
       <MarqueeList
         height={isSmallPhone ? 90 : 100}
         items={items}
@@ -107,16 +107,16 @@ function ENSAvatarPlaceholder({
       scaleTo={0.8}
       testID={testID}
     >
-      <Box paddingHorizontal="12px">
-        <Stack alignHorizontal="center" space={{ custom: 13 }}>
+      <Box paddingHorizontal={12}>
+        <Stack alignHorizontal="center" space={13}>
           <Box
             as={ImgixImage}
             background="body (Deprecated)"
             borderRadius={80}
-            height={{ custom: 80 }}
+            height={80}
             shadow="15px light (Deprecated)"
             source={{ uri: ensAvatarUrl(name) }}
-            width={{ custom: 80 }}
+            width={80}
           />
           <Text
             align="center"

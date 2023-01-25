@@ -105,9 +105,9 @@ export default function DepositInfo({
         testID="deposit-info"
       >
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-          <Inset left="2px" right="10px" vertical={android ? '6px' : '10px'}>
+          <Inset left={2} right={10} vertical={android ? 6 : 10}>
             <Inline alignHorizontal="center" alignVertical="center">
-              <Box paddingRight="5px (Deprecated)">
+              <Box paddingRight={5}>
                 <CoinIcon
                   address={asset?.address}
                   size={20}

@@ -17,10 +17,7 @@ export function ProfileBalanceRow({ totalValue }: { totalValue: string }) {
   return (
     <>
       {isLoadingAssets ? (
-        <Box
-          height={{ custom: placeholderHeight }}
-          width={{ custom: placeholderWidth }}
-        >
+        <Box height={placeholderHeight} width={placeholderWidth}>
           <Skeleton>
             <FakeText height={placeholderHeight} width={placeholderWidth} />
           </Skeleton>

@@ -11,7 +11,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
   return (
     <>
       {!!header && (
-        <Box paddingBottom="12px" paddingHorizontal={{ custom: 16 }}>
+        <Box paddingBottom={12} paddingHorizontal={16}>
           <Text
             color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
@@ -32,7 +32,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
         </Stack>
       </Box>
       {!!description && (
-        <Box paddingHorizontal={{ custom: 16 }} paddingTop={{ custom: 17 }}>
+        <Box paddingHorizontal={16} paddingTop={17}>
           <Text
             color="secondary60 (Deprecated)"
             size="14px / 19px (Deprecated)"

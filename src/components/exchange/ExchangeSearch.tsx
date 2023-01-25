@@ -213,19 +213,15 @@ const ExchangeSearch: ForwardRefRenderFunction<
       <Box
         flexDirection="row"
         borderRadius={ExchangeSearchHeight / 2}
-        height={{ custom: ExchangeSearchHeight }}
-        paddingLeft={isSearchModeEnabled ? '12px' : undefined}
-        paddingRight={isSearchModeEnabled ? '36px' : undefined}
+        height={ExchangeSearchHeight}
+        paddingLeft={isSearchModeEnabled ? 12 : undefined}
+        paddingRight={isSearchModeEnabled ? 36 : undefined}
       >
         <BackgroundGradient />
 
         {isSearchModeEnabled && !IS_TEST && (
           <>
-            <Box
-              as={Animated.View}
-              paddingTop={{ custom: 14 }}
-              style={searchIconStyle}
-            >
+            <Box as={Animated.View} paddingTop={14} style={searchIconStyle}>
               <Text
                 weight="semibold"
                 size="17pt"
@@ -237,11 +233,11 @@ const ExchangeSearch: ForwardRefRenderFunction<
 
             <Box
               as={Animated.View}
-              height={{ custom: 20 }}
-              width={{ custom: 20 }}
+              height={20}
+              width={20}
               position="absolute"
-              left={{ custom: 12 }}
-              top={{ custom: 10 }}
+              left={12}
+              top={10}
               style={spinnerStyle}
             >
               <ImgixImage

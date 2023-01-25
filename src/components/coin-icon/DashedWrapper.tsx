@@ -32,7 +32,7 @@ export default function DashedWrapper(props: DashedWrapperProps) {
   const { children, size, childXPosition, colors } = props;
 
   return (
-    <Box width={{ custom: size }} height={{ custom: size }}>
+    <Box width={size} height={size}>
       <MaskedView
         maskElement={maskElement}
         style={{ width: size, height: size, position: 'absolute' }}
@@ -45,7 +45,7 @@ export default function DashedWrapper(props: DashedWrapperProps) {
           style={{ width: '100%', height: '100%' }}
         />
       </MaskedView>
-      <Box alignItems="center" paddingTop={{ custom: childXPosition }}>
+      <Box alignItems="center" paddingTop={childXPosition}>
         {children}
       </Box>
     </Box>

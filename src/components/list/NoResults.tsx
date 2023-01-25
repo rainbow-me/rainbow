@@ -54,13 +54,13 @@ export const NoResults = ({
   }
 
   return (
-    <Inset horizontal={{ custom: 50 }}>
-      <Stack space="16px" alignHorizontal="center">
+    <Inset horizontal={50}>
+      <Stack space={16} alignHorizontal="center">
         {/* @ts-expect-error emojis don't need text color */}
         <Text size="26pt" containsEmoji>
           👻
         </Text>
-        <Stack space="12px" alignHorizontal="center">
+        <Stack space={12} alignHorizontal="center">
           {title && (
             <Text color={{ custom: colors.dark }} size="17pt" weight="bold">
               {title}

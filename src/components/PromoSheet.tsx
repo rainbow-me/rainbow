@@ -121,19 +121,16 @@ export function PromoSheet({
           <Box as={ImgixImage} height="full" source={backgroundImage}>
             <Rows>
               <Row>
-                <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>
+                <Stack space={isSmallPhone ? 46 : 54}>
                   <Box>
-                    <Box
-                      height={{ custom: isSmallPhone ? 195 : 265 }}
-                      width="full"
-                    >
+                    <Box height={isSmallPhone ? 195 : 265} width="full">
                       {/* @ts-ignore */}
                       <Box
                         as={ImgixImage}
                         height={{
                           custom: deviceWidth / headerImageAspectRatio,
                         }}
-                        marginTop={{ custom: isSmallPhone ? -70 : 0 }}
+                        marginTop={isSmallPhone ? -70 : 0}
                         source={headerImage}
                         width="full"
                       >
@@ -145,7 +142,7 @@ export function PromoSheet({
                         />
                       </Box>
                     </Box>
-                    <Stack alignHorizontal="center" space={{ custom: 13 }}>
+                    <Stack alignHorizontal="center" space={13}>
                       <Text color="labelSecondary" size="15pt" weight="heavy">
                         {subHeader}
                       </Text>
@@ -154,16 +151,14 @@ export function PromoSheet({
                       </Text>
                     </Stack>
                   </Box>
-                  <Inset horizontal={{ custom: 43.5 }}>
-                    <Stack space={isSmallPhone ? '24px' : '36px'}>
+                  <Inset horizontal={43.5}>
+                    <Stack space={isSmallPhone ? 24 : 36}>
                       {items.map(item => (
-                        <Columns key={item.title} space={{ custom: 13 }}>
+                        <Columns key={item.title} space={13}>
                           <Column width="content">
                             <MaskedView
                               maskElement={
-                                <Box
-                                  paddingTop={IS_ANDROID ? '6px' : undefined}
-                                >
+                                <Box paddingTop={IS_ANDROID ? 6 : undefined}>
                                   <Text
                                     align="center"
                                     color="accent"
@@ -180,15 +175,15 @@ export function PromoSheet({
                                 as={LinearGradient}
                                 colors={item.gradient}
                                 end={{ x: 0.5, y: 1 }}
-                                height={{ custom: 50 }}
-                                marginTop="-10px"
+                                height={50}
+                                marginTop={-10}
                                 start={{ x: 0, y: 0 }}
                                 width="full"
                               />
                             </MaskedView>
                           </Column>
-                          <Bleed top="3px">
-                            <Stack space="12px">
+                          <Bleed top={3}>
+                            <Stack space={12}>
                               <Text color="label" size="17pt" weight="bold">
                                 {item.title}
                               </Text>
@@ -209,10 +204,10 @@ export function PromoSheet({
               </Row>
               <Row height="content">
                 <Inset
-                  bottom={isSmallPhone && IS_IOS ? '24px' : '42px (Deprecated)'}
-                  horizontal="19px (Deprecated)"
+                  bottom={isSmallPhone && IS_IOS ? 24 : 42}
+                  horizontal={19}
                 >
-                  <Stack space="12px">
+                  <Stack space={12}>
                     <SheetActionButton
                       color={primaryButtonProps.color || accentColor}
                       label={primaryButtonProps.label}

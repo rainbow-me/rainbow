@@ -99,8 +99,8 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
+        width={APP_ICON_SIZE}
+        height={APP_ICON_SIZE}
         shadow="18px accent"
       />
     </AccentColorProvider>
@@ -114,8 +114,8 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
+        width={APP_ICON_SIZE}
+        height={APP_ICON_SIZE}
         shadow="18px accent"
       />
     </AccentColorProvider>
@@ -129,8 +129,8 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
+        width={APP_ICON_SIZE}
+        height={APP_ICON_SIZE}
         shadow="18px accent"
       />
     </AccentColorProvider>
@@ -144,8 +144,8 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
+        width={APP_ICON_SIZE}
+        height={APP_ICON_SIZE}
         shadow="18px accent"
       />
     </AccentColorProvider>
@@ -159,8 +159,8 @@ const ZoraAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconZora}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
+        width={APP_ICON_SIZE}
+        height={APP_ICON_SIZE}
         shadow="18px accent"
       />
     </AccentColorProvider>
@@ -727,7 +727,7 @@ export const explainers = (params, colors) => ({
         {params?.networks?.map((network, index) => {
           return (
             <Box
-              height={{ custom: 40 }}
+              height={40}
               key={`networks-${network}`}
               marginLeft={{
                 custom:
@@ -743,7 +743,7 @@ export const explainers = (params, colors) => ({
                 borderWidth: 1,
                 zIndex: index,
               }}
-              width={{ custom: 40 }}
+              width={40}
               zIndex={params?.networks?.length - index}
             >
               {network !== 'mainnet' ? (

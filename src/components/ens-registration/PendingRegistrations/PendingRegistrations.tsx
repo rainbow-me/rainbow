@@ -41,7 +41,7 @@ const PendingRegistration = ({
       <Columns alignVertical="center">
         {avatarUrl && (
           <Column width="content">
-            <Box paddingRight="10px">
+            <Box paddingRight={10}>
               <ImageAvatar image={avatarUrl} size="small" />
             </Box>
           </Column>
@@ -59,7 +59,7 @@ const PendingRegistration = ({
           </Box>
         </Column>
         <Column width="content">
-          <Box paddingRight="15px (Deprecated)">
+          <Box paddingRight={15}>
             <ButtonPressAnimation
               onPress={() => finishRegistration(registration.name)}
               scaleTo={0.9}
@@ -70,11 +70,11 @@ const PendingRegistration = ({
                 borderRadius={16}
                 colors={colors.gradients.transparentToAppleBlue}
                 end={{ x: 0.6, y: 0 }}
-                height="30px"
+                height={30}
                 justifyContent="center"
                 start={{ x: 0, y: 0.6 }}
               >
-                <Inset horizontal="10px">
+                <Inset horizontal={10}>
                   <Text
                     color="action (Deprecated)"
                     size="16px / 22px (Deprecated)"
@@ -139,11 +139,11 @@ const PendingRegistrations = () => {
   );
 
   return pendingRegistrations?.length > 0 ? (
-    <Box paddingHorizontal="19px (Deprecated)">
-      <Inset vertical="24px">
+    <Box paddingHorizontal={19}>
+      <Inset vertical={24}>
         <Separator color="divider60 (Deprecated)" />
       </Inset>
-      <Stack space="19px (Deprecated)">
+      <Stack space={19}>
         <Text
           color="secondary50 (Deprecated)"
           size="14px / 19px (Deprecated)"

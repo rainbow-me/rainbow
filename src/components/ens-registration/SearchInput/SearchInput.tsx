@@ -81,11 +81,11 @@ const SearchInput = ({
         <Box
           as={MaskedView}
           maskElement={
-            <Inset space="3px">
+            <Inset space={3}>
               <Box
                 background="body (Deprecated)"
                 borderRadius={46}
-                height={{ custom: height - strokeWidth * 2 }}
+                height={height - strokeWidth * 2}
                 width="full"
               />
             </Inset>
@@ -102,15 +102,15 @@ const SearchInput = ({
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
-        <Inset left="15px (Deprecated)" right="19px (Deprecated)">
+        <Inset left={15} right={19}>
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <MaskedView
                 androidRenderingMode="software"
                 maskElement={
-                  <Box height={`${height}px`} paddingTop={{ custom: 22 }}>
+                  <Box height={`${height}px`} paddingTop={22}>
                     {isLoading ? (
-                      <Box marginLeft="-8px" marginTop="-4px">
+                      <Box marginLeft={-8} marginTop={-4}>
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (

@@ -42,8 +42,8 @@ export const IconOrb = ({
         <AccentColorProvider color={color}>
           {shadowColor ? (
             <Box
-              width={{ custom: ORB_SIZE }}
-              height={{ custom: ORB_SIZE }}
+              width={ORB_SIZE}
+              height={ORB_SIZE}
               style={{ borderColor, borderWidth }}
               borderRadius={ORB_SIZE / 2}
               background="accent"
@@ -63,8 +63,8 @@ export const IconOrb = ({
             </Box>
           ) : (
             <Box
-              width={{ custom: ORB_SIZE }}
-              height={{ custom: ORB_SIZE }}
+              width={ORB_SIZE}
+              height={ORB_SIZE}
               style={{ borderColor, borderWidth }}
               borderRadius={ORB_SIZE / 2}
               background="accent"
@@ -87,7 +87,7 @@ export const IconOrb = ({
     );
   } else {
     return (
-      <Box height={{ custom: ORB_SIZE }}>
+      <Box height={ORB_SIZE}>
         <Skeleton>
           <FakeText height={ORB_SIZE} width={ORB_SIZE} />
         </Skeleton>

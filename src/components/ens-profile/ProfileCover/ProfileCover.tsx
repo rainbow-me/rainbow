@@ -35,9 +35,9 @@ export default function ProfileCover({
   return (
     <>
       {showSkeleton && (
-        <Box height="126px" position="absolute" top="0px" width="full">
+        <Box height={126} position="absolute" top={0} width="full">
           <Skeleton animated>
-            <Box background="body (Deprecated)" height="126px" width="full" />
+            <Box background="body (Deprecated)" height={126} width="full" />
           </Skeleton>
         </Box>
       )}
@@ -45,7 +45,7 @@ export default function ProfileCover({
         <Box
           alignItems="center"
           as={showRadialGradient ? RadialGradient : View}
-          height="126px"
+          height={126}
           justifyContent="center"
           {...(showRadialGradient
             ? {
@@ -72,7 +72,7 @@ export default function ProfileCover({
             deferOverlayTimeout={1000}
             disableEnteringWithPinch
             enableZoomOnPress={enableZoomOnPress}
-            height="126px"
+            height={126}
             hideStatusBar={false}
             imageUrl={coverUrl || ''}
             onPress={handleOnPress}
@@ -81,7 +81,7 @@ export default function ProfileCover({
           >
             <Box
               as={ImgixImage}
-              height="126px"
+              height={126}
               onLoadEnd={onLoadEnd}
               source={{ uri: coverUrl || '' }}
             />

@@ -109,7 +109,7 @@ export default function ProfileSheet() {
               (!isAddressSuccess ||
                 !hasListFetched ||
                 !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px (Deprecated)">
+                <Stack space={19}>
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
@@ -133,7 +133,7 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
     <Box
       borderTopRadius={30}
       style={{ overflow: 'hidden' }}
-      top={{ custom: StatusBar.currentHeight || 0 }}
+      top={StatusBar.currentHeight || 0}
     >
       {children}
     </Box>
@@ -144,10 +144,10 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
 
 function PlaceholderList() {
   return (
-    <Inset horizontal="19px (Deprecated)">
+    <Inset horizontal={19}>
       <Box height="full">
         <Skeleton animated>
-          <Stack space="15px (Deprecated)">
+          <Stack space={15}>
             <PlaceholderRow />
             <PlaceholderRow />
             <PlaceholderRow />
@@ -164,18 +164,18 @@ function PlaceholderRow() {
   return (
     <Columns>
       <Column width="content">
-        <Inline alignVertical="center" space="10px" wrap={false}>
+        <Inline alignVertical="center" space={10} wrap={false}>
           <Box
             background="body (Deprecated)"
             borderRadius={15}
-            height={{ custom: 30 }}
-            width={{ custom: 30 }}
+            height={30}
+            width={30}
           />
           <Box
             background="body (Deprecated)"
             borderRadius={15}
-            height={{ custom: 20 }}
-            width={{ custom: 200 }}
+            height={20}
+            width={200}
           />
         </Inline>
       </Column>

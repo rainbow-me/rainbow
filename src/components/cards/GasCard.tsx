@@ -237,7 +237,7 @@ export const GasCard = () => {
             justifyContent="space-between"
             alignItems="flex-start"
           >
-            <Stack space={{ custom: 14 }}>
+            <Stack space={14}>
               <AnimateNumber
                 formatter={formatGasPrice}
                 interval={2}
@@ -251,7 +251,7 @@ export const GasCard = () => {
                   : i18n.t(TRANSLATIONS.gwei)}
               </Text>
             </Stack>
-            <Stack space="10px">
+            <Stack space={10}>
               <Text color="labelTertiary" size="13pt" weight="bold">
                 {i18n.t(TRANSLATIONS.network_fees)}
               </Text>

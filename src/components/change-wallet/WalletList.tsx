@@ -265,8 +265,8 @@ export default function WalletList({
         />
         {showDividers && <WalletListDivider />}
         {!watchOnly && (
-          <Inset space="20px">
-            <Stack space="24px">
+          <Inset space={20}>
+            <Stack space={24}>
               <WalletOption
                 editMode={editMode}
                 label={`􀁍 ${lang.t('wallet.action.add_another')}`}

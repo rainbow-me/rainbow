@@ -13,7 +13,7 @@ export const basicUsage: Example = {
         <Cover>
           <Placeholder height="100%" width="100%" />
         </Cover>
-        <Inset space="10px">
+        <Inset space={10}>
           <Placeholder />
         </Inset>
       </>

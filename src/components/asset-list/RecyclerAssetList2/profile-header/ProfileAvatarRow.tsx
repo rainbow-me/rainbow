@@ -166,7 +166,7 @@ export function ProfileAvatarRow({
                 alignItems="center"
                 background="accent"
                 borderRadius={size / 2}
-                height={{ custom: size }}
+                height={size}
                 justifyContent="center"
                 shadow={
                   hasLoaded
@@ -202,18 +202,18 @@ export function ProfileAvatarRow({
                 style={{
                   backgroundColor: accountImage ? colors.skeleton : accentColor,
                 }}
-                width={{ custom: size }}
+                width={size}
               >
                 <>
                   {!hasLoaded && (
                     <Cover alignHorizontal="center">
-                      <Box height={{ custom: size }} width="full">
+                      <Box height={size} width="full">
                         <Skeleton animated>
                           <Box
                             background="body (Deprecated)"
                             borderRadius={size / 2}
-                            height={{ custom: size }}
-                            width={{ custom: size }}
+                            height={size}
+                            width={size}
                           />
                         </Skeleton>
                       </Box>
@@ -224,9 +224,9 @@ export function ProfileAvatarRow({
                       <Box
                         as={ImgixImage}
                         borderRadius={size / 2}
-                        height={{ custom: size }}
+                        height={size}
                         source={{ uri: accountImage }}
-                        width={{ custom: size }}
+                        width={size}
                       />
                     ) : (
                       <EmojiAvatar size={size} />
@@ -256,8 +256,8 @@ export function EmojiAvatar({ size }: { size: number }) {
       <Box
         background="accent"
         borderRadius={size / 2}
-        height={{ custom: size }}
-        width={{ custom: size }}
+        height={size}
+        width={size}
       >
         <Cover alignHorizontal="center" alignVertical="center">
           <Box>

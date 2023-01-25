@@ -27,7 +27,7 @@ const docs: DocsType = {
               const borderColor = useForegroundColor('accent');
 
               return (
-                <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
+                <Box padding={6} style={{ borderColor, borderWidth: 2 }}>
                   <Text color="accent" size="17pt">
                     Hello world
                   </Text>
@@ -52,7 +52,7 @@ const docs: DocsType = {
               });
 
               return (
-                <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
+                <Box padding={6} style={{ borderColor, borderWidth: 2 }}>
                   <Text color="accent" size="17pt">
                     Hello world
                   </Text>

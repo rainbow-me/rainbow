@@ -23,7 +23,7 @@ export const RewardsPendingEarnings: React.FC<Props> = ({
   return (
     <RewardsSectionCard>
       <Columns>
-        <Stack space="12px" alignHorizontal="left">
+        <Stack space={12} alignHorizontal="left">
           <Text color="labelTertiary" size="15pt" weight="semibold">
             {i18n.t(i18n.l.rewards.pending_earnings)}
           </Text>
@@ -31,7 +31,7 @@ export const RewardsPendingEarnings: React.FC<Props> = ({
             {`$${pendingEarningsUsd}`}
           </Text>
         </Stack>
-        <Stack space="12px" alignHorizontal="right">
+        <Stack space={12} alignHorizontal="right">
           <Text color="labelTertiary" size="15pt" weight="semibold">
             {i18n.t(i18n.l.rewards.next_airdrop)}
           </Text>

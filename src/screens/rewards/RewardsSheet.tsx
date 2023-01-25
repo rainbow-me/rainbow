@@ -40,7 +40,7 @@ export const RewardsSheet: React.FC = () => {
           additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
           scrollEnabled
         >
-          <Box padding="20px">
+          <Box padding={20}>
             {loading || rewardsData === null ? (
               <RewardsFakeContent />
             ) : (

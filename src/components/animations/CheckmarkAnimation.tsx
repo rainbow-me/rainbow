@@ -142,33 +142,28 @@ export function CheckmarkAnimation() {
   }));
 
   return (
-    <Box
-      alignItems="center"
-      height={{ custom: 132 }}
-      justifyContent="center"
-      width="full"
-    >
+    <Box alignItems="center" height={132} justifyContent="center" width="full">
       <Box
         alignItems="center"
         as={Animated.View}
         borderRadius={200}
         entering={circleEntering}
-        height={{ custom: 120 }}
+        height={120}
         justifyContent="center"
         style={{ overflow: 'hidden' }}
-        width={{ custom: 120 }}
+        width={120}
       >
         <Box
           alignItems="center"
           as={Animated.View}
           borderRadius={200}
-          height={{ custom: 120 }}
+          height={120}
           justifyContent="center"
           style={[
             { overflow: 'hidden', position: 'absolute' },
             rippleCircleStyle,
           ]}
-          width={{ custom: 120 }}
+          width={120}
         >
           <RadialGradient
             center={[60, 60]}
@@ -192,13 +187,13 @@ export function CheckmarkAnimation() {
           as={Animated.View}
           borderRadius={100}
           entering={circleEntering}
-          height={{ custom: 100 }}
+          height={100}
           justifyContent="center"
           style={[
             { overflow: 'hidden', position: 'absolute' },
             pulseCircleStyle,
           ]}
-          width={{ custom: 100 }}
+          width={100}
         >
           <RadialGradient
             center={[60, 60]}

@@ -75,11 +75,11 @@ export const ImportOrWatchWalletSheet = () => {
         <Box
           alignItems="center"
           justifyContent="space-between"
-          paddingTop={{ custom: 38 }}
-          paddingHorizontal="20px"
+          paddingTop={38}
+          paddingHorizontal={20}
           testID="import-sheet"
         >
-          <Stack space="20px">
+          <Stack space={20}>
             <Text align="center" color="label" size="26pt" weight="bold">
               {i18n.t(TRANSLATIONS[type].title)}
             </Text>
@@ -97,10 +97,10 @@ export const ImportOrWatchWalletSheet = () => {
         </Box>
         <Box
           alignItems="center"
-          bottom={{ custom: keyboardHeight }}
+          bottom={keyboardHeight}
           justifyContent="center"
           position="absolute"
-          top={{ custom: -SheetHandleFixedToTopHeight }}
+          top={-SheetHandleFixedToTopHeight}
           width="full"
         >
           <Input
@@ -132,12 +132,8 @@ export const ImportOrWatchWalletSheet = () => {
             value={seedPhrase}
           />
         </Box>
-        <Box
-          position="absolute"
-          right="0px"
-          bottom={{ custom: keyboardHeight }}
-        >
-          <Inset bottom="20px" right="20px">
+        <Box position="absolute" right={0} bottom={keyboardHeight}>
+          <Inset bottom={20} right={20}>
             <AccentColorProvider
               color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
             >
@@ -158,12 +154,12 @@ export const ImportOrWatchWalletSheet = () => {
                   alignItems="center"
                   background={buttonDisabled ? 'fillSecondary' : 'accent'}
                   borderRadius={99}
-                  height="36px"
+                  height={36}
                   justifyContent="center"
                   shadow={
                     seedPhrase && !buttonDisabled ? '12px accent' : undefined
                   }
-                  width={{ custom: 88 }}
+                  width={88}
                 >
                   <Text
                     align="center"

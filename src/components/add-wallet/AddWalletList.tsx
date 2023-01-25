@@ -12,10 +12,7 @@ export const AddWalletList = ({
   totalHorizontalInset,
 }: AddWalletListProps) => {
   return (
-    <Stack
-      space="24px"
-      separator={<Separator color="divider60 (Deprecated)" />}
-    >
+    <Stack space={24} separator={<Separator color="divider60 (Deprecated)" />}>
       {items.map((item: AddWalletItem) => (
         <AddWalletRow
           key={item.icon}

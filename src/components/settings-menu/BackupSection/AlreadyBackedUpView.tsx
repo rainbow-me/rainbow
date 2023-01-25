@@ -164,7 +164,7 @@ export default function AlreadyBackedUpView() {
       justifyContent="space-between"
       width="full"
     >
-      <Box marginTop="-10px">
+      <Box marginTop={-10}>
         <Text
           color="secondary50 (Deprecated)"
           size="14px / 19px (Deprecated)"
@@ -178,7 +178,7 @@ export default function AlreadyBackedUpView() {
               lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
-      <Box alignItems="center" marginTop="-42px (Deprecated)">
+      <Box alignItems="center" marginTop={-42}>
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
         <Text
           color="primary (Deprecated)"
@@ -189,7 +189,7 @@ export default function AlreadyBackedUpView() {
             lang.t('back_up.already_backed_up.imported_message')) ||
             lang.t('back_up.already_backed_up.backed_up_message')}
         </Text>
-        <Box paddingHorizontal="60px" paddingTop="24px">
+        <Box paddingHorizontal={60} paddingTop={24}>
           <Text
             align="center"
             color="secondary50 (Deprecated)"
@@ -205,7 +205,7 @@ export default function AlreadyBackedUpView() {
                 lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
-        <Box paddingTop="42px (Deprecated)">
+        <Box paddingTop={42}>
           <AccentColorProvider color={colors.whiteLabel}>
             <ButtonPressAnimation
               onPress={handleViewRecoveryPhrase}
@@ -219,9 +219,9 @@ export default function AlreadyBackedUpView() {
               <Box
                 background="card (Deprecated)"
                 borderRadius={56}
-                height={{ custom: 48 }}
+                height={48}
                 justifyContent="center"
-                paddingHorizontal="19px (Deprecated)"
+                paddingHorizontal={19}
                 shadow="15px light (Deprecated)"
               >
                 <Text
@@ -241,7 +241,7 @@ export default function AlreadyBackedUpView() {
           </AccentColorProvider>
         </Box>
       </Box>
-      <Box paddingBottom="42px (Deprecated)">
+      <Box paddingBottom={42}>
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
             <Text

@@ -158,7 +158,7 @@ const RegistrationAvatar = ({
   });
 
   return (
-    <Box height={{ custom: size }} width={{ custom: size }}>
+    <Box height={size} width={size}>
       <Cover alignHorizontal="center">
         <BackgroundProvider color="body (Deprecated)">
           {({ backgroundColor }) => (
@@ -171,8 +171,8 @@ const RegistrationAvatar = ({
           <Box
             background="body (Deprecated)"
             borderRadius={size / 2}
-            height={{ custom: size }}
-            width={{ custom: size }}
+            height={size}
+            width={size}
           />
         </Skeleton>
       ) : (
@@ -199,18 +199,18 @@ const RegistrationAvatar = ({
                 alignItems="center"
                 background={avatarUrl ? 'body (Deprecated)' : 'accent'}
                 borderRadius={size / 2}
-                height={{ custom: size }}
+                height={size}
                 justifyContent="center"
                 shadow={avatarUrl ? '15px light (Deprecated)' : undefined}
-                width={{ custom: size }}
+                width={size}
               >
                 {avatarUrl ? (
                   <Box
                     as={ImgixImage}
                     borderRadius={size / 2}
-                    height={{ custom: size }}
+                    height={size}
                     source={{ uri: avatarUrl }}
-                    width={{ custom: size }}
+                    width={size}
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>

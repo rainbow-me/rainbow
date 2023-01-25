@@ -25,8 +25,8 @@ export function ProfileStickyHeader() {
       <Box
         background="body (Deprecated)"
         justifyContent="center"
-        height={{ custom: ProfileStickyHeaderHeight }}
-        paddingHorizontal="19px (Deprecated)"
+        height={ProfileStickyHeaderHeight}
+        paddingHorizontal={19}
         width="full"
         testID="profile-sticky-header"
       >

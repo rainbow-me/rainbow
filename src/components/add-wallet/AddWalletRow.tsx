@@ -72,8 +72,8 @@ export const AddWalletRow = ({
       onPress={onPress}
       testID={testID}
     >
-      <Box width={{ custom: contentWidth }}>
-        <Stack space="12px" alignHorizontal="left">
+      <Box width={contentWidth}>
+        <Stack space={12} alignHorizontal="left">
           <ConditionalWrap
             condition={shouldUseRainbowText}
             wrap={(children: React.ReactNode) => (
@@ -85,9 +85,9 @@ export const AddWalletRow = ({
           <ConditionalWrap
             condition={shouldUseRainbowText}
             wrap={(children: React.ReactNode) => (
-              <Box marginBottom={{ custom: -4 }}>
+              <Box marginBottom={-4}>
                 <RainbowText colors={colors}>
-                  <Box marginBottom={{ custom: 4 }}>{children}</Box>
+                  <Box marginBottom={4}>{children}</Box>
                 </RainbowText>
               </Box>
             )}

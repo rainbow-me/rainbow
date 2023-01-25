@@ -78,11 +78,11 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
   return (
     <>
       <TransactionDetailsDivider />
-      <Box paddingTop="8px" paddingBottom="20px">
-        <Stack space="20px">
+      <Box paddingTop={8} paddingBottom={20}>
+        <Stack space={20}>
           {formattedHash && (
             <ButtonPressAnimation onPress={onHashPress} scaleTo={0.96}>
-              <Box paddingVertical="12px">
+              <Box paddingVertical={12}>
                 <SingleLineTransactionDetailsRow
                   icon="􀆃"
                   title={i18n.t(i18n.l.transaction_details.hash)}

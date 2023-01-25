@@ -156,19 +156,19 @@ export const EthCard = () => {
       type={cardType}
       testID="eth-card"
     >
-      <Stack space={{ custom: 41 }}>
-        <Stack space="12px">
-          <Bleed top="4px">
+      <Stack space={41}>
+        <Stack space={12}>
+          <Bleed top={4}>
             <Inline alignVertical="center" alignHorizontal="justify">
-              <Inline alignVertical="center" space="6px">
+              <Inline alignVertical="center" space={6}>
                 {!loadedPrice ? (
                   <>
-                    <Box height={{ custom: 20 }} width={{ custom: 20 }}>
+                    <Box height={20} width={20}>
                       <Skeleton>
                         <FakeText height={20} width={20} />
                       </Skeleton>
                     </Box>
-                    <Box height={{ custom: 12 }} width={{ custom: 100 }}>
+                    <Box height={12} width={100}>
                       <Skeleton>
                         <FakeText height={12} width={100} />
                       </Skeleton>
@@ -192,7 +192,7 @@ export const EthCard = () => {
                 )}
               </Inline>
               {!loadedPrice ? (
-                <Box height={{ custom: 12 }} width={{ custom: 110 }}>
+                <Box height={12} width={110}>
                   <Skeleton>
                     <FakeText height={12} width={110} />
                   </Skeleton>
@@ -227,7 +227,7 @@ export const EthCard = () => {
             </Inline>
           </Bleed>
           {!loadedPrice ? (
-            <Box height={{ custom: 18 }} width={{ custom: 130 }}>
+            <Box height={18} width={130}>
               <Skeleton>
                 <FakeText height={18} width={130} />
               </Skeleton>
@@ -238,7 +238,7 @@ export const EthCard = () => {
             </Text>
           )}
         </Stack>
-        <Box height={{ custom: CHART_HEIGHT }} width={{ custom: CHART_WIDTH }}>
+        <Box height={CHART_HEIGHT} width={CHART_WIDTH}>
           {!loadedChart ? (
             <Box
               height="full"
@@ -286,7 +286,7 @@ export const EthCard = () => {
           )}
         </Box>
         {!loadedPrice ? (
-          <Box height={{ custom: 36 }}>
+          <Box height={36}>
             <Skeleton>
               <FakeText width={CHART_WIDTH} height={36} />
             </Skeleton>
@@ -300,7 +300,7 @@ export const EthCard = () => {
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
               <Box
                 width="full"
-                height={{ custom: 36 }}
+                height={36}
                 borderRadius={99}
                 alignItems="center"
                 justifyContent="center"

@@ -109,13 +109,13 @@ export const MaxToleranceInput = forwardRef(
     return (
       <Columns alignHorizontal="justify" alignVertical="center">
         <Column width="content">
-          <Stack space="4px">
+          <Stack space={4}>
             <Box
               as={ButtonPressAnimation}
-              marginVertical="-12px"
+              marginVertical={-12}
               // @ts-expect-error
               onPress={openSlippageExplainer}
-              paddingVertical="12px"
+              paddingVertical={12}
               testID="swap-slippage-label"
             >
               <Inline alignVertical="center">
@@ -136,7 +136,7 @@ export const MaxToleranceInput = forwardRef(
                   )}
                 </Text>
                 {hasPriceImpact && (
-                  <Box paddingTop={android ? '2px' : '1px (Deprecated)'}>
+                  <Box paddingTop={android ? 2 : 1}>
                     <Icon color={priceImpactColor} name="warning" size={18} />
                   </Box>
                 )}

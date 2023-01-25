@@ -57,15 +57,15 @@ export const ReceiveAssetsCard = () => {
       disabled={!accentColorLoaded}
       testID="receive-card"
     >
-      <Stack space="36px">
+      <Stack space={36}>
         <Inline alignHorizontal="justify">
-          <Stack space="16px">
+          <Stack space={16}>
             {accentColorLoaded ? (
               <Text size="22pt" weight="heavy" color="label">
                 {i18n.t(TRANSLATIONS.receive_assets)}
               </Text>
             ) : (
-              <Box height={{ custom: 16 }}>
+              <Box height={16}>
                 <Skeleton>
                   <FakeText width={170} height={16} />
                 </Skeleton>
@@ -76,7 +76,7 @@ export const ReceiveAssetsCard = () => {
                 {i18n.t(TRANSLATIONS.description)}
               </Text>
             ) : (
-              <Box height={{ custom: 30 }} justifyContent="space-between">
+              <Box height={30} justifyContent="space-between">
                 <Skeleton>
                   <FakeText width={200} height={10} />
                 </Skeleton>

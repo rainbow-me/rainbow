@@ -20,13 +20,13 @@ const CommitContent = ({
   const { isSmallPhone } = useDimensions();
 
   return (
-    <Inset vertical={isSmallPhone ? '24px' : '30px (Deprecated)'}>
-      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+    <Inset vertical={isSmallPhone ? 24 : 30}>
+      <Stack space={isSmallPhone ? 19 : 30}>
         <Separator color="divider60 (Deprecated)" />
         <Inline
           alignHorizontal="center"
           alignVertical="center"
-          space="6px"
+          space={6}
           wrap={false}
         >
           <Box>

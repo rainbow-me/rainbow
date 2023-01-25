@@ -54,10 +54,10 @@ export default React.memo(function ExchangeTokenRow({
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
-    <Columns alignVertical="center" space="10px">
+    <Columns alignVertical="center" space={10}>
       <Column>
         <Box
-          paddingLeft="20px"
+          paddingLeft={20}
           as={ButtonPressAnimation}
           // @ts-ignore
           onPress={onPress}
@@ -65,7 +65,7 @@ export default React.memo(function ExchangeTokenRow({
           testID={rowTestID}
           disabled={disabled}
         >
-          <Columns alignVertical="center" space="10px">
+          <Columns alignVertical="center" space={10}>
             <Column width="content">
               <Box
                 as={FastCoinIcon}
@@ -77,7 +77,7 @@ export default React.memo(function ExchangeTokenRow({
               />
             </Column>
             <Column>
-              <Stack space="8px">
+              <Stack space={8}>
                 <Text
                   size="15pt"
                   color="primary (Deprecated)"
@@ -112,9 +112,9 @@ export default React.memo(function ExchangeTokenRow({
         </Box>
       </Column>
       <Column width="content">
-        <Box paddingRight="20px">
+        <Box paddingRight={20}>
           {showBalance && (
-            <Box background="fillSecondary" padding="8px" borderRadius={15}>
+            <Box background="fillSecondary" padding={8} borderRadius={15}>
               <Text size="15pt" weight="medium" color="labelSecondary">
                 {item?.native?.balance?.display ??
                   `${nativeCurrencySymbol}0.00`}
@@ -122,7 +122,7 @@ export default React.memo(function ExchangeTokenRow({
             </Box>
           )}
           {!showBalance && (
-            <Inline alignVertical="center" space="12px">
+            <Inline alignVertical="center" space={12}>
               {isInfoButtonVisible && (
                 <Info
                   contextMenuProps={contextMenuProps}

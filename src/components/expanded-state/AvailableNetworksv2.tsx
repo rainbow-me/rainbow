@@ -136,13 +136,13 @@ const AvailableNetworksv2 = ({
           // @ts-expect-error overloaded props ButtonPressAnimation
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
-          marginHorizontal={{ custom: marginHorizontal }}
+          marginHorizontal={marginHorizontal}
           testID={'available-networks-v2'}
         >
           <Box
             borderRadius={99}
-            paddingVertical="8px"
-            paddingHorizontal="12px"
+            paddingVertical={8}
+            paddingHorizontal={12}
             justifyContent="center"
           >
             <RadialGradient
@@ -159,7 +159,7 @@ const AvailableNetworksv2 = ({
                       <Box
                         background="body (Deprecated)"
                         key={`availableNetwork-${network}`}
-                        marginLeft="-4px"
+                        marginLeft={-4}
                         style={{
                           backgroundColor: colors.transparent,
                           zIndex: availableNetworks?.length - index,
@@ -185,7 +185,7 @@ const AvailableNetworksv2 = ({
                   })}
                 </Box>
 
-                <Box paddingLeft="6px">
+                <Box paddingLeft={6}>
                   <Text
                     color="secondary60 (Deprecated)"
                     size="14px / 19px (Deprecated)"

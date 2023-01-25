@@ -87,7 +87,7 @@ const ExamplePreview = ({
   Example,
 }: Example & { meta: Meta }) => {
   return (
-    <Stack space="20px">
+    <Stack space={20}>
       {subTitle ? (
         <Text color="label" size="17pt" weight="medium">
           {subTitle}
@@ -109,7 +109,7 @@ const ExamplePreview = ({
         </View>
       )}
       {examples?.map((example, i) => (
-        <Inset key={i} vertical="12px">
+        <Inset key={i} vertical={12}>
           <ExamplePreview {...example} meta={meta} />
         </Inset>
       ))}
@@ -121,11 +121,11 @@ const DocsRow = ({ meta, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Stack space="44px">
+    <Stack space={44}>
       <TouchableOpacity
         onPress={useCallback(() => setOpen(x => !x), [setOpen])}
       >
-        <Inline space="6px">
+        <Inline space={6}>
           <View style={styles.docsRowToggle}>
             <Text color="label" size="20pt" weight="heavy">
               {open ? '-' : '+'}
@@ -184,8 +184,8 @@ export const Playground = () => {
               {android ? (
                 <View style={{ height: StatusBar.currentHeight }} />
               ) : null}
-              <Inset space="20px">
-                <Stack space="24px">
+              <Inset space={20}>
+                <Stack space={24}>
                   <TouchableOpacity onPress={toggleColorMode}>
                     <Text color="label" size="20pt" weight="heavy">
                       Color mode: {colorMode}

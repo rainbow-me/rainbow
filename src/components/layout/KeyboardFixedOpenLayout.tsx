@@ -26,19 +26,19 @@ export default function KeyboardFixedOpenLayout({
 
   return (
     <Box
-      height={{ custom: containerHeight }}
-      left="0px"
+      height={containerHeight}
+      left={0}
       position={position}
-      right="0px"
-      top="0px"
+      right={0}
+      top={0}
     >
       <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
         <Box
           alignItems="center"
           height="full"
           justifyContent="center"
-          paddingBottom="10px"
-          paddingTop={{ custom: insets.top }}
+          paddingBottom={10}
+          paddingTop={insets.top}
           width="full"
           {...props}
         />

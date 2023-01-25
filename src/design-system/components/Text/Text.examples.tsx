@@ -43,7 +43,7 @@ export const sizes: Example[] = (Object.keys(typeHierarchy.text) as TextSize[])
     name: size,
     Example: () =>
       source(
-        <Stack space="10px">
+        <Stack space={10}>
           <View>
             <Guide />
             <Text color="label" size={size} weight="bold">
@@ -51,7 +51,7 @@ export const sizes: Example[] = (Object.keys(typeHierarchy.text) as TextSize[])
             </Text>
             <Guide />
           </View>
-          <Inline alignVertical="center" space="10px">
+          <Inline alignVertical="center" space={10}>
             <View style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
               <Text color="label" size={size} weight="bold">
                 Bounding Box
@@ -112,7 +112,7 @@ export const withWeight: Example = {
   name: 'With weight',
   Example: () =>
     source(
-      <Stack space="10px">
+      <Stack space={10}>
         {Object.entries(fontWeights).map(([name, value]) => (
           <Text
             key={value}
@@ -131,7 +131,7 @@ export const withColor: Example = {
   name: 'With color',
   Example: () =>
     source(
-      <Stack space="12px">
+      <Stack space={12}>
         <Text color="label" size="17pt">
           Default mode
         </Text>
@@ -157,9 +157,9 @@ export const withColor: Example = {
               padding: 24,
             }}
           >
-            <Stack space="24px">
+            <Stack space={24}>
               <ColorModeProvider value="dark">
-                <Stack space="12px">
+                <Stack space={12}>
                   <Text color="label" size="17pt">
                     Dark mode
                   </Text>
@@ -170,7 +170,7 @@ export const withColor: Example = {
               </ColorModeProvider>
 
               <ColorModeProvider value="darkTinted">
-                <Stack space="12px">
+                <Stack space={12}>
                   <Text color="label" size="17pt">
                     Dark tinted mode
                   </Text>

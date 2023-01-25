@@ -26,17 +26,17 @@ export function Cover({
       alignItems={
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
       }
-      bottom="0px"
+      bottom={0}
       flexDirection="row"
       justifyContent={
         alignHorizontal
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      left="0px"
+      left={0}
       position="absolute"
-      right="0px"
-      top="0px"
+      right={0}
+      top={0}
     >
       {children}
     </Box>

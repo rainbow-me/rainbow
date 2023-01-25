@@ -32,8 +32,8 @@ export const RewardsProgressBar: React.FC<Props> = ({ progress }) => {
     <Box
       width="full"
       borderRadius={8}
-      height={{ custom: 20 }}
-      padding="2px"
+      height={20}
+      padding={2}
       onLayout={onLayout}
       style={{
         backgroundColor: colors.alpha(colors.networkColors.optimism, 0.16),

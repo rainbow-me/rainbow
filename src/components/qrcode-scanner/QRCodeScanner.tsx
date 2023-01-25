@@ -114,7 +114,7 @@ export default function QRCodeScanner() {
       <Box
         position="absolute"
         width="full"
-        height={{ custom: deviceHeight + androidSoftMenuHeight }}
+        height={deviceHeight + androidSoftMenuHeight}
       >
         {enabled && (
           <Box
@@ -125,7 +125,7 @@ export default function QRCodeScanner() {
             pendingAuthorizationView={undefined}
             borderRadius={40}
             width="full"
-            height={{ custom: deviceHeight + androidSoftMenuHeight }}
+            height={deviceHeight + androidSoftMenuHeight}
             position="absolute"
           />
         )}
@@ -146,14 +146,14 @@ export default function QRCodeScanner() {
             <Cover alignHorizontal="left">
               <Box
                 height="full"
-                width={{ custom: 10 }}
+                width={10}
                 style={{ backgroundColor: 'black', opacity: 0.8 }}
               />
             </Cover>
             <Cover alignHorizontal="right">
               <Box
                 height="full"
-                width={{ custom: 10 }}
+                width={10}
                 style={{ backgroundColor: 'black', opacity: 0.8 }}
               />
             </Cover>

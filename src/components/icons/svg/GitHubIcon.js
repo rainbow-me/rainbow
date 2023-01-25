@@ -5,7 +5,7 @@ import Svg from '../Svg';
 const GitHubIcon = ({ colors = undefined, color = colors.black, ...props }) => {
   return (
     <Svg
-      height="18px"
+      height={18}
       preserveAspectRatio="xMidYMid"
       version="1.1"
       viewBox="0 0 256 250"

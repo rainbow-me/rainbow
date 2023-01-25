@@ -15,10 +15,10 @@ export function Layout({
   return (
     <Box background="surfaceSecondary">
       <Inset
-        top={{ custom: SheetHandleFixedToTopHeight }}
-        bottom={{ custom: safeAreaInsetValues.bottom }}
+        top={SheetHandleFixedToTopHeight}
+        bottom={safeAreaInsetValues.bottom}
       >
-        <Inset top="36px" bottom="52px">
+        <Inset top={36} bottom={52}>
           <Box height="full">
             <Rows>
               <Row height="content">{header}</Row>

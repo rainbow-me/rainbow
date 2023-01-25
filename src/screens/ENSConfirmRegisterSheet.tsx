@@ -399,8 +399,8 @@ export default function ENSConfirmRegisterSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body (Deprecated)"
-          paddingTop="19px (Deprecated)"
-          paddingVertical="30px (Deprecated)"
+          paddingTop={19}
+          paddingVertical={30}
           style={{
             height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
@@ -409,26 +409,26 @@ export default function ENSConfirmRegisterSheet() {
           <Rows>
             <Row height="content">
               {/* @ts-expect-error JavaScript component */}
-              <Box horizontal="30px">
-                <Stack alignHorizontal="center" space="15px (Deprecated)">
+              <Box horizontal={30}>
+                <Stack alignHorizontal="center" space={15}>
                   {avatarUrl && (
                     <Box
                       background="body (Deprecated)"
                       borderRadius={avatarSize / 2}
-                      height={{ custom: avatarSize }}
+                      height={avatarSize}
                       shadow="15px light (Deprecated)"
-                      width={{ custom: avatarSize }}
+                      width={avatarSize}
                     >
                       <Box
                         as={ImgixImage}
                         borderRadius={avatarSize / 2}
-                        height={{ custom: avatarSize }}
+                        height={avatarSize}
                         source={{ uri: avatarUrl }}
-                        width={{ custom: avatarSize }}
+                        width={avatarSize}
                       />
                     </Box>
                   )}
-                  <Inset horizontal="30px (Deprecated)">
+                  <Inset horizontal={30}>
                     <Heading
                       align="center"
                       numberOfLines={1}
@@ -451,10 +451,7 @@ export default function ENSConfirmRegisterSheet() {
               </Box>
             </Row>
             <Row>
-              <Box
-                flexGrow={1}
-                paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}
-              >
+              <Box flexGrow={1} paddingHorizontal={isSmallPhone ? 24 : 30}>
                 {stepContent[step]}
               </Box>
             </Row>

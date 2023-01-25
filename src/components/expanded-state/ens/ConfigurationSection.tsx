@@ -38,7 +38,7 @@ export default function ConfigurationSection({
   const { navigate } = useNavigation();
 
   return (
-    <Stack space="15px (Deprecated)">
+    <Stack space={15}>
       {isLoading ? (
         <>
           <InfoRowSkeleton />

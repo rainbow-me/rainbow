@@ -104,12 +104,12 @@ export default function ENSSearchSheet() {
     <Box
       background="body (Deprecated)"
       flexGrow={1}
-      paddingTop={{ custom: topPadding }}
+      paddingTop={topPadding}
       testID="ens-search-sheet"
     >
-      <Stack space="15px (Deprecated)">
-        <Box flexGrow={1} paddingTop={{ custom: 28 }}>
-          <Stack alignHorizontal="center" space={{ custom: 16 }}>
+      <Stack space={15}>
+        <Box flexGrow={1} paddingTop={28}>
+          <Stack alignHorizontal="center" space={16}>
             <Heading
               align="center"
               color="primary (Deprecated)"
@@ -130,9 +130,9 @@ export default function ENSSearchSheet() {
 
           <Box
             alignItems="center"
-            paddingBottom="19px (Deprecated)"
-            paddingHorizontal="19px (Deprecated)"
-            paddingTop={{ custom: 37 }}
+            paddingBottom={19}
+            paddingHorizontal={19}
+            paddingTop={37}
           >
             <SearchInput
               isLoading={isLoading}
@@ -153,11 +153,11 @@ export default function ENSSearchSheet() {
             />
           </Box>
           {isIdle && (
-            <Box paddingTop="10px">
+            <Box paddingTop={10}>
               <Inline
                 alignHorizontal="center"
                 alignVertical="center"
-                space={{ custom: 7 }}
+                space={7}
                 wrap={false}
               >
                 <Box>
@@ -179,7 +179,7 @@ export default function ENSSearchSheet() {
           )}
           {isIdle && <PendingRegistrations />}
           {isInvalid && (
-            <Inset horizontal="30px (Deprecated)">
+            <Inset horizontal={30}>
               <Text
                 align="center"
                 color="secondary50 (Deprecated)"
@@ -191,8 +191,8 @@ export default function ENSSearchSheet() {
             </Inset>
           )}
           {isPending && (
-            <Inset horizontal="30px (Deprecated)">
-              <Stack space="15px (Deprecated)">
+            <Inset horizontal={30}>
+              <Stack space={15}>
                 <Text
                   align="center"
                   color="secondary50 (Deprecated)"
@@ -205,14 +205,14 @@ export default function ENSSearchSheet() {
             </Inset>
           )}
           {showSearchSection && (
-            <Inset horizontal="19px (Deprecated)">
+            <Inset horizontal={19}>
               <Stack
                 separator={
-                  <Inset horizontal="19px (Deprecated)">
+                  <Inset horizontal={19}>
                     <Separator color="divider60 (Deprecated)" />
                   </Inset>
                 }
-                space="19px (Deprecated)"
+                space={19}
               >
                 <Inline alignHorizontal="justify" wrap={false}>
                   <SearchResultGradientIndicator
@@ -236,7 +236,7 @@ export default function ENSSearchSheet() {
                 </Inline>
                 {isRegistered ? (
                   registrationData?.registrationDate ? (
-                    <Inset horizontal="15px (Deprecated)">
+                    <Inset horizontal={15}>
                       <Text
                         color="secondary60 (Deprecated)"
                         size="16px / 22px (Deprecated)"
@@ -249,7 +249,7 @@ export default function ENSSearchSheet() {
                     </Inset>
                   ) : null
                 ) : (
-                  <Inset horizontal="15px (Deprecated)">
+                  <Inset horizontal={15}>
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text

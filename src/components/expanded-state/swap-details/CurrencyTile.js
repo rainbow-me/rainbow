@@ -88,8 +88,8 @@ export default function CurrencyTile({
   return (
     <Container {...props}>
       <Gradient color={colorForAsset} />
-      <Box paddingHorizontal="15px (Deprecated)">
-        <Rows alignHorizontal="center" alignVertical="center" space="10px">
+      <Box paddingHorizontal={15}>
+        <Rows alignHorizontal="center" alignVertical="center" space={10}>
           <Row height="content">
             <CoinIcon
               address={address}
@@ -103,9 +103,9 @@ export default function CurrencyTile({
           </Row>
           <Row height="content">
             <Box width="full">
-              <Rows space={ios && '4px'}>
+              <Rows space={ios && 4}>
                 <Row height="content">
-                  <Columns alignHorizontal="center" space="4px">
+                  <Columns alignHorizontal="center" space={4}>
                     <Column width="content">
                       <NativePriceText maxWidth={width / 4}>
                         {isOther && '~'}
@@ -121,7 +121,7 @@ export default function CurrencyTile({
                   <Box
                     alignItems="center"
                     justifyContent="center"
-                    marginTop={android && '-6px'}
+                    marginTop={android && -6}
                     width="full"
                   >
                     <TruncatedAmountText as={TruncatedText}>

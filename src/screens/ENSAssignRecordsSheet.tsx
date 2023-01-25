@@ -202,13 +202,13 @@ export default function ENSAssignRecordsSheet() {
         scrollEnabled={android}
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
-        <Stack space="19px (Deprecated)">
+        <Stack space={19}>
           <RegistrationCover
             enableNFTs={hasNFTs}
             hasSeenExplainSheet={hasSeenExplainSheet}
             onShowExplainSheet={handleFocus}
           />
-          <Bleed top={{ custom: 38 }}>
+          <Bleed top={38}>
             <Box alignItems="center">
               <RegistrationAvatar
                 enableNFTs={hasNFTs}
@@ -218,9 +218,9 @@ export default function ENSAssignRecordsSheet() {
               />
             </Box>
           </Bleed>
-          <Inset horizontal="19px (Deprecated)">
-            <Stack space="30px (Deprecated)">
-              <Stack alignHorizontal="center" space="15px (Deprecated)">
+          <Inset horizontal={19}>
+            <Stack space={30}>
+              <Stack alignHorizontal="center" space={15}>
                 <Heading
                   align="center"
                   numberOfLines={1}
@@ -364,8 +364,8 @@ export function ENSAssignRecordsBottomActions({
   return (
     <>
       {visible && (
-        <Box position="absolute" right="0px" style={keyboardButtonWrapperStyle}>
-          <Inset bottom="19px (Deprecated)" right="19px (Deprecated)">
+        <Box position="absolute" right={0} style={keyboardButtonWrapperStyle}>
+          <Inset bottom={19} right={19}>
             <HideKeyboardButton color={accentColor} />
           </Inset>
         </Box>
@@ -377,15 +377,12 @@ export function ENSAssignRecordsBottomActions({
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box
-            paddingBottom="19px (Deprecated)"
-            style={{ height: bottomActionHeight }}
-          >
+          <Box paddingBottom={19} style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
                 <Inset
-                  horizontal="19px (Deprecated)"
+                  horizontal={19}
                   top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}
                 >
                   <SelectableAttributesButtons
@@ -489,12 +486,12 @@ function HideKeyboardButton({ color }: { color: string }) {
           <Box
             background="accent"
             borderRadius={15}
-            height={{ custom: 30 }}
+            height={30}
             shadow="15px light (Deprecated)"
-            width={{ custom: 30 }}
+            width={30}
           >
             <Cover alignHorizontal="center" alignVertical="center">
-              <Box paddingTop={android ? '4px' : '2px'}>
+              <Box paddingTop={android ? 4 : 2}>
                 <Text
                   align="center"
                   color="primary (Deprecated)"
@@ -518,7 +515,7 @@ function Shadow() {
       <Cover>
         <Box
           background="body (Deprecated)"
-          height="30px"
+          height={30}
           shadow={{
             custom: {
               android: {
@@ -541,7 +538,7 @@ function Shadow() {
         />
       </Cover>
       <Cover>
-        <Box background="body (Deprecated)" height="46px" width="full" />
+        <Box background="body (Deprecated)" height={46} width="full" />
       </Cover>
     </>
   );
@@ -577,7 +574,7 @@ function SelectableAttributesButtons({
   }, [selectedFields]);
 
   return (
-    <Inline space="10px">
+    <Inline space={10}>
       {Object.values(textRecordFields)
         .slice(0, MAX_DISPLAY_BUTTONS)
         .map((textRecordField, i) => {

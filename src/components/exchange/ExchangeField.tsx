@@ -25,9 +25,7 @@ import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
 
 const ExchangeFieldHeight = android ? 64 : 38;
-const ExchangeFieldPadding: Space = android
-  ? '15px (Deprecated)'
-  : '19px (Deprecated)';
+const ExchangeFieldPadding: Space = android ? 15 : 19;
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
@@ -155,9 +153,9 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
           alignItems="center"
           width="full"
           paddingLeft={ExchangeFieldPadding}
-          paddingRight={disableCurrencySelection ? ExchangeFieldPadding : '6px'}
+          paddingRight={disableCurrencySelection ? ExchangeFieldPadding : 6}
         >
-          <Box paddingRight="10px">
+          <Box paddingRight={10}>
             {symbol ? (
               <CoinIcon
                 address={address}

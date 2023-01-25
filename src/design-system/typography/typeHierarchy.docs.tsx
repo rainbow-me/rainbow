@@ -22,7 +22,7 @@ const docs: DocsType = {
       name: 'Text sizes',
       Example: () =>
         source(
-          <Stack space="36px">
+          <Stack space={36}>
             <Text color="label" size="44pt">
               Lorem ipsum dolor sit amet,
               <br />

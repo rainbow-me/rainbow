@@ -6,7 +6,7 @@ export const RewardsSectionCard: React.FC = ({ children }) => {
     <Box
       background="surfaceSecondaryElevated"
       borderRadius={18}
-      padding="20px"
+      padding={20}
       shadow="12px"
     >
       {children}

@@ -25,8 +25,8 @@ const NumberBox = ({ number }: { number: number }) => {
   const itemBorderColor = useForegroundColor('buttonStrokeSecondary');
   return (
     <Box
-      width={{ custom: NUMBER_BOX_SIZE }}
-      height={{ custom: NUMBER_BOX_SIZE }}
+      width={NUMBER_BOX_SIZE}
+      height={NUMBER_BOX_SIZE}
       alignItems="center"
       justifyContent="center"
       background="surfacePrimary"
@@ -54,16 +54,16 @@ type ItemProps = {
 const Item = ({ item, rank }: ItemProps) => {
   const { width: deviceWidth } = useDimensions();
   return (
-    <Columns space={{ custom: COLUMNS_PADDING }}>
+    <Columns space={COLUMNS_PADDING}>
       <Column width="content">
         <NumberBox number={rank} />
       </Column>
       <Column
         // sorry for this hack, but it's seemingly the only way to make the
         // text wrap properly while being confined to the horizontal inset
-        width={{ custom: deviceWidth - 2 * HORIZONTAL_INSET - COLUMNS_PADDING }}
+        width={deviceWidth - 2 * HORIZONTAL_INSET - COLUMNS_PADDING}
       >
-        <Stack space="12px">
+        <Stack space={12}>
           <Text weight="heavy" size="17pt" color="label">
             {item.title}
           </Text>
@@ -105,12 +105,12 @@ export function PairHardwareWalletSigningSheet() {
   return (
     <Layout
       header={
-        <Inset horizontal="36px">
-          <Stack alignHorizontal="center" space="20px">
+        <Inset horizontal={36}>
+          <Stack alignHorizontal="center" space={20}>
             <Text align="center" color="label" weight="bold" size="26pt">
               {i18n.t(TRANSLATIONS.enable_blind_signing)}
             </Text>
-            <Stack space="10px">
+            <Stack space={10}>
               <Text
                 align="center"
                 color="labelTertiary"
@@ -141,7 +141,7 @@ export function PairHardwareWalletSigningSheet() {
         </Inset>
       }
       footer={
-        <Inset horizontal="20px">
+        <Inset horizontal={20}>
           <SheetActionButton
             color={buttonColor}
             label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
@@ -153,11 +153,8 @@ export function PairHardwareWalletSigningSheet() {
         </Inset>
       }
     >
-      <Inset
-        horizontal={{ custom: HORIZONTAL_INSET }}
-        top={isSmallPhone ? '36px' : '80px'}
-      >
-        <Stack space={isSmallPhone ? '36px' : '44px'}>
+      <Inset horizontal={HORIZONTAL_INSET} top={isSmallPhone ? 36 : 80}>
+        <Stack space={isSmallPhone ? 36 : 44}>
           {items.map((item, index) => (
             <Item item={item} rank={index + 1} key={index} />
           ))}

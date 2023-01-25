@@ -67,7 +67,7 @@ const ExchangeIcon = magicMemo(
             <Box
               alignHorizontal="center"
               alignVertical="center"
-              height={{ custom: 20 }}
+              height={20}
               style={{
                 backgroundColor: colors.exchangeFallback,
                 borderColor: colors.white,
@@ -75,7 +75,7 @@ const ExchangeIcon = magicMemo(
                 borderWidth: 1.5,
                 zIndex: index,
               }}
-              width={{ custom: 20 }}
+              width={20}
             >
               <Cover alignHorizontal="center" alignVertical="center">
                 <Box
@@ -112,7 +112,7 @@ const ExchangeIconStack = magicMemo(
           return (
             <Box
               key={`protocol-icon-${index}`}
-              marginLeft={{ custom: -4 }}
+              marginLeft={-4}
               zIndex={protocols?.icons?.length - index}
             >
               <ExchangeIcon
@@ -134,14 +134,14 @@ const CrossChainIconStack = magicMemo(
       <Inline>
         {protocols?.icons?.map((icon, index) => {
           return (
-            <Inline key={`protocol-icon-${index}`} marginLeft={{ custom: 0 }}>
+            <Inline key={`protocol-icon-${index}`} marginLeft={0}>
               <ExchangeIcon
                 icon={icon}
                 protocol={protocols?.name ?? protocols.names[index]}
               />
 
               {index < protocols?.icons.length - 1 && (
-                <Box paddingTop="6px">
+                <Box paddingTop={6}>
                   <Text
                     color="secondary50 (Deprecated)"
                     size="11pt"
@@ -220,7 +220,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
 
   if (protocols?.length > 1) {
     return (
-      <Bleed vertical="8px">
+      <Bleed vertical={8}>
         <ButtonPressAnimation
           testID={`${testID}`}
           onPress={nextStep}
@@ -230,7 +230,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
             paddingVertical: 8,
           }}
         >
-          <Columns alignHorizontal="right" alignVertical="center" space="4px">
+          <Columns alignHorizontal="right" alignVertical="center" space={4}>
             <Column>
               <SwapDetailsLabel>
                 {lang.t('expanded_state.swap.swapping_via')}
@@ -242,7 +242,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
                   top: android ? -1.5 : 0,
                 }}
               >
-                <Bleed vertical="10px">
+                <Bleed vertical={10}>
                   {bridges ? (
                     <CrossChainIconStack protocols={steps[step]} />
                   ) : (
@@ -256,7 +256,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
             </Column>
             {(steps?.[step]?.part || steps?.[step]?.action) && (
               <Column width="content">
-                <Bleed right="5px (Deprecated)" vertical="6px">
+                <Bleed right={5} vertical={6}>
                   <Pill
                     height={20}
                     style={{
@@ -276,7 +276,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
     );
   } else if (protocols?.length > 0) {
     return (
-      <Columns alignVertical="center" space="4px" testID={testID}>
+      <Columns alignVertical="center" space={4} testID={testID}>
         <Column>
           <SwapDetailsLabel>
             {lang.t('expanded_state.swap.swapping_via')}
@@ -288,7 +288,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
               top: android ? -1.5 : 0,
             }}
           >
-            <Bleed vertical="10px">
+            <Bleed vertical={10}>
               <ExchangeIcon
                 icon={getExchangeIconUrl(parseExchangeName(protocols[0].name))}
                 protocol={parseExchangeName(protocols[0].name)}
@@ -300,7 +300,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
           <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
         </Column>
         <Column width="content">
-          <Bleed right="6px" vertical="12px">
+          <Bleed right={6} vertical={12}>
             <Pill
               height={20}
               style={{

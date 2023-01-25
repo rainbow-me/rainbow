@@ -32,13 +32,13 @@ const RegisterContent = ({
 
   return (
     <>
-      <Box paddingTop="24px">
+      <Box paddingTop={24}>
         <StepIndicator currentStep={3} steps={3} />
       </Box>
       <Rows>
         <Row>
-          <Box flexGrow={1} justifyContent="center" paddingHorizontal="24px">
-            <Stack space="24px">
+          <Box flexGrow={1} justifyContent="center" paddingHorizontal={24}>
+            <Stack space={24}>
               <Text
                 align="center"
                 color="primary (Deprecated)"
@@ -60,7 +60,7 @@ const RegisterContent = ({
           </Box>
         </Row>
         <Row height="content">
-          <Stack space="19px (Deprecated)">
+          <Stack space={19}>
             <Separator color="divider80 (Deprecated)" />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>

@@ -104,7 +104,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 
   return (
     <Stack>
-      <Box alignItems="flex-end" height="40px">
+      <Box alignItems="flex-end" height={40}>
         {(canBeResubmitted || canBeCancelled) && (
           <ContextMenuButton
             menuConfig={menuConfig}
@@ -113,8 +113,8 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             <ButtonPressAnimation>
               <Box
                 style={styles.overflowHidden}
-                height={{ custom: SIZE }}
-                width={{ custom: SIZE }}
+                height={SIZE}
+                width={SIZE}
                 borderRadius={SIZE / 2}
               >
                 <RadialGradient
@@ -132,8 +132,8 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           </ContextMenuButton>
         )}
       </Box>
-      <Box paddingBottom="24px">
-        <Stack alignHorizontal="center" space="16px">
+      <Box paddingBottom={24}>
+        <Stack alignHorizontal="center" space={16}>
           {status && !hideIcon && (
             <Box borderRadius={30} style={{ overflow: 'hidden' }}>
               <RadialGradient
@@ -153,7 +153,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               </RadialGradient>
             </Box>
           )}
-          <Stack alignHorizontal="center" space="24px">
+          <Stack alignHorizontal="center" space={24}>
             {status && (
               <Text size="22pt" weight="heavy" color={color}>
                 {capitalize(status)}

@@ -14,9 +14,9 @@ export const DoubleLineTransactionDetailsRow: React.FC<Props> = ({
   value,
   title,
 }) => (
-  <Columns space="10px" alignVertical="center">
+  <Columns space={10} alignVertical="center">
     <Column width="content">{leftComponent}</Column>
-    <Stack space="10px">
+    <Stack space={10}>
       <Inline>
         <Text
           color="labelTertiary"

@@ -50,12 +50,12 @@ export default function ENSAdditionalRecordsSheet() {
       <AccentColorProvider color={accentColor}>
         <Box
           background="body (Deprecated)"
-          paddingHorizontal="19px (Deprecated)"
-          paddingVertical="24px"
+          paddingHorizontal={19}
+          paddingVertical={24}
           style={boxStyle}
           testID="ens-additional-records-sheet"
         >
-          <Inline space="10px">
+          <Inline space={10}>
             {Object.values(textRecordFields).map((textRecordField, i) => {
               const isSelected = selectedFields.some(
                 field => field.id === textRecordField.id

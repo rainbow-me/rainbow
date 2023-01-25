@@ -228,9 +228,9 @@ const ExchangeAssetList: ForwardRefRenderFunction<
         scaleTo={0.96}
       >
         <Box
-          paddingTop={section.useGradientText ? '10px' : { custom: 14 }}
-          paddingBottom="4px"
-          paddingLeft="20px"
+          paddingTop={section.useGradientText ? 10 : 14}
+          paddingBottom={4}
+          paddingLeft={20}
         >
           <HeaderBackground />
           <Box>
@@ -244,7 +244,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   };
 
   const FooterSpacer = useCallback(
-    () => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null),
+    () => (footerSpacer ? <Box width="full" height={35} /> : null),
     [footerSpacer]
   );
 

@@ -17,7 +17,7 @@ export default React.memo(function WrappedPoolRow({
   return (
     // This 'Bleed' element moves the rows visually closer to the header, but since they
     // have a fixed height in the recycler list, it doesn't affect the overall list height.
-    <Bleed top="6px">
+    <Bleed top={6}>
       <UniswapInvestmentRow assetType="uniswap" item={found} />
     </Bleed>
   );

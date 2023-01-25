@@ -263,8 +263,8 @@ export function WalletConnectV2ListItem({
 
           <Box
             borderRadius={99}
-            paddingVertical="8px"
-            paddingHorizontal="12px"
+            paddingVertical={8}
+            paddingHorizontal={12}
             justifyContent="center"
           >
             <RadialGradient
@@ -281,7 +281,7 @@ export function WalletConnectV2ListItem({
                       <Box
                         background="body (Deprecated)"
                         key={`availableNetwork-${network}`}
-                        marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                        marginLeft={index > 0 ? -4 : 0}
                         style={{
                           backgroundColor: colors.transparent,
                           zIndex: availableNetworks?.length - index,

@@ -51,18 +51,12 @@ export const GenericCard = ({
         colors={gradient}
         end={{ x: 1, y: 0 }}
         start={{ x: 0, y: 0.5 }}
-        width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
-        height={
-          type === 'square'
-            ? {
-                custom: SQUARE_CARD_SIZE,
-              }
-            : undefined
-        }
+        width={type === 'square' ? SQUARE_CARD_SIZE : 'full'}
+        height={type === 'square' ? SQUARE_CARD_SIZE : undefined}
         borderRadius={20}
         shadow={color ? '18px accent' : '18px'}
         style={{ flex: IS_IOS ? 0 : undefined }}
-        padding="20px"
+        padding={20}
         testID={testID}
       >
         {children}

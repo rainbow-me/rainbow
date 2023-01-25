@@ -13,32 +13,32 @@ export function SeparatorDots({ size, minuteEndsWithOne }: SeparatorDotsProps) {
       alignItems="center"
       flexDirection="column"
       justifyContent="center"
-      paddingBottom={{ custom: 2 }}
-      paddingLeft={{ custom: minuteEndsWithOne ? 0 : 3 }}
-      paddingRight={{ custom: 3 }}
+      paddingBottom={2}
+      paddingLeft={minuteEndsWithOne ? 0 : 3}
+      paddingRight={3}
       style={{
         marginLeft: minuteEndsWithOne ? -1 : 0,
       }}
     >
       <Box
         borderRadius={200}
-        height={{ custom: size }}
-        marginBottom={{ custom: size / 2 }}
-        marginTop={{ custom: size / 2 }}
+        height={size}
+        marginBottom={size / 2}
+        marginTop={size / 2}
         style={{
           backgroundColor: accentColor,
         }}
-        width={{ custom: size }}
+        width={size}
       />
       <Box
         borderRadius={200}
-        height={{ custom: size }}
-        marginBottom={{ custom: size / 2 }}
-        marginTop={{ custom: size / 2 }}
+        height={size}
+        marginBottom={size / 2}
+        marginTop={size / 2}
         style={{
           backgroundColor: accentColor,
         }}
-        width={{ custom: size }}
+        width={size}
       />
     </Box>
   );

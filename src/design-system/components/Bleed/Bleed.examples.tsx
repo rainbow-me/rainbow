@@ -11,10 +11,10 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed horizontal="20px">
+          <Bleed horizontal={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -27,10 +27,10 @@ export const horizontal: Example = {
   name: 'Horizontal',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed horizontal="20px">
+          <Bleed horizontal={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -43,10 +43,10 @@ export const vertical: Example = {
   name: 'Vertical',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed vertical="20px">
+          <Bleed vertical={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -59,10 +59,10 @@ export const customSpace: Example = {
   name: 'Custom space',
   Example: () =>
     source(
-      <Inset space={{ custom: 17 }}>
-        <Stack space={{ custom: 17 }}>
+      <Inset space={17}>
+        <Stack space={17}>
           <Placeholder />
-          <Bleed horizontal={{ custom: 17 }}>
+          <Bleed horizontal={17}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -75,10 +75,10 @@ export const right: Example = {
   name: 'Right',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed right="20px">
+          <Bleed right={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -91,10 +91,10 @@ export const left: Example = {
   name: 'Left',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed left="20px">
+          <Bleed left={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -107,9 +107,9 @@ export const top: Example = {
   name: 'Top',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
-          <Bleed top="20px">
+      <Inset space={20}>
+        <Stack space={20}>
+          <Bleed top={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />
@@ -123,11 +123,11 @@ export const bottom: Example = {
   name: 'Bottom',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
           <Placeholder />
-          <Bleed bottom="20px">
+          <Bleed bottom={20}>
             <Placeholder />
           </Bleed>
         </Stack>
@@ -139,10 +139,10 @@ export const allSides: Example = {
   name: 'All sides',
   Example: () =>
     source(
-      <Inset space="20px">
-        <Stack space="20px">
+      <Inset space={20}>
+        <Stack space={20}>
           <Placeholder />
-          <Bleed space="20px">
+          <Bleed space={20}>
             <Placeholder />
           </Bleed>
           <Placeholder />

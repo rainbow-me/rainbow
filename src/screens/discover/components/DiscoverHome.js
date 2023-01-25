@@ -29,28 +29,28 @@ export default function DiscoverHome() {
   const testNetwork = isTestnetNetwork(network);
 
   return (
-    <Inset top="20px" bottom={{ custom: 150 }}>
-      <Stack space="20px">
-        <Inset horizontal="20px">
+    <Inset top={20} bottom={150}>
+      <Stack space={20}>
+        <Inset horizontal={20}>
           {profilesEnabled &&
           !testNetwork &&
           !isZero(accountAsset.balance.amount) ? (
-            <Stack space="20px">
-              <Inline space="20px">
+            <Stack space={20}>
+              <Inline space={20}>
                 <GasCard />
                 <ENSSearchCard />
               </Inline>
               {optimismRewardsEnabled && <OpRewardsCard />}
               <ENSCreateProfileCard />
-              <Inline space="20px">
+              <Inline space={20}>
                 <LearnCard cardDetails={backupsCard} type="square" />
                 <LearnCard cardDetails={avoidScamsCard} type="square" />
               </Inline>
               <DPICard />
             </Stack>
           ) : (
-            <Stack space="20px">
-              <Inline space="20px">
+            <Stack space={20}>
+              <Inline space={20}>
                 <GasCard />
                 <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
               </Inline>

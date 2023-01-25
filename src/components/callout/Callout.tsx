@@ -19,13 +19,13 @@ export default function Callout({
       borderRadius={24}
       colors={colors.gradients.lightGreyWhite}
       end={{ x: 1, y: 0 }}
-      height="40px"
+      height={40}
       justifyContent="center"
       start={{ x: 0, y: 0 }}
     >
-      <Inset horizontal="10px">
+      <Inset horizontal={10}>
         <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
-          <Inline alignVertical="center" space="8px" wrap={false}>
+          <Inline alignVertical="center" space={8} wrap={false}>
             {before}
             <Text
               color="secondary80 (Deprecated)"

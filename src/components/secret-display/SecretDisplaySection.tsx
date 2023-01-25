@@ -97,12 +97,8 @@ export default function SecretDisplaySection({
   const renderStepNoSeeds = useCallback(() => {
     if (isRecoveryPhraseVisible) {
       return (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="60px"
-        >
-          <Stack space="10px">
+        <Box alignItems="center" justifyContent="center" paddingHorizontal={60}>
+          <Stack space={10}>
             <Text
               align="center"
               color="secondary (Deprecated)"
@@ -128,11 +124,7 @@ export default function SecretDisplaySection({
       );
     } else {
       return (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="60px"
-        >
+        <Box alignItems="center" justifyContent="center" paddingHorizontal={60}>
           <Text
             align="center"
             color="secondary60 (Deprecated)"
@@ -150,15 +142,15 @@ export default function SecretDisplaySection({
         <Box
           alignItems="center"
           justifyContent="center"
-          paddingBottom="30px (Deprecated)"
-          paddingHorizontal={{ custom: 46 }}
+          paddingBottom={30}
+          paddingHorizontal={46}
         >
           {seed ? (
             <>
-              <Box paddingBottom="19px (Deprecated)">
+              <Box paddingBottom={19}>
                 {/* @ts-ignore */}
                 <CopyFloatingEmojis textToCopy={seed}>
-                  <Inline alignVertical="center" space="6px">
+                  <Inline alignVertical="center" space={6}>
                     <CopyButtonIcon />
                     <Text
                       color="action (Deprecated)"
@@ -170,7 +162,7 @@ export default function SecretDisplaySection({
                   </Inline>
                 </CopyFloatingEmojis>
               </Box>
-              <Stack alignHorizontal="center" space="19px (Deprecated)">
+              <Stack alignHorizontal="center" space={19}>
                 {/* @ts-ignore */}
                 <SecretDisplayCard seed={seed} type={type} />
                 <Text

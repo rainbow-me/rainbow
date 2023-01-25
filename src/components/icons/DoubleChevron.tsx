@@ -11,7 +11,7 @@ const DoubleChevron = () => (
       >
         􀯻
       </Text>
-      <Bleed left="6px">
+      <Bleed left={6}>
         <Text
           color="secondary40 (Deprecated)"
           size="16px / 22px (Deprecated)"

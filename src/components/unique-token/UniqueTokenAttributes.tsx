@@ -47,7 +47,7 @@ const UniqueTokenAttributes = ({
   );
 
   return (
-    <Inline space="10px">
+    <Inline space={10}>
       {sortedTraits.map(
         ({
           color,

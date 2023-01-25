@@ -77,13 +77,13 @@ export default function SecretDisplayCard({
 }: SecretDisplayCardProps) {
   return (
     <Centered>
-      <Inset vertical="10px">
+      <Inset vertical={10}>
         <Box
           background="card (Deprecated)"
           borderRadius={25}
-          height={{ custom: 240 }}
-          paddingHorizontal="30px (Deprecated)"
-          paddingVertical="19px (Deprecated)"
+          height={240}
+          paddingHorizontal={30}
+          paddingVertical={19}
           shadow="21px light (Deprecated)"
         >
           <CopyTooltip

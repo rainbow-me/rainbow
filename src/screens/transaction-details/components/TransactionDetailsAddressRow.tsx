@@ -206,8 +206,8 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
       menuAlignmentOverride="left"
     >
       <ButtonPressAnimation scaleTo={0.96}>
-        <Box paddingVertical="10px">
-          <Columns space="10px" alignVertical="center">
+        <Box paddingVertical={10}>
+          <Columns space={10} alignVertical="center">
             <Column width="content">
               <Box>
                 <Animated.View style={ensAvatarAnimatedStyle}>
@@ -225,7 +225,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
                 </Cover>
               </Box>
             </Column>
-            <Stack space="10px">
+            <Stack space={10}>
               <Text
                 color="labelTertiary"
                 size="13pt"

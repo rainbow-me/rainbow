@@ -101,7 +101,7 @@ export default function RegistrationReviewRows({
 
   return (
     <Box>
-      <Stack space="30px (Deprecated)">
+      <Stack space={30}>
         <Columns>
           <Column width="3/5">
             <Text
@@ -119,7 +119,7 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="2/5">
-            <Inset left="4px">
+            <Inset left={4}>
               <Columns>
                 <Column width="content">
                   <StepButton
@@ -130,7 +130,7 @@ export default function RegistrationReviewRows({
                     type="decrement"
                   />
                 </Column>
-                <Box height={{ custom: 16 }}>
+                <Box height={16}>
                   <Text
                     align="center"
                     color="primary (Deprecated)"
@@ -193,7 +193,7 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Box height={{ custom: 16 }}>
+            <Box height={16}>
               {registrationFee ? (
                 <Text
                   align="right"
@@ -221,7 +221,7 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Box height={{ custom: 16 }}>
+            <Box height={16}>
               {networkFee ? (
                 <Text
                   align="right"
@@ -250,7 +250,7 @@ export default function RegistrationReviewRows({
               </Text>
             </Column>
             <Column width="1/3">
-              <Box height={{ custom: 16 }}>
+              <Box height={16}>
                 {networkFee ? (
                   <Text
                     align="right"
@@ -279,7 +279,7 @@ export default function RegistrationReviewRows({
             </Text>
           </Column>
           <Column width="1/3">
-            <Box height={{ custom: 16 }}>
+            <Box height={16}>
               {totalCost ? (
                 <Text
                   align="right"

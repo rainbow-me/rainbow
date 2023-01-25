@@ -27,15 +27,11 @@ export function Navbar({
 
   return (
     <Box testID={testID}>
-      {hasStatusBarInset && <Box height={{ custom: topInset }} />}
-      <Box
-        height={{ custom: navbarHeight }}
-        justifyContent="center"
-        alignItems="center"
-      >
+      {hasStatusBarInset && <Box height={topInset} />}
+      <Box height={navbarHeight} justifyContent="center" alignItems="center">
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box width="full">
-            <Inset horizontal="19px (Deprecated)">
+            <Inset horizontal={19}>
               <Inline alignHorizontal="justify" alignVertical="center">
                 {leftComponent}
                 {rightComponent}
@@ -43,7 +39,7 @@ export function Navbar({
             </Inset>
           </Box>
         </Cover>
-        <Inset top="1px (Deprecated)">
+        <Inset top={1}>
           <Text color="label" size="20pt" weight="heavy">
             {title}
           </Text>

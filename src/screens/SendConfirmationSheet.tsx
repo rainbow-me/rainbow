@@ -684,8 +684,8 @@ export default function SendConfirmationSheet() {
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
-            <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
-              <Stack space="19px (Deprecated)">
+            <Inset bottom={30} horizontal={19}>
+              <Stack space={19}>
                 {isL2 && (
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
@@ -733,8 +733,8 @@ export default function SendConfirmationSheet() {
                   </ButtonPressAnimation>
                 )}
                 {(isENS || shouldShowChecks) && checkboxes.length > 0 && (
-                  <Inset horizontal="10px">
-                    <Stack space="24px">
+                  <Inset horizontal={10}>
+                    <Stack space={24}>
                       {checkboxes.map((check, i) => (
                         <CheckboxField
                           color={color}

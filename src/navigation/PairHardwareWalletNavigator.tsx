@@ -119,8 +119,8 @@ export function PairHardwareWalletNavigator() {
           )}
           {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
             <Box
-              width={{ custom: deviceUtils.dimensions.width }}
-              height={{ custom: contentHeight }}
+              width={deviceUtils.dimensions.width}
+              height={contentHeight}
               alignItems="center"
               justifyContent="center"
               position="absolute"

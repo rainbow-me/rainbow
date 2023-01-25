@@ -121,7 +121,7 @@ export const ENSSearchCard = () => {
               shadowColor="shadow"
             />
           </Box>
-          <Stack space="10px">
+          <Stack space={10}>
             <Text
               color={{ custom: globalColors.blue20 }}
               size="13pt"

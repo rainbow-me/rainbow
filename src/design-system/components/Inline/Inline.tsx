@@ -6,16 +6,15 @@ import {
   AlignVertical,
   alignVerticalToFlexAlign,
 } from '../../layout/alignment';
-import { negateSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 export type InlineProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-  space?: Space;
-  horizontalSpace?: Space;
-  verticalSpace?: Space;
+  space?: number;
+  horizontalSpace?: number;
+  verticalSpace?: number;
 } & (
   | {
       separator?: undefined;
@@ -60,10 +59,8 @@ export function Inline({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={
-        wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined
-      }
-      marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
+      marginRight={wrap && horizontalSpace ? -horizontalSpace : undefined}
+      marginTop={wrap && verticalSpace ? -verticalSpace : undefined}
     >
       {Children.map(flattenedChildren, (child, index) => {
         if (wrap) {

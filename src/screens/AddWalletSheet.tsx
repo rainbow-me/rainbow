@@ -361,9 +361,9 @@ export const AddWalletSheet = () => {
 
   return (
     <Box height="full" width="full" testID="add-wallet-sheet">
-      <Inset horizontal="20px" top="36px" bottom="104px">
-        <Stack space="32px">
-          <Stack space="20px">
+      <Inset horizontal={20} top={36} bottom={104}>
+        <Stack space={32}>
+          <Stack space={20}>
             <Text align="center" size="26pt" weight="bold" color="label">
               {i18n.t(
                 TRANSLATIONS[
@@ -385,7 +385,7 @@ export const AddWalletSheet = () => {
             </Text>
           </Stack>
           <Box background="surfacePrimary" borderRadius={18} shadow="12px">
-            <Inset vertical="24px" horizontal="20px">
+            <Inset vertical={24} horizontal={20}>
               <AddWalletList
                 totalHorizontalInset={40}
                 items={[

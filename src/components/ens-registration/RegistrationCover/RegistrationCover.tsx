@@ -143,9 +143,9 @@ const RegistrationCover = ({
 
   if (isLoading) {
     return (
-      <Box height="126px">
+      <Box height={126}>
         <Skeleton animated>
-          <Box background="body (Deprecated)" height="126px" />
+          <Box background="body (Deprecated)" height={126} />
         </Skeleton>
       </Box>
     );
@@ -168,7 +168,7 @@ const RegistrationCover = ({
         <Box
           alignItems="center"
           as={ios ? RadialGradient : View}
-          height="126px"
+          height={126}
           justifyContent="center"
           {...(ios
             ? {
@@ -197,7 +197,7 @@ const RegistrationCover = ({
           <Cover>
             <Box
               as={ImgixImage}
-              height="126px"
+              height={126}
               onLoadEnd={() => setIsLoadingImage(false)}
               size={400}
               source={{ uri: coverUrl }}

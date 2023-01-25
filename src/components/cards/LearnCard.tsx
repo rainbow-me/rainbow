@@ -67,7 +67,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
             </Text>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
-          <Stack space="10px">
+          <Stack space={10}>
             <Text
               color={{ custom: secondaryTextColor }}
               size="13pt"
@@ -85,11 +85,11 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
           </Stack>
         </Box>
       ) : (
-        <Stack space="36px">
-          <Box height={{ custom: 65 }}>
-            <Columns space="20px">
+        <Stack space={36}>
+          <Box height={65}>
+            <Columns space={20}>
               <Column>
-                <Stack space="12px">
+                <Stack space={12}>
                   <Text
                     size="13pt"
                     weight="bold"

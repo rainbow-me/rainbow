@@ -34,7 +34,7 @@ export default function ProfileAvatar({
   const showSkeleton = isLoading || !isFetched;
 
   return (
-    <Box height={{ custom: size }} width={{ custom: size }}>
+    <Box height={size} width={size}>
       <Cover alignHorizontal="center">
         <BackgroundProvider color="body (Deprecated)">
           {({ backgroundColor }) => (
@@ -48,7 +48,7 @@ export default function ProfileAvatar({
         borderRadius={size / 2}
         justifyContent="center"
         shadow="15px light (Deprecated)"
-        width={{ custom: size }}
+        width={size}
       >
         <ImagePreviewOverlayTarget
           aspectRatioType="avatar"
@@ -56,7 +56,7 @@ export default function ProfileAvatar({
           borderRadius={size / 2}
           disableEnteringWithPinch
           enableZoomOnPress={enableZoomOnPress}
-          height={{ custom: size }}
+          height={size}
           hideStatusBar={false}
           imageUrl={avatarUrl || ''}
           onPress={handleOnPress}
@@ -66,13 +66,13 @@ export default function ProfileAvatar({
           <>
             {showSkeleton && (
               <Cover alignHorizontal="center">
-                <Box height={{ custom: size }} width="full">
+                <Box height={size} width="full">
                   <Skeleton animated>
                     <Box
                       background="body (Deprecated)"
                       borderRadius={size / 2}
-                      height={{ custom: size }}
-                      width={{ custom: size }}
+                      height={size}
+                      width={size}
                     />
                   </Skeleton>
                 </Box>
@@ -82,17 +82,17 @@ export default function ProfileAvatar({
               {avatarUrl ? (
                 <Box
                   as={ImgixImage}
-                  height={{ custom: size }}
+                  height={size}
                   onLoadEnd={onLoadEnd}
                   source={{ uri: avatarUrl }}
-                  width={{ custom: size }}
+                  width={size}
                 />
               ) : (
                 <Box
                   background="accent"
                   borderRadius={size / 2}
-                  height={{ custom: size }}
-                  width={{ custom: size }}
+                  height={size}
+                  width={size}
                 >
                   <Cover alignHorizontal="center" alignVertical="center">
                     <Box>

@@ -87,14 +87,14 @@ function GweiInputPill(
     >
       <Box
         as={LinearGradient}
-        height="40px"
+        height={40}
         borderRadius={15}
         colors={colors.gradients.lightGreyTransparent}
         end={isDarkMode ? { x: 0, y: 0 } : { x: 0.5, y: 1 }}
         start={isDarkMode ? { x: 0.5, y: 1 } : { x: 0, y: 0 }}
       >
-        <Inset vertical="10px" horizontal="12px">
-          <Inline alignVertical="center" space="4px">
+        <Inset vertical={10} horizontal={12}>
+          <Inline alignVertical="center" space={4}>
             <GweiNumberInput
               allowFontScaling={false}
               contextMenuHidden

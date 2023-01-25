@@ -55,9 +55,9 @@ const GweiStepButton = ({
       onPress={onPress}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       useLateHaptic={false}
-      padding="4px"
-      margin="-4px"
-      marginTop={IS_ANDROID ? '-2px' : undefined}
+      padding={4}
+      margin={-4}
+      marginTop={IS_ANDROID ? -2 : undefined}
     >
       <Text
         size="icon 16px"
@@ -143,7 +143,7 @@ export default function FeesGweiInput({
 
   return (
     <Box>
-      <Inline alignVertical="center" space="6px">
+      <Inline alignVertical="center" space={6}>
         <GweiStepButton
           buttonColor={buttonColor}
           onLongPress={onMinusLongPress}

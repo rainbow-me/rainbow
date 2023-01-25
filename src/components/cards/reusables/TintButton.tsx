@@ -44,7 +44,7 @@ export const TintButton = ({
           <Box
             background="accent"
             borderRadius={99}
-            height={{ custom: height }}
+            height={height}
             width={width ? { custom: width } : 'full'}
             alignItems="center"
             justifyContent="center"
@@ -63,7 +63,7 @@ export const TintButton = ({
     );
   } else {
     return (
-      <Box height={{ custom: height }}>
+      <Box height={height}>
         <Skeleton>
           <FakeText height={height} />
         </Skeleton>

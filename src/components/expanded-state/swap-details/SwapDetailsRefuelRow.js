@@ -22,7 +22,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 7,
 });
 
-const ICON_ALIGN_MARGIN = '-8px';
+const ICON_ALIGN_MARGIN = -8;
 
 export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   const { colors } = useTheme();
@@ -41,7 +41,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
 
   return (
     <Rows testID={testID}>
-      <Columns alignVertical="center" space="4px">
+      <Columns alignVertical="center" space={4}>
         <Column>
           <SwapDetailsLabel>
             {lang.t('expanded_state.swap_details.refuel')}
@@ -51,7 +51,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
           <>
             <Column width="content">
               <Box
-                paddingRight="2px"
+                paddingRight={2}
                 marginTop={ICON_ALIGN_MARGIN}
                 marginBottom={ICON_ALIGN_MARGIN}
               >
@@ -68,13 +68,13 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               </Box>
             </Column>
             <Column width="content">
-              <Box marginTop="-4px" marginBottom="-4px">
+              <Box marginTop={-4} marginBottom={-4}>
                 <CaretIcon />
               </Box>
             </Column>
             <Column width="content">
               <Box
-                paddingLeft="4px"
+                paddingLeft={4}
                 marginTop={ICON_ALIGN_MARGIN}
                 marginBottom={ICON_ALIGN_MARGIN}
               >

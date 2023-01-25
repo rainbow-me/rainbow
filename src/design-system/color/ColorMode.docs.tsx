@@ -28,14 +28,14 @@ const docs: DocsType = {
         Example={() =>
           source(
             <>
-              <Box padding="24px" style={{ backgroundColor: 'black' }}>
+              <Box padding={24} style={{ backgroundColor: 'black' }}>
                 <ColorModeProvider value="dark">
                   <Text color="label" size="17pt">
                     Hi Mom!
                   </Text>
                 </ColorModeProvider>
               </Box>
-              <Box padding="24px" style={{ backgroundColor: 'white' }}>
+              <Box padding={24} style={{ backgroundColor: 'white' }}>
                 <ColorModeProvider value="light">
                   <Text color="label" size="17pt">
                     Hi Rainbow!

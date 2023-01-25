@@ -75,16 +75,16 @@ const AvailableNetworksv1 = ({
               return (
                 <Box
                   background="body (Deprecated)"
-                  height={{ custom: 22 }}
+                  height={22}
                   key={`availbleNetwork-${network}`}
-                  marginLeft={{ custom: -6 }}
+                  marginLeft={-6}
                   style={{
                     borderColor: colors.transparent,
                     borderRadius: 10,
                     borderWidth: 1.5,
                     zIndex: index,
                   }}
-                  width={{ custom: 22 }}
+                  width={22}
                   zIndex={availableNetworks?.length - index}
                 >
                   {network !== 'mainnet' ? (

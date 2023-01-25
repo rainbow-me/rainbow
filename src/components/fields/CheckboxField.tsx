@@ -27,18 +27,18 @@ export default function CheckboxField({
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.925} testID={testID}>
-      <Inline alignVertical="center" space="8px" wrap={false}>
+      <Inline alignVertical="center" space={8} wrap={false}>
         <Box
           alignItems="center"
           borderRadius={7}
-          height={{ custom: 20 }}
+          height={20}
           justifyContent="center"
           style={{
             backgroundColor: isChecked ? customColor : undefined,
             borderColor: isChecked ? customColor || action : secondary15,
             borderWidth: 2,
           }}
-          width={{ custom: 20 }}
+          width={20}
           {...(!customColor && {
             background: !isChecked
               ? 'action (Deprecated)'
@@ -46,7 +46,7 @@ export default function CheckboxField({
           })}
         >
           {isChecked && (
-            <Inset left="1px (Deprecated)">
+            <Inset left={1}>
               <AccentColorProvider color="white">
                 <Text
                   color="accent"

@@ -47,11 +47,11 @@ export default function QRScannerScreen() {
       <ColorModeProvider value="darkTinted">
         <Box
           position="absolute"
-          top={{ custom: topInset - 8 }}
+          top={topInset - 8}
           width="full"
           style={{ zIndex: 1 }}
         >
-          <Box alignItems="center" paddingTop="8px" height={{ custom: 16 }}>
+          <Box alignItems="center" paddingTop={8} height={16}>
             <SheetHandle color="rgba(245, 248, 255, 0.4)" showBlur={false} />
           </Box>
           <Navbar hasStatusBarInset={false} title="Scan to Connect" />
