@@ -2940,10 +2940,10 @@
     "@metamask/eth-sig-util" "4.0.0"
     ethereumjs-util "6.2.1"
 
-"@ratio.me/ratio-react-native-library@0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.6.0.tgz#633979b7b2829ac20280679247da3e461ee4649f"
-  integrity sha512-0qKX1D2IGmHQT7vk7AQnE6HtVxcCX06h/XM/pRb2jNWmXodO2nxZAGKBhKRexz3T5+KpoVi2N8JUTudmOVxfmg==
+"@ratio.me/ratio-react-native-library@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.7.0.tgz#c4d4bdb2d4bffa5d86415e55a65aa9490a051191"
+  integrity sha512-DCny3dLwPsLpZa/yn9M3JbnJdlqj+mRmbE5QdWrnF4B73M/U4LSggfC3KXFWRHoGnLDq5YtahNlxXVrcmjrMCw==
   dependencies:
     react-native-svg "13.4.0"
     react-native-swipe-gestures "^1.0.5"
