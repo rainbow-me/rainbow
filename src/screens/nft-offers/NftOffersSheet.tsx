@@ -3,7 +3,6 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   BackgroundProvider,
   Box,
-  globalColors,
   Inline,
   Inset,
   Separator,
@@ -12,16 +11,16 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { CoinIcon } from '@/utils';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { ETH_SYMBOL } from '@/references';
 import { OfferRow } from './components/OfferRow';
+import { useAccountProfile } from '@/hooks';
+import { ImgixImage } from '@/components/images';
+import { ContactAvatar } from '@/components/contacts';
 
 const PROFILE_AVATAR_SIZE = 36;
-const NFT_SIZE = 50;
 
 export const NftOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -31,13 +30,26 @@ export const NftOffersSheet = () => {
             <Inset bottom="24px">
               <Stack space={{ custom: 30 }}>
                 <Inline alignHorizontal="justify" alignVertical="center">
-                  <Box
-                    width={{ custom: PROFILE_AVATAR_SIZE }}
-                    height={{ custom: PROFILE_AVATAR_SIZE }}
-                    borderRadius={PROFILE_AVATAR_SIZE / 2}
-                    background="blue"
-                    shadow="12px"
-                  />
+                  {accountImage ? (
+                    // @ts-expect-error Box is demanding a background prop but I REFUSE to yield
+                    <Box
+                      as={ImgixImage}
+                      width={{ custom: PROFILE_AVATAR_SIZE }}
+                      height={{ custom: PROFILE_AVATAR_SIZE }}
+                      borderRadius={PROFILE_AVATAR_SIZE / 2}
+                      source={{ uri: accountImage }}
+                      shadow="12px"
+                    />
+                  ) : (
+                    // @ts-expect-error js componenet
+                    <Box
+                      as={ContactAvatar}
+                      shadow="12px"
+                      color={accountColor}
+                      size="small_shadowless"
+                      value={accountSymbol}
+                    />
+                  )}
                   <Text size="20pt" weight="heavy" color="label" align="center">
                     Offers
                   </Text>
