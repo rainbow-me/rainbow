@@ -129,6 +129,18 @@ export const opRewardsSheetConfig = {
   },
 };
 
+export const nftOffersSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.2,
+    }),
+  }),
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

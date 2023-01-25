@@ -65,6 +65,7 @@ import {
   transactionDetailsConfig,
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
+  nftOffersSheetConfig,
 } from './config';
 import {
   emojiPreset,
@@ -86,6 +87,7 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
+import { NftOffersSheet } from '@/screens/nft-offers/NftOffersSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -448,6 +450,11 @@ function NativeStackNavigator() {
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
         {...opRewardsSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.NFT_OFFERS_SHEET}
+        component={NftOffersSheet}
+        {...nftOffersSheetConfig}
       />
     </NativeStack.Navigator>
   );
