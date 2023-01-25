@@ -32,7 +32,7 @@ export const ButtonOverlay = ({
       fontWeight: 'bold',
     })}
   >
-    <Inline alignVertical="center" space={4}>
+    <Inline alignVertical="center" space="4px">
       {iconBefore && (
         <div
           style={{
