@@ -410,7 +410,8 @@
     "**/d3-color": "3.1.0",
     "**/minimatch": "3.0.5",
     "**/@xmldom/xmldom": "0.7.7",
-    "**/json5": "2.2.2"
+    "**/json5": "2.2.2",
+    "**/ua-parser-js": "0.7.33"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
