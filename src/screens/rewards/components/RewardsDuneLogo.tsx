@@ -4,10 +4,10 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import duneLogoDark from '@/assets/dune-logo-dark.png';
 import duneLogo from '@/assets/dune-logo.png';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@/theme';
 
 export const RewardsDuneLogo: React.FC = () => {
-  const { dark } = useTheme();
+  const { isDarkMode } = useTheme();
   return (
     <Box paddingBottom="36px" justifyContent="center" alignItems="center">
       <Inline space="8px" alignVertical="center">
@@ -16,7 +16,7 @@ export const RewardsDuneLogo: React.FC = () => {
         </Text>
         <Box
           as={Image}
-          source={dark ? duneLogoDark : duneLogo}
+          source={isDarkMode ? duneLogoDark : duneLogo}
           width={{ custom: 63 }}
           height={{ custom: 22 }}
         />
