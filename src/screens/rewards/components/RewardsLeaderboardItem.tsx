@@ -7,6 +7,43 @@ import {
   addressHashedEmoji,
 } from '@/utils/profileUtils';
 import { ContactAvatar } from '@/components/contacts';
+import MaskedView from '@react-native-masked-view/masked-view';
+import LinearGradient from 'react-native-linear-gradient';
+import { StyleSheet } from 'react-native';
+import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
+import { useTheme } from '@/theme';
+
+const MaskedGradientText: React.FC<{
+  text: string;
+  gradientColors: string[];
+}> = ({ text, gradientColors }) => {
+  return (
+    <Box>
+      <MaskedView
+        maskElement={
+          <Box>
+            <Text size="13pt" color="label" weight="bold">
+              {text}
+            </Text>
+          </Box>
+        }
+      >
+        <Box style={{ opacity: 0 }}>
+          <Text size="13pt" color="label" weight="bold">
+            {text}
+          </Text>
+        </Box>
+        <LinearGradient
+          colors={gradientColors}
+          end={{ x: 1, y: 1 }}
+          pointerEvents="none"
+          start={{ x: 0, y: 1 }}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </MaskedView>
+    </Box>
+  );
+};
 
 type Props = {
   rank: number;
@@ -27,6 +64,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   tokenSymbol,
   rank,
 }) => {
+  const { isDarkMode } = useTheme();
   const formattedAmountEarned = amountEarnedInToken.toLocaleString('en-US', {
     minimumFractionDigits: 2,
   });
@@ -34,6 +72,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   const emoji = !avatarUrl ? addressHashedEmoji(address) : undefined;
 
   const formattedBonusEarned = bonusEarnedInToken.toLocaleString('en-US');
+  const additionalRewardText = `+${formattedBonusEarned} ${tokenSymbol}`;
   return (
     <Stack>
       <Columns space="10px" alignVertical="center">
@@ -56,9 +95,17 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
         </Stack>
         <Column width="content">
           <Inline alignHorizontal="right" alignVertical="center">
-            <Text size="13pt" color="labelTertiary" weight="bold">
-              {`+${formattedBonusEarned} ${tokenSymbol}`}
-            </Text>
+            {rank < 4 && (
+              <MaskedGradientText
+                text={additionalRewardText}
+                gradientColors={getGradientColorsForRank(rank, isDarkMode)}
+              />
+            )}
+            {rank >= 4 && (
+              <Text size="13pt" color="labelTertiary" weight="bold">
+                {additionalRewardText}
+              </Text>
+            )}
             <Box paddingLeft="8px">
               <Text
                 color="labelTertiary"
