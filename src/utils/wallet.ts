@@ -49,7 +49,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (
     isHDWallet: false,
     root: null,
     type: WalletTypes.bluetooth,
-    wallet: null,
+    wallet: { address: '', privateKey: '' },
     walletType: WalletLibraryType.ledger,
   };
 };
