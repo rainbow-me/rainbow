@@ -1291,7 +1291,9 @@
     "rewards": {
       "total_earnings": "Total Earnings :)",
       "multiplier": "Multiplier :)",
-      "you_earned": "You've earned  :)"
+      "you_earned": "You've earned  :)",
+      "pending_earnings": "Pending Earnings :)",
+      "next_airdrop": "Next Airdrop :)"
     },
     "savings": {
       "deposit": "Dépôt",
