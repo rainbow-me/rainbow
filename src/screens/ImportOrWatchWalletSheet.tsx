@@ -71,6 +71,7 @@ export const ImportOrWatchWalletSheet = () => {
           custom:
             deviceHeight - SheetHandleFixedToTopHeight - safeAreaTopPadding,
         }}
+        background="surfaceSecondary"
       >
         <Box
           alignItems="center"
