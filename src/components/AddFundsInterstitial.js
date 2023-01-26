@@ -200,7 +200,7 @@ const AddFundsInterstitial = ({ network }) => {
         return;
       }
 
-      navigate(Routes.ADD_CASH_FLOW, {
+      navigate(Routes.ADD_CASH_SHEET, {
         params: !isNaN(amount) ? { amount } : null,
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });

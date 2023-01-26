@@ -34,7 +34,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
       return;
     }
 
-    navigate(Routes.ADD_CASH_FLOW, params => params);
+    navigate(Routes.ADD_CASH_SHEET, params => params);
 
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
