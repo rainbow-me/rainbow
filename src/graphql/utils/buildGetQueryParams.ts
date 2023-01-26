@@ -11,7 +11,7 @@
  * @param {string} str GraphQL query
  * @returns {string} Cleaned query
  */
-const queryCleanner = (str: string): string =>
+const queryCleaner = (str: string): string =>
   str.replace(/([\s,]|#[^\n\r]+)+/g, ' ').trim();
 
 type TBuildGetQueryParams<V> =
@@ -42,7 +42,7 @@ export const buildGetQueryParams = <V>({
 }: TBuildGetQueryParams<V>): string => {
   if (!Array.isArray(query)) {
     const search: string[] = [
-      `query=${encodeURIComponent(queryCleanner(query))}`,
+      `query=${encodeURIComponent(queryCleaner(query))}`,
     ];
 
     if (variables) {
@@ -67,7 +67,7 @@ export const buildGetQueryParams = <V>({
     { query: string; variables: string | undefined }[]
   >((accu, currentQuery, index) => {
     accu.push({
-      query: queryCleanner(currentQuery),
+      query: queryCleaner(currentQuery),
       variables: variables ? JSON.stringify(variables[index]) : undefined,
     });
     return accu;

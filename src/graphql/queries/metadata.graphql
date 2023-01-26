@@ -34,17 +34,20 @@ fragment baseQuery on Rewards {
     color
   }
   leaderboard {
-    address
-    ens
-    avatarURL
-    earnings {
-      base {
-        ...amount
-      }
-      bonus {
-        ...amount
+    accounts {
+      address
+      ens
+      avatarURL
+      earnings {
+        base {
+          ...amount
+        }
+        bonus {
+          ...amount
+        }
       }
     }
+    updatedAt
   }
 }
 
@@ -71,6 +74,7 @@ query getRewardsDataForWallet($address: String!) {
       pending {
         ...amount
       }
+      updatedAt
     }
     stats {
       position {
