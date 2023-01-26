@@ -42,7 +42,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({
           >
             {leaderboard.map((entry, index) => (
               <RewardsLeaderboardItem
-                key={`${entry.address}${index}`}
+                key={entry.address}
                 rank={index + 1}
                 avatarUrl={entry.avatarURL ?? undefined}
                 address={entry.address}

@@ -59,13 +59,10 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
             <Text size="13pt" color="labelTertiary" weight="bold">
               {`+${formattedBonusEarned} ${tokenSymbol}`}
             </Text>
-            <Box
-              paddingLeft={rank <= 50 ? '8px' : '12px'}
-              paddingRight={rank > 50 ? '4px' : undefined}
-            >
+            <Box paddingLeft="8px">
               <Text
                 color="labelTertiary"
-                size={rank <= 50 ? '20pt' : '13pt'}
+                size="20pt"
                 weight={rank < 4 ? 'heavy' : 'semibold'}
                 containsEmoji={rank < 4}
               >
