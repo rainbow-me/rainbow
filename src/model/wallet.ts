@@ -848,7 +848,9 @@ export const createWallet = async (
       // We stop once we 2 accounts with no history
       while (lookup < 2) {
         let nextWallet: any = null;
-        if (isHardwareWallet) {
+        // TODO(@skylarbarrera APP-403): disabling until lib is patched for BT Permissions
+        // eslint-disable-next-line no-constant-condition
+        if (isHardwareWallet && false) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(
             seed,
             index

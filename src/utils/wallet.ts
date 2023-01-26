@@ -1,5 +1,5 @@
 import AppEth from '@ledgerhq/hw-app-eth';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+// import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { NativeModules } from 'react-native';
 import { hdkey } from 'ethereumjs-wallet';
 import { Wallet } from '@ethersproject/wallet';
@@ -22,6 +22,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (
   deviceId: string,
   index = 0
 ) => {
+  /*
   const transport = await TransportBLE.open(deviceId);
   const eth = new AppEth(transport);
   const path = getHdPath({
@@ -33,13 +34,22 @@ export const deriveAccountFromBluetoothHardwareWallet = async (
     address: toChecksumAddress(address),
     privateKey: `${deviceId}/${index}`,
   };
-
+ 
   return {
     address: wallet.address,
     isHDWallet: false,
     root: null,
     type: WalletTypes.bluetooth,
     wallet,
+    walletType: WalletLibraryType.ledger,
+  };
+   */
+  return {
+    address: 'wallet.address',
+    isHDWallet: false,
+    root: null,
+    type: WalletTypes.bluetooth,
+    wallet: null,
     walletType: WalletLibraryType.ledger,
   };
 };
