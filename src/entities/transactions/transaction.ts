@@ -60,7 +60,7 @@ export interface RainbowTransaction {
     orderId: string;
     userId: string;
     /**
-     * Requiref for all providers, used to associate requests with transaction
+     * Required for all providers, used to associate requests with transaction
      * data once we receive it.
      */
     analyticsSessionId: string;
