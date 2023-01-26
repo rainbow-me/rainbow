@@ -63,7 +63,7 @@ export function ratioOrderToNewTransaction(
       name: FiatProviderName.Ratio,
       orderId: data.id,
       userId: extra.userId,
-      analyticsSessionId,
+      analyticsSessionId: extra.analyticsSessionId,
     },
   };
 }
