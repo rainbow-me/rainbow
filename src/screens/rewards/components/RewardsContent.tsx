@@ -32,7 +32,7 @@ export const RewardsContent: React.FC<Props> = ({ data }) => (
       color={data.meta.color}
     />
     <RewardsLeaderboard
-      leaderboard={data.leaderboard}
+      leaderboard={data.leaderboard.accounts ?? []}
       programEndTimestamp={data.meta.end}
       tokenSymbol={data.meta.token.asset.symbol}
     />

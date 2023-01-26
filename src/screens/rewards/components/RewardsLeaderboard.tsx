@@ -1,14 +1,14 @@
 import React from 'react';
-import { Box, Columns, Rows, Separator, Stack, Text } from '@/design-system';
+import { Box, Columns, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
-import { RewardsLeaderboardEntry } from '@/graphql/__generated__/metadata';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
 import { differenceInDays, fromUnixTime } from 'date-fns';
+import { RewardsLeaderboardAccount } from '@/graphql/__generated__/metadata';
 
 type Props = {
   tokenSymbol: string;
-  leaderboard: RewardsLeaderboardEntry[];
+  leaderboard: RewardsLeaderboardAccount[];
   programEndTimestamp: number;
 };
 
