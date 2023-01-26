@@ -48,7 +48,10 @@ export const RewardsStats: React.FC<Props> = ({
               <RewardsStatsCard
                 key={action.type}
                 title={capitalize(action.type)}
-                value={convertAmountToNativeDisplay(action.amount.usd, 'USD')}
+                value={action.amount.usd.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })}
                 secondaryValue={`${action.rewardPercent}% reward`}
                 secondaryValueIcon="􀐚"
                 secondaryValueColor={{

@@ -31,6 +31,14 @@ async function rewardsQueryFunction({
   queryKey: [{ address }],
 }: QueryFunctionArgs<typeof rewardsQueryKey>) {
   const data = await metadataClient.getRewardsDataForWallet({ address });
+  if (data) {
+    for (let i = 0; i < 80; i++) {
+      data.rewards?.leaderboard.push(data.rewards?.leaderboard[0]);
+      if (i % 5 === 0 && data.rewards?.leaderboard[i] !== undefined) {
+        data.rewards.leaderboard[i].avatarURL = undefined;
+      }
+    }
+  }
   return data;
 }
 
