@@ -183,7 +183,7 @@ function BuyButton() {
       category: 'home screen',
     });
 
-    navigate(Routes.ADD_CASH_FLOW);
+    navigate(Routes.ADD_CASH_SHEET);
   }, [accountAddress, isDamaged, navigate]);
 
   return (

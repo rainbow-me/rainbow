@@ -79,7 +79,7 @@ export default function TransactionList({
       return;
     }
 
-    navigate(Routes.ADD_CASH_FLOW);
+    navigate(Routes.ADD_CASH_SHEET);
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'TransactionList',
       routeName,
