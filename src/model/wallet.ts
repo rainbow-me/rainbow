@@ -643,6 +643,7 @@ export const createWallet = async (
     } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
+    console.log('isHardwareWallet: ', isHardwareWallet);
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
     const walletAddress = address;
@@ -850,7 +851,7 @@ export const createWallet = async (
         // eslint-disable-next-line no-constant-condition
         if (isHardwareWallet && false) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(
-            seed,
+            seed || '',
             index
           );
           nextWallet = {
