@@ -129,7 +129,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         logger.debug(`Ratio: fetchSessionToken`, {}, logger.DebugContext.f2c);
 
         const { data, error } = await gretch<{ id: string }>(
-          'https://f2c.rainbow.me/v1/ratio/client-session',
+          'https://f2c.rainbow.me/v1/providers/ratio/client-session',
           {
             method: 'POST',
             json: {

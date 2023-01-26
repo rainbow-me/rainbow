@@ -821,7 +821,7 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
 
             const { userId, orderId } = tx.fiatProvider;
             const { data, error } = await gretch<ActivityItem>(
-              `https://f2c.rainbow.me/v1/ratio/users/${userId}/activity/${orderId}`
+              `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
             ).json();
 
             if (!data || error) {
