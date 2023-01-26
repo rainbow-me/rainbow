@@ -29,6 +29,7 @@ export function ratioOrderToNewTransaction(
   order: RatioOrderStatus,
   extra: {
     userId: string;
+    analyticsSessionId: string;
   }
 ): NewTransactionOrAddCashTransaction {
   const { data } = order;
@@ -62,6 +63,7 @@ export function ratioOrderToNewTransaction(
       name: FiatProviderName.Ratio,
       orderId: data.id,
       userId: extra.userId,
+      analyticsSessionId,
     },
   };
 }
@@ -70,7 +72,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   // TODO
   const [isLoading, setIsLoading] = React.useState(false);
   const [userId, setUserId] = React.useState('');
-  const sessionId = React.useMemo(() => nanoid(), []);
+  const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
 
   const onTransactionComplete = React.useCallback(
@@ -86,12 +88,15 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
         provider: 'ratio',
         success,
-        sessionId,
+        sessionId: analyticsSessionId,
       });
 
       if (success) {
         try {
-          const transaction = ratioOrderToNewTransaction(order, { userId });
+          const transaction = ratioOrderToNewTransaction(order, {
+            userId,
+            analyticsSessionId,
+          });
           dispatch(
             dataAddNewTransaction(
               transaction,
@@ -115,7 +120,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         // TODO idk what until we test this
       }
     },
-    [dispatch, userId]
+    [dispatch, userId, analyticsSessionId]
   );
 
   return (
@@ -169,7 +174,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
         analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
           provider: 'ratio',
-          sessionId,
+          sessionId: analyticsSessionId,
         });
       }}
       onOpen={() => {
@@ -192,7 +197,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         );
         analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
           provider: 'ratio',
-          sessionId,
+          sessionId: analyticsSessionId,
         });
         WrappedAlert.alert(
           lang.t(lang.l.wallet.add_cash_v2.generic_error.title),

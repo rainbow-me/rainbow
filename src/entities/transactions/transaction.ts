@@ -59,6 +59,11 @@ export interface RainbowTransaction {
     name: FiatProviderName.Ratio;
     orderId: string;
     userId: string;
+    /**
+     * Requiref for all providers, used to associate requests with transaction
+     * data once we receive it.
+     */
+    analyticsSessionId: string;
   }; // etc { name: FiatProviderName.Ramp, orderId: string }
 }
 

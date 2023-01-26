@@ -79,6 +79,7 @@ import {
 import { SwapType } from '@rainbow-me/swaps';
 import { FiatProviderName } from '@/entities/f2c';
 import { logger as loggr, RainbowError } from '@/logger';
+import { analyticsV2 } from '@/analytics';
 
 const storage = new MMKV();
 
@@ -835,6 +836,11 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
               );
             } else if (data.crypto.transactionHash) {
               tx.hash = data.crypto.transactionHash;
+
+              analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
+                provider: FiatProviderName.Ratio,
+                sessionId: tx.fiatProvider.analyticsSessionId,
+              });
             } else {
               loggr.info(
                 `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
