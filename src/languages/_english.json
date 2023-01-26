@@ -1297,7 +1297,8 @@
       "my_stats": "My Stats",
       "position": "Position",
       "leaderboard": "Leaderboard",
-      "days_left": "days left"
+      "days_left": "days left",
+      "data_powered_by": "Data powered by"
     },
     "savings": {
       "deposit": "Deposit",

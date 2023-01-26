@@ -22,7 +22,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({
     new Date()
   );
   return (
-    <>
+    <Box paddingBottom="28px">
       <Columns>
         <Text size="20pt" weight="heavy" color="label">
           {i18n.t(i18n.l.rewards.leaderboard)}
@@ -34,8 +34,8 @@ export const RewardsLeaderboard: React.FC<Props> = ({
           color="labelTertiary"
         >{`${daysLeft} ${i18n.t(i18n.l.rewards.days_left)}`}</Text>
       </Columns>
-      <Box paddingVertical="16px">
-        <RewardsSectionCard>
+      <Box paddingTop="16px">
+        <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">
           <Stack
             space="10px"
             separator={<Separator color="separatorTertiary" />}
@@ -55,6 +55,6 @@ export const RewardsLeaderboard: React.FC<Props> = ({
           </Stack>
         </RewardsSectionCard>
       </Box>
-    </>
+    </Box>
   );
 };
