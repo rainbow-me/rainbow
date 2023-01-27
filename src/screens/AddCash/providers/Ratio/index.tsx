@@ -9,7 +9,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { useDispatch } from 'react-redux';
 
 import { IS_IOS } from '@/env';
-import { Box, Text, Inline } from '@/design-system';
+import { Box, Text, Inline, useForegroundColor } from '@/design-system';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 import { WrappedAlert } from '@/helpers/alert';
@@ -17,14 +17,18 @@ import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import {
+  AssetType,
   NewTransactionOrAddCashTransaction,
   TransactionStatus,
   TransactionType,
 } from '@/entities';
 import { ethereumUtils } from '@/utils';
-import { AddCashCurrencies } from '@/references';
+import { AddCashCurrencies, ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
+import { Network } from '@/helpers';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { CoinIcon } from '@/components/coin-icon';
 
 export function ratioOrderToNewTransaction(
   order: RatioOrderStatus,
@@ -67,6 +71,44 @@ export function ratioOrderToNewTransaction(
       analyticsSessionId: extra.analyticsSessionId,
     },
   };
+}
+
+function NetworkIcons({ networks }: { networks: string[] }) {
+  const borderColor = useForegroundColor('label');
+
+  return (
+    <Box flexDirection="row" alignItems="center">
+      {networks.map((network, index) => {
+        return (
+          <Box
+            key={`availableNetwork-${network}`}
+            marginTop={{ custom: -2 }}
+            marginLeft={{ custom: index > 0 ? -6 : 0 }}
+            style={{
+              position: 'relative',
+              zIndex: networks.length - index,
+              borderRadius: 30,
+            }}
+          >
+            {network !== Network.mainnet ? (
+              <ChainBadge
+                assetType={network}
+                position="relative"
+                size="small"
+              />
+            ) : (
+              <CoinIcon
+                address={ETH_ADDRESS}
+                size={20}
+                symbol={ETH_SYMBOL}
+                type={AssetType.token}
+              />
+            )}
+          </Box>
+        );
+      })}
+    </Box>
+  );
 }
 
 export function Ratio({ accountAddress }: { accountAddress: string }) {
@@ -232,36 +274,69 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           >
             <RatioLogo width={14} height={14} color="white" />
           </Box>
-          <Box paddingLeft="10px">
-            <Text size="13pt" weight="bold" color="label">
+          <Box paddingLeft="8px">
+            <Text size="20pt" weight="heavy" color="label">
               Ratio
             </Text>
           </Box>
         </Inline>
 
-        <Box paddingTop="12px" paddingBottom="12px">
-          <Text size="20pt" weight="heavy" color="label">
-            Buy with a Bank Account
-          </Text>
-        </Box>
-        <Box paddingBottom="28px">
-          <Text size="15pt" weight="regular" color="labelSecondary">
-            Works with any bank account.
+        <Box paddingTop="8px" paddingBottom="20px">
+          <Text size="17pt" weight="semibold" color="labelSecondary">
+            Works with any US bank account
           </Text>
         </Box>
 
-        <Inline alignVertical="center">
-          <Box borderRadius={8} padding="6px" background="fillSecondary">
-            <Text size="12pt" weight="bold" color="labelSecondary">
-              2.9% fee
+        <Box flexDirection="row">
+          <Box>
+            <Text size="13pt" weight="semibold" color="labelTertiary">
+              Instant Buy
             </Text>
+            <Box flexDirection="row" alignItems="center" paddingTop="12px">
+              <Text size="12pt" weight="bold" color="labelSecondary">
+                􀋦
+              </Text>
+              <Box paddingLeft="4px">
+                <Text size="15pt" weight="bold" color="label">
+                  $1,250
+                </Text>
+              </Box>
+            </Box>
           </Box>
-          <Box paddingLeft="10px">
-            <Text size="12pt" weight="semibold" color="labelSecondary">
-              􀋦 Instant with Apple Pay
+          <Box paddingLeft="16px">
+            <Text size="13pt" weight="semibold" color="labelTertiary">
+              Fee
             </Text>
+            <Box flexDirection="row" alignItems="center" paddingTop="12px">
+              <Text size="15pt" weight="bold" color="label">
+                3%
+              </Text>
+            </Box>
           </Box>
-        </Inline>
+          <Box paddingLeft="16px">
+            <Text size="13pt" weight="semibold" color="labelTertiary">
+              Method
+            </Text>
+            <Box flexDirection="row" alignItems="center" paddingTop="12px">
+              <Text size="12pt" weight="bold" color="labelSecondary">
+                􀤨
+              </Text>
+              <Box paddingLeft="4px">
+                <Text size="15pt" weight="bold" color="label">
+                  Bank
+                </Text>
+              </Box>
+            </Box>
+          </Box>
+          <Box paddingLeft="16px">
+            <Text size="13pt" weight="semibold" color="labelTertiary">
+              Networks
+            </Text>
+            <Box flexDirection="row" alignItems="center" paddingTop="8px">
+              <NetworkIcons networks={[Network.mainnet, Network.polygon]} />
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </RatioComponent>
   );

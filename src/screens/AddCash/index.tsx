@@ -8,7 +8,7 @@ import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
-import { Box, Text, Stack, Inline, useForegroundColor } from '@/design-system';
+import { Box, Text, Separator, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
@@ -42,29 +42,22 @@ export function AddCashSheet() {
         height="full"
         paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
         paddingHorizontal="20px"
+        alignItems="center"
       >
-        <Stack alignHorizontal="center">
-          <Box paddingTop="8px" paddingBottom="44px">
-            <SheetHandle showBlur={undefined} />
-          </Box>
+        <Box paddingTop="8px" paddingBottom="44px">
+          <SheetHandle showBlur={undefined} />
+        </Box>
 
-          <Box paddingBottom="20px">
-            <Text size="30pt" weight="heavy" color="label">
-              Get Crypto
-            </Text>
-          </Box>
-          <Text
-            size="17pt"
-            weight="regular"
-            color="labelTertiary"
-            align="center"
-          >
-            Converting cash to crypto is easy! Choose a method below to get
-            started.
+        <Box paddingHorizontal="20px">
+          <Text size="26pt" weight="heavy" color="label" align="center">
+            Choose a payment option to buy crypto
           </Text>
-        </Stack>
-        <Box paddingVertical="44px">
-          <Box paddingBottom="20px">
+        </Box>
+
+        <Box paddingVertical="44px" width="full">
+          <Separator color="separatorTertiary" />
+
+          <Box paddingVertical="20px">
             <Ratio accountAddress={accountAddress} />
           </Box>
 
@@ -72,7 +65,6 @@ export function AddCashSheet() {
             padding="20px"
             borderRadius={20}
             style={{
-              flex: IS_IOS ? 0 : undefined,
               borderWidth: 1,
               borderColor,
             }}
