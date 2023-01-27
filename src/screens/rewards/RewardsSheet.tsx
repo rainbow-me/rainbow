@@ -1,9 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { IS_ANDROID } from '@/env';
@@ -18,16 +17,9 @@ export const RewardsSheet: React.FC = () => {
   const accountAddress = useSelector(
     (state: AppState) => state.settings.accountAddress
   );
-  const { data, isLoading, refetch } = useRewards({
+  const { data, isLoading } = useRewards({
     address: accountAddress,
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
