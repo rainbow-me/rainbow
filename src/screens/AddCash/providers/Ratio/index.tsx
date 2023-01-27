@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { Wallet } from '@ethersproject/wallet';
 import { useDispatch } from 'react-redux';
 
+import { IS_IOS } from '@/env';
 import { Box, Text, Inline } from '@/design-system';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
@@ -218,8 +219,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         padding="20px"
         borderRadius={20}
         shadow="12px"
-        position="absolute"
-        width="full"
+        style={{ flex: IS_IOS ? 0 : undefined }}
       >
         <Inline alignVertical="center">
           <Box

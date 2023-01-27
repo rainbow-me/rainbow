@@ -8,7 +8,7 @@ import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
-import { Box, Text, Stack } from '@/design-system';
+import { Box, Text, Stack, Inline, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
@@ -26,6 +26,7 @@ export function AddCashSheet() {
   const { accountAddress } = useSelector(({ settings }: AppState) => ({
     accountAddress: settings.accountAddress,
   }));
+  const borderColor = useForegroundColor('separatorTertiary');
 
   return (
     <Box
@@ -63,7 +64,29 @@ export function AddCashSheet() {
           </Text>
         </Stack>
         <Box paddingVertical="44px">
-          <Ratio accountAddress={accountAddress} />
+          <Box paddingBottom="20px">
+            <Ratio accountAddress={accountAddress} />
+          </Box>
+
+          <Box
+            padding="20px"
+            borderRadius={20}
+            style={{
+              flex: IS_IOS ? 0 : undefined,
+              borderWidth: 1,
+              borderColor,
+            }}
+          >
+            <Box paddingBottom="12px">
+              <Text size="17pt" weight="bold" color="labelTertiary">
+                􀵲 Not in the US?
+              </Text>
+            </Box>
+
+            <Text size="15pt" weight="semibold" color="labelQuaternary">
+              Check back soon for more options
+            </Text>
+          </Box>
         </Box>
       </Box>
     </Box>
