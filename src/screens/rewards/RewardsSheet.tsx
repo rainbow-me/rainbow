@@ -23,7 +23,7 @@ export const RewardsSheet: React.FC = () => {
   });
 
   useEffect(() => {
-    setIsLoading(queryIsLoading);
+    setTimeout(() => setIsLoading(queryIsLoading), 2000);
   }, [queryIsLoading]);
 
   return (

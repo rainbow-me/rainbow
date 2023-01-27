@@ -6,6 +6,7 @@ import { Rewards } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
 import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const LEADERBOARD_ITEMS_TRESHOLD = 50;
 
@@ -21,20 +22,26 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
     <>
       <RewardsTitle text={data.meta.title} />
       {data.earnings && (
-        <RewardsEarnings
-          totalEarnings={data.earnings.total}
-          tokenImageUrl={data.meta.token.asset.iconURL ?? ''}
-          tokenSymbol={data.meta.token.asset.symbol}
-          pendingEarningsToken={data.earnings?.pending.token ?? 0}
-          nextAirdropTimestamp={data.meta.distribution.next}
+        // TODO: Add explainer sheet navigation to on press here
+        <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+          <RewardsEarnings
+            totalEarnings={data.earnings.total}
+            tokenImageUrl={data.meta.token.asset.iconURL ?? ''}
+            tokenSymbol={data.meta.token.asset.symbol}
+            pendingEarningsToken={data.earnings?.pending.token ?? 0}
+            nextAirdropTimestamp={data.meta.distribution.next}
+            color={data.meta.color}
+          />
+        </ButtonPressAnimation>
+      )}
+      {/* TODO: Add explainer sheet navigation to on press here */}
+      <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+        <RewardsAvailable
+          totalAvailableRewards={data.meta.distribution.total}
+          remainingRewards={data.meta.distribution.left}
           color={data.meta.color}
         />
-      )}
-      <RewardsAvailable
-        totalAvailableRewards={data.meta.distribution.total}
-        remainingRewards={data.meta.distribution.left}
-        color={data.meta.color}
-      />
+      </ButtonPressAnimation>
       <RewardsStats
         position={data.stats?.position.current ?? 1}
         positionChange={data.stats?.position.change.h24 ?? 0}
