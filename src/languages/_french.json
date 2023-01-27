@@ -1635,7 +1635,8 @@
           "title": "Something went wrong :)",
           "message": "Our team has been notified and will look into it ASAP. :)",
           "button": "OK :)"
-        }
+        },
+        "support_email_subject": "I need help buying crypto with %{provider} :)"
       },
       "alert": {
         "finish_importing": "Finish Importing :)",
