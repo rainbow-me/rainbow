@@ -113,8 +113,6 @@ function NetworkIcons({ networks }: { networks: string[] }) {
 }
 
 export function Ratio({ accountAddress }: { accountAddress: string }) {
-  // TODO
-  const [isLoading, setIsLoading] = React.useState(false);
   const [userId, setUserId] = React.useState('');
   const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
@@ -175,7 +173,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   return (
     <RatioComponent
       onPress={() => {
-        setIsLoading(true);
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
         analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
           provider: 'ratio',
