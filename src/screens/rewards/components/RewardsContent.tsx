@@ -1,7 +1,7 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
-import { RewardsTotalEarnings } from '@/screens/rewards/components/RewardsTotalEarnings';
-import { RewardsPendingEarnings } from '@/screens/rewards/components/RewardsPendingEarnings';
+import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
+import { RewardsAvailable } from '@/screens/rewards/components/RewardsAvailable';
 import { Rewards } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
@@ -21,18 +21,19 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
     <>
       <RewardsTitle text={data.meta.title} />
       {data.earnings && (
-        <RewardsTotalEarnings
-          totalEarningsUsd={data.earnings.total.usd}
-          multiplier={data.earnings.multiplier.amount}
-          totalEarningsToken={data.earnings.total.token}
+        <RewardsEarnings
+          totalEarnings={data.earnings.total}
           tokenImageUrl={data.meta.token.asset.iconURL ?? ''}
           tokenSymbol={data.meta.token.asset.symbol}
+          pendingEarningsToken={data.earnings?.pending.token ?? 0}
+          nextAirdropTimestamp={data.meta.distribution.next}
           color={data.meta.color}
         />
       )}
-      <RewardsPendingEarnings
-        pendingEarningsUsd={data.earnings?.pending.usd ?? 0}
-        nextAirdropTimestamp={data.meta.distribution.next}
+      <RewardsAvailable
+        totalAvailableRewards={data.meta.distribution.total}
+        remainingRewards={data.meta.distribution.left}
+        color={data.meta.color}
       />
       <RewardsStats
         position={data.stats?.position.current ?? 1}

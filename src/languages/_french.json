@@ -1291,7 +1291,6 @@
     },
     "rewards": {
       "total_earnings": "Total Earnings :)",
-      "multiplier": "Multiplier :)",
       "you_earned": "You've earned  :)",
       "pending_earnings": "Pending Earnings :)",
       "next_airdrop": "Next Airdrop :)",
@@ -1300,7 +1299,11 @@
       "position": "Position :)",
       "leaderboard": "Leaderboard :)",
       "days_left": "days left :)",
-      "data_powered_by": "Data powered by :)"
+      "data_powered_by": "Data powered by :)",
+      "current_value": "Current Value :)",
+      "total_available_rewards": "Total Available Rewards :)",
+      "left_this_week": "left this week :)",
+      "refreshes_next_week": "Refreshes next week :)"
     },
     "savings": {
       "deposit": "Dépôt",
