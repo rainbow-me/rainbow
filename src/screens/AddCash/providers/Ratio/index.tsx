@@ -168,6 +168,17 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
   return (
     <RatioComponent
+      onPress={() => {
+        setIsLoading(true);
+        logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+          provider: 'ratio',
+          sessionId: analyticsSessionId,
+        });
+      }}
+      onOpen={() => {
+        logger.debug(`Ratio: opened`, {}, logger.DebugContext.f2c);
+      }}
       fetchSessionToken={async () => {
         logger.debug(`Ratio: fetchSessionToken`, {}, logger.DebugContext.f2c);
 
@@ -212,27 +223,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         setUserId(user.id);
       }}
       onTransactionComplete={onTransactionComplete}
-      onPress={() => {
-        setIsLoading(true);
-        logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
-          provider: 'ratio',
-          sessionId: analyticsSessionId,
-        });
-      }}
-      onOpen={() => {
-        logger.debug(`Ratio: opened`, {}, logger.DebugContext.f2c);
-      }}
-      onHelp={() => {
-        logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
-      }}
-      onAccountRecovery={() => {
-        logger.debug(
-          `Ratio: account recovery clicked`,
-          {},
-          logger.DebugContext.f2c
-        );
-      }}
       onError={error => {
         logger.error(
           new RainbowError(`Ratio component threw an error: ${error}`),
@@ -250,6 +240,18 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
               text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
             },
           ]
+        );
+      }}
+      onHelp={() => {
+        // TODO
+        logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
+      }}
+      onAccountRecovery={() => {
+        // TODO
+        logger.debug(
+          `Ratio: account recovery clicked`,
+          {},
+          logger.DebugContext.f2c
         );
       }}
       onClose={() => {
