@@ -27,12 +27,9 @@ export const RewardsLeaderboard: React.FC<Props> = ({
         <Text size="20pt" weight="heavy" color="label">
           {i18n.t(i18n.l.rewards.leaderboard)}
         </Text>
-        <Text
-          align="right"
-          size="20pt"
-          weight="semibold"
-          color="labelTertiary"
-        >{`${daysLeft} ${i18n.t(i18n.l.rewards.days_left)}`}</Text>
+        <Text align="right" size="20pt" weight="semibold" color="labelTertiary">
+          {i18n.t(i18n.l.rewards.days_left, { days: daysLeft })}
+        </Text>
       </Columns>
       <Box paddingTop="16px">
         <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">

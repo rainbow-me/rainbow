@@ -34,14 +34,12 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
           />
         </ButtonPressAnimation>
       )}
-      {/* TODO: Add explainer sheet navigation to on press here */}
-      <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
-        <RewardsAvailable
-          totalAvailableRewards={data.meta.distribution.total}
-          remainingRewards={data.meta.distribution.left}
-          color={data.meta.color}
-        />
-      </ButtonPressAnimation>
+      <RewardsAvailable
+        totalAvailableRewards={data.meta.distribution.total}
+        remainingRewards={data.meta.distribution.left}
+        nextDistributionTimestamp={data.meta.distribution.next}
+        color={data.meta.color}
+      />
       <RewardsStats
         position={data.stats?.position.current ?? 1}
         positionChange={data.stats?.position.change.h24 ?? 0}

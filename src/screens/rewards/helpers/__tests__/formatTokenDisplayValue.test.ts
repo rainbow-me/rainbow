@@ -4,36 +4,34 @@ const TOKEN_SYMBOL = 'OP';
 
 describe('formatting values without decimal part', () => {
   test('formatting display value for small token value without decimal part', () => {
-    expect(formatTokenDisplayValue(420, TOKEN_SYMBOL)).toEqual('420.00 OP');
+    expect(formatTokenDisplayValue(420, TOKEN_SYMBOL)).toEqual('420 OP');
   });
 
   test('formatting display value for larger token value without decimal part', () => {
-    expect(formatTokenDisplayValue(420000, TOKEN_SYMBOL)).toEqual(
-      '420,000.00 OP'
-    );
+    expect(formatTokenDisplayValue(420000, TOKEN_SYMBOL)).toEqual('420,000 OP');
   });
 
   test('formatting display value for very large token value without decimal part', () => {
     expect(formatTokenDisplayValue(420000000, TOKEN_SYMBOL)).toEqual(
-      '420,000,000.00 OP'
+      '420,000,000 OP'
     );
   });
 });
 
 describe('formatting values with single digit decimal part', () => {
   test('formatting display value for small token value with single digit decimal part', () => {
-    expect(formatTokenDisplayValue(420.1, TOKEN_SYMBOL)).toEqual('420.10 OP');
+    expect(formatTokenDisplayValue(420.1, TOKEN_SYMBOL)).toEqual('420.1 OP');
   });
 
   test('formatting display value for larger token value with single digit decimal part', () => {
     expect(formatTokenDisplayValue(420000.1, TOKEN_SYMBOL)).toEqual(
-      '420,000.10 OP'
+      '420,000.1 OP'
     );
   });
 
   test('formatting display value for very large token value with single digit decimal part', () => {
     expect(formatTokenDisplayValue(420000000.1, TOKEN_SYMBOL)).toEqual(
-      '420,000,000.10 OP'
+      '420,000,000.1 OP'
     );
   });
 });

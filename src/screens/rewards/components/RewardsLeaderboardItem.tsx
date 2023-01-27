@@ -12,6 +12,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
 import { useTheme } from '@/theme';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ButtonPressAnimation } from '@/components/animations';
+import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 
 const MaskedGradientText: React.FC<{
   text: string;
@@ -64,61 +68,80 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   tokenSymbol,
   rank,
 }) => {
+  const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
-  const formattedAmountEarned = amountEarnedInToken.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-  });
+  const formattedAmountEarned = formatTokenDisplayValue(
+    amountEarnedInToken,
+    tokenSymbol
+  );
   const color = !avatarUrl ? addressHashedColorIndex(address) : undefined;
   const emoji = !avatarUrl ? addressHashedEmoji(address) : undefined;
 
-  const formattedBonusEarned = bonusEarnedInToken.toLocaleString('en-US');
+  const formattedBonusEarned = formatTokenDisplayValue(
+    bonusEarnedInToken,
+    tokenSymbol
+  );
   const additionalRewardText = `+${formattedBonusEarned} ${tokenSymbol}`;
+
+  const navigateToProfile = () => {
+    navigate(Routes.PROFILE_SHEET, {
+      address: ens,
+      from: 'Rewards',
+    });
+  };
+
   return (
-    <Stack>
-      <Columns space="10px" alignVertical="center">
-        <Column width="content">
-          <Box>
-            {avatarUrl ? (
-              <ImageAvatar image={avatarUrl} size="rewards" />
-            ) : (
-              <ContactAvatar color={color} size="smedium" value={emoji} />
-            )}
-          </Box>
-        </Column>
-        <Stack space="8px">
-          <Text color="label" size="15pt" weight="semibold">
-            {ens ?? `${address.slice(0, 6)}...${address.slice(-4)}`}
-          </Text>
-          <Text size="13pt" color="labelTertiary" weight="semibold">
-            {`${formattedAmountEarned} ${tokenSymbol}`}
-          </Text>
-        </Stack>
-        <Column width="content">
-          <Inline alignHorizontal="right" alignVertical="center">
-            {rank < 4 && (
-              <MaskedGradientText
-                text={additionalRewardText}
-                gradientColors={getGradientColorsForRank(rank, isDarkMode)}
-              />
-            )}
-            {rank >= 4 && (
-              <Text size="13pt" color="labelTertiary" weight="bold">
-                {additionalRewardText}
-              </Text>
-            )}
-            <Box paddingLeft="8px">
-              <Text
-                color="labelTertiary"
-                size="20pt"
-                weight={rank < 4 ? 'heavy' : 'semibold'}
-                containsEmoji={rank < 4}
-              >
-                {RANK_SYMBOLS[rank.toString()] ?? rank}
-              </Text>
+    <ButtonPressAnimation
+      onPress={navigateToProfile}
+      scaleTo={0.96}
+      disabled={!ens}
+    >
+      <Stack>
+        <Columns space="10px" alignVertical="center">
+          <Column width="content">
+            <Box>
+              {avatarUrl ? (
+                <ImageAvatar image={avatarUrl} size="rewards" />
+              ) : (
+                <ContactAvatar color={color} size="smedium" value={emoji} />
+              )}
             </Box>
-          </Inline>
-        </Column>
-      </Columns>
-    </Stack>
+          </Column>
+          <Stack space="8px">
+            <Text color="label" size="15pt" weight="semibold">
+              {ens ?? `${address.slice(0, 6)}...${address.slice(-4)}`}
+            </Text>
+            <Text size="13pt" color="labelTertiary" weight="semibold">
+              {formattedAmountEarned}
+            </Text>
+          </Stack>
+          <Column width="content">
+            <Inline alignHorizontal="right" alignVertical="center">
+              {rank < 4 && (
+                <MaskedGradientText
+                  text={additionalRewardText}
+                  gradientColors={getGradientColorsForRank(rank, isDarkMode)}
+                />
+              )}
+              {rank >= 4 && (
+                <Text size="13pt" color="labelTertiary" weight="bold">
+                  {additionalRewardText}
+                </Text>
+              )}
+              <Box paddingLeft="8px">
+                <Text
+                  color="labelTertiary"
+                  size="20pt"
+                  weight={rank < 4 ? 'heavy' : 'semibold'}
+                  containsEmoji={rank < 4}
+                >
+                  {RANK_SYMBOLS[rank.toString()] ?? rank}
+                </Text>
+              </Box>
+            </Inline>
+          </Column>
+        </Columns>
+      </Stack>
+    </ButtonPressAnimation>
   );
 };
