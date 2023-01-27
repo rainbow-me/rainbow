@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { useTheme } from '@/theme';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import * as i18n from '@/languages';
 
