@@ -29,6 +29,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { Network } from '@/helpers';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
+import useEmailRainbow from '@/hooks/useEmailRainbow';
 
 export function ratioOrderToNewTransaction(
   order: RatioOrderStatus,
@@ -117,6 +118,11 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   const [userId, setUserId] = React.useState('');
   const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
+  const emailRainbow = useEmailRainbow({
+    subject: lang.t(lang.l.wallet.add_cash_v2.support_email_subject, {
+      provider: FiatProviderName.Ratio,
+    }),
+  });
 
   const onTransactionComplete = React.useCallback(
     (order: RatioOrderStatus) => {
@@ -243,16 +249,16 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         );
       }}
       onHelp={() => {
-        // TODO
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
+        emailRainbow();
       }}
       onAccountRecovery={() => {
-        // TODO
         logger.debug(
           `Ratio: account recovery clicked`,
           {},
           logger.DebugContext.f2c
         );
+        emailRainbow();
       }}
       onClose={() => {
         logger.debug(`Ratio: closed`, {}, logger.DebugContext.f2c);
