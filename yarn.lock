@@ -15178,9 +15178,10 @@ react-native-palette-full@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-palette-full/-/react-native-palette-full-1.2.0.tgz#db912894a6dfb1352a263a2c8bcb9bdd979c3231"
 
-react-native-permissions@3.0.5:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.0.5.tgz#94542a343abdac801fa0a4593ea2c751cb45c41f"
+react-native-permissions@3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.6.1.tgz#73adcc1cef8cd57a9ef167b4507405f4ff5749c4"
+  integrity sha512-fzPpPQXeD34inUccqtoResSwYubfrwUguP4qrVUUv8+KSMjYSaHGoS5HaIJLZHlN9gO+TvLJZ2L5ZljTsb6qnQ==
 
 react-native-quick-md5@3.0.3:
   version "3.0.3"
