@@ -4,10 +4,24 @@ import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import TintButton from '@/components/buttons/TintButton';
 import { useNavigation } from '@/navigation';
-import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
+import {
+  LedgerImportDeviceIdAtom,
+  TRANSLATIONS,
+} from '@/navigation/PairHardwareWalletNavigator';
+import { useSetRecoilState } from 'recoil';
+import { useLedgerImport } from '@/hooks/useLedgerImport';
+import Routes from '@/navigation/routesNames';
 
 export function PairHardwareWalletSearchSheet() {
-  const { dangerouslyGetParent } = useNavigation();
+  const { dangerouslyGetParent, navigate } = useNavigation();
+  const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
+
+  const { pairingStatus } = useLedgerImport({
+    successCallback: (deviceId: string) => {
+      setDeviceId(deviceId);
+      navigate(Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET);
+    },
+  });
 
   return (
     <Layout
