@@ -139,6 +139,7 @@ export default function AddressRow({
     image: accountImage,
     isSelected,
     isReadOnly,
+    isLedger,
     label,
     walletId,
   } = data;
@@ -286,6 +287,17 @@ export default function AddressRow({
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
                   {lang.t('wallet.change_wallet.watching')}
+                </ReadOnlyText>
+              </LinearGradient>
+            )}
+            {isLedger && (
+              <LinearGradient
+                {...linearGradientProps}
+                // @ts-ignore
+                marginRight={editMode || isSelected ? -9 : 19}
+              >
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                  {'Ledger'}
                 </ReadOnlyText>
               </LinearGradient>
             )}

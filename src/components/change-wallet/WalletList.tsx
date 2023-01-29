@@ -156,6 +156,7 @@ export default function WalletList({
           id: account.address,
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
+          isLedger: wallet.type === WalletTypes.bluetooth,
           isSelected:
             accountAddress === account.address &&
             (watchOnly || wallet?.id === currentWallet?.id),
@@ -170,6 +171,7 @@ export default function WalletList({
         switch (wallet.type) {
           case WalletTypes.mnemonic:
           case WalletTypes.seed:
+          case WalletTypes.bluetooth:
             seedRows.push(row);
             break;
           case WalletTypes.privateKey:
