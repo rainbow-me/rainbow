@@ -1,18 +1,19 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { Box, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
+import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 
 export function PairHardwareWalletSuccessSheet() {
   const buttonColor = useForegroundColor('purple');
 
   const { navigate } = useNavigation();
   const handleNavigateToSearch = React.useCallback(() => {
-    navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
+    navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET);
   }, [navigate]);
 
   return (
@@ -48,6 +49,10 @@ export function PairHardwareWalletSuccessSheet() {
           />
         </Inset>
       }
-    />
+    >
+      <Box height="full" alignItems="center" justifyContent="center">
+        <CheckmarkAnimation />
+      </Box>
+    </Layout>
   );
 }

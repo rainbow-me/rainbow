@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, StatusBar, View } from 'react-native';
+import { Dimensions, StatusBar } from 'react-native';
 import { SlackSheet } from '../components/sheet';
 import { sharedCoolModalTopOffset } from './config';
 import { Box } from '@/design-system';
@@ -13,9 +13,9 @@ import { PairHardwareWalletIntroSheet } from '@/screens/PairHardwareWalletIntroS
 import { PairHardwareWalletSearchSheet } from '@/screens/PairHardwareWalletSearchSheet';
 import { NanoXDeviceAnimation } from '@/components/hardware-wallets/NanoXDeviceAnimation';
 import { PairHardwareWalletSuccessSheet } from '@/screens/PairHardwareWalletSuccessSheet';
-import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 import * as i18n from '@/languages';
 import { PairHardwareWalletSigningSheet } from '@/screens/PairHardwareWalletSigningSheet';
+import { atom } from 'recoil';
 
 const Swipe = createMaterialTopTabNavigator();
 export const TRANSLATIONS = i18n.l.hardware_wallets;
@@ -30,6 +30,11 @@ const renderPager = (props: any) => (
   />
 );
 
+export const LedgerImportDeviceIdAtom = atom({
+  default: '',
+  key: 'ledgerImportDeviceId',
+});
+
 export function PairHardwareWalletNavigator() {
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
@@ -37,7 +42,7 @@ export function PairHardwareWalletNavigator() {
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
+    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
 
   return (
@@ -116,17 +121,6 @@ export function PairHardwareWalletNavigator() {
               }
               width={deviceUtils.dimensions.width}
             />
-          )}
-          {currentRouteName === Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET && (
-            <Box
-              width={{ custom: deviceUtils.dimensions.width }}
-              height={{ custom: contentHeight }}
-              alignItems="center"
-              justifyContent="center"
-              position="absolute"
-            >
-              <CheckmarkAnimation />
-            </Box>
           )}
         </Box>
       </SlackSheet>
