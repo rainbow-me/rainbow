@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import {
   Box,
@@ -12,10 +12,15 @@ import {
 } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
 import { Layout } from '@/components/hardware-wallets/Layout';
-import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
-import { useDimensions } from '@/hooks';
+import {
+  LedgerImportDeviceIdAtom,
+  TRANSLATIONS,
+} from '@/navigation/PairHardwareWalletNavigator';
+import { useDimensions, useImportingWallet } from '@/hooks';
+import { useRecoilValue } from 'recoil';
+import { logger } from '@/logger';
+import { DebugContext } from '@/logger/debugContext';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -77,7 +82,14 @@ const Item = ({ item, rank }: ItemProps) => {
 };
 
 export function PairHardwareWalletSigningSheet() {
+  const { isSmallPhone } = useDimensions();
   const buttonColor = useForegroundColor('purple');
+  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const {
+    busy,
+    handleSetSeedPhrase,
+    handlePressImportButton,
+  } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
     {
@@ -100,8 +112,20 @@ export function PairHardwareWalletSigningSheet() {
     },
   ];
 
-  const { dangerouslyGetParent } = useNavigation();
-  const { isSmallPhone } = useDimensions();
+  const importHardwareWallet = useCallback(
+    async (deviceId: string) => {
+      if (busy) return;
+      logger.debug(
+        '[importHardwareWallet] - importing Hardware Wallet',
+        { deviceId },
+        DebugContext.ledger
+      );
+      handleSetSeedPhrase(deviceId);
+      handlePressImportButton(null, deviceId, null, null);
+    },
+    [busy, handlePressImportButton, handleSetSeedPhrase]
+  );
+
   return (
     <Layout
       header={
@@ -146,7 +170,7 @@ export function PairHardwareWalletSigningSheet() {
             color={buttonColor}
             label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
             lightShadows
-            onPress={() => dangerouslyGetParent()?.goBack()}
+            onPress={() => importHardwareWallet(deviceId)}
             size="big"
             weight="heavy"
           />
