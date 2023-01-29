@@ -44,6 +44,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { fetchContractABI } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
+import { IS_IOS } from '@/env';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -287,9 +288,9 @@ export const isValidMnemonic = (value: string): boolean =>
  * @return Whether or not the string was a valid bluetooth device id
  */
 export const isValidBluetoothDeviceId = (value: string): boolean => {
-  return (
-    value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
-  );
+  return IS_IOS
+    ? value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
+    : value.length === 17 && isHexStringIgnorePrefix(value.replaceAll(':', ''));
 };
 
 /**
