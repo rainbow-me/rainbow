@@ -378,6 +378,7 @@
       "crash_app_render_error": "Crash app (render error)",
       "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",
+      "navigation_entry_point": "Navigation entry point",
       "no_update": "No update",
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
@@ -1558,6 +1559,10 @@
           "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go."
         }
       },
+      "unlock_ledger": "Unlock Ledger",
+      "open_eth_app": "Open the ETH app",
+      "open_eth_app_description": "The Ethereum app needs to be open on your Ledger to proceed with the transaction.",
+      "enter_passcode": "Enter your passcode to unlock your Ledger. Once unlocked, open the Ethereum app by pressing both buttons at once.",
       "errors": {
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
