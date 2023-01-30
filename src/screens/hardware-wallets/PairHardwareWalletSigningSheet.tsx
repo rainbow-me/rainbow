@@ -13,6 +13,7 @@ import {
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
