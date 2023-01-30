@@ -162,6 +162,20 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
       }
     },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off",
+        "message": "Please turn on Bluetooth to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      }
+    },
     "button": {
       "add": "Add",
       "add_cash": "Add Cash",
@@ -1555,6 +1569,7 @@
           "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go."
         }
       },
+      "import": {},
       "errors": {
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
@@ -1645,7 +1660,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
-        "watching": "Watching"
+        "watching": "Watching",
+        "ledger": "Ledger"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",

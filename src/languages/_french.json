@@ -162,6 +162,20 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName} :)"
       }
     },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off :)",
+        "message": "Please turn on Bluetooth to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions :)",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
+      }
+    },
     "button": {
       "add": "Ajouter",
       "add_cash": "Ajouter de l'argent",
@@ -1646,7 +1660,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH :)",
-        "watching": "Watching :)"
+        "watching": "Watching :)",
+        "ledger": "Ledger :)"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",
