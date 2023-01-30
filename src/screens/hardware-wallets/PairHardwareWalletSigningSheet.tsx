@@ -10,14 +10,11 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { SheetActionButton } from '@/components/sheet';
-import { Layout } from '@/components/hardware-wallets/Layout';
+import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
-import {
-  LedgerImportDeviceIdAtom,
-  TRANSLATIONS,
-} from '@/navigation/PairHardwareWalletNavigator';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { useDimensions, useImportingWallet } from '@/hooks';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
@@ -34,7 +31,7 @@ const NumberBox = ({ number }: { number: number }) => {
       height={{ custom: NUMBER_BOX_SIZE }}
       alignItems="center"
       justifyContent="center"
-      background="surfacePrimary"
+      background="surfaceSecondaryElevated"
       shadow="24px"
       borderRadius={8}
       style={{ borderWidth: 1, borderColor: itemBorderColor }}
@@ -83,7 +80,6 @@ const Item = ({ item, rank }: ItemProps) => {
 
 export function PairHardwareWalletSigningSheet() {
   const { isSmallPhone } = useDimensions();
-  const buttonColor = useForegroundColor('purple');
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const {
     busy,
@@ -127,9 +123,9 @@ export function PairHardwareWalletSigningSheet() {
   );
 
   return (
-    <Layout
-      header={
-        <Inset horizontal="36px">
+    <Layout>
+      <Inset horizontal={{ custom: HORIZONTAL_INSET }}>
+        <Stack space={isSmallPhone ? '36px' : '80px'}>
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
               {i18n.t(TRANSLATIONS.enable_blind_signing)}
@@ -162,31 +158,17 @@ export function PairHardwareWalletSigningSheet() {
               </ButtonPressAnimation>
             </Stack>
           </Stack>
-        </Inset>
-      }
-      footer={
-        <Inset horizontal="20px">
-          <SheetActionButton
-            color={buttonColor}
-            label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-            lightShadows
-            onPress={() => importHardwareWallet(deviceId)}
-            size="big"
-            weight="heavy"
-          />
-        </Inset>
-      }
-    >
-      <Inset
-        horizontal={{ custom: HORIZONTAL_INSET }}
-        top={isSmallPhone ? '36px' : '80px'}
-      >
-        <Stack space={isSmallPhone ? '36px' : '44px'}>
-          {items.map((item, index) => (
-            <Item item={item} rank={index + 1} key={index} />
-          ))}
+          <Stack space={isSmallPhone ? '32px' : '44px'}>
+            {items.map((item, index) => (
+              <Item item={item} rank={index + 1} key={index} />
+            ))}
+          </Stack>
         </Stack>
       </Inset>
+      <ActionButton
+        label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
+        onPress={() => importHardwareWallet(deviceId)}
+      />
     </Layout>
   );
 }
