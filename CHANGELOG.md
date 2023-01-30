@@ -17,6 +17,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- some bug fixes
+- ledger prep items
+- double eth fix
+- OP rewards prep items
+
+## [1.8.6] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
+
+### Changed
+
 - new Txn Details flag turned on
 - ledger prep work (behind feature flag)
 - non customer facing improvements & bug fixes
