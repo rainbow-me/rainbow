@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { useTheme } from '@/theme';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import * as i18n from '@/languages';
 
@@ -58,6 +57,7 @@ export const RewardsTotalEarnings: React.FC<Props> = ({
             </Columns>
             <RewardsProgressBar
               progress={Math.min(totalEarningsToken / TOTAL_SUPPLY, 1)}
+              color={color}
             />
             <Inline space="6px" alignVertical="center">
               <Bleed vertical="3px">
