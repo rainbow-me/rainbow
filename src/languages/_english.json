@@ -1293,7 +1293,10 @@
       "multiplier": "Multiplier",
       "you_earned": "You've earned ",
       "pending_earnings": "Pending Earnings",
-      "next_airdrop": "Next Airdrop"
+      "next_airdrop": "Next Airdrop",
+      "last_airdrop": "Last Airdrop",
+      "my_stats": "My Stats",
+      "position": "Position"
     },
     "savings": {
       "deposit": "Deposit",
