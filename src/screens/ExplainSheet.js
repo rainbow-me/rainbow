@@ -41,6 +41,7 @@ import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
 
 const { GAS_TRENDS } = gasUtils;
 const APP_ICON_SIZE = 64;
@@ -288,6 +289,41 @@ const navigateToAppIconSettings = async (navigate, goBack) => {
 };
 
 export const explainers = (params, colors) => ({
+  op_rewards_airdrop_timing: {
+    emoji: '📦',
+    title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
+    text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+  },
+  op_rewards_amount_distributed: {
+    emoji: '💰',
+    title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
+    text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+  },
+  op_rewards_bridge: {
+    emoji: '🌉',
+    title: i18n.t(i18n.l.rewards.op.bridge.title),
+    text: i18n.t(i18n.l.rewards.op.bridge.text),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+  },
+  op_rewards_swap: {
+    emoji: '🔃',
+    title: i18n.t(i18n.l.rewards.op.swap.title),
+    text: i18n.t(i18n.l.rewards.op.swap.text),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+  },
+  op_rewards_position: {
+    emoji: '🏆',
+    title: i18n.t(i18n.l.rewards.op.position.title),
+    text: i18n.t(i18n.l.rewards.op.position.text),
+    readMoreLink:
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+  },
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -35,

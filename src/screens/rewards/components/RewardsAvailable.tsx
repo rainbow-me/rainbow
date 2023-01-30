@@ -8,12 +8,11 @@ import {
   addDays,
   differenceInDays,
   differenceInHours,
-  formatDuration,
   fromUnixTime,
-  intervalToDuration,
-  sub,
 } from 'date-fns';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 type Props = {
   totalAvailableRewards: number;
@@ -29,6 +28,7 @@ export const RewardsAvailable: React.FC<Props> = ({
   color,
 }) => {
   const infoIconColor = useInfoIconColor();
+  const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
     const formattedTotalAvailableRewards = totalAvailableRewards.toLocaleString(
@@ -80,10 +80,16 @@ export const RewardsAvailable: React.FC<Props> = ({
     const progress = remainingRewards / totalAvailableRewards;
     const roundedProgressPercent = Math.round(progress * 10) * 10;
 
+    const navigateToAmountsExplainer = () => {
+      navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
+    };
+
     return (
       <Box paddingBottom="36px">
-        {/* TODO: Add explainer sheet navigation to on press here */}
-        <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+        <ButtonPressAnimation
+          onPress={navigateToAmountsExplainer}
+          scaleTo={0.96}
+        >
           <RewardsSectionCard>
             <Stack space="16px">
               <Stack space="12px">
