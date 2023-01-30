@@ -85,7 +85,7 @@ export function useLedgerImport({
    */
   const searchAndPair = useCallback(() => {
     setPairingStatus(LEDGER_IMPORT_STATUS.SEARCHING);
-    let currentD = '';
+    let currentDeviceId = '';
 
     const newObserver = TransportBLE.observeState({
       // havnt seen complete or error fire yet but its in the docs so keeping for reporting purposes
@@ -138,13 +138,14 @@ export function useLedgerImport({
               if (e.type === 'add') {
                 const device = e.descriptor;
                 // prevent duplicate alerts
-                if (currentD === device.id) {
+                if (currentDeviceId === device.id) {
                   return null;
                 }
                 // set the current device id to prevent duplicate alerts
                 setPairingStatus(LEDGER_IMPORT_STATUS.FOUND);
-                currentD = device.id;
+                currentDeviceId = device.id;
 
+                /*
                 Alert.alert(
                   'device found',
                   `do u wanna connect to ${device.name} - ${device.id}`,
@@ -177,6 +178,16 @@ export function useLedgerImport({
                     },
                   ]
                 );
+                */
+                setPairingStatus(LEDGER_IMPORT_STATUS.PAIRING);
+                try {
+                  // should i retry at this point?
+                  await openLedgerTransport(device.id);
+                  handlePairSuccess(device.id);
+                } catch (e) {
+                  logger.debug('error pairing ', {}, DebugContext.ledger);
+                  handlePairError(e as Error);
+                }
               } else {
                 Alert.alert('error connecting', JSON.stringify(e, null, 2));
               }
