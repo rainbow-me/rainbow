@@ -23,8 +23,12 @@ import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 type Props = {
+  assetPrice?: number;
   tokenImageUrl: string;
   tokenSymbol: string;
   totalEarnings: RewardsAmount;
@@ -36,6 +40,7 @@ type Props = {
 const TOKEN_IMAGE_SIZE = 16;
 
 export const RewardsEarnings: React.FC<Props> = ({
+  assetPrice,
   color,
   tokenImageUrl,
   pendingEarningsToken,
@@ -45,6 +50,9 @@ export const RewardsEarnings: React.FC<Props> = ({
 }) => {
   const { navigate } = useNavigation();
   const infoIconColor = useInfoIconColor();
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
+  );
 
   const {
     formattedPendingEarnings,
@@ -61,13 +69,13 @@ export const RewardsEarnings: React.FC<Props> = ({
       totalEarnings.token,
       tokenSymbol
     );
-
-    const formattedTotalEarningsNative = totalEarnings.usd.toLocaleString(
-      'en-US',
-      {
-        style: 'currency',
-        currency: 'USD',
-      }
+    const totalEarningsNative =
+      assetPrice !== undefined
+        ? assetPrice * totalEarnings.token
+        : totalEarnings.usd;
+    const formattedTotalEarningsNative = convertAmountToNativeDisplay(
+      totalEarningsNative,
+      assetPrice ? nativeCurrency : 'USD'
     );
 
     const today = new Date();

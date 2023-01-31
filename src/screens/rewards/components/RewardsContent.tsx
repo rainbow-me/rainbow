@@ -16,12 +16,14 @@ import * as i18n from '@/languages';
 const LEADERBOARD_ITEMS_THRESHOLD = 50;
 
 type Props = {
+  assetPrice?: number;
   data: GetRewardsDataForWalletQuery | undefined;
-  isLoadingError?: boolean;
   isLoading?: boolean;
+  isLoadingError?: boolean;
 };
 
 export const RewardsContent: React.FC<Props> = ({
+  assetPrice,
   data,
   isLoading,
   isLoadingError,
@@ -66,6 +68,7 @@ export const RewardsContent: React.FC<Props> = ({
       <RewardsTitle text={data.rewards.meta.title} />
       {data.rewards.earnings && (
         <RewardsEarnings
+          assetPrice={assetPrice}
           totalEarnings={data.rewards.earnings.total}
           tokenImageUrl={data.rewards.meta.token.asset.iconURL ?? ''}
           tokenSymbol={data.rewards.meta.token.asset.symbol}
@@ -81,6 +84,7 @@ export const RewardsContent: React.FC<Props> = ({
         color={data.rewards.meta.color}
       />
       <RewardsStats
+        assetPrice={assetPrice}
         position={data.rewards.stats?.position.current ?? 1}
         positionChange={data.rewards.stats?.position.change.h24 ?? 0}
         actions={data.rewards.stats?.actions ?? []}
