@@ -12,8 +12,8 @@ export interface HoldToAuthorizeBaseProps {
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
+  isHardwareWallet?: boolean;
   label: string;
-  ledger?: boolean;
   onLongPress: () => void;
   parentHorizontalPadding: number;
   shadows: [number, number, number, string, number][];
