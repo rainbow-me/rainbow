@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -9,6 +9,8 @@ import { StatusBar } from 'react-native';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { ethereumUtils } from '@/utils';
+import { chains } from '@/references';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
@@ -20,6 +22,27 @@ export const RewardsSheet: React.FC = () => {
   const { data, isLoading: queryIsLoading, isLoadingError } = useRewards({
     address: accountAddress,
   });
+
+  const assetPriceInNativeCurrency = useMemo(() => {
+    const chainID = data?.rewards?.meta.token.asset.chainID;
+    const assetCode = data?.rewards?.meta.token.asset.assetCode;
+
+    if (!chainID || !assetCode) {
+      return undefined;
+    }
+
+    const chainData = chains.find(
+      chain => chain.chain_id === data?.rewards?.meta.token.asset.chainID
+    );
+
+    if (!chainData) {
+      return undefined;
+    }
+
+    return ethereumUtils.getAssetPrice(`${assetCode}_${chainData.network}`);
+  }, [data?.rewards?.meta.token.asset]);
+
+  console.log(assetPriceInNativeCurrency);
 
   useEffect(() => {
     setIsLoading(queryIsLoading);
@@ -39,6 +62,7 @@ export const RewardsSheet: React.FC = () => {
           <Box padding="20px">
             <RewardsContent
               data={data}
+              assetPrice={assetPriceInNativeCurrency}
               isLoadingError={isLoadingError}
               isLoading={isLoading}
             />

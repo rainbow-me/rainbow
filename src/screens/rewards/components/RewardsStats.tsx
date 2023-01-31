@@ -10,8 +10,12 @@ import {
 } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 type Props = {
+  assetPrice?: number;
   position: number;
   positionChange: number;
   actions: RewardStatsAction[];
@@ -19,12 +23,16 @@ type Props = {
 };
 
 export const RewardsStats: React.FC<Props> = ({
+  assetPrice,
   actions,
   position,
   positionChange,
   color,
 }) => {
   const { navigate } = useNavigation();
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
+  );
   const navigateToPositionExplainer = () => {
     navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_position' });
   };
@@ -70,10 +78,12 @@ export const RewardsStats: React.FC<Props> = ({
                 <RewardsStatsCard
                   key={action.type}
                   title={capitalize(action.type)}
-                  value={action.amount.usd.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                  })}
+                  value={convertAmountToNativeDisplay(
+                    assetPrice
+                      ? action.amount.token * assetPrice
+                      : action.amount.usd,
+                    assetPrice ? nativeCurrency : 'USD'
+                  )}
                   secondaryValue={i18n.t(i18n.l.rewards.percent, {
                     percent: action.rewardPercent,
                   })}
