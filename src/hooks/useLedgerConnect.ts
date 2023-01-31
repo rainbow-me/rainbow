@@ -60,7 +60,7 @@ const ledgerErrorStateHandler = (error: Error) => {
 /**
  * React hook used for checking ledger connections and handling connnection error states
  */
-export function useLedgerStatusCheck({
+export function useLedgerConnect({
   address,
   errorCallback,
   successCallback,
@@ -75,7 +75,7 @@ export function useLedgerStatusCheck({
     connectionStatus,
     setConnectionStatus,
   ] = useState<LEDGER_CONNECTION_STATUS>(LEDGER_CONNECTION_STATUS.LOADING);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<LEDGER_ERROR_CODES | null>(null);
   const [transport, setTransport] = useState<TransportBLE | null>(null);
   const [ethApp, setEthApp] = useState<AppEth | null>(null);
 
@@ -88,7 +88,7 @@ export function useLedgerStatusCheck({
         setEthApp(null);
         setTransport(null);
         setConnectionStatus(LEDGER_CONNECTION_STATUS.LOADING);
-        //setErrorMessage(LEDGER_ERROR_CODES.DISCONNECTED);
+        //setErrorCode(LEDGER_ERROR_CODES.DISCONNECTED);
         return;
       }
       /*
@@ -96,7 +96,7 @@ export function useLedgerStatusCheck({
       } */
 
       setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
-      setErrorMessage(getLedgerErrorText(ledgerErrorStateHandler(error)));
+      setErrorCode(ledgerErrorStateHandler(error));
       errorCallback?.();
     },
     [errorCallback]
@@ -107,7 +107,7 @@ export function useLedgerStatusCheck({
    */
   const handleLedgerSuccess = useCallback(() => {
     setConnectionStatus(LEDGER_CONNECTION_STATUS.READY);
-    setErrorMessage(null);
+    setErrorCode(null);
     successCallback?.();
   }, [successCallback]);
 
@@ -224,5 +224,5 @@ export function useLedgerStatusCheck({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transport, ethApp]);
 
-  return { connectionStatus, errorMessage };
+  return { connectionStatus, errorCode };
 }
