@@ -46,7 +46,6 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
-  useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
@@ -74,16 +73,6 @@ function TransactionActionRow({
   testID: string;
 }) {
   const insufficientEth = isSufficientGas === false && isValidGas;
-  const { isHardwareWallet } = useWallets();
-
-  const submitFn = useCallback(async () => {
-    if (isHardwareWallet) {
-      // nav here
-    } else {
-      // may need to await here
-      action();
-    }
-  }, [action, isHardwareWallet]);
   return (
     <>
       <Box>
@@ -99,7 +88,7 @@ function TransactionActionRow({
                 ? lang.t('profiles.confirm.insufficient_eth')
                 : label
             }
-            onLongPress={submitFn}
+            onLongPress={action}
             parentHorizontalPadding={19}
             showBiometryIcon={!insufficientEth}
             testID={`ens-transaction-action-${testID}`}
