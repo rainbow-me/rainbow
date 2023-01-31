@@ -933,11 +933,11 @@ export default function TransactionConfirmationScreen() {
 
   const submitFn = useCallback(async () => {
     if (isHardwareWallet) {
-      // nav here
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
     } else {
       await onPressSend();
     }
-  }, [isHardwareWallet, onPressSend]);
+  }, [isHardwareWallet, navigate, onPressSend]);
 
   const renderTransactionButtons = useCallback(() => {
     let ready = true;

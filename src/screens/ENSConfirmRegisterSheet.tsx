@@ -46,6 +46,7 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   usePersistentDominantColorFromImage,
+  useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
@@ -72,6 +73,7 @@ function TransactionActionRow({
   isSufficientGas: boolean;
   testID: string;
 }) {
+  const { isHardwareWallet } = useWallets();
   const insufficientEth = isSufficientGas === false && isValidGas;
   return (
     <>
@@ -92,6 +94,7 @@ function TransactionActionRow({
             parentHorizontalPadding={19}
             showBiometryIcon={!insufficientEth}
             testID={`ens-transaction-action-${testID}`}
+            isHardwareWallet={isHardwareWallet}
           />
         </SheetActionButtonRow>
       </Box>
