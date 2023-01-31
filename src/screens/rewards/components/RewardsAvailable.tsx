@@ -89,6 +89,7 @@ export const RewardsAvailable: React.FC<Props> = ({
         <ButtonPressAnimation
           onPress={navigateToAmountsExplainer}
           scaleTo={0.96}
+          overflowMargin={50}
         >
           <RewardsSectionCard>
             <Stack space="16px">

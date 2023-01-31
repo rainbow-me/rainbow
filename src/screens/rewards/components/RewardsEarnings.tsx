@@ -110,6 +110,7 @@ export const RewardsEarnings: React.FC<Props> = ({
         <ButtonPressAnimation
           onPress={navigateToTimingExplainer}
           scaleTo={0.96}
+          overflowMargin={50}
         >
           <RewardsSectionCard>
             <Columns>
