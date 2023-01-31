@@ -75,7 +75,6 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
-  useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -185,7 +184,6 @@ export default function ExchangeModal({
     name: string;
     params: { inputAsset: SwappableAsset; outputAsset: SwappableAsset };
   }>();
-  const { isHardwareWallet } = useWallets();
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
@@ -875,14 +873,6 @@ export default function ExchangeModal({
     priceImpactPercentDisplay,
   ]);
 
-  const submitFn = useCallback(async () => {
-    if (isHardwareWallet) {
-      // mavigate here
-    } else {
-      await handleSubmit();
-    }
-  }, [isHardwareWallet, handleSubmit]);
-
   const confirmButtonProps = useMemoOne(
     () => ({
       currentNetwork,
@@ -893,7 +883,7 @@ export default function ExchangeModal({
       isHighPriceImpact: debouncedIsHighPriceImpact,
       isSufficientBalance,
       loading,
-      onSubmit: submitFn,
+      onSubmit: handleSubmit,
       quoteError,
       tradeDetails,
       type,
