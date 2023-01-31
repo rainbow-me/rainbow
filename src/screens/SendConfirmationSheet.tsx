@@ -71,8 +71,6 @@ import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { getHardwareKey, WalletLibraryType } from '@/model/wallet';
-import walletTypes from '@/helpers/walletTypes';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -270,7 +268,7 @@ export default function SendConfirmationSheet() {
 
   const { transactions } = useAccountTransactions(true, true);
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const { walletNames, isHardwareWallet } = useWallets();
+  const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
@@ -476,14 +474,6 @@ export default function SendConfirmationSheet() {
       setIsAuthorizing(false);
     }
   }, [callback, canSubmit, checkboxes, isENS]);
-
-  const submitFn = useCallback(async () => {
-    if (isHardwareWallet) {
-      // navigate to hardware confirm navigator here
-    } else {
-      handleSubmit();
-    }
-  }, [handleSubmit, isHardwareWallet]);
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;
@@ -775,7 +765,7 @@ export default function SendConfirmationSheet() {
               disabled={!canSubmit}
               insufficientEth={insufficientEth}
               isAuthorizing={isAuthorizing}
-              onLongPress={submitFn}
+              onLongPress={handleSubmit}
               requiresChecks={shouldShowChecks}
               smallButton={!isTinyPhone && (android || isSmallPhone)}
               testID="send-confirmation-button"
