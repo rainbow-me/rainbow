@@ -225,6 +225,7 @@
       "loading": "Se charge",
       "more": "More",
       "my_qr_code": "My QR Code",
+      "next": "Next :)",
       "no_thanks": "No thanks",
       "notify_me": "Recevoir des notifications",
       "offline": "Hors connexion",
@@ -378,6 +379,7 @@
       "crash_app_render_error": "Crash app (render error) :)",
       "enable_testnets": "Enable Testnets :)",
       "installing_update": "Installing update :)",
+      "navigation_entry_point": "Navigation entry point :)",
       "no_update": "No update :)",
       "not_applied": "NOT APPLIED :)",
       "notifications_debug": "Notifications Debug :)",
@@ -1287,6 +1289,16 @@
         "yes": "Yes :)"
       }
     },
+    "rewards": {
+      "total_earnings": "Total Earnings :)",
+      "multiplier": "Multiplier :)",
+      "you_earned": "You've earned  :)",
+      "pending_earnings": "Pending Earnings :)",
+      "next_airdrop": "Next Airdrop :)",
+      "last_airdrop": "Last Airdrop :)",
+      "my_stats": "My Stats :)",
+      "position": "Position :)"
+    },
     "savings": {
       "deposit": "Dépôt",
       "deposit_from_wallet": "Deposit from Wallet :)",
@@ -1522,12 +1534,41 @@
       "invalid_paste": "You can't paste that here :)"
     },
     "hardware_wallets": {
-      "pair_your_nano": "Pair your Nano X",
-      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
-      "learn_more_about_ledger": "Learn more about Ledger",
-      "pair_a_new_ledger": "Pair a new Ledger",
-      "looking_for_devices": "Looking for devices",
-      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+      "pair_your_nano": "Pair your Nano X :)",
+      "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access. :)",
+      "learn_more_about_ledger": "Learn more about Ledger :)",
+      "pair_a_new_ledger": "Pair a new Ledger :)",
+      "looking_for_devices": "Looking for devices :)",
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
+      "pair_successful": "Pair successful :)",
+      "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
+      "enable_blind_signing": "Enable blind signing :)",
+      "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
+      "learn_more": "Learn More :)",
+      "blind_signing_enabled": "Blind signing is enabled :)",
+      "blind_signing_instructions": {
+        "step_1": {
+          "title": "On Ledger, open the ETH app :)",
+          "description": "Connect and unlock your device and open the Ethereum (ETH) application. :)"
+        },
+        "step_2": {
+          "title": "Navigate to settings :)",
+          "description": "Press the right button to navigate to Settings. Then press both buttons to validate your Ledger device displays Blind Signing. :)"
+        },
+        "step_3": {
+          "title": "Enable blind signing :)",
+          "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go. :)"
+        }
+      },
+      "unlock_ledger": "Unlock Ledger :)",
+      "open_eth_app": "Open the ETH app :)",
+      "open_eth_app_description": "The Ethereum app needs to be open on your Ledger to proceed with the transaction. :)",
+      "enter_passcode": "Enter your passcode to unlock your Ledger. Once unlocked, open the Ethereum app by pressing both buttons at once. :)",
+      "errors": {
+        "off_or_locked": "Make sure your device is unlocked :)",
+        "no_eth_app": "Open the Eth App on your device :)",
+        "unknown": "Unknown Error, close and reopen this sheet :)"
+      }
     },
     "wallet": {
       "action": {

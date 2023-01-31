@@ -1,5 +1,5 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { useContacts, usePrevious, useWallets } from '@/hooks';
+import { usePrevious, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, {
   FirebaseMessagingTypes,
@@ -37,7 +37,6 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
 import { TransactionDirection, TransactionStatus } from '@/entities';
-import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
 import { getConfirmedState } from '@/helpers/transactions';
@@ -62,12 +61,8 @@ type Props = PropsWithChildren<{ walletReady: boolean }>;
 
 export const NotificationsHandler = ({ walletReady }: Props) => {
   const wallets = useWallets();
-  const { contacts } = useContacts();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
-  const syncedStateRef = useRef({
-    wallets,
-    contacts,
-  });
+  const walletsRef = useRef(wallets);
   const prevWalletReady = usePrevious(walletReady);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
@@ -79,11 +74,10 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   const alreadyRanInitialization = useRef(false);
 
   /*
-  We need to save some properties to a ref in order to have an up-to-date value
+  We need to save wallets property to a ref in order to have an up-to-date value
   inside the event listener callbacks closure
    */
-  syncedStateRef.current.wallets = wallets;
-  syncedStateRef.current.contacts = contacts;
+  walletsRef.current = wallets;
 
   const onForegroundRemoteNotification = (
     remoteMessage: FirebaseMessagingTypes.RemoteMessage
@@ -181,7 +175,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       // casting data payload to type that was agreed on with backend
       const data = (notification.data as unknown) as TransactionNotificationData;
 
-      const { wallets, contacts } = syncedStateRef.current;
+      const wallets = walletsRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
 
       let walletAddress: string | null | undefined = accountAddress;
@@ -198,7 +192,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           isLowerCaseMatch(ethereumUtils.getHash(tx) ?? '', data.hash)
         );
       if (zerionTransaction) {
-        showTransactionDetailsSheet(zerionTransaction, contacts, walletAddress);
+        Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+          transaction: zerionTransaction,
+        });
       } else {
         const network = ethereumUtils.getNetworkFromChainId(
           parseInt(data.chain, 10)
@@ -292,11 +288,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         resultTransaction.minedAt = minedAt;
 
         if (resultTransaction) {
-          showTransactionDetailsSheet(
-            resultTransaction,
-            contacts,
-            walletAddress
-          );
+          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+            transaction: resultTransaction,
+          });
         }
       }
     }

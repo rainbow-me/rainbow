@@ -6,8 +6,8 @@ import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Text } from '@/design-system';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
 import { ThemeContextProps } from '@/theme';
-import { showTransactionDetailsSheet } from '@/handlers/transactions';
-import { Contact } from '@/redux/contacts';
+import { useNavigation } from '@/navigation';
+import Routes from '@rainbow-me/routes';
 
 const BottomRow = React.memo(function BottomRow({
   description,
@@ -73,22 +73,21 @@ const BottomRow = React.memo(function BottomRow({
 });
 
 export default React.memo(function TransactionCoinRow({
-  accountAddress,
-  contacts,
   item,
   theme,
 }: {
-  accountAddress: string;
-  contacts: { [p: string]: Contact };
   item: any;
   theme: ThemeContextProps;
 }) {
   const { mainnetAddress } = item;
   const { colors } = theme;
+  const navigation = useNavigation();
 
   const onPress = useCallback(() => {
-    showTransactionDetailsSheet(item, contacts, accountAddress);
-  }, [item, contacts, accountAddress]);
+    navigation.navigate(Routes.TRANSACTION_DETAILS, {
+      transaction: item,
+    });
+  }, [item, navigation]);
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>

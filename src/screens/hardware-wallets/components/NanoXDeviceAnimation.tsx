@@ -21,63 +21,51 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
+import { deviceUtils } from '@/utils';
+import { useDimensions } from '@/hooks';
 
-export function NanoXDeviceAnimation({
-  height,
-  show,
-  state,
-  width,
-}: {
-  height: number;
-  show: boolean;
+const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;
+const CIRCLES_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
+export const GRID_DOTS_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
+export const LEDGER_NANO_HEIGHT = 292 * SCALE_FACTOR;
+export const LEDGER_NANO_WIDTH = 216 * SCALE_FACTOR;
+
+type Props = {
   state: 'idle' | 'loading';
-  width: number;
-}) {
+};
+
+export function NanoXDeviceAnimation({ state }: Props) {
   const { colorMode } = useColorMode();
+  const { width, height } = useDimensions();
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
 
-  const ledgerNanoHeight = 292;
-  const ledgerNanoWidth = 216;
-
-  const showLedgerNano = show;
-
   const animatedLedgerNanoWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showLedgerNano ? 1 : 0),
+    opacity: withTiming(1),
     position: 'absolute',
-    top: (height - ledgerNanoHeight) / 2,
-    left: (width - ledgerNanoWidth) / 2,
+    top: (height - LEDGER_NANO_HEIGHT) / 2,
+    left: (width - LEDGER_NANO_WIDTH) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
   // Grid Dots Image
 
-  const gridDotsWidth = width;
-  const gridDotsHeight = gridDotsWidth;
-
-  const showGridDots = show && state === 'loading';
-
   const animatedGridDotsWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showGridDots ? 1 : 0, { duration: 200 }),
+    opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
     position: 'absolute',
-    top: (height - gridDotsHeight) / 2,
-    left: (width - gridDotsWidth) / 2,
+    top: (height - GRID_DOTS_SIZE) / 2,
+    left: (width - GRID_DOTS_SIZE) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
   // Circles Wrapper
 
-  const circlesWidth = width;
-  const circlesHeight = circlesWidth;
-
-  const showCircles = show && state === 'loading';
-
   const animatedCirclesWrapperStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(showCircles ? 1 : 0, { duration: 200 }),
+    opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
     position: 'absolute',
-    top: (height - circlesHeight) / 2,
-    left: (width - circlesWidth) / 2,
+    top: (height - CIRCLES_SIZE) / 2,
+    left: (width - CIRCLES_SIZE) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
@@ -100,8 +88,8 @@ export function NanoXDeviceAnimation({
     'rgb(160, 32, 240)',
   ];
 
-  const xOrigin = useValue(circlesWidth / 2);
-  const yOrigin = useValue(circlesHeight / 2);
+  const xOrigin = useValue(CIRCLES_SIZE / 2);
+  const yOrigin = useValue(CIRCLES_SIZE / 2);
 
   // //////////////////////////////////////////////////////////////////
 
@@ -113,15 +101,15 @@ export function NanoXDeviceAnimation({
             (colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source
           }
           style={{
-            width: gridDotsWidth,
-            height: gridDotsHeight,
+            width: GRID_DOTS_SIZE,
+            height: GRID_DOTS_SIZE,
             opacity: colorMode === 'dark' ? 0.5 : 1,
           }}
-          size={gridDotsHeight}
+          size={GRID_DOTS_SIZE}
         />
       </Animated.View>
       <Animated.View style={animatedCirclesWrapperStyle}>
-        <Canvas style={{ width: circlesWidth, height: circlesHeight }}>
+        <Canvas style={{ width: CIRCLES_SIZE, height: CIRCLES_SIZE }}>
           {colors.map((color, index) => (
             <AnimatedCircle
               key={index}
@@ -135,8 +123,8 @@ export function NanoXDeviceAnimation({
       <Animated.View style={animatedLedgerNanoWrapperStyle}>
         <ImgixImage
           source={ledgerNano as Source}
-          style={{ width: ledgerNanoWidth, height: ledgerNanoHeight }}
-          size={ledgerNanoHeight}
+          style={{ width: LEDGER_NANO_WIDTH, height: LEDGER_NANO_HEIGHT }}
+          size={LEDGER_NANO_HEIGHT}
         />
       </Animated.View>
     </>

@@ -505,7 +505,7 @@ export const foregroundColors: Record<
   },
   'buttonStrokeSecondary': {
     light: globalColors.white20,
-    dark: globalColors.white20,
+    dark: globalColors.grey20,
   },
   'action (Deprecated)': {
     dark: deprecatedColors.appleBlueLight,

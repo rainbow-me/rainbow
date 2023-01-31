@@ -37,14 +37,14 @@ import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { EthereumAddress } from '@rainbow-me/entities';
-import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+import { EthereumAddress } from '@/entities';
+import AesEncryptor from '@/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
-} from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
+} from '@/handlers/authentication';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -52,17 +52,15 @@ import {
   isValidBluetoothDeviceId,
   isValidMnemonic,
   web3Provider,
-} from '@rainbow-me/handlers/web3';
-import { createSignature } from '@rainbow-me/helpers/signingWallet';
-import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import { WalletLoadingStates } from '@rainbow-me/helpers/walletLoadingStates';
-import walletTypes, {
-  EthereumWalletType,
-} from '@rainbow-me/helpers/walletTypes';
-import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
-import store from '@rainbow-me/redux/store';
-import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
-import { ethereumUtils } from '@rainbow-me/utils';
+} from '@/handlers/web3';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { setIsWalletLoading } from '@/redux/wallets';
+import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import {
   deriveAccountFromBluetoothHardwareWallet,
@@ -793,10 +791,6 @@ export const createWallet = async (
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
     let label = name || '';
-    if (!label && isHardwareWallet) {
-      //  TODO(@skylarbarrera}: add support for multiple hardware wallets
-      label = `Ledger 1`;
-    }
 
     addresses.push({
       address: walletAddress,
@@ -946,11 +940,6 @@ export const createWallet = async (
             {},
             DebugContext.wallet
           );
-
-          if (!label && isHardwareWallet) {
-            //  TODO(@skylarbarrera}: add support for multiple hardware wallets
-            label = `Ledger ${index + 1}`;
-          }
 
           addresses.push({
             address: nextWallet.address,
