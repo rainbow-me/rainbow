@@ -12,7 +12,7 @@ import {
 } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { LedgerImportDeviceIdAtom } from '@/utils/ledger';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
@@ -111,7 +111,14 @@ export function PairHardwareWalletSigningSheet() {
 
   const importHardwareWallet = useCallback(
     async (deviceId: string) => {
-      if (busy) return;
+      if (busy) {
+        logger.debug(
+          '[importHardwareWallet] - busy, already trying to import',
+          { deviceId },
+          DebugContext.ledger
+        );
+        return;
+      }
       logger.debug(
         '[importHardwareWallet] - importing Hardware Wallet',
         { deviceId },
@@ -167,7 +174,7 @@ export function PairHardwareWalletSigningSheet() {
         </Stack>
       </Inset>
       <ActionButton
-        label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
+        label={i18n.t(TRANSLATIONS.finish_importing)}
         onPress={() => importHardwareWallet(deviceId)}
       />
     </Layout>

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSuccessSheet } from '@/screens/hardware-wallets/PairHardwareWalletSuccessSheet';
@@ -10,21 +9,72 @@ import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHar
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { atom } from 'recoil';
+import { atom, useRecoilValue } from 'recoil';
+import { LedgerImportDeviceIdAtom, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { Alert } from 'react-native';
+import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 
 const Swipe = createMaterialTopTabNavigator();
 
-export const LedgerImportDeviceIdAtom = atom({
-  default: '',
-  key: 'ledgerImportDeviceId',
+export const LedgerImportReadyForPollingAtom = atom({
+  default: false,
+  key: 'ledgerImportReadyForPolling',
 });
 
 export function PairHardwareWalletNavigator() {
+  const { height, width } = useDimensions();
+  const { navigate } = useNavigation();
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
+  const [sheetBeforeError, setSheetBeforeError] = useState(
+    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
+  );
 
-  const { height, width } = useDimensions();
+  const readyForPolling = useRecoilValue(LedgerImportReadyForPollingAtom);
+  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+
+  const successCallback = useCallback(
+    (deviceId: string) => {
+      console.log('sucess callback');
+      if (currentRouteName === Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET) {
+        navigate(sheetBeforeError);
+      }
+    },
+    [currentRouteName, navigate, sheetBeforeError]
+  );
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      console.log('error callback', errorType);
+      if (
+        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
+        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
+      ) {
+        if (currentRouteName !== Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET) {
+          setSheetBeforeError(currentRouteName);
+        }
+        navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
+          errorType,
+          runChecksLocally: true,
+        });
+      } else {
+        console.log('unhandled errorType', errorType);
+
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    },
+    [currentRouteName, navigate]
+  );
+
+  const { connectionStatus } = useLedgerConnect({
+    readyForPolling,
+    deviceId,
+    successCallback,
+    errorCallback,
+  });
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -71,6 +121,15 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
+              component={PairHardwareWalletErrorSheet}
+              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
+              listeners={{
+                focus: () => {
+                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET);
+                },
+              }}
+            />
+            <Swipe.Screen
               component={PairHardwareWalletSigningSheet}
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{
@@ -78,15 +137,6 @@ export function PairHardwareWalletNavigator() {
                   setCurrentRouteName(
                     Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
                   );
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletErrorSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET);
                 },
               }}
             />

@@ -8,16 +8,21 @@ import { useSetRecoilState } from 'recoil';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { LedgerImportDeviceIdAtom } from '@/utils/ledger';
+import { LedgerImportReadyForPollingAtom } from '@/navigation/PairHardwareWalletNavigator';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate } = useNavigation();
   const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
-
+  const setReadyForPolling = useSetRecoilState(LedgerImportReadyForPollingAtom);
   const { pairingStatus } = useLedgerImport({
-    successCallback: (deviceId: string) => {
+    successCallback: deviceId => {
       setDeviceId(deviceId);
       navigate(Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET);
+      // wait to start polling for useLedgerConnect
+      setTimeout(() => {
+        setReadyForPolling(true);
+      }, 2000);
     },
   });
 
