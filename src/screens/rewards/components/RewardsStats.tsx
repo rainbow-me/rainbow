@@ -43,17 +43,24 @@ export const RewardsStats: React.FC<Props> = ({
               secondaryValue={positionChange.toString()}
               secondaryValueColor={positionChange > 0 ? 'green' : 'red'}
               secondaryValueIcon={positionChange > 0 ? '􀑁' : '􁘳'}
+              // TODO: Add explainer sheet navigation to on press here
+              onPress={() => {}}
             />
             {actions.map(action => (
               <RewardsStatsCard
                 key={action.type}
                 title={capitalize(action.type)}
-                value={convertAmountToNativeDisplay(action.amount.usd, 'USD')}
+                value={action.amount.usd.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })}
                 secondaryValue={`${action.rewardPercent}% reward`}
                 secondaryValueIcon="􀐚"
                 secondaryValueColor={{
                   custom: color,
                 }}
+                // TODO: Add explainer sheet navigation to on press here
+                onPress={() => {}}
               />
             ))}
           </Inline>

@@ -1,12 +1,21 @@
 import React from 'react';
-import { Box } from '@/design-system';
+import { Box, Space } from '@/design-system';
 
-export const RewardsSectionCard: React.FC = ({ children }) => {
+type Props = {
+  paddingVertical?: Space;
+  paddingHorizontal?: Space;
+};
+export const RewardsSectionCard: React.FC<Props> = ({
+  children,
+  paddingVertical = '20px',
+  paddingHorizontal = '20px',
+}) => {
   return (
     <Box
       background="surfaceSecondaryElevated"
       borderRadius={18}
-      padding="20px"
+      paddingVertical={paddingVertical}
+      paddingHorizontal={paddingHorizontal}
       shadow="12px"
     >
       {children}
