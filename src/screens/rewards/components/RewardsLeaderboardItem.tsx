@@ -86,7 +86,8 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   const navigateToProfile = () => {
     navigate(Routes.PROFILE_SHEET, {
       address: ens,
-      from: 'Rewards',
+      // TODO: If we want to use it for other rewards we will have to make this analytics configurable
+      from: Routes.OP_REWARDS_SHEET,
     });
   };
 

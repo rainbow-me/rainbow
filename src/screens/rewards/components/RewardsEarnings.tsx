@@ -30,6 +30,8 @@ type Props = {
   color: string;
 };
 
+const TOKEN_IMAGE_SIZE = 16;
+
 export const RewardsEarnings: React.FC<Props> = ({
   color,
   tokenImageUrl,
@@ -82,8 +84,8 @@ export const RewardsEarnings: React.FC<Props> = ({
                     source={{
                       uri: tokenImageUrl,
                     }}
-                    width={{ custom: 16 }}
-                    height={{ custom: 16 }}
+                    width={{ custom: TOKEN_IMAGE_SIZE }}
+                    height={{ custom: TOKEN_IMAGE_SIZE }}
                     borderRadius={8}
                     background="surfaceSecondaryElevated"
                     shadow="12px"
@@ -103,8 +105,8 @@ export const RewardsEarnings: React.FC<Props> = ({
                     source={{
                       uri: tokenImageUrl,
                     }}
-                    width={{ custom: 16 }}
-                    height={{ custom: 16 }}
+                    width={{ custom: TOKEN_IMAGE_SIZE }}
+                    height={{ custom: TOKEN_IMAGE_SIZE }}
                     borderRadius={8}
                     background="surfaceSecondaryElevated"
                     shadow="12px"
@@ -126,7 +128,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                     size="13pt"
                     weight="heavy"
                   >
-                    {'􀅵'}
+                    􀅵
                   </Text>
                 </Inline>
                 <Inline space="6px" alignVertical="center">
