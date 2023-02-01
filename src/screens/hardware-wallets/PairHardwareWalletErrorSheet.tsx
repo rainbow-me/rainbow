@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
+// eslint-disable-next-line no-restricted-imports
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
@@ -10,12 +11,13 @@ import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
 import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
 export type PairHardwareWalletErrorSheetParams = {
-  errorType: 'off_or_locked' | 'no_eth_app';
+  errorType: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
 };
 
 type RouteParams = {
