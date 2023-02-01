@@ -4,10 +4,19 @@ import { RewardsTotalEarnings } from '@/screens/rewards/components/RewardsTotalE
 import { RewardsPendingEarnings } from '@/screens/rewards/components/RewardsPendingEarnings';
 import { Rewards } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
+import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
+import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
+
+const LEADERBOARD_ITEMS_TRESHOLD = 50;
 
 type Props = { data: Rewards };
 
 export const RewardsContent: React.FC<Props> = ({ data }) => {
+  const leaderboardData = data.leaderboard.accounts ?? [];
+  const limitedLeaderboardData = leaderboardData.slice(
+    0,
+    LEADERBOARD_ITEMS_TRESHOLD
+  );
   return (
     <>
       <RewardsTitle text={data.meta.title} />
@@ -31,6 +40,12 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
         actions={data.stats?.actions ?? []}
         color={data.meta.color}
       />
+      <RewardsLeaderboard
+        leaderboard={limitedLeaderboardData}
+        programEndTimestamp={data.meta.end}
+        tokenSymbol={data.meta.token.asset.symbol}
+      />
+      <RewardsDuneLogo />
     </>
   );
 };

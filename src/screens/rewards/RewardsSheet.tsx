@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -17,9 +17,15 @@ export const RewardsSheet: React.FC = () => {
   const accountAddress = useSelector(
     (state: AppState) => state.settings.accountAddress
   );
-  const { data, isLoading } = useRewards({
+  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading: queryIsLoading } = useRewards({
     address: accountAddress,
   });
+
+  useEffect(() => {
+    setIsLoading(queryIsLoading);
+  }, [queryIsLoading]);
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
