@@ -4,24 +4,23 @@ import { useDimensions } from '@/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
-  status: 'error' | 'finished';
+  title: string;
+  emoji: string;
+  text: string;
 };
 
-export const RewardsProgramStatus: React.FC<Props> = ({ status }) => {
+export const RewardsProgramStatus: React.FC<Props> = ({
+  emoji,
+  text,
+  title,
+}) => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-
-  const emoji = status === 'error' ? '😵' : '💸';
-  const title = status === 'error' ? 'Something went wrong' : 'Program ended';
-  const text =
-    status === 'error'
-      ? 'Please check your internet connection and check back later.'
-      : 'Stay tuned for what we have in store for you next!';
 
   return (
     <Box
       width="full"
-      height={{ custom: height - top - 40 }}
+      height={{ custom: height - top }}
       justifyContent="center"
       alignItems="center"
     >
