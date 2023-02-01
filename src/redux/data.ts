@@ -895,10 +895,24 @@ export const addressAssetsReceived = (
   }
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
-  parsedAssets = {
-    ...existingAccountAssetsData,
-    ...parsedAssets,
-  };
+
+  if (!isL2) {
+    const existingL2DataOnly = pickBy(
+      existingAccountAssetsData,
+      (value: ParsedAddressAsset, index: string) => {
+        return index.includes('_');
+      }
+    );
+    parsedAssets = {
+      ...existingL2DataOnly,
+      ...parsedAssets,
+    };
+  } else {
+    parsedAssets = {
+      ...existingAccountAssetsData,
+      ...parsedAssets,
+    };
+  }
 
   parsedAssets = pickBy(
     parsedAssets,
