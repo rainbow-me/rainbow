@@ -43,6 +43,8 @@ export const RewardsStats: React.FC<Props> = ({
               secondaryValue={positionChange.toString()}
               secondaryValueColor={positionChange > 0 ? 'green' : 'red'}
               secondaryValueIcon={positionChange > 0 ? '􀑁' : '􁘳'}
+              // TODO: Add explainer sheet navigation to on press here
+              onPress={() => {}}
             />
             {actions.map(action => (
               <RewardsStatsCard
@@ -57,6 +59,8 @@ export const RewardsStats: React.FC<Props> = ({
                 secondaryValueColor={{
                   custom: color,
                 }}
+                // TODO: Add explainer sheet navigation to on press here
+                onPress={() => {}}
               />
             ))}
           </Inline>

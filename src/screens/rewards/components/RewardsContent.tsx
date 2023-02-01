@@ -1,11 +1,12 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
-import { RewardsTotalEarnings } from '@/screens/rewards/components/RewardsTotalEarnings';
-import { RewardsPendingEarnings } from '@/screens/rewards/components/RewardsPendingEarnings';
+import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
+import { RewardsAvailable } from '@/screens/rewards/components/RewardsAvailable';
 import { Rewards } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
 import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const LEADERBOARD_ITEMS_TRESHOLD = 50;
 
@@ -21,18 +22,23 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
     <>
       <RewardsTitle text={data.meta.title} />
       {data.earnings && (
-        <RewardsTotalEarnings
-          totalEarningsUsd={data.earnings.total.usd}
-          multiplier={data.earnings.multiplier.amount}
-          totalEarningsToken={data.earnings.total.token}
-          tokenImageUrl={data.meta.token.asset.iconURL ?? ''}
-          tokenSymbol={data.meta.token.asset.symbol}
-          color={data.meta.color}
-        />
+        // TODO: Add explainer sheet navigation to on press here
+        <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+          <RewardsEarnings
+            totalEarnings={data.earnings.total}
+            tokenImageUrl={data.meta.token.asset.iconURL ?? ''}
+            tokenSymbol={data.meta.token.asset.symbol}
+            pendingEarningsToken={data.earnings?.pending.token ?? 0}
+            nextAirdropTimestamp={data.meta.distribution.next}
+            color={data.meta.color}
+          />
+        </ButtonPressAnimation>
       )}
-      <RewardsPendingEarnings
-        pendingEarningsUsd={data.earnings?.pending.usd ?? 0}
-        nextAirdropTimestamp={data.meta.distribution.next}
+      <RewardsAvailable
+        totalAvailableRewards={data.meta.distribution.total}
+        remainingRewards={data.meta.distribution.left}
+        nextDistributionTimestamp={data.meta.distribution.next}
+        color={data.meta.color}
       />
       <RewardsStats
         position={data.stats?.position.current ?? 1}

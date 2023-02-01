@@ -1291,7 +1291,6 @@
     },
     "rewards": {
       "total_earnings": "Total Earnings :)",
-      "multiplier": "Multiplier :)",
       "you_earned": "You've earned  :)",
       "pending_earnings": "Pending Earnings :)",
       "next_airdrop": "Next Airdrop :)",
@@ -1299,8 +1298,16 @@
       "my_stats": "My Stats :)",
       "position": "Position :)",
       "leaderboard": "Leaderboard :)",
-      "days_left": "days left :)",
-      "data_powered_by": "Data powered by :)"
+      "days_left": "%{days} days left :)",
+      "data_powered_by": "Data powered by :)",
+      "current_value": "Current Value :)",
+      "total_available_rewards": "Total Available Rewards :)",
+      "left_this_week": "~%{percent}% left this week :)",
+      "refreshes_next_week": "Refreshes next week :)",
+      "all_rewards_claimed": "All rewards have been claimed this week :)",
+      "rainbow_users_claimed": "Rainbow users claimed %{amount} :)",
+      "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours :)",
+      "refreshes_in_without_days": "Refreshes in %{hours} hours :)"
     },
     "savings": {
       "deposit": "Dépôt",
