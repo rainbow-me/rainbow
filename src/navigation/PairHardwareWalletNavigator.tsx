@@ -1,16 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
-import { PairHardwareWalletSuccessSheet } from '@/screens/hardware-wallets/PairHardwareWalletSuccessSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { atom, useRecoilValue } from 'recoil';
-import { LedgerImportDeviceIdAtom, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { atom, useRecoilState } from 'recoil';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Alert } from 'react-native';
@@ -18,6 +17,11 @@ import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 
 const Swipe = createMaterialTopTabNavigator();
 
+// atoms used for navigator state
+export const LedgerImportDeviceIdAtom = atom({
+  default: '',
+  key: 'ledgerImportDeviceId',
+});
 export const LedgerImportReadyForPollingAtom = atom({
   default: false,
   key: 'ledgerImportReadyForPolling',
@@ -33,8 +37,10 @@ export function PairHardwareWalletNavigator() {
     Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
   );
 
-  const readyForPolling = useRecoilValue(LedgerImportReadyForPollingAtom);
-  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const [readyForPolling, setReadyForPolling] = useRecoilState(
+    LedgerImportReadyForPollingAtom
+  );
+  const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
 
   const successCallback = useCallback(
     (deviceId: string) => {
@@ -75,6 +81,15 @@ export function PairHardwareWalletNavigator() {
     successCallback,
     errorCallback,
   });
+
+  // reset navigator state on unmount
+  useEffect(() => {
+    return () => {
+      setDeviceId('');
+      setReadyForPolling(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

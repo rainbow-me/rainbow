@@ -12,13 +12,13 @@ import {
 } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
-import { LedgerImportDeviceIdAtom } from '@/utils/ledger';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;

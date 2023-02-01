@@ -8,8 +8,10 @@ import { useSetRecoilState } from 'recoil';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { LedgerImportDeviceIdAtom } from '@/utils/ledger';
-import { LedgerImportReadyForPollingAtom } from '@/navigation/PairHardwareWalletNavigator';
+import {
+  LedgerImportDeviceIdAtom,
+  LedgerImportReadyForPollingAtom,
+} from '@/navigation/PairHardwareWalletNavigator';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 
 export const PairHardwareWalletSearchSheet = () => {

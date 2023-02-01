@@ -3,23 +3,7 @@ import { DebugContext } from '@/logger/debugContext';
 import { getHdPath, WalletLibraryType } from '@/model/wallet';
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { atom } from 'recoil';
-
-// atoms used for state
-export const LedgerImportDeviceIdAtom = atom({
-  default: '',
-  key: 'ledgerImportDeviceId',
-});
-
-export const LedgerTransport = atom<TransportBLE | undefined>({
-  default: undefined,
-  key: 'ledgerTransport',
-});
-
-export const LedgerEthApp = atom<AppEth | undefined>({
-  default: undefined,
-  key: 'ledgerEthApp',
-});
+import { forEach } from 'lodash';
 
 /**
  * Common Ledger Error Codes
