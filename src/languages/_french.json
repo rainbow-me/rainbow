@@ -1308,6 +1308,7 @@
       "rainbow_users_claimed": "Rainbow users claimed %{amount} :)",
       "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours :)",
       "refreshes_in_without_days": "Refreshes in %{hours} hours :)",
+      "percent": "%{percent}% reward :)",
       "op": {
         "airdrop_timing": {
           "title": "Airdrops Every Week :)",

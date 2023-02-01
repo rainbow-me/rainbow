@@ -293,6 +293,7 @@ export const explainers = (params, colors) => ({
     emoji: '📦',
     title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
     text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
+    extraHeight: IS_ANDROID ? -65 : 0,
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
   },
@@ -300,6 +301,8 @@ export const explainers = (params, colors) => ({
     emoji: '💰',
     title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
     text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
+    extraHeight: IS_ANDROID ? -65 : 0,
+
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
   },
@@ -307,6 +310,8 @@ export const explainers = (params, colors) => ({
     emoji: '🌉',
     title: i18n.t(i18n.l.rewards.op.bridge.title),
     text: i18n.t(i18n.l.rewards.op.bridge.text),
+    extraHeight: IS_ANDROID ? -65 : 0,
+
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
   },
@@ -314,6 +319,7 @@ export const explainers = (params, colors) => ({
     emoji: '🔃',
     title: i18n.t(i18n.l.rewards.op.swap.title),
     text: i18n.t(i18n.l.rewards.op.swap.text),
+    extraHeight: IS_ANDROID ? -65 : 0,
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
   },
@@ -321,6 +327,7 @@ export const explainers = (params, colors) => ({
     emoji: '🏆',
     title: i18n.t(i18n.l.rewards.op.position.title),
     text: i18n.t(i18n.l.rewards.op.position.text),
+    extraHeight: IS_ANDROID ? -65 : 0,
     readMoreLink:
       'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
   },

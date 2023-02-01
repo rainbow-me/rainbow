@@ -74,7 +74,9 @@ export const RewardsStats: React.FC<Props> = ({
                     style: 'currency',
                     currency: 'USD',
                   })}
-                  secondaryValue={`${action.rewardPercent}% reward`}
+                  secondaryValue={i18n.t(i18n.l.rewards.percent, {
+                    percent: action.rewardPercent,
+                  })}
                   secondaryValueIcon="􀐚"
                   secondaryValueColor={{
                     custom: color,
