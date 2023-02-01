@@ -1,26 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger } from '@/logger';
-import * as i18n from '@/languages';
-import { checkLedgerConnection } from '@/utils/ledger';
-
-enum LEDGER_ERROR_CODES {
-  OFF_OR_LOCKED = 'off_or_locked',
-  NO_ETH_APP = 'no_eth_app',
-  UNKNOWN = 'unknown',
-  DISCONNECTED = 'disconnected',
-}
-
-export const getLedgerErrorText = (errorCode: LEDGER_ERROR_CODES) => {
-  switch (errorCode) {
-    case LEDGER_ERROR_CODES.OFF_OR_LOCKED:
-      return i18n.t(i18n.l.hardware_wallets.errors.off_or_locked);
-    case LEDGER_ERROR_CODES.NO_ETH_APP:
-      return i18n.t(i18n.l.hardware_wallets.errors.no_eth_app);
-    default:
-      return i18n.t(i18n.l.hardware_wallets.errors.unknown);
-  }
-};
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 export enum LEDGER_CONNECTION_STATUS {
   LOADING = 'loading',

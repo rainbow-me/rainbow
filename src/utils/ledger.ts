@@ -4,6 +4,7 @@ import { getHdPath, WalletLibraryType } from '@/model/wallet';
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { forEach } from 'lodash';
+import * as i18n from '@/languages';
 
 /**
  * Common Ledger Error Codes
@@ -77,4 +78,15 @@ export const checkLedgerConnection = async ({
       });
       errorCallback?.(errorType);
     });
+};
+
+export const getLedgerErrorText = (errorCode: LEDGER_ERROR_CODES) => {
+  switch (errorCode) {
+    case LEDGER_ERROR_CODES.OFF_OR_LOCKED:
+      return i18n.t(i18n.l.hardware_wallets.errors.off_or_locked);
+    case LEDGER_ERROR_CODES.NO_ETH_APP:
+      return i18n.t(i18n.l.hardware_wallets.errors.no_eth_app);
+    default:
+      return i18n.t(i18n.l.hardware_wallets.errors.unknown);
+  }
 };

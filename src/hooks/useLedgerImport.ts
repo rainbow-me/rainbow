@@ -2,8 +2,6 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useCallback, useEffect, useState } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
-import AppEth from '@ledgerhq/hw-app-eth';
 import { Subscription } from '@ledgerhq/hw-transport';
 import { Alert } from 'react-native';
 import {
@@ -12,15 +10,7 @@ import {
   showBluetoothPoweredOffAlert,
 } from '@/utils/bluetoothPermissions';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useRecoilState } from 'recoil';
-import {
-  checkLedgerConnection,
-  ledgerErrorHandler,
-  LedgerEthApp,
-  LedgerTransport,
-  LEDGER_ERROR_CODES,
-} from '@/utils/ledger';
-import { getHdPath, WalletLibraryType } from '@/model/wallet';
+import { ledgerErrorHandler, LEDGER_ERROR_CODES } from '@/utils/ledger';
 
 enum LEDGER_IMPORT_STATUS {
   SEARCHING = 'SEARCHING',
