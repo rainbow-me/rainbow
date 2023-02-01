@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
+import AppEth from '@ledgerhq/hw-app-eth';
 import { Subscription } from '@ledgerhq/hw-transport';
 import { Alert } from 'react-native';
 import {
@@ -11,6 +12,15 @@ import {
   showBluetoothPoweredOffAlert,
 } from '@/utils/bluetoothPermissions';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { useRecoilState } from 'recoil';
+import {
+  checkLedgerConnection,
+  ledgerErrorHandler,
+  LedgerEthApp,
+  LedgerTransport,
+  LEDGER_ERROR_CODES,
+} from '@/utils/ledger';
+import { getHdPath, WalletLibraryType } from '@/model/wallet';
 
 enum LEDGER_IMPORT_STATUS {
   SEARCHING = 'SEARCHING',
@@ -28,7 +38,7 @@ export function useLedgerImport({
   successCallback,
 }: {
   successCallback?: (deviceId: string) => void;
-  errorCallback?: () => void;
+  errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
   const [pairingStatus, setPairingStatus] = useState<LEDGER_IMPORT_STATUS>(
     LEDGER_IMPORT_STATUS.SEARCHING
@@ -50,7 +60,7 @@ export function useLedgerImport({
       logger.error(new RainbowError('[LedgerImport] - Pairing Error'), {
         error,
       });
-      errorCallback?.();
+      errorCallback?.(ledgerErrorHandler(error));
     },
     [errorCallback]
   );
@@ -67,18 +77,6 @@ export function useLedgerImport({
     },
     [successCallback]
   );
-
-  /**
-   * Opens a transport between the phone and the ledger device
-   */
-  const openLedgerTransport = useCallback(async (deviceId: string) => {
-    try {
-      // we dont need the transport rn other than to pair to the device
-      const transport = await TransportBLE.open(deviceId);
-    } catch (e) {
-      logger.debug('error opening transport ', {}, DebugContext.ledger);
-    }
-  }, []);
 
   /**
    * searches & pairs to the first found ledger device
@@ -181,8 +179,7 @@ export function useLedgerImport({
                 */
                 setPairingStatus(LEDGER_IMPORT_STATUS.PAIRING);
                 try {
-                  // should i retry at this point?
-                  await openLedgerTransport(device.id);
+                  const transport = await TransportBLE.open(device.id);
                   handlePairSuccess(device.id);
                 } catch (e) {
                   logger.debug('error pairing ', {}, DebugContext.ledger);
@@ -198,7 +195,7 @@ export function useLedgerImport({
       },
     });
     setObserverSubscription(newObserver);
-  }, [handlePairError, handlePairSuccess, openLedgerTransport]);
+  }, [handlePairError, handlePairSuccess]);
 
   /**
    * Init ledger device search
