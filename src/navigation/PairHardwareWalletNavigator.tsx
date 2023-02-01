@@ -110,17 +110,6 @@ export function PairHardwareWalletNavigator() {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSuccessSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(
-                    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
-                  );
-                },
-              }}
-            />
-            <Swipe.Screen
               component={PairHardwareWalletErrorSheet}
               name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
               listeners={{
@@ -149,6 +138,7 @@ export function PairHardwareWalletNavigator() {
                   ? 'loading'
                   : 'idle'
               }
+              isConnected={deviceId !== ''}
             />
           )}
         </SimpleSheet>

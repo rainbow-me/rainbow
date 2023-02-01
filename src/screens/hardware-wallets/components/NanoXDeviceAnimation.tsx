@@ -23,6 +23,7 @@ import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
+import { useTheme } from '@/theme';
 
 const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;
 const CIRCLES_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
@@ -32,10 +33,12 @@ export const LEDGER_NANO_WIDTH = 216 * SCALE_FACTOR;
 
 type Props = {
   state: 'idle' | 'loading';
+  isConnected?: boolean;
 };
 
-export function NanoXDeviceAnimation({ state }: Props) {
+export function NanoXDeviceAnimation({ state, isConnected }: Props) {
   const { colorMode } = useColorMode();
+  const { colors } = useTheme();
   const { width, height } = useDimensions();
 
   // //////////////////////////////////////////////////////////////////
@@ -71,7 +74,7 @@ export function NanoXDeviceAnimation({ state }: Props) {
   // //////////////////////////////////////////////////////////////////
   // Circle
 
-  const colors = [
+  const circleColors = [
     // red
     'rgb(255, 0, 0)',
     // green
@@ -87,6 +90,12 @@ export function NanoXDeviceAnimation({ state }: Props) {
     // purple
     'rgb(160, 32, 240)',
   ];
+
+  if (isConnected) {
+    circleColors.push(
+      ...[colors.green, colors.green, colors.green, colors.green]
+    );
+  }
 
   const xOrigin = useValue(CIRCLES_SIZE / 2);
   const yOrigin = useValue(CIRCLES_SIZE / 2);
@@ -110,12 +119,13 @@ export function NanoXDeviceAnimation({ state }: Props) {
       </Animated.View>
       <Animated.View style={animatedCirclesWrapperStyle}>
         <Canvas style={{ width: CIRCLES_SIZE, height: CIRCLES_SIZE }}>
-          {colors.map((color, index) => (
+          {circleColors.map((color, index) => (
             <AnimatedCircle
               key={index}
-              color={color}
+              color={isConnected ? colors.green : color}
               xOrigin={xOrigin}
               yOrigin={yOrigin}
+              isConnected={isConnected}
             />
           ))}
         </Canvas>
@@ -140,10 +150,12 @@ function AnimatedCircle({
   color,
   xOrigin,
   yOrigin,
+  isConnected,
 }: {
   color: string;
   xOrigin: SkiaMutableValue<number>;
   yOrigin: SkiaMutableValue<number>;
+  isConnected?: boolean;
 }) {
   const circleRadius = 48;
 
@@ -169,7 +181,7 @@ function AnimatedCircle({
   }, []);
 
   useSharedValueEffect(() => {
-    const scalar = 0.2;
+    const scalar = isConnected ? 0.2 : 0.5;
     x.current =
       xOrigin.current -
       mix(
