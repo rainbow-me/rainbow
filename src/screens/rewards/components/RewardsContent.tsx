@@ -11,6 +11,7 @@ import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderbo
 import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
+import * as i18n from '@/languages';
 
 const LEADERBOARD_ITEMS_THRESHOLD = 50;
 
@@ -29,10 +30,22 @@ export const RewardsContent: React.FC<Props> = ({
     return <RewardsFakeContent />;
   }
   if (isLoadingError || !data || !data.rewards) {
-    return <RewardsProgramStatus status="error" />;
+    return (
+      <RewardsProgramStatus
+        emoji="😵"
+        title={i18n.t(i18n.l.rewards.error_title)}
+        text={i18n.t(i18n.l.rewards.error_text)}
+      />
+    );
   }
   if (data.rewards.meta.status === RewardsMetaStatus.Finished) {
-    return <RewardsProgramStatus status="finished" />;
+    return (
+      <RewardsProgramStatus
+        emoji="💸"
+        title={i18n.t(i18n.l.rewards.ended_title)}
+        text={i18n.t(i18n.l.rewards.ended_text)}
+      />
+    );
   }
   const leaderboardData = data.rewards.leaderboard.accounts ?? [];
   const limitedLeaderboardData = leaderboardData.slice(
