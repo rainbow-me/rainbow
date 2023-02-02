@@ -3,12 +3,16 @@ import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
 import { IS_TESTING } from 'react-native-dotenv';
-import logger from '@/utils/logger';
+import { analyticsV2 } from '@/analytics';
+import * as ls from '@/storage';
+import { logger, RainbowError } from '@/logger';
 
-export const branchListener = (handleOpenLinkingURL: (url: any) => void) =>
-  branch.subscribe(({ error, params, uri }) => {
+export const branchListener = async (
+  handleOpenLinkingURL: (url: any) => void
+) => {
+  const unsubscribe = branch.subscribe(({ error, params, uri }) => {
     if (error) {
-      logger.error('Error from Branch: ' + error);
+      logger.error(new RainbowError('Error from Branch'), { error });
     }
 
     if (!params && uri) {
@@ -55,6 +59,34 @@ export const branchListener = (handleOpenLinkingURL: (url: any) => void) =>
       handleOpenLinkingURL(uri);
     }
   });
+
+  // getFirstReferringParams must be called after branch.subscribe()
+  const branchFirstReferringParamsSet = ls.device.get([
+    'branchFirstReferringParamsSet',
+  ]);
+  if (!branchFirstReferringParamsSet) {
+    const branchParams = await branch
+      .getFirstReferringParams()
+      .then(branchParams => branchParams)
+      .catch(e => {
+        logger.error(
+          new RainbowError('error calling branch.getFirstReferringParams()'),
+          e
+        );
+        return null;
+      });
+    if (branchParams) {
+      analyticsV2.identify({
+        branchCampaign: branchParams['~campaign'],
+        branchReferrer: branchParams['+referrer'],
+        branchReferringLink: branchParams['~referring_link'],
+      });
+    }
+    ls.device.set(['branchFirstReferringParamsSet'], true);
+  }
+
+  return unsubscribe;
+};
 
 /**
  * Sometimes branch deeplinks have the following form:
