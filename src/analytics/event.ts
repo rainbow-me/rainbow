@@ -34,9 +34,8 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
-  pairHwWalletFlowStarted: 'pair_hw_wallet_flow.started',
-  pairHwWalletFlowCompleted: 'pair_hw_wallet_flow.completed',
-  pairHwWalletFlowCanceled: 'pair_hw_wallet_flow.canceled',
+  pairHwWalletNavEntered: 'pair_hw_wallet_nav.entered',
+  pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
 } as const;
 
 /**
@@ -98,13 +97,13 @@ export type EventProperties = {
     isFirstWallet: boolean;
     type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
   };
-  [event.pairHwWalletFlowStarted]: {
-    fromRoute: string;
+  [event.pairHwWalletNavEntered]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
   };
-  [event.pairHwWalletFlowCompleted]: {
-    fromRoute: string;
-  };
-  [event.pairHwWalletFlowCompleted]: {
-    fromRoute: string;
+  [event.pairHwWalletNavExited]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
+    step: string;
   };
 };

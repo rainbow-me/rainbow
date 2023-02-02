@@ -4,16 +4,13 @@ import { Linking } from 'react-native';
 import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useRecoilValue } from 'recoil';
-import { routeToGoBackToAtom } from '@/navigation/PairHardwareWalletNavigator';
 
 export const PairHardwareWalletIntroSheet = () => {
   const { navigate } = useNavigation();
-
-  const routeToGoBackTo = useRecoilValue(routeToGoBackToAtom);
 
   return (
     <Layout>
@@ -48,7 +45,7 @@ export const PairHardwareWalletIntroSheet = () => {
         </Stack>
       </Inset>
       <ActionButton
-        onPress={() => navigate(routeToGoBackTo)}
+        onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET)}
         label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
       />
     </Layout>

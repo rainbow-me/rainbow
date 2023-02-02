@@ -11,17 +11,11 @@ import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/Nano
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { RouteProp, useRoute } from '@react-navigation/core';
-import { atom, useSetRecoilState } from 'recoil';
+import { analyticsV2 } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();
 
-export const routeToGoBackToAtom = atom<string>({
-  default: '',
-  key: 'pairHardwareWalletNavigator.routeToGoBackTo',
-});
-
 type PairHardwareWalletNavigatorParams = {
-  routeToGoBackTo: string;
   entryPoint: string;
   isFirstWallet: boolean;
 };
@@ -31,29 +25,33 @@ type RouteParams = {
 };
 
 export const PairHardwareWalletNavigator = () => {
-  const { params: { routeToGoBackTo } = {} } = useRoute<
+  const { params } = useRoute<
     RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
   >();
 
-  const setRouteToGoBackTo = useSetRecoilState(routeToGoBackToAtom);
-
-  useEffect(() => {
-    if (routeToGoBackTo) {
-      setRouteToGoBackTo(routeToGoBackTo);
-    }
-  }, [routeToGoBackTo, setRouteToGoBackTo]);
-
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
+    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
   );
 
   const { height, width } = useDimensions();
+
+  useEffect(
+    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
+    []
+  );
+
+  const onDismiss = () =>
+    analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
+      step: currentRouteName,
+      ...params,
+    });
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
+          onDismiss={onDismiss}
           scrollEnabled={false}
         >
           <Swipe.Navigator

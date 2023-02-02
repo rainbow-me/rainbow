@@ -219,7 +219,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'import' },
+      params: { type: 'import', isFirstWallet },
     });
   };
 
@@ -231,7 +231,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'watch' },
+      params: { type: 'watch', isFirstWallet },
     });
   };
 
@@ -311,9 +311,6 @@ export const AddWalletSheet = () => {
     goBack();
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-        routeToGoBackTo: isFirstWallet
-          ? Routes.WELCOME_SCREEN
-          : Routes.WALLET_SCREEN,
         entryPoint: Routes.ADD_WALLET_SHEET,
         isFirstWallet,
       });
