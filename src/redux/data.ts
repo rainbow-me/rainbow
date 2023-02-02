@@ -847,7 +847,6 @@ export const addressAssetsReceived = (
     accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
-  const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
   let updatedAssets = pickBy(
     newAssets,
@@ -857,7 +856,7 @@ export const addressAssetsReceived = (
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
+  let parsedAssets = parseAccountAssets(updatedAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 

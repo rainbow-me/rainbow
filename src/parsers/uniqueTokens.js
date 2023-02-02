@@ -1,4 +1,4 @@
-import { isEmpty, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import uniq from 'lodash/uniq';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
@@ -300,20 +300,6 @@ export const applyENSMetadataFallbackToTokens = async data => {
 
 export const getFamilies = uniqueTokens =>
   uniq(uniqueTokens.map(u => u?.asset_contract?.address ?? ''));
-
-export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
-  const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = newAssets;
-  if (!isEmpty(newAssets)) {
-    updatedAssets = pickBy(updatedAssets, newAsset => {
-      const matchingElement = uniqueTokenFamilies?.find(
-        uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
-      );
-      return !matchingElement;
-    });
-  }
-  return updatedAssets;
-};
 
 export const dedupeAssetsWithFamilies = (accountAssets, families) =>
   pickBy(

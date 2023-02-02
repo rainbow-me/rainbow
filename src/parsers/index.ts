@@ -35,6 +35,5 @@ export {
   handleAndSignImages,
   getOpenSeaCollectionUrl,
   getFamilies,
-  dedupeUniqueTokens,
   dedupeAssetsWithFamilies,
 } from './uniqueTokens';
