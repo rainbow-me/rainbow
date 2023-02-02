@@ -32,8 +32,6 @@ import {
   PortfolioReceivedMessage,
   transactionsReceived,
   TransactionsReceivedMessage,
-  transactionsRemoved,
-  TransactionsRemovedMessage,
 } from './data';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
@@ -83,17 +81,13 @@ const messages = {
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
-    CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     RECEIVED_BSC: 'received address bsc-transactions',
-    REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
-    APPENDED: 'appended chart points',
-    CHANGED: 'changed chart points',
     RECEIVED: 'received assets charts',
   },
   ASSETS: {
@@ -953,22 +947,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
       dispatch(transactionsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.CHANGED,
-    (message: TransactionsReceivedMessage) => {
-      logger.log('txns changed', message?.payload?.transactions);
-      dispatch(transactionsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.REMOVED,
-    (message: TransactionsRemovedMessage) => {
-      logger.log('txns removed', message?.payload?.transactions);
-      dispatch(transactionsRemoved(message));
     }
   );
 

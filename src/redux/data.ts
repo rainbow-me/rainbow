@@ -384,16 +384,6 @@ export interface TransactionsReceivedMessage {
 }
 
 /**
- * A message from the Zerion API indicating that transactions were removed.
- */
-export interface TransactionsRemovedMessage {
-  payload?: {
-    transactions?: ZerionTransaction[];
-  };
-  meta?: MessageMeta;
-}
-
-/**
  * A message from the Zerion API indicating that asset data was received. Note,
  * an actual message directly from Zerion would only include `ZerionAsset`
  * as the value type in the `prices` map, but this message type is also used
@@ -435,7 +425,6 @@ type DataMessage =
   | AddressAssetsReceivedMessage
   | PortfolioReceivedMessage
   | TransactionsReceivedMessage
-  | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
 
@@ -615,28 +604,6 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
 };
 
 /**
- * Checks to see if a network's nonce should be decremented for an account
- * based on incoming transaction data, and if so, updates state.
- *
- * @param removedTransactions Removed transaction data.
- */
-const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  if (removedTransactions.length) {
-    const { accountAddress, network } = getState().settings;
-    const txSortedByAscendingNonce = removedTransactions
-      .filter(({ from }) => from === accountAddress)
-      .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
-    const [lowestNonceTx] = txSortedByAscendingNonce;
-    const { nonce } = lowestNonceTx;
-    // @ts-ignore-next-line
-    dispatch(decrementNonce(accountAddress, nonce!, network));
-  }
-};
-
-/**
  * Handles an incoming portfolio data message from Zerion and updates state
  * accordidngly.
  *
@@ -759,43 +726,6 @@ export const transactionsReceived = (
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
-};
-
-/**
- * Handles a `TransactionsRemovedMessage` from Zerion and updates state and
- * account local storage.
- *
- * @param message The incoming `TransactionsRemovedMessage` or undefined.
- */
-export const transactionsRemoved = (
-  message: TransactionsRemovedMessage | undefined
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
-  getState: AppGetState
-) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
-  const transactionData = message?.payload?.transactions ?? [];
-  if (!transactionData.length) {
-    return;
-  }
-  const { accountAddress, network } = getState().settings;
-  const { transactions } = getState().data;
-  const removeHashes = transactionData.map(txn => txn.hash);
-  logger.log('[data] - remove txn hashes', removeHashes);
-  const [updatedTransactions, removedTransactions] = partition(
-    transactions,
-    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
-  );
-
-  dispatch({
-    payload: updatedTransactions,
-    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-  });
-
-  dispatch(checkForRemovedNonce(removedTransactions));
-  saveLocalTransactions(updatedTransactions, accountAddress, network);
 };
 
 /**
