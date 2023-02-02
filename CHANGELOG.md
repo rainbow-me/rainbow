@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.8] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
+
+### Changed
+
+- 1.8.7 hotfix
+- fix balance updates on L1 sends
+
+## [1.8.7] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
+
+### Changed
+
+- some bug fixes
+- ledger prep items
+- double eth fix
+- OP rewards prep items
+
 ## [1.8.6] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
 
 ### Changed

@@ -11,11 +11,11 @@ import { LayoutChangeEvent } from 'react-native';
 type Props = {
   // Between 0 and 1
   progress: number;
+  color: string;
 };
 
-export const RewardsProgressBar: React.FC<Props> = ({ progress }) => {
+export const RewardsProgressBar: React.FC<Props> = ({ progress, color }) => {
   const { colors } = useTheme();
-
   const widthValue = useSharedValue(10);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -36,7 +36,7 @@ export const RewardsProgressBar: React.FC<Props> = ({ progress }) => {
       padding="2px"
       onLayout={onLayout}
       style={{
-        backgroundColor: colors.alpha(colors.networkColors.optimism, 0.16),
+        backgroundColor: colors.alpha(color, 0.16),
       }}
     >
       <Box
@@ -45,7 +45,7 @@ export const RewardsProgressBar: React.FC<Props> = ({ progress }) => {
         borderRadius={6}
         style={[
           {
-            backgroundColor: colors.networkColors.optimism,
+            backgroundColor: color,
           },
           animatedStyle,
         ]}

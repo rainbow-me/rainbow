@@ -14,7 +14,7 @@
 
 ### General
 
-- Install NVM or Node.js 14: https://github.com/creationix/nvm
+- Install NVM or Node.js 16: https://github.com/creationix/nvm
 - Install all project dependencies with `yarn setup`
 
 ### MacOS
@@ -62,7 +62,7 @@ https://reactnative.dev/docs/getting-started
 
 ### Preflight
 
-1. Run `nvm use 14` to force Node.js v14.
+1. Run `nvm use` to force Node.js v16.
 
 2. Set up your .env file, use our env.example as a guide.
 

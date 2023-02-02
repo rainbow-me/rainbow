@@ -16,7 +16,6 @@ export const L2_TXS = 'L2 Transactions';
 export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const WC_V2 = 'Wallet Connect v2';
-export const NEW_TRANSACTION_DETAILS = 'New Transaction Details';
 export const OP_REWARDS = '$OP Rewards';
 
 export const defaultConfig = {
@@ -30,7 +29,6 @@ export const defaultConfig = {
   [REVIEW_ANDROID]: { settings: false, value: false },
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
   [WC_V2]: { settings: true, value: false },
-  [NEW_TRANSACTION_DETAILS]: { settings: true, value: true },
   [OP_REWARDS]: { settings: true, value: false },
 };
 

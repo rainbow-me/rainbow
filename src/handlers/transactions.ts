@@ -6,7 +6,6 @@ import { CONTRACT_FUNCTION } from '@/apollo/queries';
 import {
   RainbowTransaction,
   TransactionStatus,
-  TransactionStatusTypes,
   TransactionDirection,
   TransactionTypes,
   TransactionType,
@@ -15,28 +14,7 @@ import {
 import store from '@/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSignatures';
 import { SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI } from '@/references';
-import {
-  getHumanReadableDate,
-  hasAddableContact,
-} from '@/helpers/transactions';
-import lang from 'i18n-js';
-import { isValidDomainFormat } from '@/helpers/validators';
-import {
-  abbreviations,
-  ethereumUtils,
-  showActionSheetWithOptions,
-  isLowerCaseMatch,
-} from '@/utils';
-import { getRandomColor } from '@/styles/colors';
-import startCase from 'lodash/startCase';
-import {
-  getShortTransactionActionId,
-  TransactionActions,
-} from '@/helpers/transactionActions';
-import Routes from '@rainbow-me/routes';
-import { Navigation } from '@/navigation';
-import { Contact } from '@/redux/contacts';
-import { Network } from '@/helpers';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { getTitle, getTransactionLabel } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
@@ -44,12 +22,7 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
-import { swapMetadataStorage } from '@/raps/actions/swap';
-import { SwapMetadata } from '@/raps/common';
-import WalletTypes from '@/helpers/walletTypes';
-import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
-import { getExperimetalFlag, NEW_TRANSACTION_DETAILS } from '@/config';
 
 const flashbotsApi = new RainbowFetchClient({
   baseURL: 'https://protect.flashbots.net',
@@ -125,156 +98,6 @@ export const getTransactionMethodName = async (
     return parsedSignature;
   } catch (e) {
     return '';
-  }
-};
-
-export const showTransactionDetailsSheet = (
-  transactionDetails: RainbowTransaction,
-  contacts: { [p: string]: Contact },
-  accountAddress: string
-) => {
-  // TODO: APP-298 Clean up old transaction details sheet code after releasing new one
-  const isNewTransactionSheetEnabled = getExperimetalFlag(
-    NEW_TRANSACTION_DETAILS
-  );
-  if (isNewTransactionSheetEnabled) {
-    return void Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
-      transaction: transactionDetails,
-    });
-  }
-  // Old TX details action sheet code
-  const { hash, from, minedAt, pending, to, status, type } = transactionDetails;
-  const network = transactionDetails.network ?? Network.mainnet;
-
-  // get info to try swap again
-  const parentTxHash = ethereumUtils.getHash(transactionDetails);
-  const data = swapMetadataStorage.getString(parentTxHash?.toLowerCase() ?? '');
-  const wrappedMeta = data ? JSON.parse(data) : {};
-  let parsedMeta: undefined | SwapMetadata;
-  if (wrappedMeta?.type === 'swap') {
-    parsedMeta = wrappedMeta.data as SwapMetadata;
-  }
-
-  const isReadOnly =
-    store.getState().wallets.selected?.type === WalletTypes.readOnly ?? true;
-  const isRetryButtonVisible =
-    !isReadOnly && status === TransactionStatus.failed && !!parsedMeta;
-
-  const date = getHumanReadableDate(minedAt);
-  const isSent =
-    status === TransactionStatusTypes.sending ||
-    status === TransactionStatusTypes.sent;
-  const showContactInfo = hasAddableContact(status, type);
-  const headerInfo = {
-    address: '',
-    divider: isSent
-      ? lang.t('account.tx_to_lowercase')
-      : lang.t('account.tx_from_lowercase'),
-    type: (status?.charAt(0)?.toUpperCase() ?? '') + (status?.slice(1) ?? ''),
-  };
-
-  const contactAddress = (isSent ? to : from) as string;
-  const contact = contacts[contactAddress];
-  let contactColor = 0;
-
-  if (contact) {
-    headerInfo.address = contact.nickname;
-    contactColor = contact.color;
-  } else {
-    headerInfo.address = isValidDomainFormat(contactAddress)
-      ? contactAddress
-      : (abbreviations.address(contactAddress, 4, 10) as string);
-    contactColor = getRandomColor();
-  }
-
-  const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
-  const canBeResubmitted = isOutgoing && !minedAt;
-  const canBeCancelled =
-    canBeResubmitted && status !== TransactionStatusTypes.cancelling;
-  const blockExplorerAction = lang.t('wallet.action.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
-  });
-
-  if (hash) {
-    const buttons = [
-      ...(isRetryButtonVisible ? [TransactionActions.trySwapAgain] : []),
-      ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
-      ...(canBeCancelled ? [TransactionActions.cancel] : []),
-      blockExplorerAction,
-      ...(ios ? [TransactionActions.close] : []),
-    ];
-    if (showContactInfo) {
-      buttons.unshift(
-        contact
-          ? TransactionActions.viewContact
-          : TransactionActions.addToContacts
-      );
-    }
-
-    showActionSheetWithOptions(
-      {
-        cancelButtonIndex: buttons.length - 1,
-        options: buttons,
-        title: pending
-          ? `${headerInfo.type}${
-              showContactInfo
-                ? ' ' + headerInfo.divider + ' ' + headerInfo.address
-                : ''
-            }`
-          : showContactInfo
-          ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
-          : `${headerInfo.type} ${date}`,
-      },
-      (buttonIndex: number) => {
-        const action = buttons[buttonIndex];
-        const actionId = getShortTransactionActionId(action);
-        analytics.track('Tapped Transaction Details Menu Item', {
-          action: actionId,
-        });
-        switch (action) {
-          case TransactionActions.trySwapAgain:
-            Navigation.handleAction(Routes.WALLET_SCREEN, {});
-            Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-              params: {
-                meta: parsedMeta,
-                inputAsset: parsedMeta?.inputAsset,
-                outputAsset: parsedMeta?.outputAsset,
-              },
-            });
-            break;
-          case TransactionActions.viewContact:
-          case TransactionActions.addToContacts:
-            Navigation.handleAction(Routes.MODAL_SCREEN, {
-              address: contactAddress,
-              asset: transactionDetails,
-              color: contactColor,
-              contact,
-              type: 'contact_profile',
-            });
-            break;
-          case TransactionActions.speedUp:
-            Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-              tx: transactionDetails,
-              type: 'speed_up',
-            });
-            break;
-          case TransactionActions.close:
-            return;
-          case TransactionActions.cancel:
-            Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-              tx: transactionDetails,
-              type: 'cancel',
-            });
-            break;
-          case blockExplorerAction:
-            ethereumUtils.openTransactionInBlockExplorer(hash, network);
-            break;
-          default: {
-            return;
-          }
-        }
-      }
-    );
   }
 };
 
