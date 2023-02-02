@@ -23,7 +23,10 @@ import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { useNavigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 
@@ -69,14 +72,14 @@ export const RewardsEarnings: React.FC<Props> = ({
       totalEarnings.token,
       tokenSymbol
     );
-    const totalEarningsNative =
+    const formattedTotalEarningsNative =
       assetPrice !== undefined
-        ? assetPrice * totalEarnings.token
-        : totalEarnings.usd;
-    const formattedTotalEarningsNative = convertAmountToNativeDisplay(
-      totalEarningsNative,
-      assetPrice ? nativeCurrency : 'USD'
-    );
+        ? convertAmountAndPriceToNativeDisplay(
+            totalEarnings.token,
+            assetPrice,
+            assetPrice ? nativeCurrency : 'USD'
+          ).display
+        : convertAmountToNativeDisplay(totalEarnings.usd, 'USD');
 
     const today = new Date();
     const dayOfNextDistribution = fromUnixTime(nextAirdropTimestamp);

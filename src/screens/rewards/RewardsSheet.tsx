@@ -42,8 +42,6 @@ export const RewardsSheet: React.FC = () => {
     return ethereumUtils.getAssetPrice(`${assetCode}_${chainData.network}`);
   }, [data?.rewards?.meta.token.asset]);
 
-  console.log(assetPriceInNativeCurrency);
-
   useEffect(() => {
     setIsLoading(queryIsLoading);
   }, [queryIsLoading]);
