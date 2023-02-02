@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-redash/src/v1/Gesture.ts b/node_modules/react-native-redash/src/v1/Gesture.ts
-index 47c83ab..ec86af0 100644
+index 47c83ab..f5d4472 100644
 --- a/node_modules/react-native-redash/src/v1/Gesture.ts
 +++ b/node_modules/react-native-redash/src/v1/Gesture.ts
-@@ -1,3 +1,5 @@
+@@ -1,3 +1,4 @@
 +// @ts-nocheck
  import Animated, { diff, lessThan, or } from "react-native-reanimated";
  import type {
@@ -17,10 +17,10 @@ index c395935..9f772a4 100644
  import type { TextStyle, StyleProp } from "react-native";
  import { TextInput } from "react-native";
 diff --git a/node_modules/react-native-redash/src/v1/SVG.ts b/node_modules/react-native-redash/src/v1/SVG.ts
-index 9751193..f56a482 100644
+index 9751193..81ec8d8 100644
 --- a/node_modules/react-native-redash/src/v1/SVG.ts
 +++ b/node_modules/react-native-redash/src/v1/SVG.ts
-@@ -1,3 +1,5 @@
+@@ -1,3 +1,4 @@
 +// @ts-nocheck
  import Animated, { interpolateNode } from "react-native-reanimated";
  import parseSVG from "parse-svg-path";
