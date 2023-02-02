@@ -297,7 +297,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
           },
           "backups": {
             "title": "The Importance of Backups",
@@ -980,7 +980,7 @@
       "no_interactions": "No interactions found for this account",
       "no_transactions": "No transactions found for this account",
       "no_unique_tokens": "No unique tokens found for this account",
-      "opensea_footer": " is a market place for unique (or 'non-fungible') tokens. People trade on the marketspace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
+      "opensea_footer": " is a marketplace for unique (or 'non-fungible') tokens. People trade on the marketplace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
       "opensea_header": "How does this work under the hood?",
       "page_not_found": "404 Page Not Found",
       "please_connect_ledger": "Please connect and unlock Ledger then select Ethereum",
