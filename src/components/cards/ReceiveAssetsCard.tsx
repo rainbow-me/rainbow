@@ -42,12 +42,12 @@ export const ReceiveAssetsCard = () => {
     [accountAddress, isToastActive, setClipboard, setToastActive]
   );
 
-  const onPressQRCode = useCallback(() => {
+  const onPressQRCode = () => {
     analyticsV2.track(analyticsV2.event.qrCodeViewed, {
       component: 'ReceiveAssetsCard',
     });
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+  };
 
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 

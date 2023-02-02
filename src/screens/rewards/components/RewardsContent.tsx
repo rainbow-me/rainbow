@@ -18,6 +18,7 @@ export const RewardsContent: React.FC<Props> = ({ data }) => {
     0,
     LEADERBOARD_ITEMS_TRESHOLD
   );
+  console.log(data.meta.color);
   return (
     <>
       <RewardsTitle text={data.meta.title} />

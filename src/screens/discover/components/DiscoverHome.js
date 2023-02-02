@@ -2,6 +2,7 @@ import React from 'react';
 import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
+  HARDWARE_WALLETS,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -20,12 +21,14 @@ import {
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
+import { LedgerCard } from '@/components/cards/LedgerCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const optimismRewardsEnabled = useExperimentalFlag(OP_REWARDS);
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const testNetwork = isTestnetNetwork(network);
 
   return (
@@ -41,6 +44,7 @@ export default function DiscoverHome() {
                 <ENSSearchCard />
               </Inline>
               {optimismRewardsEnabled && <OpRewardsCard />}
+              {hardwareWalletsEnabled && <LedgerCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
