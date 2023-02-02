@@ -310,7 +310,13 @@ export const AddWalletSheet = () => {
     });
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+        routeToGoBackTo: isFirstWallet
+          ? Routes.WELCOME_SCREEN
+          : Routes.WALLET_SCREEN,
+        entryPoint: Routes.ADD_WALLET_SHEET,
+        isFirstWallet,
+      });
     });
   };
 

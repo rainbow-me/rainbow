@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Routes from '@/navigation/routesNames';
@@ -10,10 +10,39 @@ import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHar
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { RouteProp, useRoute } from '@react-navigation/core';
+import { atom, useSetRecoilState } from 'recoil';
 
 const Swipe = createMaterialTopTabNavigator();
 
+export const routeToGoBackToAtom = atom<string>({
+  default: '',
+  key: 'pairHardwareWalletNavigator.routeToGoBackTo',
+});
+
+type PairHardwareWalletNavigatorParams = {
+  routeToGoBackTo: string;
+  entryPoint: string;
+  isFirstWallet: boolean;
+};
+
+type RouteParams = {
+  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
+};
+
 export const PairHardwareWalletNavigator = () => {
+  const { params: { routeToGoBackTo } = {} } = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
+  >();
+
+  const setRouteToGoBackTo = useSetRecoilState(routeToGoBackToAtom);
+
+  useEffect(() => {
+    if (routeToGoBackTo) {
+      setRouteToGoBackTo(routeToGoBackTo);
+    }
+  }, [routeToGoBackTo, setRouteToGoBackTo]);
+
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );

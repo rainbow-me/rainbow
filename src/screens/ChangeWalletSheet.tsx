@@ -405,7 +405,11 @@ export default function ChangeWalletSheet() {
     });
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+        routeToGoBackTo: Routes.WALLET_SCREEN,
+        entryPoint: Routes.CHANGE_WALLET_SHEET,
+        isFirstWallet: false,
+      });
     });
   }, [goBack, navigate]);
 
