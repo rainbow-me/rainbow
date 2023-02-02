@@ -53,10 +53,14 @@ export const PairHardwareWalletSearchSheet = () => {
       </Inset>
       <Box width="full">
         <Stack space="12px">
-          <ActionButton
-            label={i18n.t(i18n.l.button.next)}
-            onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)}
-          />
+          {isConnected && (
+            <ActionButton
+              label={i18n.t(i18n.l.button.next)}
+              onPress={() =>
+                navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)
+              }
+            />
+          )}
           <CancelButton />
         </Stack>
       </Box>
