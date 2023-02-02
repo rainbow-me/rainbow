@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.8-1",
+  "version": "1.8.9-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -413,7 +413,8 @@
     "**/minimatch": "3.0.5",
     "**/@xmldom/xmldom": "0.7.7",
     "**/json5": "2.2.2",
-    "**/ua-parser-js": "0.7.33"
+    "**/ua-parser-js": "0.7.33",
+    "**/http-cache-semantics": "4.1.1"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
