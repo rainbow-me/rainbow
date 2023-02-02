@@ -546,29 +546,6 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
 };
 
 /**
- * Replaces the account asset data in state and saves to account local storage.
- *
- * @param assetsData The new asset data.
- */
-export const dataUpdateAssets = (assetsData: {
-  [uniqueId: string]: ParsedAddressAsset;
-}) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  if (!isEmpty(assetsData)) {
-    saveAccountAssetsData(assetsData, accountAddress, network);
-    // Change the state since the account isn't empty anymore
-    saveAccountEmptyState(false, accountAddress, network);
-    dispatch({
-      payload: assetsData,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
-  }
-};
-
-/**
  * Checks whether or not metadata received from Zerion is valid.
  *
  * @param message The message received from Zerion.

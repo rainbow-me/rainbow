@@ -34,6 +34,4 @@ export {
   parseSimplehashNfts,
   handleAndSignImages,
   getOpenSeaCollectionUrl,
-  getFamilies,
-  dedupeAssetsWithFamilies,
 } from './uniqueTokens';
