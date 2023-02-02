@@ -10,7 +10,10 @@ import {
 } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 
@@ -74,26 +77,32 @@ export const RewardsStats: React.FC<Props> = ({
                 secondaryValueIcon={positionChange > 0 ? '􀑁' : '􁘳'}
                 onPress={navigateToPositionExplainer}
               />
-              {actions.map(action => (
-                <RewardsStatsCard
-                  key={action.type}
-                  title={capitalize(action.type)}
-                  value={convertAmountToNativeDisplay(
-                    assetPrice
-                      ? action.amount.token * assetPrice
-                      : action.amount.usd,
-                    assetPrice ? nativeCurrency : 'USD'
-                  )}
-                  secondaryValue={i18n.t(i18n.l.rewards.percent, {
-                    percent: action.rewardPercent,
-                  })}
-                  secondaryValueIcon="􀐚"
-                  secondaryValueColor={{
-                    custom: color,
-                  }}
-                  onPress={getPressHandlerForType(action.type)}
-                />
-              ))}
+              {actions.map(action => {
+                const value =
+                  assetPrice !== undefined
+                    ? convertAmountAndPriceToNativeDisplay(
+                        action.amount.token,
+                        assetPrice,
+                        nativeCurrency
+                      ).display
+                    : convertAmountToNativeDisplay(action.amount.usd, 'USD');
+
+                return (
+                  <RewardsStatsCard
+                    key={action.type}
+                    title={capitalize(action.type)}
+                    value={value}
+                    secondaryValue={i18n.t(i18n.l.rewards.percent, {
+                      percent: action.rewardPercent,
+                    })}
+                    secondaryValueIcon="􀐚"
+                    secondaryValueColor={{
+                      custom: color,
+                    }}
+                    onPress={getPressHandlerForType(action.type)}
+                  />
+                );
+              })}
             </Inline>
           </ScrollView>
         </Bleed>
