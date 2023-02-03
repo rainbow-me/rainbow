@@ -76,7 +76,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   });
 
   const onTransactionComplete = React.useCallback(
-    (order: RatioOrderStatus) => {
+    async (order: RatioOrderStatus) => {
       const success = order.status === 'success';
 
       logger.debug(
@@ -93,9 +93,16 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
       if (success) {
         try {
-          const transaction = ratioOrderToNewTransaction(order, {
+          const transaction = await ratioOrderToNewTransaction(order, {
             analyticsSessionId,
           });
+
+          logger.debug(
+            `Ratio: transaction parsed, adding to transaction list data`,
+            { transaction },
+            logger.DebugContext.f2c
+          );
+
           dispatch(
             dataAddNewTransaction(
               transaction,
@@ -116,7 +123,33 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           }
         }
       } else {
-        // TODO idk what until we test this
+        logger.warn(`Ratio: order completed but success === false`, {
+          error: order.error,
+        });
+
+        // {
+        //   "success": false,
+        //   "order": {
+        //     "data": null,
+        //     "status": "failure",
+        //     "error": {
+        //       "errorId": "ratio-error-522a239a-95a1-4571-9840-76c9c40efe1e",
+        //       "message": "Max 24h limit of transactions reached",
+        //       "statusCode": 422
+        //     }
+        //   }
+        // }
+
+        WrappedAlert.alert(
+          lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
+          order.error.message ||
+            lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
+          [
+            {
+              text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+            },
+          ]
+        );
       }
     },
     [dispatch, userId, analyticsSessionId]

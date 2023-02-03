@@ -716,10 +716,28 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
+  loggr.debug('transactionsReceived', {
+    message: {
+      ...message,
+      payload: {
+        transactions: message?.payload?.transactions?.length,
+      },
+    },
+    appended,
+  });
+
   const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
+
+  if (!isValidMeta) {
+    loggr.debug('transactionsReceived: !isValidMeta', { message });
+    return;
+  }
+
   const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
+    loggr.debug(
+      'transactionsReceived: dispatching checkForConfirmedSavingsActions'
+    );
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
 
@@ -729,6 +747,7 @@ export const transactionsReceived = (
     currentNetwork = message?.meta?.chain_id;
   }
   if (transactionData.length && currentNetwork === Network.mainnet) {
+    loggr.debug('transactionsReceived: dispatching checkForUpdatedNonce');
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -736,6 +755,8 @@ export const transactionsReceived = (
   const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
+
+  loggr.debug('transactionsReceived: attempting to parse transactions');
 
   const {
     parsedTransactions,
@@ -753,20 +774,32 @@ export const transactionsReceived = (
 
   const isCurrentAccountAddress =
     accountAddress === getState().settings.accountAddress;
-  if (!isCurrentAccountAddress) return;
+  if (!isCurrentAccountAddress) {
+    loggr.debug(
+      'transactionsReceived: transaction accountAddress does not match current accountAddress',
+      {
+        transactionAccountAddress: accountAddress,
+        currentAccountAddress: getState().settings.accountAddress,
+      }
+    );
+    return;
+  }
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
       dispatch(uniqueTokensRefreshState());
     }, 60000);
   }
-  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const decoratedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
+
+  const newTransactionHashesFromF2CProviders = await maybeFetchF2CHashForPendingTransactions(
     {
       pendingTransactions,
     }
   );
-  const updatedPendingTransactions = decoratedPendingTransactions.filter(
+  const txHashes = parsedTransactions
+    .map(tx => ethereumUtils.getHash(tx))
+    .concat(newTransactionHashesFromF2CProviders);
+  const updatedPendingTransactions = pendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -807,10 +840,18 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
 }: {
   pendingTransactions: RainbowTransaction[];
 }) => {
+  loggr.debug(
+    `maybeFetchF2CHashForPendingTransactions`,
+    {},
+    loggr.DebugContext.f2c
+  );
+
   const updatedPendingTransactions = await Promise.all(
     pendingTransactions
       .filter(tx => Boolean(tx.fiatProvider))
       .map(async tx => {
+        let transactionHash;
+
         switch (tx.fiatProvider?.name) {
           case FiatProviderName.Ratio: {
             loggr.debug(
@@ -820,9 +861,23 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
             );
 
             const { userId, orderId } = tx.fiatProvider;
+
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions: fetching order`
+            );
+
             const { data, error } = await gretch<ActivityItem>(
               `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
             ).json();
+
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions: fetched order`,
+              {
+                hasData: Boolean(data),
+                hasError: Boolean(error),
+                hasHash: Boolean(data?.crypto?.transactionHash),
+              }
+            );
 
             if (!data || error) {
               loggr.error(
@@ -835,12 +890,16 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
                 }
               );
             } else if (data.crypto.transactionHash) {
-              tx.hash = data.crypto.transactionHash;
+              transactionHash = data.crypto.transactionHash;
 
               analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
                 provider: FiatProviderName.Ratio,
                 sessionId: tx.fiatProvider.analyticsSessionId,
               });
+
+              loggr.debug(
+                `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
+              );
             } else {
               loggr.info(
                 `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
@@ -850,8 +909,9 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
           }
         }
 
-        return tx;
+        return transactionHash;
       })
+      .filter(Boolean)
   );
 
   return updatedPendingTransactions;
@@ -1162,13 +1222,23 @@ export const dataAddNewTransaction = (
   >,
   getState: AppGetState
 ) => {
+  loggr.debug('dataAddNewTransaction', {}, loggr.DebugContext.f2c);
+
   const { pendingTransactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
+
   if (
     accountAddressToUpdate &&
     accountAddressToUpdate.toLowerCase() !== accountAddress.toLowerCase()
-  )
+  ) {
+    loggr.debug(
+      'dataAddNewTransaction: accountAddressToUpdate does not match accountAddress',
+      {},
+      loggr.DebugContext.f2c
+    );
     return;
+  }
+
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
@@ -1180,6 +1250,13 @@ export const dataAddNewTransaction = (
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
     });
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
+
+    loggr.debug(
+      'dataAddNewTransaction: adding pending transactions',
+      {},
+      loggr.DebugContext.f2c
+    );
+
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
         // @ts-ignore-next-line
@@ -1195,6 +1272,11 @@ export const dataAddNewTransaction = (
       network !== Network.mainnet ||
       parsedTransaction?.network
     ) {
+      loggr.debug(
+        'dataAddNewTransaction: watching new pending transactions',
+        {},
+        loggr.DebugContext.f2c
+      );
       dispatch(
         watchPendingTransactions(
           accountAddress,
@@ -1207,9 +1289,13 @@ export const dataAddNewTransaction = (
         )
       );
     }
+
+    loggr.debug('dataAddNewTransaction: complete', {}, loggr.DebugContext.f2c);
+
     return parsedTransaction;
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    loggr.error(new Error('dataAddNewTransaction: failed'), { error });
+  }
 };
 
 /**

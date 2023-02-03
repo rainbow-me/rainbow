@@ -86,6 +86,8 @@ export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+export const USDC_POLYGON_ADDRESS =
+  '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
 export const USDT_ADDRESS = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 export const TUSD_ADDRESS = '0x0000000000085d4780b73119b644ae5ecd22b376';
 export const BUSD_ADDRESS = '0x4fabb145d64652a948d72533023f6e7a623c7c53';
@@ -99,13 +101,20 @@ export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
-// TODO Need to support polygon and USDC
 export const AddCashCurrencies: {
   [key in Network]?: { [currency: string]: string };
 } = {
   mainnet: {
     DAI: DAI_ADDRESS,
     ETH: ETH_ADDRESS,
+    USDC: USDC_ADDRESS,
+    MATIC: MATIC_MAINNET_ADDRESS,
+  },
+  polygon: {
+    DAI: DAI_ADDRESS,
+    ETH: ETH_ADDRESS,
+    USDC: USDC_POLYGON_ADDRESS,
+    MATIC: MATIC_POLYGON_ADDRESS,
   },
 };
 
