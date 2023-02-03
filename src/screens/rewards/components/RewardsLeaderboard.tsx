@@ -28,7 +28,9 @@ export const RewardsLeaderboard: React.FC<Props> = ({
           {i18n.t(i18n.l.rewards.leaderboard)}
         </Text>
         <Text align="right" size="20pt" weight="semibold" color="labelTertiary">
-          {i18n.t(i18n.l.rewards.days_left, { days: daysLeft })}
+          {i18n.t(i18n.l.rewards.days_left, {
+            days: daysLeft < 0 ? 0 : daysLeft,
+          })}
         </Text>
       </Columns>
       <Box paddingTop="16px">
