@@ -17,9 +17,6 @@ import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useSetRecoilState } from 'recoil';
-import { canceledAtom } from '@/navigation/PairHardwareWalletNavigator';
-import { useRoute } from '@react-navigation/core';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
