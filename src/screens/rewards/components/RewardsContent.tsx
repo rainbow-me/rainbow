@@ -78,7 +78,8 @@ export const RewardsContent: React.FC<Props> = ({
         />
       )}
       <RewardsAvailable
-        totalAvailableRewards={data.rewards.meta.distribution.total}
+        assetPrice={assetPrice}
+        totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
         remainingRewards={data.rewards.meta.distribution.left}
         nextDistributionTimestamp={data.rewards.meta.distribution.next}
         color={data.rewards.meta.color}
