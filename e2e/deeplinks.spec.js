@@ -46,9 +46,9 @@ describe('Deeplinks spec', () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
-  it('Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('restore-sheet');
+    await Helpers.checkIfExists('add-wallet-sheet');
   });
 
   it('Show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
@@ -60,7 +60,7 @@ describe('Deeplinks spec', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');

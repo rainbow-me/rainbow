@@ -10,9 +10,9 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
-  it('Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('restore-sheet');
+    await Helpers.checkIfExists('add-wallet-sheet');
   });
 
   it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
@@ -25,7 +25,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
@@ -188,22 +188,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('lists-section-defi');
     await Helpers.waitAndTap('list-stablecoins');
     await Helpers.checkIfVisible('lists-section-stablecoins');
-  });
-
-  it('Should cycle through pools lists', async () => {
-    await Helpers.swipeUntilVisible(
-      'pools-list-liquidity',
-      'discover-sheet',
-      'up'
-    );
-    await Helpers.waitAndTap('pools-list-liquidity');
-    await Helpers.checkIfVisible('pools-section-liquidity');
-    await Helpers.waitAndTap('pools-list-annualized_fees');
-    await Helpers.checkIfVisible('pools-section-annualized_fees');
-    await Helpers.waitAndTap('pools-list-profit30d');
-    await Helpers.checkIfVisible('pools-section-profit30d');
-    await Helpers.waitAndTap('pools-list-oneDayVolumeUSD');
-    await Helpers.checkIfVisible('pools-section-oneDayVolumeUSD');
   });
 
   afterAll(async () => {

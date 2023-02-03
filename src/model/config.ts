@@ -38,13 +38,15 @@ export interface RainbowConfig extends Record<string, any> {
   data_endpoint?: string;
   data_origin?: string;
   default_slippage_bips?: string;
-  flashbots_enabled?: boolean;
   ethereum_goerli_rpc?: string;
   ethereum_mainnet_rpc?: string;
+  f2c_enabled?: boolean;
+  flashbots_enabled?: boolean;
   op_nft_network?: string;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
   bsc_mainnet_rpc?: string;
+  swagg_enabled?: boolean;
   trace_call_block_number_offset?: number;
   wyre_enabled?: boolean;
 }
@@ -65,11 +67,13 @@ const DEFAULT_CONFIG = {
   ethereum_mainnet_rpc: __DEV__
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
+  f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
+  swagg_enabled: true,
   trace_call_block_number_offset: 20,
   wyre_enabled: true,
 };
@@ -100,7 +104,12 @@ const init = async () => {
       const [key, entry] = $;
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
-      } else if (key === 'flashbots_enabled' || key === 'wyre_enabled') {
+      } else if (
+        key === 'flashbots_enabled' ||
+        key === 'wyre_enabled' ||
+        key === 'f2c_enabled' ||
+        key === 'swagg_enabled'
+      ) {
         config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();

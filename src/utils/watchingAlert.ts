@@ -10,8 +10,10 @@ export default function watchingAlert() {
     [
       {
         onPress: () => {
-          // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-3 arguments, but got 1.
-          Navigation.handleAction(Routes.IMPORT_SEED_PHRASE_FLOW);
+          Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
+            screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
+            params: { type: 'import' },
+          });
         },
         text: lang.t('wallet.alert.finish_importing'),
       },

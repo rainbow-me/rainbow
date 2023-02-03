@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import { withThemeContext } from '../../theme/ThemeContext';
+import { ThemeContextProps, withThemeContext } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row';
@@ -12,10 +12,16 @@ import { position } from '@/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
+type FakeItemProps = {
+  color?: string;
+  theme: ThemeContextProps;
+};
+
 // @ts-expect-error Property 'View' does not exist on type...
 export const FakeAvatar = styled.View({
   ...position.sizeAsObject(40),
-  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
+    color ?? colors.skeleton,
   borderRadius: 20,
 });
 
@@ -34,7 +40,8 @@ export const FakeText = styled(View).attrs(
     width,
   })
 )({
-  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
+    color ?? colors.skeleton,
   borderRadius: ({ height }: { height: number }) => height / 2,
   height: ({ height }: { height: number }) => height,
   width: ({ width }: { width: number }) => width,
@@ -45,7 +52,8 @@ const Wrapper = styled(View)({
 });
 
 const ShimmerWrapper = styled(Wrapper)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.skeleton,
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
+    color ?? colors.skeleton,
 });
 
 function Skeleton({
@@ -53,12 +61,16 @@ function Skeleton({
   children,
   style,
   colors,
+  shimmerColor,
+  skeletonColor,
   width = deviceUtils.dimensions.width,
 }: {
   animated?: boolean;
   children: React.ReactElement;
   style?: ViewProps['style'];
-  colors: any;
+  colors: ThemeContextProps['colors'];
+  shimmerColor?: string;
+  skeletonColor?: string;
   width?: number;
 }) {
   if (animated && IS_TESTING !== 'true') {
@@ -67,11 +79,12 @@ function Skeleton({
         maskElement={<Wrapper style={style}>{children}</Wrapper>}
         style={{ flex: 1 }}
       >
-        <ShimmerWrapper>
+        <ShimmerWrapper color={skeletonColor}>
           <ShimmerAnimation
-            color={colors.shimmer}
+            color={shimmerColor ?? colors.shimmer}
             enabled
-            gradientColor={colors.shimmer}
+            // @ts-expect-error JS Component
+            gradientColor={shimmerColor ?? colors.shimmer}
             width={width}
           />
         </ShimmerWrapper>

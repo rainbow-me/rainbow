@@ -48,28 +48,6 @@
         "testnet_label": "Your testnet transaction history starts now!"
       }
     },
-    "add_first_wallet": {
-      "cloud": {
-        "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
-        "description_ios_one_wallet": "You have 1 wallet backed up",
-        "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
-        "title": "Restore from %{platform}",
-        "no_backups": "No backups found",
-        "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
-      },
-      "hardware_wallet": {
-        "description": "Add accounts from your Bluetooth hardware wallet",
-        "title": "Connect your hardware wallet"
-      },
-      "seed": {
-        "description": "Use your recovery phrase from Rainbow or another crypto wallet",
-        "title": "Restore with a recovery phrase or private key"
-      },
-      "watch": {
-        "description": "Watch a public address or ENS name",
-        "title": "Watch an Ethereum address"
-      }
-    },
     "add_funds": {
       "eth": {
         "or_send_eth": "or send ETH to your wallet",
@@ -236,6 +214,7 @@
       "hide": "Hide",
       "hold_to_authorize": {
         "authorizing": "Authorizing",
+        "confirming_on_ledger": "Confirming on Ledger",
         "hold_keyword": "Hold",
         "tap_keyword": "Tap"
       },
@@ -246,6 +225,7 @@
       "loading": "Loading",
       "more": "More",
       "my_qr_code": "My QR Code",
+      "next": "Next",
       "no_thanks": "No thanks",
       "notify_me": "Get notified",
       "offline": "Offline",
@@ -285,7 +265,9 @@
         "mini_title": "ENS",
         "title": "Register a .eth name"
       },
-      "eth": { "today": "today" },
+      "eth": {
+        "today": "today"
+      },
       "gas": {
         "average": "Average",
         "gwei": "Gwei",
@@ -442,6 +424,11 @@
         "error_loading_uniswap": "There was an error loading Uniswap pool data",
         "show_more": "Show more",
         "title_pools": "Uniswap Pools"
+      },
+      "op_rewards": {
+        "card_subtitle": "Earn OP tokens every time you bridge to or swap on Optimism.",
+        "card_title": "$OP Rewards",
+        "button_title": "\uDBC1\uDC1A View My Earnings"
       }
     },
     "error_boundary": {
@@ -709,6 +696,10 @@
       },
       "failed_walletconnect": {
         "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
+        "title": "Connection failed"
+      },
+      "failed_wc_invalid_methods": {
+        "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow.",
         "title": "Connection failed"
       },
       "floor_price": {
@@ -1265,6 +1256,27 @@
         },
         "header": "Swaps on Rainbow",
         "subheader": "REINTRODUCING"
+      },
+      "notifications_launch": {
+        "primary_button": {
+          "permissions_enabled": "Configure",
+          "permissions_not_enabled": "Enable"
+        },
+        "secondary_button": "Not Now",
+        "info_row_1": {
+          "title": "For all your wallet activity",
+          "description": "Get notified about activity in your wallets or wallets you’re watching."
+        },
+        "info_row_2": {
+          "title": "Lightning fast",
+          "description": "Know the instant a transaction confirms on the blockchain."
+        },
+        "info_row_3": {
+          "title": "Customizable",
+          "description": "Sends, receives, sales, mints, swaps, and more. Choose what you want."
+        },
+        "header": "Notifications",
+        "subheader": "INTRODUCING"
       }
     },
     "review": {
@@ -1274,6 +1286,13 @@
         "no": "No",
         "yes": "Yes"
       }
+    },
+    "rewards": {
+      "total_earnings": "Total Earnings",
+      "multiplier": "Multiplier",
+      "you_earned": "You've earned ",
+      "pending_earnings": "Pending Earnings",
+      "next_airdrop": "Next Airdrop"
     },
     "savings": {
       "deposit": "Deposit",
@@ -1428,9 +1447,24 @@
       }
     },
     "transaction_details": {
+      "from": "From",
+      "to": "To",
       "value": "Value",
       "hash": "Tx Hash",
-      "network_fee": "Network Fee"
+      "network_fee": "Network Fee",
+      "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
+      "address_copied": "\uDBC0\uDC63 Address copied",
+      "try_again": "\uDBC0\uDD49 Try again",
+      "context_menu": {
+        "copy_address": "Copy Address",
+        "send": "Send",
+        "add_contact": "Add to Contacts",
+        "edit_contact": "Edit Contact"
+      },
+      "actions_menu": {
+        "speed_up": "Speed Up",
+        "cancel": "Cancel"
+      }
     },
     "time": {
       "days": {
@@ -1500,14 +1534,38 @@
       "learn_more_about_ledger": "Learn more about Ledger",
       "pair_a_new_ledger": "Pair a new Ledger",
       "looking_for_devices": "Looking for devices",
-      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked."
+      "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked.",
+      "pair_successful": "Pair successful",
+      "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device.",
+      "enable_blind_signing": "Enable blind signing",
+      "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions.",
+      "learn_more": "Learn More",
+      "blind_signing_enabled": "Blind signing is enabled",
+      "blind_signing_instructions": {
+        "step_1": {
+          "title": "On Ledger, open the ETH app",
+          "description": "Connect and unlock your device and open the Ethereum (ETH) application."
+        },
+        "step_2": {
+          "title": "Navigate to settings",
+          "description": "Press the right button to navigate to Settings. Then press both buttons to validate your Ledger device displays Blind Signing."
+        },
+        "step_3": {
+          "title": "Enable blind signing",
+          "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go."
+        }
+      },
+      "errors": {
+        "off_or_locked": "Make sure your device is unlocked",
+        "no_eth_app": "Open the Eth App on your device",
+        "unknown": "Unknown Error, close and reopen this sheet"
+      }
     },
     "wallet": {
       "action": {
-        "add_existing": "Add an existing wallet",
+        "add_another": "Add another wallet",
         "cancel": "Cancel",
         "copy_contract_address": "Copy Contract Address",
-        "create_new": "Create a new wallet",
         "delete": "Delete Wallet",
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
@@ -1648,6 +1706,61 @@
       "my_account_address": "My account address:",
       "network_title": "Network",
       "new": {
+        "add_wallet_sheet": {
+          "options": {
+            "cloud": {
+              "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
+              "description_ios_one_wallet": "You have 1 wallet backed up",
+              "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+              "title": "Restore from %{platform}",
+              "no_backups": "No backups found",
+              "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
+            },
+            "create_new": {
+              "description": "Create a new wallet on one of your seed phrases",
+              "title": "Create a new wallet"
+            },
+            "hardware_wallet": {
+              "description": "Add accounts from your Bluetooth hardware wallet",
+              "title": "Connect your hardware wallet"
+            },
+            "seed": {
+              "description": "Use your recovery phrase from Rainbow or another crypto wallet",
+              "title": "Restore with a recovery phrase or private key"
+            },
+            "watch": {
+              "description": "Watch a public address or ENS name",
+              "title": "Watch an Ethereum address"
+            }
+          },
+          "first_wallet": {
+            "description": "Import your own wallet or watch someone else's",
+            "title": "Add your first wallet"
+          },
+          "additional_wallet": {
+            "description": "Create a new wallet or add an existing one",
+            "title": "Add another wallet"
+          }
+        },
+        "import_or_watch_wallet_sheet": {
+          "paste": "Paste",
+          "continue": "Continue",
+          "import": {
+            "title": "Restore a wallet",
+            "description": "Restore with a recovery phrase or private key from Rainbow or another crypto wallet",
+            "placeholder": "Enter a recovery phrase or private key",
+            "button": "Import"
+          },
+          "watch": {
+            "title": "Watch an address",
+            "placeholder": "Enter an Ethereum address or ENS name",
+            "button": "Watch"
+          },
+          "watch_or_import": {
+            "title": "Add a wallet",
+            "placeholder": "Enter a secret phrase, private key, Ethereum address, or ENS name"
+          }
+        },
         "alert": {
           "looks_like_already_imported": "Looks like you already imported this wallet!",
           "oops": "Oops!"
@@ -1766,7 +1879,11 @@
       "unknown_application": "Unknown Application",
       "connection_failed": "Connection failed",
       "failed_to_connect_to": "Failed to connect to %{appName}",
-      "go_back": "Go back"
+      "go_back": "Go back",
+      "requesting_network": "Requesting %{num} network",
+      "requesting_networks": "Requesting %{num} networks",
+      "unknown_dapp": "Unknown Dapp",
+      "unknown_url": "Unknown URL"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

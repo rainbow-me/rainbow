@@ -1,11 +1,9 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
-import { Wallet } from '@ethersproject/wallet';
 import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
-import { mnemonicToSeed } from 'bip39';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import {
@@ -13,11 +11,10 @@ import {
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
-import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
 import lang from 'i18n-js';
 import { isEmpty, isString, replace } from 'lodash';
-import { InteractionManager, Linking, NativeModules } from 'react-native';
+import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
@@ -51,14 +48,6 @@ import {
   isZero,
   subtract,
 } from '@/helpers/utilities';
-import WalletTypes from '@/helpers/walletTypes';
-import {
-  DEFAULT_HD_PATH,
-  identifyWalletType,
-  WalletLibraryType,
-  EthereumPrivateKey,
-  EthereumWalletSeed,
-} from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
@@ -83,8 +72,6 @@ import {
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';
 import { IS_IOS } from '@/env';
-
-const { RNBip39 } = NativeModules;
 
 const getNetworkNativeAsset = (
   network: Network
@@ -249,11 +236,6 @@ export const useNativeAssetForNetwork = (
 export const useEthUSDPrice = (): number => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
-};
-
-export const useEthUSDMonthChart = (): number => {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'charts' does not exist on type 'DefaultR... Remove this comment to see the full error message
-  return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
 };
 
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
@@ -442,19 +424,6 @@ const isEthAddress = (str: string) => {
   return isValidAddress(withHexPrefix);
 };
 
-const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
-  const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
-  const cachedTxTime = await AsyncStorage.getItem(`first-tx-${address}`);
-  if (cachedTxTime) {
-    return cachedTxTime;
-  }
-  const response = await fetch(url);
-  const parsedResponse = await response.json();
-  const txTime = parsedResponse.result[0].timeStamp;
-  AsyncStorage.setItem(`first-tx-${address}`, txTime);
-  return txTime;
-};
-
 export const fetchContractABI = async (address: EthereumAddress) => {
   const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
   const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
@@ -466,22 +435,6 @@ export const fetchContractABI = async (address: EthereumAddress) => {
   const abi = parsedResponse.result;
   AsyncStorage.setItem(`abi-${address}`, abi);
   return abi;
-};
-
-export const daysFromTheFirstTx = (address: EthereumAddress) => {
-  return new Promise(async resolve => {
-    try {
-      if (address === 'eth') {
-        resolve(1000);
-        return;
-      }
-      const txTime = await fetchTxWithAlwaysCache(address);
-      const daysFrom = Math.floor((Date.now() / 1000 - txTime) / 60 / 60 / 24);
-      resolve(daysFrom);
-    } catch (e) {
-      resolve(1000);
-    }
-  });
 };
 
 /**
@@ -550,58 +503,6 @@ const checkIfUrlIsAScam = async (url: string) => {
     logger.sentry('Error fetching cryptoscamdb.org list');
     captureException(e);
   }
-};
-
-const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => {
-  let seed;
-  if (ios) {
-    seed = await mnemonicToSeed(mnemonic);
-  } else {
-    const res = await RNBip39.mnemonicToSeed({ mnemonic, passphrase: null });
-    seed = new Buffer(res, 'base64');
-  }
-  const hdWallet = hdkey.fromMasterSeed(seed);
-  const root = hdWallet.derivePath(DEFAULT_HD_PATH);
-  const child = root.deriveChild(index);
-  const wallet = child.getWallet();
-  return {
-    address: toChecksumAddress(wallet.getAddress().toString('hex')),
-    isHDWallet: true,
-    root,
-    type: WalletTypes.mnemonic,
-    wallet,
-    walletType: WalletLibraryType.bip39,
-  };
-};
-
-const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
-  const ethersWallet = new Wallet(addHexPrefix(privateKey));
-  return {
-    address: ethersWallet.address,
-    isHDWallet: false,
-    root: null,
-    type: WalletTypes.privateKey,
-    wallet: ethersWallet,
-    walletType: WalletLibraryType.ethers,
-  };
-};
-
-const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
-  const type = identifyWalletType(input);
-  if (type === WalletTypes.privateKey) {
-    return deriveAccountFromPrivateKey(input);
-  } else if (type === WalletTypes.readOnly) {
-    const ethersWallet = { address: addHexPrefix(input), privateKey: null };
-    return {
-      address: addHexPrefix(input),
-      isHDWallet: false,
-      root: null,
-      type: WalletTypes.readOnly,
-      wallet: ethersWallet,
-      walletType: WalletLibraryType.ethers,
-    };
-  }
-  return deriveAccountFromMnemonic(input);
 };
 
 function getBlockExplorer(network: Network) {
@@ -826,9 +727,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
 export default {
   calculateL1FeeOptimism,
   checkIfUrlIsAScam,
-  deriveAccountFromMnemonic,
-  deriveAccountFromPrivateKey,
-  deriveAccountFromWalletInput,
   formatGenericAsset,
   getAssetFromAllAssets,
   getAccountAsset,

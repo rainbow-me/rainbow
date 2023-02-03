@@ -37,6 +37,7 @@ import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { getAllActiveSessionsSync } from '@/utils/walletConnect';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -58,21 +59,29 @@ export function ProfileActionButtonsRow() {
   }));
 
   if (!accentColorLoaded) return null;
+
+  const addCashEnabled = config.f2c_enabled;
+  const swapEnabled = config.swagg_enabled;
+
   return (
     <Box width="full">
       <Inset horizontal={{ custom: 17 }}>
         <AccentColorProvider color={accentColor}>
           <Columns>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <BuyButton />
-              </Animated.View>
-            </Column>
-            <Column>
-              <Animated.View style={[expandStyle]}>
-                <SwapButton />
-              </Animated.View>
-            </Column>
+            {addCashEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <BuyButton />
+                </Animated.View>
+              </Column>
+            )}
+            {swapEnabled && (
+              <Column>
+                <Animated.View style={[expandStyle]}>
+                  <SwapButton />
+                </Animated.View>
+              </Column>
+            )}
             <Column>
               <Animated.View style={[expandStyle]}>
                 <SendButton />
@@ -267,6 +276,9 @@ export function MoreButton() {
   );
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
+  const [activeWCV2Sessions, setActiveWCV2Sessions] = React.useState(
+    getAllActiveSessionsSync()
+  );
 
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {

@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RainbowTransaction, TransactionType } from '@/entities';
-import { ethereumUtils } from '@/utils';
+import { RouteProp } from '@react-navigation/native';
+import { RainbowTransaction } from '@/entities';
 import { IS_ANDROID } from '@/env';
-import { useNavigation } from '@/navigation';
 import { BackgroundProvider, Box } from '@/design-system';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
+import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import * as i18n from '@/languages';
+import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
+import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
+import { LayoutChangeEvent } from 'react-native';
+import { useDimensions } from '@/hooks';
 
 type RouteParams = {
   TransactionDetails: {
@@ -29,31 +32,34 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
   const { setParams } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);
+  const [statusIconHidden, setStatusIconHidden] = useState(false);
+  const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
+  const { height: deviceHeight } = useDimensions();
 
-  const type = transaction.type;
-  const hash = ethereumUtils.getHash(transaction);
-  const fee = transaction.fee;
-  const value = transaction.balance?.display;
-  const nativeCurrencyValue = transaction.native?.display;
-  const coinSymbol =
-    type === TransactionType.contract_interaction
-      ? 'eth'
-      : transaction.symbol ?? undefined;
-  const mainnetCoinAddress = useSelector(
-    (state: AppState) =>
-      state.data.accountAssetsData?.[
-        `${transaction.address}_${transaction.network}`
-      ]?.mainnet_address
-  );
-  const coinAddress = mainnetCoinAddress ?? transaction.address ?? undefined;
-
+  // Dynamic sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [
     setParams,
     sheetHeight,
   ]);
 
+  const onSheetContentLayout = (event: LayoutChangeEvent) => {
+    const contentHeight = event.nativeEvent.layout.height;
+    if (contentHeight > deviceHeight) {
+      setStatusIconHidden(true);
+    }
+    setSheetHeight(contentHeight);
+  };
+
+  const presentAddressToast = useCallback(() => {
+    presentToastFor('address');
+  }, [presentToastFor]);
+
+  const presentHashToast = useCallback(() => {
+    presentToastFor('hash');
+  }, [presentToastFor]);
+
   return (
-    <BackgroundProvider color="surfacePrimary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         // @ts-ignore
         <SlackSheet
@@ -61,25 +67,39 @@ export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
           backgroundColor={backgroundColor}
           height={IS_ANDROID ? sheetHeight : '100%'}
           deferredHeight={IS_ANDROID}
+          showsVerticalScrollIndicator={false}
         >
           <Box
-            background="surfacePrimary"
             paddingHorizontal="20px"
             paddingBottom="20px"
-            onLayout={event => setSheetHeight(event.nativeEvent.layout.height)}
+            onLayout={onSheetContentLayout}
           >
-            <TransactionDetailsValueAndFeeSection
-              coinAddress={coinAddress}
-              coinSymbol={coinSymbol}
-              fee={fee}
-              nativeCurrencyValue={nativeCurrencyValue}
-              value={value}
+            <TransactionDetailsStatusActionsAndTimestampSection
+              hideIcon={statusIconHidden}
+              transaction={transaction}
             />
+            <TransactionDetailsFromToSection
+              transaction={transaction}
+              presentToast={presentAddressToast}
+            />
+            <TransactionDetailsValueAndFeeSection transaction={transaction} />
             <TransactionDetailsHashAndActionsSection
-              hash={hash}
-              network={transaction.network}
+              transaction={transaction}
+              presentToast={presentHashToast}
             />
           </Box>
+          <ToastPositionContainer>
+            <Toast
+              isVisible={presentedToast === 'address'}
+              text={i18n.t(i18n.l.transaction_details.address_copied)}
+              testID="address-copied-toast"
+            />
+            <Toast
+              isVisible={presentedToast === 'hash'}
+              text={i18n.t(i18n.l.transaction_details.hash_copied)}
+              testID="hash-copied-toast"
+            />
+          </ToastPositionContainer>
         </SlackSheet>
       )}
     </BackgroundProvider>

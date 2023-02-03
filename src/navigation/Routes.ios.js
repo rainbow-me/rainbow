@@ -13,7 +13,6 @@ import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
-import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
@@ -27,6 +26,7 @@ import SettingsSheet from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
+import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -53,20 +53,21 @@ import {
   profileConfig,
   profilePreviewConfig,
   qrScannerConfig,
+  promoSheetConfig,
   registerENSNavigatorConfig,
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
-  swapsPromoSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
+  addWalletNavigatorConfig,
+  opRewardsSheetConfig,
 } from './config';
 import {
   emojiPreset,
   emojiPresetWallet,
-  exchangePreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -75,14 +76,14 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import { StatusBarHelper } from '@/helpers';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { omitFlatten } from '@/helpers/utilities';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
+import { AddWalletNavigator } from './AddWalletNavigator';
+import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -102,25 +103,6 @@ function SendFlowNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function ImportSeedPhraseFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.IMPORT_SEED_PHRASE_SHEET}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={ImportSeedPhraseSheet}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET}
       />
     </Stack.Navigator>
   );
@@ -277,7 +259,12 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
-        {...swapsPromoSheetConfig}
+        {...promoSheetConfig}
+      />
+      <NativeStack.Screen
+        component={NotificationsPromoSheet}
+        name={Routes.NOTIFICATIONS_PROMO_SHEET}
+        {...promoSheetConfig}
       />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}
@@ -382,7 +369,11 @@ function NativeStackNavigator() {
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         {...pairHardwareWalletNavigatorConfig}
       />
-
+      <NativeStack.Screen
+        component={AddWalletNavigator}
+        name={Routes.ADD_WALLET_NAVIGATOR}
+        {...addWalletNavigatorConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen
@@ -428,10 +419,6 @@ function NativeStackNavigator() {
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <NativeStack.Screen
-        component={ImportSeedPhraseFlowNavigator}
-        name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
         component={AddCashFlowNavigator}
         name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
@@ -449,6 +436,11 @@ function NativeStackNavigator() {
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
         {...transactionDetailsConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.OP_REWARDS_SHEET}
+        component={RewardsSheet}
+        {...opRewardsSheetConfig}
       />
     </NativeStack.Navigator>
   );

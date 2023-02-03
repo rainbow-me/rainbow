@@ -36,7 +36,9 @@ export const networksMenuItems = () => {
 
 const networksAvailable = networksMenuItems();
 
-export const changeConnectionMenuItems = () => {
+export const changeConnectionMenuItems = ({
+  isWalletConnectV2,
+}: { isWalletConnectV2?: boolean } = {}) => {
   const baseOptions = [
     {
       actionKey: 'disconnect',
@@ -57,7 +59,7 @@ export const changeConnectionMenuItems = () => {
     },
   ];
 
-  if (networksAvailable.length > 1) {
+  if (networksAvailable.length > 1 && !isWalletConnectV2) {
     return [
       ...baseOptions,
       {

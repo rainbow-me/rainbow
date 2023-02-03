@@ -36,7 +36,6 @@ export type TextProps = {
     }
   | { containsEmoji?: false; children: ReactNode }
 );
-
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
     {

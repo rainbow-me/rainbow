@@ -80,12 +80,7 @@ const buildTransactionsSections = (
           mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
         })),
         renderItem: ({ item }: any) => (
-          <FastTransactionCoinRow
-            accountAddress={accountAddress}
-            contacts={contacts}
-            item={item}
-            theme={theme}
-          />
+          <FastTransactionCoinRow item={item} theme={theme} />
         ),
         title: section,
       }));

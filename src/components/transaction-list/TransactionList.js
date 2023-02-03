@@ -16,7 +16,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import { removeRequest } from '@/redux/requests';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { showTransactionDetailsSheet } from '@/handlers/transactions';
 import config from '@/model/config';
 import { useRoute } from '@/navigation';
 
@@ -124,7 +123,8 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      showTransactionDetailsSheet(item, contacts, accountAddress);
+
+      navigate(Routes.TRANSACTION_DETAILS, { transaction: item });
     },
     [accountAddress, contacts, navigate, transactions]
   );

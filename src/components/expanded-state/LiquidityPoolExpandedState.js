@@ -47,10 +47,6 @@ export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = android
-  ? undefined
-  : heightWithoutChart;
-
 const formatTokenAddress = address => {
   if (!address || address.toLowerCase() === ETH_ADDRESS) {
     return 'ETH';
@@ -150,7 +146,6 @@ const LiquidityPoolExpandedState = () => {
       deviceUtils.dimensions.height
     ),
     isPool: true,
-    secondStore: true,
     uniBalance: !!uniBalance,
   });
 
@@ -158,15 +153,6 @@ const LiquidityPoolExpandedState = () => {
     (ios || showChart ? heightWithChart : heightWithoutChart) +
     (android && 44) -
     (uniBalance || android ? 0 : UniBalanceHeightDifference);
-
-  const chartDataLabels = useMemo(() => {
-    if (chartType === chartTypes.month && params?.asset?.profit30d) {
-      const overrideChartDataLabels = { ...initialChartDataLabels };
-      overrideChartDataLabels.latestChange = params.asset.profit30d;
-      return overrideChartDataLabels;
-    }
-    return initialChartDataLabels;
-  }, [chartType, initialChartDataLabels, params?.asset?.profit30d]);
 
   const { colors } = useTheme();
 
@@ -204,7 +190,7 @@ const LiquidityPoolExpandedState = () => {
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
-          {...chartDataLabels}
+          {...initialChartDataLabels}
           asset={asset}
           chart={chart}
           chartType={chartType}
@@ -212,9 +198,6 @@ const LiquidityPoolExpandedState = () => {
           fetchingCharts={fetchingCharts}
           isPool
           nativePoints={chart}
-          overrideValue={
-            chartType === chartTypes.month && params?.asset?.profit30d
-          }
           showChart={showChart}
           throttledData={throttledData}
         />

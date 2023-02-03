@@ -1,55 +1,40 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
-import { Box, Inset, Stack, Text } from '@/design-system';
-import { ImgixImage } from '@/components/images';
-import ledgerNano from '@/assets/ledger-nano.png';
-import { Source } from 'react-native-fast-image';
+import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import TintButton from '@/components/buttons/TintButton';
 import { useNavigation } from '@/navigation';
+import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
 
 export function PairHardwareWalletSearchSheet() {
   const { dangerouslyGetParent } = useNavigation();
 
   return (
-    <Box background="surfaceSecondary" height="full">
-      <Layout
-        header={
-          <Inset horizontal="44px">
-            <Stack alignHorizontal="center" space="20px">
-              <Text align="center" color="label" weight="bold" size="26pt">
-                {lang.t('hardware_wallets.looking_for_devices')}
-              </Text>
-              <Text
-                align="center"
-                color="labelTertiary"
-                weight="semibold"
-                size="15pt / 135%"
-              >
-                {lang.t('hardware_wallets.make_sure_bluetooth_enabled')}
-              </Text>
-            </Stack>
-          </Inset>
-        }
-        footer={
-          <Inset horizontal="20px">
-            <TintButton
-              onPress={() => dangerouslyGetParent()?.goBack()}
-              testID="ens-search-clear-button"
+    <Layout
+      header={
+        <Inset horizontal="36px">
+          <Stack alignHorizontal="center" space="20px">
+            <Text align="center" color="label" weight="bold" size="26pt">
+              {i18n.t(TRANSLATIONS.looking_for_devices)}
+            </Text>
+            <Text
+              align="center"
+              color="labelTertiary"
+              weight="semibold"
+              size="15pt / 135%"
             >
-              {lang.t('button.cancel')}
-            </TintButton>
-          </Inset>
-        }
-      >
-        <Inset top="104px">
-          <ImgixImage
-            source={ledgerNano as Source}
-            style={{ width: 216, height: 292 }}
-            size={292}
-          />
+              {i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+            </Text>
+          </Stack>
         </Inset>
-      </Layout>
-    </Box>
+      }
+      footer={
+        <Inset horizontal="20px">
+          <TintButton onPress={() => dangerouslyGetParent()?.goBack()}>
+            {i18n.t(i18n.l.button.cancel)}
+          </TintButton>
+        </Inset>
+      }
+    />
   );
 }

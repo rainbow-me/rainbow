@@ -12,6 +12,22 @@ export const event = {
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   swapSubmitted: 'Submitted Swap',
+  // notification promo sheet was shown
+  notificationsPromoShown: 'notifications_promo.shown',
+  // only for iOS — initial prompt is not allowed — Android is enabled by default
+  notificationsPromoPermissionsBlocked:
+    'notifications_promo.permissions_blocked',
+  // only for iOS, Android is enabled by default
+  notificationsPromoPermissionsGranted:
+    'notifications_promo.permissions_granted',
+  // if initially blocked, user must go to system settings and manually turn on notys
+  notificationsPromoSystemSettingsOpened:
+    'notifications_promo.system_settings_opened',
+  // user enabled settings, and we sent them to our in-app settings
+  notificationsPromoNotificationSettingsOpened:
+    'notifications_promo.notification_settings_opened',
+  // user either swiped the sheet away, or clicked "Not Now"
+  notificationsPromoDismissed: 'notifications_promo.dismissed',
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
   learnArticleShared: 'learn_article.shared',
@@ -41,6 +57,12 @@ export type EventProperties = {
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
   };
+  [event.notificationsPromoShown]: undefined;
+  [event.notificationsPromoPermissionsBlocked]: undefined;
+  [event.notificationsPromoPermissionsGranted]: undefined;
+  [event.notificationsPromoSystemSettingsOpened]: undefined;
+  [event.notificationsPromoNotificationSettingsOpened]: undefined;
+  [event.notificationsPromoDismissed]: undefined;
   [event.cardPressed]: {
     cardName: string;
     routeName: string;
@@ -71,6 +93,6 @@ export type EventProperties = {
   };
   [event.addWalletFlowStarted]: {
     isFirstWallet: boolean;
-    type: 'backup' | 'seed' | 'watch' | 'hardware_wallet';
+    type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
   };
 };

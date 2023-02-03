@@ -11,7 +11,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({
-  ...padding.object(20, 15, isTallPhone ? 30 : 15),
+  ...padding.object(20, 15, isTallPhone ? 65 : 50),
   flexShrink: 0,
   width: '100%',
 }));

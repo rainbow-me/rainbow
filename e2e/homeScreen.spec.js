@@ -8,14 +8,14 @@ describe('Home Screen', () => {
   it('imports wallet', async () => {
     await Helpers.checkIfVisible('welcome-screen');
     await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('restore-sheet');
+    await Helpers.checkIfExists('add-wallet-sheet');
     await Helpers.waitAndTap('restore-with-key-button');
     await Helpers.checkIfExists('import-sheet');
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
-      'Import'
+      'Continue'
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');

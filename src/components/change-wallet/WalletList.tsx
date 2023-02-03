@@ -29,6 +29,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
+import { Inset, Stack } from '@/design-system';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -94,11 +95,6 @@ const WalletListDivider = styled(Divider).attrs(
   marginTop: -1,
 });
 
-const WalletListFooter = styled(Column)({
-  paddingBottom: 6,
-  paddingTop: 4,
-});
-
 interface Props {
   accountAddress: EthereumAddress;
   allWallets: any;
@@ -110,8 +106,7 @@ interface Props {
     walletId: string,
     address: EthereumAddress | undefined
   ) => void;
-  onPressAddAccount: () => void;
-  onPressImportSeedPhrase: () => void;
+  onPressAddAnotherWallet: () => void;
   onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
   showDividers: boolean;
@@ -126,8 +121,7 @@ export default function WalletList({
   editMode,
   height,
   onChangeAccount,
-  onPressAddAccount,
-  onPressImportSeedPhrase,
+  onPressAddAnotherWallet,
   onPressPairHardwareWallet,
   scrollEnabled,
   showDividers,
@@ -271,25 +265,24 @@ export default function WalletList({
         />
         {showDividers && <WalletListDivider />}
         {!watchOnly && (
-          <WalletListFooter>
-            <WalletOption
-              editMode={editMode}
-              label={`􀁍 ${lang.t('wallet.action.create_new')}`}
-              onPress={onPressAddAccount}
-            />
-            <WalletOption
-              editMode={editMode}
-              label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
-              onPress={onPressImportSeedPhrase}
-            />
-            {hardwareWalletsEnabled && (
+          <Inset space="20px">
+            <Stack space="24px">
               <WalletOption
                 editMode={editMode}
-                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
-                onPress={onPressPairHardwareWallet}
+                label={`􀁍 ${lang.t('wallet.action.add_another')}`}
+                onPress={onPressAddAnotherWallet}
+                testID="add-another-wallet-button"
               />
-            )}
-          </WalletListFooter>
+              {hardwareWalletsEnabled && (
+                <WalletOption
+                  editMode={editMode}
+                  label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                  onPress={onPressPairHardwareWallet}
+                  testID="pair-hardware-wallet-button"
+                />
+              )}
+            </Stack>
+          </Inset>
         )}
       </WalletsContainer>
     </Container>

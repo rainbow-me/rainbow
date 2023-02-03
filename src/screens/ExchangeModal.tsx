@@ -50,7 +50,11 @@ import {
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { getProviderForNetwork, getHasMerged } from '@/handlers/web3';
+import {
+  getProviderForNetwork,
+  getHasMerged,
+  getFlashbotsProvider,
+} from '@/handlers/web3';
 import {
   divide,
   fromWei,
@@ -101,6 +105,7 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
+import { Wallet } from 'ethers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -642,11 +647,25 @@ export default function ExchangeModal({
         ? NativeModules.NotificationManager
         : null;
       try {
-        const wallet = await loadWallet();
+        // load the correct network provider for the wallet
+        const provider = await getProviderForNetwork(currentNetwork);
+        let wallet = await loadWallet(accountAddress, false, provider);
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
           return false;
+        }
+
+        // Switch to the flashbots provider if enabled
+        // TODO(skylarbarrera): need to check if ledger and handle differently here
+        if (
+          flashbots &&
+          currentNetwork === Network.mainnet &&
+          wallet instanceof Wallet
+        ) {
+          logger.debug('flashbots provider being set on mainnet');
+          const flashbotsProvider = await getFlashbotsProvider();
+          wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         const callback = (

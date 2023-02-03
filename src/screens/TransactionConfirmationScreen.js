@@ -1,5 +1,4 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
@@ -113,9 +112,9 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
-import logger from '@/utils/logger';
 import { handleSessionRequestResponse } from '@/utils/walletConnect';
 import { isAddress } from '@ethersproject/address';
+import { logger, RainbowError } from '@/logger';
 
 const springConfig = {
   damping: 500,
@@ -467,7 +466,10 @@ export default function TransactionConfirmationScreen() {
           analytics.track(`Rejected WalletConnect ${rejectionType} request`);
         }, 300);
       } catch (error) {
-        logger.log('error while handling cancel request', error);
+        logger.error(
+          new RainbowError('WC: error while handling cancel request'),
+          { error }
+        );
         closeScreen(true);
       }
     },
@@ -518,16 +520,28 @@ export default function TransactionConfirmationScreen() {
     let gas = txPayload.gasLimit || txPayload.gas;
     try {
       // attempt to re-run estimation
-      logger.log('Estimating gas limit');
+      logger.debug(
+        'WC: Estimating gas limit',
+        { gas },
+        logger.DebugContext.walletconnect
+      );
       const rawGasLimit = await estimateGas(txPayload, provider);
-      logger.log('Estimated gas limit', rawGasLimit);
+      logger.debug(
+        'WC: Estimated gas limit',
+        { rawGasLimit },
+        logger.DebugContext.walletconnect
+      );
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
-      logger.log('error estimating gas', error);
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
     } finally {
-      logger.log('Setting gas limit to', convertHexToString(gas));
+      logger.debug(
+        'WC: Setting gas limit to',
+        { gas: convertHexToString(gas) },
+        logger.DebugContext.walletconnect
+      );
 
       if (currentNetwork === networkTypes.optimism) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
@@ -635,10 +649,14 @@ export default function TransactionConfirmationScreen() {
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
 
     try {
-      logger.log('⛽ gas suggested by dapp', {
-        gas: convertHexToString(gas),
-        gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
-      });
+      logger.debug(
+        'WC: gas suggested by dapp',
+        {
+          gas: convertHexToString(gas),
+          gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+        },
+        logger.DebugContext.walletconnect
+      );
 
       if (currentNetwork === networkTypes.mainnet) {
         // Estimate the tx with gas limit padding before sending
@@ -657,12 +675,16 @@ export default function TransactionConfirmationScreen() {
           (!isNil(gasLimitFromPayload) &&
             greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
         ) {
-          logger.log('⛽ using padded estimation!', rawGasLimit.toString());
+          logger.debug(
+            'WC: using padded estimation!',
+            { gas: rawGasLimit.toString() },
+            logger.DebugContext.walletconnect
+          );
           gas = toHex(rawGasLimit);
         }
       }
     } catch (error) {
-      logger.log('⛽ error estimating gas', error);
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
     }
     // clean gas prices / fees sent from the dapp
     const cleanTxPayload = omitFlatten(txPayload, [
@@ -709,9 +731,12 @@ export default function TransactionConfirmationScreen() {
         });
       }
     } catch (e) {
-      logger.log(
-        `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
-        e
+      logger.error(
+        new RainbowError(
+          `WC: Error while ${
+            sendInsteadOfSign ? 'sending' : 'signing'
+          } transaction`
+        )
       );
     }
 
@@ -768,25 +793,14 @@ export default function TransactionConfirmationScreen() {
         });
       }
     } else {
-      try {
-        logger.sentry('Error with WC transaction. See previous logs...');
-        const dappInfo = {
-          dappName,
-          dappScheme,
-          dappUrl,
-          formattedDappUrl,
-          isAuthenticated,
-        };
-        logger.sentry('Dapp info:', dappInfo);
-        logger.sentry('Request info:', {
-          method,
-          params,
-        });
-        logger.sentry('TX payload:', txPayloadUpdated);
-        const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
-        captureException(error);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
+        dappName,
+        dappScheme,
+        dappUrl,
+        formattedDappUrl,
+        isAuthenticated,
+        rpcMethod: method,
+      });
 
       await onCancel(error);
     }

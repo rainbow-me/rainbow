@@ -1,4 +1,14 @@
-import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
+import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
+import {
+  concat,
+  isEmpty,
+  isNil,
+  keyBy,
+  keys,
+  mapValues,
+  toLower,
+} from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
@@ -16,7 +26,6 @@ import {
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
-  disableGenericAssetsFallbackIfNeeded,
   DISPERSION_SUCCESS_CODE,
   MessageMeta,
   portfolioReceived,
@@ -26,27 +35,23 @@ import {
   transactionsRemoved,
   TransactionsRemovedMessage,
 } from './data';
-import {
-  fallbackExplorerClearState,
-  fallbackExplorerInit,
-  fetchOnchainBalances,
-  MainnetAssetDiscoveryMessage,
-  onMainnetAssetDiscoveryResponse,
-} from './fallbackExplorer';
-import { optimismExplorerInit } from './optimismExplorer';
 import { AppGetState, AppState } from './store';
-import { disableCharts, forceFallbackProvider } from '@/config/debug';
+import { disableCharts } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
   checkForTheMerge,
   getProviderForNetwork,
   isHardHat,
+  web3Provider,
 } from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
+import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import {
+  balanceCheckerContractAbi,
   BNB_MAINNET_ADDRESS,
+  chainAssets,
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
@@ -57,14 +62,14 @@ import logger from '@/utils/logger';
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
-const EXPLORER_ENABLE_FALLBACK = 'explorer/EXPLORER_ENABLE_FALLBACK';
-const EXPLORER_DISABLE_FALLBACK = 'explorer/EXPLORER_DISABLE_FALLBACK';
-const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
 let assetInfoHandle: ReturnType<typeof setTimeout> | null = null;
+let hardhatAndTestnetHandle: ReturnType<typeof setTimeout> | null = null;
 
+const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
+  '0x0000000000000000000000000000000000000000';
+const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
-const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
 const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
 const messages = {
@@ -106,7 +111,6 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
-  MAINNET_ASSET_DISCOVERY: 'received address mainnet-assets-discovery',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
 };
 
@@ -114,12 +118,6 @@ const messages = {
 
 // The `explorer` reducer's state.
 interface ExplorerState {
-  // A handler for the asset initialization timeout.
-  assetsTimeoutHandler: ReturnType<typeof setTimeout> | null;
-
-  // Whether or not the fallback provider is enabled.
-  fallback: boolean;
-
   // A socket for the address endpoint.
   addressSocket: Socket | null;
 
@@ -169,36 +167,9 @@ interface ExplorerClearStateAction {
 }
 
 /**
- * An action for disabling the fallback data provider.
- */
-interface ExplorerDisableFallbackAction {
-  type: typeof EXPLORER_DISABLE_FALLBACK;
-}
-
-/**
- * An action for enabling the fallback data provider.
- */
-interface ExplorerEnableFallbackAction {
-  type: typeof EXPLORER_ENABLE_FALLBACK;
-}
-
-/**
- * An action for setting the asset timeout handler for the `explorer` reducer.
- */
-interface ExplorerSetFallbackHandlerAction {
-  type: typeof EXPLORER_SET_FALLBACK_HANDLER;
-  payload: Pick<ExplorerState, 'assetsTimeoutHandler'>;
-}
-
-/**
  * An action for the `explorer` reducer.
  */
-type ExplorerAction =
-  | ExplorerUpdateSocketsAction
-  | ExplorerClearStateAction
-  | ExplorerDisableFallbackAction
-  | ExplorerEnableFallbackAction
-  | ExplorerSetFallbackHandlerAction;
+type ExplorerAction = ExplorerUpdateSocketsAction | ExplorerClearStateAction;
 
 /**
  * A socket subscription action for the Zerion API.
@@ -336,29 +307,6 @@ export const notificationsSubscription = (address: string) => (
   ];
   addressSocket?.emit(...payload);
 };
-
-/**
- * Configures a mainnet asset discovery request.
- *
- * @param address The address to request assets for.
- * @param currency The currency to use.
- * @param action The API action.
- * @returns Arguments for an `emit` function call.
- */
-const mainnetAssetDiscovery = (
-  address: string,
-  currency: string,
-  action = 'get'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: ['mainnet-assets-discovery'],
-  },
-];
 
 /**
  * Configures an asset price subscription.
@@ -566,26 +514,6 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
 };
 
 /**
- * Disables the fallback explorer if it has been enabled.
- */
-const disableFallbackIfNeeded = () => (
-  dispatch: ThunkDispatch<AppState, unknown, ExplorerDisableFallbackAction>,
-  getState: AppGetState
-) => {
-  const { fallback, assetsTimeoutHandler } = getState().explorer;
-
-  if (fallback) {
-    logger.log('😬 Disabling fallback data provider!');
-    dispatch(fallbackExplorerClearState());
-  }
-  assetsTimeoutHandler && clearTimeout(assetsTimeoutHandler);
-
-  dispatch({
-    type: EXPLORER_DISABLE_FALLBACK,
-  });
-};
-
-/**
  * Checks whether or not a response message from Zerion is valid.
  *
  * @param msg The Zerion asset message.
@@ -612,22 +540,123 @@ const isValidAssetsResponseFromZerion = (msg: AddressAssetsReceivedMessage) => {
 export const explorerClearState = () => (
   dispatch: ThunkDispatch<AppState, unknown, ExplorerClearStateAction>
 ) => {
-  dispatch(disableFallbackIfNeeded());
+  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
+};
+
+/**
+ * Fetches balances for tokens for a given address.
+ *
+ * @param tokens The tokens to find balances for.
+ * @param address The account address.
+ * @param network The network to use.
+ * @returns An object mapping token addresses to balances, or `null` if an error
+ * occurs.
+ */
+const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
+  tokens: string[],
+  address: string,
+  network: Network
+): Promise<{ [tokenAddress: string]: string } | null> => {
+  const balanceCheckerContract = new Contract(
+    networkInfo[network]?.balance_checker_contract_address,
+    balanceCheckerContractAbi,
+    web3Provider
+  );
+  try {
+    const values = await balanceCheckerContract.balances([address], tokens);
+    const balances: {
+      [address: string]: { [tokenAddress: string]: string };
+    } = {};
+    [address].forEach((addr, addrIdx) => {
+      balances[addr] = {};
+      tokens.forEach((tokenAddr, tokenIdx) => {
+        const balance = values[addrIdx * tokens.length + tokenIdx];
+        balances[addr][tokenAddr] = balance.toString();
+      });
+    });
+    return balances[address];
+  } catch (e) {
+    logger.sentry(
+      'Error fetching balances from balanceCheckerContract',
+      network,
+      e
+    );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
+    return null;
+  }
+};
+
+const fetchTestnetOrHardhatBalances = (
+  accountAddress: string,
+  network: Network,
+  nativeCurrency: string
+) => async (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+  const chainAssetsMap = keyBy(
+    chainAssets[network as keyof typeof chainAssets],
+    'asset.asset_code'
+  );
+
+  const tokenAddresses = Object.values(
+    chainAssetsMap
+  ).map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS
+      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+      : asset_code.toLowerCase()
+  );
+  const balances = await fetchTestnetOrHardhatBalancesWithBalanceChecker(
+    tokenAddresses,
+    accountAddress,
+    network
+  );
+  if (!balances) return;
+
+  const updatedAssets = mapValues(chainAssetsMap, assetAndQuantity => {
+    const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
+    return {
+      asset: {
+        ...assetAndQuantity.asset,
+        asset_code:
+          assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+            ? ETH_ADDRESS
+            : assetCode,
+      },
+      quantity:
+        balances[
+          assetCode === ETH_ADDRESS
+            ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+            : assetCode
+        ],
+    };
+  });
+
+  const newPayload = { assets: updatedAssets };
+  const updatedMessage = {
+    meta: {
+      address: accountAddress,
+      currency: nativeCurrency,
+      status: DISPERSION_SUCCESS_CODE,
+    },
+    payload: newPayload,
+  };
+
+  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
+  hardhatAndTestnetHandle = setTimeout(
+    () =>
+      dispatch(
+        fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
+      ),
+    HARDHAT_TESTNET_BALANCE_FREQUENCY
+  );
 };
 
 /**
  * Initializes the explorer, creating sockets and configuring listeners.
  */
 export const explorerInit = () => async (
-  dispatch: ThunkDispatch<
-    AppState,
-    unknown,
-    | ExplorerUpdateSocketsAction
-    | ExplorerEnableFallbackAction
-    | ExplorerSetFallbackHandlerAction
-  >,
+  dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>,
   getState: AppGetState
 ) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
@@ -637,20 +666,16 @@ export const explorerInit = () => async (
   // if there is another socket unsubscribe first
   if (addressSocket || assetsSocket) {
     dispatch(explorerUnsubscribe());
-    dispatch(disableFallbackIfNeeded());
   }
 
-  // Fallback to the testnet data provider
-  // if we're not on mainnnet
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
   checkForTheMerge(provider, network);
-  if (
-    isHardHat(providerUrl) ||
-    network !== Network.mainnet ||
-    forceFallbackProvider
-  ) {
-    return dispatch(fallbackExplorerInit());
+  if (isHardHat(providerUrl) || network !== Network.mainnet) {
+    dispatch(
+      fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
+    );
+    return;
   }
 
   const newAddressSocket = createSocket('address');
@@ -682,10 +707,7 @@ export const explorerInit = () => async (
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    const newAssetsEmitted = dispatch(emitAssetRequest(keys(pairs)));
-    if (!newAssetsEmitted) {
-      disableGenericAssetsFallbackIfNeeded();
-    }
+    dispatch(emitAssetRequest(keys(pairs)));
 
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
@@ -695,42 +717,10 @@ export const explorerInit = () => async (
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
       dispatch(
-        emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
-      );
-      dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
       );
     }
   });
-
-  if (network === Network.mainnet) {
-    const assetsTimeoutHandler = setTimeout(() => {
-      logger.log('😬 Zerion timeout. Falling back!');
-      dispatch(fallbackExplorerInit());
-      dispatch({
-        type: EXPLORER_ENABLE_FALLBACK,
-      });
-    }, ZERION_ASSETS_TIMEOUT);
-
-    dispatch({
-      payload: {
-        assetsTimeoutHandler,
-      },
-      type: EXPLORER_SET_FALLBACK_HANDLER,
-    });
-  }
-};
-
-/**
- * Emits a mainnet asset discovery request using the current account address.
- */
-export const emitMainnetAssetDiscoveryRequest = (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const { addressSocket } = getState().explorer;
-  const { accountAddress, nativeCurrency } = getState().settings;
-  addressSocket!.emit(...mainnetAssetDiscovery(accountAddress, nativeCurrency));
 };
 
 /**
@@ -879,41 +869,10 @@ const listenOnAssetMessages = (socket: Socket) => (
 };
 
 /**
- * Initializes the explorer for a given layer-2 network.
- *
- * @param network The `Network` to use.
- */
-export const explorerInitL2 = (network: Network | null = null) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  if (getState().settings.network === Network.mainnet) {
-    switch (network) {
-      case Network.arbitrum:
-      case Network.bsc:
-      case Network.polygon:
-        // Fetch all assets from refraction
-        dispatch(fetchAssetsFromRefraction());
-        break;
-      case Network.optimism:
-        // Start watching optimism assets
-        dispatch(fetchAssetsFromRefraction());
-        // Once covalent supports is official, we should get rid of the optimism explorer
-        dispatch(optimismExplorerInit());
-        break;
-      default:
-        // Start watching all L2 assets
-        dispatch(fetchAssetsFromRefraction());
-        dispatch(optimismExplorerInit());
-    }
-  }
-};
-
-/**
  * Fetches the current wallet's assets. The result is handled by a listener
  * in `listenOnAddressMessages`.
  */
-const fetchAssetsFromRefraction = () => (
+export const fetchAssetsFromRefraction = () => (
   _: Dispatch,
   getState: AppGetState
 ) => {
@@ -1045,9 +1004,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
       dispatch(transactionsReceived(message, true));
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   );
 
@@ -1056,9 +1012,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsReceivedMessage) => {
       logger.log('txns changed', message?.payload?.transactions);
       dispatch(transactionsReceived(message, true));
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   );
 
@@ -1067,9 +1020,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsRemovedMessage) => {
       logger.log('txns removed', message?.payload?.transactions);
       dispatch(transactionsRemoved(message));
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   );
 
@@ -1108,13 +1058,6 @@ const listenOnAddressMessages = (socket: Socket) => (
         logger.log(
           '😬 Cancelling fallback data provider listener. Zerion is good!'
         );
-        dispatch(disableFallbackIfNeeded());
-        dispatch(optimismExplorerInit());
-        // Fetch balances onchain to override zerion's
-        // which is likely behind
-        dispatch(
-          fetchOnchainBalances({ keepPolling: false, withPrices: false })
-        );
       }
     }
   );
@@ -1123,10 +1066,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_ASSETS.APPENDED,
     (message: AddressAssetsReceivedMessage) => {
       dispatch(addressAssetsReceived(message, true));
-      dispatch(disableFallbackIfNeeded());
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   );
 
@@ -1134,10 +1073,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_ASSETS.CHANGED,
     (message: AddressAssetsReceivedMessage) => {
       dispatch(addressAssetsReceived(message, false, true));
-      dispatch(disableFallbackIfNeeded());
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   );
 
@@ -1145,17 +1080,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_ASSETS.REMOVED,
     (message: AddressAssetsReceivedMessage) => {
       dispatch(addressAssetsReceived(message, false, false, true));
-      dispatch(disableFallbackIfNeeded());
-      // Fetch balances onchain to override zerion's
-      // which is likely behind
-      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
-    }
-  );
-
-  socket.on(
-    messages.MAINNET_ASSET_DISCOVERY,
-    (message: MainnetAssetDiscoveryMessage) => {
-      onMainnetAssetDiscoveryResponse(message);
     }
   );
 };
@@ -1165,8 +1089,6 @@ const INITIAL_STATE: ExplorerState = {
   addressSocket: null,
   addressSubscribed: null,
   assetsSocket: null,
-  assetsTimeoutHandler: null,
-  fallback: false,
 };
 
 export default (
@@ -1185,22 +1107,6 @@ export default (
       return {
         ...state,
         ...INITIAL_STATE,
-      };
-    case EXPLORER_DISABLE_FALLBACK:
-      return {
-        ...state,
-        assetsTimeoutHandler: null,
-        fallback: false,
-      };
-    case EXPLORER_ENABLE_FALLBACK:
-      return {
-        ...state,
-        fallback: true,
-      };
-    case EXPLORER_SET_FALLBACK_HANDLER:
-      return {
-        ...state,
-        assetsTimeoutHandler: action.payload.assetsTimeoutHandler,
       };
     default:
       return state;

@@ -1,4 +1,4 @@
-import { Wallet } from '@ethersproject/wallet';
+import { Signer } from 'ethers';
 import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
@@ -36,7 +36,7 @@ const executeCommit = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -72,7 +72,7 @@ const executeRegisterWithConfig = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -104,7 +104,7 @@ const executeMulticall = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -135,7 +135,7 @@ const executeRenew = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -167,7 +167,7 @@ const executeSetName = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -197,7 +197,7 @@ const executeSetAddr = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -227,7 +227,7 @@ const executeSetContenthash = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -257,7 +257,7 @@ const executeSetText = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -288,7 +288,7 @@ const executeReclaim = async (
   gasLimit?: string | null,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string,
-  wallet?: Wallet,
+  wallet?: Signer,
   nonce: number | null = null
 ) => {
   const { contract, methodArguments, value } = await getENSExecutionDetails({
@@ -314,7 +314,7 @@ const executeReclaim = async (
 };
 
 const ensAction = async (
-  wallet: Wallet,
+  wallet: Signer,
   actionName: string,
   index: number,
   parameters: RapENSActionParameters,
@@ -564,6 +564,7 @@ const ensAction = async (
     nonce: tx?.nonce,
     to: tx?.to,
     value: toHex(tx.value),
+    network: NetworkTypes.mainnet,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
@@ -574,7 +575,7 @@ const ensAction = async (
 };
 
 const commitENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -591,7 +592,7 @@ const commitENS = async (
 };
 
 const multicallENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -608,7 +609,7 @@ const multicallENS = async (
 };
 
 const registerWithConfig = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -625,7 +626,7 @@ const registerWithConfig = async (
 };
 
 const renewENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -642,7 +643,7 @@ const renewENS = async (
 };
 
 const setNameENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -659,7 +660,7 @@ const setNameENS = async (
 };
 
 const setAddrENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -676,7 +677,7 @@ const setAddrENS = async (
 };
 
 const reclaimENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -693,7 +694,7 @@ const reclaimENS = async (
 };
 
 const setTextENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,
@@ -710,7 +711,7 @@ const setTextENS = async (
 };
 
 const setContenthashENS = async (
-  wallet: Wallet,
+  wallet: Signer,
   currentRap: Rap,
   index: number,
   parameters: RapENSActionParameters,

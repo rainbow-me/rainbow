@@ -1,11 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import {
-  EthereumAddress,
-  IndexToken,
-  RainbowToken,
-  UniswapPoolData,
-} from '@/entities';
+import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import logger from '@/utils/logger';
 import { Network } from '@/helpers';
@@ -18,22 +13,6 @@ const dispersionApi = new RainbowFetchClient({
   },
   timeout: 30000,
 });
-
-export const getUniswapV2Pools = async (
-  token?: EthereumAddress
-): Promise<UniswapPoolData[] | null> => {
-  try {
-    const tokenPath = token ? `/${token}` : '';
-    const res = await dispersionApi.get(
-      `/dispersion/v1/pools/uniswap/v2${tokenPath}`
-    );
-    return res?.data?.pools ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching uniswap v2 pools: ${error}`);
-    captureException(error);
-  }
-  return null;
-};
 
 export const getUniswapV2Tokens = async (
   addresses: EthereumAddress[]
@@ -94,20 +73,6 @@ export const getAdditionalAssetData = async (
     return res?.data?.data ?? null;
   } catch (error) {
     logger.sentry(`Error fetching additional asset data: ${error}`);
-    captureException(error);
-    return null;
-  }
-};
-
-export const getCoingeckoIds = async (): Promise<Record<
-  EthereumAddress,
-  string
-> | null> => {
-  try {
-    const res = await dispersionApi.get('/dispersion/v1/coingecko/ids/1');
-    return res?.data?.data?.ids ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching coingecko ids: ${error}`);
     captureException(error);
     return null;
   }

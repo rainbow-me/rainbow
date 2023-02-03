@@ -1,9 +1,9 @@
 import React from 'react';
 import useExperimentalFlag, {
+  OP_REWARDS,
   PROFILES,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
-import UniswapPools from '@/components/discover/UniswapPoolsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
@@ -19,11 +19,13 @@ import {
   backupsCard,
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
+import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 
 export default function DiscoverHome() {
-  const { accountAddress, network } = useAccountSettings();
+  const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const optimismRewardsEnabled = useExperimentalFlag(OP_REWARDS);
   const testNetwork = isTestnetNetwork(network);
 
   return (
@@ -38,6 +40,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 <ENSSearchCard />
               </Inline>
+              {optimismRewardsEnabled && <OpRewardsCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
@@ -56,7 +59,6 @@ export default function DiscoverHome() {
           )}
         </Inset>
         <Lists />
-        {accountAddress ? <UniswapPools /> : null}
       </Stack>
     </Inset>
   );

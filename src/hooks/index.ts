@@ -1,6 +1,6 @@
 export {
-  useChartData,
   useChartDataLabels,
+  useChartInfo,
   useChartThrottledPoints,
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
@@ -135,7 +135,6 @@ export { default as useTransactionConfirmation } from './useTransactionConfirmat
 export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useAssetsInWallet } from './useAssetsInWallet';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
-export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';
@@ -168,3 +167,4 @@ export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
 export { useSwappableUserAssets } from './useSwappableUserAssets';
+export { useAccountAccentColor } from './useAccountAccentColor';

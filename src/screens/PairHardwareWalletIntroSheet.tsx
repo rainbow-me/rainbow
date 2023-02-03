@@ -1,15 +1,13 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { Linking } from 'react-native';
 import { Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { SheetActionButton } from '@/components/sheet';
-import { ImgixImage } from '@/components/images';
-import ledgerNano from '@/assets/ledger-nano.png';
-import { Source } from 'react-native-fast-image';
 import { Layout } from '@/components/hardware-wallets/Layout';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
+import { TRANSLATIONS } from '@/navigation/PairHardwareWalletNavigator';
 
 export function PairHardwareWalletIntroSheet() {
   const buttonColor = useForegroundColor('purple');
@@ -25,7 +23,7 @@ export function PairHardwareWalletIntroSheet() {
         <Inset horizontal="36px">
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
-              {lang.t('hardware_wallets.pair_your_nano')}
+              {i18n.t(TRANSLATIONS.pair_your_nano)}
             </Text>
             <Stack space="10px">
               <Text
@@ -34,7 +32,7 @@ export function PairHardwareWalletIntroSheet() {
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {lang.t('hardware_wallets.connect_your_ledger')}
+                {i18n.t(TRANSLATIONS.connect_your_ledger)}
               </Text>
               <ButtonPressAnimation
                 onPress={() => Linking.openURL('https://www.ledger.com')}
@@ -46,7 +44,7 @@ export function PairHardwareWalletIntroSheet() {
                   weight="semibold"
                   size="15pt / 135%"
                 >
-                  {lang.t('hardware_wallets.learn_more_about_ledger')}
+                  {i18n.t(TRANSLATIONS.learn_more_about_ledger)}
                 </Text>
               </ButtonPressAnimation>
             </Stack>
@@ -57,7 +55,7 @@ export function PairHardwareWalletIntroSheet() {
         <Inset horizontal="20px">
           <SheetActionButton
             color={buttonColor}
-            label={lang.t('hardware_wallets.pair_a_new_ledger')}
+            label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
             lightShadows
             onPress={handleNavigateToSearch}
             size="big"
@@ -65,14 +63,6 @@ export function PairHardwareWalletIntroSheet() {
           />
         </Inset>
       }
-    >
-      <Inset top="52px">
-        <ImgixImage
-          source={ledgerNano as Source}
-          style={{ width: 216, height: 292 }}
-          size={292}
-        />
-      </Inset>
-    </Layout>
+    />
   );
 }
