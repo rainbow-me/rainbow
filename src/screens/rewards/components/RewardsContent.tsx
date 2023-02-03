@@ -47,6 +47,15 @@ export const RewardsContent: React.FC<Props> = ({
       />
     );
   }
+  if (data.rewards.meta.status === RewardsMetaStatus.Paused) {
+    return (
+      <RewardsProgramStatus
+        emoji="⏸️"
+        title={i18n.t(i18n.l.rewards.paused_title)}
+        text={i18n.t(i18n.l.rewards.paused_text)}
+      />
+    );
+  }
   const leaderboardData = data.rewards.leaderboard.accounts ?? [];
   const limitedLeaderboardData = leaderboardData.slice(
     0,
