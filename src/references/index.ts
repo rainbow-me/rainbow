@@ -99,6 +99,7 @@ export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
+// TODO Need to support polygon and USDC
 export const AddCashCurrencies: {
   [key in Network]?: { [currency: string]: string };
 } = {

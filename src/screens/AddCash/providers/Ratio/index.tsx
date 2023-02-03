@@ -16,14 +16,8 @@ import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
 import { analyticsV2 } from '@/analytics';
-import {
-  AssetType,
-  NewTransactionOrAddCashTransaction,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
-import { ethereumUtils } from '@/utils';
-import { AddCashCurrencies, ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { AssetType } from '@/entities';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network } from '@/helpers';
@@ -31,48 +25,7 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import useEmailRainbow from '@/hooks/useEmailRainbow';
 
-export function ratioOrderToNewTransaction(
-  order: RatioOrderStatus,
-  extra: {
-    userId: string;
-    analyticsSessionId: string;
-  }
-): NewTransactionOrAddCashTransaction {
-  const { data } = order;
-  const destAssetAddress = AddCashCurrencies['mainnet']?.[
-    data.crypto.currency
-  ]?.toLowerCase();
-
-  if (!destAssetAddress) {
-    throw new RainbowError(`Ratio: could not determine asset address`);
-  }
-
-  // TODO if account doesn't have this token, we fail here I.e. new wallets
-  const asset = ethereumUtils.getAccountAsset(destAssetAddress);
-
-  if (!asset) {
-    throw new RainbowError(`Ratio: could not get account asset`);
-  }
-
-  return {
-    amount: data.crypto.amount,
-    asset,
-    from: null,
-    hash: null,
-    nonce: null,
-    sourceAmount: data.fiat.amount,
-    status: TransactionStatus.purchasing,
-    timestamp: Date.now(),
-    to: data.crypto.wallet.address,
-    type: TransactionType.purchase,
-    fiatProvider: {
-      name: FiatProviderName.Ratio,
-      orderId: data.id,
-      userId: extra.userId,
-      analyticsSessionId: extra.analyticsSessionId,
-    },
-  };
-}
+import { ratioOrderToNewTransaction } from './utils';
 
 function NetworkIcons({ networks }: { networks: string[] }) {
   const borderColor = useForegroundColor('label');
@@ -141,13 +94,12 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       if (success) {
         try {
           const transaction = ratioOrderToNewTransaction(order, {
-            userId,
             analyticsSessionId,
           });
           dispatch(
             dataAddNewTransaction(
               transaction,
-              order.data.crypto.wallet.address,
+              order.data.activity.crypto.wallet.address,
               true
             )
           );
