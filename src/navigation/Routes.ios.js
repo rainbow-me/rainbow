@@ -135,6 +135,7 @@ function MainNavigator() {
         name={Routes.AVATAR_BUILDER_WALLET}
         options={emojiPresetWallet}
       />
+      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
     </Stack.Navigator>
   );
 }
@@ -406,7 +407,6 @@ function NativeStackNavigator() {
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
-      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
