@@ -284,7 +284,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow :)",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
           },
           "backups": {
             "title": "The Importance of Backups :)",
@@ -729,7 +729,7 @@
         "title": "What's Polygon?"
       },
       "bsc": {
-        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum. :)",
+        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum. :)",
         "title": "What's Binance Smart Chain? :)"
       },
       "read_more": "Read More",
