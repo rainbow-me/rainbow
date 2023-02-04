@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, DebugLayout, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
@@ -28,13 +28,34 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { delay } from '@/helpers/utilities';
 import { ActionButton } from './components/ActionButton';
+import { useLedgerConnect, useLedgerImport } from '@/hooks';
+import { useRecoilState } from 'recoil';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { LEDGER_CONNECTION_STATUS } from '@/hooks/useLedgerConnect';
 
 const INDICATOR_SIZE = 7;
 
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const connected = false;
+  const [isConnected, setIsConnected] = useState(false);
+  const [readyForPolling, setReadyForPolling] = useState(false);
+  const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
+  useLedgerImport({
+    successCallback: deviceId => {
+      setDeviceId(deviceId);
+      setIsConnected(true);
+      // wait to start polling for useLedgerConnect
+      setTimeout(() => {
+        setReadyForPolling(true);
+      }, 2000);
+    },
+  });
+  const { errorCode, connectionStatus } = useLedgerConnect({
+    readyForPolling,
+    deviceId,
+  });
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -51,10 +72,21 @@ export const PairHardwareWalletAgainSheet = () => {
   }));
 
   useEffect(() => {
-    if (connected) {
-      delay(1000).then(() => navigate(Routes.WALLET_SCREEN));
+    if (connectionStatus !== LEDGER_CONNECTION_STATUS.LOADING) {
+      delay(1000).then(() => {
+        if (errorCode === LEDGER_ERROR_CODES.NO_ETH_APP) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
+        } else if (errorCode === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+        } else if (
+          !errorCode &&
+          connectionStatus === LEDGER_CONNECTION_STATUS.READY
+        ) {
+          // go to tx details
+        }
+      });
     }
-  }, [connected, navigate]);
+  }, [connectionStatus, errorCode, navigate]);
 
   return (
     <Layout>
