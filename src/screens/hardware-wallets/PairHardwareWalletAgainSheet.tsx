@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
-import React from 'react';
-import { Box, Inline, Inset, Stack, Text } from '@/design-system';
+import React, { useEffect } from 'react';
+import { Box, DebugLayout, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import {
@@ -24,11 +24,16 @@ import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { delay } from '@/helpers/utilities';
+import { ActionButton } from './components/ActionButton';
 
 const INDICATOR_SIZE = 7;
 
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
+  const { navigate } = useNavigation();
   const connected = false;
 
   const indicatorOpacity = useDerivedValue(() =>
@@ -44,6 +49,12 @@ export const PairHardwareWalletAgainSheet = () => {
   const indicatorAnimation = useAnimatedStyle(() => ({
     opacity: indicatorOpacity.value,
   }));
+
+  useEffect(() => {
+    if (connected) {
+      delay(1000).then(() => navigate(Routes.WALLET_SCREEN));
+    }
+  }, [connected, navigate]);
 
   return (
     <Layout>
@@ -66,7 +77,7 @@ export const PairHardwareWalletAgainSheet = () => {
           </Stack>
         </Inset>
       </Box>
-      <Box marginTop={{ custom: -70 }}>
+      <Box position="absolute" top={{ custom: 77 }}>
         <ImgixImage
           source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
           style={{
@@ -136,7 +147,14 @@ export const PairHardwareWalletAgainSheet = () => {
           </ImgixImage>
         </ImgixImage>
       </Box>
-      <CancelButton />
+      <ActionButton
+        onPress={() =>
+          navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
+            errorType: 'off_or_locked',
+          })
+        }
+        label="hi"
+      />
     </Layout>
   );
 };

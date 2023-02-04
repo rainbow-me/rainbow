@@ -44,8 +44,10 @@ const Routes = {
   NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
   PAIR_HARDWARE_WALLET_AGAIN_SHEET: 'PairHardwareWalletAgainSheet',
-  PAIR_HARDWARE_WALLET_ERROR_SHEET: 'PairHardwareWalletErrorSheet',
+  PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET:
+    'PairHardwareWalletEthAppErrorSheet',
   PAIR_HARDWARE_WALLET_INTRO_SHEET: 'PairHardwareWalletIntroSheet',
+  PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET: 'PairHardwareWalletLockedErrorSheet',
   PAIR_HARDWARE_WALLET_NAVIGATOR: 'PairHardwareWalletNavigator',
   PAIR_HARDWARE_WALLET_SEARCH_SHEET: 'PairHardwareWalletSearchSheet',
   PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',

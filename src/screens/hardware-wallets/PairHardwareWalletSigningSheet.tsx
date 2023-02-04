@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { Linking } from 'react-native';
 import {
   Box,
@@ -13,12 +13,16 @@ import {
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useDimensions, useImportingWallet } from '@/hooks';
+import { useDimensions, useImportingWallet, useLedgerConnect } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { LEDGER_CONNECTION_STATUS } from '@/hooks/useLedgerConnect';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -81,7 +85,13 @@ const Item = ({ item, rank }: ItemProps) => {
 
 export function PairHardwareWalletSigningSheet() {
   const { isSmallPhone } = useDimensions();
+  const { navigate } = useNavigation();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const [readyForPolling, setReadyForPolling] = useReducer(() => true, false);
+  const { errorCode, connectionStatus } = useLedgerConnect({
+    readyForPolling,
+    deviceId,
+  });
   const {
     busy,
     handleSetSeedPhrase,
@@ -130,6 +140,23 @@ export function PairHardwareWalletSigningSheet() {
     [busy, handlePressImportButton, handleSetSeedPhrase]
   );
 
+  useEffect(() => {
+    if (errorCode === LEDGER_ERROR_CODES.NO_ETH_APP) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+        screen: Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET,
+      });
+    } else if (errorCode === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+        screen: Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET,
+      });
+    } else if (
+      !errorCode &&
+      connectionStatus === LEDGER_CONNECTION_STATUS.READY
+    ) {
+      importHardwareWallet(deviceId);
+    }
+  }, [connectionStatus, deviceId, errorCode, importHardwareWallet, navigate]);
+
   return (
     <Layout>
       <Inset horizontal={{ custom: HORIZONTAL_INSET }}>
@@ -175,7 +202,7 @@ export function PairHardwareWalletSigningSheet() {
       </Inset>
       <ActionButton
         label={i18n.t(TRANSLATIONS.finish_importing)}
-        onPress={() => importHardwareWallet(deviceId)}
+        onPress={() => setReadyForPolling()}
       />
     </Layout>
   );
