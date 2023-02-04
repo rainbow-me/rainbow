@@ -389,7 +389,11 @@ export const AddWalletSheet = () => {
               )}
             </Text>
           </Stack>
-          <Box background="surfacePrimary" borderRadius={18} shadow="12px">
+          <Box
+            background="surfaceSecondaryElevated"
+            borderRadius={18}
+            shadow="12px"
+          >
             <Inset vertical="24px" horizontal="20px">
               <AddWalletList
                 totalHorizontalInset={40}

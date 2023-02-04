@@ -378,6 +378,7 @@
       "crash_app_render_error": "Crash app (render error)",
       "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",
+      "navigation_entry_point": "Navigation entry point",
       "no_update": "No update",
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
@@ -1289,10 +1290,23 @@
     },
     "rewards": {
       "total_earnings": "Total Earnings",
-      "multiplier": "Multiplier",
       "you_earned": "You've earned ",
       "pending_earnings": "Pending Earnings",
-      "next_airdrop": "Next Airdrop"
+      "next_airdrop": "Next Airdrop",
+      "last_airdrop": "Last Airdrop",
+      "my_stats": "My Stats",
+      "position": "Position",
+      "leaderboard": "Leaderboard",
+      "days_left": "%{days} days left",
+      "data_powered_by": "Data powered by",
+      "current_value": "Current Value",
+      "total_available_rewards": "Total Available Rewards",
+      "left_this_week": "~%{percent}% left this week",
+      "refreshes_next_week": "Refreshes next week",
+      "all_rewards_claimed": "All rewards have been claimed this week",
+      "rainbow_users_claimed": "Rainbow users claimed %{amount}",
+      "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours",
+      "refreshes_in_without_days": "Refreshes in %{hours} hours"
     },
     "savings": {
       "deposit": "Deposit",
@@ -1555,6 +1569,10 @@
           "description": "Press both buttons to enable blind signing for transactions. If the device displays Enabled, you're good to go."
         }
       },
+      "unlock_ledger": "Unlock Ledger",
+      "open_eth_app": "Open the ETH app",
+      "open_eth_app_description": "The Ethereum app needs to be open on your Ledger to proceed with the transaction.",
+      "enter_passcode": "Enter your passcode to unlock your Ledger. Once unlocked, open the Ethereum app by pressing both buttons at once.",
       "errors": {
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
