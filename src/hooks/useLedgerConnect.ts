@@ -15,9 +15,13 @@ export enum LEDGER_CONNECTION_STATUS {
 export function useLedgerConnect({
   readyForPolling = true,
   deviceId,
+  errorCallback,
+  successCallback,
 }: {
   readyForPolling?: boolean;
   deviceId: string;
+  successCallback: (deviceId: string) => void;
+  errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
   const [
     connectionStatus,
@@ -28,21 +32,25 @@ export function useLedgerConnect({
   /**
    * Handles local error handling for useLedgerStatusCheck
    */
-  const handleLedgerError = useCallback((errorType: LEDGER_ERROR_CODES) => {
-    // just saving these in case we need them
-    /*
+  const handleLedgerError = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      // just saving these in case we need them
+      /*
       if (error.message.toLowerCase().includes('disconnected')) {
         setConnectionStatus(LEDGER_CONNECTION_STATUS.LOADING);
         //setErrorCode(LEDGER_ERROR_CODES.DISCONNECTED);
         return;
       }*/
 
-    /*
+      /*
       if (error.message.includes('Ledger Device is busy (lock')) {
       } */
-    setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
-    setErrorCode(errorType);
-  }, []);
+      setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
+      setErrorCode(errorType);
+      errorCallback?.(errorType);
+    },
+    [errorCallback]
+  );
 
   /**
    * Handles successful ledger connection
@@ -50,7 +58,8 @@ export function useLedgerConnect({
   const handleLedgerSuccess = useCallback(() => {
     setConnectionStatus(LEDGER_CONNECTION_STATUS.READY);
     setErrorCode(null);
-  }, []);
+    successCallback?.(deviceId);
+  }, [deviceId, successCallback]);
 
   /**
    * Cleans up ledger connection polling

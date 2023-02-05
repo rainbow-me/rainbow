@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
-import React, { useEffect, useState } from 'react';
-import { Box, DebugLayout, Inline, Inset, Stack, Text } from '@/design-system';
+import React, { useState } from 'react';
+import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import {
@@ -17,7 +17,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
@@ -26,13 +25,11 @@ import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { delay } from '@/helpers/utilities';
-import { ActionButton } from './components/ActionButton';
 import { useLedgerConnect, useLedgerImport } from '@/hooks';
 import { useRecoilState } from 'recoil';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { LEDGER_CONNECTION_STATUS } from '@/hooks/useLedgerConnect';
+import { Alert } from 'react-native';
 
 const INDICATOR_SIZE = 7;
 
@@ -52,9 +49,21 @@ export const PairHardwareWalletAgainSheet = () => {
       }, 2000);
     },
   });
-  const { errorCode, connectionStatus } = useLedgerConnect({
+  useLedgerConnect({
     readyForPolling,
     deviceId,
+    errorCallback: errorType => {
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
+        navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
+      } else if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+        navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+      } else {
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    },
+    successCallback: deviceId => {
+      // go to tx details
+    },
   });
 
   const indicatorOpacity = useDerivedValue(() =>
@@ -70,23 +79,6 @@ export const PairHardwareWalletAgainSheet = () => {
   const indicatorAnimation = useAnimatedStyle(() => ({
     opacity: indicatorOpacity.value,
   }));
-
-  useEffect(() => {
-    if (connectionStatus !== LEDGER_CONNECTION_STATUS.LOADING) {
-      delay(1000).then(() => {
-        if (errorCode === LEDGER_ERROR_CODES.NO_ETH_APP) {
-          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
-        } else if (errorCode === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
-        } else if (
-          !errorCode &&
-          connectionStatus === LEDGER_CONNECTION_STATUS.READY
-        ) {
-          // go to tx details
-        }
-      });
-    }
-  }, [connectionStatus, errorCode, navigate]);
 
   return (
     <Layout>
@@ -144,7 +136,7 @@ export const PairHardwareWalletAgainSheet = () => {
                   Nano X 7752
                 </Text>
                 <Box>
-                  {!connected && (
+                  {!isConnected && (
                     <Animated.View
                       style={{
                         alignItems: 'center',
@@ -152,7 +144,7 @@ export const PairHardwareWalletAgainSheet = () => {
                         height: INDICATOR_SIZE,
                         width: INDICATOR_SIZE,
                         borderRadius: INDICATOR_SIZE / 2,
-                        ...(!connected ? indicatorAnimation : {}),
+                        ...(!isConnected ? indicatorAnimation : {}),
                       }}
                     >
                       <Box
@@ -169,8 +161,8 @@ export const PairHardwareWalletAgainSheet = () => {
                     width={{ custom: INDICATOR_SIZE }}
                     height={{ custom: INDICATOR_SIZE }}
                     style={{ zIndex: -1 }}
-                    background={connected ? 'green' : 'surfaceSecondary'}
-                    shadow={connected && IS_IOS ? '30px green' : undefined}
+                    background={isConnected ? 'green' : 'surfaceSecondary'}
+                    shadow={isConnected && IS_IOS ? '30px green' : undefined}
                     borderRadius={INDICATOR_SIZE / 2}
                   />
                 </Box>
@@ -179,14 +171,6 @@ export const PairHardwareWalletAgainSheet = () => {
           </ImgixImage>
         </ImgixImage>
       </Box>
-      <ActionButton
-        onPress={() =>
-          navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
-            errorType: 'off_or_locked',
-          })
-        }
-        label="hi"
-      />
     </Layout>
   );
 };

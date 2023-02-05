@@ -47,15 +47,6 @@ export function PairHardwareWalletNavigator() {
   const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
   const setErrorStatus = useSetRecoilState(LedgerErrorStatusAtom);
 
-  const { connectionStatus, errorCode } = useLedgerConnect({
-    readyForPolling,
-    deviceId,
-  });
-
-  useEffect(() => {
-    setErrorStatus(errorCode);
-  }, [errorCode, setErrorStatus]);
-
   // reset navigator state on unmount
   useEffect(() => {
     return () => {

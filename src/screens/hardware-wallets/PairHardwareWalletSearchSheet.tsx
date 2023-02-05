@@ -18,7 +18,7 @@ export const PairHardwareWalletSearchSheet = () => {
   const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
   const setReadyForPolling = useSetRecoilState(LedgerImportReadyForPollingAtom);
   const [isConnected, setIsConnected] = useState(false);
-  const { pairingStatus } = useLedgerImport({
+  useLedgerImport({
     successCallback: deviceId => {
       setDeviceId(deviceId);
       setIsConnected(true);

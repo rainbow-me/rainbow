@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { Linking } from 'react-native';
+import React, { useCallback, useEffect, useReducer } from 'react';
+import { Alert, Linking } from 'react-native';
 import {
   Box,
   Column,
@@ -88,36 +88,11 @@ export function PairHardwareWalletSigningSheet() {
   const { navigate } = useNavigation();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const [readyForPolling, setReadyForPolling] = useReducer(() => true, false);
-  const { errorCode, connectionStatus } = useLedgerConnect({
-    readyForPolling,
-    deviceId,
-  });
   const {
     busy,
     handleSetSeedPhrase,
     handlePressImportButton,
   } = useImportingWallet({ showImportModal: true });
-
-  const items: ItemDetails[] = [
-    {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_1.description
-      ),
-    },
-    {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_2.description
-      ),
-    },
-    {
-      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_3.description
-      ),
-    },
-  ];
 
   const importHardwareWallet = useCallback(
     async (deviceId: string) => {
@@ -139,6 +114,61 @@ export function PairHardwareWalletSigningSheet() {
     },
     [busy, handlePressImportButton, handleSetSeedPhrase]
   );
+
+  const successCallback = useCallback(
+    (deviceId: string) => {
+      console.log('sucess callback');
+      importHardwareWallet(deviceId);
+    },
+    [importHardwareWallet]
+  );
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      console.log('error callback', errorType);
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          screen: Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET,
+        });
+      } else if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          screen: Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET,
+        });
+      } else {
+        console.log('unhandled errorType', errorType);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    },
+    [navigate]
+  );
+
+  const { connectionStatus } = useLedgerConnect({
+    readyForPolling,
+    deviceId,
+    successCallback,
+    errorCallback,
+  });
+
+  const items: ItemDetails[] = [
+    {
+      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.title),
+      description: i18n.t(
+        TRANSLATIONS.blind_signing_instructions.step_1.description
+      ),
+    },
+    {
+      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.title),
+      description: i18n.t(
+        TRANSLATIONS.blind_signing_instructions.step_2.description
+      ),
+    },
+    {
+      title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.title),
+      description: i18n.t(
+        TRANSLATIONS.blind_signing_instructions.step_3.description
+      ),
+    },
+  ];
 
   useEffect(() => {
     if (errorCode === LEDGER_ERROR_CODES.NO_ETH_APP) {

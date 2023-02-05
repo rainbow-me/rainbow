@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useDimensions, useLedgerConnect } from '@/hooks';
@@ -26,29 +26,46 @@ export const ErrorSheet = ({
   const { dangerouslyGetParent, navigate } = useNavigation();
   const { width: deviceWidth } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-  const { errorCode } = useLedgerConnect({
-    deviceId,
-  });
+  const onSuccess = () => {
+    // TODO
+  };
 
   const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
 
-  useEffect(() => {
-    if (!errorCode) {
+  const successCallback = useCallback(
+    (deviceId: string) => {
+      console.log('sucess callback');
       dangerouslyGetParent()?.goBack();
-      // or something else
-    } else if (errorCode === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-      if (type === LEDGER_ERROR_CODES.NO_ETH_APP) {
-        navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+      onSuccess();
+    },
+    [dangerouslyGetParent]
+  );
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      console.log('error callback', errorType);
+      if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+        if (type === LEDGER_ERROR_CODES.NO_ETH_APP) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+        }
+      } else if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
+        if (type === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
+        }
+      } else {
+        console.log('unhandled errorType', errorType);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
       }
-    } else if (errorCode === LEDGER_ERROR_CODES.NO_ETH_APP) {
-      if (type === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-        navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
-      }
-    } else {
-      Alert.alert('Error', 'Something went wrong. Please try again later.');
-    }
-  }, [dangerouslyGetParent, errorCode, navigate, type]);
+    },
+    [navigate, type]
+  );
+
+  useLedgerConnect({
+    deviceId,
+    errorCallback,
+    successCallback,
+  });
 
   return (
     <Layout>
