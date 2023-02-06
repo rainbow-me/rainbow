@@ -55,6 +55,7 @@ import {
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  OP_ADDRESS,
 } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
@@ -326,7 +327,8 @@ const assetPricesSubscription = (
     ETH_ADDRESS,
     DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS,
-    BNB_MAINNET_ADDRESS
+    BNB_MAINNET_ADDRESS,
+    OP_ADDRESS
   );
   return [
     action,

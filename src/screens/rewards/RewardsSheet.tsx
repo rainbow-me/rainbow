@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -9,6 +9,9 @@ import { StatusBar } from 'react-native';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { ethereumUtils } from '@/utils';
+import { useFocusEffect } from '@react-navigation/native';
+import { analyticsV2 } from '@/analytics';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
@@ -21,9 +24,25 @@ export const RewardsSheet: React.FC = () => {
     address: accountAddress,
   });
 
+  const assetPriceInNativeCurrency = useMemo(() => {
+    const assetCode = data?.rewards?.meta.token.asset.assetCode;
+
+    if (!assetCode) {
+      return undefined;
+    }
+
+    return ethereumUtils.getAssetPrice(assetCode);
+  }, [data?.rewards?.meta.token.asset]);
+
   useEffect(() => {
     setIsLoading(queryIsLoading);
   }, [queryIsLoading]);
+
+  useFocusEffect(
+    useCallback(() => {
+      analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
+    }, [])
+  );
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -39,6 +58,7 @@ export const RewardsSheet: React.FC = () => {
           <Box padding="20px">
             <RewardsContent
               data={data}
+              assetPrice={assetPriceInNativeCurrency}
               isLoadingError={isLoadingError}
               isLoading={isLoading}
             />

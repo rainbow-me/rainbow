@@ -20,12 +20,14 @@ import {
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
+import config from '@/model/config';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const optimismRewardsEnabled = useExperimentalFlag(OP_REWARDS);
+  const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
+  const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
 
   return (
@@ -40,7 +42,8 @@ export default function DiscoverHome() {
                 <GasCard />
                 <ENSSearchCard />
               </Inline>
-              {optimismRewardsEnabled && <OpRewardsCard />}
+              {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
+              {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />

@@ -3,6 +3,7 @@ import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
+
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chains } from './chains.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -94,6 +95,7 @@ export const GUSD_ADDRESS = '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd';
 export const SOCKS_ADDRESS = '0x23b608675a2b2fb1890d3abbd85c5775c51691d5';
 export const WBTC_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
 export const DOG_ADDRESS = '0xbaac2b4491727d78d2b78815144570b9f2fe8899';
+export const OP_ADDRESS = '0x4200000000000000000000000000000000000042';
 
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =

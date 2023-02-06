@@ -10,8 +10,16 @@ import {
 } from '@/graphql/__generated__/metadata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
 
 type Props = {
+  assetPrice?: number;
   position: number;
   positionChange: number;
   actions: RewardStatsAction[];
@@ -19,23 +27,34 @@ type Props = {
 };
 
 export const RewardsStats: React.FC<Props> = ({
+  assetPrice,
   actions,
   position,
   positionChange,
   color,
 }) => {
   const { navigate } = useNavigation();
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
+  );
   const navigateToPositionExplainer = () => {
+    analyticsV2.track(analyticsV2.event.rewardsPressedPositionCard, {
+      position,
+    });
     navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_position' });
   };
   const getPressHandlerForType = (type: RewardStatsActionType) => {
     switch (type) {
       case RewardStatsActionType.Bridge:
-        return () =>
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
           navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
+        };
       case RewardStatsActionType.Swap:
-        return () =>
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
           navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
+        };
       default:
         return () => {};
     }
@@ -61,29 +80,37 @@ export const RewardsStats: React.FC<Props> = ({
                 key="Position"
                 title={i18n.t(i18n.l.rewards.position)}
                 value={`#${position}`}
-                secondaryValue={positionChange.toString()}
+                secondaryValue={Math.abs(positionChange).toString()}
                 secondaryValueColor={positionChange > 0 ? 'green' : 'red'}
                 secondaryValueIcon={positionChange > 0 ? '􀑁' : '􁘳'}
                 onPress={navigateToPositionExplainer}
               />
-              {actions.map(action => (
-                <RewardsStatsCard
-                  key={action.type}
-                  title={capitalize(action.type)}
-                  value={action.amount.usd.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                  })}
-                  secondaryValue={i18n.t(i18n.l.rewards.percent, {
-                    percent: action.rewardPercent,
-                  })}
-                  secondaryValueIcon="􀐚"
-                  secondaryValueColor={{
-                    custom: color,
-                  }}
-                  onPress={getPressHandlerForType(action.type)}
-                />
-              ))}
+              {actions.map(action => {
+                const value =
+                  assetPrice !== undefined
+                    ? convertAmountAndPriceToNativeDisplay(
+                        action.amount.token,
+                        assetPrice,
+                        nativeCurrency
+                      ).display
+                    : convertAmountToNativeDisplay(action.amount.usd, 'USD');
+
+                return (
+                  <RewardsStatsCard
+                    key={action.type}
+                    title={capitalize(action.type)}
+                    value={value}
+                    secondaryValue={i18n.t(i18n.l.rewards.percent, {
+                      percent: action.rewardPercent,
+                    })}
+                    secondaryValueIcon="􀐚"
+                    secondaryValueColor={{
+                      custom: color,
+                    }}
+                    onPress={getPressHandlerForType(action.type)}
+                  />
+                );
+              })}
             </Inline>
           </ScrollView>
         </Bleed>
