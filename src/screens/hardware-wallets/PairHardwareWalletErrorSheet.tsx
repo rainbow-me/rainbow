@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
+// import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 // eslint-disable-next-line no-restricted-imports
 import { RouteProp, useRoute } from '@react-navigation/core';
@@ -58,10 +58,10 @@ export const PairHardwareWalletErrorSheet = () => {
           </Stack>
         </Stack>
       </Inset>
-      <Box marginTop="-44px">
+      <Box position="absolute" top={{ custom: 148 }}>
         <ImgixImage
           source={
-            (errorType === 'no_eth_app'
+            (errorType === LEDGER_ERROR_CODES.NO_ETH_APP
               ? ledgerNanoEthApp
               : ledgerNanoUnlock) as Source
           }
@@ -83,7 +83,6 @@ export const PairHardwareWalletErrorSheet = () => {
           </Text>
         </Box>
       </Box>
-      <CancelButton />
     </Layout>
   );
 };

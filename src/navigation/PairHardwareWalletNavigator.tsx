@@ -42,46 +42,6 @@ export function PairHardwareWalletNavigator() {
   );
   const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
 
-  const successCallback = useCallback(
-    (deviceId: string) => {
-      console.log('sucess callback');
-      if (currentRouteName === Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET) {
-        navigate(sheetBeforeError);
-      }
-    },
-    [currentRouteName, navigate, sheetBeforeError]
-  );
-
-  const errorCallback = useCallback(
-    (errorType: LEDGER_ERROR_CODES) => {
-      console.log('error callback', errorType);
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
-        if (currentRouteName !== Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET) {
-          setSheetBeforeError(currentRouteName);
-        }
-        navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
-          errorType,
-          runChecksLocally: true,
-        });
-      } else {
-        console.log('unhandled errorType', errorType);
-
-        Alert.alert('Error', 'Something went wrong. Please try again later.');
-      }
-    },
-    [currentRouteName, navigate]
-  );
-
-  const { connectionStatus } = useLedgerConnect({
-    readyForPolling,
-    deviceId,
-    successCallback,
-    errorCallback,
-  });
-
   // reset navigator state on unmount
   useEffect(() => {
     return () => {
@@ -121,15 +81,6 @@ export function PairHardwareWalletNavigator() {
               listeners={{
                 focus: () => {
                   setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET);
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletErrorSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET);
                 },
               }}
             />

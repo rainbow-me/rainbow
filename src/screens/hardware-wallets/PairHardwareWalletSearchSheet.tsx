@@ -17,16 +17,11 @@ import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate } = useNavigation();
   const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
-  const setReadyForPolling = useSetRecoilState(LedgerImportReadyForPollingAtom);
   const [isConnected, setIsConnected] = React.useState(false);
   const { pairingStatus } = useLedgerImport({
     successCallback: deviceId => {
       setDeviceId(deviceId);
       setIsConnected(true);
-      // wait to start polling for useLedgerConnect
-      setTimeout(() => {
-        setReadyForPolling(true);
-      }, 2000);
     },
   });
 
@@ -51,19 +46,12 @@ export const PairHardwareWalletSearchSheet = () => {
           </Text>
         </Stack>
       </Inset>
-      <Box width="full">
-        <Stack space="12px">
-          {isConnected && (
-            <ActionButton
-              label={i18n.t(i18n.l.button.next)}
-              onPress={() =>
-                navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)
-              }
-            />
-          )}
-          <CancelButton />
-        </Stack>
-      </Box>
+      {isConnected && (
+        <ActionButton
+          label={i18n.t(i18n.l.button.next)}
+          onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)}
+        />
+      )}
     </Layout>
   );
 };

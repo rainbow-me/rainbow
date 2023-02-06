@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import {
   Box,
   Column,
@@ -19,6 +19,9 @@ import { useRecoilValue } from 'recoil';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -80,6 +83,7 @@ const Item = ({ item, rank }: ItemProps) => {
 };
 
 export function PairHardwareWalletSigningSheet() {
+  const { navigate } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const {
@@ -130,6 +134,43 @@ export function PairHardwareWalletSigningSheet() {
     [busy, handlePressImportButton, handleSetSeedPhrase]
   );
 
+  const successCallback = useCallback(
+    (deviceId: string) => {
+      console.log('success callback');
+      importHardwareWallet(deviceId);
+    },
+    [importHardwareWallet]
+  );
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      console.log('error callback', errorType);
+      if (
+        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
+        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
+      ) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
+          params: {
+            errorType,
+          },
+        });
+      } else {
+        console.log('unhandled errorType', errorType);
+
+        Alert.alert(
+          'Error',
+          'Something went wrong. Please restart the app and try again.)'
+        );
+      }
+    },
+    [navigate]
+  );
+
+  const handleButtonPress = useCallback(async (): Promise<void> => {
+    await checkLedgerConnection({ deviceId, successCallback, errorCallback });
+  }, [deviceId, successCallback, errorCallback]);
+
   return (
     <Layout>
       <Inset horizontal={{ custom: HORIZONTAL_INSET }}>
@@ -175,7 +216,7 @@ export function PairHardwareWalletSigningSheet() {
       </Inset>
       <ActionButton
         label={i18n.t(TRANSLATIONS.finish_importing)}
-        onPress={() => importHardwareWallet(deviceId)}
+        onPress={() => handleButtonPress()}
       />
     </Layout>
   );
