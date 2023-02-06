@@ -12,6 +12,7 @@ import { Box, Text, Separator, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
+import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -35,7 +36,10 @@ export function AddCashSheet() {
       top={{ custom: IS_IOS ? 0 : statusBarHeight }}
       width="full"
       style={{
-        ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
+        ...borders.buildRadiusAsObject(
+          'top',
+          IS_IOS ? ScreenCornerRadius || 30 : 16
+        ),
       }}
     >
       <Box
