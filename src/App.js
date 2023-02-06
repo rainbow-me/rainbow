@@ -82,6 +82,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
 import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 import { saveFCMToken } from '@/notifications/tokens';
+import branch from 'react-native-branch';
 
 const FedoraToastRef = createRef();
 
@@ -129,7 +130,7 @@ class OldApp extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
-    this.branchListener = branchListener(this.handleOpenLinkingURL);
+    this.branchListener = await branchListener(this.handleOpenLinkingURL);
     // Walletconnect uses direct deeplinks
     if (android) {
       try {
