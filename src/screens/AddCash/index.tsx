@@ -33,7 +33,7 @@ export function AddCashSheet() {
     <Box
       background="surfaceSecondary"
       height={{ custom: IS_IOS ? deviceHeight : sheetHeight }}
-      top={{ custom: IS_IOS ? 0 : statusBarHeight }}
+      top={{ custom: insets.top + (IS_IOS ? 0 : statusBarHeight) }}
       width="full"
       style={{
         ...borders.buildRadiusAsObject(
