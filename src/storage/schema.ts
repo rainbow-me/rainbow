@@ -11,4 +11,10 @@ export type Device = {
    * already opened the app at least once.
    */
   isReturningUser: boolean;
+
+  /**
+   * Undefined when branch referring params have not been attempted to be set in
+   * the past. We set this to `true` immediately after checking.
+   */
+  branchFirstReferringParamsSet: boolean;
 };
