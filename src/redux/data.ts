@@ -11,6 +11,7 @@ import {
   mapValues,
   partition,
   update,
+  cloneDeep,
 } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
@@ -791,15 +792,13 @@ export const transactionsReceived = (
     }, 60000);
   }
 
-  const newTransactionHashesFromF2CProviders = await maybeFetchF2CHashForPendingTransactions(
+  const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
     {
-      pendingTransactions,
+      pendingTransactions: cloneDeep(pendingTransactions),
     }
   );
-  const txHashes = parsedTransactions
-    .map(tx => ethereumUtils.getHash(tx))
-    .concat(newTransactionHashesFromF2CProviders);
-  const updatedPendingTransactions = pendingTransactions.filter(
+  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
+  const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -850,8 +849,6 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
     pendingTransactions
       .filter(tx => Boolean(tx.fiatProvider))
       .map(async tx => {
-        let transactionHash;
-
         switch (tx.fiatProvider?.name) {
           case FiatProviderName.Ratio: {
             loggr.debug(
@@ -890,7 +887,7 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
                 }
               );
             } else if (data.crypto.transactionHash) {
-              transactionHash = data.crypto.transactionHash;
+              tx.hash = data.crypto.transactionHash;
 
               analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
                 provider: FiatProviderName.Ratio,
@@ -909,7 +906,7 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
           }
         }
 
-        return transactionHash;
+        return tx;
       })
       .filter(Boolean)
   );

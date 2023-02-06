@@ -25,11 +25,12 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import useEmailRainbow from '@/hooks/useEmailRainbow';
 
-import { ratioOrderToNewTransaction } from './utils';
+import {
+  ratioOrderToNewTransaction,
+  parseRatioNetworkToInternalNetwork,
+} from './utils';
 
 function NetworkIcons({ networks }: { networks: string[] }) {
-  const borderColor = useForegroundColor('label');
-
   return (
     <Box flexDirection="row" alignItems="center">
       {networks.map((network, index) => {
@@ -103,13 +104,32 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
             logger.DebugContext.f2c
           );
 
-          dispatch(
-            dataAddNewTransaction(
-              transaction,
-              order.data.activity.crypto.wallet.address,
-              true
-            )
-          );
+          if (
+            parseRatioNetworkToInternalNetwork(
+              order.data.activity.crypto.wallet.network
+            ) === Network.mainnet
+          ) {
+            logger.debug(
+              `Ratio: transaction is on mainnet, adding to transaction list data`,
+              {},
+              logger.DebugContext.f2c
+            );
+
+            dispatch(
+              dataAddNewTransaction(
+                transaction,
+                order.data.activity.crypto.wallet.address,
+                true
+              )
+            );
+          } else {
+            logger.log(
+              `Ratio: transaction is not on mainnet, not adding to transaction list data`,
+              {
+                network: order.data.activity.crypto.wallet.network,
+              }
+            );
+          }
         } catch (e) {
           if (e instanceof RainbowError) {
             logger.error(e);

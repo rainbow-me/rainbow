@@ -11,7 +11,7 @@ import { logger, RainbowError } from '@/logger';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network } from '@/helpers';
 
-export function parseRationNetworkToInternalNetwork(network: string) {
+export function parseRatioNetworkToInternalNetwork(network: string) {
   switch (network) {
     case 'ETHEREUM':
       return Network.mainnet;
@@ -35,7 +35,7 @@ export async function ratioOrderToNewTransaction(
 ): Promise<NewTransactionOrAddCashTransaction> {
   const { data } = order;
   const parsedCurrency = parseRationCurrency(data.activity.crypto.currency);
-  const parsedNetwork = parseRationNetworkToInternalNetwork(
+  const parsedNetwork = parseRatioNetworkToInternalNetwork(
     data.activity.crypto.wallet.network
   );
 
