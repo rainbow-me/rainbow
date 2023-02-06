@@ -1,3 +1,4 @@
+import { useWallets } from '@/hooks';
 import lang from 'i18n-js';
 import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
@@ -14,6 +15,7 @@ export default function SendButton({
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
+  const { isHardwareWallet } = useWallets();
   const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
 
   const shadows = {
@@ -47,6 +49,7 @@ export default function SendButton({
       shadows={disabled ? shadows.disabled : shadows.colored}
       showBiometryIcon={!disabled}
       testID={testID}
+      isHardwareWallet={isHardwareWallet}
     />
   );
 }
