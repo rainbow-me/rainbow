@@ -1308,6 +1308,12 @@
       "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours",
       "refreshes_in_without_days": "Refreshes in %{hours} hours",
       "percent": "%{percent}% reward",
+      "error_title": "Something went wrong",
+      "error_text": "Please check your internet connection and check back later.",
+      "ended_title": "Program ended",
+      "ended_text": "Stay tuned for what we have in store for you next!",
+      "paused_title": "Program paused",
+      "paused_text": "Check back later, stay tuned and look for any announcements!",
       "op": {
         "airdrop_timing": {
           "title": "Airdrops Every Week",
