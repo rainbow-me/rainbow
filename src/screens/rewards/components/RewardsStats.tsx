@@ -16,6 +16,7 @@ import {
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
 
 type Props = {
   assetPrice?: number;
@@ -37,16 +38,23 @@ export const RewardsStats: React.FC<Props> = ({
     (state: AppState) => state.settings.nativeCurrency
   );
   const navigateToPositionExplainer = () => {
+    analyticsV2.track(analyticsV2.event.rewardsPressedPositionCard, {
+      position,
+    });
     navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_position' });
   };
   const getPressHandlerForType = (type: RewardStatsActionType) => {
     switch (type) {
       case RewardStatsActionType.Bridge:
-        return () =>
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
           navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
+        };
       case RewardStatsActionType.Swap:
-        return () =>
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
           navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
+        };
       default:
         return () => {};
     }
