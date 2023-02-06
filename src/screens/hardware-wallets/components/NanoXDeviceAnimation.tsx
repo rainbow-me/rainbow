@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Source } from 'react-native-fast-image';
 import Animated, {
   Easing,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -91,12 +92,6 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
     'rgb(160, 32, 240)',
   ];
 
-  if (isConnected) {
-    circleColors.push(
-      ...[colors.green, colors.green, colors.green, colors.green]
-    );
-  }
-
   const xOrigin = useValue(CIRCLES_SIZE / 2);
   const yOrigin = useValue(CIRCLES_SIZE / 2);
 
@@ -122,7 +117,7 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
           {circleColors.map((color, index) => (
             <AnimatedCircle
               key={index}
-              color={isConnected ? colors.green : color}
+              color={color}
               xOrigin={xOrigin}
               yOrigin={yOrigin}
               isConnected={isConnected}
@@ -157,10 +152,14 @@ function AnimatedCircle({
   yOrigin: SkiaMutableValue<number>;
   isConnected?: boolean;
 }) {
+  const isConnectedValue = useSharedValue(isConnected ? 1 : 0);
   const circleRadius = 48;
 
   const progressOffset = getRandom(0, 2 * Math.PI);
   const progress = useSharedValue(progressOffset);
+
+  const { colors } = useTheme();
+  const colorValue = useValue(color);
 
   const x = useValue(0);
   const xOffset = useValue(circleRadius * getRandom(-1, 1));
@@ -180,28 +179,48 @@ function AnimatedCircle({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useSharedValueEffect(() => {
-    const scalar = isConnected ? 0.2 : 0.5;
-    x.current =
-      xOrigin.current -
-      mix(
-        Math.cos(progress.value),
-        scalar * -circleRadius,
-        scalar * circleRadius
-      ) +
-      xOffset.current;
-    y.current =
-      yOrigin.current -
-      mix(
-        Math.sin(progress.value),
-        scalar * -circleRadius,
-        scalar * circleRadius
-      ) +
-      yOffset.current;
-  }, progress);
+  useEffect(() => {
+    // logic for connected animation
+    isConnectedValue.value = withTiming(isConnected ? 1 : 0, {
+      duration: 3000,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+  }, [isConnected, isConnectedValue]);
+
+  useSharedValueEffect(
+    () => {
+      // position animation
+      const scalar = 0.5 - 0.4 * isConnectedValue.value;
+      x.current =
+        xOrigin.current -
+        mix(
+          Math.cos(progress.value),
+          scalar * -circleRadius,
+          scalar * circleRadius
+        ) +
+        xOffset.current;
+      y.current =
+        yOrigin.current -
+        mix(
+          Math.sin(progress.value),
+          scalar * -circleRadius,
+          scalar * circleRadius
+        ) +
+        yOffset.current;
+
+      // color animation
+      colorValue.current = interpolateColor(
+        isConnectedValue.value,
+        [0, 1],
+        [color, colors.green]
+      );
+    },
+    progress,
+    isConnectedValue
+  );
 
   return (
-    <Circle r={circleRadius} cx={x} cy={y} color={color} opacity={0.3}>
+    <Circle r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
       <BlurMask blur={32} style="normal" />
     </Circle>
   );
