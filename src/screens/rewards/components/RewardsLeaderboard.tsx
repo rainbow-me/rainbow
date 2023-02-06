@@ -3,17 +3,52 @@ import { Box, Columns, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
-import { differenceInDays, fromUnixTime } from 'date-fns';
-import { RewardsLeaderboardAccount } from '@/graphql/__generated__/metadata';
+import { differenceInDays, format, fromUnixTime } from 'date-fns';
+import {
+  RewardsLeaderboardAccount,
+  RewardsMetaStatus,
+} from '@/graphql/__generated__/metadata';
+
+type GetRHSValueBasedOnStatusParams =
+  | {
+      status: RewardsMetaStatus.Paused;
+    }
+  | {
+      status: RewardsMetaStatus.Finished;
+    }
+  | {
+      status: RewardsMetaStatus.Ongoing;
+      value: string;
+    };
+
+const getRHSValueBasedOnStatus = (
+  status: RewardsMetaStatus,
+  daysLeftValue: number
+) => {
+  switch (status) {
+    case RewardsMetaStatus.Paused:
+      return i18n.t(i18n.l.rewards.program_paused);
+    case RewardsMetaStatus.Finished:
+      return i18n.t(i18n.l.rewards.program_finished);
+    default:
+      return i18n.t(i18n.l.rewards.days_left, {
+        days: daysLeftValue,
+      });
+  }
+};
 
 type Props = {
-  tokenSymbol: string;
+  status: RewardsMetaStatus;
   leaderboard: RewardsLeaderboardAccount[];
+  nextDistributionTimestamp: number;
   programEndTimestamp: number;
+  tokenSymbol: string;
 };
 
 export const RewardsLeaderboard: React.FC<Props> = ({
+  status,
   leaderboard,
+  nextDistributionTimestamp,
   programEndTimestamp,
   tokenSymbol,
 }) => {
@@ -21,19 +56,42 @@ export const RewardsLeaderboard: React.FC<Props> = ({
     fromUnixTime(programEndTimestamp),
     new Date()
   );
+
+  const formattedNextDistributionDate =
+    status === RewardsMetaStatus.Paused
+      ? format(fromUnixTime(nextDistributionTimestamp), 'EEEE, LLLL do')
+      : undefined;
+
   return (
     <Box paddingBottom="28px">
-      <Columns>
-        <Text size="20pt" weight="heavy" color="label">
-          {i18n.t(i18n.l.rewards.leaderboard)}
-        </Text>
-        <Text align="right" size="20pt" weight="semibold" color="labelTertiary">
-          {i18n.t(i18n.l.rewards.days_left, {
-            days: daysLeft < 0 ? 0 : daysLeft,
-          })}
-        </Text>
-      </Columns>
-      <Box paddingTop="16px">
+      <Stack space="12px">
+        <Columns>
+          <Text size="20pt" weight="heavy" color="label">
+            {i18n.t(i18n.l.rewards.leaderboard)}
+          </Text>
+          <Text
+            align="right"
+            size="20pt"
+            weight="semibold"
+            color="labelTertiary"
+          >
+            {getRHSValueBasedOnStatus(status, daysLeft)}
+          </Text>
+        </Columns>
+        {status === RewardsMetaStatus.Paused && (
+          <Text weight="semibold" size="13pt" color="labelQuaternary">
+            {i18n.t(i18n.l.rewards.program_paused_will_resume, {
+              resumeDate: formattedNextDistributionDate ?? '',
+            })}
+          </Text>
+        )}
+        {status === RewardsMetaStatus.Finished && (
+          <Text weight="semibold" size="13pt" color="labelQuaternary">
+            {i18n.t(i18n.l.rewards.program_finished_description)}
+          </Text>
+        )}
+      </Stack>
+      <Box paddingTop={status !== RewardsMetaStatus.Ongoing ? '12px' : '16px'}>
         <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">
           <Stack
             space="10px"

@@ -40,24 +40,6 @@ export const RewardsContent: React.FC<Props> = ({
       />
     );
   }
-  if (data.rewards.meta.status === RewardsMetaStatus.Finished) {
-    return (
-      <RewardsProgramStatus
-        emoji="💸"
-        title={i18n.t(i18n.l.rewards.ended_title)}
-        text={i18n.t(i18n.l.rewards.ended_text)}
-      />
-    );
-  }
-  if (data.rewards.meta.status === RewardsMetaStatus.Paused) {
-    return (
-      <RewardsProgramStatus
-        emoji="⏸️"
-        title={i18n.t(i18n.l.rewards.paused_title)}
-        text={i18n.t(i18n.l.rewards.paused_text)}
-      />
-    );
-  }
   const leaderboardData = data.rewards.leaderboard.accounts ?? [];
   const limitedLeaderboardData = leaderboardData.slice(
     0,
@@ -69,31 +51,33 @@ export const RewardsContent: React.FC<Props> = ({
       {data.rewards.earnings && (
         <RewardsEarnings
           assetPrice={assetPrice}
-          totalEarnings={data.rewards.earnings.total}
+          color={data.rewards.meta.color}
+          nextAirdropTimestamp={data.rewards.meta.distribution.next}
+          pendingEarningsToken={data.rewards.earnings?.pending.token ?? 0}
           tokenImageUrl={data.rewards.meta.token.asset.iconURL ?? ''}
           tokenSymbol={data.rewards.meta.token.asset.symbol}
-          pendingEarningsToken={data.rewards.earnings?.pending.token ?? 0}
-          nextAirdropTimestamp={data.rewards.meta.distribution.next}
-          color={data.rewards.meta.color}
+          totalEarnings={data.rewards.earnings.total}
         />
       )}
       <RewardsAvailable
         assetPrice={assetPrice}
-        totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
-        remainingRewards={data.rewards.meta.distribution.left}
-        nextDistributionTimestamp={data.rewards.meta.distribution.next}
         color={data.rewards.meta.color}
+        nextDistributionTimestamp={data.rewards.meta.distribution.next}
+        remainingRewards={data.rewards.meta.distribution.left}
+        totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
       />
       <RewardsStats
+        actions={data.rewards.stats?.actions ?? []}
         assetPrice={assetPrice}
+        color={data.rewards.meta.color}
         position={data.rewards.stats?.position.current ?? 1}
         positionChange={data.rewards.stats?.position.change.h24 ?? 0}
-        actions={data.rewards.stats?.actions ?? []}
-        color={data.rewards.meta.color}
       />
       <RewardsLeaderboard
         leaderboard={limitedLeaderboardData}
+        nextDistributionTimestamp={data.rewards.meta.distribution.next}
         programEndTimestamp={data.rewards.meta.end}
+        status={data.rewards.meta.status}
         tokenSymbol={data.rewards.meta.token.asset.symbol}
       />
       <RewardsDuneLogo />
