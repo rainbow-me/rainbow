@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';

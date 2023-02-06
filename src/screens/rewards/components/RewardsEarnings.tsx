@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import {
@@ -20,6 +20,9 @@ import {
   isPast,
 } from 'date-fns';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
+import { useNavigation } from '@/navigation';
+import { ButtonPressAnimation } from '@/components/animations';
+import Routes from '@/navigation/routesNames';
 
 type Props = {
   tokenImageUrl: string;
@@ -40,117 +43,156 @@ export const RewardsEarnings: React.FC<Props> = ({
   totalEarnings,
   nextAirdropTimestamp,
 }) => {
+  const { navigate } = useNavigation();
   const infoIconColor = useInfoIconColor();
-  const formattedPendingEarnings = formatTokenDisplayValue(
+
+  const {
+    formattedPendingEarnings,
+    formattedTotalEarningsToken,
+    formattedTotalEarningsNative,
+    airdropTitle,
+    airdropTime,
+  } = useMemo(() => {
+    const formattedPendingEarnings = formatTokenDisplayValue(
+      pendingEarningsToken,
+      tokenSymbol
+    );
+    const formattedTotalEarningsToken = formatTokenDisplayValue(
+      totalEarnings.token,
+      tokenSymbol
+    );
+
+    const formattedTotalEarningsNative = totalEarnings.usd.toLocaleString(
+      'en-US',
+      {
+        style: 'currency',
+        currency: 'USD',
+      }
+    );
+
+    const today = new Date();
+    const dayOfNextDistribution = fromUnixTime(nextAirdropTimestamp);
+    const days = differenceInDays(dayOfNextDistribution, today);
+    const hours = differenceInHours(
+      dayOfNextDistribution,
+      addDays(today, days)
+    );
+
+    const airdropTitle = isPast(dayOfNextDistribution)
+      ? i18n.t(i18n.l.rewards.last_airdrop)
+      : i18n.t(i18n.l.rewards.next_airdrop);
+    const airdropTime = `${Math.abs(days)}d ${Math.abs(hours)}h`;
+
+    return {
+      formattedPendingEarnings,
+      formattedTotalEarningsNative,
+      formattedTotalEarningsToken,
+      airdropTitle,
+      airdropTime,
+    };
+  }, [
     pendingEarningsToken,
-    tokenSymbol
-  );
-  const formattedTotalEarningsToken = formatTokenDisplayValue(
+    tokenSymbol,
     totalEarnings.token,
-    tokenSymbol
-  );
+    totalEarnings.usd,
+    nextAirdropTimestamp,
+  ]);
 
-  const formattedTotalEarningsNative = totalEarnings.usd.toLocaleString(
-    'en-US',
-    {
-      style: 'currency',
-      currency: 'USD',
-    }
-  );
-
-  const today = new Date();
-  const dayOfNextDistribution = fromUnixTime(nextAirdropTimestamp);
-  const days = differenceInDays(dayOfNextDistribution, today);
-  const hours = differenceInHours(dayOfNextDistribution, addDays(today, days));
-
-  const airdropTitle = isPast(dayOfNextDistribution)
-    ? i18n.t(i18n.l.rewards.last_airdrop)
-    : i18n.t(i18n.l.rewards.next_airdrop);
-  const airdropTime = `${Math.abs(days)}d ${Math.abs(hours)}h`;
+  const navigateToTimingExplainer = () => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'op_rewards_airdrop_timing',
+    });
+  };
 
   return (
     <AccentColorProvider color={color}>
       <Box paddingBottom="12px">
-        <RewardsSectionCard>
-          <Columns>
-            <Stack space="32px" alignHorizontal="left">
-              <Stack space="12px">
-                <Text color="labelSecondary" size="15pt" weight="semibold">
-                  {i18n.t(i18n.l.rewards.pending_earnings)}
-                </Text>
-                <Inline space="6px" alignVertical="center">
-                  <Box
-                    as={Image}
-                    source={{
-                      uri: tokenImageUrl,
-                    }}
-                    width={{ custom: TOKEN_IMAGE_SIZE }}
-                    height={{ custom: TOKEN_IMAGE_SIZE }}
-                    borderRadius={8}
-                    background="surfaceSecondaryElevated"
-                    shadow="12px"
-                  />
-                  <Text color="label" size="22pt" weight="heavy">
-                    {formattedPendingEarnings}
-                  </Text>
-                </Inline>
-              </Stack>
-              <Stack space="12px">
-                <Text color="labelSecondary" size="15pt" weight="semibold">
-                  {i18n.t(i18n.l.rewards.total_earnings)}
-                </Text>
-                <Inline space="6px" alignVertical="center">
-                  <Box
-                    as={Image}
-                    source={{
-                      uri: tokenImageUrl,
-                    }}
-                    width={{ custom: TOKEN_IMAGE_SIZE }}
-                    height={{ custom: TOKEN_IMAGE_SIZE }}
-                    borderRadius={8}
-                    background="surfaceSecondaryElevated"
-                    shadow="12px"
-                  />
-                  <Text color="labelSecondary" size="22pt" weight="heavy">
-                    {formattedTotalEarningsToken}
-                  </Text>
-                </Inline>
-              </Stack>
-            </Stack>
-            <Stack space="32px" alignHorizontal="right">
-              <Stack space="12px" alignHorizontal="right">
-                <Inline space="4px" alignVertical="center">
+        <ButtonPressAnimation
+          onPress={navigateToTimingExplainer}
+          scaleTo={0.96}
+          overflowMargin={50}
+        >
+          <RewardsSectionCard>
+            <Columns>
+              <Stack space="32px" alignHorizontal="left">
+                <Stack space="12px">
                   <Text color="labelSecondary" size="15pt" weight="semibold">
-                    {airdropTitle}
+                    {i18n.t(i18n.l.rewards.pending_earnings)}
                   </Text>
-                  <Text
-                    color={{ custom: infoIconColor }}
-                    size="13pt"
-                    weight="heavy"
-                  >
-                    􀅵
+                  <Inline space="6px" alignVertical="center">
+                    <Box
+                      as={Image}
+                      source={{
+                        uri: tokenImageUrl,
+                      }}
+                      width={{ custom: TOKEN_IMAGE_SIZE }}
+                      height={{ custom: TOKEN_IMAGE_SIZE }}
+                      borderRadius={8}
+                      background="surfaceSecondaryElevated"
+                      shadow="12px"
+                    />
+                    <Text color="label" size="22pt" weight="heavy">
+                      {formattedPendingEarnings}
+                    </Text>
+                  </Inline>
+                </Stack>
+                <Stack space="12px">
+                  <Text color="labelSecondary" size="15pt" weight="semibold">
+                    {i18n.t(i18n.l.rewards.total_earnings)}
                   </Text>
-                </Inline>
-                <Inline space="6px" alignVertical="center">
-                  <Text color="label" size="17pt" weight="semibold">
-                    􀧞
-                  </Text>
-                  <Text color="label" size="22pt" weight="semibold">
-                    {airdropTime}
-                  </Text>
-                </Inline>
+                  <Inline space="6px" alignVertical="center">
+                    <Box
+                      as={Image}
+                      source={{
+                        uri: tokenImageUrl,
+                      }}
+                      width={{ custom: TOKEN_IMAGE_SIZE }}
+                      height={{ custom: TOKEN_IMAGE_SIZE }}
+                      borderRadius={8}
+                      background="surfaceSecondaryElevated"
+                      shadow="12px"
+                    />
+                    <Text color="labelSecondary" size="22pt" weight="heavy">
+                      {formattedTotalEarningsToken}
+                    </Text>
+                  </Inline>
+                </Stack>
               </Stack>
-              <Stack space="12px" alignHorizontal="right">
-                <Text color="labelSecondary" size="15pt" weight="semibold">
-                  {i18n.t(i18n.l.rewards.current_value)}
-                </Text>
-                <Text color="labelSecondary" size="22pt" weight="heavy">
-                  {formattedTotalEarningsNative}
-                </Text>
+              <Stack space="32px" alignHorizontal="right">
+                <Stack space="12px" alignHorizontal="right">
+                  <Inline space="4px" alignVertical="center">
+                    <Text color="labelSecondary" size="15pt" weight="semibold">
+                      {airdropTitle}
+                    </Text>
+                    <Text
+                      color={{ custom: infoIconColor }}
+                      size="13pt"
+                      weight="heavy"
+                    >
+                      􀅵
+                    </Text>
+                  </Inline>
+                  <Inline space="6px" alignVertical="center">
+                    <Text color="label" size="17pt" weight="semibold">
+                      􀧞
+                    </Text>
+                    <Text color="label" size="22pt" weight="semibold">
+                      {airdropTime}
+                    </Text>
+                  </Inline>
+                </Stack>
+                <Stack space="12px" alignHorizontal="right">
+                  <Text color="labelSecondary" size="15pt" weight="semibold">
+                    {i18n.t(i18n.l.rewards.current_value)}
+                  </Text>
+                  <Text color="labelSecondary" size="22pt" weight="heavy">
+                    {formattedTotalEarningsNative}
+                  </Text>
+                </Stack>
               </Stack>
-            </Stack>
-          </Columns>
-        </RewardsSectionCard>
+            </Columns>
+          </RewardsSectionCard>
+        </ButtonPressAnimation>
       </Box>
     </AccentColorProvider>
   );
