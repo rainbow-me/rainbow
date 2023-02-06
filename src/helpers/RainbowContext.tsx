@@ -12,6 +12,7 @@ import Emoji from '../components/text/Emoji';
 import {
   showReloadButton,
   showSwitchModeButton,
+  // @ts-ignore
   showConnectToHardhatButton,
 } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
