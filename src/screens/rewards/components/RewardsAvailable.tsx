@@ -19,6 +19,7 @@ import {
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
 
 type Props = {
   assetPrice?: number;
@@ -90,6 +91,7 @@ export const RewardsAvailable: React.FC<Props> = ({
     const roundedProgressPercent = Math.round(progress * 10) * 10;
 
     const navigateToAmountsExplainer = () => {
+      analyticsV2.track(analyticsV2.event.rewardsPressedAvailableCard);
       navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
     };
 

@@ -16,6 +16,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
+import { analyticsV2 } from '@/analytics';
 
 const MaskedGradientText: React.FC<{
   text: string;
@@ -25,14 +26,23 @@ const MaskedGradientText: React.FC<{
     <Box>
       <MaskedView
         maskElement={
-          <Box>
+          <Box
+            paddingVertical="4px"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Text size="13pt" color="label" weight="bold">
               {text}
             </Text>
           </Box>
         }
       >
-        <Box style={{ opacity: 0 }}>
+        <Box
+          paddingVertical="4px"
+          alignItems="center"
+          justifyContent="center"
+          style={{ opacity: 0 }}
+        >
           <Text size="13pt" color="label" weight="bold">
             {text}
           </Text>
@@ -81,9 +91,12 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
     bonusEarnedInToken,
     tokenSymbol
   );
-  const additionalRewardText = `+${formattedBonusEarned} ${tokenSymbol}`;
+  const additionalRewardText = `+${formattedBonusEarned}`;
 
   const navigateToProfile = () => {
+    analyticsV2.track(analyticsV2.event.rewardsPressedLeaderboardItem, {
+      ens,
+    });
     navigate(Routes.PROFILE_SHEET, {
       address: ens,
       // TODO: If we want to use it for other rewards we will have to make this analytics configurable

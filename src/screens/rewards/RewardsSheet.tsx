@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -10,7 +10,8 @@ import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
-import { chains } from '@/references';
+import { useFocusEffect } from '@react-navigation/native';
+import { analyticsV2 } from '@/analytics';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
@@ -24,27 +25,24 @@ export const RewardsSheet: React.FC = () => {
   });
 
   const assetPriceInNativeCurrency = useMemo(() => {
-    const chainID = data?.rewards?.meta.token.asset.chainID;
     const assetCode = data?.rewards?.meta.token.asset.assetCode;
 
-    if (!chainID || !assetCode) {
+    if (!assetCode) {
       return undefined;
     }
 
-    const chainData = chains.find(
-      chain => chain.chain_id === data?.rewards?.meta.token.asset.chainID
-    );
-
-    if (!chainData) {
-      return undefined;
-    }
-
-    return ethereumUtils.getAssetPrice(`${assetCode}_${chainData.network}`);
+    return ethereumUtils.getAssetPrice(assetCode);
   }, [data?.rewards?.meta.token.asset]);
 
   useEffect(() => {
     setIsLoading(queryIsLoading);
   }, [queryIsLoading]);
+
+  useFocusEffect(
+    useCallback(() => {
+      analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
+    }, [])
+  );
 
   return (
     <BackgroundProvider color="surfaceSecondary">
