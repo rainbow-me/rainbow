@@ -293,43 +293,32 @@ export const explainers = (params, colors) => ({
     emoji: '📦',
     title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
     text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
-    extraHeight: IS_ANDROID ? -65 : 0,
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    extraHeight: IS_ANDROID ? -65 : 10,
+    readMoreLink: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
   },
   op_rewards_amount_distributed: {
     emoji: '💰',
     title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
     text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
-    extraHeight: IS_ANDROID ? -65 : 0,
-
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    extraHeight: IS_ANDROID ? -110 : -65,
   },
   op_rewards_bridge: {
     emoji: '🌉',
     title: i18n.t(i18n.l.rewards.op.bridge.title),
     text: i18n.t(i18n.l.rewards.op.bridge.text),
-    extraHeight: IS_ANDROID ? -65 : 0,
-
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    extraHeight: IS_ANDROID ? -65 : 10,
   },
   op_rewards_swap: {
-    emoji: '🔃',
+    emoji: '🔀',
     title: i18n.t(i18n.l.rewards.op.swap.title),
     text: i18n.t(i18n.l.rewards.op.swap.text),
-    extraHeight: IS_ANDROID ? -65 : 0,
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    extraHeight: IS_ANDROID ? -65 : 10,
   },
   op_rewards_position: {
     emoji: '🏆',
     title: i18n.t(i18n.l.rewards.op.position.title),
     text: i18n.t(i18n.l.rewards.op.position.text),
-    extraHeight: IS_ANDROID ? -65 : 0,
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    extraHeight: IS_ANDROID ? -110 : -65,
   },
   optimism_app_icon: {
     logo: <OptimismAppIcon />,

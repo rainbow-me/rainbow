@@ -6,9 +6,6 @@ import { Rewards } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
 import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 
 const LEADERBOARD_ITEMS_TRESHOLD = 50;
 
