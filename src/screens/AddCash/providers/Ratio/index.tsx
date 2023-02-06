@@ -147,19 +147,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           error: order.error,
         });
 
-        // {
-        //   "success": false,
-        //   "order": {
-        //     "data": null,
-        //     "status": "failure",
-        //     "error": {
-        //       "errorId": "ratio-error-522a239a-95a1-4571-9840-76c9c40efe1e",
-        //       "message": "Max 24h limit of transactions reached",
-        //       "statusCode": 422
-        //     }
-        //   }
-        // }
-
         WrappedAlert.alert(
           lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
           order.error.message ||
