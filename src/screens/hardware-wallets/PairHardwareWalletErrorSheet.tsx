@@ -12,12 +12,15 @@ import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
 import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { useLedgerConnect } from '@/hooks/useLedgerConnect';
+import { useNavigation } from '@/navigation';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
 export type PairHardwareWalletErrorSheetParams = {
   errorType: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
+  deviceId?: string;
 };
 
 type RouteParams = {
@@ -29,11 +32,20 @@ export const PairHardwareWalletErrorSheet = () => {
     RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
   >();
   const { width: deviceWidth } = useDimensions();
+  const { goBack } = useNavigation();
 
   const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
 
   const errorType = route?.params?.errorType;
+
+  const { connectionStatus } = useLedgerConnect({
+    readyForPolling: !!route?.params?.deviceId,
+    deviceId: route?.params?.deviceId || '',
+    successCallback: () => {
+      goBack();
+    },
+  });
 
   return (
     <Layout>

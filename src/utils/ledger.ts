@@ -59,7 +59,6 @@ export const checkLedgerConnection = async ({
   const transport = await TransportBLE.open(deviceId);
   const ethApp = new AppEth(transport);
   const path = getHdPath({ type: WalletLibraryType.ledger, index: 1 });
-  console.log('ethApp: ', typeof ethApp?.getAddress);
   ethApp
     .getAddress(path)
     .then(res => {

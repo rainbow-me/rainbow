@@ -153,6 +153,7 @@ export function PairHardwareWalletSigningSheet() {
           screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
           params: {
             errorType,
+            deviceId,
           },
         });
       } else {
@@ -164,7 +165,7 @@ export function PairHardwareWalletSigningSheet() {
         );
       }
     },
-    [navigate]
+    [deviceId, navigate]
   );
 
   const handleButtonPress = useCallback(async (): Promise<void> => {
