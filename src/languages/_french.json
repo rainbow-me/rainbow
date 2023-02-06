@@ -1307,7 +1307,30 @@
       "all_rewards_claimed": "All rewards have been claimed this week :)",
       "rainbow_users_claimed": "Rainbow users claimed %{amount} :)",
       "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours :)",
-      "refreshes_in_without_days": "Refreshes in %{hours} hours :)"
+      "refreshes_in_without_days": "Refreshes in %{hours} hours :)",
+      "percent": "%{percent}% reward :)",
+      "op": {
+        "airdrop_timing": {
+          "title": "Airdrops Every Week :)",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet. :)"
+        },
+        "amount_distributed": {
+          "title": "30,000 OP Every Week :)",
+          "text": "Up to 30,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
+        },
+        "bridge": {
+          "title": "Earn 0.125% on Bridging :)",
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately 0.125% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here. :)"
+        },
+        "swap": {
+          "title": "Earn 0.425% on Swaps :)",
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately 0.425% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here. :)"
+        },
+        "position": {
+          "title": "Leaderboard Position :)",
+          "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP. :)"
+        }
+      }
     },
     "savings": {
       "deposit": "Dépôt",
