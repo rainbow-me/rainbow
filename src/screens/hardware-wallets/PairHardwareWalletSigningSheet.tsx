@@ -136,7 +136,6 @@ export function PairHardwareWalletSigningSheet() {
 
   const successCallback = useCallback(
     (deviceId: string) => {
-      console.log('success callback');
       importHardwareWallet(deviceId);
     },
     [importHardwareWallet]
@@ -144,7 +143,6 @@ export function PairHardwareWalletSigningSheet() {
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      console.log('error callback', errorType);
       if (
         errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
         errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
@@ -157,11 +155,9 @@ export function PairHardwareWalletSigningSheet() {
           },
         });
       } else {
-        console.log('unhandled errorType', errorType);
-
         Alert.alert(
           'Error',
-          'Something went wrong. Please restart the app and try again.)'
+          'Something went wrong. Please restart the app and try again.'
         );
       }
     },

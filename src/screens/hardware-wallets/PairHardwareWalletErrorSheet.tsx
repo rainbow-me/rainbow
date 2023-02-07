@@ -39,7 +39,7 @@ export const PairHardwareWalletErrorSheet = () => {
 
   const errorType = route?.params?.errorType;
 
-  const { connectionStatus } = useLedgerConnect({
+  useLedgerConnect({
     readyForPolling: !!route?.params?.deviceId,
     deviceId: route?.params?.deviceId || '',
     successCallback: () => {
