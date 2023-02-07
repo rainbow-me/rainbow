@@ -10,20 +10,27 @@ import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
-import { useRecoilValue } from 'recoil';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import Routes from '@/navigation/routesNames';
 import { Alert } from 'react-native';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
+type ErrorSheetProps = {
+  deviceId?: string;
+};
+
+export type ErrorSheetRouteParams = {
+  ErrorSheetProps: ErrorSheetProps;
+};
+
 export const ErrorSheet = ({
+  deviceId,
   type,
 }: {
+  deviceId?: string;
   type: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
 }) => {
-  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const { dangerouslyGetParent, navigate } = useNavigation();
   const { width: deviceWidth } = useDimensions();
 
@@ -32,19 +39,23 @@ export const ErrorSheet = ({
 
   const successCallback = useCallback(() => {
     dangerouslyGetParent()?.goBack(); // to blind signing sheet
-    // or nav to tx details (?) if confirming a tx}, [])
-  }, []);
+    // or nav to tx details (?) if confirming a tx
+  }, [dangerouslyGetParent]);
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
       console.log('error callback', errorType);
       if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
         if (type === LEDGER_ERROR_CODES.NO_ETH_APP) {
-          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET, {
+            params: deviceId,
+          });
         }
       } else if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
         if (type === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
+          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET, {
+            params: deviceId,
+          });
         }
       } else {
         console.log('unhandled errorType', errorType);
@@ -56,7 +67,7 @@ export const ErrorSheet = ({
 
   useLedgerConnect({
     readyForPolling: !!deviceId,
-    deviceId: deviceId,
+    deviceId: deviceId || '',
     successCallback: successCallback,
     errorCallback,
   });
