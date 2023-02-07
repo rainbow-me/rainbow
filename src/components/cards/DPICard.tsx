@@ -19,11 +19,21 @@ import store from '@/redux/store';
 import { DPI_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import { GenericCard } from './GenericCard';
+import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 import { useRoute } from '@react-navigation/native';
 
 const TRANSLATIONS = i18n.l.cards.dpi;
+const CARD_GRADIENT: Gradient = {
+  colors: ['#6D58F5', '#A970FF'],
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+};
+const BUTTON_GRADIENT: Gradient = {
+  colors: ['#5236C2', '#7533D6'],
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+};
 
 export const DPICard = () => {
   const { nativeCurrency } = useAccountSettings();
@@ -55,7 +65,7 @@ export const DPICard = () => {
   return (
     <ColorModeProvider value="darkTinted">
       <GenericCard
-        gradient={['#6D58F5', '#A970FF']}
+        gradient={CARD_GRADIENT}
         color="#8D65FA"
         onPress={handlePress}
         testID="dpi-button"
@@ -90,9 +100,9 @@ export const DPICard = () => {
           >
             <Box
               as={LinearGradient}
-              colors={['#5236C2', '#7533D6']}
-              end={{ x: 1, y: 0 }}
-              start={{ x: 0, y: 0.5 }}
+              colors={BUTTON_GRADIENT.colors}
+              end={BUTTON_GRADIENT.end}
+              start={BUTTON_GRADIENT.start}
               background="accent"
               borderRadius={99}
               height="36px"

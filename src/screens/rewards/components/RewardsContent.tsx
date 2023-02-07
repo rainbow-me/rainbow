@@ -45,6 +45,7 @@ export const RewardsContent: React.FC<Props> = ({
     0,
     LEADERBOARD_ITEMS_THRESHOLD
   );
+
   return (
     <>
       <RewardsTitle text={data.rewards.meta.title} />

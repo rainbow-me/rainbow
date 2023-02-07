@@ -333,6 +333,10 @@
           "navigating_your_wallet": "Navigating your Wallet :)"
         }
       },
+      "ledger": {
+        "title": "Pair a Hardware Wallet :)",
+        "body": "Connect your Ledger Nano X to Rainbow through Bluetooth. :)"
+      },
       "receive": {
         "receive_assets": "Receive assets :)",
         "copy_address": "Copy Address :)",
