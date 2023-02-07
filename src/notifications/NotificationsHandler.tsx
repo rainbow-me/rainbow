@@ -161,6 +161,8 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   ) => {
     const type = notification?.data?.type;
 
+    // TODO handle wc v2
+
     if (type === NotificationTypes.transaction) {
       const untypedData = notification?.data;
       if (

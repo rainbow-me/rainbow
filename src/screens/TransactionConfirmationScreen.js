@@ -430,6 +430,12 @@ export default function TransactionConfirmationScreen() {
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
+
+      if (walletConnectV2RequestValues?.onComplete) {
+        InteractionManager.runAfterInteractions(() => {
+          walletConnectV2RequestValues.onComplete();
+        });
+      }
     },
     [
       goBack,

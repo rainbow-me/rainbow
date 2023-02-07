@@ -57,6 +57,9 @@ export default async function handleDeeplink(
   }
   logger.info('Handling deeplink', { url });
   const urlObj = new URL(url);
+
+  logger.debug(`Handling deeplink`, { url })
+
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
   } else if (urlObj.protocol === 'https:' || urlObj.protocol === 'rainbow:') {
@@ -64,6 +67,7 @@ export default async function handleDeeplink(
       urlObj.protocol === 'https:'
         ? urlObj.pathname.split('/')[1]
         : urlObj.host;
+
     switch (action) {
       case 'wc': {
         const { uri } = urlObj.query;
@@ -195,10 +199,13 @@ function handleWalletConnect(uri: any) {
     parsedUri.version === 2 &&
     getExperimetalFlag(WC_V2)
   ) {
+    logger.debug(`handleWalletConnect: handling v2`, { uri });
     setHasPendingDeeplinkPendingRedirect(true);
     pairWalletConnect({ uri });
   } else {
+    logger.debug(`handleWalletConnect: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
+    setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }
 }

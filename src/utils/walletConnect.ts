@@ -59,6 +59,16 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
 }
 
 /**
+ * Called in case we're on mobile and have a pending redirect
+ */
+export function maybeGoBackAndClearHasPendingRedirect() {
+  if (hasDeeplinkPendingRedirect) {
+    setHasPendingDeeplinkPendingRedirect(false);
+    Minimizer.goBack();
+  }
+}
+
+/**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
 export let syncSignClient: SignClient | undefined;
@@ -373,10 +383,7 @@ export async function onSessionProposal(
           // let the ConnectedDappsSheet know we've got a new one
           events.emit('walletConnectV2SessionCreated');
 
-          if (hasDeeplinkPendingRedirect) {
-            setHasPendingDeeplinkPendingRedirect(false);
-            Minimizer.goBack();
-          }
+          maybeGoBackAndClearHasPendingRedirect();
 
           logger.debug(
             `WC v2: session created`,
@@ -458,6 +465,8 @@ export async function onSessionRequest(
           response: formatJsonRpcError(id, `Invalid RPC params`),
         });
 
+        maybeGoBackAndClearHasPendingRedirect();
+
         return;
       }
 
@@ -480,6 +489,8 @@ export async function onSessionRequest(
           topic,
           response: formatJsonRpcError(id, `Wallet is read-only`),
         });
+
+        maybeGoBackAndClearHasPendingRedirect();
 
         return;
       }
@@ -516,6 +527,9 @@ export async function onSessionRequest(
         // @ts-ignore we assign address above
         address, // required by screen
         chainId, // required by screen
+        onComplete() {
+          maybeGoBackAndClearHasPendingRedirect();
+        }
       },
     };
 
@@ -563,6 +577,9 @@ export async function onSessionRequest(
         method,
       }
     );
+
+    // TODO what happens in this state?
+    maybeGoBackAndClearHasPendingRedirect();
 
     await client.respond({
       topic,
