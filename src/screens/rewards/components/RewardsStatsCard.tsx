@@ -26,8 +26,7 @@ export const RewardsStatsCard: React.FC<Props> = ({
   const infoIconColor = useInfoIconColor();
 
   return (
-    // TODO: Add explainer sheet navigation to on press here
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} overflowMargin={50}>
       <RewardsSectionCard>
         <Stack space="12px">
           <Inline space="4px" alignVertical="center" wrap={false}>
