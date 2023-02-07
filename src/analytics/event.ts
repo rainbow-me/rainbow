@@ -36,6 +36,13 @@ export const event = {
   addWalletFlowStarted: 'add_wallet_flow.started',
   pairHwWalletNavEntered: 'pair_hw_wallet_nav.entered',
   pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
+  rewardsViewedSheet: 'rewards.viewed_sheet',
+  rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
+  rewardsPressedAvailableCard: 'rewards.pressed_available_card',
+  rewardsPressedPositionCard: 'rewards.pressed_position_card',
+  rewardsPressedSwappedCard: 'rewards.pressed_swapped_card',
+  rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
+  rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 } as const;
 
 /**
@@ -106,4 +113,11 @@ export type EventProperties = {
     isFirstWallet: boolean;
     step: string;
   };
+  [event.rewardsViewedSheet]: undefined;
+  [event.rewardsPressedPendingEarningsCard]: undefined;
+  [event.rewardsPressedAvailableCard]: undefined;
+  [event.rewardsPressedPositionCard]: { position: number };
+  [event.rewardsPressedSwappedCard]: undefined;
+  [event.rewardsPressedBridgedCard]: undefined;
+  [event.rewardsPressedLeaderboardItem]: { ens?: string };
 };

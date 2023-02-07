@@ -85,6 +85,7 @@ export default function useWallets() {
   return {
     isDamaged,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
+    isHardwareWallet: !!selectedWallet.deviceId,
     isWalletLoading,
     latestBackup,
     selectedWallet,
