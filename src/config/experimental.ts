@@ -21,7 +21,7 @@ export const OP_REWARDS = '$OP Rewards';
 export const defaultConfig = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
-  [HARDWARE_WALLETS]: { settings: true, value: true },
+  [HARDWARE_WALLETS]: { settings: true, value: false },
   [L2_TXS]: { needsRestart: true, settings: true, value: false },
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: true },
