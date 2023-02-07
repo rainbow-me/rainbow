@@ -76,7 +76,6 @@ export const RewardsContent: React.FC<Props> = ({
       />
       <RewardsLeaderboard
         leaderboard={limitedLeaderboardData}
-        nextDistributionTimestamp={data.rewards.meta.distribution.next}
         programEndTimestamp={data.rewards.meta.end}
         status={data.rewards.meta.status}
         tokenSymbol={data.rewards.meta.token.asset.symbol}

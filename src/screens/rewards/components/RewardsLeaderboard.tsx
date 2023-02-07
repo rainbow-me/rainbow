@@ -40,7 +40,6 @@ const getRHSValueBasedOnStatus = (
 type Props = {
   status: RewardsMetaStatus;
   leaderboard: RewardsLeaderboardAccount[];
-  nextDistributionTimestamp: number;
   programEndTimestamp: number;
   tokenSymbol: string;
 };
@@ -48,7 +47,6 @@ type Props = {
 export const RewardsLeaderboard: React.FC<Props> = ({
   status,
   leaderboard,
-  nextDistributionTimestamp,
   programEndTimestamp,
   tokenSymbol,
 }) => {
@@ -56,11 +54,6 @@ export const RewardsLeaderboard: React.FC<Props> = ({
     fromUnixTime(programEndTimestamp),
     new Date()
   );
-
-  const formattedNextDistributionDate =
-    status === RewardsMetaStatus.Paused
-      ? format(fromUnixTime(nextDistributionTimestamp), 'EEEE, LLLL do')
-      : undefined;
 
   return (
     <Box paddingBottom="28px">
@@ -80,9 +73,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({
         </Columns>
         {status === RewardsMetaStatus.Paused && (
           <Text weight="semibold" size="13pt" color="labelQuaternary">
-            {i18n.t(i18n.l.rewards.program_paused_will_resume, {
-              resumeDate: formattedNextDistributionDate ?? '',
-            })}
+            {i18n.t(i18n.l.rewards.program_paused_will_resume)}
           </Text>
         )}
         {status === RewardsMetaStatus.Finished && (

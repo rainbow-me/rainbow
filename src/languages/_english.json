@@ -1302,7 +1302,7 @@
       "position": "Position",
       "leaderboard": "Leaderboard",
       "program_paused": "\uDBC0\uDE97 Paused",
-      "program_paused_will_resume": "The contest will resume once rewards refresh on %{resumeDate}.",
+      "program_paused_will_resume": "The contest will be resumed soon, please check back later.",
       "program_finished": "\uDBC1\uDF2A Ended",
       "program_finished_description": "The contest ended, the leaderboard shows the results from the last week of the contest",
       "days_left": "%{days} days left",
