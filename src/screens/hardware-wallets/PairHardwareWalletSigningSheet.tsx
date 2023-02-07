@@ -15,6 +15,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -77,6 +79,7 @@ const Item = ({ item, rank }: ItemProps) => {
 
 export const PairHardwareWalletSigningSheet = () => {
   const { isSmallPhone } = useDimensions();
+  const { navigate } = useNavigation();
 
   const items: ItemDetails[] = [
     {
@@ -144,7 +147,7 @@ export const PairHardwareWalletSigningSheet = () => {
       </Inset>
       <ActionButton
         label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-        onPress={() => null}
+        onPress={() => navigate(Routes.WALLET_SCREEN)}
       />
     </Layout>
   );

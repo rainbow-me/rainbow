@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Routes from '@/navigation/routesNames';
@@ -10,21 +10,48 @@ import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHar
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { RouteProp, useRoute } from '@react-navigation/core';
+import { analyticsV2 } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();
 
+type PairHardwareWalletNavigatorParams = {
+  entryPoint: string;
+  isFirstWallet: boolean;
+};
+
+type RouteParams = {
+  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
+};
+
 export const PairHardwareWalletNavigator = () => {
+  const { params } = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
+  >();
+
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
+    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
   );
 
   const { height, width } = useDimensions();
+
+  useEffect(
+    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
+    []
+  );
+
+  const onDismiss = () =>
+    analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
+      step: currentRouteName,
+      ...params,
+    });
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
+          onDismiss={onDismiss}
           scrollEnabled={false}
         >
           <Swipe.Navigator
