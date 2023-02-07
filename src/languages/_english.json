@@ -1593,6 +1593,8 @@
       "learn_more_about_ledger": "Learn more about Ledger",
       "pair_a_new_ledger": "Pair a new Ledger",
       "looking_for_devices": "Looking for devices",
+      "confirm_on_device": "Confirm on device",
+      "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device.",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked.",
       "device_connected": "Device connected",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device.",

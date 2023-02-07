@@ -12,6 +12,7 @@ export interface HoldToAuthorizeBaseProps {
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
+  ignoreHardwareWallet?: boolean;
   isHardwareWallet?: boolean;
   label: string;
   onLongPress: () => void;

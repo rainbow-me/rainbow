@@ -105,6 +105,7 @@ function HoldToAuthorizeButtonContent2({
   disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
+  ignoreHardwareWallet,
   isHardwareWallet,
   label,
   parentHorizontalPadding,
@@ -164,7 +165,7 @@ function HoldToAuthorizeButtonContent2({
 
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {
-      if (isHardwareWallet) {
+      if (isHardwareWallet && !ignoreHardwareWallet) {
         navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onLongPress });
       } else {
         onLongPress();

@@ -24,12 +24,21 @@ import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useRecoilState } from 'recoil';
+import {
+  LedgerIsReadyAtom,
+  readyForPollingAtom,
+} from '@/navigation/HardwareWalletTxNavigator';
 
 const INDICATOR_SIZE = 7;
 
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
-  const connected = false;
+
+  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
+  const [readyForPolling, setReadyForPolling] = useRecoilState(
+    readyForPollingAtom
+  );
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -51,7 +60,9 @@ export const PairHardwareWalletAgainSheet = () => {
         <Inset horizontal="36px">
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
-              {i18n.t(TRANSLATIONS.looking_for_devices)}
+              {isReady
+                ? i18n.t(TRANSLATIONS.confirm_on_device)
+                : i18n.t(TRANSLATIONS.looking_for_devices)}
             </Text>
             <Stack space="10px">
               <Text
@@ -60,7 +71,9 @@ export const PairHardwareWalletAgainSheet = () => {
                 weight="semibold"
                 size="15pt / 135%"
               >
-                {i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+                {isReady
+                  ? i18n.t(TRANSLATIONS.connected_and_ready)
+                  : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
               </Text>
             </Stack>
           </Stack>
@@ -101,7 +114,7 @@ export const PairHardwareWalletAgainSheet = () => {
                   Nano X 7752
                 </Text>
                 <Box>
-                  {!connected && (
+                  {!isReady && (
                     <Animated.View
                       style={{
                         alignItems: 'center',
@@ -109,7 +122,7 @@ export const PairHardwareWalletAgainSheet = () => {
                         height: INDICATOR_SIZE,
                         width: INDICATOR_SIZE,
                         borderRadius: INDICATOR_SIZE / 2,
-                        ...(!connected ? indicatorAnimation : {}),
+                        ...(!isReady ? indicatorAnimation : {}),
                       }}
                     >
                       <Box
@@ -126,8 +139,8 @@ export const PairHardwareWalletAgainSheet = () => {
                     width={{ custom: INDICATOR_SIZE }}
                     height={{ custom: INDICATOR_SIZE }}
                     style={{ zIndex: -1 }}
-                    background={connected ? 'green' : 'surfaceSecondary'}
-                    shadow={connected && IS_IOS ? '30px green' : undefined}
+                    background={isReady ? 'green' : 'surfaceSecondary'}
+                    shadow={isReady && IS_IOS ? '30px green' : undefined}
                     borderRadius={INDICATOR_SIZE / 2}
                   />
                 </Box>

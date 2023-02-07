@@ -194,6 +194,12 @@ export default function ConfirmExchangeButton({
             isAuthorizing={isSwapSubmitting}
             label={label}
             loading={loading || isSwapSubmitting}
+            ignoreHardwareWallet={
+              loading ||
+              isSwapSubmitting ||
+              shouldOpenSwapDetails ||
+              !!explainerType
+            }
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
