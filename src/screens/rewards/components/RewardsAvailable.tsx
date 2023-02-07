@@ -8,38 +8,48 @@ import {
   addDays,
   differenceInDays,
   differenceInHours,
-  formatDuration,
   fromUnixTime,
-  intervalToDuration,
-  sub,
 } from 'date-fns';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
 
 type Props = {
-  totalAvailableRewards: number;
-  remainingRewards: number;
-  nextDistributionTimestamp: number;
+  assetPrice?: number;
   color: string;
+  nextDistributionTimestamp: number;
+  remainingRewards: number;
+  totalAvailableRewardsInToken: number;
 };
 
 export const RewardsAvailable: React.FC<Props> = ({
-  remainingRewards,
-  totalAvailableRewards,
-  nextDistributionTimestamp,
+  assetPrice,
   color,
+  nextDistributionTimestamp,
+  remainingRewards,
+  totalAvailableRewardsInToken,
 }) => {
   const infoIconColor = useInfoIconColor();
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
+  );
+  const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
-    const formattedTotalAvailableRewards = totalAvailableRewards.toLocaleString(
-      'en-US',
-      {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    );
+    const formattedTotalAvailableRewards = assetPrice
+      ? convertAmountAndPriceToNativeDisplay(
+          totalAvailableRewardsInToken,
+          assetPrice,
+          nativeCurrency
+        ).display
+      : convertAmountToNativeDisplay(totalAvailableRewardsInToken, 'USD');
 
     const now = new Date();
     const nextDistribution = fromUnixTime(nextDistributionTimestamp);
@@ -77,13 +87,21 @@ export const RewardsAvailable: React.FC<Props> = ({
       </Box>
     );
   } else {
-    const progress = remainingRewards / totalAvailableRewards;
+    const progress = remainingRewards / totalAvailableRewardsInToken;
     const roundedProgressPercent = Math.round(progress * 10) * 10;
+
+    const navigateToAmountsExplainer = () => {
+      analyticsV2.track(analyticsV2.event.rewardsPressedAvailableCard);
+      navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
+    };
 
     return (
       <Box paddingBottom="36px">
-        {/* TODO: Add explainer sheet navigation to on press here */}
-        <ButtonPressAnimation onPress={() => {}} scaleTo={0.96}>
+        <ButtonPressAnimation
+          onPress={navigateToAmountsExplainer}
+          scaleTo={0.96}
+          overflowMargin={50}
+        >
           <RewardsSectionCard>
             <Stack space="16px">
               <Stack space="12px">

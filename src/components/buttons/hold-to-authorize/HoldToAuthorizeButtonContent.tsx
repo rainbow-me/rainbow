@@ -41,6 +41,8 @@ import { ThemeContextProps } from '@/theme';
 import { haptics } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 import * as lang from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
@@ -103,7 +105,7 @@ function HoldToAuthorizeButtonContent2({
   disableShimmerAnimation = false,
   enableLongPress,
   hideInnerBorder,
-  ledger,
+  isHardwareWallet,
   label,
   parentHorizontalPadding,
   shadows,
@@ -118,6 +120,7 @@ function HoldToAuthorizeButtonContent2({
   onLongPress,
   ...props
 }: Props) {
+  const { navigate } = useNavigation();
   const [isAuthorizingState, setIsAuthorizing] = useState(false);
 
   const longPressProgress = useSharedValue(0);
@@ -161,7 +164,11 @@ function HoldToAuthorizeButtonContent2({
 
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {
-      onLongPress();
+      if (isHardwareWallet) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onLongPress });
+      } else {
+        onLongPress();
+      }
     }
   };
 
@@ -228,7 +235,7 @@ function HoldToAuthorizeButtonContent2({
 
   let buttonLabel = label;
   if (isAuthorizing) {
-    if (ledger) {
+    if (isHardwareWallet) {
       buttonLabel = lang.t(
         lang.l.button.hold_to_authorize.confirming_on_ledger
       );

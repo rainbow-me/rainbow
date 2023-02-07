@@ -34,6 +34,13 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
+  rewardsViewedSheet: 'rewards.viewed_sheet',
+  rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
+  rewardsPressedAvailableCard: 'rewards.pressed_available_card',
+  rewardsPressedPositionCard: 'rewards.pressed_position_card',
+  rewardsPressedSwappedCard: 'rewards.pressed_swapped_card',
+  rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
+  rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 } as const;
 
 /**
@@ -95,4 +102,11 @@ export type EventProperties = {
     isFirstWallet: boolean;
     type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
   };
+  [event.rewardsViewedSheet]: undefined;
+  [event.rewardsPressedPendingEarningsCard]: undefined;
+  [event.rewardsPressedAvailableCard]: undefined;
+  [event.rewardsPressedPositionCard]: { position: number };
+  [event.rewardsPressedSwappedCard]: undefined;
+  [event.rewardsPressedBridgedCard]: undefined;
+  [event.rewardsPressedLeaderboardItem]: { ens?: string };
 };

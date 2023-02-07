@@ -55,6 +55,7 @@ import {
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  OP_ADDRESS,
 } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
@@ -326,7 +327,8 @@ const assetPricesSubscription = (
     ETH_ADDRESS,
     DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS,
-    BNB_MAINNET_ADDRESS
+    BNB_MAINNET_ADDRESS,
+    OP_ADDRESS
   );
   return [
     action,
@@ -901,13 +903,10 @@ const l2AddressAssetsReceived = (
     | { asset: ZerionAsseWithL2Fields }[]
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
-    const uniqueId = `${asset?.asset?.asset_code}_${asset?.asset?.network}`;
     const fallbackAsset =
-      (mainnetAddress &&
-        (ethereumUtils.getAccountAsset(mainnetAddress) ||
-          genericAssets[mainnetAddress])) ||
-      ethereumUtils.getAccountAsset(uniqueId) ||
-      genericAssets[asset?.asset?.asset_code];
+      mainnetAddress &&
+      (ethereumUtils.getAccountAsset(mainnetAddress) ||
+        genericAssets[mainnetAddress]);
 
     if (fallbackAsset) {
       return {
