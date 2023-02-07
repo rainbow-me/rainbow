@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
@@ -17,19 +17,30 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-// import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useSetRecoilState } from 'recoil';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { useLedgerImport } from '@/hooks';
 
 const INDICATOR_SIZE = 7;
 
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
-  const connected = false;
+  const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useLedgerImport({
+    successCallback: deviceId => {
+      setDeviceId(deviceId);
+      setIsConnected(true);
+      // TODO: add delay to make sure the animation is finished
+    },
+  });
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -101,7 +112,7 @@ export const PairHardwareWalletAgainSheet = () => {
                   Nano X 7752
                 </Text>
                 <Box>
-                  {!connected && (
+                  {!isConnected && (
                     <Animated.View
                       style={{
                         alignItems: 'center',
@@ -109,7 +120,7 @@ export const PairHardwareWalletAgainSheet = () => {
                         height: INDICATOR_SIZE,
                         width: INDICATOR_SIZE,
                         borderRadius: INDICATOR_SIZE / 2,
-                        ...(!connected ? indicatorAnimation : {}),
+                        ...(!isConnected ? indicatorAnimation : {}),
                       }}
                     >
                       <Box
@@ -126,8 +137,8 @@ export const PairHardwareWalletAgainSheet = () => {
                     width={{ custom: INDICATOR_SIZE }}
                     height={{ custom: INDICATOR_SIZE }}
                     style={{ zIndex: -1 }}
-                    background={connected ? 'green' : 'surfaceSecondary'}
-                    shadow={connected && IS_IOS ? '30px green' : undefined}
+                    background={isConnected ? 'green' : 'surfaceSecondary'}
+                    shadow={isConnected && IS_IOS ? '30px green' : undefined}
                     borderRadius={INDICATOR_SIZE / 2}
                   />
                 </Box>

@@ -1,50 +1,64 @@
 import * as i18n from '@/languages';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-// import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-// eslint-disable-next-line no-restricted-imports
-import { RouteProp, useRoute } from '@react-navigation/core';
-import { useDimensions } from '@/hooks';
+import { useDimensions, useLedgerConnect } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
 import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { useNavigation } from '@/navigation';
+import { useRecoilValue } from 'recoil';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import Routes from '@/navigation/routesNames';
+import { Alert } from 'react-native';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
-export type PairHardwareWalletErrorSheetParams = {
-  errorType: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
-  deviceId?: string;
-};
-
-type RouteParams = {
-  PairHardwareWalletErrorSheetParams: PairHardwareWalletErrorSheetParams;
-};
-
-export const PairHardwareWalletErrorSheet = () => {
-  const route = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
-  >();
+export const ErrorSheet = ({
+  type,
+}: {
+  type: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
+}) => {
+  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const { dangerouslyGetParent, navigate } = useNavigation();
   const { width: deviceWidth } = useDimensions();
-  const { goBack } = useNavigation();
 
   const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
 
-  const errorType = route?.params?.errorType;
+  const successCallback = useCallback(() => {
+    dangerouslyGetParent()?.goBack(); // to blind signing sheet
+    // or nav to tx details (?) if confirming a tx}, [])
+  }, []);
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      console.log('error callback', errorType);
+      if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+        if (type === LEDGER_ERROR_CODES.NO_ETH_APP) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET);
+        }
+      } else if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
+        if (type === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+          navigate(Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET);
+        }
+      } else {
+        console.log('unhandled errorType', errorType);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    },
+    [navigate, type]
+  );
 
   useLedgerConnect({
-    readyForPolling: !!route?.params?.deviceId,
-    deviceId: route?.params?.deviceId || '',
-    successCallback: () => {
-      goBack();
-    },
+    readyForPolling: !!deviceId,
+    deviceId: deviceId,
+    successCallback: successCallback,
+    errorCallback,
   });
 
   return (
@@ -54,7 +68,9 @@ export const PairHardwareWalletErrorSheet = () => {
           <Text align="center" color="label" weight="bold" size="26pt">
             {i18n.t(
               TRANSLATIONS[
-                errorType === 'no_eth_app' ? 'open_eth_app' : 'unlock_ledger'
+                type === LEDGER_ERROR_CODES.NO_ETH_APP
+                  ? 'open_eth_app'
+                  : 'unlock_ledger'
               ]
             )}
           </Text>
@@ -70,10 +86,10 @@ export const PairHardwareWalletErrorSheet = () => {
           </Stack>
         </Stack>
       </Inset>
-      <Box position="absolute" top={{ custom: 148 }}>
+      <Box position="absolute" top={{ custom: 122 }}>
         <ImgixImage
           source={
-            (errorType === LEDGER_ERROR_CODES.NO_ETH_APP
+            (type === LEDGER_ERROR_CODES.NO_ETH_APP
               ? ledgerNanoEthApp
               : ledgerNanoUnlock) as Source
           }

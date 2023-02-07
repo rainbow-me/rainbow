@@ -143,14 +143,17 @@ export function PairHardwareWalletSigningSheet() {
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP) {
         navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
-          screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
+          screen: Routes.PAIR_HARDWARE_WALLET_ETH_APP_ERROR_SHEET,
           params: {
-            errorType,
+            deviceId,
+          },
+        });
+      } else if (errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          screen: Routes.PAIR_HARDWARE_WALLET_LOCKED_ERROR_SHEET,
+          params: {
             deviceId,
           },
         });

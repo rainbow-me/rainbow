@@ -168,3 +168,5 @@ export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
 export { useSwappableUserAssets } from './useSwappableUserAssets';
 export { useAccountAccentColor } from './useAccountAccentColor';
+export { useLedgerConnect } from './useLedgerConnect';
+export { useLedgerImport } from './useLedgerImport';
