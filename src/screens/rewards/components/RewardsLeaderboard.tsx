@@ -37,6 +37,17 @@ const getRHSValueBasedOnStatus = (
   }
 };
 
+const getDisclaimerBasedOnStatus = (status: RewardsMetaStatus) => {
+  switch (status) {
+    case RewardsMetaStatus.Paused:
+      return i18n.t(i18n.l.rewards.program_paused_description);
+    case RewardsMetaStatus.Finished:
+      return i18n.t(i18n.l.rewards.program_finished_description);
+    default:
+      return i18n.t(i18n.l.rewards.leaderboard_data_refresh_notice);
+  }
+};
+
 type Props = {
   status: RewardsMetaStatus;
   leaderboard: RewardsLeaderboardAccount[];
@@ -71,16 +82,9 @@ export const RewardsLeaderboard: React.FC<Props> = ({
             {getRHSValueBasedOnStatus(status, daysLeft)}
           </Text>
         </Columns>
-        {status === RewardsMetaStatus.Paused && (
-          <Text weight="semibold" size="13pt" color="labelQuaternary">
-            {i18n.t(i18n.l.rewards.program_paused_will_resume)}
-          </Text>
-        )}
-        {status === RewardsMetaStatus.Finished && (
-          <Text weight="semibold" size="13pt" color="labelQuaternary">
-            {i18n.t(i18n.l.rewards.program_finished_description)}
-          </Text>
-        )}
+        <Text weight="semibold" size="13pt" color="labelQuaternary">
+          {getDisclaimerBasedOnStatus(status)}
+        </Text>
       </Stack>
       <Box paddingTop={status !== RewardsMetaStatus.Ongoing ? '12px' : '16px'}>
         <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">

@@ -98,18 +98,14 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
       ens,
     });
     navigate(Routes.PROFILE_SHEET, {
-      address: ens,
+      address: ens ?? address,
       // TODO: If we want to use it for other rewards we will have to make this analytics configurable
       from: Routes.OP_REWARDS_SHEET,
     });
   };
 
   return (
-    <ButtonPressAnimation
-      onPress={navigateToProfile}
-      scaleTo={0.96}
-      disabled={!ens}
-    >
+    <ButtonPressAnimation onPress={navigateToProfile} scaleTo={0.96}>
       <Stack>
         <Columns space="10px" alignVertical="center">
           <Column width="content">

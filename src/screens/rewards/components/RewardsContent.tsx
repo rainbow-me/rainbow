@@ -1,7 +1,7 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
 import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
-import { RewardsAvailable } from '@/screens/rewards/components/RewardsAvailable';
+import { RewardsClaimed } from '@/screens/rewards/components/RewardsClaimed';
 import {
   GetRewardsDataForWalletQuery,
   RewardsMetaStatus,
@@ -60,11 +60,12 @@ export const RewardsContent: React.FC<Props> = ({
           totalEarnings={data.rewards.earnings.total}
         />
       )}
-      <RewardsAvailable
+      <RewardsClaimed
         assetPrice={assetPrice}
         color={data.rewards.meta.color}
         nextDistributionTimestamp={data.rewards.meta.distribution.next}
         remainingRewards={data.rewards.meta.distribution.left}
+        tokenSymbol={data.rewards.meta.token.asset.symbol}
         totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
       />
       <RewardsStats
