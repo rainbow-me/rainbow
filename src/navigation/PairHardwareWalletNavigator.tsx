@@ -1,19 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
-import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
-import { LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { Alert } from 'react-native';
-import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -22,31 +17,20 @@ export const LedgerImportDeviceIdAtom = atom({
   default: '',
   key: 'ledgerImportDeviceId',
 });
-export const LedgerImportReadyForPollingAtom = atom({
-  default: false,
-  key: 'ledgerImportReadyForPolling',
-});
 
 export function PairHardwareWalletNavigator() {
   const { height, width } = useDimensions();
-  const { navigate } = useNavigation();
+
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
-  const [sheetBeforeError, setSheetBeforeError] = useState(
-    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
-  );
 
-  const [readyForPolling, setReadyForPolling] = useRecoilState(
-    LedgerImportReadyForPollingAtom
-  );
   const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
 
   // reset navigator state on unmount
   useEffect(() => {
     return () => {
       setDeviceId('');
-      setReadyForPolling(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

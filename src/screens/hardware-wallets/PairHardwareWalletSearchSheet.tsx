@@ -1,24 +1,21 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Box, Inset, Stack, Text } from '@/design-system';
+import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useSetRecoilState } from 'recoil';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import {
-  LedgerImportDeviceIdAtom,
-  LedgerImportReadyForPollingAtom,
-} from '@/navigation/PairHardwareWalletNavigator';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate } = useNavigation();
   const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
   const [isConnected, setIsConnected] = React.useState(false);
-  const { pairingStatus } = useLedgerImport({
+
+  useLedgerImport({
     successCallback: deviceId => {
       setDeviceId(deviceId);
       setIsConnected(true);
