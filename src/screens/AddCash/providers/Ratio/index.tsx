@@ -78,7 +78,9 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       provider: FiatProviderName.Ratio,
     }),
   });
-  const pendingTransactionSheetExplainerType = React.useRef('');
+  const pendingTransactionSheetExplainerType = React.useRef(
+    'f2cSemiSupportedAssetPurchased'
+  );
   const { navigate } = useNavigation();
 
   const onTransactionComplete = React.useCallback(
@@ -284,9 +286,11 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
         if (explainerType) {
           InteractionManager.runAfterInteractions(() => {
-            navigate(Routes.EXPLAIN_SHEET, {
-              type: explainerType,
-            });
+            setTimeout(() => {
+              navigate(Routes.EXPLAIN_SHEET, {
+                type: explainerType,
+              });
+            }, 1000);
           });
         }
 

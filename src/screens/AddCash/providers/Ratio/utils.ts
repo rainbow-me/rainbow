@@ -22,7 +22,7 @@ export function parseRatioNetworkToInternalNetwork(network: string) {
   }
 }
 
-export function parseRationCurrency(currency: string | `${string}_${string}`) {
+export function parseRatioCurrency(currency: string | `${string}_${string}`) {
   const [token] = currency.split('_') as [string, string | undefined];
   return token;
 }
@@ -34,7 +34,7 @@ export async function ratioOrderToNewTransaction(
   }
 ): Promise<NewTransactionOrAddCashTransaction> {
   const { data } = order;
-  const parsedCurrency = parseRationCurrency(data.activity.crypto.currency);
+  const parsedCurrency = parseRatioCurrency(data.activity.crypto.currency);
   const parsedNetwork = parseRatioNetworkToInternalNetwork(
     data.activity.crypto.wallet.network
   );
