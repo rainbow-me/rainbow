@@ -5,11 +5,11 @@ import { TestnetToast } from '../components/toasts';
 import { web3Provider } from '@/handlers/web3';
 import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import WalletScreen from '../screens/wallet/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
 import { useAccountSettings, useCoinListEdited } from '@/hooks';
+import { WalletScreen } from '@/screens/wallet/WalletScreen';
 
 const Swipe = createMaterialTopTabNavigator();
 
