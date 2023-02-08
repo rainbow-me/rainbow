@@ -14,16 +14,29 @@ type Props = {
   color: string;
 };
 
+const COMBINED_HORIZONTAL_PADDING = 4;
+const MIN_PROGRESS_WIDTH = 12;
+
 export const RewardsProgressBar: React.FC<Props> = ({ progress, color }) => {
   const { colors } = useTheme();
-  const widthValue = useSharedValue(10);
+  const widthValue = useSharedValue(MIN_PROGRESS_WIDTH);
 
   const animatedStyle = useAnimatedStyle(() => ({
     width: widthValue.value,
   }));
 
   const onLayout = (event: LayoutChangeEvent) => {
-    widthValue.value = withTiming(event.nativeEvent.layout.width * progress, {
+    const maxWidth =
+      event.nativeEvent.layout.width - COMBINED_HORIZONTAL_PADDING;
+    const destinationWidth = Math.min(
+      Math.max(
+        event.nativeEvent.layout.width * progress - COMBINED_HORIZONTAL_PADDING,
+        MIN_PROGRESS_WIDTH
+      ),
+      maxWidth
+    );
+
+    widthValue.value = withTiming(destinationWidth, {
       duration: 1000,
     });
   };

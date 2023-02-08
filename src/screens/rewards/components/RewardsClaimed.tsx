@@ -20,20 +20,23 @@ import {
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
+import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 
 type Props = {
   assetPrice?: number;
   color: string;
   nextDistributionTimestamp: number;
   remainingRewards: number;
+  tokenSymbol: string;
   totalAvailableRewardsInToken: number;
 };
 
-export const RewardsAvailable: React.FC<Props> = ({
+export const RewardsClaimed: React.FC<Props> = ({
   assetPrice,
   color,
   nextDistributionTimestamp,
   remainingRewards,
+  tokenSymbol,
   totalAvailableRewardsInToken,
 }) => {
   const infoIconColor = useInfoIconColor();
@@ -87,8 +90,9 @@ export const RewardsAvailable: React.FC<Props> = ({
       </Box>
     );
   } else {
-    const progress = remainingRewards / totalAvailableRewardsInToken;
-    const roundedProgressPercent = Math.round(progress * 10) * 10;
+    const claimed = totalAvailableRewardsInToken - remainingRewards;
+    const progress = claimed / totalAvailableRewardsInToken;
+    const claimedTokenFormatted = Math.floor(claimed).toLocaleString('en-US');
 
     const navigateToAmountsExplainer = () => {
       analyticsV2.track(analyticsV2.event.rewardsPressedAvailableCard);
@@ -107,7 +111,7 @@ export const RewardsAvailable: React.FC<Props> = ({
               <Stack space="12px">
                 <Columns alignVertical="center">
                   <Text size="15pt" weight="semibold" color="labelSecondary">
-                    {i18n.t(i18n.l.rewards.total_available_rewards)}
+                    {i18n.t(i18n.l.rewards.rewards_claimed)}
                   </Text>
                   <Column width="content">
                     <Text
@@ -123,9 +127,10 @@ export const RewardsAvailable: React.FC<Props> = ({
               </Stack>
               <Columns alignVertical="center">
                 <Text size="13pt" weight="semibold" color={{ custom: color }}>
-                  {i18n.t(i18n.l.rewards.left_this_week, {
-                    percent: roundedProgressPercent,
-                  })}
+                  {`${claimedTokenFormatted} / ${formatTokenDisplayValue(
+                    totalAvailableRewardsInToken,
+                    tokenSymbol
+                  )}`}
                 </Text>
                 <Column width="content">
                   <Text size="13pt" weight="semibold" color="labelTertiary">
