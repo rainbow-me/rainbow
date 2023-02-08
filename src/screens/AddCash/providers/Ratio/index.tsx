@@ -7,6 +7,7 @@ import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
 import { Wallet } from '@ethersproject/wallet';
 import { useDispatch } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, useForegroundColor } from '@/design-system';
@@ -24,6 +25,8 @@ import { Network } from '@/helpers';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import useEmailRainbow from '@/hooks/useEmailRainbow';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 import {
   ratioOrderToNewTransaction,
@@ -75,6 +78,8 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       provider: FiatProviderName.Ratio,
     }),
   });
+  const pendingTransactionSheetExplainerType = React.useRef('');
+  const { navigate } = useNavigation();
 
   const onTransactionComplete = React.useCallback(
     async (order: RatioOrderStatus) => {
@@ -94,21 +99,42 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
       if (success) {
         try {
+          const networkName = parseRatioNetworkToInternalNetwork(
+            order.data.activity.crypto.wallet.network
+          );
+          const isMainnet = networkName === Network.mainnet;
+
+          /**
+           * Handle this check synchronously before we run
+           * ratioOrderToNewTransaction. THis ensures that the user hasn't
+           * closed the modal before that async function has returned.
+           */
+          if (!isMainnet) {
+            logger.log(
+              `Ratio: transaction is not on mainnet, will not add to transaction list data`,
+              {
+                network: order.data.activity.crypto.wallet.network,
+              }
+            );
+
+            // set this to show the explainer sheet onClose of the modal
+            pendingTransactionSheetExplainerType.current =
+              'f2cSemiSupportedAssetPurchased';
+          }
+
+          // OK now we can run this async function
           const transaction = await ratioOrderToNewTransaction(order, {
             analyticsSessionId,
           });
 
           logger.debug(
-            `Ratio: transaction parsed, adding to transaction list data`,
+            `Ratio: transaction parsed`,
             { transaction },
             logger.DebugContext.f2c
           );
 
-          if (
-            parseRatioNetworkToInternalNetwork(
-              order.data.activity.crypto.wallet.network
-            ) === Network.mainnet
-          ) {
+          // for now we only support L1 transaction data from our backend
+          if (isMainnet) {
             logger.debug(
               `Ratio: transaction is on mainnet, adding to transaction list data`,
               {},
@@ -121,13 +147,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
                 order.data.activity.crypto.wallet.address,
                 true
               )
-            );
-          } else {
-            logger.log(
-              `Ratio: transaction is not on mainnet, not adding to transaction list data`,
-              {
-                network: order.data.activity.crypto.wallet.network,
-              }
             );
           }
         } catch (e) {
@@ -159,7 +178,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         );
       }
     },
-    [dispatch, userId, analyticsSessionId]
+    [dispatch, userId, analyticsSessionId, pendingTransactionSheetExplainerType]
   );
 
   return (
@@ -250,7 +269,23 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         emailRainbow();
       }}
       onClose={() => {
-        logger.debug(`Ratio: closed`, {}, logger.DebugContext.f2c);
+        logger.debug(
+          `Ratio: closed`,
+          {
+            showingL2Explainer: Boolean(
+              pendingTransactionSheetExplainerType.current
+            ),
+          },
+          logger.DebugContext.f2c
+        );
+
+        if (pendingTransactionSheetExplainerType.current) {
+          navigate(Routes.EXPLAIN_SHEET, {
+            type: pendingTransactionSheetExplainerType.current,
+          });
+        }
+
+        pendingTransactionSheetExplainerType.current = '';
       }}
     >
       <Box
