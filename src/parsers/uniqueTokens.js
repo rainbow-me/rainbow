@@ -1,5 +1,4 @@
-import { isEmpty, isNil } from 'lodash';
-import uniq from 'lodash/uniq';
+import { isNil } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
@@ -7,7 +6,7 @@ import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
 import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
-import { pickBy, pickShallow } from '@/helpers/utilities';
+import { pickShallow } from '@/helpers/utilities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
@@ -297,29 +296,6 @@ export const applyENSMetadataFallbackToTokens = async data => {
     })
   );
 };
-
-export const getFamilies = uniqueTokens =>
-  uniq(uniqueTokens.map(u => u?.asset_contract?.address ?? ''));
-
-export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
-  const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = newAssets;
-  if (!isEmpty(newAssets)) {
-    updatedAssets = pickBy(updatedAssets, newAsset => {
-      const matchingElement = uniqueTokenFamilies?.find(
-        uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
-      );
-      return !matchingElement;
-    });
-  }
-  return updatedAssets;
-};
-
-export const dedupeAssetsWithFamilies = (accountAssets, families) =>
-  pickBy(
-    accountAssets,
-    asset => !families?.find(family => family === asset?.address)
-  );
 
 const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
