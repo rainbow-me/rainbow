@@ -682,7 +682,7 @@ export const explainers = (params, colors) => ({
     emoji: '🎉',
     title: `Purchase successful!`,
     text: `We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon.`,
-    extraHeight: -100,
+    extraHeight: -80,
   },
   insufficientLiquidity: {
     extraHeight: -20,

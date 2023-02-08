@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { Wallet } from '@ethersproject/wallet';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { InteractionManager } from 'react-native';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, useForegroundColor } from '@/design-system';
@@ -25,7 +26,6 @@ import { Network } from '@/helpers';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import useEmailRainbow from '@/hooks/useEmailRainbow';
-import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 import {
@@ -279,9 +279,14 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           logger.DebugContext.f2c
         );
 
-        if (pendingTransactionSheetExplainerType.current) {
-          navigate(Routes.EXPLAIN_SHEET, {
-            type: pendingTransactionSheetExplainerType.current,
+        // assign to variable to avoid ref updates before interactions finish
+        const explainerType = pendingTransactionSheetExplainerType.current;
+
+        if (explainerType) {
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.EXPLAIN_SHEET, {
+              type: explainerType,
+            });
           });
         }
 
