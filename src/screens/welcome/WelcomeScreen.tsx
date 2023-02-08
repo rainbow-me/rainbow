@@ -16,20 +16,20 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import RainbowText from '../../components/icons/svg/RainbowText';
-import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
-import { Text } from '../../components/text';
+import RainbowText from '@/components/icons/svg/RainbowText';
+import { RainbowsBackground } from '@/components/rainbows-background/RainbowsBackground';
+import { Text } from '@/components/text';
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
   syncCloud,
-} from '@rainbow-me/handlers/cloudBackup';
-import { cloudPlatform } from '@rainbow-me/utils/platform';
+} from '@/handlers/cloudBackup';
+import { cloudPlatform } from '@/utils/platform';
 import { analytics } from '@/analytics';
 
 import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';

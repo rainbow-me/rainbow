@@ -8,6 +8,7 @@ import { RowWithMargins } from '@/components/layout';
 import { Emoji, Text } from '@/components/text';
 import { ThemeContextProps } from '@/theme';
 import { shadow } from '@/styles';
+import { IS_IOS } from '@/env';
 
 const ButtonContainer = styled(Reanimated.View)({
   borderRadius: ({ height }: { height: number }) => height / 2,
@@ -65,7 +66,7 @@ const Shadow = styled(Reanimated.View)(
     height: 60,
     position: 'absolute',
     width: 236,
-    ...(ios
+    ...(IS_IOS
       ? {
           left: -3,
           top: -3,
