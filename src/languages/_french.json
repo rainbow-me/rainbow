@@ -1597,6 +1597,8 @@
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
       "device_connected": "Device connected",
       "confirm_on_device": "Confirm on device",
+      "error_sending_tx": "Error sending transaction",
+      "please_try_again": "Please try again if you'd like to continue",
       "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device.",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",

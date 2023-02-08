@@ -83,6 +83,8 @@ import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Wallet } from 'ethers';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -617,6 +619,11 @@ export default function SendSheet(props) {
         logger.sentry('SendSheet onSubmit error');
         logger.sentry(error);
         captureException(error);
+
+        // if hardware wallet, we need to tell hardware flow there was error
+        if (!(wallet instanceof Wallet)) {
+          setHardwareTXError(true);
+        }
       }
       return submitSuccess;
     },

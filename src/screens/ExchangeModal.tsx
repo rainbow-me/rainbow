@@ -106,6 +106,7 @@ import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from 'ethers';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -677,7 +678,11 @@ export default function ExchangeModal({
             setParams({ focused: false });
             navigate(Routes.PROFILE_SCREEN);
           } else if (errorMessage) {
-            Alert.alert(errorMessage);
+            if (wallet instanceof Wallet) {
+              Alert.alert(errorMessage);
+            } else {
+              setHardwareTXError(true);
+            }
           }
         };
         logger.log('[exchange - handle submit] rap');

@@ -255,6 +255,7 @@ export default function TransactionConfirmationScreen() {
     return {
       ...profileInfo,
       address,
+      isHardwareWallet: !!selectedWallet?.deviceId,
     };
   }, [
     walletConnector?._accounts,
@@ -418,6 +419,10 @@ export default function TransactionConfirmationScreen() {
 
   const closeScreen = useCallback(
     canceled => {
+      // we need to close the hw navigator too
+      if (accountInfo.isHardwareWallet) {
+        goBack();
+      }
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
@@ -434,19 +439,21 @@ export default function TransactionConfirmationScreen() {
       }
     },
     [
+      accountInfo.isHardwareWallet,
       goBack,
       isMessageRequest,
       pendingRedirect,
       stopPollingGasFees,
       method,
-      dappScheme,
       dispatch,
+      dappScheme,
     ]
   );
 
   const onCancel = useCallback(
     async error => {
       try {
+        console.log('onCancel', error);
         closeScreen(true);
         if (callback) {
           callback({ error: error || 'User cancelled the request' });
@@ -807,7 +814,10 @@ export default function TransactionConfirmationScreen() {
         rpcMethod: method,
       });
 
-      await onCancel(error);
+      // If the user is using a hardware wallet, we don't want to close the sheet on an error
+      if (!accountInfo.isHardwareWallet) {
+        await onCancel(error);
+      }
     }
   }, [
     method,
@@ -818,7 +828,10 @@ export default function TransactionConfirmationScreen() {
     currentNetwork,
     provider,
     accountInfo.address,
+    accountInfo.isHardwareWallet,
     callback,
+    dappName,
+    dappUrl,
     isFocused,
     requestId,
     closeScreen,
@@ -827,20 +840,18 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.from,
     displayDetails?.request?.to,
     nativeAsset,
-    dappName,
     accountAddress,
     dispatch,
     dataAddNewTransaction,
+    walletConnectV2RequestValues,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     switchToWalletWithAddress,
-    onCancel,
-    dappScheme,
-    dappUrl,
     formattedDappUrl,
+    dappScheme,
     isAuthenticated,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {

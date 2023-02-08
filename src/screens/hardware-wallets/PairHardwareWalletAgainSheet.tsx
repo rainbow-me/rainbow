@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
@@ -26,9 +26,13 @@ import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useRecoilState } from 'recoil';
 import {
+  HARDWARE_TX_ERROR_KEY,
   LedgerIsReadyAtom,
+  ledgerStorage,
   readyForPollingAtom,
 } from '@/navigation/HardwareWalletTxNavigator';
+import { TryAgainButton } from './components/TryAgainButton';
+import { useMMKVBoolean } from 'react-native-mmkv';
 
 const INDICATOR_SIZE = 7;
 
@@ -39,6 +43,16 @@ export const PairHardwareWalletAgainSheet = () => {
   const [readyForPolling, setReadyForPolling] = useRecoilState(
     readyForPollingAtom
   );
+  const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(
+    HARDWARE_TX_ERROR_KEY,
+    ledgerStorage
+  );
+
+  const onPressTryAgain = useCallback(() => {
+    setHardwareTXError(false);
+    setReadyForPolling(true);
+    setIsReady(false);
+  }, [setHardwareTXError, setReadyForPolling, setIsReady]);
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(
@@ -55,100 +69,125 @@ export const PairHardwareWalletAgainSheet = () => {
   }));
 
   return (
-    <Layout>
-      <Box style={{ zIndex: 1 }}>
-        <Inset horizontal="36px">
-          <Stack alignHorizontal="center" space="20px">
-            <Text align="center" color="label" weight="bold" size="26pt">
-              {isReady
-                ? i18n.t(TRANSLATIONS.confirm_on_device)
-                : i18n.t(TRANSLATIONS.looking_for_devices)}
-            </Text>
-            <Stack space="10px">
-              <Text
-                align="center"
-                color="labelTertiary"
-                weight="semibold"
-                size="15pt / 135%"
-              >
-                {isReady
-                  ? i18n.t(TRANSLATIONS.connected_and_ready)
-                  : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+    <>
+      <Layout>
+        <Box style={{ zIndex: 1 }}>
+          <Inset horizontal="36px">
+            <Stack alignHorizontal="center" space="20px">
+              <Text align="center" color="label" weight="bold" size="26pt">
+                {hardwareTXError
+                  ? i18n.t(TRANSLATIONS.error_sending_tx)
+                  : isReady
+                  ? i18n.t(TRANSLATIONS.confirm_on_device)
+                  : i18n.t(TRANSLATIONS.looking_for_devices)}
               </Text>
-            </Stack>
-          </Stack>
-        </Inset>
-      </Box>
-      <Box marginTop={{ custom: -70 }}>
-        <ImgixImage
-          source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
-          style={{
-            width: GRID_DOTS_SIZE,
-            height: GRID_DOTS_SIZE,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          size={GRID_DOTS_SIZE}
-        >
-          <ImgixImage
-            source={ledgerNano as Source}
-            style={{
-              width: LEDGER_NANO_WIDTH,
-              height: LEDGER_NANO_HEIGHT,
-              alignItems: 'center',
-            }}
-            size={LEDGER_NANO_HEIGHT}
-          >
-            <Box
-              height={{ custom: 36 }}
-              width={{ custom: 149 }}
-              top={{ custom: LEDGER_NANO_HEIGHT / 2 + 80 }}
-              borderRadius={18}
-              background="surfaceSecondaryElevated"
-              shadow="12px"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Inline alignVertical="center" space="8px">
-                <Text color="label" weight="semibold" size="17pt">
-                  Nano X 7752
+              <Stack space="10px">
+                <Text
+                  align="center"
+                  color="labelTertiary"
+                  weight="semibold"
+                  size="15pt / 135%"
+                >
+                  {hardwareTXError
+                    ? i18n.t(TRANSLATIONS.please_try_again)
+                    : isReady
+                    ? i18n.t(TRANSLATIONS.connected_and_ready)
+                    : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
                 </Text>
-                <Box>
-                  {!isReady && (
-                    <Animated.View
-                      style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: INDICATOR_SIZE,
-                        width: INDICATOR_SIZE,
-                        borderRadius: INDICATOR_SIZE / 2,
-                        ...(!isReady ? indicatorAnimation : {}),
-                      }}
-                    >
-                      <Box
-                        width={{ custom: INDICATOR_SIZE }}
-                        height={{ custom: INDICATOR_SIZE }}
-                        background="yellow"
-                        shadow={IS_IOS ? '30px yellow' : undefined}
-                        position="absolute"
-                        borderRadius={INDICATOR_SIZE / 2}
-                      />
-                    </Animated.View>
-                  )}
-                  <Box
-                    width={{ custom: INDICATOR_SIZE }}
-                    height={{ custom: INDICATOR_SIZE }}
-                    style={{ zIndex: -1 }}
-                    background={isReady ? 'green' : 'surfaceSecondary'}
-                    shadow={isReady && IS_IOS ? '30px green' : undefined}
-                    borderRadius={INDICATOR_SIZE / 2}
-                  />
-                </Box>
-              </Inline>
-            </Box>
+              </Stack>
+            </Stack>
+          </Inset>
+        </Box>
+        <Box marginTop={{ custom: -70 }}>
+          <ImgixImage
+            source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
+            style={{
+              width: GRID_DOTS_SIZE,
+              height: GRID_DOTS_SIZE,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            size={GRID_DOTS_SIZE}
+          >
+            <ImgixImage
+              source={ledgerNano as Source}
+              style={{
+                width: LEDGER_NANO_WIDTH,
+                height: LEDGER_NANO_HEIGHT,
+                alignItems: 'center',
+              }}
+              size={LEDGER_NANO_HEIGHT}
+            >
+              <Box
+                height={{ custom: 36 }}
+                width={{ custom: 149 }}
+                top={{ custom: LEDGER_NANO_HEIGHT / 2 + 80 }}
+                borderRadius={18}
+                background="surfaceSecondaryElevated"
+                shadow="12px"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Inline alignVertical="center" space="8px">
+                  <Text color="label" weight="semibold" size="17pt">
+                    Nano X 7752
+                  </Text>
+                  <Box>
+                    {!isReady && (
+                      <Animated.View
+                        style={{
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: INDICATOR_SIZE,
+                          width: INDICATOR_SIZE,
+                          borderRadius: INDICATOR_SIZE / 2,
+                          ...(!isReady ? indicatorAnimation : {}),
+                        }}
+                      >
+                        <Box
+                          width={{ custom: INDICATOR_SIZE }}
+                          height={{ custom: INDICATOR_SIZE }}
+                          background="yellow"
+                          shadow={IS_IOS ? '30px yellow' : undefined}
+                          position="absolute"
+                          borderRadius={INDICATOR_SIZE / 2}
+                        />
+                      </Animated.View>
+                    )}
+                    <Box
+                      width={{ custom: INDICATOR_SIZE }}
+                      height={{ custom: INDICATOR_SIZE }}
+                      style={{ zIndex: -1 }}
+                      background={
+                        hardwareTXError
+                          ? 'red'
+                          : isReady
+                          ? 'green'
+                          : 'surfaceSecondary'
+                      }
+                      shadow={
+                        IS_IOS
+                          ? hardwareTXError
+                            ? '30px red'
+                            : isReady
+                            ? '30px green'
+                            : undefined
+                          : undefined
+                      }
+                      borderRadius={INDICATOR_SIZE / 2}
+                    />
+                  </Box>
+                </Inline>
+              </Box>
+            </ImgixImage>
           </ImgixImage>
-        </ImgixImage>
-      </Box>
-    </Layout>
+        </Box>
+      </Layout>
+      {hardwareTXError && (
+        <Box position="absolute" bottom={{ custom: 40 }} width="full">
+          <TryAgainButton onPress={onPressTryAgain} />
+        </Box>
+      )}
+    </>
   );
 };

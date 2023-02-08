@@ -9,12 +9,24 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
-import { Alert } from 'react-native';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
 // eslint-disable-next-line no-restricted-imports
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { atom, useRecoilState } from 'recoil';
+import { MMKV } from 'react-native-mmkv';
+
+export const ledgerStorage = new MMKV({
+  id: 'ledgerStorage',
+});
+
+export const HARDWARE_TX_ERROR_KEY = 'hardwareTXError';
+
+export const setHardwareTXError = (value: boolean) => {
+  console.log('setHardwareTXError', { value });
+  logger.info(`setHardwareTXError`, { value });
+  ledgerStorage.set(HARDWARE_TX_ERROR_KEY, value);
+};
 
 const Swipe = createMaterialTopTabNavigator();
 export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
@@ -74,6 +86,7 @@ export const HardwareWalletTxNavigator = () => {
     if (!isReady) {
       setReadyForPolling(false);
       setIsReady(true);
+      setHardwareTXError(false);
       submit();
     } else {
       logger.debug('[LedgerTx] - already submitted', {}, DebugContext.ledger);
@@ -92,6 +105,7 @@ export const HardwareWalletTxNavigator = () => {
     return () => {
       setIsReady(false);
       setReadyForPolling(true);
+      setHardwareTXError(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
