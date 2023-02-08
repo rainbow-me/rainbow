@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Linking, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -16,135 +16,26 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { ButtonPressAnimation } from '../components/animations';
-import { BaseButtonAnimationProps } from '../components/animations/ButtonPressAnimation/types';
-import RainbowText from '../components/icons/svg/RainbowText';
-import { RowWithMargins } from '../components/layout';
-import { RainbowsBackground } from '../components/rainbows-background/RainbowsBackground';
-import { Emoji, Text } from '../components/text';
+import RainbowText from '../../components/icons/svg/RainbowText';
+import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
+import { Text } from '../../components/text';
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
   syncCloud,
-} from '../handlers/cloudBackup';
-import { cloudPlatform } from '../utils/platform';
+} from '@rainbow-me/handlers/cloudBackup';
+import { cloudPlatform } from '@rainbow-me/utils/platform';
 import { analytics } from '@/analytics';
 
 import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import styled from '@/styled-thing';
-import { position, shadow } from '@/styles';
+import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import logger from '@/utils/logger';
+import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
-
-const ButtonContainer = styled(Reanimated.View)({
-  borderRadius: ({ height }: { height: number }) => height / 2,
-});
-
-const ButtonContent = styled(RowWithMargins).attrs({
-  align: 'center',
-  margin: 4,
-})({
-  alignSelf: 'center',
-  height: '100%',
-  paddingBottom: 2,
-});
-
-const ButtonLabel = styled(Text).attrs(
-  ({
-    textColor: color,
-    theme: { colors },
-  }: {
-    textColor: string;
-    theme: ThemeContextProps;
-  }) => ({
-    align: 'center',
-    color: color || colors.dark,
-    size: 'larger',
-    weight: 'bold',
-  })
-)({});
-
-const ButtonEmoji = styled(Emoji).attrs({
-  align: 'center',
-  size: 16.25,
-})({
-  paddingBottom: 1.5,
-});
-
-const DarkShadow = styled(Reanimated.View)(
-  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.dark, isDarkMode ? 0 : 1),
-    backgroundColor: colors.white,
-    borderRadius: 30,
-    height: 60,
-    left: -3,
-    opacity: 0.2,
-    position: 'absolute',
-    top: -3,
-    width: 236,
-  })
-);
-
-const Shadow = styled(Reanimated.View)(
-  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
-    borderRadius: 30,
-    height: 60,
-    position: 'absolute',
-    width: 236,
-    ...(ios
-      ? {
-          left: -3,
-          top: -3,
-        }
-      : {
-          elevation: 30,
-        }),
-  })
-);
-
-interface RainbowButtonProps extends BaseButtonAnimationProps {
-  height: number;
-  textColor: string;
-  text: string;
-  emoji: string;
-  shadowStyle?: StyleProp<ViewStyle>;
-  darkShadowStyle?: StyleProp<ViewStyle>;
-}
-
-const RainbowButton = ({
-  darkShadowStyle,
-  emoji,
-  height,
-  onPress,
-  shadowStyle,
-  style,
-  textColor,
-  text,
-  ...props
-}: RainbowButtonProps) => {
-  return (
-    <ButtonPressAnimation
-      onPress={onPress}
-      overflowMargin={40}
-      radiusAndroid={height / 2}
-      scaleTo={0.9}
-      {...props}
-    >
-      {ios && <DarkShadow style={darkShadowStyle} />}
-      <Shadow style={shadowStyle} />
-      <ButtonContainer height={height} style={style}>
-        <ButtonContent>
-          <ButtonEmoji name={emoji} />
-          <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
-        </ButtonContent>
-      </ButtonContainer>
-    </ButtonPressAnimation>
-  );
-};
+import { RainbowButton } from '@/screens/welcome/components/RainbowButton';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -191,7 +82,7 @@ const animationColors = [
   'rgb(255,73,74)',
 ];
 
-export default function WelcomeScreen() {
+export const WelcomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
@@ -413,7 +304,7 @@ export default function WelcomeScreen() {
       </TermsOfUse>
     </Container>
   );
-}
+};
 
 const sx = StyleSheet.create({
   existingWallet: {

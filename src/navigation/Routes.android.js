@@ -35,7 +35,6 @@ import TransactionConfirmationScreen from '../screens/TransactionConfirmationScr
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
-import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
 import RegisterENSNavigator from './RegisterENSNavigator';
@@ -76,6 +75,7 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
+import { WelcomeScreen } from '@/screens/welcome/WelcomeScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
