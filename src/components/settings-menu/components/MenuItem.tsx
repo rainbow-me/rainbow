@@ -24,6 +24,7 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
     marginTop={{ custom: 8 }}
     source={source as Source}
     width={{ custom: size }}
+    size={size}
   />
 );
 
@@ -223,6 +224,7 @@ const MenuItem = ({
                 source={Caret as Source}
                 tintColor={colors.blueGreyDark60}
                 width={{ custom: 7 }}
+                size={30}
               />
             )}
             {hasChevron && (
@@ -232,6 +234,7 @@ const MenuItem = ({
                 source={Chevron as Source}
                 tintColor={colors.blueGreyDark60}
                 width={{ custom: 16 }}
+                size={30}
               />
             )}
           </Inline>

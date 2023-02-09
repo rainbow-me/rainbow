@@ -23,6 +23,7 @@ import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
+  size: 80,
 })({
   height: 80,
   width: 80,

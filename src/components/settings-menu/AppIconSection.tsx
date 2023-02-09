@@ -144,6 +144,7 @@ const AppIconSection = () => {
                       height: 36,
                       width: 36,
                     }}
+                    size={30}
                   />
                 </Box>
               }

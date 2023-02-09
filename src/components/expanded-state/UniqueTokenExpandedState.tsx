@@ -173,6 +173,7 @@ const Section = ({
                 height={{ custom: 24 }}
                 source={{ uri: titleImageUrl }}
                 width={{ custom: 24 }}
+                size={30}
               />
             </Bleed>
           )}

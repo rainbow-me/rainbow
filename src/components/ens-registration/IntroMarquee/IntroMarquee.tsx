@@ -117,6 +117,7 @@ function ENSAvatarPlaceholder({
             shadow="15px light (Deprecated)"
             source={{ uri: ensAvatarUrl(name) }}
             width={{ custom: 80 }}
+            size={200}
           />
           <Text
             align="center"

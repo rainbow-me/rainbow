@@ -127,6 +127,7 @@ const SavingsListHeader = ({
             source={CaretImageSource}
             style={imageAnimatedStyles}
             tintColor={colors.dark}
+            size={30}
           />
         </RowWithMargins>
       </Row>

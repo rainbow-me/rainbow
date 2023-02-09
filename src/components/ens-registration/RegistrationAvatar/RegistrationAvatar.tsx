@@ -211,6 +211,7 @@ const RegistrationAvatar = ({
                     height={{ custom: size }}
                     source={{ uri: avatarUrl }}
                     width={{ custom: size }}
+                    size={200}
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>
