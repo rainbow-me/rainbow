@@ -76,7 +76,7 @@ export const PairHardwareWalletAgainSheet = () => {
             <Stack alignHorizontal="center" space="20px">
               <Text align="center" color="label" weight="bold" size="26pt">
                 {hardwareTXError
-                  ? i18n.t(TRANSLATIONS.error_sending_tx)
+                  ? i18n.t(TRANSLATIONS.transaction_rejected)
                   : isReady
                   ? i18n.t(TRANSLATIONS.confirm_on_device)
                   : i18n.t(TRANSLATIONS.looking_for_devices)}

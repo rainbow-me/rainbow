@@ -1594,7 +1594,7 @@
       "pair_a_new_ledger": "Pair a new Ledger",
       "looking_for_devices": "Looking for devices",
       "confirm_on_device": "Confirm on device",
-      "error_sending_tx": "Error sending transaction",
+      "transaction_rejected": "Transaction rejected",
       "please_try_again": "Please try again if you'd like to continue",
       "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device.",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked.",
