@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
@@ -25,7 +25,6 @@ import { logger, RainbowError } from '@/logger';
 import { updateSession, disconnectSession } from '@/utils/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
@@ -237,6 +236,7 @@ export function WalletConnectV2ListItem({
                 ) : (
                   <ContactAvatar
                     color={
+                      approvalAccountInfo.accountColor !== undefined &&
                       isNaN(approvalAccountInfo.accountColor)
                         ? colors.skeleton
                         : approvalAccountInfo.accountColor

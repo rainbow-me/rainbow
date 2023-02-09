@@ -11,13 +11,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
-import {
-  useAccountProfile,
-  useLatestCallback,
-  useOnAvatarPress,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { useLatestCallback, useOnAvatarPress } from '@/hooks';
 import { useTheme } from '@/theme';
 import { getFirstGrapheme } from '@/utils';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
@@ -30,57 +24,45 @@ export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
 export const ProfileAvatarSize = 80;
 
-export function ProfileAvatarRow({
-  size = ProfileAvatarSize,
-}: {
+type Props = {
   size?: number;
-}) {
-  // ////////////////////////////////////////////////////
-  // Account
+  accountSymbol?: string | boolean;
+  accountColor?: number;
+  accountImage?: string | null;
+};
 
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
-
+export const ProfileAvatarRow: React.FC<Props> = ({
+  size = ProfileAvatarSize,
+  accountSymbol,
+  accountColor,
+  accountImage,
+}) => {
   const {
     avatarContextMenuConfig,
     onAvatarPressProfile,
     onSelectionCallback,
   } = useOnAvatarPress({ screenType: 'wallet' });
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
-  );
-
-  // ////////////////////////////////////////////////////
-  // Context Menu
-
   const ContextMenuButton = onAvatarPressProfile ? React.Fragment : ContextMenu;
-
   const handlePressMenuItem = useLatestCallback((e: any) => {
     const index = avatarContextMenuConfig.menuItems?.findIndex(
       item => item.actionKey === e.nativeEvent.actionKey
     );
     onSelectionCallback(index);
   });
-
-  // ////////////////////////////////////////////////////
-  // Colors
-
   const { colors } = useTheme();
-
   const { colorMode } = useColorMode();
 
-  let accentColor = colors.skeleton;
-  if (accountImage) {
-    accentColor = dominantColor || colors.skeleton;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  }
-
-  // ////////////////////////////////////////////////////
-  // Animations
+  const accentColor =
+    accountImage || accountColor === undefined
+      ? colors.black
+      : colors.avatarBackgrounds[accountColor];
 
   const insets = useSafeAreaInsets();
   const position = useRecyclerAssetListPosition();
+
+  const hasLoaded = accountSymbol || accountImage;
+
   const animatedStyle = React.useMemo(
     () => ({
       opacity: position!.interpolate({
@@ -114,8 +96,6 @@ export function ProfileAvatarRow({
     }),
     [position]
   );
-
-  const hasLoaded = accountSymbol || accountImage;
 
   const opacity = useDerivedValue(() => {
     return hasLoaded ? 1 : 0;
@@ -227,10 +207,13 @@ export function ProfileAvatarRow({
                         height={{ custom: size }}
                         source={{ uri: accountImage }}
                         width={{ custom: size }}
-                        size={100}
                       />
                     ) : (
-                      <EmojiAvatar size={size} />
+                      <EmojiAvatar
+                        accountColor={accountColor}
+                        accountSymbol={accountSymbol}
+                        size={size}
+                      />
                     )}
                   </Animated.View>
                 </>
@@ -241,11 +224,18 @@ export function ProfileAvatarRow({
       </RNAnimated.View>
     </AccentColorProvider>
   );
-}
+};
 
-export function EmojiAvatar({ size }: { size: number }) {
+export function EmojiAvatar({
+  size,
+  accountColor,
+  accountSymbol,
+}: {
+  size: number;
+  accountColor?: number;
+  accountSymbol?: string | boolean;
+}) {
   const { colors } = useTheme();
-  const { accountColor, accountSymbol } = useAccountProfile();
 
   const accentColor =
     accountColor !== undefined

@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -17,7 +17,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useRecoilState } from 'recoil';
 import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
 import {
@@ -27,9 +26,9 @@ import {
 } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { delayNext } from '../hooks/useMagicAutofocus';
-import { useNavigation } from '../navigation/Navigation';
-import { useTheme } from '../theme/ThemeContext';
+import { delayNext } from '@/hooks/useMagicAutofocus';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
 import {
   ENSConfirmRegisterSheetHeight,
   ENSConfirmUpdateSheetHeight,
@@ -53,7 +52,6 @@ import {
   saveSeenOnchainDataDisclaimer,
 } from '@/handlers/localstorage/ens';
 import {
-  accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
@@ -70,7 +68,6 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
-  usePersistentDominantColorFromImage,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -86,10 +83,9 @@ export default function ENSAssignRecordsSheet() {
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
+  const accentColor = colors.purple;
 
-  const {
-    images: { avatarUrl: initialAvatarUrl },
-  } = useENSModifiedRegistration({
+  useENSModifiedRegistration({
     modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
   });
@@ -127,25 +123,9 @@ export default function ENSAssignRecordsSheet() {
     step,
     yearsDuration: 1,
   });
-
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-
-  const avatarImage =
-    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
-  );
-
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
     : BottomActionHeight;
-
-  useFocusEffect(() => {
-    if (dominantColor || (!dominantColor && !avatarImage)) {
-      setAccentColor(dominantColor || colors.purple);
-    }
-  });
 
   const handleAutoFocusLayout = useCallback(
     ({
@@ -213,7 +193,6 @@ export default function ENSAssignRecordsSheet() {
               <RegistrationAvatar
                 enableNFTs={hasNFTs}
                 hasSeenExplainSheet={hasSeenExplainSheet}
-                onChangeAvatarUrl={setAvatarUrl}
                 onShowExplainSheet={handleFocus}
               />
             </Box>
@@ -280,7 +259,6 @@ export function ENSAssignRecordsBottomActions({
   const keyboardHeight = useKeyboardHeight();
   const { accountENS } = useAccountProfile();
   const { colors } = useTheme();
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
@@ -298,8 +276,7 @@ export function ENSAssignRecordsBottomActions({
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
-    setAccentColor(colors.purple);
-  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+  }, [fromRoute, navigate]);
 
   const hasBackButton = useMemo(
     () =>
@@ -360,6 +337,8 @@ export function ENSAssignRecordsBottomActions({
     () => ({ bottom: keyboardHeight }),
     [keyboardHeight]
   );
+
+  const accentColor = colors.purple;
 
   return (
     <>

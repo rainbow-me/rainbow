@@ -38,12 +38,10 @@ const isTesting = IS_TESTING === 'true';
 
 const RegistrationAvatar = ({
   hasSeenExplainSheet,
-  onChangeAvatarUrl,
   onShowExplainSheet,
   enableNFTs,
 }: {
   hasSeenExplainSheet: boolean;
-  onChangeAvatarUrl: (url: string) => void;
   onShowExplainSheet: () => void;
   enableNFTs: boolean;
 }) => {
@@ -70,7 +68,6 @@ const RegistrationAvatar = ({
           ? initialAvatarUrl
           : values?.avatar;
       setAvatarUrl(avatarUrl);
-      onChangeAvatarUrl(avatarUrl ?? '');
     }
   }, [initialAvatarUrl, avatarUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -92,9 +89,6 @@ const RegistrationAvatar = ({
       setAvatarMetadata(image);
       setAvatarUrl(
         image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
-      );
-      onChangeAvatarUrl(
-        image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
       );
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
@@ -118,7 +112,7 @@ const RegistrationAvatar = ({
         });
       }
     },
-    [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
+    [onBlurField, setAvatarMetadata]
   );
 
   const {
@@ -136,7 +130,6 @@ const RegistrationAvatar = ({
     onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: 'avatar' });
-      onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
       setDisabled(false);
       setTimeout(() => {

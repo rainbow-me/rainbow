@@ -8,7 +8,17 @@ import { useRecyclerAssetListPosition } from '../core/Contexts';
 export const ProfileStickyHeaderHeight = 52;
 const visiblePosition = ios ? navbarHeight : navbarHeight + 80;
 
-export function ProfileStickyHeader() {
+type Props = {
+  accountName?: string;
+  accountENS?: string;
+  accountAddress?: string;
+};
+
+export const ProfileStickyHeader: React.FC<Props> = ({
+  accountName,
+  accountENS,
+  accountAddress,
+}) => {
   const position = useRecyclerAssetListPosition();
 
   const [disabled, setDisabled] = React.useState(true);
@@ -33,8 +43,11 @@ export function ProfileStickyHeader() {
         <ProfileNameRow
           disableOnPress={disabled}
           testIDPrefix="profile-name-sticky"
+          accountName={accountName}
+          accountENS={accountENS}
+          accountAddress={accountAddress}
         />
       </Box>
     </StickyHeader>
   );
-}
+};

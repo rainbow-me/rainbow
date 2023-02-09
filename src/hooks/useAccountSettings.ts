@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { updateLanguageLocale, Language } from '../languages';
+import { Language, updateLanguageLocale } from '@/languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
   settingsChangeFlashbotsEnabled as changeFlashbotsEnabled,
@@ -12,6 +12,7 @@ import {
 } from '../redux/settings';
 import { AppState } from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
+import { NativeCurrencyKey } from '@/entities';
 
 const languageSelector = (state: AppState) => state.settings.language;
 
@@ -46,36 +47,36 @@ export default function useAccountSettings() {
       language,
       nativeCurrency,
       nativeCurrencySymbol:
-        supportedNativeCurrencies[
-          nativeCurrency as keyof typeof supportedNativeCurrencies
-        ].symbol,
+        supportedNativeCurrencies[nativeCurrency as NativeCurrencyKey].symbol,
       network,
       testnetsEnabled,
     })
   );
 
   const settingsChangeLanguage = useCallback(
-    language => dispatch(changeLanguage(language)),
+    (language: string) => dispatch(changeLanguage(language)),
     [dispatch]
   );
 
   const settingsChangeAppIcon = useCallback(
-    appIcon => dispatch(changeAppIcon(appIcon)),
+    (appIcon: string) => dispatch(changeAppIcon(appIcon)),
     [dispatch]
   );
 
   const settingsChangeNativeCurrency = useCallback(
-    currency => dispatch(changeNativeCurrency(currency)),
+    (currency: NativeCurrencyKey) => dispatch(changeNativeCurrency(currency)),
     [dispatch]
   );
 
   const settingsChangeTestnetsEnabled = useCallback(
-    testnetsEnabled => dispatch(changeTestnetsEnabled(testnetsEnabled)),
+    (testnetsEnabled: boolean) =>
+      dispatch(changeTestnetsEnabled(testnetsEnabled)),
     [dispatch]
   );
 
   const settingsChangeFlashbotsEnabled = useCallback(
-    flashbotsEnabled => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
+    (flashbotsEnabled: boolean) =>
+      dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
     [dispatch]
   );
 

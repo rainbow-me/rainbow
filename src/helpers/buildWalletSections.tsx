@@ -49,6 +49,7 @@ const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const uniswapSelector = (state: any) => state.uniswap;
 const uniswapTotalSelector = (state: any) => state.uniswapTotal;
 const listTypeSelector = (state: any) => state.listType;
+const profileSelector = (state: any) => state.profile;
 
 const buildBriefWalletSections = (
   balanceSectionData: any,
@@ -148,7 +149,7 @@ const withBriefBalanceSection = (
   collectibles: any,
   savingsSection: any,
   uniswapTotal: any,
-  uniqueTokens: any
+  profile: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -187,7 +188,9 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
-      value: totalValue,
+      accountName: profile.accountName,
+      accountENS: profile.accountENS,
+      accountAddress: profile.accountAddress,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -196,6 +199,9 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_AVATAR_ROW',
       uid: 'profile-avatar',
+      accountSymbol: profile.accountSymbol,
+      accountColor: profile.accountColor,
+      accountImage: profile.accountImage,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
@@ -204,6 +210,9 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_NAME_ROW',
       uid: 'profile-name',
+      accountName: profile.accountName,
+      accountENS: profile.accountENS,
+      accountAddress: profile.accountAddress,
     },
     {
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
@@ -225,6 +234,8 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
+      accountColor: profile.accountColor,
+      accountImage: profile.accountImage,
       value: totalValue,
     },
     hasTokens
@@ -298,6 +309,7 @@ const briefBalanceSectionSelector = createSelector(
     uniqueTokensSelector,
     briefBalanceSavingsSectionSelector,
     uniswapTotalSelector,
+    profileSelector,
   ],
   withBriefBalanceSection
 );

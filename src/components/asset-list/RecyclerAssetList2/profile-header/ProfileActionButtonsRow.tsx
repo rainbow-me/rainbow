@@ -2,11 +2,6 @@ import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-  withSpring,
-} from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
@@ -36,30 +31,25 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/wallet/WalletScreen';
 import config from '@/model/config';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { getAllActiveSessionsSync } from '@/utils/walletConnect';
+import { useTheme } from '@/theme';
 
 export const ProfileActionButtonsRowHeight = 80;
 
-export function ProfileActionButtonsRow() {
-  const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
+type Props = {
+  accountColor?: number;
+  accountImage?: string | null;
+};
 
-  const scale = useDerivedValue(() => (accentColorLoaded ? 1 : 0.9));
-  const expandStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: withSpring(scale.value, {
-          damping: 12,
-          restDisplacementThreshold: 0.001,
-          restSpeedThreshold: 0.001,
-          stiffness: 280,
-        }),
-      },
-    ],
-  }));
-
-  if (!accentColorLoaded) return null;
-
+export const ProfileActionButtonsRow: React.FC<Props> = ({
+  accountColor,
+  accountImage,
+}) => {
+  const { colors } = useTheme();
+  const accentColor =
+    accountImage || accountColor === undefined
+      ? colors.appleBlue
+      : colors.avatarBackgrounds[accountColor];
   const addCashEnabled = config.f2c_enabled;
   const swapEnabled = config.swagg_enabled;
 
@@ -70,34 +60,26 @@ export function ProfileActionButtonsRow() {
           <Columns>
             {addCashEnabled && (
               <Column>
-                <Animated.View style={[expandStyle]}>
-                  <BuyButton />
-                </Animated.View>
+                <BuyButton />
               </Column>
             )}
             {swapEnabled && (
               <Column>
-                <Animated.View style={[expandStyle]}>
-                  <SwapButton />
-                </Animated.View>
+                <SwapButton />
               </Column>
             )}
             <Column>
-              <Animated.View style={[expandStyle]}>
-                <SendButton />
-              </Animated.View>
+              <SendButton />
             </Column>
             <Column>
-              <Animated.View style={[expandStyle]}>
-                <MoreButton />
-              </Animated.View>
+              <MoreButton />
             </Column>
           </Columns>
         </AccentColorProvider>
       </Inset>
     </Box>
   );
-}
+};
 
 function ActionButton({
   children,

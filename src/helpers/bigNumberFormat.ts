@@ -1,15 +1,15 @@
-import { memoFn } from '../utils/memoFn';
-import { supportedNativeCurrencies } from '@/references';
+import { memoFn } from '@/utils/memoFn';
 import {
   convertAmountToNativeDisplay,
   divide,
   greaterThan,
 } from '@/helpers/utilities';
+import { NativeCurrencyKey } from '@/entities';
 
 export const bigNumberFormat = memoFn(
   (
     value: string | number,
-    nativeCurrency: keyof typeof supportedNativeCurrencies,
+    nativeCurrency: NativeCurrencyKey,
     skipDecimals: boolean
   ) => {
     let ret;

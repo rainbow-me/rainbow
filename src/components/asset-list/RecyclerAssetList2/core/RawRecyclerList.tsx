@@ -73,7 +73,11 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData]
   );
 
-  const { accountAddress } = useAccountSettings();
+  const {
+    nativeCurrencySymbol,
+    nativeCurrency,
+    accountAddress,
+  } = useAccountSettings();
 
   const topMarginRef = useRef<number>(0);
 
@@ -115,7 +119,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const layoutItemAnimator = useLayoutItemAnimator(ref, topMarginRef);
 
   const theme = useTheme();
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const {
     hiddenCoinsObj: hiddenCoins,
     pinnedCoinsObj: pinnedCoins,

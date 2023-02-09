@@ -7,17 +7,23 @@ import {
   UseQueryData,
 } from '@/react-query';
 
-export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
+export const ensAvatarQueryKey = (name?: string) => [
+  'ens-avatar',
+  name ?? 'undefined',
+];
 
 const STALE_TIME = 10000;
 
 export async function fetchENSAvatar(
-  name: string,
+  name?: string,
   {
     cacheFirst,
     swallowError,
   }: { cacheFirst?: boolean; swallowError?: boolean } = {}
 ) {
+  if (name === undefined) {
+    return undefined;
+  }
   try {
     const cachedAvatar = await getENSData('avatar', name);
     if (cachedAvatar) {
@@ -45,7 +51,7 @@ export async function prefetchENSAvatar(
 }
 
 export default function useENSAvatar(
-  name: string,
+  name?: string,
   config?: QueryConfigDeprecated<typeof fetchENSAvatar>
 ) {
   return useQuery<UseQueryData<typeof fetchENSAvatar>>(

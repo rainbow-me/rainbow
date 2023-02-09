@@ -13,13 +13,14 @@ import {
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
   MaxPriorityFeeSuggestions,
+  NativeCurrencyKey,
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-import { ethUnits, supportedNativeCurrencies, timeUnits } from '@/references';
+import { ethUnits, timeUnits } from '@/references';
 import {
   add,
   convertRawAmountToBalance,
@@ -240,7 +241,7 @@ export const parseLegacyGasFeesBySpeed = (
   legacyGasFees: LegacyGasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   l1GasFeeOptimism: BigNumber | null = null
 ): LegacyGasFeesBySpeed => {
   const gasFeesBySpeed = GasSpeedOrder.map(speed => {
@@ -264,7 +265,7 @@ export const parseGasFees = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => {
   const { maxPriorityFeePerGas, maxBaseFee } = gasFeeParams || {};
   const priorityFee = maxPriorityFeePerGas?.amount || 0;
@@ -302,7 +303,7 @@ export const parseGasFeesBySpeed = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ): GasFeesBySpeed => {
   const gasFeesBySpeed = GasSpeedOrder.map(speed =>
     parseGasFees(
@@ -320,7 +321,7 @@ const getTxFee = (
   gasPrice: BigNumberish,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   l1GasFeeOptimism: BigNumber | null = null
 ) => {
   let amount = multiply(gasPrice, gasLimit);

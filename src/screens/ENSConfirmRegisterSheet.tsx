@@ -1,10 +1,9 @@
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
-import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -14,7 +13,6 @@ import {
   WaitCommitmentConfirmationContent,
   WaitENSConfirmationContent,
 } from '../components/ens-registration';
-import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -29,7 +27,6 @@ import {
   Text,
 } from '@/design-system';
 import {
-  accentColorAtom,
   ENS_DOMAIN,
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
@@ -45,7 +42,6 @@ import {
   useENSRegistrationForm,
   useENSRegistrationStepHandler,
   useENSSearch,
-  usePersistentDominantColorFromImage,
   useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -119,36 +115,15 @@ export default function ENSConfirmRegisterSheet() {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
   const { isSmallPhone } = useDimensions();
-
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
-
-  const avatarImage =
-    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
-  );
-
-  useEffect(() => {
-    if (dominantColor || (!dominantColor && !avatarImage)) {
-      setAccentColor(dominantColor || colors.purple);
-    }
-  }, [avatarImage, dominantColor, setAccentColor]);
-
   const [duration, setDuration] = useState(1);
-
   const { navigate, goBack } = useNavigation();
-
   const { blurFields, values } = useENSRegistrationForm();
   const accountProfile = useAccountProfile();
-
   const avatarUrl = initialAvatarUrl || values.avatar;
-
   const name = ensName?.replace(ENS_DOMAIN, '');
   const { data: registrationData } = useENSSearch({
     name,
   });
-
   const [sendReverseRecord, setSendReverseRecord] = useState(
     accountProfile.accountENS !== ensName &&
       (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
@@ -202,6 +177,8 @@ export default function ENSConfirmRegisterSheet() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  const accentColor = colors.purple;
 
   const stepContent = useMemo(
     () => ({

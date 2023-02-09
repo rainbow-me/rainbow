@@ -24,6 +24,7 @@ import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -66,7 +67,6 @@ import {
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
   BSC_BLOCK_EXPLORER_URL,
-  supportedNativeCurrencies,
   BNB_MAINNET_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -276,7 +276,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => {
   return {
     ...asset,

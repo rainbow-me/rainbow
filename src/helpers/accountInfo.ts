@@ -1,41 +1,42 @@
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '../helpers/emojiHandler';
-import { address } from '../utils/abbreviations';
-import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
+} from '@/helpers/emojiHandler';
+import { address } from '@/utils/abbreviations';
+import { addressHashedEmoji, isValidImagePath } from '@/utils/profileUtils';
+import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 
 export function getAccountProfileInfo(
-  selectedWallet: any,
-  walletNames: any,
-  accountAddress: any
+  selectedWallet: RainbowWallet | undefined,
+  walletNames: { [p: string]: string },
+  accountAddress: string
 ) {
   if (!selectedWallet) {
-    return {};
-  }
-
-  if (!accountAddress) {
-    return {};
+    return {
+      accountAddress,
+    };
   }
 
   if (!selectedWallet?.addresses?.length) {
-    return {};
+    return { accountAddress };
   }
 
   const accountENS = walletNames?.[accountAddress];
 
   const selectedAccount = selectedWallet.addresses.find(
-    (account: any) => account.address === accountAddress
+    (account: RainbowAccount) => account.address === accountAddress
   );
 
   if (!selectedAccount) {
-    return {};
+    return {
+      accountAddress,
+    };
   }
   const { label, color, image } = selectedAccount;
 
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
 
-  const accountName =
+  const accountName: string | undefined =
     labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
 
   const emojiAvatar = returnStringFirstEmoji(label);

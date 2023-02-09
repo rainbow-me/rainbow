@@ -5,7 +5,6 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale, Language } from '../languages';
 import { analytics } from '@/analytics';
-import { NativeCurrencyKeys } from '@/entities';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import {
@@ -27,9 +26,9 @@ import { Network } from '@/helpers/networkTypes';
 import { dataResetState } from '@/redux/data';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
-import { supportedNativeCurrencies } from '@/references';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
@@ -60,7 +59,7 @@ interface SettingsState {
   chainId: number;
   flashbotsEnabled: boolean;
   language: string;
-  nativeCurrency: keyof typeof supportedNativeCurrencies;
+  nativeCurrency: NativeCurrencyKey;
   network: Network;
   testnetsEnabled: boolean;
 }
@@ -289,7 +288,7 @@ export const settingsChangeLanguage = (language: string) => async (
 };
 
 export const settingsChangeNativeCurrency = (
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => async (
   dispatch: ThunkDispatch<
     AppState,

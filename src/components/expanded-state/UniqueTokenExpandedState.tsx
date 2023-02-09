@@ -1,5 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
@@ -57,7 +57,7 @@ import { Network } from '@/helpers';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
-  useAccountProfile,
+  useAccountSettings,
   useBooleanState,
   useDimensions,
   useENSProfile,
@@ -251,8 +251,7 @@ const UniqueTokenExpandedState = ({
   external,
 }: UniqueTokenExpandedStateProps) => {
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
-
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -358,7 +357,6 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 

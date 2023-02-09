@@ -17,6 +17,9 @@ import {
   NFTExtraData,
   NFTFamilyExtraData,
   PoolsHeaderExtraData,
+  ProfileActionButtonsExtraData,
+  ProfileAvatarExtraData,
+  ProfileNameExtraData,
   SavingExtraData,
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
@@ -92,7 +95,13 @@ function rowRenderer(
         </CardRowWrapper>
       );
     case CellType.PROFILE_STICKY_HEADER:
-      return <ProfileStickyHeader />;
+      return (
+        <ProfileStickyHeader
+          accountName={(data as ProfileNameExtraData).accountName}
+          accountAddress={(data as ProfileNameExtraData).accountAddress}
+          accountENS={(data as ProfileNameExtraData).accountENS}
+        />
+      );
     case CellType.COIN:
       return (
         <FastBalanceCoinRow
@@ -116,13 +125,20 @@ function rowRenderer(
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
-          <ProfileActionButtonsRow />
+          <ProfileActionButtonsRow
+            accountColor={(data as ProfileActionButtonsExtraData).accountColor}
+            accountImage={(data as ProfileActionButtonsExtraData).accountImage}
+          />
         </ProfileRowWrapper>
       );
     case CellType.PROFILE_AVATAR_ROW:
       return (
         <ProfileRowWrapper>
-          <ProfileAvatarRow />
+          <ProfileAvatarRow
+            accountColor={(data as ProfileAvatarExtraData).accountColor}
+            accountImage={(data as ProfileAvatarExtraData).accountImage}
+            accountSymbol={(data as ProfileAvatarExtraData).accountSymbol}
+          />
         </ProfileRowWrapper>
       );
     case CellType.PROFILE_BALANCE_ROW:
@@ -136,7 +152,12 @@ function rowRenderer(
     case CellType.PROFILE_NAME_ROW:
       return (
         <ProfileRowWrapper>
-          <ProfileNameRow testIDPrefix="profile-name" />
+          <ProfileNameRow
+            testIDPrefix="profile-name"
+            accountName={(data as ProfileNameExtraData).accountName}
+            accountAddress={(data as ProfileNameExtraData).accountAddress}
+            accountENS={(data as ProfileNameExtraData).accountENS}
+          />
         </ProfileRowWrapper>
       );
     case CellType.UNISWAP_POOL:

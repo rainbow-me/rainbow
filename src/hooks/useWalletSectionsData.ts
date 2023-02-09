@@ -9,6 +9,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
+import useAccountProfile from './useAccountProfile';
 import useWallets from './useWallets';
 import { AppState } from '@/redux/store';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
@@ -23,6 +24,7 @@ export default function useWalletSectionsData({
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
+  const profile = useAccountProfile();
   const sendableUniqueTokens = useSendableUniqueTokens();
   const allUniqueTokens = useSelector(
     (state: AppState) => state.uniqueTokens.uniqueTokens
@@ -51,6 +53,7 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
+      profile,
       savings,
       ...sortedAccountData,
       ...sendableUniqueTokens,
@@ -87,13 +90,14 @@ export default function useWalletSectionsData({
     nativeCurrency,
     network,
     pinnedCoins,
+    profile,
     refetchSavings,
     savings,
+    sendableUniqueTokens,
     shouldRefetchSavings,
     showcaseTokens,
     sortedAccountData,
     type,
-    sendableUniqueTokens,
     uniswap,
   ]);
   return walletSections;

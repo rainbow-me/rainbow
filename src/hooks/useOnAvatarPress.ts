@@ -142,6 +142,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [navigate]);
 
   const onAvatarWebProfile = useCallback(() => {
+    if (!accountENS) return;
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
       Linking.openURL(rainbowURL);
@@ -161,6 +162,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountENS, navigate]);
 
   const onAvatarEditProfile = useCallback(() => {
+    if (!accountENS) return;
     startRegistration(accountENS, REGISTRATION_MODES.EDIT);
     navigate(Routes.REGISTER_ENS_NAVIGATOR, {
       ensName: accountENS,

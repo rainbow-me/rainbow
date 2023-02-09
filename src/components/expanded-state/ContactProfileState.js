@@ -1,22 +1,16 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useNavigation } from '../../navigation/Navigation';
-import { useTheme } from '../../theme/ThemeContext';
+import { useNavigation } from '@/navigation';
+import { useTheme } from '@/theme';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@/helpers/emojiHandler';
-import {
-  useAccountSettings,
-  useContacts,
-  useENSAvatar,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { useAccountSettings, useContacts, useENSAvatar } from '@/hooks';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
@@ -84,12 +78,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '', { w: 200 }) || ''
-  );
-
-  const accentColor =
-    dominantColor || color || colors.avatarBackgrounds[colorIndex || 0];
+  const accentColor = color || colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ProfileModal

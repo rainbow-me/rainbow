@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StatusBar } from 'react-native';
@@ -13,7 +13,7 @@ import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
   useENSRegistration,
@@ -58,7 +58,6 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
-  const setAccentColor = useSetRecoilState(accentColorAtom);
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
   const { colors } = useTheme();
@@ -116,7 +115,6 @@ export default function RegisterENSNavigator() {
     () => () => {
       removeRecordByKey('avatar');
       setAvatarMetadata(undefined);
-      setAccentColor(colors.purple);
       clearValues();
       clearCurrentRegistrationName();
     },
@@ -125,7 +123,6 @@ export default function RegisterENSNavigator() {
       clearValues,
       colors.purple,
       removeRecordByKey,
-      setAccentColor,
       setAvatarMetadata,
     ]
   );

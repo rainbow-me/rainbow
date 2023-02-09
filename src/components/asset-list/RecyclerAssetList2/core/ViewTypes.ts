@@ -79,6 +79,25 @@ export type NFTFamilyExtraData = {
   image?: string;
 };
 
+export type ProfileNameExtraData = {
+  type: CellType.PROFILE_NAME_ROW | CellType.PROFILE_STICKY_HEADER;
+  accountName?: string;
+  accountENS?: string;
+  accountAddress?: string;
+};
+
+export type ProfileAvatarExtraData = {
+  type: CellType.PROFILE_AVATAR_ROW;
+  accountSymbol?: string | boolean;
+  accountColor?: number;
+  accountImage?: string | null;
+};
+
+export type ProfileActionButtonsExtraData = {
+  accountColor?: number;
+  accountImage?: string | null;
+};
+
 export type CellExtraData =
   | { type: CellType.NFTS_HEADER }
   | { type: CellType.LOADING_ASSETS }
@@ -90,6 +109,9 @@ export type CellExtraData =
   | CoinExtraData
   | NFTExtraData
   | AssetsHeaderExtraData
-  | PoolsHeaderExtraData;
+  | PoolsHeaderExtraData
+  | ProfileNameExtraData
+  | ProfileAvatarExtraData
+  | ProfileActionButtonsExtraData;
 
 export type CellTypes = BaseCellType & CellExtraData;

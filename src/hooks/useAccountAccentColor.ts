@@ -1,30 +1,22 @@
-import { maybeSignUri } from '@/handlers/imgix';
 import { useTheme } from '@/theme';
-import {
-  useAccountProfile,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { useAccountProfile } from '@/hooks';
 
-export function useAccountAccentColor() {
+type ReturnType = {
+  accentColor: string;
+  loaded: boolean;
+};
+
+export function useAccountAccentColor(): ReturnType {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
-  );
-
   const { colors } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  }
-
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = accountImage || accountSymbol || hasImageColorLoaded;
+  const hasLoaded = Boolean(accountImage || accountSymbol);
 
   return {
-    accentColor,
+    accentColor:
+      accountImage || accountColor === undefined
+        ? colors.appleBlue
+        : colors.avatarBackgrounds[accountColor],
     loaded: hasLoaded,
   };
 }

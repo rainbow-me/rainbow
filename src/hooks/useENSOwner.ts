@@ -8,11 +8,17 @@ import {
   UseQueryData,
 } from '@/react-query';
 
-export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];
+export const ensOwnerQueryKey = (name?: string) => [
+  'ens-owner',
+  name ?? 'undefined',
+];
 
 const STALE_TIME = 10000;
 
-export async function fetchENSOwner(name: string) {
+export async function fetchENSOwner(name?: string) {
+  if (name === undefined) {
+    return undefined;
+  }
   const cachedOwner = await getENSData('owner', name);
   if (cachedOwner) {
     queryClient.setQueryData(ensOwnerQueryKey(name), cachedOwner);
@@ -31,7 +37,7 @@ export async function prefetchENSOwner(name: string) {
 }
 
 export default function useENSOwner(
-  name: string,
+  name?: string,
   config?: QueryConfigDeprecated<typeof fetchENSOwner>
 ) {
   const { accountAddress } = useAccountSettings();

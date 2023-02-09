@@ -11,7 +11,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
@@ -19,36 +19,41 @@ import { addressCopiedToastAtom } from '@/screens/wallet/WalletScreen';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { haptics } from '@/utils';
 import { Space } from '@/design-system/docs/system/tokens.css';
+import { useCallback, useMemo, useRef } from 'react';
 
 export const ProfileNameRowHeight = 16;
 
-export function ProfileNameRow({
+const HORIZONTAL_INSET = 19;
+const ACCOUNT_NAME_LEFT_OFFSET = 15;
+const CARET_ICON_WIDTH = 22;
+
+type Props = {
+  accountAddress?: string;
+  accountName?: string;
+  accountENS?: string;
+  disableOnPress?: boolean;
+  testIDPrefix?: string;
+};
+
+export const ProfileNameRow: React.FC<Props> = ({
+  accountAddress,
+  accountName,
+  accountENS,
   disableOnPress,
   testIDPrefix,
-}: {
-  disableOnPress?: any;
-  testIDPrefix?: string;
-}) {
-  // ////////////////////////////////////////////////////
-  // Account
-  const { accountENS, accountName } = useAccountProfile();
-
-  const onNewEmoji = React.useRef<() => void>();
-
-  // ////////////////////////////////////////////////////
-  // Name & press handler
-
+}) => {
+  const onNewEmoji = useRef<() => void>();
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
   );
-  const { accountAddress } = useAccountProfile();
 
-  const onPressName = () => {
+  const onPressName = useCallback(() => {
     if (disableOnPress) return;
     navigate(Routes.CHANGE_WALLET_SHEET);
-  };
-  const onLongPressName = React.useCallback(() => {
+  }, [disableOnPress, navigate]);
+
+  const onLongPressName = useCallback(() => {
     if (disableOnPress) return;
     if (!isToastActive) {
       setToastActive(true);
@@ -61,27 +66,17 @@ export function ProfileNameRow({
     Clipboard.setString(accountAddress);
   }, [accountAddress, disableOnPress, isToastActive, setToastActive]);
 
-  const name = accountENS
-    ? abbreviateEnsForDisplay(accountENS, 20)
-    : accountName;
-
-  // ////////////////////////////////////////////////////
-  // Colors
-
+  const name = useMemo(
+    () => (accountENS ? abbreviateEnsForDisplay(accountENS, 20) : accountName),
+    [accountName, accountENS]
+  );
   const iconColor = useForegroundColor('secondary60 (Deprecated)');
-
-  // ////////////////////////////////////////////////////
-  // Spacings
-
   const { width: deviceWidth } = useDimensions();
 
-  const horizontalInset = 19;
-  const accountNameLeftOffset = 15;
-  const caretIconWidth = 22;
   const maxWidth =
     deviceWidth -
-    (caretIconWidth + accountNameLeftOffset) -
-    horizontalInset * 2;
+    (CARET_ICON_WIDTH + ACCOUNT_NAME_LEFT_OFFSET) -
+    HORIZONTAL_INSET * 2;
 
   const hitSlop: Space = '16px';
   return (
@@ -110,7 +105,7 @@ export function ProfileNameRow({
                   color={iconColor}
                   height={9}
                   name="caretDownIcon"
-                  width={caretIconWidth}
+                  width={CARET_ICON_WIDTH}
                 />
               </Inline>
             </Inset>
@@ -130,4 +125,4 @@ export function ProfileNameRow({
       />
     </Box>
   );
-}
+};
