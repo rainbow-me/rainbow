@@ -414,7 +414,8 @@
     "**/@xmldom/xmldom": "0.7.7",
     "**/json5": "2.2.2",
     "**/ua-parser-js": "0.7.33",
-    "**/http-cache-semantics": "4.1.1"
+    "**/http-cache-semantics": "4.1.1",
+    "**/@sideway/formula": "3.0.1"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
