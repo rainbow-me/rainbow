@@ -9,8 +9,19 @@ import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
+import { RouteProp, useRoute } from '@react-navigation/core';
+import { analyticsV2 } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();
+
+type PairHardwareWalletNavigatorParams = {
+  entryPoint: string;
+  isFirstWallet: boolean;
+};
+
+type RouteParams = {
+  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
+};
 
 // atoms used for navigator state
 export const LedgerImportDeviceIdAtom = atom({
@@ -20,6 +31,10 @@ export const LedgerImportDeviceIdAtom = atom({
 
 export function PairHardwareWalletNavigator() {
   const { height, width } = useDimensions();
+
+  const { params } = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
+  >();
 
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
@@ -35,11 +50,23 @@ export function PairHardwareWalletNavigator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(
+    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
+    []
+  );
+
+  const onDismiss = () =>
+    analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
+      step: currentRouteName,
+      ...params,
+    });
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
+          onDismiss={onDismiss}
           scrollEnabled={false}
         >
           <Swipe.Navigator

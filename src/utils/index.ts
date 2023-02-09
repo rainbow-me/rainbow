@@ -39,7 +39,6 @@ export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';
 export { default as parseObjectToUrlQueryString } from './parseObjectToUrlQueryString';
-export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
 export { default as pseudoRandomArrayItemFromString } from './pseudoRandomArrayItemFromString';
 export { default as reduceArrayToObject } from './reduceArrayToObject';

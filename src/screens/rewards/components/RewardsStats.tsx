@@ -17,6 +17,35 @@ import {
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
+import { TextColor } from '@/design-system/color/palettes';
+import { CustomColor } from '@/design-system/color/useForegroundColor';
+
+const getPositionChangeSymbol = (positionChange: number) => {
+  if (positionChange > 0) {
+    return '􀑁';
+  }
+  if (positionChange < 0) {
+    return '􁘳';
+  }
+  return '􁘶';
+};
+
+const getPositionChangeColor = (
+  positionChange: number,
+  colors: {
+    up: TextColor | CustomColor;
+    down: TextColor | CustomColor;
+    noChange: TextColor | CustomColor;
+  }
+): TextColor | CustomColor => {
+  if (positionChange > 0) {
+    return colors.up;
+  }
+  if (positionChange < 0) {
+    return colors.down;
+  }
+  return colors.noChange;
+};
 
 type Props = {
   assetPrice?: number;
@@ -81,8 +110,12 @@ export const RewardsStats: React.FC<Props> = ({
                 title={i18n.t(i18n.l.rewards.position)}
                 value={`#${position}`}
                 secondaryValue={Math.abs(positionChange).toString()}
-                secondaryValueColor={positionChange > 0 ? 'green' : 'red'}
-                secondaryValueIcon={positionChange > 0 ? '􀑁' : '􁘳'}
+                secondaryValueColor={getPositionChangeColor(positionChange, {
+                  up: 'green',
+                  down: { custom: color },
+                  noChange: 'labelQuaternary',
+                })}
+                secondaryValueIcon={getPositionChangeSymbol(positionChange)}
                 onPress={navigateToPositionExplainer}
               />
               {actions.map(action => {

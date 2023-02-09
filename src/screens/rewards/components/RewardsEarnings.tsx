@@ -165,7 +165,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                       background="surfaceSecondaryElevated"
                       shadow="12px"
                     />
-                    <Text color="labelSecondary" size="22pt" weight="heavy">
+                    <Text color="labelSecondary" size="22pt" weight="bold">
                       {formattedTotalEarningsToken}
                     </Text>
                   </Inline>
@@ -198,7 +198,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                   <Text color="labelSecondary" size="15pt" weight="semibold">
                     {i18n.t(i18n.l.rewards.current_value)}
                   </Text>
-                  <Text color="labelSecondary" size="22pt" weight="heavy">
+                  <Text color="labelSecondary" size="22pt" weight="bold">
                     {formattedTotalEarningsNative}
                   </Text>
                 </Stack>

@@ -2,6 +2,7 @@ import React from 'react';
 import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
+  HARDWARE_WALLETS,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -20,12 +21,14 @@ import {
   cryptoAndWalletsCard,
 } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
+import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
@@ -44,6 +47,7 @@ export default function DiscoverHome() {
               </Inline>
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
+              {hardwareWalletsEnabled && <LedgerCard />}
               <ENSCreateProfileCard />
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />

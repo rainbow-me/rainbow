@@ -619,7 +619,7 @@ export function getValueForColorMode<Value>(
   value: Value | ContextualColorValue<Value>,
   colorMode: ColorMode
 ): Value {
-  if (typeof value === 'object' && 'light' in value) {
+  if (typeof value === 'object' && value !== null && 'light' in value) {
     if (colorMode === 'darkTinted') {
       return value.darkTinted ?? value.dark;
     }
