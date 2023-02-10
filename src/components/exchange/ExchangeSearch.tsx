@@ -249,6 +249,7 @@ const ExchangeSearch: ForwardRefRenderFunction<
                 source={Spinner as Source}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.6)}
                 style={{ height: 20, width: 20 }}
+                size={20}
               />
             </Box>
           </>

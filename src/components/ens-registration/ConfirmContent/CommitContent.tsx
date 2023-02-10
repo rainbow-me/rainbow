@@ -33,6 +33,7 @@ const CommitContent = ({
             <ImgixImage
               source={brain as Source}
               style={{ height: 20, width: 20 }}
+              size={30}
             />
           </Box>
           <Text

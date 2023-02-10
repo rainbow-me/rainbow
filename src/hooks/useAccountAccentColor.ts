@@ -9,7 +9,7 @@ export function useAccountAccentColor() {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
+    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
   );
 
   const { colors } = useTheme();
