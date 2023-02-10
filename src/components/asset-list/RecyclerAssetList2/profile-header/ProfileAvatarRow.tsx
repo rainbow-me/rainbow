@@ -27,14 +27,16 @@ export const ProfileAvatarSize = 80;
 type Props = {
   size?: number;
   accountSymbol?: string | boolean;
-  accountColor?: number;
+  accountAccentColor: string;
   accountImage?: string | null;
+  hasAccountAccentColorLoaded?: boolean;
 };
 
 export const ProfileAvatarRow: React.FC<Props> = ({
   size = ProfileAvatarSize,
   accountSymbol,
-  accountColor,
+  accountAccentColor,
+  hasAccountAccentColorLoaded,
   accountImage,
 }) => {
   const {
@@ -53,15 +55,12 @@ export const ProfileAvatarRow: React.FC<Props> = ({
   const { colors } = useTheme();
   const { colorMode } = useColorMode();
 
-  const accentColor =
-    accountImage || accountColor === undefined
-      ? colors.black
-      : colors.avatarBackgrounds[accountColor];
+  const accentColor = hasAccountAccentColorLoaded
+    ? accountAccentColor
+    : colors.skeleton;
 
   const insets = useSafeAreaInsets();
   const position = useRecyclerAssetListPosition();
-
-  const hasLoaded = accountSymbol || accountImage;
 
   const animatedStyle = React.useMemo(
     () => ({
@@ -98,7 +97,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
   );
 
   const opacity = useDerivedValue(() => {
-    return hasLoaded ? 1 : 0;
+    return hasAccountAccentColorLoaded ? 1 : 0;
   });
   const fadeInStyle = useAnimatedStyle(() => {
     return {
@@ -110,7 +109,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
   });
 
   const scale = useDerivedValue(() => {
-    return hasLoaded ? 1 : 0.9;
+    return hasAccountAccentColorLoaded ? 1 : 0.9;
   });
   const expandStyle = useAnimatedStyle(() => {
     return {
@@ -149,7 +148,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
                 height={{ custom: size }}
                 justifyContent="center"
                 shadow={
-                  hasLoaded
+                  hasAccountAccentColorLoaded
                     ? {
                         custom: {
                           ios: [
@@ -185,7 +184,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
                 width={{ custom: size }}
               >
                 <>
-                  {!hasLoaded && (
+                  {!hasAccountAccentColorLoaded && (
                     <Cover alignHorizontal="center">
                       <Box height={{ custom: size }} width="full">
                         <Skeleton animated>
@@ -210,7 +209,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
                       />
                     ) : (
                       <EmojiAvatar
-                        accountColor={accountColor}
+                        accountAccentColor={accountAccentColor}
                         accountSymbol={accountSymbol}
                         size={size}
                       />
@@ -228,22 +227,15 @@ export const ProfileAvatarRow: React.FC<Props> = ({
 
 export function EmojiAvatar({
   size,
-  accountColor,
+  accountAccentColor,
   accountSymbol,
 }: {
   size: number;
-  accountColor?: number;
+  accountAccentColor: string;
   accountSymbol?: string | boolean;
 }) {
-  const { colors } = useTheme();
-
-  const accentColor =
-    accountColor !== undefined
-      ? colors.avatarBackgrounds[accountColor]
-      : colors.skeleton;
-
   return (
-    <AccentColorProvider color={accentColor}>
+    <AccentColorProvider color={accountAccentColor}>
       <Box
         background="accent"
         borderRadius={size / 2}

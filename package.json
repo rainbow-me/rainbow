@@ -307,6 +307,7 @@
     "@lavamoat/allow-scripts": "2.0.3",
     "@nomiclabs/hardhat-ethers": "2.0.4",
     "@nomiclabs/hardhat-waffle": "2.0.1",
+    "@testing-library/react": "13.4.0",
     "@testing-library/react-native": "11.2.0",
     "@types/chroma-js": "2.1.3",
     "@types/d3-scale": "4.0.2",

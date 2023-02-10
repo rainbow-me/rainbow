@@ -27,6 +27,7 @@ import {
   Text,
 } from '@/design-system';
 import {
+  accentColorAtom,
   ENS_DOMAIN,
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
@@ -42,12 +43,15 @@ import {
   useENSRegistrationForm,
   useENSRegistrationStepHandler,
   useENSSearch,
+  usePersistentDominantColorFromImage,
   useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -115,6 +119,22 @@ export default function ENSConfirmRegisterSheet() {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
   const { isSmallPhone } = useDimensions();
+
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
+
+  const avatarImage =
+    avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
+  const {
+    result: dominantColor,
+  } = usePersistentDominantColorFromImage(avatarImage, { signUrl: true });
+
+  useEffect(() => {
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  }, [avatarImage, dominantColor, setAccentColor]);
+
   const [duration, setDuration] = useState(1);
   const { navigate, goBack } = useNavigation();
   const { blurFields, values } = useENSRegistrationForm();
@@ -177,8 +197,6 @@ export default function ENSConfirmRegisterSheet() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
-
-  const accentColor = colors.purple;
 
   const stepContent = useMemo(
     () => ({

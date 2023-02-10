@@ -4,10 +4,10 @@ import { useWindowDimensions } from 'react-native';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
-import { textRecordFields } from '@/helpers/ens';
+import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
 import { deviceUtils } from '@/utils';
-import { useTheme } from '@/theme';
+import { useRecoilState } from 'recoil';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
@@ -21,8 +21,8 @@ export const getENSAdditionalRecordsSheetHeight = () => {
 };
 
 export default function ENSAdditionalRecordsSheet() {
-  const { colors } = useTheme();
   const { params } = useRoute<any>();
+  const [accentColor] = useRecoilState(accentColorAtom);
   const {
     selectedFields,
     onAddField,
@@ -38,7 +38,6 @@ export default function ENSAdditionalRecordsSheet() {
   );
 
   const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
-  const accentColor = colors.purple;
 
   return (
     // @ts-expect-error JavaScript component

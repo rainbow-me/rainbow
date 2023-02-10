@@ -10,7 +10,12 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@/helpers/emojiHandler';
-import { useAccountSettings, useContacts, useENSAvatar } from '@/hooks';
+import {
+  useAccountSettings,
+  useContacts,
+  useENSAvatar,
+  usePersistentDominantColorFromImage,
+} from '@/hooks';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
@@ -78,7 +83,12 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
-  const accentColor = color || colors.avatarBackgrounds[colorIndex || 0];
+  const {
+    result: dominantColor,
+  } = usePersistentDominantColorFromImage(avatarUrl || '', { signUrl: true });
+
+  const accentColor =
+    dominantColor || color || colors.avatarBackgrounds[colorIndex || 0];
 
   return (
     <ProfileModal

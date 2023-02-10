@@ -126,8 +126,13 @@ function rowRenderer(
       return (
         <ProfileRowWrapper>
           <ProfileActionButtonsRow
-            accountColor={(data as ProfileActionButtonsExtraData).accountColor}
-            accountImage={(data as ProfileActionButtonsExtraData).accountImage}
+            accountAccentColor={
+              (data as ProfileActionButtonsExtraData).accountAccentColor
+            }
+            hasAccountAccentColorLoaded={
+              (data as ProfileActionButtonsExtraData)
+                .hasAccountAccentColorLoaded
+            }
           />
         </ProfileRowWrapper>
       );
@@ -135,7 +140,12 @@ function rowRenderer(
       return (
         <ProfileRowWrapper>
           <ProfileAvatarRow
-            accountColor={(data as ProfileAvatarExtraData).accountColor}
+            accountAccentColor={
+              (data as ProfileAvatarExtraData).accountAccentColor
+            }
+            hasAccountAccentColorLoaded={
+              (data as ProfileAvatarExtraData).hasAccountAccentColorLoaded
+            }
             accountImage={(data as ProfileAvatarExtraData).accountImage}
             accountSymbol={(data as ProfileAvatarExtraData).accountSymbol}
           />

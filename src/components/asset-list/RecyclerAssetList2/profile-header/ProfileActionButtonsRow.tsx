@@ -33,46 +33,82 @@ import { addressCopiedToastAtom } from '@/screens/wallet/WalletScreen';
 import config from '@/model/config';
 import { getAllActiveSessionsSync } from '@/utils/walletConnect';
 import { useTheme } from '@/theme';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+  WithSpringConfig,
+} from 'react-native-reanimated';
+import { useLayoutEffect } from 'react';
 
 export const ProfileActionButtonsRowHeight = 80;
+const SPRING_CONFIG: WithSpringConfig = {
+  damping: 12,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 280,
+};
 
 type Props = {
-  accountColor?: number;
-  accountImage?: string | null;
+  accountAccentColor?: string;
+  hasAccountAccentColorLoaded?: boolean;
 };
 
 export const ProfileActionButtonsRow: React.FC<Props> = ({
-  accountColor,
-  accountImage,
+  accountAccentColor,
+  hasAccountAccentColorLoaded,
 }) => {
   const { colors } = useTheme();
-  const accentColor =
-    accountImage || accountColor === undefined
-      ? colors.appleBlue
-      : colors.avatarBackgrounds[accountColor];
+
+  const scale = useSharedValue(hasAccountAccentColorLoaded ? 1 : 0.9);
+  const expandStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: scale.value,
+      },
+    ],
+  }));
+
+  useLayoutEffect(() => {
+    scale.value = withSpring(
+      hasAccountAccentColorLoaded ? 1 : 0.9,
+      SPRING_CONFIG
+    );
+  }, [hasAccountAccentColorLoaded, scale]);
+
+  if (!hasAccountAccentColorLoaded) return null;
+
   const addCashEnabled = config.f2c_enabled;
   const swapEnabled = config.swagg_enabled;
-
   return (
     <Box width="full">
       <Inset horizontal={{ custom: 17 }}>
-        <AccentColorProvider color={accentColor}>
+        <AccentColorProvider color={accountAccentColor ?? colors.skeleton}>
           <Columns>
             {addCashEnabled && (
               <Column>
-                <BuyButton />
+                <Animated.View style={[expandStyle]}>
+                  <BuyButton />
+                </Animated.View>
               </Column>
             )}
             {swapEnabled && (
               <Column>
-                <SwapButton />
+                <Animated.View style={[expandStyle]}>
+                  <SwapButton />
+                </Animated.View>
               </Column>
             )}
             <Column>
-              <SendButton />
+              <Animated.View style={[expandStyle]}>
+                <SendButton />
+              </Animated.View>
             </Column>
             <Column>
-              <MoreButton />
+              <Animated.View style={[expandStyle]}>
+                <MoreButton />
+              </Animated.View>
             </Column>
           </Columns>
         </AccentColorProvider>

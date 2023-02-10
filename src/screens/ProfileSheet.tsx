@@ -19,6 +19,7 @@ import {
   useDimensions,
   useENSAvatar,
   useExternalWalletSectionsData,
+  usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
@@ -63,6 +64,13 @@ export default function ProfileSheet() {
     infinite: true,
   });
 
+  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
+    avatar?.imageUrl || '',
+    {
+      signUrl: true,
+    }
+  );
+
   const colorIndex = useMemo(
     () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
     [profileAddress]
@@ -72,15 +80,14 @@ export default function ProfileSheet() {
     contentHeight,
   ]);
 
-  let accentColor = colors.appleBlue;
-  if (!isAvatarFetched) {
-    accentColor = colors.skeleton;
-  } else if (
-    (avatar === undefined || avatar.imageUrl === null) &&
-    colorIndex !== null
-  ) {
-    accentColor = colors.avatarBackgrounds[colorIndex];
-  }
+  const accentColor =
+    // Set accent color when ENS images have fetched & dominant
+    // color is not loading.
+    isAvatarFetched && state !== 1 && typeof colorIndex === 'number'
+      ? dominantColor ||
+        colors.avatarBackgrounds[colorIndex] ||
+        colors.appleBlue
+      : colors.skeleton;
 
   const enableZoomableImages = !isPreview;
 

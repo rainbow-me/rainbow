@@ -14,6 +14,7 @@ import useWallets from './useWallets';
 import { AppState } from '@/redux/store';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 
 export default function useWalletSectionsData({
   type,
@@ -25,6 +26,10 @@ export default function useWalletSectionsData({
 
   const { language, network, nativeCurrency } = useAccountSettings();
   const profile = useAccountProfile();
+  const {
+    loaded: hasAccountAccentColorLoaded,
+    accentColor: accountAccentColor,
+  } = useAccountAccentColor();
   const sendableUniqueTokens = useSendableUniqueTokens();
   const allUniqueTokens = useSelector(
     (state: AppState) => state.uniqueTokens.uniqueTokens
@@ -53,7 +58,11 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
-      profile,
+      profile: {
+        ...profile,
+        accountAccentColor,
+        hasAccountAccentColorLoaded,
+      },
       savings,
       ...sortedAccountData,
       ...sendableUniqueTokens,

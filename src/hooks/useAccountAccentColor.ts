@@ -1,5 +1,8 @@
 import { useTheme } from '@/theme';
-import { useAccountProfile } from '@/hooks';
+import {
+  useAccountProfile,
+  usePersistentDominantColorFromImage,
+} from '@/hooks';
 
 type ReturnType = {
   accentColor: string;
@@ -9,14 +12,25 @@ type ReturnType = {
 export function useAccountAccentColor(): ReturnType {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
+  const {
+    result: dominantColor,
+    state,
+  } = usePersistentDominantColorFromImage(accountImage, { signUrl: true });
+
   const { colors } = useTheme();
-  const hasLoaded = Boolean(accountImage || accountSymbol);
+  let accentColor = colors.appleBlue;
+  if (accountImage) {
+    accentColor = dominantColor || colors.appleBlue;
+  } else if (typeof accountColor === 'number') {
+    accentColor = colors.avatarBackgrounds[accountColor];
+  }
+  const hasImageColorLoaded = state === 2 || state === 3;
+  const hasLoaded = Boolean(
+    accountImage || accountSymbol || hasImageColorLoaded
+  );
 
   return {
-    accentColor:
-      accountImage || accountColor === undefined
-        ? colors.appleBlue
-        : colors.avatarBackgrounds[accountColor],
+    accentColor: accentColor,
     loaded: hasLoaded,
   };
 }

@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -52,6 +52,7 @@ import {
   saveSeenOnchainDataDisclaimer,
 } from '@/handlers/localstorage/ens';
 import {
+  accentColorAtom,
   ENS_RECORDS,
   REGISTRATION_MODES,
   TextRecordField,
@@ -68,9 +69,11 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
+  usePersistentDominantColorFromImage,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
+import { useRecoilState } from 'recoil';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -83,9 +86,10 @@ export default function ENSAssignRecordsSheet() {
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
-  const accentColor = colors.purple;
 
-  useENSModifiedRegistration({
+  const {
+    images: { avatarUrl: initialAvatarUrl },
+  } = useENSModifiedRegistration({
     modifyChangedRecords: true,
     setInitialRecordsWhenInEditMode: true,
   });
@@ -123,9 +127,25 @@ export default function ENSAssignRecordsSheet() {
     step,
     yearsDuration: 1,
   });
+
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+
+  const avatarImage =
+    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
+  const {
+    result: dominantColor,
+  } = usePersistentDominantColorFromImage(avatarImage, { signUrl: true });
+
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
     : BottomActionHeight;
+
+  useFocusEffect(() => {
+    if (dominantColor || (!dominantColor && !avatarImage)) {
+      setAccentColor(dominantColor || colors.purple);
+    }
+  });
 
   const handleAutoFocusLayout = useCallback(
     ({
@@ -193,6 +213,7 @@ export default function ENSAssignRecordsSheet() {
               <RegistrationAvatar
                 enableNFTs={hasNFTs}
                 hasSeenExplainSheet={hasSeenExplainSheet}
+                onChangeAvatarUrl={setAvatarUrl}
                 onShowExplainSheet={handleFocus}
               />
             </Box>
@@ -259,6 +280,7 @@ export function ENSAssignRecordsBottomActions({
   const keyboardHeight = useKeyboardHeight();
   const { accountENS } = useAccountProfile();
   const { colors } = useTheme();
+  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
   const [fromRoute, setFromRoute] = useState(previousRouteName);
   const {
@@ -276,7 +298,8 @@ export function ENSAssignRecordsBottomActions({
   const handlePressBack = useCallback(() => {
     delayNext();
     navigate(fromRoute);
-  }, [fromRoute, navigate]);
+    setAccentColor(colors.purple);
+  }, [colors.purple, fromRoute, navigate, setAccentColor]);
 
   const hasBackButton = useMemo(
     () =>
@@ -337,8 +360,6 @@ export function ENSAssignRecordsBottomActions({
     () => ({ bottom: keyboardHeight }),
     [keyboardHeight]
   );
-
-  const accentColor = colors.purple;
 
   return (
     <>

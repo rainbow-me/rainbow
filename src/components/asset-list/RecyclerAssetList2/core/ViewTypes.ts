@@ -36,6 +36,7 @@ export enum CellType {
   BIG_EMPTY_WALLET_SPACER = 'BIG_EMPTY_WALLET_SPACER',
   EMPTY_ROW = 'EMPTY_ROW',
 }
+
 export type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,
   RecyclerListViewState
@@ -89,12 +90,14 @@ export type ProfileNameExtraData = {
 export type ProfileAvatarExtraData = {
   type: CellType.PROFILE_AVATAR_ROW;
   accountSymbol?: string | boolean;
-  accountColor?: number;
+  accountAccentColor: string;
   accountImage?: string | null;
+  hasAccountAccentColorLoaded?: boolean;
 };
 
 export type ProfileActionButtonsExtraData = {
-  accountColor?: number;
+  accountAccentColor?: string;
+  hasAccountAccentColorLoaded?: boolean;
   accountImage?: string | null;
 };
 

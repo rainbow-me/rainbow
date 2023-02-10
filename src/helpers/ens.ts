@@ -794,6 +794,11 @@ const formatRentPrice = (
   };
 };
 
+const accentColorAtom = atom({
+  default: colors.purple,
+  key: 'ens.accentColor',
+});
+
 export {
   generateSalt,
   getENSRecordKeys,
@@ -811,4 +816,5 @@ export {
   formatEstimatedNetworkFee,
   formatTotalRegistrationCost,
   formatRentPrice,
+  accentColorAtom,
 };

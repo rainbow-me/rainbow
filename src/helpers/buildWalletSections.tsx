@@ -200,8 +200,9 @@ const withBriefBalanceSection = (
       type: 'PROFILE_AVATAR_ROW',
       uid: 'profile-avatar',
       accountSymbol: profile.accountSymbol,
-      accountColor: profile.accountColor,
       accountImage: profile.accountImage,
+      accountAccentColor: profile.accountAccentColor,
+      hasAccountAccentColorLoaded: profile.hasAccountAccentColorLoaded,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
@@ -234,8 +235,9 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
-      accountColor: profile.accountColor,
       accountImage: profile.accountImage,
+      accountAccentColor: profile.accountAccentColor,
+      hasAccountAccentColorLoaded: profile.hasAccountAccentColorLoaded,
       value: totalValue,
     },
     hasTokens
