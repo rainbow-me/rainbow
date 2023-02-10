@@ -31,7 +31,7 @@ export {
 export {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
-  parseSimplehashNfts,
+  parseSimplehashNFTs,
   handleAndSignImages,
   getOpenSeaCollectionUrl,
 } from './uniqueTokens';

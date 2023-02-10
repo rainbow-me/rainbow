@@ -45,10 +45,11 @@ export interface UniqueAsset {
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;
-  lowResUrl: string | null;
+  lowResUrl: string | undefined | null;
   marketplaceCollectionUrl?: string | null;
   marketplaceId: string | null;
   marketplaceName: string | null;
+  spamScore: number;
   type: AssetType;
   uniqueId: string;
   /**
@@ -62,10 +63,10 @@ export interface UniqueAsset {
 }
 
 export interface UniqueAssetTrait {
-  trait_type: string;
-  value: string | number | null | undefined;
-  display_type: string;
-  max_value: string | number | null | undefined;
+  trait_type?: string;
+  value?: string | number | null | undefined;
+  display_type?: string;
+  max_value?: string | number | null | undefined;
 }
 
 export interface SeaportOrder {

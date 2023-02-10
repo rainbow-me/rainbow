@@ -316,7 +316,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   };
 };
 
-export const parseSimplehashNfts = nftData => {
+export const parseSimplehashNFTs = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
 
