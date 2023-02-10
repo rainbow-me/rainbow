@@ -170,7 +170,7 @@ function ENSAvatar({ name }: { name: string }) {
         height={{ custom: rowHeight }}
         source={{ uri: avatar?.imageUrl }}
         width={{ custom: rowHeight }}
-        size={200}
+        size={100}
       />
     );
   }

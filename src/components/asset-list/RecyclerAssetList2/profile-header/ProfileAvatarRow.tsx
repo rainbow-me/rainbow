@@ -227,7 +227,7 @@ export function ProfileAvatarRow({
                         height={{ custom: size }}
                         source={{ uri: accountImage }}
                         width={{ custom: size }}
-                        size={200}
+                        size={100}
                       />
                     ) : (
                       <EmojiAvatar size={size} />
