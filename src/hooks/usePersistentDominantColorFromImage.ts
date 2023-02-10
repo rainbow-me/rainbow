@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@rainbow-me/model/mmkv';
-import { getDominantColorFromImage } from '@rainbow-me/utils';
+import { STORAGE_IDS } from '@/model/mmkv';
+import { getDominantColorFromImage } from '@/utils';
 import { maybeSignUri } from '@/handlers/imgix';
 import usePrevious from './usePrevious';
 

@@ -57,7 +57,7 @@ import { Network } from '@/helpers';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
-  useAccountSettings,
+  useAccountProfile,
   useBooleanState,
   useDimensions,
   useENSProfile,
@@ -251,7 +251,7 @@ const UniqueTokenExpandedState = ({
   external,
 }: UniqueTokenExpandedStateProps) => {
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();

@@ -30,7 +30,7 @@ export function useAccountAccentColor(): ReturnType {
   );
 
   return {
-    accentColor: accentColor,
+    accentColor,
     loaded: hasLoaded,
   };
 }
