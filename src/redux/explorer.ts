@@ -823,7 +823,11 @@ export const fetchAssetsFromRefraction = () => (
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
-  addressSocket!.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  if (addressSocket) {
+    addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  } else {
+    //
+  }
 };
 
 /**
