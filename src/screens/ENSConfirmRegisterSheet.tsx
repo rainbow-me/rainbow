@@ -425,6 +425,7 @@ export default function ENSConfirmRegisterSheet() {
                         height={{ custom: avatarSize }}
                         source={{ uri: avatarUrl }}
                         width={{ custom: avatarSize }}
+                        size={200}
                       />
                     </Box>
                   )}

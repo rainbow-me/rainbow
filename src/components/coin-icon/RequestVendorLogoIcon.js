@@ -75,6 +75,7 @@ export default function RequestVendorLogoIcon({
               onError={setError}
               source={imageSource}
               style={position.sizeAsObject('100%')}
+              size={200}
             />
           ) : (
             <Text

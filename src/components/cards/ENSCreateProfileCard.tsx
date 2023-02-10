@@ -68,13 +68,6 @@ export const ENSCreateProfileCard = () => {
     }
   }, [uniqueDomain]);
 
-  useEffect(() => {
-    // Preload intro screen preview marquee ENS images
-    ImgixImage.preload(
-      ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
-    );
-  }, []);
-
   return (
     <ColorModeProvider value="lightTinted">
       <GenericCard

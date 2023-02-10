@@ -10,6 +10,7 @@ import { WebView } from 'react-native-webview';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/getFullSizeUrl';
 
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
@@ -136,6 +137,7 @@ export default function ModelViewer({
         <ImgixImage
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}
+          size={FULL_NFT_IMAGE_SIZE}
         />
       </ProgressIndicatorContainer>
     </View>

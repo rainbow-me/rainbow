@@ -307,7 +307,8 @@ export async function onSessionProposal(
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
       imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0]
+        dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0],
+        { w: 200 }
       ),
       peerId: proposer.publicKey,
       isWalletConnectV2: true,
@@ -506,7 +507,8 @@ export async function onSessionRequest(
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
       imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta.url) || peerMeta.icons[0]
+        dappLogoOverride(peerMeta.url) || peerMeta.icons[0],
+        { w: 200 }
       ),
       payload: event.params.request,
       walletConnectV2RequestValues: {

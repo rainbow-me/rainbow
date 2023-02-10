@@ -5,6 +5,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import logger from '@/utils/logger';
+import { CardSize } from '../unique-token/CardSize';
 
 const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
@@ -152,6 +153,7 @@ class SvgImage extends Component {
             resizeMode={ImgixImage.resizeMode.cover}
             source={{ uri: props.lowResFallbackUri }}
             style={position.coverAsObject}
+            size={CardSize}
           />
         )}
         {!this.state.trulyLoaded && props.fallbackUri && (
@@ -160,6 +162,7 @@ class SvgImage extends Component {
             resizeMode={ImgixImage.resizeMode.cover}
             source={{ uri: props.fallbackUri }}
             style={position.coverAsObject}
+            size={CardSize}
           />
         )}
         <WebView

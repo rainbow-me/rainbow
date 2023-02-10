@@ -71,7 +71,7 @@ export default function ProfileSheet() {
   );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatar?.imageUrl ?? '') ?? ''
+    maybeSignUri(avatar?.imageUrl ?? '', { w: 200 }) ?? ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [

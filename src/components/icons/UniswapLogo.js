@@ -10,7 +10,7 @@ const Container = styled(Centered).attrs(({ theme: { colors } }) => ({
 
 const UniswapLogo = ({ imageStyle, ...props }) => (
   <Container {...props}>
-    <ImgixImage source={UniswapLogoImage} style={imageStyle} />
+    <ImgixImage source={UniswapLogoImage} style={imageStyle} size={100} />
   </Container>
 );
 
