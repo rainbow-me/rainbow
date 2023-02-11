@@ -20,13 +20,13 @@ const DEFAULT_STALE_TIME = 10000;
 // Query Types
 
 export type UniqueTokensArgs = {
-  address: string | undefined;
+  address: string | null | undefined;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-const uniqueTokensQueryKey = ({ address }: UniqueTokensArgs) =>
+export const uniqueTokensQueryKey = ({ address }: UniqueTokensArgs) =>
   createQueryKey('uniqueTokens', { address }, { persisterVersion: 1 });
 
 type UniqueTokensQueryKey = ReturnType<typeof uniqueTokensQueryKey>;
@@ -37,12 +37,13 @@ type UniqueTokensQueryKey = ReturnType<typeof uniqueTokensQueryKey>;
 async function uniqueTokensQueryFunction({
   queryKey: [{ address }],
 }: QueryFunctionArgs<typeof uniqueTokensQueryKey>) {
-  const storedTokens = await getUniqueTokens(address, Network.mainnet);
-  if (storedTokens) {
-    queryClient.setQueryData(uniqueTokensQueryKey({ address }), storedTokens);
-  }
+  if (!address) return [];
+  // const storedTokens = await getUniqueTokens(address, Network.mainnet);
+  // if (storedTokens && storedTokens.length > 0) {
+  //   queryClient.setQueryData(uniqueTokensQueryKey({ address }), storedTokens);
+  // }
   const freshTokens = await getUniqueTokens2(address);
-  saveUniqueTokens(address, freshTokens, Network.mainnet);
+  // saveUniqueTokens(address, freshTokens, Network.mainnet);
   return freshTokens;
 }
 

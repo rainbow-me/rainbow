@@ -3,7 +3,10 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
-import { applyENSMetadataFallbackToTokens } from '@/parsers/uniqueTokens';
+import {
+  applyENSMetadataFallbackToTokens,
+  parseSimplehashNFTs,
+} from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@/handlers/ens';
 import {
@@ -17,11 +20,16 @@ import {
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
 import { Network } from '@/helpers/networkTypes';
+import { fetchRawUniqueTokens, START_CURSOR } from '@/handlers/simplehash';
+import { rainbowFetch } from '@/rainbow-fetch';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
   address,
 ];
+
+const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
+const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 
 export default function useFetchUniqueTokens({
   address,
@@ -34,8 +42,11 @@ export default function useFetchUniqueTokens({
 }) {
   const { network } = useAccountSettings();
   const mounted = useIsMounted();
+  const queryClient = useQueryClient();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
+  const [cursor, setCursor] = useState<string | null>(START_CURSOR);
+  const [polygonAllowlist, setPolygonAllowlist] = useState<string[]>([]);
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -52,6 +63,27 @@ export default function useFetchUniqueTokens({
     })();
   }, [address, network]);
 
+  useEffect(() => {
+    const fetchPolygonAllowlist = async () => {
+      const allowlist = await queryClient.fetchQuery(
+        ['polygon-allowlist'],
+        async () => {
+          return (
+            await rainbowFetch(
+              'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+              { method: 'get' }
+            )
+          ).data.data.addresses;
+        },
+        {
+          staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
+        }
+      );
+      setPolygonAllowlist(allowlist);
+    };
+    fetchPolygonAllowlist();
+  }, [queryClient]);
+
   // Make the first query to retrieve the unique tokens.
   const uniqueTokensQuery = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address }),
@@ -65,12 +97,17 @@ export default function useFetchUniqueTokens({
 
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
-        uniqueTokens = await apiGetAccountUniqueTokens(network, address, 0);
+        const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
+          address as string,
+          START_CURSOR
+        );
+        setCursor(nextCursor);
+        uniqueTokens = rawNFTData;
       }
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
-      uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
+      // uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
 
       return uniqueTokens;
     },
@@ -83,37 +120,67 @@ export default function useFetchUniqueTokens({
   );
   const uniqueTokens = uniqueTokensQuery.data;
 
-  const queryClient = useQueryClient();
   useEffect(() => {
     if (!address) return;
 
     async function fetchMore({
       network,
+      cursor,
       uniqueTokens = [],
-      page = 0,
     }: {
       network: Network;
+      cursor: any;
       uniqueTokens?: UniqueAsset[];
-      page?: number;
     }): Promise<UniqueAsset[]> {
       if (
         mounted.current &&
-        uniqueTokens?.length >= page * UNIQUE_TOKENS_LIMIT_PER_PAGE &&
-        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL
+        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL &&
+        cursor
       ) {
-        let moreUniqueTokens = await apiGetAccountUniqueTokens(
-          network,
+        // let moreUniqueTokens = await apiGetAccountUniqueTokens(
+        //   network,
+        //   address as string,
+        //   page
+        // );
+        const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
           address as string,
-          page
+          cursor
+        );
+        let moreUniqueTokens = parseSimplehashNFTs(rawNFTData).filter(
+          (nft: UniqueAsset) => {
+            if (nft.collection.name === null) return false;
+
+            // filter out spam
+            if (nft.spamScore >= 85) return false;
+
+            // filter gnosis NFTs that are not POAPs
+            if (
+              nft.network === Network.gnosis &&
+              nft.asset_contract &&
+              nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+            )
+              return false;
+
+            if (
+              nft.network === Network.polygon &&
+              !polygonAllowlist.includes(
+                nft.asset_contract?.address?.toLowerCase()
+              )
+            ) {
+              return false;
+            }
+
+            return true;
+          }
         );
 
         // If there are any "unknown" ENS names, fallback to the ENS
         // metadata service.
-        moreUniqueTokens = await applyENSMetadataFallbackToTokens(
-          moreUniqueTokens
-        );
+        // moreUniqueTokens = await applyENSMetadataFallbackToTokens(
+        //   moreUniqueTokens
+        // );
 
-        if (!hasStoredTokens) {
+        if (!hasStoredTokens && moreUniqueTokens.length) {
           queryClient.setQueryData<UniqueAsset[]>(
             uniqueTokensQueryKey({ address }),
             tokens =>
@@ -124,7 +191,7 @@ export default function useFetchUniqueTokens({
         }
         return fetchMore({
           network,
-          page: page + 1,
+          cursor: nextCursor,
           uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
         });
       }
@@ -144,32 +211,30 @@ export default function useFetchUniqueTokens({
         let tokens = (
           await fetchMore({
             network,
-            // If there are stored tokens in storage, then we want
-            // to do a background refresh.
-            page: hasStoredTokens ? 0 : 1,
+            cursor,
             uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
           })
         ).filter((token: any) => token.familyName !== 'POAP');
 
-        // Fetch poaps
-        const poaps = await fetchPoaps(address);
-        if (poaps) {
-          tokens = [...tokens, ...poaps];
-        }
+        // // Fetch poaps
+        // const poaps = await fetchPoaps(address);
+        // if (poaps) {
+        //   tokens = [...tokens, ...poaps];
+        // }
 
-        // Fetch Polygon tokens until all have fetched
-        const polygonTokens = await fetchMore({ network: Network.polygon });
-        tokens = [...tokens, ...polygonTokens];
+        // // Fetch Polygon tokens until all have fetched
+        // const polygonTokens = await fetchMore({ network: Network.polygon });
+        // tokens = [...tokens, ...polygonTokens];
 
         // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
         // We will fetch tokens registered in the past 48 hours to be safe.
-        const ensTokens = await fetchEnsTokens({
-          address,
-          timeAgo: { hours: 48 },
-        });
-        if (ensTokens.length > 0) {
-          tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
-        }
+        // const ensTokens = await fetchEnsTokens({
+        //   address,
+        //   timeAgo: { hours: 48 },
+        // });
+        // if (ensTokens.length > 0) {
+        //   tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
+        // }
 
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
@@ -190,6 +255,8 @@ export default function useFetchUniqueTokens({
     hasStoredTokens,
     infinite,
     mounted,
+    cursor,
+    polygonAllowlist,
   ]);
 
   return uniqueTokensQuery;
