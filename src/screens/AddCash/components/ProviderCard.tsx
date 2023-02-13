@@ -20,7 +20,6 @@ import {
   CalloutType,
   PaymentMethod,
 } from '@/screens/AddCash/types';
-import { analyticsV2 } from '@/analytics';
 
 const providerNames = {
   [FiatProviderName.Ramp]: 'Ramp',
@@ -107,9 +106,6 @@ export function ProviderCard({
   const Logo = React.useMemo(() => providerLogos[config.name], [config.name]);
   const handleOnPress = React.useCallback(() => {
     onPress?.();
-    analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
-      provider: config.name,
-    });
   }, [onPress]);
 
   return (

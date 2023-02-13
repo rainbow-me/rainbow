@@ -162,32 +162,6 @@ export type EventProperties = {
      * This should be saved along with the pending transaction so that when we
      * get transaction data we can emit an event with this sessionId.
      */
-    sessionId: string;
-    /**
-     * Whether or not the order was successful
-     */
-    success?: boolean;
-  };
-  [event.f2cProviderFlowErrored]: {
-    /**
-     * Name of the provider that was selected
-     */
-    provider: FiatProviderName;
-    /**
-     * Locally-generated string ID used to associate start/complete events.
-     */
-    sessionId?: string;
-  };
-  [event.f2cTransactionReceived]: {
-    /**
-     * Name of the provider that was selected
-     */
-    provider: FiatProviderName;
-    /**
-     * Locally-generated string ID used to associate start/complete events.
-     * This should have been saved along with the pending transaction so that
-     * when we get transaction data we can emit an event with this sessionId.
-     */
     sessionId?: string;
   };
 };

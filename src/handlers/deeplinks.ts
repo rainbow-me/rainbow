@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import qs from 'qs';
+import qs from 'query-string';
 import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
@@ -35,6 +35,8 @@ import {
   pair as pairWalletConnect,
   setHasPendingDeeplinkPendingRedirect,
 } from '@/utils/walletConnect';
+import { analyticsV2 } from '@/analytics';
+import { FiatProviderName } from '@/entities/f2c';
 
 // initial research into refactoring deep links
 //                         eip      native deeplink  rainbow.me profiles
@@ -125,6 +127,19 @@ export default async function handleDeeplink(
       }
       case 'f2c': {
         logger.log('Handling F2C deeplink', { url });
+
+        const { query } = new URL(url);
+        const { provider, sessionId } = query;
+
+        if (!provider || !sessionId) {
+          logger.warn('Received FWC deeplink with invalid params', { query });
+        }
+
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          provider: provider as FiatProviderName,
+          sessionId,
+        });
+
         break;
       }
       default: {

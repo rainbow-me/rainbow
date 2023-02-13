@@ -2,6 +2,7 @@ import React from 'react';
 import qs from 'query-string';
 import { Linking } from 'react-native';
 import { RAMP_HOST_API_KEY } from 'react-native-dotenv';
+import { nanoid } from 'nanoid/non-secure';
 
 import { logger } from '@/logger';
 import { FiatProviderName } from '@/entities/f2c';
@@ -13,6 +14,7 @@ import {
 } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
+import { analyticsV2 } from '@/analytics';
 
 const providerConfig = {
   name: FiatProviderName.Ramp,
@@ -81,14 +83,24 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
         config={providerConfig}
         onPress={() => {
           const host = 'https://buy.ramp.network';
+          const sessionId = nanoid();
           const params = qs.stringify({
             hostLogoUrl: 'https://rainbow.me/images/rainbow-avatar.png',
             hostAppName: 'Rainbow',
             hostApiKey: RAMP_HOST_API_KEY,
-            finalUrl: `https://rnbw.app/f2c?provider=ramp&address=${accountAddress}`,
+            userAddress: accountAddress,
+            defaultAsset: 'ETH',
+            finalUrl: `https://rnbw.app/f2c?provider=${FiatProviderName.Ramp}&sessionId=${sessionId}`,
           });
           const uri = `${host}/?${params}`;
-          logger.info('F2C: opening Ramp', { uri });
+
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+            provider: FiatProviderName.Ramp,
+            sessionId,
+          });
+
+          logger.info('F2C: opening Ramp');
+
           Linking.openURL(uri);
         }}
       />
