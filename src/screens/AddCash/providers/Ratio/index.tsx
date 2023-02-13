@@ -78,9 +78,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       provider: FiatProviderName.Ratio,
     }),
   });
-  const pendingTransactionSheetExplainerType = React.useRef(
-    'f2cSemiSupportedAssetPurchased'
-  );
+  const pendingTransactionSheetExplainerType = React.useRef('');
   const { navigate } = useNavigation();
 
   const onTransactionComplete = React.useCallback(

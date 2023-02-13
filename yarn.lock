@@ -2940,10 +2940,10 @@
     "@metamask/eth-sig-util" "4.0.0"
     ethereumjs-util "6.2.1"
 
-"@ratio.me/ratio-react-native-library@0.7.5":
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.7.5.tgz#60b69b8f1ff3542d28ad1bb5268f5e96aeaadf86"
-  integrity sha512-k3xyEIkHUWWAq8BjzlY0hkJvH2jZ1OHjLNWd/8Wa9WhCSy7LrzM8EySS2QLHqrRfrTmG0bcShrusdQ5g4/sjZw==
+"@ratio.me/ratio-react-native-library@0.7.10":
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.7.10.tgz#c8aa558f55fed1d87e495c85038aebf7fc71fa4b"
+  integrity sha512-jrQuo3k5J3hn4WcDfcDhZhJnIr1DbEcWufATpeAaVZMr5Q+V15QMuP3dBITu1GTRPyNRXhntAzyqnvjGkTQWYA==
   dependencies:
     react-native-swipe-gestures "^1.0.5"
 
@@ -15361,6 +15361,11 @@ react-native-palette-full@1.2.0:
 react-native-permissions@3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.0.5.tgz#94542a343abdac801fa0a4593ea2c751cb45c41f"
+
+react-native-plaid-link-sdk@9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-plaid-link-sdk/-/react-native-plaid-link-sdk-9.0.1.tgz#47bcbc5b17b16483950c0c8f65855cbfee1bf00a"
+  integrity sha512-C7YK+0EpSHEYN/2SfGBr7Szq+zwf0KxfVbNpyuHhWCXkKke3gjOmZWGNnZJuzR9JyuKM3GNokUmMH3zJZhfjTw==
 
 react-native-quick-md5@3.0.3:
   version "3.0.3"

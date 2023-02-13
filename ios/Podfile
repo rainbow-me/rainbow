@@ -51,6 +51,7 @@ target 'Rainbow' do
   pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
+  pod 'Plaid', '~> 4.1.0'
 
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
