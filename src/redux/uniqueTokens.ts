@@ -5,6 +5,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import {
   applyENSMetadataFallbackToToken,
   applyENSMetadataFallbackToTokens,
+  parseSimplehashNFTs,
 } from '../parsers/uniqueTokens';
 import { AppGetState, AppState } from './store';
 import { analytics } from '@/analytics';
@@ -21,8 +22,17 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
-import { getNftsByWalletAddress } from '@/handlers/simplehash';
+import {
+  fetchRawUniqueTokens,
+  getNftsByWalletAddress,
+  START_CURSOR,
+} from '@/handlers/simplehash';
 import { Network } from '@/helpers/networkTypes';
+import { queryClient } from '@/react-query';
+import { rainbowFetch } from '@/rainbow-fetch';
+
+const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
+const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -248,89 +258,154 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
-  const fetchNetwork = async (network: Network) => {
-    let shouldStopFetching = false;
-    let page = 0;
-    while (!shouldStopFetching) {
-      shouldStopFetching = await fetchPage(page, network);
-      // check that the account address to fetch for has not changed while fetching
-      const isCurrentAccountAddress =
-        accountAddress ===
-        (showcaseAddress || getState().settings.accountAddress);
-      if (!isCurrentAccountAddress) {
-        shouldStopFetching = true;
-      }
-
-      page++;
+  const polygonAllowlist = await queryClient.fetchQuery(
+    ['polygon-allowlist'],
+    async () => {
+      return (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses;
+    },
+    {
+      staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
     }
-  };
-
-  const fetchPage = async (page: number, network: Network) => {
-    let shouldStopFetching = false;
+  );
+  let shouldStopFetching = false;
+  let cursor = START_CURSOR;
+  while (cursor && !shouldStopFetching) {
     try {
-      let newPageResults;
-      try {
-        newPageResults = await apiGetAccountUniqueTokens(
-          network,
-          accountAddress,
-          page
-        );
-      } catch (e) {
-        newPageResults = [];
-      }
+      const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
+        accountAddress,
+        cursor
+      );
 
-      // If there are any "unknown" ENS names, fallback to the ENS
-      // metadata service.
-      newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
-
-      uniqueTokens = uniqueTokens.concat(newPageResults);
+      cursor = nextCursor;
       shouldStopFetching =
-        newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
-        uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
+        rawNFTData.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+        uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL ||
+        accountAddress !==
+          (showcaseAddress || getState().settings.accountAddress);
+
+      const tokens = parseSimplehashNFTs(rawNFTData).filter(
+        (nft: UniqueAsset) => {
+          if (nft.collection.name === null) return false;
+
+          // filter out spam
+          if (nft.spamScore >= 85) return false;
+
+          // filter gnosis NFTs that are not POAPs
+          if (
+            nft.network === Network.gnosis &&
+            nft.asset_contract &&
+            nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+          )
+            return false;
+
+          if (
+            nft.network === Network.polygon &&
+            !polygonAllowlist.includes(
+              nft.asset_contract?.address?.toLowerCase()
+            )
+          ) {
+            return false;
+          }
+
+          return true;
+        }
+      );
+      uniqueTokens = uniqueTokens.concat(tokens);
     } catch (error) {
       dispatch({
         showcase: !!showcaseAddress,
         type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
       });
       captureException(error);
-      // stop fetching if there is an error & dont save results
       shouldStopFetching = true;
       errorCheck = true;
     }
-    return shouldStopFetching;
-  };
+  }
 
-  await fetchNetwork(currentNetwork);
+  // const fetchNetwork = async (network: Network) => {
+  //   let shouldStopFetching = false;
+  //   let page = 0;
+  //   while (!shouldStopFetching) {
+  //     shouldStopFetching = await fetchPage(page, network);
+  //     // check that the account address to fetch for has not changed while fetching
+  //     const isCurrentAccountAddress =
+  //       accountAddress ===
+  //       (showcaseAddress || getState().settings.accountAddress);
+  //     if (!isCurrentAccountAddress) {
+  //       shouldStopFetching = true;
+  //     }
+
+  //     page++;
+  //   }
+  // };
+
+  // const fetchPage = async (cursor: string | null | undefined) => {
+  //   let shouldStopFetching = false;
+  //   try {
+  //     let newPageResults;
+  //     try {
+  //       newPageResults = await fetchRawUniqueTokens(accountAddress, cursor);
+  //     } catch (e) {
+  //       newPageResults = [];
+  //     }
+
+  //     // If there are any "unknown" ENS names, fallback to the ENS
+  //     // metadata service.
+  //     // newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
+
+  //     uniqueTokens = uniqueTokens.concat(newPageResults);
+  //     shouldStopFetching =
+  //       newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+  //       uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
+  //   } catch (error) {
+  //     dispatch({
+  //       showcase: !!showcaseAddress,
+  //       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+  //     });
+  //     captureException(error);
+  //     // stop fetching if there is an error & dont save results
+  //     shouldStopFetching = true;
+  //     errorCheck = true;
+  //   }
+  //   return shouldStopFetching;
+  // };
+
+  // await fetchNetwork(currentNetwork);
 
   // Only include poaps and L2 nft's on mainnet
-  if (currentNetwork === Network.mainnet) {
-    const poaps = (await fetchPoaps(accountAddress)) ?? [];
-    if (poaps.length > 0) {
-      analytics.identify(undefined, { poaps: poaps.length });
-      uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
-      uniqueTokens = uniqueTokens.concat(poaps);
-    }
+  // if (currentNetwork === Network.mainnet) {
+  //   const poaps = (await fetchPoaps(accountAddress)) ?? [];
+  //   if (poaps.length > 0) {
+  //     analytics.identify(undefined, { poaps: poaps.length });
+  //     uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
+  //     uniqueTokens = uniqueTokens.concat(poaps);
+  //   }
 
-    // Fetch Optimism and Arbitrum NFTs
-    const layer2NFTs = await getNftsByWalletAddress(accountAddress);
+  // Fetch Optimism and Arbitrum NFTs
+  // const layer2NFTs = await getNftsByWalletAddress(accountAddress);
 
-    if (layer2NFTs.length > 0) {
-      uniqueTokens = uniqueTokens.concat(layer2NFTs);
-    }
+  // if (layer2NFTs.length > 0) {
+  //   uniqueTokens = uniqueTokens.concat(layer2NFTs);
+  // }
 
-    // we only care about analytics for mainnet + L2's
-    analytics.identify(undefined, { NFTs: uniqueTokens.length });
+  // we only care about analytics for mainnet + L2's
+  analytics.identify(undefined, { NFTs: uniqueTokens.length });
 
-    // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
-    // We will fetch tokens registered in the past 48 hours to be safe.
-    const ensTokens = await fetchEnsTokens({
-      address: accountAddress,
-      timeAgo: { hours: 48 },
-    });
-    if (ensTokens.length > 0) {
-      uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
-    }
-  }
+  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+  // We will fetch tokens registered in the past 48 hours to be safe.
+  // const ensTokens = await fetchEnsTokens({
+  //   address: accountAddress,
+  //   timeAgo: { hours: 48 },
+  // });
+  // if (ensTokens.length > 0) {
+  //   uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+  // }
+  // }
 
   // NFT Fetching clean up
   // check that the account address to fetch for has not changed while fetching before updating state
