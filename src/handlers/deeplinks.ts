@@ -54,6 +54,7 @@ export default async function handleDeeplink(
   while (store.getState().data.isLoadingAssets) {
     await delay(300);
   }
+  logger.info('Handling deeplink', { url });
   const urlObj = new URL(url);
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
@@ -113,7 +114,6 @@ export default async function handleDeeplink(
 
         break;
       }
-
       case 'update-android': {
         const code = urlObj.pathname.split('/')[2];
         if (ios) {
@@ -123,7 +123,10 @@ export default async function handleDeeplink(
         }
         break;
       }
-
+      case 'f2c': {
+        logger.log('Handling F2C deeplink', { url });
+        break;
+      }
       default: {
         const addressOrENS = urlObj.pathname?.split('/')?.[1];
         if (addressOrENS) {

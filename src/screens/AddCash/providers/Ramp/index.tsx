@@ -1,5 +1,9 @@
 import React from 'react';
+import qs from 'query-string';
+import { Linking } from 'react-native';
+import { RAMP_HOST_API_KEY } from 'react-native-dotenv';
 
+import { logger } from '@/logger';
 import { FiatProviderName } from '@/entities/f2c';
 import {
   PaymentMethod,
@@ -72,8 +76,22 @@ const providerConfig = {
 export function Ramp({ accountAddress }: { accountAddress: string }) {
   return (
     <ButtonPressAnimation onPress={() => {}}>
-      {/* @ts-ignore */}
-      <ProviderCard config={providerConfig} />
+      <ProviderCard
+        /* @ts-ignore */
+        config={providerConfig}
+        onPress={() => {
+          const host = 'https://buy.ramp.network';
+          const params = qs.stringify({
+            hostLogoUrl: 'https://rainbow.me/images/rainbow-avatar.png',
+            hostAppName: 'Rainbow',
+            hostApiKey: RAMP_HOST_API_KEY,
+            finalUrl: `https://rnbw.app/f2c?provider=ramp&address=${accountAddress}`,
+          });
+          const uri = `${host}/?${params}`;
+          logger.info('F2C: opening Ramp', { uri });
+          Linking.openURL(uri);
+        }}
+      />
     </ButtonPressAnimation>
   );
 }

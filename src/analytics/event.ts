@@ -149,7 +149,7 @@ export type EventProperties = {
     /**
      * Locally-generated string ID used to associate start/complete events.
      */
-    sessionId: string;
+    sessionId?: string;
   };
   [event.f2cProviderFlowCompleted]: {
     /**
@@ -166,7 +166,7 @@ export type EventProperties = {
     /**
      * Whether or not the order was successful
      */
-    success: boolean;
+    success?: boolean;
   };
   [event.f2cProviderFlowErrored]: {
     /**
@@ -176,7 +176,7 @@ export type EventProperties = {
     /**
      * Locally-generated string ID used to associate start/complete events.
      */
-    sessionId: string;
+    sessionId?: string;
   };
   [event.f2cTransactionReceived]: {
     /**
@@ -188,6 +188,6 @@ export type EventProperties = {
      * This should have been saved along with the pending transaction so that
      * when we get transaction data we can emit an event with this sessionId.
      */
-    sessionId: string;
+    sessionId?: string;
   };
 };
