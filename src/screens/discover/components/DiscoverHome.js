@@ -27,28 +27,29 @@ import config from '@/model/config';
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const accountAsset = useAccountAsset(ETH_ADDRESS);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
+  const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
+  const isProfilesEnabled =
+    profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   return (
     <Inset top="20px" bottom={{ custom: 150 }}>
       <Stack space="20px">
         <Inset horizontal="20px">
-          {profilesEnabled &&
-          !testNetwork &&
-          !isZero(accountAsset.balance.amount) ? (
+          {!testNetwork ? (
             <Stack space="20px">
               <Inline space="20px">
                 <GasCard />
-                <ENSSearchCard />
+                {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && <LedgerCard />}
-              <ENSCreateProfileCard />
+              {isProfilesEnabled && <ENSCreateProfileCard />}
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
                 <LearnCard cardDetails={avoidScamsCard} type="square" />
