@@ -7,9 +7,7 @@ import useExperimentalFlag, {
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
-import { useAccountAsset, useAccountSettings } from '@/hooks';
-import { ETH_ADDRESS } from '@/references';
-import { isZero } from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
@@ -26,7 +24,6 @@ import config from '@/model/config';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
-  const accountAsset = useAccountAsset(ETH_ADDRESS);
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
