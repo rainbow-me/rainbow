@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import qs from 'query-string';
 import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
@@ -67,15 +66,13 @@ export default async function handleDeeplink(
         : urlObj.host;
     switch (action) {
       case 'wc': {
-        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri } = urlObj.query;
         handleWalletConnect(uri);
         break;
       }
       case 'token': {
         const { dispatch } = store;
-        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { addr } = qs.parse(urlObj.query?.substring(1));
+        const { addr } = urlObj.query;
         const address = (addr as string)?.toLowerCase() ?? '';
         if (address && address.length > 0) {
           const asset = ethereumUtils.getAssetFromAllAssets(address);
@@ -128,11 +125,12 @@ export default async function handleDeeplink(
       case 'f2c': {
         logger.log('Handling F2C deeplink', { url });
 
-        const { query } = new URL(url);
-        const { provider, sessionId } = query;
+        const { provider, sessionId } = urlObj.query;
 
         if (!provider || !sessionId) {
-          logger.warn('Received FWC deeplink with invalid params', { query });
+          logger.warn('Received FWC deeplink with invalid params', {
+            query: urlObj.query,
+          });
         }
 
         analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
