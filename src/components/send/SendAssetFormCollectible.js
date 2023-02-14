@@ -63,12 +63,8 @@ export default function SendAssetFormCollectible({
   const [containerWidth, setContainerWidth] = useState();
   const [isGradientVisible, setIsGradientVisible] = useState(false);
 
-  const { dimensions: cachedImageDimensions } = useImageMetadata(
-    asset.image_preview_url
-  );
-
   const { height: imageHeight, width: imageWidth } = useMemo(() => {
-    const imgDims = cachedImageDimensions || defaultImageDimensions;
+    const imgDims = defaultImageDimensions;
 
     const defaultWidth = deviceWidth - 38;
     const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
@@ -88,13 +84,7 @@ export default function SendAssetFormCollectible({
     }
 
     return { height, width };
-  }, [
-    cachedImageDimensions,
-    deviceHeight,
-    deviceWidth,
-    isTallPhone,
-    isTinyPhone,
-  ]);
+  }, [deviceHeight, deviceWidth, isTallPhone, isTinyPhone]);
 
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {

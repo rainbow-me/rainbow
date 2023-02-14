@@ -70,6 +70,7 @@ class ImgixImage extends React.PureComponent<
       <Component
         {...props}
         key={retryCount}
+        onLoad={props?.onLoad}
         onError={this.handleError}
         source={source}
       />

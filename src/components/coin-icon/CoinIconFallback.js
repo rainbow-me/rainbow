@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
-import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@/assets/eth-icon.png';
 import { AssetTypes } from '@/entities';
 import { useBooleanState, useColorForAsset } from '@/hooks';
-import { ImageWithCachedMetadata } from '@/components/images';
+import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { borders, fonts, position, shadow } from '@/styles';
 import {
@@ -14,6 +13,7 @@ import {
   isETH,
   magicMemo,
 } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -23,7 +23,7 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const FallbackImage = styled(ImageWithCachedMetadata)(
+const FallbackImage = styled(ImgixImage)(
   ({
     size,
     layoutSize,
@@ -86,7 +86,7 @@ function WrappedFallbackImage({
   );
 }
 
-const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
+const FallbackImageElement = IS_ANDROID ? WrappedFallbackImage : FallbackImage;
 
 const CoinIconFallback = fallbackProps => {
   const {
@@ -133,6 +133,7 @@ const CoinIconFallback = fallbackProps => {
         color={fallbackIconColor}
         eth={eth}
         imageUrl={imageUrl}
+        source={{ uri: imageUrl }}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}

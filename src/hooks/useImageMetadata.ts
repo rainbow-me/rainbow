@@ -38,11 +38,6 @@ export default function useImageMetadata(imageUrl: string | null) {
             ...(color || colorFromImage
               ? { color: color || colorFromImage }
               : {}),
-            dimensions: {
-              height,
-              isSquare: height === width,
-              width,
-            },
           },
         })
       );

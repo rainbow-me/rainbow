@@ -18,11 +18,6 @@ const MERGE = 'imageMetadata/MERGE';
  */
 export interface ImageMetadata {
   color?: string;
-  dimensions: {
-    height: number;
-    isSquare: boolean;
-    width: number;
-  };
 }
 
 /**
