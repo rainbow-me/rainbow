@@ -54,16 +54,6 @@ export const event = {
    * modal. This event DOES NOT mean we have transaction data.
    */
   f2cProviderFlowCompleted: 'f2c.provider.flow_completed',
-  /**
-   * Called if a provider flow throws an error.
-   */
-  f2cProviderFlowErrored: 'f2c.provider.flow_errored',
-  /**
-   * Called when we have transaction data. This is fired a while after a
-   * provider flow completes because we need to wait for the transaction to hit
-   * the blockchain.
-   */
-  f2cTransactionReceived: 'f2c.transaction_received',
 } as const;
 
 /**

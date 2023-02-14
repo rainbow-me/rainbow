@@ -137,7 +137,7 @@ export default async function handleDeeplink(
 
         analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
           provider: provider as FiatProviderName,
-          sessionId,
+          sessionId: sessionId as string,
         });
 
         break;
