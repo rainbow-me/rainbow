@@ -206,6 +206,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
                         height={{ custom: size }}
                         source={{ uri: accountImage }}
                         width={{ custom: size }}
+                        size={size}
                       />
                     ) : (
                       <EmojiAvatar
