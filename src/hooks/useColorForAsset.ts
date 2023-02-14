@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
-import useImageMetadata from './useImageMetadata';
 import { AssetType, ParsedAddressAsset } from '@/entities';
 import {
   getTokenMetadata,
@@ -8,6 +7,8 @@ import {
   isETH,
   pseudoRandomArrayItemFromString,
 } from '@/utils';
+import { usePersistentDominantColorFromImage } from '.';
+import { maybeSignUri } from '@/handlers/imgix';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
@@ -21,12 +22,15 @@ export default function useColorForAsset(
   const token = getTokenMetadata(mainnet_address || address!);
   const tokenListColor = token?.color;
 
-  const { color: imageColor } = useImageMetadata(
-    getUrlForTrustIconFallback(
-      mainnet_address || address!,
-      mainnet_address ? AssetType.token : (type as AssetType)
-    )
-  ) as any;
+  const { result: imageColor } = usePersistentDominantColorFromImage(
+    maybeSignUri(
+      getUrlForTrustIconFallback(
+        mainnet_address || address!,
+        mainnet_address ? AssetType.token : (type as AssetType)
+      ) || '',
+      { w: 40 }
+    ) || ''
+  );
 
   const isDarkMode = forceLightMode || isDarkModeTheme;
 

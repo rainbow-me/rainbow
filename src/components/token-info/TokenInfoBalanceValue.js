@@ -9,7 +9,7 @@ import { magicMemo } from '@/utils';
 const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});
 
 const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
-  const { address, balance, symbol, type, value } = asset;
+  const { address, balance, symbol, type, value, mainnet_address } = asset;
   const color = useColorForAsset(asset);
 
   return (
@@ -21,6 +21,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
       marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
     >
       <CoinIcon
+        mainnet_address={mainnet_address}
         address={address}
         ignoreBadge
         size={20}
