@@ -2,7 +2,6 @@ import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
 import networkTypes from '@/helpers/networkTypes';
 
-export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
@@ -51,11 +50,6 @@ export const getAppIcon = () => getGlobal(APP_ICON, 'og');
 
 export const saveNativeCurrency = (nativeCurrency: any) =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
-
-export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
-
-export const saveImageMetadata = (imageMetadata: any) =>
-  saveGlobal(IMAGE_METADATA, imageMetadata);
 
 /**
  * @desc save transaction signatures

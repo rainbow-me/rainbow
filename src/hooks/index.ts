@@ -76,7 +76,6 @@ export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
-export { default as useImageMetadata } from './useImageMetadata';
 export { default as useInitializeAccountData } from './useInitializeAccountData';
 export { default as useInitializeDiscoverData } from './useInitializeDiscoverData';
 export { default as useInitializeWallet } from './useInitializeWallet';

@@ -41,7 +41,6 @@ import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
 import { explorerInit } from '@/redux/explorer';
-import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
@@ -316,16 +315,6 @@ const DevSection = () => {
               }
               rightComponent={
                 loadingStates.clearMmkvStorage && <SettingsLoadingIndicator />
-              }
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
-              onPress={clearImageMetadataCache}
-              size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.clear_image_metadata_cache')}
-                />
               }
             />
             <MenuItem

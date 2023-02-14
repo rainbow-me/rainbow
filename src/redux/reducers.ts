@@ -11,7 +11,6 @@ import ensRegistration from './ensRegistration';
 import explorer from './explorer';
 import gas from './gas';
 import hiddenTokens from './hiddenTokens';
-import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import nonceManager from './nonceManager';
 import requests from './requests';
@@ -39,7 +38,6 @@ export default combineReducers({
   explorer,
   gas,
   hiddenTokens,
-  imageMetadata,
   keyboardHeight,
   nonceManager,
   requests,
