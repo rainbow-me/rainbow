@@ -21,25 +21,32 @@ import {
   PaymentMethod,
 } from '@/screens/AddCash/types';
 
+type PaymentMethodConfig = {
+  name: string;
+  icon: string;
+};
+
 const providerNames = {
   [FiatProviderName.Ramp]: 'Ramp',
 };
 
 const providerDescriptions = {
-  [FiatProviderName.Ramp]: `Works with any US card, and many international payment methods.`,
+  [FiatProviderName.Ramp]: `Cards, banks, and international options.`,
 };
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
 };
 
-const paymentMethodConfig = {
+const paymentMethodConfig: {
+  [key in PaymentMethod]: PaymentMethodConfig;
+} = {
   [PaymentMethod.DebitCard]: {
-    name: 'Debit',
+    name: 'Card',
     icon: '􀍯',
   },
   [PaymentMethod.CreditCard]: {
-    name: 'Credit',
+    name: 'Card',
     icon: '􀍯',
   },
   [PaymentMethod.Bank]: {
@@ -55,6 +62,32 @@ const paymentMethodConfig = {
     icon: '􀍯',
   },
 };
+
+function getPaymentMethodConfigs(paymentMethods: { type: PaymentMethod }[]) {
+  const methods: PaymentMethodConfig[] = [];
+  const types = paymentMethods.map(method => method.type);
+  const debit = types.includes(PaymentMethod.DebitCard);
+  const credit = types.includes(PaymentMethod.CreditCard);
+  const bank = types.includes(PaymentMethod.Bank);
+  const apple = types.includes(PaymentMethod.ApplePay);
+  const google = types.includes(PaymentMethod.GooglePay);
+
+  // card first
+  if (debit || credit)
+    methods.push(paymentMethodConfig[PaymentMethod.DebitCard]);
+
+  // then bank
+  if (bank) methods.push(paymentMethodConfig[PaymentMethod.Bank]);
+
+  // and if no card, then show platform specific ones if avail
+  if (!(debit || credit) && (apple || google)) {
+    if (apple) methods.push(paymentMethodConfig[PaymentMethod.ApplePay]);
+
+    if (google) methods.push(paymentMethodConfig[PaymentMethod.GooglePay]);
+  }
+
+  return methods;
+}
 
 function NetworkIcons({ networks }: { networks: Network[] }) {
   return (
@@ -112,7 +145,8 @@ export function ProviderCard({
     <ButtonPressAnimation onPress={handleOnPress}>
       <Box
         background="surfaceSecondaryElevated"
-        padding="20px"
+        paddingTop="20px"
+        paddingHorizontal="20px"
         borderRadius={20}
         shadow="12px"
         style={{ flex: IS_IOS ? 0 : undefined }}
@@ -151,19 +185,24 @@ export function ProviderCard({
               left: 0,
               width: 20,
               zIndex: 1,
+              bottom: 20,
             }}
             start={{ x: 0, y: 0.5 }}
           />
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Box flexDirection="row" paddingHorizontal="20px">
+            <Box
+              flexDirection="row"
+              paddingHorizontal="20px"
+              paddingBottom="20px"
+            >
               {config.callouts.map(callout => {
                 let title = '';
                 let content = null;
 
                 switch (callout.type) {
                   case CalloutType.Rate: {
-                    title = 'Fee';
+                    title = 'Fees';
                     content = (
                       <Box
                         flexDirection="row"
@@ -202,39 +241,39 @@ export function ProviderCard({
                     break;
                   }
                   case CalloutType.PaymentMethods: {
-                    title = callout.methods.length > 1 ? 'Methods' : 'Method';
+                    const methods = getPaymentMethodConfigs(callout.methods);
+                    const multi = methods.length > 1;
+                    title = multi ? 'Methods' : 'Method';
                     content = (
-                      <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                      >
-                        {callout.methods.map(method => {
-                          const methodConfig = paymentMethodConfig[method.type];
-
+                      <Box flexDirection="row">
+                        {methods.map(m => {
                           return (
                             <Box
-                              key={method.type}
+                              key={m.name}
                               flexDirection="row"
                               alignItems="center"
                               paddingTop="12px"
-                              paddingRight="8px"
+                              paddingRight="4px"
                             >
                               <Text
-                                size="12pt"
+                                size="13pt"
                                 weight="bold"
                                 color={{ custom: config.metadata.accentColor }}
                               >
-                                {methodConfig.icon}
+                                {m.icon}
                               </Text>
-                              <Box paddingLeft="4px">
-                                <Text size="15pt" weight="bold" color="label">
-                                  {methodConfig.name}
-                                </Text>
-                              </Box>
+
+                              {!multi && (
+                                <Box paddingLeft="4px">
+                                  <Text size="15pt" weight="bold" color="label">
+                                    {m.name}
+                                  </Text>
+                                </Box>
+                              )}
                             </Box>
                           );
                         })}
-                      </ScrollView>
+                      </Box>
                     );
                     break;
                   }
@@ -280,6 +319,7 @@ export function ProviderCard({
               right: 0,
               width: 20,
               zIndex: 1,
+              bottom: 20,
             }}
             start={{ x: 0, y: 0.5 }}
           />

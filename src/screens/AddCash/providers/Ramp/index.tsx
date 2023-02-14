@@ -29,7 +29,13 @@ const providerConfig = {
         type: PaymentMethod.CreditCard,
       },
       {
+        type: PaymentMethod.Bank,
+      },
+      {
         type: PaymentMethod.ApplePay,
+      },
+      {
+        type: PaymentMethod.GooglePay,
       },
     ],
     networks: [
@@ -50,15 +56,6 @@ const providerConfig = {
       value: '0.49-2.9%',
     },
     {
-      type: CalloutType.Networks,
-      networks: [
-        Network.Ethereum,
-        Network.Polygon,
-        Network.Arbitrum,
-        Network.Optimism,
-      ],
-    },
-    {
       type: CalloutType.PaymentMethods,
       methods: [
         {
@@ -68,8 +65,23 @@ const providerConfig = {
           type: PaymentMethod.CreditCard,
         },
         {
+          type: PaymentMethod.Bank,
+        },
+        {
           type: PaymentMethod.ApplePay,
         },
+        {
+          type: PaymentMethod.GooglePay,
+        },
+      ],
+    },
+    {
+      type: CalloutType.Networks,
+      networks: [
+        Network.Ethereum,
+        Network.Polygon,
+        Network.Arbitrum,
+        Network.Optimism,
       ],
     },
   ],

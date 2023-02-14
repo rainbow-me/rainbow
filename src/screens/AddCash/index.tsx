@@ -75,7 +75,7 @@ export function AddCashSheet() {
           >
             <Box paddingBottom="12px">
               <Text size="17pt" weight="bold" color="labelTertiary">
-                􀵲 Not in the US?
+                􀵲 {`Can't find your preferred provider?`}
               </Text>
             </Box>
 
