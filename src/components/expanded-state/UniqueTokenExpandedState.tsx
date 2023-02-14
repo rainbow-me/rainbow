@@ -1,5 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';

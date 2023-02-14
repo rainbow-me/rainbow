@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';

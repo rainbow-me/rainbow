@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRecoilState } from 'recoil';

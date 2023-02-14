@@ -20,7 +20,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import config from '@/model/config';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 
 const ContainerWidth = 261;
 

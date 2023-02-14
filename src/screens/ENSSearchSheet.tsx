@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
