@@ -37,10 +37,20 @@ const getRHSValueBasedOnStatus = (
   }
 };
 
+const getDisclaimerBasedOnStatus = (status: RewardsMetaStatus) => {
+  switch (status) {
+    case RewardsMetaStatus.Paused:
+      return i18n.t(i18n.l.rewards.program_paused_description);
+    case RewardsMetaStatus.Finished:
+      return i18n.t(i18n.l.rewards.program_finished_description);
+    default:
+      return i18n.t(i18n.l.rewards.leaderboard_data_refresh_notice);
+  }
+};
+
 type Props = {
   status: RewardsMetaStatus;
   leaderboard: RewardsLeaderboardAccount[];
-  nextDistributionTimestamp: number;
   programEndTimestamp: number;
   tokenSymbol: string;
 };
@@ -48,7 +58,6 @@ type Props = {
 export const RewardsLeaderboard: React.FC<Props> = ({
   status,
   leaderboard,
-  nextDistributionTimestamp,
   programEndTimestamp,
   tokenSymbol,
 }) => {
@@ -56,11 +65,6 @@ export const RewardsLeaderboard: React.FC<Props> = ({
     fromUnixTime(programEndTimestamp),
     new Date()
   );
-
-  const formattedNextDistributionDate =
-    status === RewardsMetaStatus.Paused
-      ? format(fromUnixTime(nextDistributionTimestamp), 'EEEE, LLLL do')
-      : undefined;
 
   return (
     <Box paddingBottom="28px">
@@ -78,18 +82,9 @@ export const RewardsLeaderboard: React.FC<Props> = ({
             {getRHSValueBasedOnStatus(status, daysLeft)}
           </Text>
         </Columns>
-        {status === RewardsMetaStatus.Paused && (
-          <Text weight="semibold" size="13pt" color="labelQuaternary">
-            {i18n.t(i18n.l.rewards.program_paused_will_resume, {
-              resumeDate: formattedNextDistributionDate ?? '',
-            })}
-          </Text>
-        )}
-        {status === RewardsMetaStatus.Finished && (
-          <Text weight="semibold" size="13pt" color="labelQuaternary">
-            {i18n.t(i18n.l.rewards.program_finished_description)}
-          </Text>
-        )}
+        <Text weight="semibold" size="13pt" color="labelQuaternary">
+          {getDisclaimerBasedOnStatus(status)}
+        </Text>
       </Stack>
       <Box paddingTop={status !== RewardsMetaStatus.Ongoing ? '12px' : '16px'}>
         <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">

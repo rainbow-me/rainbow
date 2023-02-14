@@ -1,12 +1,11 @@
 import { captureException } from '@sentry/react-native';
-import { uniqBy, without } from 'lodash';
+import { uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
   applyENSMetadataFallbackToToken,
   applyENSMetadataFallbackToTokens,
 } from '../parsers/uniqueTokens';
-import { dataUpdateAssets } from './data';
 import { AppGetState, AppState } from './store';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
@@ -24,7 +23,6 @@ import {
 import { fetchPoaps } from '@/handlers/poap';
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
 import { Network } from '@/helpers/networkTypes';
-import { dedupeAssetsWithFamilies, getFamilies } from '@/parsers';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -247,7 +245,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   }
   const { network: currentNetwork } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   let uniqueTokens: UniqueAsset[] = [];
   let errorCheck = false;
 
@@ -290,24 +287,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
       shouldStopFetching =
         newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
-
-      if (shouldStopFetching) {
-        const isCurrentAccountAddress =
-          accountAddress ===
-          (showcaseAddress || getState().settings.accountAddress);
-        if (isCurrentAccountAddress) {
-          const existingFamilies = getFamilies(existingUniqueTokens);
-          const newFamilies = getFamilies(uniqueTokens);
-          const incomingFamilies = without(newFamilies, ...existingFamilies);
-          if (incomingFamilies.length) {
-            const dedupedAssets = dedupeAssetsWithFamilies(
-              getState().data.accountAssetsData,
-              incomingFamilies
-            );
-            dispatch(dataUpdateAssets(dedupedAssets));
-          }
-        }
-      }
     } catch (error) {
       dispatch({
         showcase: !!showcaseAddress,

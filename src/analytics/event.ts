@@ -34,6 +34,8 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
+  pairHwWalletNavEntered: 'pair_hw_wallet_nav.entered',
+  pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
   rewardsViewedSheet: 'rewards.viewed_sheet',
   rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
   rewardsPressedAvailableCard: 'rewards.pressed_available_card',
@@ -101,6 +103,15 @@ export type EventProperties = {
   [event.addWalletFlowStarted]: {
     isFirstWallet: boolean;
     type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
+  };
+  [event.pairHwWalletNavEntered]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
+  };
+  [event.pairHwWalletNavExited]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
+    step: string;
   };
   [event.rewardsViewedSheet]: undefined;
   [event.rewardsPressedPendingEarningsCard]: undefined;

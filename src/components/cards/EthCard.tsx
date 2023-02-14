@@ -57,7 +57,7 @@ export const EthCard = () => {
     emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
   }, [nativeCurrency]);
 
-  const handlePressBuy = useCallback(() => {
+  const handlePressBuy = () => {
     if (isDamaged) {
       showWalletErrorAlert();
       return;
@@ -77,7 +77,7 @@ export const EthCard = () => {
       componentName: 'EthCard',
       routeName,
     });
-  }, [accountAddress, isDamaged, navigate, routeName]);
+  };
 
   const assetWithPrice = useMemo(() => {
     return {

@@ -347,6 +347,10 @@
           "navigating_your_wallet": "Navigating your Wallet :)"
         }
       },
+      "ledger": {
+        "title": "Pair a Hardware Wallet :)",
+        "body": "Connect your Ledger Nano X to Rainbow through Bluetooth. :)"
+      },
       "receive": {
         "receive_assets": "Receive assets :)",
         "copy_address": "Copy Address :)",
@@ -1312,15 +1316,15 @@
       "my_stats": "My Stats :)",
       "position": "Position :)",
       "leaderboard": "Leaderboard :)",
+      "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected. :)",
       "program_paused": "\uDBC0\uDE97 Paused :)",
-      "program_paused_will_resume": "The contest will resume once rewards refresh on %{resumeDate}. :)",
+      "program_paused_description": "The contest will be resumed soon, please check back later. :)",
       "program_finished": "\uDBC1\uDF2A Ended :)",
       "program_finished_description": "The contest ended, the leaderboard shows the results from the last week of the contest :)",
       "days_left": "%{days} days left :)",
       "data_powered_by": "Data powered by :)",
       "current_value": "Current Value :)",
-      "total_available_rewards": "Total Available Rewards :)",
-      "left_this_week": "~%{percent}% left this week :)",
+      "rewards_claimed": "Weekly Rewards Claimed :)",
       "refreshes_next_week": "Refreshes next week :)",
       "all_rewards_claimed": "All rewards have been claimed this week :)",
       "rainbow_users_claimed": "Rainbow users claimed %{amount} :)",
@@ -1337,8 +1341,8 @@
           "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet. :)"
         },
         "amount_distributed": {
-          "title": "30,000 OP Every Week :)",
-          "text": "Up to 30,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
+          "title": "28,000 OP Every Week :)",
+          "text": "Up to 28,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
         },
         "bridge": {
           "title": "Earn 0.125% on Bridging :)",
