@@ -684,12 +684,6 @@ export const explainers = (params, colors) => ({
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
   },
-  f2cSemiSupportedAssetPurchased: {
-    emoji: '🎉',
-    title: `Purchase successful!`,
-    text: `We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon.`,
-    extraHeight: -80,
-  },
   insufficientLiquidity: {
     extraHeight: -20,
     emoji: '🏦',
