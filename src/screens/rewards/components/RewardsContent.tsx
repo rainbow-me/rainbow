@@ -2,18 +2,13 @@ import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
 import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
 import { RewardsClaimed } from '@/screens/rewards/components/RewardsClaimed';
-import {
-  GetRewardsDataForWalletQuery,
-  RewardsMetaStatus,
-} from '@/graphql/__generated__/metadata';
+import { GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
 import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
 import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
-
-const LEADERBOARD_ITEMS_THRESHOLD = 50;
 
 type Props = {
   assetPrice?: number;
@@ -41,10 +36,6 @@ export const RewardsContent: React.FC<Props> = ({
     );
   }
   const leaderboardData = data.rewards.leaderboard.accounts ?? [];
-  const limitedLeaderboardData = leaderboardData.slice(
-    0,
-    LEADERBOARD_ITEMS_THRESHOLD
-  );
 
   return (
     <>
@@ -76,7 +67,7 @@ export const RewardsContent: React.FC<Props> = ({
         positionChange={data.rewards.stats?.position.change.h24 ?? 0}
       />
       <RewardsLeaderboard
-        leaderboard={limitedLeaderboardData}
+        leaderboard={leaderboardData}
         programEndTimestamp={data.rewards.meta.end}
         status={data.rewards.meta.status}
         tokenSymbol={data.rewards.meta.token.asset.symbol}
