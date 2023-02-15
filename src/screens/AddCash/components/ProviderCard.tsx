@@ -31,7 +31,7 @@ const providerNames = {
 };
 
 const providerDescriptions = {
-  [FiatProviderName.Ramp]: `Cards, banks, and international options.`,
+  [FiatProviderName.Ramp]: `Cards, banks, and international options`,
 };
 
 const providerLogos = {
@@ -231,7 +231,7 @@ export function ProviderCard({
                         >
                           􀋦
                         </Text>
-                        <Box paddingLeft="4px">
+                        <Box paddingLeft="2px">
                           <Text size="15pt" weight="bold" color="label">
                             {callout.value || 'Yes'}
                           </Text>
