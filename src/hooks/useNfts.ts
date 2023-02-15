@@ -5,12 +5,15 @@ import {
 } from '@/handlers/localstorage/accountLocal';
 import { START_CURSOR } from '@/handlers/simplehash';
 import { Network } from '@/helpers';
+import { logger, RainbowError } from '@/logger';
 import { parseSimplehashNFTs } from '@/parsers';
 import { fetchNfts } from '@/resources/nftsQuery';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { promiseUtils } from '@/utils';
+import { captureException } from '@sentry/react-native';
 import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
+import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 
 const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
@@ -79,6 +82,7 @@ export const fetchAllNfts = async (address: string, network: Network) => {
     cursor = nextCursor;
   }
   await saveUniqueTokens(nfts, address, network);
+  return nfts;
 };
 
 export const useNfts = (address: string) => {
@@ -88,61 +92,76 @@ export const useNfts = (address: string) => {
   const [loadedStoredNfts, setLoadedStoredNfts] = useState(false);
   const [polygonAllowlist, setPolygonAllowlist] = useState<string[]>([]);
   const { network } = useAccountSettings();
+  const { accountAddress } = useAccountProfile();
 
   useEffect(() => {
     const setupAndFirstFetch = async () => {
-      const [
-        storedNfts,
-        allowlist,
-        nftResponse,
-      ] = await promiseUtils.PromiseAllWithFails([
-        getUniqueTokens(address, network),
-        fetchPolygonAllowlist(),
-        fetchNfts({
-          address,
-          cursor: START_CURSOR,
-        }),
-      ]);
-      const { data, nextCursor } = nftResponse;
-      setCursor(nextCursor);
-      const newNfts = filterNfts(parseSimplehashNFTs(data), allowlist);
-      let updatedNfts;
-      if (storedNfts?.length) {
-        setLoadedStoredNfts(true);
-        updatedNfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
-      } else {
-        updatedNfts = newNfts;
-      }
-      await saveUniqueTokens(updatedNfts, address, network);
-      setNfts(updatedNfts);
-      setPolygonAllowlist(allowlist);
-      if (nextCursor) {
-        setShouldFetchMore(true);
+      try {
+        const [
+          storedNfts,
+          allowlist,
+          nftResponse,
+        ] = await promiseUtils.PromiseAllWithFails([
+          getUniqueTokens(address, network),
+          fetchPolygonAllowlist(),
+          fetchNfts({
+            address,
+            cursor: START_CURSOR,
+          }),
+        ]);
+        const { data, nextCursor } = nftResponse;
+        setCursor(nextCursor);
+        const newNfts = filterNfts(parseSimplehashNFTs(data), allowlist);
+        let updatedNfts;
+        if (storedNfts?.length) {
+          setLoadedStoredNfts(true);
+          updatedNfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
+        } else {
+          updatedNfts = newNfts;
+        }
+        if (accountAddress === address) {
+          await saveUniqueTokens(updatedNfts, address, network);
+        }
+        setNfts(updatedNfts);
+        setPolygonAllowlist(allowlist);
+        if (nextCursor) {
+          setShouldFetchMore(true);
+        }
+      } catch (error) {
+        setShouldFetchMore(false);
+        captureException(error);
+        logger.error(new RainbowError(`useNfts error: ${error}`));
       }
     };
     if (address) {
       setupAndFirstFetch();
     }
-  }, [address, network]);
+  }, [accountAddress, address, network]);
 
   useEffect(() => {
     const fetchNextPage = async () => {
-      const { data, nextCursor } = await fetchNfts({
-        address,
-        cursor: cursor as string,
-      });
-      const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
-      setCursor(nextCursor);
-      let updatedNfts;
-      if (loadedStoredNfts) {
-        updatedNfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
-      } else {
-        updatedNfts = [...nfts, ...newNfts];
-      }
-      await saveUniqueTokens(address, updatedNfts, network);
-      setNfts(updatedNfts);
-      if (nfts?.length >= UNIQUE_TOKENS_LIMIT_TOTAL || !nextCursor) {
+      try {
+        const { data, nextCursor } = await fetchNfts({
+          address,
+          cursor: cursor as string,
+        });
+        const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
+        setCursor(nextCursor);
+        let updatedNfts;
+        if (loadedStoredNfts) {
+          updatedNfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
+        } else {
+          updatedNfts = [...nfts, ...newNfts];
+        }
+        await saveUniqueTokens(address, updatedNfts, network);
+        setNfts(updatedNfts);
+        if (nfts?.length >= UNIQUE_TOKENS_LIMIT_TOTAL || !nextCursor) {
+          setShouldFetchMore(false);
+        }
+      } catch (error) {
         setShouldFetchMore(false);
+        captureException(error);
+        logger.error(new RainbowError(`useNfts error: ${error}`));
       }
     };
     if (shouldFetchMore) {
