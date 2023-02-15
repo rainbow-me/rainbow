@@ -28,8 +28,8 @@ import {
   useENSAvatar,
   useENSCover,
   useENSRecords,
-  useFetchUniqueTokens,
   useOpenENSNFTHandler,
+  useUniqueTokens,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
@@ -70,10 +70,12 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const { data: uniqueTokens } = useFetchUniqueTokens({
+  const { uniqueTokens } = useUniqueTokens({
     address: profileAddress ?? '',
     // Don't want to refetch tokens if we already have them.
-    staleTime: Infinity,
+    queryConfig: {
+      staleTime: Infinity,
+    },
   });
 
   const avatarUrl = avatar?.imageUrl;

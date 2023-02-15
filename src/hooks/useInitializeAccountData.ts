@@ -3,12 +3,13 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
-import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '@/redux/usersPositions';
 import logger from '@/utils/logger';
+import { useUpdateUniqueTokensState } from './useUpdateUniqueTokensState';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
+  const { updateUniqueTokensState } = useUpdateUniqueTokensState();
 
   const initializeAccountData = useCallback(async () => {
     try {
@@ -19,7 +20,7 @@ export default function useInitializeAccountData() {
 
       InteractionManager.runAfterInteractions(async () => {
         logger.sentry('Initialize uniqueTokens');
-        await dispatch(uniqueTokensRefreshState());
+        updateUniqueTokensState();
       });
 
       InteractionManager.runAfterInteractions(async () => {
@@ -30,7 +31,7 @@ export default function useInitializeAccountData() {
       logger.sentry('Error initializing account data');
       captureException(error);
     }
-  }, [dispatch]);
+  }, [dispatch, updateUniqueTokensState]);
 
   return initializeAccountData;
 }

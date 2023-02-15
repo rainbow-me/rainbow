@@ -64,9 +64,9 @@ export default function ShowcaseScreen() {
     init();
   }, [addressOrDomain]);
 
-  useEffect(() => {
-    accountAddress && dispatch(fetchUniqueTokens(accountAddress));
-  }, [dispatch, accountAddress]);
+  // useEffect(() => {
+  //   accountAddress && dispatch(fetchUniqueTokens(accountAddress));
+  // }, [dispatch, accountAddress]);
 
   useEffect(() => {
     async function fetchShowcase() {

@@ -15,7 +15,7 @@ import {
 } from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
-import { uniqueTokensRefreshState } from './uniqueTokens';
+import { updateUniqueTokens } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -67,6 +67,7 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
+import { fetchAllNfts } from '@/hooks/useUniqueTokens';
 
 const storage = new MMKV();
 
@@ -688,7 +689,7 @@ export const transactionsReceived = (
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
+      dispatch(updateUniqueTokens());
     }, 60000);
   }
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));

@@ -1,94 +1,235 @@
-import { useQuery } from '@tanstack/react-query';
-
+import { analytics } from '@/analytics';
+import { UniqueAsset } from '@/entities';
 import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
-import { getUniqueTokens } from '@/handlers/simplehash';
+  getUniqueTokens,
+  saveUniqueTokens,
+} from '@/handlers/localstorage/accountLocal';
+import { START_CURSOR } from '@/handlers/simplehash';
+import { Network } from '@/helpers';
+import { logger, RainbowError } from '@/logger';
+import { parseSimplehashNFTs } from '@/parsers';
+import { fetchNfts, NftsQueryConfigType } from '@/resources/nftsQuery';
+import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
+import { promiseUtils } from '@/utils';
+import { captureException } from '@sentry/react-native';
+import { uniqBy } from 'lodash';
+import { useEffect, useState } from 'react';
+import useAccountProfile from './useAccountProfile';
+import useAccountSettings from './useAccountSettings';
+import useIsMounted from './useIsMounted';
 
-const DEFAULT_STALE_TIME = 10000;
+const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
+export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
-// ///////////////////////////////////////////////
-// Query Types
+export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
+  nfts.filter((nft: UniqueAsset) => {
+    if (nft.collection.name === null) return false;
 
-export type UniqueTokensArgs = {
-  address: string | undefined;
+    // filter out spam
+    if (nft.spamScore >= 85) return false;
+
+    // filter gnosis NFTs that are not POAPs
+    if (
+      nft.network === Network.gnosis &&
+      nft.asset_contract &&
+      nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+    )
+      return false;
+
+    if (
+      nft.network === Network.polygon &&
+      !polygonAllowlist.includes(nft.asset_contract?.address?.toLowerCase())
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+export const fetchAllUniqueTokens = async (
+  address: string,
+  network: Network
+) => {
+  const [
+    storedNfts,
+    polygonAllowlist,
+    nftResponse,
+  ] = await promiseUtils.PromiseAllWithFails([
+    getUniqueTokens(address, network),
+    fetchPolygonAllowlist(),
+    fetchNfts({
+      address,
+      cursor: START_CURSOR,
+    }),
+  ]);
+  const { data, nextCursor } = nftResponse;
+  let cursor = nextCursor;
+  let nfts;
+  const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
+  if (storedNfts?.length) {
+    nfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
+  } else {
+    nfts = newNfts;
+  }
+  while (cursor && nfts.length < UNIQUE_TOKENS_LIMIT_TOTAL) {
+    // eslint-disable-next-line no-await-in-loop
+    const { data, nextCursor } = await fetchNfts({
+      address,
+      cursor,
+    });
+    const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
+    if (storedNfts?.length) {
+      nfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
+    } else {
+      nfts = [...nfts, ...newNfts];
+    }
+    cursor = nextCursor;
+  }
+  await saveUniqueTokens(nfts, address, network);
+  analytics.identify(undefined, { NFTs: nfts.length });
+  return nfts;
 };
 
-// ///////////////////////////////////////////////
-// Query Key
+export const useUniqueTokens = ({
+  address,
+  queryConfig = {},
+}: {
+  address: string;
+  queryConfig?: NftsQueryConfigType;
+}) => {
+  const { network } = useAccountSettings();
+  const { accountAddress } = useAccountProfile();
+  const mounted = useIsMounted();
 
-const uniqueTokensQueryKey = ({ address }: UniqueTokensArgs) =>
-  createQueryKey('uniqueTokens', { address }, { persisterVersion: 1 });
+  const [cursor, setCursor] = useState<string | undefined>();
+  const [uniqueTokens, setUniqueTokens] = useState<UniqueAsset[]>([]);
+  const [shouldFetchMore, setShouldFetchMore] = useState(false);
+  const [loadedStoredUniqueTokens, setLoadedStoredUniqueTokens] = useState(
+    false
+  );
+  const [polygonAllowlist, setPolygonAllowlist] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-type UniqueTokensQueryKey = ReturnType<typeof uniqueTokensQueryKey>;
-
-// ///////////////////////////////////////////////
-// Query Function
-
-async function uniqueTokensQueryFunction({
-  queryKey: [{ address }],
-}: QueryFunctionArgs<typeof uniqueTokensQueryKey>) {
-  try {
-    const cachedAvatar = await getENSData('avatar', name);
-    if (cachedAvatar) {
-      queryClient.setQueryData(ensAvatarQueryKey(name), cachedAvatar);
-      if (cacheFirst) return cachedAvatar as { imageUrl: string };
+  useEffect(() => {
+    const setupAndFirstFetch = async () => {
+      try {
+        const [
+          storedUniqueTokens,
+          allowlist,
+          newUniqueTokensResponse,
+        ] = await promiseUtils.PromiseAllWithFails([
+          getUniqueTokens(address, network),
+          fetchPolygonAllowlist(),
+          fetchNfts(
+            {
+              address,
+              cursor: START_CURSOR,
+            },
+            queryConfig
+          ),
+        ]);
+        const { data, nextCursor } = newUniqueTokensResponse;
+        setCursor(nextCursor);
+        const newUniqueTokens = filterNfts(
+          parseSimplehashNFTs(data),
+          allowlist
+        );
+        let updatedUniqueTokens;
+        if (storedUniqueTokens?.length) {
+          setLoadedStoredUniqueTokens(true);
+          updatedUniqueTokens = uniqBy(
+            [...storedUniqueTokens, ...newUniqueTokens],
+            'uniqueId'
+          );
+        } else {
+          updatedUniqueTokens = newUniqueTokens;
+        }
+        if (accountAddress === address) {
+          await saveUniqueTokens(newUniqueTokens, address, network);
+        }
+        setUniqueTokens(updatedUniqueTokens);
+        setPolygonAllowlist(allowlist);
+        if (nextCursor) {
+          setShouldFetchMore(true);
+        } else {
+          setIsSuccess(true);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setShouldFetchMore(false);
+        setIsLoading(false);
+        captureException(error);
+        logger.error(new RainbowError(`useNfts error: ${error}`));
+      }
+    };
+    if (address && mounted.current) {
+      setupAndFirstFetch();
     }
-    const avatar = await fetchImage('avatar', name);
-    saveENSData('avatar', name, avatar);
-    return avatar;
-  } catch (err) {
-    if (swallowError) return undefined;
-    throw err;
-  }
-  const data = await getUniqueTokens(address);
-  return data;
-}
+  }, [accountAddress, address, mounted, network, queryConfig]);
 
-type UniqueTokensResult = QueryFunctionResult<typeof uniqueTokensQueryFunction>;
+  useEffect(() => {
+    const fetchNextPage = async () => {
+      try {
+        const { data, nextCursor } = await fetchNfts(
+          {
+            address,
+            cursor: cursor as string,
+          },
+          queryConfig
+        );
+        const newUniqueTokens = filterNfts(
+          parseSimplehashNFTs(data),
+          polygonAllowlist
+        );
+        setCursor(nextCursor);
+        let updatedUniqueTokens;
+        if (loadedStoredUniqueTokens) {
+          updatedUniqueTokens = uniqBy(
+            [...uniqueTokens, ...newUniqueTokens],
+            'uniqueId'
+          );
+        } else {
+          updatedUniqueTokens = [...uniqueTokens, ...newUniqueTokens];
+        }
+        await saveUniqueTokens(address, updatedUniqueTokens, network);
+        setUniqueTokens(updatedUniqueTokens);
+        if (uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL || !nextCursor) {
+          setShouldFetchMore(false);
+          setIsLoading(false);
+          setIsSuccess(true);
+        }
+      } catch (error) {
+        setIsLoading(false);
+        setShouldFetchMore(false);
+        captureException(error);
+        logger.error(new RainbowError(`useUniqueTokens error: ${error}`));
+      }
+    };
+    if (shouldFetchMore && mounted.current) {
+      fetchNextPage();
+    }
+  }, [
+    address,
+    cursor,
+    loadedStoredUniqueTokens,
+    network,
+    uniqueTokens,
+    polygonAllowlist,
+    queryConfig,
+    shouldFetchMore,
+    mounted,
+  ]);
 
-// ///////////////////////////////////////////////
-// Query Prefetcher (Optional)
+  useEffect(() => {
+    if (isSuccess) {
+      analytics.identify(undefined, { NFTs: uniqueTokens.length });
+    }
+  }, [isSuccess, uniqueTokens.length]);
 
-export async function prefetchUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
-) {
-  return await queryClient.prefetchQuery(
-    uniqueTokensQueryKey({ address }),
-    uniqueTokensQueryFunction,
-    config
-  );
-}
-
-// ///////////////////////////////////////////////
-// Query Fetcher (Optional)
-
-export async function fetchUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
-) {
-  return await queryClient.fetchQuery(
-    uniqueTokensQueryKey({ address }),
-    uniqueTokensQueryFunction,
-    config
-  );
-}
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
-) {
-  return useQuery(
-    uniqueTokensQueryKey({ address }),
-    uniqueTokensQueryFunction,
-    { staleTime: DEFAULT_STALE_TIME, enabled: !!address, ...config }
-  );
-}
+  return {
+    uniqueTokens,
+    isLoading,
+    isSuccess,
+  };
+};

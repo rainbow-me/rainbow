@@ -17,6 +17,8 @@ export type NftsQueryArgs = {
   cursor: string;
 };
 
+export type NftsQueryConfigType = QueryConfig<NftsResult, Error, NftsQueryKey>;
+
 // ///////////////////////////////////////////////
 // Query Key
 
@@ -45,7 +47,7 @@ type NftsResult = QueryFunctionResult<typeof nftsQueryFunction>;
 
 export async function fetchNfts(
   { address, cursor }: NftsQueryArgs,
-  config: QueryConfig<NftsResult, Error, NftsQueryKey> = {}
+  config: NftsQueryConfigType = {}
 ) {
   return await queryClient.fetchQuery(
     nftsQueryKey({ address, cursor }),

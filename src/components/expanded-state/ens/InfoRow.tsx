@@ -9,8 +9,8 @@ import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import {
   useAccountSettings,
-  useFetchUniqueTokens,
   useOpenENSNFTHandler,
+  useUniqueTokens,
 } from '@/hooks';
 import { AppState } from '@/redux/store';
 import {
@@ -224,10 +224,12 @@ function ImageValue({
   const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
+  const { uniqueTokens: uniqueTokensProfile } = useUniqueTokens({
     address: address ?? '',
     // Don't want to refetch tokens if we already have them.
-    staleTime: Infinity,
+    queryConfig: {
+      staleTime: Infinity,
+    },
   });
   const isSelf = address === accountAddress;
   const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;

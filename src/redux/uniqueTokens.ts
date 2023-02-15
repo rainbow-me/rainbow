@@ -30,29 +30,30 @@ import {
 import { Network } from '@/helpers/networkTypes';
 import { queryClient } from '@/react-query';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { fetchAllNfts } from '@/hooks/useNfts';
+import { fetchAllNfts } from '@/hooks/useUniqueTokens';
 
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 
 // -- Constants ------------------------------------------------------------- //
 
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
+export const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
   'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST';
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS =
+export const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS =
   'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS';
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE =
+export const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE =
   'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE';
 
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST =
+export const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST =
   'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST';
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS =
+export const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS =
   'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS';
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
+export const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
   'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE';
 
-const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
-const UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE =
+export const UNIQUE_TOKENS_CLEAR_STATE =
+  'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
+export const UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE =
   'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE';
 
 // -- Actions --------------------------------------------------------------- //
@@ -213,31 +214,10 @@ export const uniqueTokensResetState = () => (
 };
 
 /**
- * Fetches unique tokens via API, updates state, and saves to local storage,
- * as long as the current network is mainnet.
+ * Updates unique tokens in state. This is needed to update the unique tokens
+ * state from within redux/data/transactionsReceived.
  */
-export const uniqueTokensRefreshState = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  const { network } = getState().settings;
-
-  // Currently not supported in testnets
-  if (network !== Network.mainnet) {
-    return;
-  }
-
-  dispatch(fetchUniqueTokens());
-};
-
-/**
- * Fetches unique tokens or showcased unique tokens via API, updates state,
- * and saves to local storage.
- *
- * @param showcaseAddress The showcase address to use for fetching, or no
- * address to fetch all unique tokens.
- */
-export const fetchUniqueTokens = (showcaseAddress?: string) => async (
+export const updateUniqueTokens = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
@@ -245,194 +225,239 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   >,
   getState: AppGetState
 ) => {
+  const { accountAddress, network } = getState().settings;
   dispatch({
-    showcase: !!showcaseAddress,
+    showcase: false,
     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
   });
-  if (showcaseAddress) {
+  try {
+    const nfts = await fetchAllNfts(accountAddress, network);
     dispatch({
-      type: UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE,
+      payload: nfts,
+      showcase: false,
+      type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({
+      showcase: false,
+      type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
     });
   }
-  const { network: currentNetwork } = getState().settings;
-  const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  // let uniqueTokens: UniqueAsset[] = [];
-  // let errorCheck = false;
-
-  // const polygonAllowlist = await queryClient.fetchQuery(
-  //   ['polygon-allowlist'],
-  //   async () => {
-  //     return (
-  //       await rainbowFetch(
-  //         'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-  //         { method: 'get' }
-  //       )
-  //     ).data.data.addresses;
-  //   },
-  //   {
-  //     staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
-  //   }
-  // );
-  // let shouldStopFetching = false;
-  // let cursor = START_CURSOR;
-  // while (cursor && !shouldStopFetching) {
-  //   try {
-  //     const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
-  //       accountAddress,
-  //       cursor
-  //     );
-
-  //     cursor = nextCursor;
-  //     shouldStopFetching =
-  //       rawNFTData.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
-  //       uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL ||
-  //       accountAddress !==
-  //         (showcaseAddress || getState().settings.accountAddress);
-
-  //     const tokens = parseSimplehashNFTs(rawNFTData).filter(
-  //       (nft: UniqueAsset) => {
-  //         if (nft.collection.name === null) return false;
-
-  //         // filter out spam
-  //         if (nft.spamScore >= 85) return false;
-
-  //         // filter gnosis NFTs that are not POAPs
-  //         if (
-  //           nft.network === Network.gnosis &&
-  //           nft.asset_contract &&
-  //           nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
-  //         )
-  //           return false;
-
-  //         if (
-  //           nft.network === Network.polygon &&
-  //           !polygonAllowlist.includes(
-  //             nft.asset_contract?.address?.toLowerCase()
-  //           )
-  //         ) {
-  //           return false;
-  //         }
-
-  //         return true;
-  //       }
-  //     );
-  //     uniqueTokens = uniqueTokens.concat(tokens);
-  //   } catch (error) {
-  //     dispatch({
-  //       showcase: !!showcaseAddress,
-  //       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
-  //     });
-  //     captureException(error);
-  //     shouldStopFetching = true;
-  //     errorCheck = true;
-  //   }
-  // }
-
-  // const fetchNetwork = async (network: Network) => {
-  //   let shouldStopFetching = false;
-  //   let page = 0;
-  //   while (!shouldStopFetching) {
-  //     shouldStopFetching = await fetchPage(page, network);
-  //     // check that the account address to fetch for has not changed while fetching
-  //     const isCurrentAccountAddress =
-  //       accountAddress ===
-  //       (showcaseAddress || getState().settings.accountAddress);
-  //     if (!isCurrentAccountAddress) {
-  //       shouldStopFetching = true;
-  //     }
-
-  //     page++;
-  //   }
-  // };
-
-  // const fetchPage = async (cursor: string | null | undefined) => {
-  //   let shouldStopFetching = false;
-  //   try {
-  //     let newPageResults;
-  //     try {
-  //       newPageResults = await fetchRawUniqueTokens(accountAddress, cursor);
-  //     } catch (e) {
-  //       newPageResults = [];
-  //     }
-
-  //     // If there are any "unknown" ENS names, fallback to the ENS
-  //     // metadata service.
-  //     // newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
-
-  //     uniqueTokens = uniqueTokens.concat(newPageResults);
-  //     shouldStopFetching =
-  //       newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
-  //       uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
-  //   } catch (error) {
-  //     dispatch({
-  //       showcase: !!showcaseAddress,
-  //       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
-  //     });
-  //     captureException(error);
-  //     // stop fetching if there is an error & dont save results
-  //     shouldStopFetching = true;
-  //     errorCheck = true;
-  //   }
-  //   return shouldStopFetching;
-  // };
-
-  // await fetchNetwork(currentNetwork);
-
-  // Only include poaps and L2 nft's on mainnet
-  // if (currentNetwork === Network.mainnet) {
-  //   const poaps = (await fetchPoaps(accountAddress)) ?? [];
-  //   if (poaps.length > 0) {
-  //     analytics.identify(undefined, { poaps: poaps.length });
-  //     uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
-  //     uniqueTokens = uniqueTokens.concat(poaps);
-  //   }
-
-  // Fetch Optimism and Arbitrum NFTs
-  // const layer2NFTs = await getNftsByWalletAddress(accountAddress);
-
-  // if (layer2NFTs.length > 0) {
-  //   uniqueTokens = uniqueTokens.concat(layer2NFTs);
-  // }
-
-  // we only care about analytics for mainnet + L2's
-  // analytics.identify(undefined, { NFTs: uniqueTokens.length });
-
-  // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
-  // We will fetch tokens registered in the past 48 hours to be safe.
-  // const ensTokens = await fetchEnsTokens({
-  //   address: accountAddress,
-  //   timeAgo: { hours: 48 },
-  // });
-  // if (ensTokens.length > 0) {
-  //   uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
-  // }
-  // }
-
-  // NFT Fetching clean up
-  // check that the account address to fetch for has not changed while fetching before updating state
-  // const isCurrentAccountAddress =
-  //   accountAddress === (showcaseAddress || getState().settings.accountAddress);
-  // if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
-  //   saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
-  // }
-  // if (isCurrentAccountAddress && !errorCheck) {
-  //   dispatch({
-  //     payload: uniqueTokens,
-  //     showcase: !!showcaseAddress,
-  //     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-  //   });
-  // }
-  const nfts = await fetchAllNfts(
-    getState().settings.accountAddress,
-    currentNetwork
-  );
-
-  dispatch({
-    payload: nfts,
-    showcase: !!showcaseAddress,
-    type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-  });
 };
+
+// export const updateUniqueTokens = (uniqueTokens: UniqueAsset[]) => async (
+//   dispatch: Dispatch<UniqueTokensGetAction>
+// ) => {
+//   dispatch({
+//     payload: uniqueTokens,
+//     showcase: false,
+//     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+//   });
+// };
+
+// /**
+//  * Fetches unique tokens or showcased unique tokens via API, updates state,
+//  * and saves to local storage.
+//  *
+//  * @param showcaseAddress The showcase address to use for fetching, or no
+//  * address to fetch all unique tokens.
+//  */
+// export const fetchUniqueTokens = (showcaseAddress?: string) => async (
+//   dispatch: ThunkDispatch<
+//     AppState,
+//     unknown,
+//     UniqueTokensGetAction | UniqueTokensClearStateShowcaseAction
+//   >,
+//   getState: AppGetState
+// ) => {
+//   dispatch({
+//     showcase: !!showcaseAddress,
+//     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
+//   });
+//   if (showcaseAddress) {
+//     dispatch({
+//       type: UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE,
+//     });
+//   }
+//   const { network: currentNetwork } = getState().settings;
+//   const accountAddress = showcaseAddress || getState().settings.accountAddress;
+//   // let uniqueTokens: UniqueAsset[] = [];
+//   // let errorCheck = false;
+
+//   // const polygonAllowlist = await queryClient.fetchQuery(
+//   //   ['polygon-allowlist'],
+//   //   async () => {
+//   //     return (
+//   //       await rainbowFetch(
+//   //         'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+//   //         { method: 'get' }
+//   //       )
+//   //     ).data.data.addresses;
+//   //   },
+//   //   {
+//   //     staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
+//   //   }
+//   // );
+//   // let shouldStopFetching = false;
+//   // let cursor = START_CURSOR;
+//   // while (cursor && !shouldStopFetching) {
+//   //   try {
+//   //     const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
+//   //       accountAddress,
+//   //       cursor
+//   //     );
+
+//   //     cursor = nextCursor;
+//   //     shouldStopFetching =
+//   //       rawNFTData.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+//   //       uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL ||
+//   //       accountAddress !==
+//   //         (showcaseAddress || getState().settings.accountAddress);
+
+//   //     const tokens = parseSimplehashNFTs(rawNFTData).filter(
+//   //       (nft: UniqueAsset) => {
+//   //         if (nft.collection.name === null) return false;
+
+//   //         // filter out spam
+//   //         if (nft.spamScore >= 85) return false;
+
+//   //         // filter gnosis NFTs that are not POAPs
+//   //         if (
+//   //           nft.network === Network.gnosis &&
+//   //           nft.asset_contract &&
+//   //           nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+//   //         )
+//   //           return false;
+
+//   //         if (
+//   //           nft.network === Network.polygon &&
+//   //           !polygonAllowlist.includes(
+//   //             nft.asset_contract?.address?.toLowerCase()
+//   //           )
+//   //         ) {
+//   //           return false;
+//   //         }
+
+//   //         return true;
+//   //       }
+//   //     );
+//   //     uniqueTokens = uniqueTokens.concat(tokens);
+//   //   } catch (error) {
+//   //     dispatch({
+//   //       showcase: !!showcaseAddress,
+//   //       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+//   //     });
+//   //     captureException(error);
+//   //     shouldStopFetching = true;
+//   //     errorCheck = true;
+//   //   }
+//   // }
+
+//   // const fetchNetwork = async (network: Network) => {
+//   //   let shouldStopFetching = false;
+//   //   let page = 0;
+//   //   while (!shouldStopFetching) {
+//   //     shouldStopFetching = await fetchPage(page, network);
+//   //     // check that the account address to fetch for has not changed while fetching
+//   //     const isCurrentAccountAddress =
+//   //       accountAddress ===
+//   //       (showcaseAddress || getState().settings.accountAddress);
+//   //     if (!isCurrentAccountAddress) {
+//   //       shouldStopFetching = true;
+//   //     }
+
+//   //     page++;
+//   //   }
+//   // };
+
+//   // const fetchPage = async (cursor: string | null | undefined) => {
+//   //   let shouldStopFetching = false;
+//   //   try {
+//   //     let newPageResults;
+//   //     try {
+//   //       newPageResults = await fetchRawUniqueTokens(accountAddress, cursor);
+//   //     } catch (e) {
+//   //       newPageResults = [];
+//   //     }
+
+//   //     // If there are any "unknown" ENS names, fallback to the ENS
+//   //     // metadata service.
+//   //     // newPageResults = await applyENSMetadataFallbackToTokens(newPageResults);
+
+//   //     uniqueTokens = uniqueTokens.concat(newPageResults);
+//   //     shouldStopFetching =
+//   //       newPageResults.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+//   //       uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
+//   //   } catch (error) {
+//   //     dispatch({
+//   //       showcase: !!showcaseAddress,
+//   //       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+//   //     });
+//   //     captureException(error);
+//   //     // stop fetching if there is an error & dont save results
+//   //     shouldStopFetching = true;
+//   //     errorCheck = true;
+//   //   }
+//   //   return shouldStopFetching;
+//   // };
+
+//   // await fetchNetwork(currentNetwork);
+
+//   // Only include poaps and L2 nft's on mainnet
+//   // if (currentNetwork === Network.mainnet) {
+//   //   const poaps = (await fetchPoaps(accountAddress)) ?? [];
+//   //   if (poaps.length > 0) {
+//   //     analytics.identify(undefined, { poaps: poaps.length });
+//   //     uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
+//   //     uniqueTokens = uniqueTokens.concat(poaps);
+//   //   }
+
+//   // Fetch Optimism and Arbitrum NFTs
+//   // const layer2NFTs = await getNftsByWalletAddress(accountAddress);
+
+//   // if (layer2NFTs.length > 0) {
+//   //   uniqueTokens = uniqueTokens.concat(layer2NFTs);
+//   // }
+
+//   // we only care about analytics for mainnet + L2's
+//   // analytics.identify(undefined, { NFTs: uniqueTokens.length });
+
+//   // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
+//   // We will fetch tokens registered in the past 48 hours to be safe.
+//   // const ensTokens = await fetchEnsTokens({
+//   //   address: accountAddress,
+//   //   timeAgo: { hours: 48 },
+//   // });
+//   // if (ensTokens.length > 0) {
+//   //   uniqueTokens = uniqBy([...uniqueTokens, ...ensTokens], 'uniqueId');
+//   // }
+//   // }
+
+//   // NFT Fetching clean up
+//   // check that the account address to fetch for has not changed while fetching before updating state
+//   // const isCurrentAccountAddress =
+//   //   accountAddress === (showcaseAddress || getState().settings.accountAddress);
+//   // if (!showcaseAddress && isCurrentAccountAddress && !errorCheck) {
+//   //   saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
+//   // }
+//   // if (isCurrentAccountAddress && !errorCheck) {
+//   //   dispatch({
+//   //     payload: uniqueTokens,
+//   //     showcase: !!showcaseAddress,
+//   //     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+//   //   });
+//   // }
+//   const nfts = await fetchAllNfts(
+//     getState().settings.accountAddress,
+//     currentNetwork
+//   );
+
+//   dispatch({
+//     payload: nfts,
+//     showcase: !!showcaseAddress,
+//     type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+//   });
+// };
 
 /**
  * Revalidates a unique token via OpenSea API, updates state, and saves to local storage.
