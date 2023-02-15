@@ -12,16 +12,8 @@ import {
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ledgerErrorHandler, LEDGER_ERROR_CODES } from '@/utils/ledger';
 
-enum LEDGER_IMPORT_STATUS {
-  SEARCHING = 'SEARCHING',
-  FOUND = 'FOUND',
-  PAIRING = 'PAIRING',
-  PAIRED = 'PAIRED',
-  ERROR = 'ERROR',
-}
-
 /**
- * React hook used for checking ledger connections and handling connnection error states
+ * React hook used for checking connecting to a ledger device for the first time
  */
 export function useLedgerImport({
   errorCallback,
@@ -30,10 +22,6 @@ export function useLedgerImport({
   successCallback?: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const [pairingStatus, setPairingStatus] = useState<LEDGER_IMPORT_STATUS>(
-    LEDGER_IMPORT_STATUS.SEARCHING
-  );
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [observer, setObserverSubscription] = useState<Subscription | null>(
     null
   );
@@ -46,7 +34,6 @@ export function useLedgerImport({
    */
   const handlePairError = useCallback(
     (error: Error) => {
-      setPairingStatus(LEDGER_IMPORT_STATUS.ERROR);
       logger.error(new RainbowError('[LedgerImport] - Pairing Error'), {
         error,
       });
@@ -61,8 +48,6 @@ export function useLedgerImport({
   const handlePairSuccess = useCallback(
     (deviceId: string) => {
       logger.debug('[LedgerImport] - Pairing Success', {}, DebugContext.ledger);
-      setPairingStatus(LEDGER_IMPORT_STATUS.PAIRED);
-      setErrorMessage(null);
       successCallback?.(deviceId);
     },
     [successCallback]
@@ -72,7 +57,6 @@ export function useLedgerImport({
    * searches & pairs to the first found ledger device
    */
   const searchAndPair = useCallback(() => {
-    setPairingStatus(LEDGER_IMPORT_STATUS.SEARCHING);
     let currentDeviceId = '';
 
     const newObserver = TransportBLE.observeState({
@@ -90,7 +74,6 @@ export function useLedgerImport({
           { e },
           DebugContext.ledger
         );
-        setPairingStatus(LEDGER_IMPORT_STATUS.ERROR);
       },
       next: async (e: any) => {
         // App is not authorized to use Bluetooth
@@ -120,7 +103,6 @@ export function useLedgerImport({
             complete: () => {},
             error: error => {
               logger.debug('error pairing ', { error }, DebugContext.ledger);
-              setPairingStatus(error);
             },
             next: async e => {
               if (e.type === 'add') {
@@ -130,44 +112,8 @@ export function useLedgerImport({
                   return null;
                 }
                 // set the current device id to prevent duplicate alerts
-                setPairingStatus(LEDGER_IMPORT_STATUS.FOUND);
                 currentDeviceId = device.id;
 
-                /*
-                Alert.alert(
-                  'device found',
-                  `do u wanna connect to ${device.name} - ${device.id}`,
-                  [
-                    {
-                      onPress: () => {
-                        // if a user cancels this how do we want to handle?
-                        return null;
-                      },
-                      style: 'cancel',
-                      text: 'no',
-                    },
-                    {
-                      onPress: async () => {
-                        setPairingStatus(LEDGER_IMPORT_STATUS.PAIRING);
-                        try {
-                          // should i retry at this point?
-                          await openLedgerTransport(device.id);
-                          handlePairSuccess(device.id);
-                        } catch (e) {
-                          logger.debug(
-                            'error pairing ',
-                            {},
-                            DebugContext.ledger
-                          );
-                          handlePairError(e as Error);
-                        }
-                      },
-                      text: 'yes/pair',
-                    },
-                  ]
-                );
-                */
-                setPairingStatus(LEDGER_IMPORT_STATUS.PAIRING);
                 try {
                   const transport = await TransportBLE.open(device.id);
                   handlePairSuccess(device.id);
@@ -199,16 +145,17 @@ export function useLedgerImport({
         {},
         DebugContext.ledger
       );
-      let isBluetothEnabled = true;
-      if (IS_ANDROID) {
-        isBluetothEnabled = await checkAndRequestAndroidBluetooth();
-      }
+
+      const isBluetoothEnabled = IS_ANDROID
+        ? await checkAndRequestAndroidBluetooth()
+        : true;
       logger.debug(
         '[LedgerImport] - bluetooth enabled? ',
-        { isBluetothEnabled },
+        { isBluetoothEnabled },
         DebugContext.ledger
       );
-      if (isBluetothEnabled) {
+
+      if (isBluetoothEnabled) {
         searchAndPair();
       }
     };
@@ -222,6 +169,4 @@ export function useLedgerImport({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  return { pairingStatus, errorMessage };
 }
