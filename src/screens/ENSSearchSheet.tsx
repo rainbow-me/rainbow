@@ -164,6 +164,7 @@ export default function ENSSearchSheet() {
                   <ImgixImage
                     source={dice as Source}
                     style={{ height: 20, top: -0.5, width: 20 }}
+                    size={30}
                   />
                 </Box>
                 <Text

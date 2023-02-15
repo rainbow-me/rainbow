@@ -34,6 +34,7 @@ import Logger from '@/utils/logger';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;
+  bsc_mainnet_rpc?: string;
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
@@ -43,12 +44,13 @@ export interface RainbowConfig extends Record<string, any> {
   f2c_enabled?: boolean;
   flashbots_enabled?: boolean;
   op_nft_network?: string;
+  op_rewards_enabled?: boolean;
   optimism_mainnet_rpc?: string;
   polygon_mainnet_rpc?: string;
-  bsc_mainnet_rpc?: string;
   swagg_enabled?: boolean;
   trace_call_block_number_offset?: number;
   wyre_enabled?: boolean;
+  profiles_enabled?: boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -70,12 +72,14 @@ const DEFAULT_CONFIG = {
   f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
+  op_rewards_enabled: false,
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   wyre_enabled: true,
+  profiles_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -108,7 +112,9 @@ const init = async () => {
         key === 'flashbots_enabled' ||
         key === 'wyre_enabled' ||
         key === 'f2c_enabled' ||
-        key === 'swagg_enabled'
+        key === 'swagg_enabled' ||
+        key === 'op_rewards_enabled' ||
+        key === 'profiles_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

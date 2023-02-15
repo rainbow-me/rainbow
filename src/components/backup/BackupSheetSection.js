@@ -40,6 +40,7 @@ const MastheadIcon = styled(ImgixImage).attrs({
   height: 74,
   marginBottom: -1,
   width: 75,
+  size: 75,
 });
 
 export default function BackupSheetSection({

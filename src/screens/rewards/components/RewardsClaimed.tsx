@@ -13,33 +13,46 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
+import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 
 type Props = {
-  totalAvailableRewards: number;
-  remainingRewards: number;
-  nextDistributionTimestamp: number;
+  assetPrice?: number;
   color: string;
+  nextDistributionTimestamp: number;
+  remainingRewards: number;
+  tokenSymbol: string;
+  totalAvailableRewardsInToken: number;
 };
 
-export const RewardsAvailable: React.FC<Props> = ({
-  remainingRewards,
-  totalAvailableRewards,
-  nextDistributionTimestamp,
+export const RewardsClaimed: React.FC<Props> = ({
+  assetPrice,
   color,
+  nextDistributionTimestamp,
+  remainingRewards,
+  tokenSymbol,
+  totalAvailableRewardsInToken,
 }) => {
   const infoIconColor = useInfoIconColor();
+  const nativeCurrency = useSelector(
+    (state: AppState) => state.settings.nativeCurrency
+  );
   const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
-    const formattedTotalAvailableRewards = totalAvailableRewards.toLocaleString(
-      'en-US',
-      {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    );
+    const formattedTotalAvailableRewards = assetPrice
+      ? convertAmountAndPriceToNativeDisplay(
+          totalAvailableRewardsInToken,
+          assetPrice,
+          nativeCurrency
+        ).display
+      : convertAmountToNativeDisplay(totalAvailableRewardsInToken, 'USD');
 
     const now = new Date();
     const nextDistribution = fromUnixTime(nextDistributionTimestamp);
@@ -77,10 +90,12 @@ export const RewardsAvailable: React.FC<Props> = ({
       </Box>
     );
   } else {
-    const progress = remainingRewards / totalAvailableRewards;
-    const roundedProgressPercent = Math.round(progress * 10) * 10;
+    const claimed = totalAvailableRewardsInToken - remainingRewards;
+    const progress = claimed / totalAvailableRewardsInToken;
+    const claimedTokenFormatted = Math.floor(claimed).toLocaleString('en-US');
 
     const navigateToAmountsExplainer = () => {
+      analyticsV2.track(analyticsV2.event.rewardsPressedAvailableCard);
       navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
     };
 
@@ -96,7 +111,7 @@ export const RewardsAvailable: React.FC<Props> = ({
               <Stack space="12px">
                 <Columns alignVertical="center">
                   <Text size="15pt" weight="semibold" color="labelSecondary">
-                    {i18n.t(i18n.l.rewards.total_available_rewards)}
+                    {i18n.t(i18n.l.rewards.rewards_claimed)}
                   </Text>
                   <Column width="content">
                     <Text
@@ -112,9 +127,10 @@ export const RewardsAvailable: React.FC<Props> = ({
               </Stack>
               <Columns alignVertical="center">
                 <Text size="13pt" weight="semibold" color={{ custom: color }}>
-                  {i18n.t(i18n.l.rewards.left_this_week, {
-                    percent: roundedProgressPercent,
-                  })}
+                  {`${claimedTokenFormatted} / ${formatTokenDisplayValue(
+                    totalAvailableRewardsInToken,
+                    tokenSymbol
+                  )}`}
                 </Text>
                 <Column width="content">
                   <Text size="13pt" weight="semibold" color="labelTertiary">

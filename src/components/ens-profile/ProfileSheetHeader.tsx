@@ -83,7 +83,6 @@ export default function ProfileSheetHeader({
   });
   const enableZoomOnPressAvatar = enableZoomableImages && !onPressAvatar;
 
-  const coverUrl = getLowResUrl(cover?.imageUrl || '', { w: 400 });
   const { onPress: onPressCover } = useOpenENSNFTHandler({
     uniqueTokens,
     value: records?.header,
@@ -106,7 +105,7 @@ export default function ProfileSheetHeader({
     >
       <Stack space={{ custom: 18 }}>
         <ProfileCover
-          coverUrl={coverUrl}
+          coverUrl={cover?.imageUrl}
           enableZoomOnPress={enableZoomOnPressCover}
           handleOnPress={onPressCover}
           isFetched={isImagesFetched}

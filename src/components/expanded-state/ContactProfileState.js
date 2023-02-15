@@ -85,7 +85,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '') || ''
+    maybeSignUri(avatarUrl || '', { w: 200 }) || ''
   );
 
   const accentColor =

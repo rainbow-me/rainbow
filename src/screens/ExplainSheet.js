@@ -100,6 +100,7 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -115,6 +116,7 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -130,6 +132,7 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -145,6 +148,7 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -160,6 +164,7 @@ const ZoraAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconZora}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -176,6 +181,7 @@ const TheMergeIcon = () => {
       }}
     >
       <ImgixImage
+        size={50}
         source={TheMergePng}
         style={{
           width: 53,

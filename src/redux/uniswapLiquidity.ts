@@ -1,7 +1,5 @@
-import { isEmpty, uniqBy } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { emitChartsRequest } from './explorer';
 import { AppGetState, AppState } from './store';
 import { ParsedAddressAsset } from '@/entities';
 import { getLiquidity, saveLiquidity } from '@/handlers/localstorage/uniswap';
@@ -123,12 +121,9 @@ export const setPoolsDetails = (
  * new tokens. If tokens are being replaced, a new chart request is emitted.
  *
  * @param liquidityTokens The liquidity tokens to update.
- * @param appendOrChange Whether this update should append the provided tokens,
- * as opposed to replacing the tokens in state.
  */
 export const uniswapUpdateLiquidityTokens = (
-  liquidityTokens: ParsedAddressAsset[],
-  appendOrChange: boolean
+  liquidityTokens: ParsedAddressAsset[]
 ) => (
   dispatch: ThunkDispatch<
     AppState,
@@ -137,27 +132,12 @@ export const uniswapUpdateLiquidityTokens = (
   >,
   getState: AppGetState
 ) => {
-  if (appendOrChange && isEmpty(liquidityTokens)) return;
-  let updatedLiquidityTokens = liquidityTokens;
-  if (appendOrChange) {
-    const {
-      liquidityTokens: existingLiquidityTokens,
-    } = getState().uniswapLiquidity;
-
-    updatedLiquidityTokens = uniqBy(
-      updatedLiquidityTokens.concat(existingLiquidityTokens),
-      token => token.address
-    ).filter(token => !!Number(token?.balance?.amount ?? 0));
-  } else {
-    const assetCodes = liquidityTokens.map(token => token.address);
-    dispatch(emitChartsRequest(assetCodes));
-  }
   const { accountAddress, network } = getState().settings;
   dispatch({
-    payload: updatedLiquidityTokens,
+    payload: liquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveLiquidity(updatedLiquidityTokens, accountAddress, network);
+  saveLiquidity(liquidityTokens, accountAddress, network);
 };
 
 // -- Reducer --------------------------------------------------------------- //

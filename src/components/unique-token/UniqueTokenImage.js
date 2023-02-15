@@ -14,6 +14,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import isSVGImage from '@/utils/isSVG';
+import { CardSize } from './CardSize';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -96,6 +97,7 @@ const UniqueTokenImage = ({
               resizeMode={ImgixImage.resizeMode[resizeMode]}
               source={{ uri: item.lowResUrl }}
               style={position.coverAsObject}
+              size={CardSize}
             />
           )}
         </Fragment>

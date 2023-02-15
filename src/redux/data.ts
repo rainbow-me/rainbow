@@ -398,16 +398,6 @@ export interface TransactionsReceivedMessage {
 }
 
 /**
- * A message from the Zerion API indicating that transactions were removed.
- */
-export interface TransactionsRemovedMessage {
-  payload?: {
-    transactions?: ZerionTransaction[];
-  };
-  meta?: MessageMeta;
-}
-
-/**
  * A message from the Zerion API indicating that asset data was received. Note,
  * an actual message directly from Zerion would only include `ZerionAsset`
  * as the value type in the `prices` map, but this message type is also used
@@ -449,7 +439,6 @@ type DataMessage =
   | AddressAssetsReceivedMessage
   | PortfolioReceivedMessage
   | TransactionsReceivedMessage
-  | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
 
@@ -560,29 +549,6 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
 };
 
 /**
- * Replaces the account asset data in state and saves to account local storage.
- *
- * @param assetsData The new asset data.
- */
-export const dataUpdateAssets = (assetsData: {
-  [uniqueId: string]: ParsedAddressAsset;
-}) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  if (!isEmpty(assetsData)) {
-    saveAccountAssetsData(assetsData, accountAddress, network);
-    // Change the state since the account isn't empty anymore
-    saveAccountEmptyState(false, accountAddress, network);
-    dispatch({
-      payload: assetsData,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
-  }
-};
-
-/**
  * Checks whether or not metadata received from Zerion is valid.
  *
  * @param message The message received from Zerion.
@@ -648,28 +614,6 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
       // @ts-ignore-next-line
       dispatch(incrementNonce(addressFrom!, nonce, network));
     }
-  }
-};
-
-/**
- * Checks to see if a network's nonce should be decremented for an account
- * based on incoming transaction data, and if so, updates state.
- *
- * @param removedTransactions Removed transaction data.
- */
-const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  if (removedTransactions.length) {
-    const { accountAddress, network } = getState().settings;
-    const txSortedByAscendingNonce = removedTransactions
-      .filter(({ from }) => from === accountAddress)
-      .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
-    const [lowestNonceTx] = txSortedByAscendingNonce;
-    const { nonce } = lowestNonceTx;
-    // @ts-ignore-next-line
-    dispatch(decrementNonce(accountAddress, nonce!, network));
   }
 };
 
@@ -915,57 +859,14 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
 };
 
 /**
- * Handles a `TransactionsRemovedMessage` from Zerion and updates state and
- * account local storage.
- *
- * @param message The incoming `TransactionsRemovedMessage` or undefined.
- */
-export const transactionsRemoved = (
-  message: TransactionsRemovedMessage | undefined
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
-  getState: AppGetState
-) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
-  const transactionData = message?.payload?.transactions ?? [];
-  if (!transactionData.length) {
-    return;
-  }
-  const { accountAddress, network } = getState().settings;
-  const { transactions } = getState().data;
-  const removeHashes = transactionData.map(txn => txn.hash);
-  logger.log('[data] - remove txn hashes', removeHashes);
-  const [updatedTransactions, removedTransactions] = partition(
-    transactions,
-    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
-  );
-
-  dispatch({
-    payload: updatedTransactions,
-    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-  });
-
-  dispatch(checkForRemovedNonce(removedTransactions));
-  saveLocalTransactions(updatedTransactions, accountAddress, network);
-};
-
-/**
  * Handles an `AddressAssetsReceivedMessage` from Zerion and updates state and
  * account local storage.
  *
  * @param message The message.
- * @param append Whether or not the asset data is being appended.
- * @param change Whether or not an existing asset is being changed.
- * @param removed Whether or not an asset is being removed.
  * @param assetsNetwork The asset's network.
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  append = false,
-  change = false,
-  removed = false,
   assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
@@ -983,7 +884,6 @@ export const addressAssetsReceived = (
     accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
-  const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
   let updatedAssets = pickBy(
     newAssets,
@@ -993,16 +893,7 @@ export const addressAssetsReceived = (
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
-  if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
-  }
-
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
+  let parsedAssets = parseAccountAssets(updatedAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 
@@ -1018,10 +909,7 @@ export const addressAssetsReceived = (
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
-    dispatch(
-      // @ts-ignore
-      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
-    );
+    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;

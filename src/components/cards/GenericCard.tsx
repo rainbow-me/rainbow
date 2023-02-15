@@ -12,9 +12,21 @@ export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
 
 export type CardType = 'square' | 'stretch';
 
+export type Gradient = {
+  colors: string[];
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+};
+
+const transparentGradient = {
+  colors: ['transparent', 'transparent'],
+  start: { x: 0, y: 0 },
+  end: { x: 0, y: 0 },
+};
+
 type GenericCardProps = {
   type: CardType;
-  gradient?: string[];
+  gradient?: Gradient;
   disabled?: boolean;
   onPress?: () => void;
   color?: string;
@@ -25,7 +37,7 @@ export const GenericCard = ({
   children,
   disabled = false,
   type,
-  gradient = ['transparent', 'transparent'],
+  gradient = transparentGradient,
   onPress,
   color,
   testID,
@@ -44,13 +56,19 @@ export const GenericCard = ({
       </ButtonPressAnimation>
     )}
   >
-    <AccentColorProvider color={color ?? globalColors.grey100}>
+    <ConditionalWrap
+      condition={color !== undefined && color !== 'accent'}
+      wrap={(children: React.ReactNode) => (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <AccentColorProvider color={color!}>{children}</AccentColorProvider>
+      )}
+    >
       <Box
         background={color ? 'accent' : 'surfacePrimaryElevated'}
         as={LinearGradient}
-        colors={gradient}
-        end={{ x: 1, y: 0 }}
-        start={{ x: 0, y: 0.5 }}
+        colors={gradient.colors}
+        end={gradient.end}
+        start={gradient.start}
         width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
         height={
           type === 'square'
@@ -67,6 +85,6 @@ export const GenericCard = ({
       >
         {children}
       </Box>
-    </AccentColorProvider>
+    </ConditionalWrap>
   </ConditionalWrap>
 );

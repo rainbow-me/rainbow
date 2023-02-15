@@ -103,6 +103,7 @@ const ImageAvatar = ({
           source={{
             uri: image,
           }}
+          size={100}
         />
       </Centered>
     </ShadowStack>
