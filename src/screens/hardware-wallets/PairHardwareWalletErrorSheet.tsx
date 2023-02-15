@@ -2,8 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-// eslint-disable-next-line no-restricted-imports
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
