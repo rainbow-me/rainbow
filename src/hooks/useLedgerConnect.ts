@@ -27,7 +27,6 @@ export function useLedgerConnect({
     connectionStatus,
     setConnectionStatus,
   ] = useState<LEDGER_CONNECTION_STATUS>(LEDGER_CONNECTION_STATUS.LOADING);
-  const [errorCode, setErrorCode] = useState<LEDGER_ERROR_CODES | null>(null);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
@@ -46,7 +45,6 @@ export function useLedgerConnect({
       if (error.message.includes('Ledger Device is busy (lock')) {
       } */
       setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
-      setErrorCode(errorType);
       errorCallback?.(errorType);
     },
     [errorCallback]
@@ -57,7 +55,6 @@ export function useLedgerConnect({
    */
   const handleLedgerSuccess = useCallback(() => {
     setConnectionStatus(LEDGER_CONNECTION_STATUS.READY);
-    setErrorCode(null);
     successCallback?.(deviceId);
   }, [deviceId, successCallback]);
 
@@ -103,5 +100,5 @@ export function useLedgerConnect({
     };
   }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling]);
 
-  return { connectionStatus, errorCode };
+  return { connectionStatus };
 }
