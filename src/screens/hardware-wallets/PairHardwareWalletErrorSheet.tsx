@@ -1,7 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-// import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 // eslint-disable-next-line no-restricted-imports
 import { RouteProp, useRoute } from '@react-navigation/core';

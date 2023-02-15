@@ -33,9 +33,10 @@ export function PairHardwareWalletNavigator() {
   const { params } = useRoute<
     RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
   >();
+  const { height, width } = useDimensions();
 
   const [currentRouteName, setCurrentRouteName] = useState(
-    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
+    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
 
   const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
