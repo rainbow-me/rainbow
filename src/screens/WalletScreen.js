@@ -39,6 +39,7 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { atom, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analytics } from '@/analytics';
+import { useNfts } from '@/hooks/useNfts';
 
 export const addressCopiedToastAtom = atom({
   default: false,
@@ -244,6 +245,9 @@ export default function WalletScreen() {
 
   const isLoadingAssets =
     useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
+
+  const { nfts } = useNfts('0x2DC92aA78358310A87276cF6f893F48E896d8Fc5');
+  console.log(nfts?.length, 'length');
 
   return (
     <WalletPage testID="wallet-screen">

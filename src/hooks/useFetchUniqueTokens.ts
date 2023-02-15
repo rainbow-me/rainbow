@@ -146,6 +146,8 @@ export default function useFetchUniqueTokens({
           address as string,
           cursor
         );
+
+        console.log(nextCursor, 'nextCursor');
         let moreUniqueTokens = parseSimplehashNFTs(rawNFTData).filter(
           (nft: UniqueAsset) => {
             if (nft.collection.name === null) return false;
