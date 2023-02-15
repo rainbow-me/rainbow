@@ -183,6 +183,8 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
   return (
     <RatioComponent
+      redirectUri={IS_IOS ? 'https://rainbow.me/plaid/oauth' : null}
+      androidPackageName={IS_IOS ? null : 'me.rainbow'}
       onPress={() => {
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
         analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
