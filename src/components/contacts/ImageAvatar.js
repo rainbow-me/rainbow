@@ -53,10 +53,12 @@ const sizeConfigs = (colors, isDarkMode) => ({
   },
   rewards: {
     dimensions: 36,
-    shadow: [
-      [0, 4, IS_ANDROID ? 5 : 12, colors.shadow, 0.16],
-      [0, 2, IS_ANDROID ? 5 : 6, colors.shadow, 0.02],
-    ],
+    shadow: IS_ANDROID
+      ? [[0, 4, 5, colors.shadow, 0.16]]
+      : [
+          [0, 4, 12, colors.shadow, 0.16],
+          [0, 2, 6, colors.shadow, 0.02],
+        ],
     textSize: 'large',
   },
   smedium_shadowless: {

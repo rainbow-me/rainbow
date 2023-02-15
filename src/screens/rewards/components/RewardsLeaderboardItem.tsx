@@ -121,15 +121,13 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
       <Stack>
         <Columns space="10px" alignVertical="center">
           <Column width="content">
-            <Bleed vertical="6px">
-              <Box>
-                {avatarUrl ? (
-                  <ImageAvatar image={avatarUrl} size="rewards" />
-                ) : (
-                  <ContactAvatar color={color} size="smedium" value={emoji} />
-                )}
-              </Box>
-            </Bleed>
+            <Box>
+              {avatarUrl ? (
+                <ImageAvatar image={avatarUrl} size="rewards" />
+              ) : (
+                <ContactAvatar color={color} size="rewards" value={emoji} />
+              )}
+            </Box>
           </Column>
           <Stack space="8px">
             <Text
