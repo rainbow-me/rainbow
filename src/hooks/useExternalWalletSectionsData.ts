@@ -14,11 +14,9 @@ export default function useExternalWalletSectionsData({
   infinite?: boolean;
   type?: AssetListType;
 }) {
-  const {
-    uniqueTokens,
-    isLoading: isUniqueTokensLoading,
-    isSuccess: isUniqueTokensSuccess,
-  } = useUniqueTokens({ address: address || '' });
+  const { uniqueTokens, isLoading: isUniqueTokensLoading } = useUniqueTokens({
+    address: address || '',
+  });
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
@@ -44,6 +42,6 @@ export default function useExternalWalletSectionsData({
   return {
     briefSectionsData,
     isLoading: isUniqueTokensLoading,
-    isSuccess: isUniqueTokensSuccess,
+    isSuccess: !!uniqueTokens?.length,
   };
 }

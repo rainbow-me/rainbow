@@ -110,9 +110,11 @@ export const useUniqueTokens = ({
   const [polygonAllowlist, setPolygonAllowlist] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [didSetup, setDidSetup] = useState(false);
 
   useEffect(() => {
     const setupAndFirstFetch = async () => {
+      console.log(address);
       try {
         const [
           storedUniqueTokens,
@@ -163,13 +165,16 @@ export const useUniqueTokens = ({
         logger.error(new RainbowError(`useNfts error: ${error}`));
       }
     };
-    if (address && mounted.current) {
+    if (address && mounted.current && !didSetup) {
+      setDidSetup(true);
       setupAndFirstFetch();
     }
-  }, [accountAddress, address, mounted, network, queryConfig]);
+  }, [accountAddress, address, didSetup, mounted, network, queryConfig]);
 
   useEffect(() => {
     const fetchNextPage = async () => {
+      console.log('OOPS');
+      console.log(address);
       try {
         const { data, nextCursor } = await fetchNfts(
           {
@@ -192,21 +197,24 @@ export const useUniqueTokens = ({
         } else {
           updatedUniqueTokens = [...uniqueTokens, ...newUniqueTokens];
         }
-        await saveUniqueTokens(address, updatedUniqueTokens, network);
+        if (accountAddress === address) {
+          await saveUniqueTokens(updatedUniqueTokens, address, network);
+        }
         setUniqueTokens(updatedUniqueTokens);
         if (uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL || !nextCursor) {
-          setShouldFetchMore(false);
           setIsLoading(false);
           setIsSuccess(true);
+        } else {
+          setShouldFetchMore(true);
         }
       } catch (error) {
         setIsLoading(false);
-        setShouldFetchMore(false);
         captureException(error);
         logger.error(new RainbowError(`useUniqueTokens error: ${error}`));
       }
     };
     if (shouldFetchMore && mounted.current) {
+      setShouldFetchMore(false);
       fetchNextPage();
     }
   }, [
@@ -219,6 +227,7 @@ export const useUniqueTokens = ({
     queryConfig,
     shouldFetchMore,
     mounted,
+    accountAddress,
   ]);
 
   useEffect(() => {
