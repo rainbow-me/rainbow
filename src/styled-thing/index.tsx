@@ -52,7 +52,7 @@ function useResolvedAttrs(theme = {}, props: any, attrs = []) {
 
   for (let i = 0; i < attrs.length; i++) {
     const attrDef = attrs[i];
-    const resolvedAttrDef =
+    let resolvedAttrDef =
       // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       typeof attrDef === 'function' ? attrDef(context) : attrDef;
     let key;
@@ -67,7 +67,7 @@ function useResolvedAttrs(theme = {}, props: any, attrs = []) {
 }
 
 function processStyles(nestedStyles: any, props: any) {
-  const result = {};
+  let result = {};
 
   for (let i = 0; i < nestedStyles.length; i++) {
     const styles = nestedStyles[i];
@@ -123,6 +123,7 @@ export default function styled(Component: any) {
       const theme = useTheme() ?? {};
 
       const [context, attributes] = useResolvedAttrs(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
         theme,
         props,
         WrappedStyledComponent.attrs
