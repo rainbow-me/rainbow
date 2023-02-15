@@ -118,7 +118,14 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
             </Box>
           </Column>
           <Stack space="8px">
-            <Text color="label" size="15pt" weight="semibold">
+            <Text
+              color="label"
+              ellipsizeMode="middle"
+              numberOfLines={1}
+              size="15pt"
+              weight="semibold"
+              containsEmoji
+            >
               {ens ?? `${address.slice(0, 6)}...${address.slice(-4)}`}
             </Text>
             <Text size="13pt" color="labelTertiary" weight="semibold">
