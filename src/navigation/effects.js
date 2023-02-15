@@ -12,6 +12,7 @@ import {
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
+import { useAccountProfile } from '@/hooks';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;

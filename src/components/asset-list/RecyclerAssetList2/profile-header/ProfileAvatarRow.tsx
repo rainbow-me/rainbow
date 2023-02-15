@@ -11,7 +11,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import {
+  useAccountProfile,
+  useLatestCallback,
+  useOnAvatarPress,
+} from '@/hooks';
 import { useTheme } from '@/theme';
 import { getFirstGrapheme } from '@/utils';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
@@ -209,11 +213,7 @@ export const ProfileAvatarRow: React.FC<Props> = ({
                         size={size}
                       />
                     ) : (
-                      <EmojiAvatar
-                        accountAccentColor={accountAccentColor}
-                        accountSymbol={accountSymbol}
-                        size={size}
-                      />
+                      <EmojiAvatar size={size} />
                     )}
                   </Animated.View>
                 </>
@@ -226,17 +226,16 @@ export const ProfileAvatarRow: React.FC<Props> = ({
   );
 };
 
-export function EmojiAvatar({
-  size,
-  accountAccentColor,
-  accountSymbol,
-}: {
-  size: number;
-  accountAccentColor: string;
-  accountSymbol?: string | boolean;
-}) {
+export function EmojiAvatar({ size }: { size: number }) {
+  const { colors } = useTheme();
+  const { accountColor, accountSymbol } = useAccountProfile();
+
+  const accentColor =
+    accountColor !== undefined
+      ? colors.avatarBackgrounds[accountColor]
+      : colors.skeleton;
   return (
-    <AccentColorProvider color={accountAccentColor}>
+    <AccentColorProvider color={accentColor}>
       <Box
         background="accent"
         borderRadius={size / 2}

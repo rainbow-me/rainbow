@@ -4,12 +4,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@/hooks';
 
-type ReturnType = {
-  accentColor: string;
-  loaded: boolean;
-};
-
-export function useAccountAccentColor(): ReturnType {
+export function useAccountAccentColor() {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   const {
@@ -21,7 +16,11 @@ export function useAccountAccentColor(): ReturnType {
   let accentColor = colors.appleBlue;
   if (accountImage) {
     accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
+  } else if (
+    typeof accountColor === 'number' &&
+    accountColor >= 0 &&
+    accountColor < colors.avatarBackgrounds.length
+  ) {
     accentColor = colors.avatarBackgrounds[accountColor];
   }
   const hasImageColorLoaded = state === 2 || state === 3;
