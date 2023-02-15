@@ -42,9 +42,44 @@ const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
     return true;
   });
 
-// export const fetchAllNfts = ({ address }: { address: string }) => {
-
-// };
+export const fetchAllNfts = async (address: string, network: Network) => {
+  const [
+    storedNfts,
+    polygonAllowlist,
+    nftResponse,
+  ] = await promiseUtils.PromiseAllWithFails([
+    getUniqueTokens(address, network),
+    fetchPolygonAllowlist(),
+    fetchNfts({
+      address,
+      cursor: START_CURSOR,
+    }),
+  ]);
+  const { data, nextCursor } = nftResponse;
+  let cursor = nextCursor;
+  let nfts;
+  const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
+  if (storedNfts?.length) {
+    nfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
+  } else {
+    nfts = newNfts;
+  }
+  while (cursor && nfts.length < UNIQUE_TOKENS_LIMIT_TOTAL) {
+    // eslint-disable-next-line no-await-in-loop
+    const { data, nextCursor } = await fetchNfts({
+      address,
+      cursor,
+    });
+    const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
+    if (storedNfts?.length) {
+      nfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
+    } else {
+      nfts = [...nfts, ...newNfts];
+    }
+    cursor = nextCursor;
+  }
+  await saveUniqueTokens(nfts, address, network);
+};
 
 export const useNfts = (address: string) => {
   const [cursor, setCursor] = useState<string | undefined>();
@@ -96,7 +131,6 @@ export const useNfts = (address: string) => {
         address,
         cursor: cursor as string,
       });
-      console.log('zumba');
       const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
       setCursor(nextCursor);
       let updatedNfts;
@@ -124,5 +158,5 @@ export const useNfts = (address: string) => {
     shouldFetchMore,
   ]);
 
-  return { nfts };
+  return { nfts, isLoading: shouldFetchMore };
 };
