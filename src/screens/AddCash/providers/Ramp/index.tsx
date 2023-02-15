@@ -97,7 +97,8 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
           const host = 'https://buy.ramp.network';
           const sessionId = nanoid();
           const params = qs.stringify({
-            hostLogoUrl: 'https://rainbow.me/images/rainbow-avatar.png',
+            hostLogoUrl:
+              'https://rainbow.me/images/rainbow-app-icon-rounded.svg',
             hostAppName: 'Rainbow',
             hostApiKey: RAMP_HOST_API_KEY,
             userAddress: accountAddress,
