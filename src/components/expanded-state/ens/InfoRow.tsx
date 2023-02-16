@@ -25,7 +25,6 @@ import {
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
-import { CardSize } from '@/components/unique-token/CardSize';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -244,12 +243,7 @@ function ImageValue({
       imageUrl={url}
       onPress={onPress}
     >
-      <Box
-        as={ImgixImage}
-        height="full"
-        source={{ uri: url }}
-        size={CardSize}
-      />
+      <Box as={ImgixImage} height="full" source={{ uri: url }} />
     </ImagePreviewOverlayTarget>
   );
 }

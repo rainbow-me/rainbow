@@ -8,6 +8,7 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import {
+  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,

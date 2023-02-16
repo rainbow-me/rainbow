@@ -580,7 +580,7 @@ const UniqueTokenExpandedState = ({
                         ) : null}
                       </Columns>
                     ) : null}
-                    {/* {asset.network !== Network.mainnet ? (
+                    {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
                         assetType={asset.network}
@@ -592,7 +592,7 @@ const UniqueTokenExpandedState = ({
                         onPress={handleL2DisclaimerPress}
                         symbol="NFT"
                       />
-                    ) : null} */}
+                    ) : null}
                     <Stack
                       separator={<Separator color="divider20 (Deprecated)" />}
                       space={sectionSpace}
