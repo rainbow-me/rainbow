@@ -16,6 +16,7 @@ import {
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   RainbowMeteorologyData,
   RainbowMeteorologyLegacyData,
   SelectedGasFee,
