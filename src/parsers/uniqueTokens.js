@@ -285,18 +285,6 @@ export const applyENSMetadataFallbackToToken = async token => {
   return token;
 };
 
-export const applyENSMetadataFallbackToTokens = async data => {
-  return await Promise.all(
-    data.map(async token => {
-      try {
-        return await applyENSMetadataFallbackToToken(token);
-      } catch {
-        return token;
-      }
-    })
-  );
-};
-
 const getSimplehashMarketplaceInfo = simplehashNft => {
   const marketplace = simplehashNft.collection.marketplace_pages?.[0];
   if (!marketplace) return null;

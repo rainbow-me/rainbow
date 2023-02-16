@@ -3,10 +3,7 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
-import {
-  applyENSMetadataFallbackToTokens,
-  parseSimplehashNFTs,
-} from '@/parsers/uniqueTokens';
+import { parseSimplehashNFTs } from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@/handlers/ens';
 import {
@@ -108,10 +105,6 @@ export default function useFetchUniqueTokens({
         );
       }
 
-      // If there are any "unknown" ENS names, fallback to the ENS
-      // metadata service.
-      uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
-
       return uniqueTokens;
     },
     {
@@ -142,14 +135,9 @@ export default function useFetchUniqueTokens({
       ]);
       const { rawNFTData, nextCursor } = uniqueTokensResponse;
 
-      let moreUniqueTokens = filterNfts(
+      const moreUniqueTokens = filterNfts(
         parseSimplehashNFTs(rawNFTData),
         polygonAllowlist
-      );
-      // If there are any "unknown" ENS names, fallback to the ENS
-      // metadata service.
-      moreUniqueTokens = await applyENSMetadataFallbackToTokens(
-        moreUniqueTokens
       );
 
       if (!hasStoredTokens) {
