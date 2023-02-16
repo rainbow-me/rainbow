@@ -737,9 +737,7 @@ export const transactionsReceived = (
   }
 
   const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
-    {
-      pendingTransactions: cloneDeep(pendingTransactions),
-    }
+    cloneDeep(pendingTransactions)
   );
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
   const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
@@ -778,59 +776,74 @@ export const transactionsReceived = (
   }
 };
 
-export const maybeFetchF2CHashForPendingTransactions = async ({
-  pendingTransactions,
-}: {
-  pendingTransactions: RainbowTransaction[];
-}) => {
+/**
+ * Maps over every pendingTransaction, and if it's a F2C transaction, fetches
+ * the transaction has and updates the pendingTransaction with its hash.
+ *
+ * This method returns all pendingTransactions that were passed in, so 5 go in,
+ * 5 come out, but they might have a tx hash added.
+ */
+export const maybeFetchF2CHashForPendingTransactions = async (
+  pendingTransactions: RainbowTransaction[]
+) => {
   loggr.debug(
     `maybeFetchF2CHashForPendingTransactions`,
     {},
     loggr.DebugContext.f2c
   );
 
-  const updatedPendingTransactions = await Promise.all(
-    pendingTransactions
-      .filter(tx => Boolean(tx.fiatProvider))
-      .map(async tx => {
-        switch (tx.fiatProvider?.name) {
-          case FiatProviderName.Ratio: {
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions`,
-              { provider: tx.fiatProvider?.name },
-              loggr.DebugContext.f2c
-            );
+  return Promise.all(
+    pendingTransactions.map(async tx => {
+      // If not from a F2C provider, return the original tx
+      if (!tx.fiatProvider) return tx;
 
-            const { userId, orderId } = tx.fiatProvider;
+      // If it is from an F2C provider, see if we can add the tx hash to it
+      switch (tx.fiatProvider?.name) {
+        // handle Ratio case
+        case FiatProviderName.Ratio: {
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions`,
+            { provider: tx.fiatProvider?.name },
+            loggr.DebugContext.f2c
+          );
 
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions: fetching order`
-            );
+          const { userId, orderId } = tx.fiatProvider;
 
-            const { data, error } = await gretch<ActivityItem>(
-              `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
-            ).json();
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions: fetching order`
+          );
 
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions: fetched order`,
+          const { data, error } = await gretch<ActivityItem>(
+            `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
+          ).json();
+
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions: fetched order`,
+            {
+              hasData: Boolean(data),
+              hasError: Boolean(error),
+              hasHash: Boolean(data?.crypto?.transactionHash),
+            }
+          );
+
+          if (!data || error) {
+            loggr.error(
+              new RainbowError(
+                `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
+              ),
               {
-                hasData: Boolean(data),
-                hasError: Boolean(error),
-                hasHash: Boolean(data?.crypto?.transactionHash),
+                error,
+                provider: tx.fiatProvider.name,
               }
             );
-
-            if (!data || error) {
-              loggr.error(
-                new RainbowError(
-                  `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
-                ),
-                {
-                  error,
-                  provider: tx.fiatProvider.name,
-                }
+          } else if (data.crypto.transactionHash) {
+            if (tx.hash) {
+              // idk how this could happen, but just in case
+              loggr.warn(
+                `maybeFetchF2CHashForPendingTransactions: pending F2C tx already has a hash`,
+                { hash: tx.hash }
               );
-            } else if (data.crypto.transactionHash) {
+            } else {
               tx.hash = data.crypto.transactionHash;
 
               analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
@@ -841,21 +854,21 @@ export const maybeFetchF2CHashForPendingTransactions = async ({
               loggr.debug(
                 `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
               );
-            } else {
-              loggr.info(
-                `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
-              );
             }
-            break;
+          } else {
+            loggr.info(
+              `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
+            );
           }
+          break;
         }
 
-        return tx;
-      })
-      .filter(Boolean)
-  );
+        // handle other cases here once we have more providers
+      }
 
-  return updatedPendingTransactions;
+      return tx;
+    })
+  );
 };
 
 /**
