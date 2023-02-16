@@ -1,4 +1,4 @@
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

@@ -38,7 +38,7 @@ import chartTypes from '@/helpers/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 
 export const ETH_CARD_HEIGHT = 284.3;

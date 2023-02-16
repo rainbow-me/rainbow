@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import React, { useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';

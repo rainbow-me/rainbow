@@ -1,4 +1,4 @@
-import { useIsFocused } from '@react-navigation/core';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
