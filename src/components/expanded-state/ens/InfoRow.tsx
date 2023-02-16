@@ -9,8 +9,8 @@ import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import {
   useAccountSettings,
+  useFetchUniqueTokens,
   useOpenENSNFTHandler,
-  useUniqueTokens,
 } from '@/hooks';
 import { AppState } from '@/redux/store';
 import {
@@ -25,6 +25,7 @@ import {
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
+import { CardSize } from '@/components/unique-token/CardSize';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -224,12 +225,10 @@ function ImageValue({
   const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const { uniqueTokens: uniqueTokensProfile } = useUniqueTokens({
+  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
     address: address ?? '',
     // Don't want to refetch tokens if we already have them.
-    queryConfig: {
-      staleTime: Infinity,
-    },
+    staleTime: Infinity,
   });
   const isSelf = address === accountAddress;
   const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
@@ -245,7 +244,12 @@ function ImageValue({
       imageUrl={url}
       onPress={onPress}
     >
-      <Box as={ImgixImage} height="full" source={{ uri: url }} />
+      <Box
+        as={ImgixImage}
+        height="full"
+        source={{ uri: url }}
+        size={CardSize}
+      />
     </ImagePreviewOverlayTarget>
   );
 }

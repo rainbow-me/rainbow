@@ -14,22 +14,44 @@ import {
   saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
 import {
-  apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/opensea-api';
-import { fetchPoaps } from '@/handlers/poap';
 import { Network } from '@/helpers/networkTypes';
 import { fetchRawUniqueTokens, START_CURSOR } from '@/handlers/simplehash';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
   address,
 ];
 
-const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
+
+export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
+  nfts.filter((nft: UniqueAsset) => {
+    if (!nft.collection.name) return false;
+
+    // filter out spam
+    if (nft.spamScore === null || nft.spamScore >= 85) return false;
+
+    // filter gnosis NFTs that are not POAPs
+    if (
+      nft.network === Network.gnosis &&
+      nft.asset_contract &&
+      nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+    )
+      return false;
+
+    if (
+      nft.network === Network.polygon &&
+      !polygonAllowlist.includes(nft.asset_contract?.address?.toLowerCase())
+    ) {
+      return false;
+    }
+
+    return true;
+  });
 
 export default function useFetchUniqueTokens({
   address,
@@ -42,11 +64,9 @@ export default function useFetchUniqueTokens({
 }) {
   const { network } = useAccountSettings();
   const mounted = useIsMounted();
-  const queryClient = useQueryClient();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
-  const [cursor, setCursor] = useState<string | null>(START_CURSOR);
-  const [polygonAllowlist, setPolygonAllowlist] = useState<string[]>([]);
+  const [cursor, setCursor] = useState<string>(START_CURSOR);
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -63,27 +83,6 @@ export default function useFetchUniqueTokens({
     })();
   }, [address, network]);
 
-  useEffect(() => {
-    const fetchPolygonAllowlist = async () => {
-      const allowlist = await queryClient.fetchQuery(
-        ['polygon-allowlist'],
-        async () => {
-          return (
-            await rainbowFetch(
-              'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-              { method: 'get' }
-            )
-          ).data.data.addresses;
-        },
-        {
-          staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
-        }
-      );
-      setPolygonAllowlist(allowlist);
-    };
-    fetchPolygonAllowlist();
-  }, [queryClient]);
-
   // Make the first query to retrieve the unique tokens.
   const uniqueTokensQuery = useQuery<UniqueAsset[]>(
     uniqueTokensQueryKey({ address }),
@@ -97,17 +96,21 @@ export default function useFetchUniqueTokens({
 
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
-        const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
-          address as string,
-          START_CURSOR
-        );
+        const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
+          fetchRawUniqueTokens(address as string, START_CURSOR),
+          fetchPolygonAllowlist(),
+        ]);
+        const { rawNFTData, nextCursor } = uniqueTokensResponse;
         setCursor(nextCursor);
-        uniqueTokens = rawNFTData;
+        uniqueTokens = filterNfts(
+          parseSimplehashNFTs(rawNFTData),
+          polygonAllowlist
+        );
       }
 
       // If there are any "unknown" ENS names, fallback to the ENS
       // metadata service.
-      // uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
+      uniqueTokens = await applyENSMetadataFallbackToTokens(uniqueTokens);
 
       return uniqueTokens;
     },
@@ -120,84 +123,56 @@ export default function useFetchUniqueTokens({
   );
   const uniqueTokens = uniqueTokensQuery.data;
 
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!address) return;
 
     async function fetchMore({
       network,
-      cursor,
       uniqueTokens = [],
+      cursor = START_CURSOR,
     }: {
       network: Network;
-      cursor: any;
       uniqueTokens?: UniqueAsset[];
+      cursor?: string;
     }): Promise<UniqueAsset[]> {
-      if (
-        mounted.current &&
-        uniqueTokens?.length < UNIQUE_TOKENS_LIMIT_TOTAL &&
-        cursor
-      ) {
-        // let moreUniqueTokens = await apiGetAccountUniqueTokens(
-        //   network,
-        //   address as string,
-        //   page
-        // );
-        const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
-          address as string,
-          cursor
+      const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
+        fetchRawUniqueTokens(address as string, cursor),
+        fetchPolygonAllowlist(),
+      ]);
+      const { rawNFTData, nextCursor } = uniqueTokensResponse;
+
+      let moreUniqueTokens = filterNfts(
+        parseSimplehashNFTs(rawNFTData),
+        polygonAllowlist
+      );
+      // If there are any "unknown" ENS names, fallback to the ENS
+      // metadata service.
+      moreUniqueTokens = await applyENSMetadataFallbackToTokens(
+        moreUniqueTokens
+      );
+
+      if (!hasStoredTokens) {
+        queryClient.setQueryData<UniqueAsset[]>(
+          uniqueTokensQueryKey({ address }),
+          tokens =>
+            tokens
+              ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
+              : moreUniqueTokens
         );
-
-        console.log(nextCursor, 'nextCursor');
-        let moreUniqueTokens = parseSimplehashNFTs(rawNFTData).filter(
-          (nft: UniqueAsset) => {
-            if (nft.collection.name === null) return false;
-
-            // filter out spam
-            if (nft.spamScore >= 85) return false;
-
-            // filter gnosis NFTs that are not POAPs
-            if (
-              nft.network === Network.gnosis &&
-              nft.asset_contract &&
-              nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
-            )
-              return false;
-
-            if (
-              nft.network === Network.polygon &&
-              !polygonAllowlist.includes(
-                nft.asset_contract?.address?.toLowerCase()
-              )
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        );
-
-        // If there are any "unknown" ENS names, fallback to the ENS
-        // metadata service.
-        // moreUniqueTokens = await applyENSMetadataFallbackToTokens(
-        //   moreUniqueTokens
-        // );
-
-        if (!hasStoredTokens && moreUniqueTokens.length) {
-          queryClient.setQueryData<UniqueAsset[]>(
-            uniqueTokensQueryKey({ address }),
-            tokens =>
-              tokens
-                ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
-                : moreUniqueTokens
-          );
-        }
-        return fetchMore({
-          network,
-          cursor: nextCursor,
-          uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
-        });
       }
-      return uniqueTokens;
+      if (
+        rawNFTData?.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+        (!nextCursor && uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL) ||
+        !mounted.current
+      ) {
+        return uniqueTokens;
+      }
+      return fetchMore({
+        network,
+        cursor: nextCursor,
+        uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
+      });
     }
 
     // We have already fetched the first page of results – so let's fetch more!
@@ -210,33 +185,23 @@ export default function useFetchUniqueTokens({
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
-        let tokens = (
-          await fetchMore({
-            network,
-            cursor,
-            uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
-          })
-        ).filter((token: any) => token.familyName !== 'POAP');
-
-        // // Fetch poaps
-        // const poaps = await fetchPoaps(address);
-        // if (poaps) {
-        //   tokens = [...tokens, ...poaps];
-        // }
-
-        // // Fetch Polygon tokens until all have fetched
-        // const polygonTokens = await fetchMore({ network: Network.polygon });
-        // tokens = [...tokens, ...polygonTokens];
+        let tokens = await fetchMore({
+          network,
+          // If there are stored tokens in storage, then we want
+          // to do a background refresh.
+          cursor,
+          uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
+        });
 
         // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
         // We will fetch tokens registered in the past 48 hours to be safe.
-        // const ensTokens = await fetchEnsTokens({
-        //   address,
-        //   timeAgo: { hours: 48 },
-        // });
-        // if (ensTokens.length > 0) {
-        //   tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
-        // }
+        const ensTokens = await fetchEnsTokens({
+          address,
+          timeAgo: { hours: 48 },
+        });
+        if (ensTokens.length > 0) {
+          tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
+        }
 
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(
@@ -258,7 +223,6 @@ export default function useFetchUniqueTokens({
     infinite,
     mounted,
     cursor,
-    polygonAllowlist,
   ]);
 
   return uniqueTokensQuery;

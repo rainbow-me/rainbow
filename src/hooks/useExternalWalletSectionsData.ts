@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
-import { useUniqueTokens } from './useUniqueTokens';
+import useFetchUniqueTokens from './useFetchUniqueTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
 
 export default function useExternalWalletSectionsData({
@@ -14,9 +14,11 @@ export default function useExternalWalletSectionsData({
   infinite?: boolean;
   type?: AssetListType;
 }) {
-  const { uniqueTokens, isLoading: isUniqueTokensLoading } = useUniqueTokens({
-    address: address || '',
-  });
+  const {
+    data: uniqueTokens,
+    isLoading: isUniqueTokensLoading,
+    isSuccess: isUniqueTokensSuccess,
+  } = useFetchUniqueTokens({ address, infinite });
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
@@ -42,6 +44,6 @@ export default function useExternalWalletSectionsData({
   return {
     briefSectionsData,
     isLoading: isUniqueTokensLoading,
-    isSuccess: !!uniqueTokens?.length,
+    isSuccess: isUniqueTokensSuccess,
   };
 }

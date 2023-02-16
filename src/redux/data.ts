@@ -67,7 +67,6 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
-import { fetchAllNfts } from '@/hooks/useUniqueTokens';
 
 const storage = new MMKV();
 

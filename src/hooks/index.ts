@@ -168,5 +168,5 @@ export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
 export { useSwappableUserAssets } from './useSwappableUserAssets';
 export { useAccountAccentColor } from './useAccountAccentColor';
-export { useUniqueTokens } from './useUniqueTokens';
-export { useUpdateUniqueTokensState } from './useUpdateUniqueTokensState';
+export { useUpdateUniqueTokens } from './useUpdateUniqueTokens';
+export { useLoadUniqueTokens } from './useLoadUniqueTokens';

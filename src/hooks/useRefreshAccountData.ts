@@ -11,12 +11,12 @@ import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
-import { useUpdateUniqueTokensState } from './useUpdateUniqueTokensState';
+import { useUpdateUniqueTokens } from './useUpdateUniqueTokens';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
-  const { updateUniqueTokensState } = useUpdateUniqueTokensState();
+  const { updateUniqueTokens } = useUpdateUniqueTokens();
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -39,7 +39,7 @@ export default function useRefreshAccountData() {
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
-        updateUniqueTokensState(),
+        updateUniqueTokens(),
         getWalletENSAvatars,
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
@@ -52,7 +52,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, profilesEnabled, refetchSavings]);
+  }, [dispatch, network, profilesEnabled, refetchSavings, updateUniqueTokens]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
