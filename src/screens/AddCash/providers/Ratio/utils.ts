@@ -1,4 +1,4 @@
-import { RatioOrderStatus } from '@ratio.me/ratio-react-native-library';
+import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 
 import {
   NewTransactionOrAddCashTransaction,
@@ -27,21 +27,23 @@ export function parseRatioCurrency(currency: string | `${string}_${string}`) {
   return token;
 }
 
-export async function ratioOrderToNewTransaction(
-  order: RatioOrderStatus,
-  extra: {
-    analyticsSessionId: string;
-  }
-): Promise<NewTransactionOrAddCashTransaction> {
-  const { data } = order;
-  const parsedCurrency = parseRatioCurrency(data.activity.crypto.currency);
+export async function ratioOrderToNewTransaction({
+  userId,
+  activity,
+  analyticsSessionId,
+}: {
+  userId: string;
+  activity: ActivityItem;
+  analyticsSessionId: string;
+}): Promise<NewTransactionOrAddCashTransaction> {
+  const parsedCurrency = parseRatioCurrency(activity.crypto.currency);
   const parsedNetwork = parseRatioNetworkToInternalNetwork(
-    data.activity.crypto.wallet.network
+    activity.crypto.wallet.network
   );
 
   if (!parsedNetwork) {
     logger.debug(`Ratio: could not determine network`, {
-      rawNetwork: data.activity.crypto.wallet.network,
+      rawNetwork: activity.crypto.wallet.network,
       parsedNetwork,
     });
 
@@ -54,9 +56,9 @@ export async function ratioOrderToNewTransaction(
 
   if (!destAssetAddress) {
     logger.debug(`Ratio: could not determine asset address`, {
-      rawNetwork: data.activity.crypto.wallet.network,
+      rawNetwork: activity.crypto.wallet.network,
       parsedNetwork,
-      rawCurrency: data.activity.crypto.currency,
+      rawCurrency: activity.crypto.currency,
       parsedCurrency,
     });
 
@@ -71,9 +73,9 @@ export async function ratioOrderToNewTransaction(
 
   if (!asset) {
     logger.debug(`Ratio: could not get account asset`, {
-      rawNetwork: data.activity.crypto.wallet.network,
+      rawNetwork: activity.crypto.wallet.network,
       parsedNetwork,
-      rawCurrency: data.activity.crypto.currency,
+      rawCurrency: activity.crypto.currency,
       parsedCurrency,
       destAssetAddress,
     });
@@ -82,21 +84,21 @@ export async function ratioOrderToNewTransaction(
   }
 
   return {
-    amount: data.activity.crypto.amount,
+    amount: activity.crypto.amount,
     asset,
     from: null,
     hash: null,
     nonce: null,
-    sourceAmount: `${data.activity.fiat.amount} ${data.activity.fiat.currency}`,
+    sourceAmount: `${activity.fiat.amount} ${activity.fiat.currency}`,
     status: TransactionStatus.purchasing,
     timestamp: Date.now(),
-    to: data.activity.crypto.wallet.address,
+    to: activity.crypto.wallet.address,
     type: TransactionType.purchase,
     fiatProvider: {
       name: FiatProviderName.Ratio,
-      orderId: data.activity.id,
-      userId: data.userId,
-      analyticsSessionId: extra.analyticsSessionId,
+      orderId: activity.id,
+      userId: userId,
+      analyticsSessionId: analyticsSessionId,
     },
   };
 }

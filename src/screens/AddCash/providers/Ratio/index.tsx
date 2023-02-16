@@ -2,6 +2,7 @@ import React from 'react';
 import {
   RatioComponent,
   RatioOrderStatus,
+  OrderStatus,
 } from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
@@ -85,7 +86,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
   const onTransactionComplete = React.useCallback(
     async (order: RatioOrderStatus) => {
-      const success = order.status === 'success';
+      const success = order.status === OrderStatus.SUCCESS;
 
       logger.debug(
         `Ratio: transaction complete`,
@@ -125,7 +126,9 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           }
 
           // OK now we can run this async function
-          const transaction = await ratioOrderToNewTransaction(order, {
+          const transaction = await ratioOrderToNewTransaction({
+            userId: order.data.userId,
+            activity: order.data.activity,
             analyticsSessionId,
           });
 
