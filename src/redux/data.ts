@@ -427,6 +427,7 @@ export interface AssetPricesChangedMessage {
  */
 export interface MessageMeta {
   address?: string;
+  addresses?: string[];
   currency?: string;
   status?: string;
   chain_id?: Network; // L2
@@ -558,7 +559,7 @@ const checkMeta = (message: DataMessage | undefined) => (
   getState: AppGetState
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const address = message?.meta?.address;
+  const address = message?.meta?.address || message?.meta?.addresses?.[0];
   const currency = message?.meta?.currency;
   return (
     isLowerCaseMatch(address!, accountAddress) &&
@@ -796,6 +797,16 @@ export const maybeFetchF2CHashForPendingTransactions = async (
     pendingTransactions.map(async tx => {
       // If not from a F2C provider, return the original tx
       if (!tx.fiatProvider) return tx;
+      if (tx.hash) {
+        /**
+         * Sometimes `transactionsReceived` gets called more than once in quick
+         * succession, which can result it fetching order data more than once.
+         *
+         * So if we already have a tx hash, then we don't need to fetch
+         * anything else.
+         */
+        return tx;
+      }
 
       // If it is from an F2C provider, see if we can add the tx hash to it
       switch (tx.fiatProvider?.name) {
@@ -837,24 +848,16 @@ export const maybeFetchF2CHashForPendingTransactions = async (
               }
             );
           } else if (data.crypto.transactionHash) {
-            if (tx.hash) {
-              // idk how this could happen, but just in case
-              loggr.warn(
-                `maybeFetchF2CHashForPendingTransactions: pending F2C tx already has a hash`,
-                { hash: tx.hash }
-              );
-            } else {
-              tx.hash = data.crypto.transactionHash;
+            tx.hash = data.crypto.transactionHash;
 
-              analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
-                provider: FiatProviderName.Ratio,
-                sessionId: tx.fiatProvider.analyticsSessionId,
-              });
+            analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
+              provider: FiatProviderName.Ratio,
+              sessionId: tx.fiatProvider.analyticsSessionId,
+            });
 
-              loggr.debug(
-                `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
-              );
-            }
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
+            );
           } else {
             loggr.info(
               `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
