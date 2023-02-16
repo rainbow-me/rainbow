@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';

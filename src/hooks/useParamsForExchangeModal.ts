@@ -7,7 +7,7 @@ import { MutableRefObject, useEffect, useState } from 'react';
 import { useSwapInputHandlers } from '@/hooks/index';
 import { SwapMetadata } from '@/raps/common';
 import { useDispatch } from 'react-redux';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { disable, enable } from '@/hooks/useMagicAutofocus';
 

@@ -12,6 +12,7 @@ import { Box, Text, Separator, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
+import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -65,6 +66,10 @@ export function AddCashSheet() {
             <Ratio accountAddress={accountAddress} />
           </Box>
 
+          <Box paddingVertical="20px">
+            <Ramp accountAddress={accountAddress} />
+          </Box>
+
           <Box
             padding="20px"
             borderRadius={20}
@@ -75,7 +80,7 @@ export function AddCashSheet() {
           >
             <Box paddingBottom="12px">
               <Text size="17pt" weight="bold" color="labelTertiary">
-                􀵲 Not in the US?
+                􀵲 {`Can't find your preferred provider?`}
               </Text>
             </Box>
 

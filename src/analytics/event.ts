@@ -1,5 +1,6 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
+import { FiatProviderName } from '@/entities/f2c';
 
 /**
  * All events, used by `analytics.track()`
@@ -63,6 +64,16 @@ export const event = {
   rewardsPressedSwappedCard: 'rewards.pressed_swapped_card',
   rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
   rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
+  /**
+   * Called either on click or during an open event callback. We want this as
+   * early in the flow as possible.
+   */
+  f2cProviderFlowStarted: 'f2c.provider.flow_opened',
+  /**
+   * Called when the provider flow is completed and the user can close the
+   * modal. This event DOES NOT mean we have transaction data.
+   */
+  f2cProviderFlowCompleted: 'f2c.provider.flow_completed',
 } as const;
 
 /**
@@ -189,4 +200,27 @@ export type EventProperties = {
   [event.rewardsPressedSwappedCard]: undefined;
   [event.rewardsPressedBridgedCard]: undefined;
   [event.rewardsPressedLeaderboardItem]: { ens?: string };
+  [event.f2cProviderFlowStarted]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     */
+    sessionId?: string;
+  };
+  [event.f2cProviderFlowCompleted]: {
+    /**
+     * Name of the provider that was selected. This should be saved along with
+     * the pending transaction.
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     * This should be saved along with the pending transaction so that when we
+     * get transaction data we can emit an event with this sessionId.
+     */
+    sessionId?: string;
+  };
 };

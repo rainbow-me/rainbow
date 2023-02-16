@@ -12,7 +12,7 @@ import config from '@/model/config';
 import { useNavigation } from '@/navigation';
 
 import Routes from '@/navigation/routesNames';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 
 function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();

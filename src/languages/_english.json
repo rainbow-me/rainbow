@@ -1299,6 +1299,8 @@
       "next_airdrop": "Next Airdrop",
       "last_airdrop": "Last Airdrop",
       "my_stats": "My Stats",
+      "swapped": "Swapped",
+      "bridged": "Bridged",
       "position": "Position",
       "leaderboard": "Leaderboard",
       "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected.",
