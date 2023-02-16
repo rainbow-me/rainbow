@@ -52,50 +52,23 @@ export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
     return true;
   });
 
-export const fetchAllUniqueTokens = async (
-  address: string,
-  network: Network
-) => {
-  const [
-    storedNfts,
-    polygonAllowlist,
-    nftResponse,
-  ] = await promiseUtils.PromiseAllWithFails([
-    getUniqueTokens(address, network),
-    fetchPolygonAllowlist(),
-    fetchNfts({
-      address,
-      cursor: START_CURSOR,
-    }),
-  ]);
-  const { data, nextCursor } = nftResponse;
-  let cursor = nextCursor;
-  let nfts;
-  const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
-  if (storedNfts?.length) {
-    nfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
-  } else {
-    nfts = newNfts;
-  }
-  while (cursor && nfts.length < UNIQUE_TOKENS_LIMIT_TOTAL) {
-    // eslint-disable-next-line no-await-in-loop
-    const { data, nextCursor } = await fetchNfts({
-      address,
-      cursor,
-    });
-    const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
-    if (storedNfts?.length) {
-      nfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
-    } else {
-      nfts = [...nfts, ...newNfts];
-    }
-    cursor = nextCursor;
-  }
-  await saveUniqueTokens(nfts, address, network);
-  analytics.identify(undefined, { NFTs: nfts.length });
-  return nfts;
-};
-
+/**
+ * This hook returns `uniqueTokens`, an array of nfts owned by the provided wallet address.
+ * `uniqueTokens` is dynamically updated, 1 page of Simplehash nft data at a time. `uniqueTokens`
+ * is not guaranteed to be a complete set of data unless `isSuccess` is true. If the provided
+ * wallet address is the current account address, redux state will be updated upon start/success/failure.
+ * If the provided wallet address is the current account address OR `uniqueTokens` already exists for
+ * the provided address in local storage, local storage will be updated upon success. If you don't
+ * care about streaming in nft data and just want to update state, see `useUpdateUniqueTokensState`.
+ *
+ * @param address wallet address
+ * @param queryConfig optional react query config
+ *
+ * @returns
+ *   uniqueTokens: UniqueAsset[] (nfts) owned by `address`
+ *   isLoading: true if `uniqueTokens` is currently being updated, false otherwise
+ *   isSuccess: true if `uniqueTokens` has been successfully and completely updated, false otherwise
+ */
 export const useUniqueTokens = ({
   address,
   queryConfig = {},
@@ -126,7 +99,7 @@ export const useUniqueTokens = ({
       setShouldFetchMore(false);
       setIsLoading(false);
       captureException(error);
-      logger.error(new RainbowError(`useNfts error: ${error}`));
+      logger.error(new RainbowError(`useUniqueTokens error: ${error}`));
       if (address === accountAddress) {
         setDidDispatch(true);
         dispatch({
@@ -158,7 +131,7 @@ export const useUniqueTokens = ({
   }, [address, currentAddress, resetState]);
 
   useEffect(() => {
-    const setupAndFirstFetch = async () => {
+    const setupAndFetchFirstPage = async () => {
       try {
         const [
           storedUniqueTokens,
@@ -211,7 +184,7 @@ export const useUniqueTokens = ({
           type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
         });
       }
-      setupAndFirstFetch();
+      setupAndFetchFirstPage();
     }
   }, [
     accountAddress,
@@ -278,8 +251,10 @@ export const useUniqueTokens = ({
   useEffect(() => {
     if (isSuccess) {
       analytics.identify(undefined, { NFTs: uniqueTokens.length });
-      if (accountAddress === address) {
-        saveUniqueTokens(uniqueTokens, address, network);
+      if (accountAddress === currentAddress || loadedStoredUniqueTokens) {
+        saveUniqueTokens(uniqueTokens, currentAddress, network);
+      }
+      if (accountAddress === currentAddress) {
         setDidDispatch(true);
         dispatch({
           payload: uniqueTokens,
@@ -288,8 +263,18 @@ export const useUniqueTokens = ({
         });
       }
     }
-  }, [accountAddress, address, dispatch, isSuccess, network, uniqueTokens]);
+  }, [
+    accountAddress,
+    address,
+    currentAddress,
+    dispatch,
+    isSuccess,
+    loadedStoredUniqueTokens,
+    network,
+    uniqueTokens,
+  ]);
 
+  // if success/failure was not dispatched, dispatch failure on unmount
   useEffect(
     () => () => {
       if (currentAddress === accountAddress) {
