@@ -345,7 +345,7 @@
     "husky": "8.0.1",
     "image-size": "1.0.0",
     "jest": "28",
-    "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
+    "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
     "metro-react-native-babel-preset": "0.68.0",
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
