@@ -1,5 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-
 import {
   createQueryKey,
   queryClient,
@@ -7,27 +5,32 @@ import {
   QueryFunctionArgs,
   QueryFunctionResult,
 } from '@/react-query';
-import { getUniqueTokens2 } from '@/handlers/simplehash';
-import {
-  getUniqueTokens,
-  saveUniqueTokens,
-} from '@/handlers/localstorage/accountLocal';
-import { Network } from '@/helpers';
+import { fetchRawUniqueTokens } from '@/handlers/simplehash';
 
 const DEFAULT_STALE_TIME = 10000;
 
 // ///////////////////////////////////////////////
 // Query Types
 
-export type UniqueTokensArgs = {
-  address: string | null | undefined;
+export type UniqueTokensQueryArgs = {
+  address: string;
+  cursor: string;
 };
+
+export type UniqueTokensQueryConfigType = QueryConfig<
+  UniqueTokensResult,
+  Error,
+  UniqueTokensQueryKey
+>;
 
 // ///////////////////////////////////////////////
 // Query Key
 
-export const uniqueTokensQueryKey = ({ address }: UniqueTokensArgs) =>
-  createQueryKey('uniqueTokens', { address }, { persisterVersion: 1 });
+export const uniqueTokensQueryKey = ({
+  address,
+  cursor,
+}: UniqueTokensQueryArgs) =>
+  createQueryKey('uniqueTokens', { address, cursor }, { persisterVersion: 1 });
 
 type UniqueTokensQueryKey = ReturnType<typeof uniqueTokensQueryKey>;
 
@@ -35,58 +38,27 @@ type UniqueTokensQueryKey = ReturnType<typeof uniqueTokensQueryKey>;
 // Query Function
 
 async function uniqueTokensQueryFunction({
-  queryKey: [{ address }],
+  queryKey: [{ address, cursor }],
 }: QueryFunctionArgs<typeof uniqueTokensQueryKey>) {
-  if (!address) return [];
-  // const storedTokens = await getUniqueTokens(address, Network.mainnet);
-  // if (storedTokens && storedTokens.length > 0) {
-  //   queryClient.setQueryData(uniqueTokensQueryKey({ address }), storedTokens);
-  // }
-  const freshTokens = await getUniqueTokens2(address);
-  // saveUniqueTokens(address, freshTokens, Network.mainnet);
-  return freshTokens;
+  const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
+    address,
+    cursor
+  );
+  return { data: rawNFTData, nextCursor };
 }
 
 type UniqueTokensResult = QueryFunctionResult<typeof uniqueTokensQueryFunction>;
 
 // ///////////////////////////////////////////////
-// Query Prefetcher (Optional)
-
-export async function prefetchUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
-) {
-  return await queryClient.prefetchQuery(
-    uniqueTokensQueryKey({ address }),
-    uniqueTokensQueryFunction,
-    config
-  );
-}
-
-// ///////////////////////////////////////////////
-// Query Fetcher (Optional)
+// Query Fetcher
 
 export async function fetchUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
+  { address, cursor }: UniqueTokensQueryArgs,
+  config: UniqueTokensQueryConfigType = {}
 ) {
   return await queryClient.fetchQuery(
-    uniqueTokensQueryKey({ address }),
+    uniqueTokensQueryKey({ address, cursor }),
     uniqueTokensQueryFunction,
-    config
-  );
-}
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useUniqueTokens(
-  { address }: UniqueTokensArgs,
-  config: QueryConfig<UniqueTokensResult, Error, UniqueTokensQueryKey> = {}
-) {
-  return useQuery(
-    uniqueTokensQueryKey({ address }),
-    uniqueTokensQueryFunction,
-    { staleTime: DEFAULT_STALE_TIME, enabled: !!address, ...config }
+    { staleTime: DEFAULT_STALE_TIME, ...config }
   );
 }

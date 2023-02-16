@@ -13,7 +13,7 @@ import {
 } from '@/handlers/localstorage/accountLocal';
 import { START_CURSOR } from '@/handlers/simplehash';
 import { parseSimplehashNFTs } from '@/parsers';
-import { fetchNfts } from '@/resources/nftsQuery';
+import { fetchUniqueTokens } from '@/resources/uniqueTokensQuery';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { promiseUtils } from '@/utils';
 import { uniqBy } from 'lodash';
@@ -26,47 +26,6 @@ export const useUpdateUniqueTokensState = () => {
   const { accountAddress: address } = useAccountProfile();
   const { network } = useAccountSettings();
   const dispatch = useDispatch();
-
-  const fetchAllUniqueTokens = useCallback(async () => {
-    const [
-      storedNfts,
-      polygonAllowlist,
-      nftResponse,
-    ] = await promiseUtils.PromiseAllWithFails([
-      getUniqueTokens(address, network),
-      fetchPolygonAllowlist(),
-      fetchNfts({
-        address,
-        cursor: START_CURSOR,
-      }),
-    ]);
-    const { data, nextCursor } = nftResponse;
-    let cursor = nextCursor;
-    let nfts;
-    const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
-    if (storedNfts?.length) {
-      nfts = uniqBy([...storedNfts, ...newNfts], 'uniqueId');
-    } else {
-      nfts = newNfts;
-    }
-    while (cursor && nfts.length < UNIQUE_TOKENS_LIMIT_TOTAL) {
-      // eslint-disable-next-line no-await-in-loop
-      const { data, nextCursor } = await fetchNfts({
-        address,
-        cursor,
-      });
-      const newNfts = filterNfts(parseSimplehashNFTs(data), polygonAllowlist);
-      if (storedNfts?.length) {
-        nfts = uniqBy([...nfts, ...newNfts], 'uniqueId');
-      } else {
-        nfts = [...nfts, ...newNfts];
-      }
-      cursor = nextCursor;
-    }
-    await saveUniqueTokens(nfts, address, network);
-    analytics.identify(undefined, { NFTs: nfts.length });
-    return nfts;
-  }, [address, network]);
 
   const updateUniqueTokensState = useCallback(async () => {
     dispatch({
@@ -81,7 +40,7 @@ export const useUpdateUniqueTokensState = () => {
       ] = await promiseUtils.PromiseAllWithFails([
         getUniqueTokens(address, network),
         fetchPolygonAllowlist(),
-        fetchNfts({
+        fetchUniqueTokens({
           address,
           cursor: START_CURSOR,
         }),
@@ -103,7 +62,7 @@ export const useUpdateUniqueTokensState = () => {
       }
       while (cursor && uniqueTokens.length < UNIQUE_TOKENS_LIMIT_TOTAL) {
         // eslint-disable-next-line no-await-in-loop
-        const { data, nextCursor } = await fetchNfts({
+        const { data, nextCursor } = await fetchUniqueTokens({
           address,
           cursor,
         });

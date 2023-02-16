@@ -13,7 +13,10 @@ import {
   UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
   UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
 } from '@/redux/uniqueTokens';
-import { fetchNfts, NftsQueryConfigType } from '@/resources/nftsQuery';
+import {
+  fetchUniqueTokens,
+  UniqueTokensQueryConfigType,
+} from '@/resources/uniqueTokensQuery';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { promiseUtils } from '@/utils';
 import { captureException } from '@sentry/react-native';
@@ -74,7 +77,7 @@ export const useUniqueTokens = ({
   queryConfig = {},
 }: {
   address: string;
-  queryConfig?: NftsQueryConfigType;
+  queryConfig?: UniqueTokensQueryConfigType;
 }) => {
   const { network } = useAccountSettings();
   const { accountAddress } = useAccountProfile();
@@ -140,7 +143,7 @@ export const useUniqueTokens = ({
         ] = await promiseUtils.PromiseAllWithFails([
           getUniqueTokens(currentAddress, network),
           fetchPolygonAllowlist(),
-          fetchNfts(
+          fetchUniqueTokens(
             {
               address: currentAddress,
               cursor: START_CURSOR,
@@ -200,7 +203,7 @@ export const useUniqueTokens = ({
   useEffect(() => {
     const fetchNextPage = async () => {
       try {
-        const { data, nextCursor } = await fetchNfts(
+        const { data, nextCursor } = await fetchUniqueTokens(
           {
             address: currentAddress,
             cursor: cursor as string,
