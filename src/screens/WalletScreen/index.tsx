@@ -34,16 +34,12 @@ import { emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { atom, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
-
-export const addressCopiedToastAtom = atom({
-  default: false,
-  key: 'addressCopiedToast',
-});
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 
 type RouteParams = {
   WalletScreen: {
