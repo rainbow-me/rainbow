@@ -8,6 +8,8 @@ import MenuItem from './components/MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { emojis, supportedNativeCurrencies } from '@/references';
+import { Text } from '@/design-system';
+import config from '@/model/config';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,
@@ -70,6 +72,9 @@ const CurrencySection = () => {
           />
         ))}
       </Menu>
+      <Text size="15pt" weight="medium" color="accent">
+        {'isOPRewardsEnabled: ' + JSON.stringify(config.op_rewards_enabled)}
+      </Text>
     </MenuContainer>
   );
 };
