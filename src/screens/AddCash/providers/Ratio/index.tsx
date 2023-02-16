@@ -11,63 +11,65 @@ import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
 
 import { IS_IOS } from '@/env';
-import { Box, Text, Inline, useForegroundColor } from '@/design-system';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
 import { analyticsV2 } from '@/analytics';
-import { AssetType } from '@/entities';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
-import { Network } from '@/helpers';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
+import { Network as InternalNetwork } from '@/helpers';
 import useEmailRainbow from '@/hooks/useEmailRainbow';
 import Routes from '@/navigation/routesNames';
+import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
+import {
+  PaymentMethod,
+  Network,
+  FiatCurrency,
+  CalloutType,
+} from '@/screens/AddCash/types';
 
 import {
   ratioOrderToNewTransaction,
   parseRatioNetworkToInternalNetwork,
 } from './utils';
 
-function NetworkIcons({ networks }: { networks: string[] }) {
-  return (
-    <Box flexDirection="row" alignItems="center">
-      {networks.map((network, index) => {
-        return (
-          <Box
-            key={`availableNetwork-${network}`}
-            marginTop={{ custom: -2 }}
-            marginLeft={{ custom: index > 0 ? -6 : 0 }}
-            style={{
-              position: 'relative',
-              zIndex: networks.length - index,
-              borderRadius: 30,
-            }}
-          >
-            {network !== Network.mainnet ? (
-              <ChainBadge
-                assetType={network}
-                position="relative"
-                size="small"
-              />
-            ) : (
-              <CoinIcon
-                address={ETH_ADDRESS}
-                size={20}
-                symbol={ETH_SYMBOL}
-                type={AssetType.token}
-              />
-            )}
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
+const providerConfig = {
+  name: FiatProviderName.Ratio,
+  enabled: true,
+  metadata: {
+    accentColor: '#5F6162',
+    paymentMethods: [
+      {
+        type: PaymentMethod.Bank,
+      },
+    ],
+    networks: [Network.Ethereum, Network.Polygon],
+    instantAvailable: true,
+    fiatCurrencies: [FiatCurrency.USD],
+  },
+  callouts: [
+    {
+      type: CalloutType.InstantAvailable,
+    },
+    {
+      type: CalloutType.Rate,
+      value: `3%`,
+    },
+    {
+      type: CalloutType.PaymentMethods,
+      methods: [
+        {
+          type: PaymentMethod.Bank,
+        },
+      ],
+    },
+    {
+      type: CalloutType.Networks,
+      networks: [Network.Ethereum, Network.Polygon],
+    },
+  ],
+};
 
 export function Ratio({ accountAddress }: { accountAddress: string }) {
   const [userId, setUserId] = React.useState('');
@@ -92,7 +94,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       );
 
       analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
-        provider: 'ratio',
+        provider: FiatProviderName.Ratio,
         success,
         sessionId: analyticsSessionId,
       });
@@ -102,7 +104,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           const networkName = parseRatioNetworkToInternalNetwork(
             order.data.activity.crypto.wallet.network
           );
-          const isMainnet = networkName === Network.mainnet;
+          const isMainnet = networkName === InternalNetwork.mainnet;
 
           /**
            * Handle this check synchronously before we run
@@ -183,12 +185,12 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
   return (
     <RatioComponent
-      redirectUri={IS_IOS ? 'https://rainbow.me/plaid/oauth' : null}
-      androidPackageName={IS_IOS ? null : 'me.rainbow'}
+      redirectUri={IS_IOS ? 'https://rainbow.me/plaid/oauth' : undefined}
+      androidPackageName={IS_IOS ? undefined : 'me.rainbow'}
       onPress={() => {
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
         analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
-          provider: 'ratio',
+          provider: FiatProviderName.Ratio,
           sessionId: analyticsSessionId,
         });
       }}
@@ -245,7 +247,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           { error }
         );
         analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
-          provider: 'ratio',
+          provider: FiatProviderName.Ratio,
           sessionId: analyticsSessionId,
         });
         WrappedAlert.alert(
@@ -297,88 +299,10 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         pendingTransactionSheetExplainerType.current = '';
       }}
     >
-      <Box
-        background="surfaceSecondaryElevated"
-        padding="20px"
-        borderRadius={20}
-        shadow="12px"
-        style={{ flex: IS_IOS ? 0 : undefined }}
-      >
-        <Inline alignVertical="center">
-          <Box
-            borderRadius={24}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            style={{ backgroundColor: 'black' }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <RatioLogo width={14} height={14} color="white" />
-          </Box>
-          <Box paddingLeft="8px">
-            <Text size="20pt" weight="heavy" color="label">
-              Ratio
-            </Text>
-          </Box>
-        </Inline>
-
-        <Box paddingTop="8px" paddingBottom="20px">
-          <Text size="17pt" weight="semibold" color="labelSecondary">
-            Works with any US bank account
-          </Text>
-        </Box>
-
-        <Box flexDirection="row">
-          <Box>
-            <Text size="13pt" weight="semibold" color="labelTertiary">
-              Instant Buy
-            </Text>
-            <Box flexDirection="row" alignItems="center" paddingTop="12px">
-              <Text size="12pt" weight="bold" color="labelSecondary">
-                􀋦
-              </Text>
-              <Box paddingLeft="4px">
-                <Text size="15pt" weight="bold" color="label">
-                  $1,250
-                </Text>
-              </Box>
-            </Box>
-          </Box>
-          <Box paddingLeft="16px">
-            <Text size="13pt" weight="semibold" color="labelTertiary">
-              Fee
-            </Text>
-            <Box flexDirection="row" alignItems="center" paddingTop="12px">
-              <Text size="15pt" weight="bold" color="label">
-                3%
-              </Text>
-            </Box>
-          </Box>
-          <Box paddingLeft="16px">
-            <Text size="13pt" weight="semibold" color="labelTertiary">
-              Method
-            </Text>
-            <Box flexDirection="row" alignItems="center" paddingTop="12px">
-              <Text size="12pt" weight="bold" color="labelSecondary">
-                􀤨
-              </Text>
-              <Box paddingLeft="4px">
-                <Text size="15pt" weight="bold" color="label">
-                  Bank
-                </Text>
-              </Box>
-            </Box>
-          </Box>
-          <Box paddingLeft="16px">
-            <Text size="13pt" weight="semibold" color="labelTertiary">
-              Networks
-            </Text>
-            <Box flexDirection="row" alignItems="center" paddingTop="8px">
-              <NetworkIcons networks={[Network.mainnet, Network.polygon]} />
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+      <ProviderCard
+        // @ts-ignore
+        config={providerConfig}
+      />
     </RatioComponent>
   );
 }

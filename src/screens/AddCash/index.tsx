@@ -62,11 +62,11 @@ export function AddCashSheet() {
         <Box paddingVertical="44px" width="full">
           <Separator color="separatorTertiary" />
 
-          <Box paddingVertical="20px">
+          <Box paddingTop="20px" paddingBottom="20px">
             <Ratio accountAddress={accountAddress} />
           </Box>
 
-          <Box paddingVertical="20px">
+          <Box paddingBottom="20px">
             <Ramp accountAddress={accountAddress} />
           </Box>
 
