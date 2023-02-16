@@ -8,12 +8,18 @@ import { START_CURSOR } from '@/handlers/simplehash';
 import { Network } from '@/helpers';
 import { logger, RainbowError } from '@/logger';
 import { parseSimplehashNFTs } from '@/parsers';
+import {
+  UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+  UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
+  UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+} from '@/redux/uniqueTokens';
 import { fetchNfts, NftsQueryConfigType } from '@/resources/nftsQuery';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { promiseUtils } from '@/utils';
 import { captureException } from '@sentry/react-native';
 import { uniqBy } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
@@ -23,10 +29,10 @@ export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
   nfts.filter((nft: UniqueAsset) => {
-    if (nft.collection.name === null) return false;
+    if (!nft.collection.name) return false;
 
     // filter out spam
-    if (nft.spamScore >= 85) return false;
+    if (nft.spamScore === null || nft.spamScore >= 85) return false;
 
     // filter gnosis NFTs that are not POAPs
     if (
@@ -100,6 +106,7 @@ export const useUniqueTokens = ({
   const { network } = useAccountSettings();
   const { accountAddress } = useAccountProfile();
   const mounted = useIsMounted();
+  const dispatch = useDispatch();
 
   const [cursor, setCursor] = useState<string | undefined>();
   const [uniqueTokens, setUniqueTokens] = useState<UniqueAsset[]>([]);
@@ -111,21 +118,58 @@ export const useUniqueTokens = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [didSetup, setDidSetup] = useState(false);
+  const [didDispatch, setDidDispatch] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState(address);
+
+  const handleError = useCallback(
+    (error: Error) => {
+      setShouldFetchMore(false);
+      setIsLoading(false);
+      captureException(error);
+      logger.error(new RainbowError(`useNfts error: ${error}`));
+      if (address === accountAddress) {
+        setDidDispatch(true);
+        dispatch({
+          showcase: false,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+        });
+      }
+    },
+    [accountAddress, address, dispatch]
+  );
+
+  const resetState = useCallback(() => {
+    setCursor(undefined);
+    setUniqueTokens([]);
+    setShouldFetchMore(false);
+    setLoadedStoredUniqueTokens(false);
+    setPolygonAllowlist([]);
+    setIsLoading(true);
+    setIsSuccess(false);
+    setDidSetup(false);
+    setDidDispatch(false);
+  }, []);
+
+  useEffect(() => {
+    if (address !== currentAddress) {
+      resetState();
+      setCurrentAddress(address);
+    }
+  }, [address, currentAddress, resetState]);
 
   useEffect(() => {
     const setupAndFirstFetch = async () => {
-      console.log(address);
       try {
         const [
           storedUniqueTokens,
           allowlist,
           newUniqueTokensResponse,
         ] = await promiseUtils.PromiseAllWithFails([
-          getUniqueTokens(address, network),
+          getUniqueTokens(currentAddress, network),
           fetchPolygonAllowlist(),
           fetchNfts(
             {
-              address,
+              address: currentAddress,
               cursor: START_CURSOR,
             },
             queryConfig
@@ -147,9 +191,6 @@ export const useUniqueTokens = ({
         } else {
           updatedUniqueTokens = newUniqueTokens;
         }
-        if (accountAddress === address) {
-          await saveUniqueTokens(newUniqueTokens, address, network);
-        }
         setUniqueTokens(updatedUniqueTokens);
         setPolygonAllowlist(allowlist);
         if (nextCursor) {
@@ -159,26 +200,36 @@ export const useUniqueTokens = ({
           setIsLoading(false);
         }
       } catch (error) {
-        setShouldFetchMore(false);
-        setIsLoading(false);
-        captureException(error);
-        logger.error(new RainbowError(`useNfts error: ${error}`));
+        handleError(error as Error);
       }
     };
-    if (address && mounted.current && !didSetup) {
+    if (currentAddress && mounted.current && !didSetup) {
       setDidSetup(true);
+      if (currentAddress === accountAddress) {
+        dispatch({
+          showcase: false,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
+        });
+      }
       setupAndFirstFetch();
     }
-  }, [accountAddress, address, didSetup, mounted, network, queryConfig]);
+  }, [
+    accountAddress,
+    currentAddress,
+    didSetup,
+    dispatch,
+    handleError,
+    mounted,
+    network,
+    queryConfig,
+  ]);
 
   useEffect(() => {
     const fetchNextPage = async () => {
-      console.log('OOPS');
-      console.log(address);
       try {
         const { data, nextCursor } = await fetchNfts(
           {
-            address,
+            address: currentAddress,
             cursor: cursor as string,
           },
           queryConfig
@@ -197,9 +248,6 @@ export const useUniqueTokens = ({
         } else {
           updatedUniqueTokens = [...uniqueTokens, ...newUniqueTokens];
         }
-        if (accountAddress === address) {
-          await saveUniqueTokens(updatedUniqueTokens, address, network);
-        }
         setUniqueTokens(updatedUniqueTokens);
         if (uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL || !nextCursor) {
           setIsLoading(false);
@@ -208,9 +256,7 @@ export const useUniqueTokens = ({
           setShouldFetchMore(true);
         }
       } catch (error) {
-        setIsLoading(false);
-        captureException(error);
-        logger.error(new RainbowError(`useUniqueTokens error: ${error}`));
+        handleError(error as Error);
       }
     };
     if (shouldFetchMore && mounted.current) {
@@ -218,23 +264,53 @@ export const useUniqueTokens = ({
       fetchNextPage();
     }
   }, [
-    address,
+    currentAddress,
     cursor,
+    handleError,
     loadedStoredUniqueTokens,
-    network,
-    uniqueTokens,
+    mounted,
     polygonAllowlist,
     queryConfig,
     shouldFetchMore,
-    mounted,
-    accountAddress,
+    uniqueTokens,
   ]);
 
   useEffect(() => {
     if (isSuccess) {
       analytics.identify(undefined, { NFTs: uniqueTokens.length });
+      if (accountAddress === address) {
+        saveUniqueTokens(uniqueTokens, address, network);
+        setDidDispatch(true);
+        dispatch({
+          payload: uniqueTokens,
+          showcase: false,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+        });
+      }
     }
-  }, [isSuccess, uniqueTokens.length]);
+  }, [accountAddress, address, dispatch, isSuccess, network, uniqueTokens]);
+
+  useEffect(
+    () => () => {
+      if (currentAddress === accountAddress) {
+        if (!didDispatch) {
+          dispatch({
+            showcase: false,
+            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
+          });
+        }
+      }
+    },
+    [
+      accountAddress,
+      address,
+      currentAddress,
+      didDispatch,
+      dispatch,
+      isSuccess,
+      uniqueTokens,
+    ]
+  );
 
   return {
     uniqueTokens,
