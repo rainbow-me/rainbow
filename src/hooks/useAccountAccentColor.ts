@@ -1,4 +1,3 @@
-import { maybeSignUri } from '@/handlers/imgix';
 import { useTheme } from '@/theme';
 import {
   useAccountProfile,
@@ -9,7 +8,10 @@ export function useAccountAccentColor() {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
+    accountImage,
+    {
+      signUrl: true,
+    }
   );
 
   const { colors } = useTheme();

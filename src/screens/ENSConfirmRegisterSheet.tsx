@@ -126,7 +126,10 @@ export default function ENSConfirmRegisterSheet() {
   const avatarImage =
     avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
+    avatarImage,
+    {
+      signUrl: true,
+    }
   );
 
   useEffect(() => {

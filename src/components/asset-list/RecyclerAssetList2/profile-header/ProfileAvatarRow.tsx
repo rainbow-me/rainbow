@@ -11,7 +11,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountProfile,
   useLatestCallback,
@@ -47,7 +46,10 @@ export function ProfileAvatarRow({
   } = useOnAvatarPress({ screenType: 'wallet' });
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
+    accountImage,
+    {
+      signUrl: true,
+    }
   );
 
   // ////////////////////////////////////////////////////

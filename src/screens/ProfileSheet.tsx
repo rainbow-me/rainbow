@@ -14,7 +14,6 @@ import {
   Inset,
   Stack,
 } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
@@ -71,7 +70,10 @@ export default function ProfileSheet() {
   );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatar?.imageUrl ?? '', { w: 200 }) ?? ''
+    avatar?.imageUrl,
+    {
+      signUrl: true,
+    }
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [

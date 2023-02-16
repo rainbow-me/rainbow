@@ -358,7 +358,6 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.lowResUrl).result ||
     colors.paleBlue;
 

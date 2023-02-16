@@ -6,7 +6,6 @@ import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -85,7 +84,10 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatarUrl || '', { w: 200 }) || ''
+    avatarUrl,
+    {
+      signUrl: true,
+    }
   );
 
   const accentColor =
