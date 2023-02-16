@@ -23,7 +23,6 @@ const Routes = {
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
   ENS_INTRO_SHEET: 'ENSIntroSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',
-  EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
