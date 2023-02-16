@@ -132,7 +132,7 @@ const getUpdatedGasFeeParams = (
   currentBaseFee: GasFeeParam,
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
   gasLimit: string,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   selectedGasFeeOption: string,
   txNetwork: Network,
   l1GasFeeOptimism: BigNumber | null = null
