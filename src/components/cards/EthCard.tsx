@@ -57,27 +57,24 @@ export const EthCard = () => {
     emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
   }, [nativeCurrency]);
 
-  const handlePressBuy = () => {
-    if (isDamaged) {
-      showWalletErrorAlert();
-      return;
-    }
+  const handlePressBuy = useCallback(
+    e => {
+      e.stopPropagation();
 
-    if (IS_IOS) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
+      if (isDamaged) {
+        showWalletErrorAlert();
+        return;
+      }
+
+      navigate(Routes.ADD_CASH_SHEET);
+
+      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+        componentName: 'EthCard',
+        routeName,
       });
-    }
-    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-      componentName: 'EthCard',
-      routeName,
-    });
-  };
+    },
+    [accountAddress, isDamaged, navigate, routeName]
+  );
 
   const assetWithPrice = useMemo(() => {
     return {
@@ -152,6 +149,7 @@ export const EthCard = () => {
 
   return (
     <GenericCard
+      /** @ts-ignore */
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type={cardType}
       testID="eth-card"
