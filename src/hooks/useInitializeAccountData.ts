@@ -5,11 +5,10 @@ import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
 import { updatePositions } from '@/redux/usersPositions';
 import logger from '@/utils/logger';
-import { useUpdateUniqueTokens } from './useUpdateUniqueTokens';
+import { updateUniqueTokens } from '@/handlers/uniqueTokens';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
-  const { updateUniqueTokens } = useUpdateUniqueTokens();
 
   const initializeAccountData = useCallback(async () => {
     try {
@@ -31,7 +30,7 @@ export default function useInitializeAccountData() {
       logger.sentry('Error initializing account data');
       captureException(error);
     }
-  }, [dispatch, updateUniqueTokens]);
+  }, [dispatch]);
 
   return initializeAccountData;
 }

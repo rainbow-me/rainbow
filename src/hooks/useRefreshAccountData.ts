@@ -11,12 +11,11 @@ import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
-import { useUpdateUniqueTokens } from './useUpdateUniqueTokens';
+import { updateUniqueTokens } from '@/handlers/uniqueTokens';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
-  const { updateUniqueTokens } = useUpdateUniqueTokens();
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,7 +51,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, profilesEnabled, refetchSavings, updateUniqueTokens]);
+  }, [dispatch, network, profilesEnabled, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

@@ -6,8 +6,8 @@ import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@/entities';
 import { saveUniqueTokens } from '@/handlers/localstorage/accountLocal';
 import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
-import { fetchAllUniqueTokens } from '@/hooks/useUpdateUniqueTokens';
 import { logger, RainbowError } from '@/logger';
+import { fetchAllUniqueTokens } from '@/handlers/uniqueTokens';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -170,7 +170,7 @@ export const uniqueTokensResetState = () => (
 /**
  * Updates unique tokens in state. This is needed to update the unique tokens
  * state from within redux/data/transactionsReceived. Should be replaced with
- * useUpdateUniqueTokens when possible.
+ * handlers/uniqueTokens/updateUniqueTokens when possible.
  */
 export const updateUniqueTokens = () => async (
   dispatch: ThunkDispatch<

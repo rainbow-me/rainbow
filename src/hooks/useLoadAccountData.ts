@@ -13,11 +13,10 @@ import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
 import logger from '@/utils/logger';
-import { useLoadUniqueTokens } from './useLoadUniqueTokens';
+import { loadUniqueTokens } from '@/handlers/uniqueTokens';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
-  const { loadUniqueTokens } = useLoadUniqueTokens();
   const loadAccountData = useCallback(
     async network => {
       logger.sentry('Load wallet account data');
@@ -41,7 +40,7 @@ export default function useLoadAccountData() {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);
     },
-    [dispatch, loadUniqueTokens]
+    [dispatch]
   );
 
   return loadAccountData;
