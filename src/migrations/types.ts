@@ -11,6 +11,7 @@ export enum MigrationName {
   deleteImgixMMKVCache = 'migration_deleteImgixMMKVCache',
   migrateNotificationSettingsToVersion2 = 'migration_migrateNotificationSettingsToVersion2',
   prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
+  deleteImageMetadata = 'migration_deleteImageMetadata',
 }
 
 export type Migration = {

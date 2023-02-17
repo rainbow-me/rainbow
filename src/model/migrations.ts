@@ -5,6 +5,8 @@ import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
+import { removeLocal } from '../handlers/localstorage/common';
+import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -313,7 +315,7 @@ export default async function runMigrations() {
 
   const v8 = async () => {
     logger.log('wiping old metadata');
-    //await removeLocal(IMAGE_METADATA);
+    await removeLocal(IMAGE_METADATA);
   };
 
   migrations.push(v8);
