@@ -50,11 +50,7 @@ import {
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import {
-  getProviderForNetwork,
-  getHasMerged,
-  getFlashbotsProvider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
 import {
   divide,
   fromWei,
@@ -437,8 +433,7 @@ export default function ExchangeModal({
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const hideFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const hideFlashbotsPostMerge = !config.flashbots_enabled;
   const swapSupportsFlashbots =
     currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
