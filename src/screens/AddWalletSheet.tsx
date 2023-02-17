@@ -241,6 +241,7 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     if (IS_ANDROID) {
+      await RNCloudFs.logout();
       const isAvailable = await isCloudBackupAvailable();
       if (isAvailable) {
         let proceed = false;
@@ -268,7 +269,6 @@ export const AddWalletSheet = () => {
               i18n.t(TRANSLATIONS.options.cloud.no_backups),
               i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
             );
-            await RNCloudFs.logout();
           }
         }
       }
