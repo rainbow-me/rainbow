@@ -24,6 +24,7 @@ import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -276,7 +277,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => {
   return {
     ...asset,
