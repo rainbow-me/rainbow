@@ -24,7 +24,7 @@ export const CLOUD_BACKUP_ERRORS = {
 };
 
 export function logoutFromGoogleDrive() {
-  android && RNCloudFs.logout();
+  IS_ANDROID && RNCloudFs.logout();
 }
 
 // This is used for dev purposes only!
