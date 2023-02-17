@@ -17,9 +17,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- hotfix
+- more OP fixes
+- performance improvements
 
 ## [1.8.10] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.9)
+
+### Added
+
+- OP rewards
 
 ### Changed
 
