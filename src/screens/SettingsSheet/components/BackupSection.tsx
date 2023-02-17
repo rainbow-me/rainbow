@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { cloudPlatform } from '../../../utils/platform';
-import { ContactAvatar } from '../../contacts';
-import Menu from '../components/Menu';
-import MenuContainer from '../components/MenuContainer';
-import MenuItem from '../components/MenuItem';
+import { cloudPlatform } from '@/utils/platform';
+import { ContactAvatar } from '../../../components/contacts';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';

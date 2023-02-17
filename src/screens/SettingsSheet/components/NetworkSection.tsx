@@ -2,11 +2,11 @@ import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import networkInfo from '../../helpers/networkInfo';
-import { settingsUpdateNetwork } from '../../redux/settings';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { settingsUpdateNetwork } from '@rainbow-me/redux/settings';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import {

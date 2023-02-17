@@ -1,120 +1,25 @@
 import { useRoute } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackCardInterpolationProps,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager } from 'react-native';
-import ModalHeaderButton from '../components/modal/ModalHeaderButton';
-import {
-  AppIconSection,
-  CurrencySection,
-  DevSection,
-  LanguageSection,
-  NetworkSection,
-  NotificationsSection,
-  PrivacySection,
-  SettingsSection,
-  WalletNotificationsSettings,
-} from '../components/settings-menu';
-import BackupSection from '../components/settings-menu/BackupSection/BackupSection';
-import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
-import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
-import WalletTypes from '../helpers/walletTypes';
-import { settingsOptions } from '../navigation/config';
-import { useTheme } from '../theme/ThemeContext';
+import { InteractionManager } from 'react-native';
+import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
+import { SettingsSection, WalletNotificationsSettings } from './components';
+import { settingsOptions } from '@rainbow-me/navigation/config';
+import { useTheme } from '@/theme';
 import { Box } from '@/design-system';
 import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-
-export const CUSTOM_MARGIN_TOP_ANDROID = 8;
-
-function cardStyleInterpolator({
-  current,
-  next,
-  inverted,
-  layouts: { screen },
-}: StackCardInterpolationProps) {
-  const translateFocused = Animated.multiply(
-    current.progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [screen.width, 0],
-    }),
-    inverted
-  );
-  const translateUnfocused = next
-    ? Animated.multiply(
-        next.progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -screen.width],
-        }),
-        inverted
-      )
-    : 0;
-
-  return {
-    cardStyle: {
-      transform: [
-        {
-          translateX: Animated.add(translateFocused, translateUnfocused),
-        },
-      ],
-    },
-  };
-}
-
-const SettingsPages = {
-  appIcon: {
-    component: AppIconSection,
-    getTitle: () => lang.t('settings.app_icon'),
-    key: 'AppIconSection',
-  },
-  backup: {
-    component: BackupSection,
-    getTitle: () => lang.t('settings.backup'),
-    key: 'BackupSection',
-  },
-  currency: {
-    component: CurrencySection,
-    getTitle: () => lang.t('settings.currency'),
-    key: 'CurrencySection',
-  },
-  default: {
-    component: null,
-    getTitle: () => lang.t('settings.label'),
-    key: 'SettingsSection',
-  },
-  dev: {
-    component: DevSection,
-    getTitle: () => lang.t('settings.dev'),
-    key: 'DevSection',
-  },
-  language: {
-    component: LanguageSection,
-    getTitle: () => lang.t('settings.language'),
-    key: 'LanguageSection',
-  },
-  network: {
-    component: NetworkSection,
-    getTitle: () => lang.t('settings.network'),
-    key: 'NetworkSection',
-  },
-  notifications: {
-    component: NotificationsSection,
-    getTitle: () => lang.t('settings.notifications'),
-    key: 'NotificationsSection',
-  },
-  privacy: {
-    component: PrivacySection,
-    getTitle: () => lang.t('settings.privacy'),
-    key: 'PrivacySection',
-  },
-};
+import { SettingsPages } from './SettingsPages';
+import { settingsCardStyleInterpolator } from '@/screens/SettingsSheet/settingsCardStyleInterpolator';
+import WalletTypes from '@/helpers/walletTypes';
+import SettingsBackupView from '@/screens/SettingsSheet/components/SettingsBackupView';
+import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 
 const Stack = createStackNavigator();
 
-export default function SettingsSheet() {
+export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { wallets } = useWallets();
   const { params } = useRoute<any>();
@@ -213,7 +118,7 @@ export default function SettingsSheet() {
         <Stack.Screen
           name="SettingsSection"
           options={{
-            cardStyleInterpolator,
+            cardStyleInterpolator: settingsCardStyleInterpolator,
             title: lang.t('settings.label'),
           }}
         >
@@ -239,7 +144,7 @@ export default function SettingsSheet() {
                 key={key}
                 name={key}
                 options={{
-                  cardStyleInterpolator,
+                  cardStyleInterpolator: settingsCardStyleInterpolator,
                   title: getTitle(),
                 }}
                 // @ts-ignore
@@ -251,7 +156,7 @@ export default function SettingsSheet() {
           component={WalletNotificationsSettings}
           name="WalletNotificationsSettings"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
+            cardStyleInterpolator: settingsCardStyleInterpolator,
             title: route.params?.title,
           })}
         />
@@ -259,7 +164,7 @@ export default function SettingsSheet() {
           component={SettingsBackupView}
           name="SettingsBackupView"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
+            cardStyleInterpolator: settingsCardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
             headerStyle: {
               ...memoSettingsOptions.headerStyle,
@@ -273,7 +178,7 @@ export default function SettingsSheet() {
           component={ShowSecretView}
           name="ShowSecretView"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
+            cardStyleInterpolator: settingsCardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
           })}
         />

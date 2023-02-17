@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
 import { MMKV } from 'react-native-mmkv';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
@@ -14,9 +14,9 @@ import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { ImgixImage } from '@/components/images';
+import { ImgixImage } from '@rainbow-me/images';
 import { useTheme } from '@/theme';
-import Logger from '@/utils/logger';
+import Logger from 'logger';
 import {
   GoldDogeIcon,
   OptimismIcon,

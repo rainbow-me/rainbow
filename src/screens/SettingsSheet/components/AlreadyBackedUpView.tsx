@@ -2,9 +2,9 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import { cloudPlatform } from '../../../utils/platform';
-import { DelayedAlert } from '../../alerts';
-import { ButtonPressAnimation } from '../../animations';
+import { cloudPlatform } from '@/utils/platform';
+import { DelayedAlert } from '../../../components/alerts';
+import { ButtonPressAnimation } from '../../../components/animations';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Text } from '@/design-system';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -16,7 +16,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import Routes from '@rainbow-me/routes';
 import styled from '@/styled-thing';
 import { colors, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';

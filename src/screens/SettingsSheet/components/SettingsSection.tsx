@@ -6,11 +6,11 @@ import {
   ContextMenuButton,
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
-import { supportedLanguages } from '../../languages';
-import AppVersionStamp from '../AppVersionStamp';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import { supportedLanguages } from '../../../languages';
+import AppVersionStamp from '../../../components/AppVersionStamp';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
 import AppIconIconDark from '@/assets/settingsAppIconDark.png';
 import BackupIcon from '@/assets/settingsBackup.png';
