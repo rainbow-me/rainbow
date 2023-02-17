@@ -4,7 +4,7 @@ import { rainbowFetch, RainbowFetchClient } from '../rainbow-fetch';
 
 import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
-import { parseSimplehashNFTs } from '@/parsers';
+import { parseSimplehashNfts } from '@/parsers';
 import { queryClient } from '@/react-query/queryClient';
 import { qs } from 'url-parse';
 import { POAP_ADDRESS } from '@/parsers/uniqueTokens';
@@ -32,7 +32,7 @@ interface SimplehashCollection {
   spam_score: number;
 }
 
-export interface SimplehashNFT {
+export interface SimplehashNft {
   nft_id: string;
   chain: Network;
   contract_address: string;
@@ -82,7 +82,7 @@ const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
 
-export async function getNFTByTokenId({
+export async function getNftByTokenId({
   chain = chains.ethereum,
   contractAddress,
   tokenId,
@@ -115,9 +115,9 @@ export async function getNFTByTokenId({
 
 export async function fetchRawUniqueTokens(
   walletAddress: string,
-  cursor: string | null | undefined = START_CURSOR
+  cursor: string = START_CURSOR
 ) {
-  let rawNFTData: SimplehashNFT[] = [];
+  let rawNftData: SimplehashNft[] = [];
   let nextCursor;
   try {
     const chainsParam = `${chains.ethereum},${chains.arbitrum},${chains.optimism},${chains.polygon},${chains.bsc},${chains.gnosis}`;
@@ -136,7 +136,7 @@ export async function fetchRawUniqueTokens(
     });
     nextCursor = (qs.parse(response.data.next) as any)['cursor'];
     if (response.data?.nfts?.length) {
-      rawNFTData = [...rawNFTData, ...response.data.nfts];
+      rawNftData = [...rawNftData, ...response.data.nfts];
     }
   } catch (error) {
     logger.error(
@@ -146,5 +146,5 @@ export async function fetchRawUniqueTokens(
     );
     captureException(error);
   }
-  return { rawNFTData, nextCursor };
+  return { rawNftData, nextCursor };
 }

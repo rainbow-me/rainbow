@@ -3,7 +3,7 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
-import { parseSimplehashNFTs } from '@/parsers/uniqueTokens';
+import { parseSimplehashNfts } from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@/handlers/ens';
 import {
@@ -71,10 +71,10 @@ export default function useFetchUniqueTokens({
           fetchRawUniqueTokens(address as string),
           fetchPolygonAllowlist(),
         ]);
-        const { rawNFTData, nextCursor } = uniqueTokensResponse;
+        const { rawNftData, nextCursor } = uniqueTokensResponse;
         setCursor(nextCursor);
         uniqueTokens = filterNfts(
-          parseSimplehashNFTs(rawNFTData),
+          parseSimplehashNfts(rawNftData),
           polygonAllowlist
         );
       }
@@ -109,10 +109,10 @@ export default function useFetchUniqueTokens({
           : fetchRawUniqueTokens(address as string),
         fetchPolygonAllowlist(),
       ]);
-      const { rawNFTData, nextCursor } = uniqueTokensResponse;
+      const { rawNftData, nextCursor } = uniqueTokensResponse;
 
       const moreUniqueTokens = filterNfts(
-        parseSimplehashNFTs(rawNFTData),
+        parseSimplehashNfts(rawNftData),
         polygonAllowlist
       );
 
@@ -126,7 +126,7 @@ export default function useFetchUniqueTokens({
         );
       }
       if (
-        rawNFTData?.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
+        rawNftData?.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
         (!nextCursor && uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL) ||
         !mounted.current
       ) {

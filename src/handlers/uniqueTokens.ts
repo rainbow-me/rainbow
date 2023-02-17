@@ -16,7 +16,7 @@ import { captureException } from '@sentry/react-native';
 import { logger, RainbowError } from '@/logger';
 import { Network } from '@/helpers';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
-import { parseSimplehashNFTs } from '@/parsers';
+import { parseSimplehashNfts } from '@/parsers';
 import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
@@ -36,25 +36,25 @@ export const fetchAllUniqueTokens = async (
     fetchPolygonAllowlist(),
   ]);
 
-  const { rawNFTData, nextCursor } = newUniqueTokensResponse;
+  const { rawNftData, nextCursor } = newUniqueTokensResponse;
 
   let cursor = nextCursor;
   let uniqueTokens = filterNfts(
-    parseSimplehashNFTs(rawNFTData),
+    parseSimplehashNfts(rawNftData),
     polygonAllowlist
   );
 
   let shouldFetchMore =
-    cursor && rawNFTData?.length === UNIQUE_TOKENS_LIMIT_PER_PAGE;
+    cursor && rawNftData?.length === UNIQUE_TOKENS_LIMIT_PER_PAGE;
 
   while (shouldFetchMore) {
     // eslint-disable-next-line no-await-in-loop
-    const { rawNFTData, nextCursor } = await fetchRawUniqueTokens(
+    const { rawNftData, nextCursor } = await fetchRawUniqueTokens(
       address,
       cursor
     );
     const newUniqueTokens = filterNfts(
-      parseSimplehashNFTs(rawNFTData),
+      parseSimplehashNfts(rawNftData),
       polygonAllowlist
     );
     uniqueTokens = [...uniqueTokens, ...newUniqueTokens];
@@ -62,7 +62,7 @@ export const fetchAllUniqueTokens = async (
 
     shouldFetchMore =
       cursor &&
-      rawNFTData?.length === UNIQUE_TOKENS_LIMIT_PER_PAGE &&
+      rawNftData?.length === UNIQUE_TOKENS_LIMIT_PER_PAGE &&
       uniqueTokens.length < UNIQUE_TOKENS_LIMIT_TOTAL;
   }
   analytics.identify(undefined, { NFTs: uniqueTokens.length });

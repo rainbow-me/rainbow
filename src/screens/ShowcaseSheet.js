@@ -65,6 +65,7 @@ export default function ShowcaseScreen() {
   }, [addressOrDomain]);
 
   useEffect(() => {
+    // this is broken now but this sheet is obsolete
     accountAddress && dispatch(fetchUniqueTokens(accountAddress));
   }, [dispatch, accountAddress]);
 
