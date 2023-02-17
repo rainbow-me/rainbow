@@ -336,7 +336,7 @@
     "detox": "19.12.1",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
-    "eslint-config-rainbow": "4.2.0",
+    "eslint-config-rainbow": "4.3.0",
     "ethers": "5.6.8",
     "graphql": "15.3.0",
     "hardhat": "2.9.1",
