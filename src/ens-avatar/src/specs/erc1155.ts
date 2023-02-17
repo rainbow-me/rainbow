@@ -5,7 +5,7 @@ import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import { UniqueAsset } from '@/entities';
 import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
-import { getNFTByTokenId } from '@/handlers/simplehash';
+import { getNftByTokenId } from '@/handlers/simplehash';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { NetworkTypes } from '@/helpers';
 
@@ -52,7 +52,7 @@ export default class ERC1155 {
       );
       image = svgToPngIfNeeded(data?.image_url, false) || data?.lowResUrl;
     } catch (error) {
-      const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
+      const data = await getNftByTokenId({ contractAddress, tokenId: tokenID });
       image = data?.previews?.image_medium_url;
       if (!image) throw new Error('no image found');
     }

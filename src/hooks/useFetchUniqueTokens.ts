@@ -104,6 +104,7 @@ export default function useFetchUniqueTokens({
       cursor?: string;
     }): Promise<UniqueAsset[]> {
       const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
+        // if there's no cursor set, that means we still need to fetch the first page
         cursor
           ? fetchRawUniqueTokens(address as string, cursor)
           : fetchRawUniqueTokens(address as string),

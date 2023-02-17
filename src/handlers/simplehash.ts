@@ -1,13 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
-import { rainbowFetch, RainbowFetchClient } from '../rainbow-fetch';
-
-import { UniqueAsset } from '@/entities';
+import { RainbowFetchClient } from '../rainbow-fetch';
 import { Network } from '@/helpers';
-import { parseSimplehashNfts } from '@/parsers';
-import { queryClient } from '@/react-query/queryClient';
 import { qs } from 'url-parse';
-import { POAP_ADDRESS } from '@/parsers/uniqueTokens';
 import { logger, RainbowError } from '@/logger';
 
 interface SimplehashMarketplace {

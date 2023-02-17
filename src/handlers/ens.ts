@@ -119,45 +119,6 @@ const buildEnsToken = ({
   } as UniqueAsset;
 };
 
-export const isUnknownOpenSeaENS = (asset?: UniqueAsset) => {
-  const isENS =
-    asset?.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  return (
-    isENS &&
-    (asset?.description?.includes(
-      'This is an unknown ENS name with the hash'
-    ) ||
-      !asset?.uniqueId?.includes('.eth') ||
-      !asset?.image_url)
-  );
-};
-
-export const fetchMetadata = async ({
-  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
-  tokenId,
-}: {
-  contractAddress?: string;
-  tokenId: string;
-}) => {
-  try {
-    const labelhash = BigNumber.from(tokenId).toHexString();
-
-    let name = await getNameFromLabelhash(labelhash);
-    if (!name) {
-      const data = await ensClient.getNameFromLabelhash({ labelhash });
-      name = `${data.domains[0].labelName}.eth`;
-    }
-
-    const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
-    return { image_url, name };
-  } catch (error) {
-    logger.sentry('ENS: Error getting ENS metadata', error);
-    captureException(new Error('ENS: Error getting ENS metadata'));
-    throw error;
-  }
-};
-
 export const fetchEnsTokens = async ({
   address,
   contractAddress = ENS_NFT_CONTRACT_ADDRESS,

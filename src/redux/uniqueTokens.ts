@@ -204,62 +204,6 @@ export const updateUniqueTokens = () => async (
   }
 };
 
-/**
- * Revalidates a unique token via OpenSea API, updates state, and saves to local storage.
- *
- * Note:  it is intentional that there are no loading states dispatched in this action. This
- *        is for _revalidation_ purposes only.
- *
- * @param contractAddress - The contract address of the NFT
- * @param tokenId - The tokenId of the NFT
- * @param {Object} config - Optional configuration
- * @param {boolean} config.forceUpdate - Trigger a force update of metadata (equivalent to refreshing metadata in OpenSea)
- */
-export const revalidateUniqueToken = (
-  contractAddress: string,
-  tokenId: string,
-  { forceUpdate = false }: { forceUpdate?: boolean } = {}
-) => async (
-  dispatch: ThunkDispatch<
-    AppState,
-    unknown,
-    UniqueTokensGetAction | UniqueTokensClearStateShowcaseAction
-  >,
-  getState: AppGetState
-) => {
-  const { network: currentNetwork } = getState().settings;
-  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-  const accountAddress = getState().settings.accountAddress;
-
-  let token = await apiGetAccountUniqueToken(
-    currentNetwork,
-    contractAddress,
-    tokenId,
-    { forceUpdate }
-  );
-
-  // If the token is an "unknown" ENS name, fallback to the ENS
-  // metadata service.
-  try {
-    token = await applyENSMetadataFallbackToToken(token);
-  } catch (error) {
-    captureException(error);
-  }
-
-  const uniqueTokens = existingUniqueTokens.map(existingToken =>
-    existingToken.id === tokenId ? token : existingToken
-  );
-
-  saveUniqueTokens(uniqueTokens, accountAddress, currentNetwork);
-  dispatch({
-    payload: uniqueTokens,
-    showcase: false,
-    type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-  });
-
-  return token;
-};
-
 // -- Reducer --------------------------------------------------------------- //
 
 export const INITIAL_UNIQUE_TOKENS_STATE: UniqueTokensState = {

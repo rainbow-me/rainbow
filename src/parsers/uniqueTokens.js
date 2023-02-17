@@ -2,7 +2,6 @@ import { isNil } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
 import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
@@ -261,28 +260,6 @@ export const parseAccountUniqueTokensPolygon = data => {
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
 
   return erc721s;
-};
-
-export const applyENSMetadataFallbackToToken = async token => {
-  const isENS =
-    token?.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  if (isENS && isUnknownOpenSeaENS(token)) {
-    const { name, image_url } = await fetchMetadata({
-      tokenId: token.id,
-    });
-    const { imageUrl, lowResUrl } = handleAndSignImages(image_url);
-    return {
-      ...token,
-      image_preview_url: lowResUrl,
-      image_thumbnail_url: lowResUrl,
-      image_url: imageUrl,
-      lowResUrl,
-      name,
-      uniqueId: name,
-    };
-  }
-  return token;
 };
 
 const getSimplehashMarketplaceInfo = simplehashNft => {
