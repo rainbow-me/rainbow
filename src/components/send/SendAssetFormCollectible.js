@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import { useDimensions, useImageMetadata } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 
