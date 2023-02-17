@@ -3,7 +3,7 @@ import {
   UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
   UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
 } from '@/redux/uniqueTokens';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
 import { saveUniqueTokens } from '@/handlers/localstorage/accountLocal';
@@ -21,6 +21,7 @@ import {
 } from '@/handlers/opensea-api';
 import { queryClient } from '@/react-query';
 import { UniqueAsset } from '@/entities';
+import { AppState } from '@/redux/store';
 
 export const fetchAllUniqueTokens = async (
   address: string,
@@ -70,7 +71,10 @@ export const fetchAllUniqueTokens = async (
 };
 
 export const useUpdateUniqueTokens = () => {
-  const { accountAddress: address, network } = useAccountSettings();
+  const { network } = useAccountSettings();
+  const accountAddress = useSelector(
+    (state: AppState) => state.settings.accountAddress
+  );
   const dispatch = useDispatch();
 
   const updateUniqueTokens = useCallback(async () => {
@@ -79,7 +83,7 @@ export const useUpdateUniqueTokens = () => {
       type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST,
     });
     try {
-      const uniqueTokens = await fetchAllUniqueTokens(address, network);
+      const uniqueTokens = await fetchAllUniqueTokens(accountAddress, network);
       dispatch({
         payload: uniqueTokens,
         showcase: false,
@@ -93,7 +97,7 @@ export const useUpdateUniqueTokens = () => {
         type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
       });
     }
-  }, [address, dispatch, network]);
+  }, [accountAddress, dispatch, network]);
 
   return { updateUniqueTokens };
 };

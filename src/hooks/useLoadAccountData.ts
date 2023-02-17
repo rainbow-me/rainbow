@@ -6,7 +6,6 @@ import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
-import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
 import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '../redux/usersPositions';
@@ -27,7 +26,7 @@ export default function useLoadAccountData() {
       const promises = [];
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
-        const p2 = dispatch(loadUniqueTokens());
+        const p2 = loadUniqueTokens();
         promises.push(p1, p2);
       }
       const p3 = dispatch(requestsLoadState());
