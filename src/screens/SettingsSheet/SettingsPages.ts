@@ -1,14 +1,12 @@
-import {
-  AppIconSection,
-  CurrencySection,
-  DevSection,
-  LanguageSection,
-  NetworkSection,
-  NotificationsSection,
-  PrivacySection,
-} from '@/screens/SettingsSheet/components';
 import lang from 'i18n-js';
-import BackupSection from '@/screens/SettingsSheet/components/BackupSection';
+import AppIconSection from './components/AppIconSection';
+import BackupSection from './components/BackupSection';
+import CurrencySection from './components/CurrencySection';
+import LanguageSection from './components/LanguageSection';
+import DevSection from './components/DevSection';
+import NetworkSection from './components/NetworkSection';
+import PrivacySection from './components/PrivacySection';
+import NotificationsSection from './components/NotificationsSection';
 
 export const SettingsPages = {
   appIcon: {

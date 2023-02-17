@@ -16,7 +16,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';

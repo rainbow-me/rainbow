@@ -14,9 +14,7 @@ import {
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
-import { defaultConfig } from '@rainbow-me/config/experimental';
 import useAppVersion from '../../../hooks/useAppVersion';
-import { settingsUpdateNetwork } from '@rainbow-me/redux/settings';
 import NetworkSection from './NetworkSection';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
@@ -35,7 +33,7 @@ import {
   useUpdateAssetOnchainBalance,
   useWallets,
 } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
@@ -45,7 +43,7 @@ import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 import {
@@ -55,6 +53,8 @@ import {
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { defaultConfig } from '@/config';
+import { settingsUpdateNetwork } from '@/redux/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

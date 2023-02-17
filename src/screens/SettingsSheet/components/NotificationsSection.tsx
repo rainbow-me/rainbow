@@ -8,7 +8,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useAppState, useWallets } from '@/hooks';
 import { requestPermission } from '@/notifications/permissions';

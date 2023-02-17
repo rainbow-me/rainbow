@@ -14,9 +14,9 @@ import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { ImgixImage } from '@rainbow-me/images';
+import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
-import Logger from 'logger';
+import Logger from '@/utils/logger';
 import {
   GoldDogeIcon,
   OptimismIcon,

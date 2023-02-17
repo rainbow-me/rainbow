@@ -4,18 +4,19 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
-import { SettingsSection, WalletNotificationsSettings } from './components';
-import { settingsOptions } from '@rainbow-me/navigation/config';
 import { useTheme } from '@/theme';
 import { Box } from '@/design-system';
 import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
-import { settingsCardStyleInterpolator } from '@/screens/SettingsSheet/settingsCardStyleInterpolator';
+import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
 import WalletTypes from '@/helpers/walletTypes';
-import SettingsBackupView from '@/screens/SettingsSheet/components/SettingsBackupView';
-import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
-import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
+import SettingsBackupView from './components/SettingsBackupView';
+import ShowSecretView from './components/ShowSecretView';
+import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
+import SettingsSection from './components/SettingsSection';
+import WalletNotificationsSettings from './components/WalletNotificationsSettings';
+import { settingsOptions } from '@/navigation/config';
 
 const Stack = createStackNavigator();
 

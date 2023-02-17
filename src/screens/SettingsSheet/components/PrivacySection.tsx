@@ -6,7 +6,7 @@ import MenuItem from './MenuItem';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
