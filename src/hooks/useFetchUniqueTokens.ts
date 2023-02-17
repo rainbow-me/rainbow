@@ -15,40 +15,14 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/opensea-api';
 import { Network } from '@/helpers/networkTypes';
-import { fetchRawUniqueTokens, START_CURSOR } from '@/handlers/simplehash';
+import { fetchRawUniqueTokens } from '@/handlers/simplehash';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
+import { filterNfts } from '@/helpers/uniqueTokens';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
   address,
 ];
-
-const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
-
-export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
-  nfts.filter((nft: UniqueAsset) => {
-    if (!nft.collection.name) return false;
-
-    // filter out spam
-    if (nft.spamScore === null || nft.spamScore >= 85) return false;
-
-    // filter gnosis NFTs that are not POAPs
-    if (
-      nft.network === Network.gnosis &&
-      nft.asset_contract &&
-      nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
-    )
-      return false;
-
-    if (
-      nft.network === Network.polygon &&
-      !polygonAllowlist.includes(nft.asset_contract?.address?.toLowerCase())
-    ) {
-      return false;
-    }
-
-    return true;
-  });
 
 export default function useFetchUniqueTokens({
   address,
@@ -63,7 +37,7 @@ export default function useFetchUniqueTokens({
   const mounted = useIsMounted();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
-  const [cursor, setCursor] = useState<string>(START_CURSOR);
+  const [cursor, setCursor] = useState<string>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -94,7 +68,7 @@ export default function useFetchUniqueTokens({
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
         const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
-          fetchRawUniqueTokens(address as string, START_CURSOR),
+          fetchRawUniqueTokens(address as string),
           fetchPolygonAllowlist(),
         ]);
         const { rawNFTData, nextCursor } = uniqueTokensResponse;
@@ -123,14 +97,16 @@ export default function useFetchUniqueTokens({
     async function fetchMore({
       network,
       uniqueTokens = [],
-      cursor = START_CURSOR,
+      cursor,
     }: {
       network: Network;
       uniqueTokens?: UniqueAsset[];
       cursor?: string;
     }): Promise<UniqueAsset[]> {
       const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
-        fetchRawUniqueTokens(address as string, cursor),
+        cursor
+          ? fetchRawUniqueTokens(address as string, cursor)
+          : fetchRawUniqueTokens(address as string),
         fetchPolygonAllowlist(),
       ]);
       const { rawNFTData, nextCursor } = uniqueTokensResponse;

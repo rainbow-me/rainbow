@@ -6,10 +6,9 @@ import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import { parseSimplehashNFTs } from '@/parsers';
 import { queryClient } from '@/react-query/queryClient';
-
-import { logger } from '@/utils';
 import { qs } from 'url-parse';
 import { POAP_ADDRESS } from '@/parsers/uniqueTokens';
+import { logger, RainbowError } from '@/logger';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -77,8 +76,7 @@ const chains = {
 
 type SimpleHashChain = keyof typeof chains;
 
-export const START_CURSOR = 'start';
-const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
+const START_CURSOR = 'start';
 
 const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
@@ -106,14 +104,18 @@ export async function getNFTByTokenId({
     );
     return response.data;
   } catch (error) {
-    logger.sentry(`Error fetching simplehash NFT: ${error}`);
+    logger.error(
+      new RainbowError(
+        `Error fetching simplehash NFT (chain: ${chain}, contractAddress: ${contractAddress}, tokenId: ${tokenId}) - ${error}`
+      )
+    );
     captureException(error);
   }
 }
 
 export async function fetchRawUniqueTokens(
   walletAddress: string,
-  cursor: string | null | undefined
+  cursor: string | null | undefined = START_CURSOR
 ) {
   let rawNFTData: SimplehashNFT[] = [];
   let nextCursor;
@@ -125,6 +127,7 @@ export async function fetchRawUniqueTokens(
         'Content-Type': 'application/json',
         'x-api-key': SIMPLEHASH_API_KEY,
       },
+      //@ts-ignore
       params: {
         chains: chainsParam,
         ...(cursor !== START_CURSOR && { cursor }),
@@ -132,61 +135,16 @@ export async function fetchRawUniqueTokens(
       },
     });
     nextCursor = (qs.parse(response.data.next) as any)['cursor'];
-    if (response.data?.nfts?.length > 0) {
-      rawNFTData = rawNFTData.concat(response.data.nfts);
+    if (response.data?.nfts?.length) {
+      rawNFTData = [...rawNFTData, ...response.data.nfts];
     }
   } catch (error) {
-    logger.sentry(
-      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
+    logger.error(
+      new RainbowError(
+        `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
+      )
     );
     captureException(error);
   }
   return { rawNFTData, nextCursor };
 }
-
-// export async function getUniqueTokens2(walletAddress: string | undefined) {
-//   if (!walletAddress) return [];
-
-//   const [rawNFTData, polygonAllowlist] = await Promise.all([
-//     getSimplehashNFTs(walletAddress),
-//     // will migrate this to Async State RFC architecture once at some point
-//     queryClient.fetchQuery(
-//       ['polygon-allowlist'],
-//       async () => {
-//         return (
-//           await rainbowFetch(
-//             'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-//             { method: 'get' }
-//           )
-//         ).data.data.addresses;
-//       },
-//       {
-//         staleTime: POLYGON_ALLOWLIST_STALE_TIME, // 10 minutes
-//       }
-//     ),
-//   ]);
-
-//   return parseSimplehashNFTs(rawNFTData).filter((nft: UniqueAsset) => {
-//     if (nft.collection.name === null) return false;
-
-//     // filter out spam
-//     if (nft.spamScore >= 85) return false;
-
-//     // filter gnosis NFTs that are not POAPs
-//     if (
-//       nft.network === Network.gnosis &&
-//       nft.asset_contract &&
-//       nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
-//     )
-//       return false;
-
-//     if (
-//       nft.network == Network.polygon &&
-//       !polygonAllowlist.includes(nft.asset_contract?.address?.toLowerCase())
-//     ) {
-//       return false;
-//     }
-
-//     return true;
-//   });
-// }

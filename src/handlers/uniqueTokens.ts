@@ -11,7 +11,7 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
-import { fetchRawUniqueTokens, START_CURSOR } from '@/handlers/simplehash';
+import { fetchRawUniqueTokens } from '@/handlers/simplehash';
 import { captureException } from '@sentry/react-native';
 import { logger, RainbowError } from '@/logger';
 import { Network } from '@/helpers';
@@ -24,14 +24,15 @@ import {
 import { queryClient } from '@/react-query';
 import { UniqueAsset } from '@/entities';
 import store from '@/redux/store';
-import { filterNfts, uniqueTokensQueryKey } from '@/hooks/useFetchUniqueTokens';
+import { uniqueTokensQueryKey } from '@/hooks/useFetchUniqueTokens';
+import { filterNfts } from '@/helpers/uniqueTokens';
 
 export const fetchAllUniqueTokens = async (
   address: string,
   network: Network
 ) => {
   const [newUniqueTokensResponse, polygonAllowlist] = await Promise.all([
-    fetchRawUniqueTokens(address, START_CURSOR),
+    fetchRawUniqueTokens(address),
     fetchPolygonAllowlist(),
   ]);
 
