@@ -1,17 +1,23 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
 import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
+import { UniqueAsset } from '@/entities';
+import { SimplehashFloorPrice } from '@/entities/uniqueAssets';
 
 const NONE = 'None';
+const OPENSEA_MARKETPLACE_ID = 'opensea';
+const ETH_PAYMENT_TOKEN_ID = 'ethereum.native';
 
 const getIsFloorPriceSupported = (network: Network) => {
   switch (network) {
@@ -22,48 +28,39 @@ const getIsFloorPriceSupported = (network: Network) => {
   }
 };
 
+const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
+  if (getIsFloorPriceSupported(asset?.network)) {
+    const floorPrices = asset?.collection?.floor_prices;
+    const openSeaFloorPrice = floorPrices?.find(
+      (floorPrice: SimplehashFloorPrice) =>
+        floorPrice.marketplace_id === OPENSEA_MARKETPLACE_ID
+    );
+    if (
+      openSeaFloorPrice?.payment_token.payment_token_id === ETH_PAYMENT_TOKEN_ID
+    ) {
+      const numericValue =
+        openSeaFloorPrice.value *
+        10 ** -openSeaFloorPrice?.payment_token.decimals;
+      return `${handleSignificantDecimals(numericValue, 5)} ETH`;
+    }
+  }
+  return NONE;
+};
+
 export default function NFTBriefTokenInfoRow({
-  currentPrice,
-  lastPrice,
-  lastSalePaymentToken,
-  network: assetNetwork,
-  urlSuffixForAsset,
+  asset,
 }: {
-  currentPrice?: number | null;
-  lastPrice?: number | null;
-  lastSalePaymentToken?: string | null;
-  network: Network;
-  urlSuffixForAsset: string;
+  asset: UniqueAsset;
 }) {
+  const { currentPrice, lastPrice, lastSalePaymentToken } = asset;
+
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
 
-  const { nativeCurrency, network } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(null);
-
-  useEffect(() => {
-    const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
-
-    const fetchFloorPrice = async () => {
-      if (isFloorPriceSupported) {
-        try {
-          const result = await apiGetUniqueTokenFloorPrice(
-            network,
-            urlSuffixForAsset
-          );
-          setFloorPrice(result);
-        } catch (_) {
-          setFloorPrice(NONE);
-        }
-      } else {
-        setFloorPrice(NONE);
-      }
-    };
-
-    fetchFloorPrice();
-  }, [assetNetwork, network, urlSuffixForAsset]);
+  const floorPrice = getOpenSeaFloorPrice(asset);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(

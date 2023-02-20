@@ -281,6 +281,16 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
   };
 };
 
+const getNetworkFromSimplehashNft = simplehashNft => {
+  if (simplehashNft) {
+    if (simplehashNft.chain === 'ethereum') {
+      return Network.mainnet;
+    } else {
+      return simplehashNft.chain;
+    }
+  }
+};
+
 export const parseSimplehashNfts = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
@@ -306,6 +316,7 @@ export const parseSimplehashNfts = nftData => {
         description: collection.description,
         discord_url: collection.discord_url,
         external_url: collection.external_url,
+        floor_prices: collection.floor_prices,
         image_url: collection.image_url,
         name: collection.name,
         slug: marketplaceInfo?.collectionId,
@@ -330,7 +341,7 @@ export const parseSimplehashNfts = nftData => {
       marketplaceId: marketplaceInfo?.marketplaceId,
       marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
-      network: simplehashNft.chain,
+      network: getNetworkFromSimplehashNft(simplehashNft),
       permalink: marketplaceInfo?.permalink,
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,

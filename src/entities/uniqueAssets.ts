@@ -9,6 +9,19 @@ interface UniqueAssetLastSale {
   };
 }
 
+interface SimplehashPaymentToken {
+  payment_token_id: string;
+  name: string | null;
+  symbol: string | null;
+  address: string | null;
+  decimals: number;
+}
+export interface SimplehashFloorPrice {
+  marketplace_id: string;
+  value: number;
+  payment_token: SimplehashPaymentToken;
+}
+
 export interface UniqueAsset {
   animation_url?: string | null;
   description?: string | null;
@@ -28,6 +41,7 @@ export interface UniqueAsset {
     discord_url?: string | null;
     external_url?: string | null;
     featured_image_url?: string | null;
+    floor_prices?: SimplehashFloorPrice[];
     hidden?: boolean | null;
     image_url?: string | null;
     name: string;
