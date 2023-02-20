@@ -11,16 +11,16 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
-import { fetchRawUniqueTokens } from '@/handlers/simplehash';
+import {
+  fetchRawUniqueTokens,
+  UNIQUE_TOKENS_LIMIT_PER_PAGE,
+  UNIQUE_TOKENS_LIMIT_TOTAL,
+} from '@/handlers/simplehash';
 import { captureException } from '@sentry/react-native';
 import { logger, RainbowError } from '@/logger';
 import { Network } from '@/helpers';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { parseSimplehashNfts } from '@/parsers';
-import {
-  UNIQUE_TOKENS_LIMIT_PER_PAGE,
-  UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@/handlers/opensea-api';
 import { queryClient } from '@/react-query';
 import { UniqueAsset } from '@/entities';
 import store from '@/redux/store';

@@ -9,12 +9,12 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
+import { Network } from '@/helpers/networkTypes';
 import {
+  fetchRawUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
-} from '@/handlers/opensea-api';
-import { Network } from '@/helpers/networkTypes';
-import { fetchRawUniqueTokens } from '@/handlers/simplehash';
+} from '@/handlers/simplehash';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
 import { filterNfts } from '@/helpers/uniqueTokens';
 

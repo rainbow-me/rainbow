@@ -46,8 +46,6 @@ export default function ExpandedAssetSheet(props) {
   const { goBack } = useNavigation();
   const { params } = useRoute();
 
-  // We want to revalidate (ie. refresh OpenSea metadata) collectibles
-  // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
 
   return (
