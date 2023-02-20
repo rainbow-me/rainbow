@@ -5,7 +5,6 @@ import useAccountSettings from './useAccountSettings';
 import useIsMounted from './useIsMounted';
 import { parseSimplehashNfts } from '@/parsers/uniqueTokens';
 import { UniqueAsset } from '@/entities';
-import { fetchEnsTokens } from '@/handlers/ens';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -126,17 +125,21 @@ export default function useFetchUniqueTokens({
               : moreUniqueTokens
         );
       }
+
+      const newUniqueTokens = [...uniqueTokens, ...moreUniqueTokens];
+
       if (
         rawNftData?.length < UNIQUE_TOKENS_LIMIT_PER_PAGE ||
-        (!nextCursor && uniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL) ||
+        !nextCursor ||
+        newUniqueTokens?.length >= UNIQUE_TOKENS_LIMIT_TOTAL ||
         !mounted.current
       ) {
-        return uniqueTokens;
+        return newUniqueTokens;
       }
       return fetchMore({
         network,
         cursor: nextCursor,
-        uniqueTokens: [...uniqueTokens, ...moreUniqueTokens],
+        uniqueTokens: newUniqueTokens,
       });
     }
 
@@ -150,23 +153,13 @@ export default function useFetchUniqueTokens({
       setShouldFetchMore(false);
       (async () => {
         // Fetch more Ethereum tokens until all have fetched
-        let tokens = await fetchMore({
+        const tokens = await fetchMore({
           network,
           // If there are stored tokens in storage, then we want
           // to do a background refresh.
           cursor,
           uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
         });
-
-        // Fetch recently registered ENS tokens (OpenSea doesn't recognize these for a while).
-        // We will fetch tokens registered in the past 48 hours to be safe.
-        const ensTokens = await fetchEnsTokens({
-          address,
-          timeAgo: { hours: 48 },
-        });
-        if (ensTokens.length > 0) {
-          tokens = uniqBy([...tokens, ...ensTokens], 'uniqueId');
-        }
 
         if (hasStoredTokens) {
           queryClient.setQueryData<UniqueAsset[]>(

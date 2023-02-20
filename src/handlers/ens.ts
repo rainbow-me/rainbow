@@ -1,23 +1,15 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
-import { captureException } from '@sentry/react-native';
-import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
-import { BigNumber } from 'ethers';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
-import {
-  getENSData,
-  getNameFromLabelhash,
-  saveENSData,
-} from './localstorage/ens';
+import { getENSData, saveENSData } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
-import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
+import { ENSRegistrationRecords, Records } from '@/entities';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -28,13 +20,8 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
-import {
-  ENS_NFT_CONTRACT_ADDRESS,
-  ensIntroMarqueeNames,
-  ethUnits,
-} from '@/references';
-import { labelhash, logger, profileUtils } from '@/utils';
+import { ensIntroMarqueeNames, ethUnits } from '@/references';
+import { labelhash, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
@@ -45,122 +32,6 @@ const DUMMY_RECORDS = {
   header:
     'https://cloudflare-ipfs.com/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/I/m/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_(454045).jpg',
   name: 'name',
-};
-
-const buildEnsToken = ({
-  contractAddress,
-  tokenId,
-  name,
-  imageUrl: imageUrl_,
-}: {
-  contractAddress: string;
-  tokenId: string;
-  name: string;
-  imageUrl: string;
-}) => {
-  // @ts-expect-error JavaScript function
-  const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
-  const slug = 'ens';
-  return {
-    animation_url: null,
-    asset_contract: {
-      address: contractAddress,
-      name: 'ENS',
-      nft_version: '3.0',
-      schema_name: 'ERC721',
-      symbol: 'ENS',
-      total_supply: null,
-    },
-    background: null,
-    collection: {
-      description:
-        'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
-      discord_url: null,
-      external_url: 'https://ens.domains',
-      featured_image_url:
-        'https://lh3.googleusercontent.com/BBj09xD7R4bBtg1lgnAAS9_TfoYXKwMtudlk-0fVljlURaK7BWcARCpkM-1LGNGTAcsGO6V1TgrtmQFvCo8uVYW_QEfASK-9j6Nr=s300',
-      hidden: false,
-      image_url:
-        'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
-      name: 'ENS: Ethereum Name Service',
-      short_description: null,
-      slug,
-      twitter_username: 'ensdomains',
-    },
-    currentPrice: null,
-    description: `\`${name}\`, an ENS name.`,
-    external_link: `https://app.ens.domains/search/${name}`,
-    familyImage:
-      'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
-    familyName: 'ENS',
-    fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
-    id: tokenId,
-    image_original_url: imageUrl,
-    image_thumbnail_url: lowResUrl,
-    image_url: imageUrl,
-    isSendable: true,
-    last_sale: null,
-    lastPrice: null,
-    lastPriceUsd: null,
-    lastSale: undefined,
-    lastSalePaymentToken: null,
-    lowResUrl,
-    marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
-    marketplaceId: 'opensea',
-    marketplaceName: 'OpenSea',
-    name,
-    network: Network.mainnet,
-    permalink: '',
-    sell_orders: [],
-    traits: [],
-    type: 'nft',
-    uniqueId: name,
-    urlSuffixForAsset: `${contractAddress}/${tokenId}`,
-  } as UniqueAsset;
-};
-
-export const fetchEnsTokens = async ({
-  address,
-  contractAddress = ENS_NFT_CONTRACT_ADDRESS,
-  timeAgo,
-}: {
-  address: string;
-  contractAddress?: string;
-  timeAgo: Duration;
-}) => {
-  try {
-    const data = await ensClient.getRegistrationsByAddress({
-      address: address.toLowerCase(),
-      registrationDate_gt: Math.floor(
-        sub(new Date(), timeAgo).getTime() / 1000
-      ).toString(),
-    });
-
-    return (
-      data?.account?.registrations
-        ?.map(registration => {
-          if (!registration.domain) return;
-
-          const tokenId = BigNumber.from(
-            registration.domain.labelhash
-          ).toString();
-          const token = buildEnsToken({
-            contractAddress,
-            imageUrl: `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`,
-            name: registration.domain.name || '',
-            tokenId,
-          });
-          return token;
-        })
-        .filter(
-          <TToken>(token: TToken | null | undefined): token is TToken => !!token
-        ) || []
-    );
-  } catch (error) {
-    logger.sentry('ENS: Error getting ENS unique tokens', error);
-    captureException(new Error('ENS: Error getting ENS unique tokens'));
-    return [];
-  }
 };
 
 export const fetchSuggestions = async (

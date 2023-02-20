@@ -1,11 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { applyENSMetadataFallbackToToken } from '../parsers/uniqueTokens';
 import { AppGetState, AppState } from './store';
 import { UniqueAsset } from '@/entities';
-import { saveUniqueTokens } from '@/handlers/localstorage/accountLocal';
-import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
 import { logger, RainbowError } from '@/logger';
 import { fetchAllUniqueTokens } from '@/handlers/uniqueTokens';
 
