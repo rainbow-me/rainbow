@@ -306,6 +306,8 @@ const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 
 const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
 
+const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -385,7 +387,7 @@ export const explainers = (params, colors) => ({
     logo: <PoolyAppIcon />,
     extraHeight: -90,
     text: POOLY_APP_ICON_EXPLAINER,
-    title: lang.t('explain.icon_unlock.title', { partner: 'Pooly' }),
+    title: POOLY_APP_ICON_TITLE,
     button: {
       onPress: navigateToAppIconSettings,
       label: lang.t('explain.icon_unlock.button'),
