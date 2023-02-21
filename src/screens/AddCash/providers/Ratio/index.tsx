@@ -6,13 +6,11 @@ import {
 } from '@ratio.me/ratio-react-native-library';
 import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
-import { Wallet } from '@ethersproject/wallet';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
 
 import { IS_IOS } from '@/env';
-import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
@@ -29,6 +27,10 @@ import {
   FiatCurrency,
   CalloutType,
 } from '@/screens/AddCash/types';
+import {
+  getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded,
+  signWithSigningWallet,
+} from '@/helpers/signingWallet';
 
 import {
   ratioOrderToNewTransaction,
@@ -203,12 +205,14 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       fetchSessionToken={async () => {
         logger.debug(`Ratio: fetchSessionToken`, {}, logger.DebugContext.f2c);
 
+        const signingAddress = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+
         const { data, error } = await gretch<{ id: string }>(
           'https://f2c.rainbow.me/v1/providers/ratio/client-session',
           {
             method: 'POST',
             json: {
-              signingAddress: accountAddress,
+              signingAddress,
               depositAddress: accountAddress,
               signingNetwork: 'ETHEREUM',
             },
@@ -224,20 +228,9 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       signingCallback={async challenge => {
         logger.debug(`Ratio: signingCallback`, {}, logger.DebugContext.f2c);
 
-        const existingWallet = await loadWallet(accountAddress, true);
+        const signature = await signWithSigningWallet(challenge);
 
-        if (!existingWallet || !(existingWallet instanceof Wallet)) {
-          throw new Error('No wallet found');
-        }
-
-        const { result, error } =
-          (await signPersonalMessage(challenge, existingWallet)) || {};
-
-        if (!result || error) {
-          throw new Error('Signature failed');
-        }
-
-        return { signature: result };
+        return { signature };
       }}
       onLogin={async user => {
         logger.debug(`Ratio: onLogin`, {}, logger.DebugContext.f2c);
