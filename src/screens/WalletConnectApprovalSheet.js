@@ -153,31 +153,30 @@ const NetworkPill = ({ chainIds }) => {
         scaleTo={0.96}
         onPress={() => {}}
         testID={'available-networks-v2'}
+        paddingTop="8px"
+        marginRight={{ custom: -2 }}
       >
         <Box
-          borderRadius={99}
-          paddingVertical="8px"
-          paddingHorizontal="12px"
-          justifyContent="center"
+          flexDirection="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          width="100%"
         >
-          <RadialGradient
-            {...radialGradientProps}
-            // @ts-expect-error overloaded props RadialGradient
-            borderRadius={99}
-            radius={600}
-          />
-          <Inline alignVertical="center" width="100%">
-            <Box style={{ flexDirection: 'row' }}>
-              {availableNetworks?.map((network, index) => {
+          {availableNetworks.length > 1 ? (
+            <>
+              {availableNetworks.map((network, index) => {
                 return (
                   <Box
-                    background="body (Deprecated)"
                     key={`availableNetwork-${network}`}
-                    marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                    marginTop={{ custom: -2 }}
+                    marginLeft={{ custom: index > 0 ? -6 : 0 }}
                     style={{
+                      position: 'relative',
                       backgroundColor: colors.transparent,
-                      zIndex: availableNetworks?.length - index,
+                      zIndex: availableNetworks.length - index,
                       borderRadius: 30,
+                      borderWidth: 2,
+                      borderColor: 'white',
                     }}
                   >
                     {network !== Network.mainnet ? (
@@ -197,26 +196,36 @@ const NetworkPill = ({ chainIds }) => {
                   </Box>
                 );
               })}
-            </Box>
+            </>
+          ) : (
+            <Inline alignVertical="center">
+              {availableNetworks[0] !== Network.mainnet ? (
+                <ChainBadge
+                  assetType={availableNetworks[0]}
+                  position="relative"
+                  size="small"
+                />
+              ) : (
+                <CoinIcon
+                  address={ETH_ADDRESS}
+                  size={20}
+                  symbol={ETH_SYMBOL}
+                  type={AssetType.token}
+                />
+              )}
 
-            <Box paddingHorizontal="12px">
-              <Text
-                color="secondary60 (Deprecated)"
-                size="14px / 19px (Deprecated)"
-                weight="semibold"
-                numberOfLines={2}
-              >
-                {lang.t(
-                  availableNetworks.length > 1
-                    ? lang.l.walletconnect.requesting_networks
-                    : lang.l.walletconnect.requesting_network,
-                  {
-                    num: availableNetworks?.length,
-                  }
-                )}
-              </Text>
-            </Box>
-          </Inline>
+              <Box paddingLeft="6px">
+                <Text
+                  color="primary (Deprecated)"
+                  numberOfLines={1}
+                  size="18px / 27px (Deprecated)"
+                  weight="bold"
+                >
+                  {networkInfo[availableNetworks[0]].name}
+                </Text>
+              </Box>
+            </Inline>
+          )}
         </Box>
       </Box>
     </ContextMenuButton>
@@ -520,10 +529,12 @@ export default function WalletConnectApprovalSheet() {
               weight="heavy"
             />
           </SheetActionButtonRow>
-          <Row justify="space-between" paddingBottom={8} paddingHorizontal={24}>
-            <Column
-              style={{ flex: 1, marginRight: isWalletConnectV2 ? 0 : 16 }}
-            >
+          <Row
+            justify="space-between"
+            paddingBottom={21}
+            paddingHorizontal={24}
+          >
+            <Column style={{ marginRight: 16 }}>
               <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
               <ButtonPressAnimation
                 onPress={handlePressChangeWallet}
@@ -562,13 +573,20 @@ export default function WalletConnectApprovalSheet() {
                 )}
               </ButtonPressAnimation>
             </Column>
-            {isWalletConnectV2 ? null : (
-              <Column>
-                <Flex justify="end">
-                  <SwitchText align="right">
-                    {lang.t('wallet.network_title')}
-                  </SwitchText>
-                </Flex>
+
+            <Column>
+              <Flex justify="end">
+                <SwitchText align="right">
+                  {chainIds.length > 1
+                    ? lang.t(lang.l.walletconnect.approval_sheet_networks, {
+                        length: chainIds.length,
+                      })
+                    : lang.t(lang.l.walletconnect.approval_sheet_network)}
+                </SwitchText>
+              </Flex>
+              {isWalletConnectV2 ? (
+                <NetworkPill chainIds={chainIds} />
+              ) : (
                 <NetworkSwitcherParent
                   activeOpacity={0}
                   isMenuPrimaryAction
@@ -612,14 +630,9 @@ export default function WalletConnectApprovalSheet() {
                       )}
                   </ButtonPressAnimation>
                 </NetworkSwitcherParent>
-              </Column>
-            )}
+              )}
+            </Column>
           </Row>
-          {isWalletConnectV2 && (
-            <Row paddingBottom={21} paddingHorizontal={24}>
-              <NetworkPill chainIds={chainIds} />
-            </Row>
-          )}
         </Flex>
       )}
     </Sheet>
