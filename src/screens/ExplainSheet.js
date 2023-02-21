@@ -383,7 +383,7 @@ export const explainers = (params, colors) => ({
   },
   pooly_app_icon: {
     logo: <PoolyAppIcon />,
-    extraHeight: -65,
+    extraHeight: -90,
     text: POOLY_APP_ICON_EXPLAINER,
     title: lang.t('explain.icon_unlock.title', { partner: 'Pooly' }),
     button: {
