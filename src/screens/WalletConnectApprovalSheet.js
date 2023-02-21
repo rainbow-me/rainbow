@@ -46,6 +46,7 @@ import { position } from '@/styles';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
+import TruncatedText from '@/components/text/TruncatedText';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -534,7 +535,7 @@ export default function WalletConnectApprovalSheet() {
             paddingBottom={21}
             paddingHorizontal={24}
           >
-            <Column style={{ marginRight: 16 }}>
+            <Column style={{ flex: 1, marginRight: 16, maxWidth: 110 }}>
               <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
               <ButtonPressAnimation
                 onPress={handlePressChangeWallet}
@@ -564,13 +565,14 @@ export default function WalletConnectApprovalSheet() {
                       />
                     )}
                   </AvatarWrapper>
-                  <LabelText position="relative">
+                  <LabelText position="relative" ellipsizeMode="middle">
                     {approvalAccountInfo.accountLabel}
                   </LabelText>
+
+                  {type === WalletConnectApprovalSheetType.connect && (
+                    <LabelText> 􀁰</LabelText>
+                  )}
                 </Flex>
-                {type === WalletConnectApprovalSheetType.connect && (
-                  <LabelText> 􀁰</LabelText>
-                )}
               </ButtonPressAnimation>
             </Column>
 
