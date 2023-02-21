@@ -72,9 +72,7 @@ export default function ProfileSheet() {
   const {
     dominantColor,
     loading: dominantColorLoading,
-  } = usePersistentDominantColorFromImage({
-    url: avatar?.imageUrl,
-  });
+  } = usePersistentDominantColorFromImage(avatar?.imageUrl);
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,

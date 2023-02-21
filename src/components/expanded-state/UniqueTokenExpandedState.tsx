@@ -358,9 +358,8 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    usePersistentDominantColorFromImage({
-      url: asset.lowResUrl,
-    }).dominantColor ?? colors.paleBlue;
+    usePersistentDominantColorFromImage(asset.lowResUrl).dominantColor ??
+    colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);

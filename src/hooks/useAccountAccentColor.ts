@@ -5,9 +5,9 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 export function useAccountAccentColor() {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
-  const { dominantColor, loading } = usePersistentDominantColorFromImage({
-    url: accountImage,
-  });
+  const { dominantColor, loading } = usePersistentDominantColorFromImage(
+    accountImage
+  );
 
   const { colors } = useTheme();
   let accentColor = colors.appleBlue;

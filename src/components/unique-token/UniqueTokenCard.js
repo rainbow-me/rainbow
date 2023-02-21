@@ -38,7 +38,7 @@ const UniqueTokenCard = ({
   ...props
 }) => {
   usePersistentAspectRatio(item.lowResUrl);
-  usePersistentDominantColorFromImage({ url: item.lowResUrl });
+  usePersistentDominantColorFromImage(item.lowResUrl);
 
   const isSVG = isSVGImage(item.image_url);
 

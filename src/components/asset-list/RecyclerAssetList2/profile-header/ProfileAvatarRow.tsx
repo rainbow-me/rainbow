@@ -45,9 +45,7 @@ export function ProfileAvatarRow({
     onSelectionCallback,
   } = useOnAvatarPress({ screenType: 'wallet' });
 
-  const { dominantColor } = usePersistentDominantColorFromImage({
-    url: accountImage,
-  });
+  const { dominantColor } = usePersistentDominantColorFromImage(accountImage);
 
   // ////////////////////////////////////////////////////
   // Context Menu
