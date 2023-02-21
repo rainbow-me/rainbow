@@ -6,7 +6,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
 import { pickShallow } from '@/helpers/utilities';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
 import isSVGImage from '@/utils/isSVG';
@@ -172,7 +172,6 @@ export const parseAccountUniqueTokens = data => {
             asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
               ? asset.name
               : `${asset_contract?.address}_${token_id}`,
-          urlSuffixForAsset: `${asset_contract?.address}/${token_id}`,
         };
       }
     )
@@ -254,7 +253,6 @@ export const parseAccountUniqueTokensPolygon = data => {
         permalink: asset.permalink,
         type: AssetTypes.nft,
         uniqueId: `${Network.polygon}_${asset_contract?.address}_${token_id}`,
-        urlSuffixForAsset: `${asset_contract?.address}/${token_id}`,
       };
     })
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
@@ -294,11 +292,10 @@ const getNetworkFromSimplehashNft = simplehashNft => {
 export const parseSimplehashNfts = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
-
     const { imageUrl, lowResUrl } = handleAndSignImages(
       simplehashNft.image_url,
       simplehashNft.extra_metadata?.image_original_url,
-      simplehashNft.previews.image_small_url
+      simplehashNft?.previews?.image_small_url
     );
 
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
@@ -313,6 +310,7 @@ export const parseSimplehashNfts = nftData => {
       },
       background: simplehashNft.background_color,
       collection: {
+        collection_id: collection.collection_id,
         description: collection.description,
         discord_url: collection.discord_url,
         external_url: collection.external_url,
@@ -325,17 +323,22 @@ export const parseSimplehashNfts = nftData => {
       description: simplehashNft.description,
       external_link: simplehashNft.external_url,
       familyImage: collection.image_url,
-      familyName: collection.name,
+      familyName:
+        simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
+          ? 'ENS'
+          : collection.name,
       fullUniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
       id: simplehashNft.token_id,
       image_original_url: simplehashNft.extra_metadata?.image_original_url,
       image_preview_url: lowResUrl,
       image_thumbnail_url: lowResUrl,
       image_url: imageUrl,
-      isPoap: false,
-      isSendable: false,
-      lastPrice: parseLastSalePrice(simplehashNft.last_sale?.unit_price),
-      lastSalePaymentToken: simplehashNft.last_sale?.payment_token?.symbol,
+      isPoap: simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+      isSendable:
+        simplehashNft.chain === 'ethereum' &&
+        (simplehashNft.contract.type === 'ERC721' ||
+          simplehashNft.contract.type === 'ERC1155'),
+      lastSale: simplehashNft.last_sale,
       lowResUrl,
       marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
       marketplaceId: marketplaceInfo?.marketplaceId,
@@ -346,7 +349,6 @@ export const parseSimplehashNfts = nftData => {
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
-      urlSuffixForAsset: `${simplehashNft.contract_address}/${simplehashNft.token_id}`,
     };
     return parsedNft;
   });

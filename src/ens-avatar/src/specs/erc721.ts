@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
-import { getNftByTokenId } from '@/handlers/simplehash';
+import { fetchSimplehashNft } from '@/handlers/simplehash';
 import svgToPngIfNeeded from '@/handlers/svgs';
 
 const abi = [
@@ -48,7 +48,7 @@ export default class ERC721 {
     }
 
     try {
-      const data = await getNftByTokenId({ contractAddress, tokenId: tokenID });
+      const data = await fetchSimplehashNft(contractAddress, tokenID);
       image = svgToPngIfNeeded(data?.previews?.image_medium_url, false);
     } catch (error) {
       throw new Error('no image found');

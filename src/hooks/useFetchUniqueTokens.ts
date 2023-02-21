@@ -11,7 +11,7 @@ import {
 } from '@/handlers/localstorage/accountLocal';
 import { Network } from '@/helpers/networkTypes';
 import {
-  fetchRawUniqueTokens,
+  fetchSimplehashNfts,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/simplehash';
@@ -67,7 +67,7 @@ export default function useFetchUniqueTokens({
       let uniqueTokens = storedTokens;
       if (!hasStoredTokens) {
         const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
-          fetchRawUniqueTokens(address as string),
+          fetchSimplehashNfts(address as string),
           fetchPolygonAllowlist(),
         ]);
         const { rawNftData, nextCursor } = uniqueTokensResponse;
@@ -105,8 +105,8 @@ export default function useFetchUniqueTokens({
       const [uniqueTokensResponse, polygonAllowlist] = await Promise.all([
         // if there's no cursor set, that means we still need to fetch the first page
         cursor
-          ? fetchRawUniqueTokens(address as string, cursor)
-          : fetchRawUniqueTokens(address as string),
+          ? fetchSimplehashNfts(address as string, cursor)
+          : fetchSimplehashNfts(address as string),
         fetchPolygonAllowlist(),
       ]);
       const { rawNftData, nextCursor } = uniqueTokensResponse;

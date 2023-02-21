@@ -1,7 +1,6 @@
 import { UniqueAsset } from '@/entities';
+import { POAP_NFT_ADDRESS } from '@/references';
 import { Network } from './networkTypes';
-
-const POAP_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 
 export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
   nfts.filter((nft: UniqueAsset) => {
@@ -14,7 +13,7 @@ export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
     if (
       nft.network === Network.gnosis &&
       nft.asset_contract &&
-      nft?.asset_contract?.address?.toLowerCase() !== POAP_ADDRESS
+      nft?.asset_contract?.address?.toLowerCase() !== POAP_NFT_ADDRESS
     )
       return false;
 

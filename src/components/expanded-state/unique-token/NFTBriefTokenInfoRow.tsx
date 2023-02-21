@@ -7,13 +7,14 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import {
-  convertAmountToNativeDisplay,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { UniqueAsset } from '@/entities';
-import { SimplehashFloorPrice } from '@/entities/uniqueAssets';
+import {
+  SimplehashFloorPrice,
+  SimplehashLastSale,
+} from '@/entities/uniqueAssets';
+import { fetchSimplehashNftCollectionListings } from '@/handlers/simplehash';
 
 const NONE = 'None';
 const OPENSEA_MARKETPLACE_ID = 'opensea';
@@ -28,6 +29,32 @@ const getIsFloorPriceSupported = (network: Network) => {
   }
 };
 
+const getRoundedValueFromRawAmount = (
+  rawAmount: number | null | undefined,
+  decimals: number | null | undefined
+) => {
+  if (rawAmount && decimals) {
+    return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
+  }
+  return null;
+};
+
+const getLastSaleString = (lastSale: SimplehashLastSale | null) => {
+  const value = getRoundedValueFromRawAmount(
+    lastSale?.unit_price,
+    lastSale?.payment_token?.decimals
+  );
+  if (value !== null) {
+    const tokenSymbol = lastSale?.payment_token?.symbol;
+    if (value === 0) {
+      return `< 0.001 ${tokenSymbol}`;
+    } else {
+      return `${value} ${tokenSymbol}`;
+    }
+  }
+  return NONE;
+};
+
 const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
   if (getIsFloorPriceSupported(asset?.network)) {
     const floorPrices = asset?.collection?.floor_prices;
@@ -38,10 +65,13 @@ const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
     if (
       openSeaFloorPrice?.payment_token.payment_token_id === ETH_PAYMENT_TOKEN_ID
     ) {
-      const numericValue =
-        openSeaFloorPrice.value *
-        10 ** -openSeaFloorPrice?.payment_token.decimals;
-      return `${handleSignificantDecimals(numericValue, 5)} ETH`;
+      const roundedValue = getRoundedValueFromRawAmount(
+        openSeaFloorPrice.value,
+        openSeaFloorPrice?.payment_token.decimals
+      );
+      if (roundedValue) {
+        return `${roundedValue} ETH`;
+      }
     }
   }
   return NONE;
@@ -52,7 +82,10 @@ export default function NFTBriefTokenInfoRow({
 }: {
   asset: UniqueAsset;
 }) {
-  const { currentPrice, lastPrice, lastSalePaymentToken } = asset;
+  // TODO
+  const currentPrice = null;
+
+  fetchSimplehashNftCollectionListings(asset?.collection?.collection_id);
 
   const { colors } = useTheme();
 
@@ -80,12 +113,7 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const lastSalePrice =
-    lastPrice != null
-      ? lastPrice === 0
-        ? `< 0.001 ${lastSalePaymentToken}`
-        : `${lastPrice} ${lastSalePaymentToken}`
-      : NONE;
+  const lastSalePrice = getLastSaleString(asset?.lastSale);
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (

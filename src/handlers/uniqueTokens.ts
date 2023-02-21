@@ -12,7 +12,7 @@ import {
   saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
 import {
-  fetchRawUniqueTokens,
+  fetchSimplehashNfts,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/simplehash';
@@ -32,7 +32,7 @@ export const fetchAllUniqueTokens = async (
   network: Network
 ) => {
   const [newUniqueTokensResponse, polygonAllowlist] = await Promise.all([
-    fetchRawUniqueTokens(address),
+    fetchSimplehashNfts(address),
     fetchPolygonAllowlist(),
   ]);
 
@@ -49,14 +49,16 @@ export const fetchAllUniqueTokens = async (
 
   while (shouldFetchMore) {
     // eslint-disable-next-line no-await-in-loop
-    const { rawNftData, nextCursor } = await fetchRawUniqueTokens(
+    const { rawNftData, nextCursor } = await fetchSimplehashNfts(
       address,
       cursor
     );
+
     const newUniqueTokens = filterNfts(
       parseSimplehashNfts(rawNftData),
       polygonAllowlist
     );
+
     uniqueTokens = [...uniqueTokens, ...newUniqueTokens];
     cursor = nextCursor;
 

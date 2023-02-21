@@ -9,17 +9,34 @@ interface UniqueAssetLastSale {
   };
 }
 
-interface SimplehashPaymentToken {
+// https://docs.simplehash.com/reference/floor-price-model
+export interface SimplehashPaymentToken {
   payment_token_id: string;
   name: string | null;
   symbol: string | null;
   address: string | null;
   decimals: number;
 }
+// https://docs.simplehash.com/reference/floor-price-model
 export interface SimplehashFloorPrice {
   marketplace_id: string;
   value: number;
   payment_token: SimplehashPaymentToken;
+}
+
+// https://docs.simplehash.com/reference/sale-model
+export interface SimplehashLastSale {
+  from_address: string | null;
+  to_address: string | null;
+  quantity: number | null;
+  timestamp: string;
+  transaction: string;
+  marketplace_id: string;
+  marketplace_name: string;
+  is_bundle_sale: boolean;
+  payment_token: SimplehashPaymentToken | null;
+  unit_price: number | null;
+  total_price: number | null;
 }
 
 export interface UniqueAsset {
@@ -37,6 +54,7 @@ export interface UniqueAsset {
   asset_contract: AssetContract;
   background: string | null;
   collection: {
+    collection_id: string | null;
     description?: string | null;
     discord_url?: string | null;
     external_url?: string | null;
@@ -50,15 +68,11 @@ export interface UniqueAsset {
     twitter_username?: string | null;
     wiki_link?: string | null;
   };
-  currentPrice: number | null;
   familyImage: string | null | undefined;
   familyName: string | null | undefined;
   id: string;
   isSendable: boolean;
-  lastPrice: number | null;
-  lastPriceUsd: string | undefined | null;
-  lastSale: UniqueAssetLastSale | undefined;
-  lastSalePaymentToken: string | undefined | null;
+  lastSale: SimplehashLastSale | null;
   lowResUrl: string | undefined | null;
   marketplaceCollectionUrl?: string | null;
   marketplaceId: string | null;
@@ -70,7 +84,6 @@ export interface UniqueAsset {
    * @description a computed unique value comprised of <network>_<address>_<token_id>
    */
   fullUniqueId: string;
-  urlSuffixForAsset: string;
   isPoap?: boolean;
   network: Network;
   seaport_sell_orders?: SeaportOrder[];

@@ -80,15 +80,11 @@ const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
 
-export async function getNftByTokenId({
-  chain = chains.ethereum,
-  contractAddress,
-  tokenId,
-}: {
-  chain?: SimpleHashChain;
-  contractAddress: string;
-  tokenId: string;
-}) {
+export async function fetchSimplehashNft(
+  contractAddress: string,
+  tokenId: string,
+  chain: SimpleHashChain = chains.ethereum
+) {
   try {
     const response = await simplehashApi.get(
       `/v0/nfts/${chain}/${contractAddress}/${tokenId}`,
@@ -111,7 +107,7 @@ export async function getNftByTokenId({
   }
 }
 
-export async function fetchRawUniqueTokens(
+export async function fetchSimplehashNfts(
   walletAddress: string,
   cursor: string = START_CURSOR
 ) {
@@ -145,4 +141,30 @@ export async function fetchRawUniqueTokens(
     captureException(error);
   }
   return { rawNftData, nextCursor };
+}
+
+export async function fetchSimplehashNftCollectionListings(
+  collectionId: string
+) {
+  try {
+    const response = await simplehashApi.get(
+      // opensea only for now
+      `/v0/nfts/listings/collection/${collectionId}?marketplaces=opensea`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': SIMPLEHASH_API_KEY,
+        },
+      }
+    );
+    console.log('response', response);
+  } catch (error) {
+    logger.error(
+      new RainbowError(
+        `Error fetching simplehash nft collection listings for collectionId: ${collectionId} - ${error}`
+      )
+    );
+    captureException(error);
+  }
 }
