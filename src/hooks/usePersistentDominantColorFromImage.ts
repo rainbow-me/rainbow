@@ -1,16 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
-import { MMKV, useMMKVString } from 'react-native-mmkv';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { getDominantColorFromImage } from '@/utils';
 import { maybeSignUri } from '@/handlers/imgix';
 import usePrevious from './usePrevious';
-
-enum State {
-  init,
-  loading,
-  loaded,
-  failed,
-}
 
 const DEFAULT_MMKV_KEY = 'DEFAULT_MMKV_KEY';
 const NOT_DEFINED_MMKV_VALUE = 'NOT_DEFINED';
@@ -23,75 +16,81 @@ storage.set(DEFAULT_MMKV_KEY, NOT_DEFINED_MMKV_VALUE);
 const DEFAULT_COLOR_TO_MEASURE_AGAINST = '#333333';
 const DEFAULT_SIZE_FOR_COLOR_PROBING = 80;
 
-type Result = {
-  result: string | undefined;
-  state: State;
-};
-
-type ConfigOptions = {
-  colorToMeasureAgainst?: string;
-  signUrl?: boolean;
-};
-export default function usePersistentDominantColorFromImage(
+export function usePersistentDominantColorFromImage(
   url: string | undefined | null,
-  options: ConfigOptions = {
-    colorToMeasureAgainst: DEFAULT_COLOR_TO_MEASURE_AGAINST,
-    signUrl: false,
-  }
-): Result {
+  colorToMeasureAgainst = DEFAULT_COLOR_TO_MEASURE_AGAINST
+) {
   const previousUrl = usePrevious(url);
-  const { colorToMeasureAgainst: passedColor, signUrl } = options;
-  const externalUrl = useMemo(
-    () =>
-      signUrl && url
-        ? maybeSignUri(url, { w: DEFAULT_SIZE_FOR_COLOR_PROBING })
-        : url,
-    [signUrl, url]
+  const didInitialize = useRef(false);
+  const externalUrl = useMemo(() => {
+    if (url) {
+      return maybeSignUri(url, { w: DEFAULT_SIZE_FOR_COLOR_PROBING });
+    }
+    return undefined;
+  }, [url]);
+  const currentCachedValue = storage.getString(url || DEFAULT_MMKV_KEY);
+  const [dominantColor, setDominantColor] = useState(
+    currentCachedValue !== NOT_DEFINED_MMKV_VALUE
+      ? currentCachedValue
+      : undefined
   );
-  const colorToMeasureAgainst = passedColor ?? DEFAULT_COLOR_TO_MEASURE_AGAINST;
-  const [dominantColor, setPersistentDominantColor] = useMMKVString(
-    url || DEFAULT_MMKV_KEY,
-    storage
-  );
-  // This is the most recent value saved in MMKV store, we can't use the value from the hook
-  // because it's updated a cycle behind due to onChange listener and useState usage
-  const currentStoreValue = storage.getString(url || DEFAULT_MMKV_KEY);
-  const [state, setState] = useState<State>(
-    currentStoreValue !== NOT_DEFINED_MMKV_VALUE ? State.loaded : State.init
-  );
+  const [loading, setLoading] = useState(currentCachedValue === undefined);
+
+  const checkIfCacheExistsAndSetColor = useCallback((): boolean => {
+    if (currentCachedValue && currentCachedValue !== NOT_DEFINED_MMKV_VALUE) {
+      setDominantColor(currentCachedValue);
+      setLoading(false);
+      return true;
+    }
+    return false;
+  }, [currentCachedValue]);
+
+  const fetchAndSetColor = useCallback(() => {
+    if (!url || !externalUrl) {
+      setDominantColor(undefined);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    getDominantColorFromImage(externalUrl, colorToMeasureAgainst)
+      .then(color => {
+        setDominantColor(color);
+        setLoading(false);
+        // We use original URL as a cache key
+        storage.set(url, color);
+      })
+      .catch(() => {
+        setDominantColor(undefined);
+        setLoading(false);
+      });
+  }, [colorToMeasureAgainst, externalUrl, url]);
 
   useEffect(() => {
-    if (
-      currentStoreValue !== NOT_DEFINED_MMKV_VALUE &&
-      currentStoreValue !== undefined
-    ) {
-      setState(State.loaded);
-    } else if (externalUrl && (state === State.init || url !== previousUrl)) {
-      setState(State.loading);
-      getDominantColorFromImage(externalUrl, colorToMeasureAgainst)
-        .then(color => {
-          setPersistentDominantColor(color);
-          setState(State.loaded);
-        })
-        .catch(() => {
-          setState(State.failed);
-        });
+    if (!url || !externalUrl) {
+      setDominantColor(undefined);
+      setLoading(false);
+      return;
+    }
+    if (!didInitialize.current || url !== previousUrl) {
+      didInitialize.current = true;
+      const alreadyCached = checkIfCacheExistsAndSetColor();
+      if (!alreadyCached) {
+        fetchAndSetColor();
+      }
     }
   }, [
-    colorToMeasureAgainst,
+    checkIfCacheExistsAndSetColor,
     externalUrl,
-    setPersistentDominantColor,
-    state,
-    url,
+    fetchAndSetColor,
     previousUrl,
+    url,
   ]);
 
   return useMemo(
     () => ({
-      result:
-        dominantColor === NOT_DEFINED_MMKV_VALUE ? undefined : dominantColor,
-      state,
+      dominantColor,
+      loading,
     }),
-    [state, dominantColor]
+    [dominantColor, loading]
   );
 }

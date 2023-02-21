@@ -3,13 +3,11 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
-import {
-  usePersistentAspectRatio,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
 import isSVGImage from '@/utils/isSVG';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -40,7 +38,7 @@ const UniqueTokenCard = ({
   ...props
 }) => {
   usePersistentAspectRatio(item.lowResUrl);
-  usePersistentDominantColorFromImage(item.lowResUrl);
+  usePersistentDominantColorFromImage({ url: item.lowResUrl });
 
   const isSVG = isSVGImage(item.image_url);
 

@@ -33,7 +33,6 @@ export default function ProfileCover({
   const showSkeleton = isLoading || !isFetched;
   const showRadialGradient = ios && !coverUrl && isFetched && !isLoading;
 
-  console.log('coverUrl: ', coverUrl);
   return (
     <>
       {showSkeleton && (

@@ -19,7 +19,6 @@ import {
   useDimensions,
   useENSAvatar,
   useExternalWalletSectionsData,
-  usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
@@ -27,6 +26,7 @@ import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -69,12 +69,12 @@ export default function ProfileSheet() {
     [profileAddress]
   );
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    avatar?.imageUrl,
-    {
-      signUrl: true,
-    }
-  );
+  const {
+    dominantColor,
+    loading: dominantColorLoading,
+  } = usePersistentDominantColorFromImage({
+    url: avatar?.imageUrl,
+  });
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
@@ -83,7 +83,7 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isAvatarFetched && state !== 1 && typeof colorIndex === 'number'
+    isAvatarFetched && !dominantColorLoading && typeof colorIndex === 'number'
       ? dominantColor ||
         colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue
