@@ -24,7 +24,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 // @ts-ignore ts is complaining about this import
 import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';

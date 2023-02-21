@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import AddCashSheet from '../screens/AddCashSheet';
+import { AddCashSheet } from '../screens/AddCash';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -67,6 +67,7 @@ import {
   opRewardsSheetConfig,
 } from './config';
 import {
+  addCashSheet,
   emojiPreset,
   emojiPresetWallet,
   overlayExpandedPreset,
@@ -110,25 +111,6 @@ function SendFlowNavigator() {
   );
 }
 
-function AddCashFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
 
@@ -153,6 +135,11 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER_WALLET}
         options={emojiPresetWallet}
+      />
+      <Stack.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
+        options={addCashSheet}
       />
     </Stack.Navigator>
   );
@@ -424,10 +411,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
-        component={AddCashFlowNavigator}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
