@@ -88,6 +88,6 @@ export const PoolyIcon: UnlockableAppIcon = {
   key: 'pooly',
   explainSheetType: 'pooly_app_icon',
   network: Network.mainnet,
-  unlockingNfts: [ZORA_NFT_ADDRESS],
+  unlockingNfts: [POOLY_NFT_ADDRESS],
   unlockKey: 'pooly_nft_app_icon',
 };
