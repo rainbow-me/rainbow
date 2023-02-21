@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
@@ -42,11 +41,9 @@ import { Network } from '@/helpers';
 import { Box, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
-import { position } from '@/styles';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
-import TruncatedText from '@/components/text/TruncatedText';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -100,16 +97,6 @@ const SwitchText = ({ children, ...props }) => {
 
 const NetworkPill = ({ chainIds }) => {
   const { colors } = useTheme();
-
-  const radialGradientProps = {
-    center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
-    pointerEvents: 'none',
-    style: {
-      ...position.coverAsObject,
-      overflow: 'hidden',
-    },
-  };
 
   const availableNetworks = useMemo(() => {
     // we dont want to show mainnet
