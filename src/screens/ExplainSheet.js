@@ -20,6 +20,7 @@ import { AccentColorProvider, Box } from '@/design-system';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
+import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -132,6 +133,22 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const PoolyAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.poolyPurple}>
+      <Box
+        as={ImgixImage}
+        source={AppIconPooly}
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
@@ -287,6 +304,8 @@ const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 
+const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -360,6 +379,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.dogeGold,
       bgColor: colors?.dogeGold06,
+    },
+  },
+  pooly_app_icon: {
+    logo: <PoolyAppIcon />,
+    extraHeight: -65,
+    text: POOLY_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'Pooly' }),
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.poolyPurple,
+      bgColor: colors?.poolyPurple06,
     },
   },
   smol_app_icon: {

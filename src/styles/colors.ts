@@ -130,6 +130,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     paleBlue: '#579DFF', // 87, 157, 255
     pink: '#FF54BB', // 255, 84, 187
     pinkLight: '#FF75E8', // '255, 117, 232'
+    poolyPurple: '#6434C4', // '100, 52, 196'
+    poolyPurple06: 'rgba(100, 52, 196, 0.06)',
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
