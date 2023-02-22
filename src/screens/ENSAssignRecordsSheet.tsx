@@ -133,7 +133,7 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarImage =
     avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { dominantColor } = usePersistentDominantColorFromImage(avatarImage);
+  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall

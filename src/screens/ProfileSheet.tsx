@@ -69,10 +69,7 @@ export default function ProfileSheet() {
     [profileAddress]
   );
 
-  const {
-    dominantColor,
-    loading: dominantColorLoading,
-  } = usePersistentDominantColorFromImage(avatar?.imageUrl);
+  const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
@@ -81,7 +78,7 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isAvatarFetched && !dominantColorLoading && typeof colorIndex === 'number'
+    isAvatarFetched && typeof colorIndex === 'number'
       ? dominantColor ||
         colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue

@@ -79,7 +79,7 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;
 
-  const { dominantColor } = usePersistentDominantColorFromImage(avatarUrl);
+  const dominantColor = usePersistentDominantColorFromImage(avatarUrl);
 
   const accentColor =
     dominantColor || color || colors.avatarBackgrounds[colorIndex || 0];

@@ -45,7 +45,7 @@ export function ProfileAvatarRow({
     onSelectionCallback,
   } = useOnAvatarPress({ screenType: 'wallet' });
 
-  const { dominantColor } = usePersistentDominantColorFromImage(accountImage);
+  const dominantColor = usePersistentDominantColorFromImage(accountImage);
 
   // ////////////////////////////////////////////////////
   // Context Menu
@@ -68,7 +68,7 @@ export function ProfileAvatarRow({
 
   let accentColor = colors.skeleton;
   if (accountImage) {
-    accentColor = dominantColor || colors.skeleton;
+    accentColor = dominantColor || colors.appleBlue;
   } else if (typeof accountColor === 'number') {
     accentColor = colors.avatarBackgrounds[accountColor];
   }
