@@ -3,7 +3,7 @@ import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import useFetchUniqueTokens from './useFetchUniqueTokens';
-import { buildBriefUniqueTokenList } from '@/helpers/assets';
+import { buildBriefUniqueTokenList } from '@/utils/assets';
 
 export default function useExternalWalletSectionsData({
   address,

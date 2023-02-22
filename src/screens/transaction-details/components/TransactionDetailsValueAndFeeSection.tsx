@@ -10,8 +10,7 @@ import { Box, Stack } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
 import { AssetTypes, TransactionType } from '@/entities';
-import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
+import { ethereumUtils, Network } from '@/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 

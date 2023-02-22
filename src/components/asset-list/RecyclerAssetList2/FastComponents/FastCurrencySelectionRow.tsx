@@ -14,10 +14,9 @@ import FastCoinIcon from './FastCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils, ethereumUtils, Network } from '@/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View

@@ -30,14 +30,14 @@ import {
 } from 'react-native-dotenv';
 import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
 import logger from 'logger';
-import networkTypes, { Network } from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
-import { ethereumUtils } from '@/utils';
 import { ETH_ADDRESS } from '@/references';
 import store from '@/redux/store';
 import { useUpdateAssetOnchainBalance } from '@/hooks';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
+import networkTypes, { Network } from '@/utils/networkTypes';
+import ethereumUtils from '@/utils/ethereumUtils';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';

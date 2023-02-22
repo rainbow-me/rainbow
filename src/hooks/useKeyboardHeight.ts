@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import KeyboardTypes from '@/helpers/keyboardTypes';
+import KeyboardTypes from '@/utils/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
 

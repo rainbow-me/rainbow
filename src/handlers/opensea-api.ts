@@ -7,12 +7,12 @@ import {
   NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import NetworkTypes, { Network } from '@/helpers/networkTypes';
+import NetworkTypes, { Network } from '@/utils/networkTypes';
 import {
   parseAccountUniqueTokens,
   parseAccountUniqueTokensPolygon,
 } from '@/parsers';
-import { handleSignificantDecimals } from '@/helpers/utilities';
+import { handleSignificantDecimals } from '@/utils/utilities';
 import logger from '@/utils/logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;

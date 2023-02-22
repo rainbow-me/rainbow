@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
+import { convertAmountToPercentageDisplay } from '@rainbow-me/utils/utilities';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';

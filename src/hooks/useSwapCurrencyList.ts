@@ -17,7 +17,7 @@ import {
 } from '@/entities';
 import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
-import tokenSectionTypes from '@/helpers/tokenSectionTypes';
+import tokenSectionTypes from '@/utils/tokenSectionTypes';
 import {
   DAI_ADDRESS,
   erc20ABI,
@@ -27,9 +27,14 @@ import {
   WBTC_ADDRESS,
   WETH_ADDRESS,
 } from '@/references';
-import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
+import {
+  ethereumUtils,
+  filterList,
+  isLowerCaseMatch,
+  logger,
+  Network,
+} from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
-import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 

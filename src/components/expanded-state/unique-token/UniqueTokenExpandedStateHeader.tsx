@@ -3,7 +3,7 @@ import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import URL from 'url-parse';
-import { buildUniqueTokenName } from '../../../helpers/assets';
+import { buildUniqueTokenName } from '@rainbow-me/utils/assets';
 import { ButtonPressAnimation } from '../../animations';
 import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -19,7 +19,6 @@ import {
   Text,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
 import {
   useClipboard,
   useDimensions,
@@ -31,7 +30,12 @@ import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import {
+  Network,
+  ethereumUtils,
+  magicMemo,
+  showActionSheetWithOptions,
+} from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 

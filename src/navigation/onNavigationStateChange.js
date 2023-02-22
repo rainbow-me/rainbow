@@ -4,7 +4,7 @@ import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
-import { StatusBarHelper } from '@/helpers';
+import { StatusBarHelper } from '@/utils';
 import { analytics } from '@/analytics';
 import { currentColors } from '@/theme';
 

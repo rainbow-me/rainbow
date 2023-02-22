@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import RainbowContextWrapper from '../../helpers/RainbowContext';
+import RainbowContextWrapper from '@rainbow-me/utils/RainbowContext';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import {
   Box,

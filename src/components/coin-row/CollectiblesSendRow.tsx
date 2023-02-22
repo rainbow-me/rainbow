@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback } from 'react-native';
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { buildAssetUniqueIdentifier } from '@rainbow-me/utils/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
 import Divider from '../Divider';

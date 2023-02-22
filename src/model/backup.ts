@@ -10,8 +10,8 @@ import {
   encryptAndSaveDataToCloud,
   getDataFromCloud,
 } from '../handlers/cloudBackup';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import WalletTypes from '../helpers/walletTypes';
+import WalletBackupTypes from '@rainbow-me/utils/walletBackupTypes';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import {
   allWalletsKey,
   privateKeyKey,

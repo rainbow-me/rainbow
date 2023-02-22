@@ -1,4 +1,4 @@
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/utilities';
 import React, { useReducer } from 'react';
 import { LearnCard } from './LearnCard';
 import {

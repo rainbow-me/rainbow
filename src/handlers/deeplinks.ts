@@ -9,7 +9,7 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import {
   defaultConfig,
@@ -18,11 +18,11 @@ import {
 } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@/handlers/fedora';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/utilities';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
-} from '@/helpers/validators';
+} from '@/utils/validators';
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
 import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';

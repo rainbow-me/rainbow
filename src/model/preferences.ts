@@ -4,7 +4,7 @@ import { EthereumAddress } from '@/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
-} from '@/helpers/signingWallet';
+} from '@/utils/signingWallet';
 import logger from '@/utils/logger';
 
 export enum PreferenceActionType {

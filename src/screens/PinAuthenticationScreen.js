@@ -13,7 +13,7 @@ import {
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { useDimensions, useShakeAnimation } from '@/hooks';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';

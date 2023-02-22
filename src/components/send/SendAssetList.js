@@ -7,8 +7,8 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import { buildCoinsList } from '../../helpers/assets';
-import networkTypes from '../../helpers/networkTypes';
+import { buildCoinsList } from '@rainbow-me/utils/assets';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import { deviceUtils } from '../../utils';
 import Divider, { DividerSize } from '../Divider';
 import { FlyInAnimation } from '../animations';

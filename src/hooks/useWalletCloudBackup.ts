@@ -12,15 +12,15 @@ import {
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
 } from '@/handlers/cloudBackup';
-import { delay } from '@/helpers/utilities';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { delay } from '@/utils/utilities';
+import WalletBackupTypes from '@/utils/walletBackupTypes';
+import { WalletLoadingStates } from '@/utils/walletLoadingStates';
 import logger from '@/utils/logger';
 
 function getUserError(e: Error) {

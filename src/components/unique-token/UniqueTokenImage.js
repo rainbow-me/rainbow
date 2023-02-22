@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { Fragment, useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { buildUniqueTokenName } from '../../helpers/assets';
+import { buildUniqueTokenName } from '@rainbow-me/utils/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';

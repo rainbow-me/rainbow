@@ -4,7 +4,7 @@ import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/utils/ens';
 import { useENSRegistration } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';

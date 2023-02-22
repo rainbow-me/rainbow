@@ -16,7 +16,7 @@ import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '@/utils/emojiHandler';
 import { useClipboard, useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';

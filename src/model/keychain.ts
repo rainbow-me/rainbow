@@ -17,7 +17,7 @@ import {
   setInternetCredentials,
   UserCredentials,
 } from 'react-native-keychain';
-import { delay } from '../helpers/utilities';
+import { delay } from '@rainbow-me/utils/utilities';
 import { logger, RainbowError } from '@/logger';
 
 interface AnonymousKey {

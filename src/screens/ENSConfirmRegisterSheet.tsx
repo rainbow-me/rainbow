@@ -34,7 +34,7 @@ import {
   ENS_SECONDS_WAIT,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 import {
   useAccountProfile,
   useDimensions,

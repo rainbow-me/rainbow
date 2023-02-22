@@ -2,7 +2,7 @@ import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import NetworkTypes from '../helpers/networkTypes';
+import NetworkTypes from '@rainbow-me/utils/networkTypes';
 import { fetchAssetsFromRefraction } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';

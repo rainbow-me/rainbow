@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import ScrollPager from '../helpers/ScrollPager';
+import ScrollPager from '@rainbow-me/utils/ScrollPager';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import ViewPagerAdapter from './ViewPagerAdapter';
 

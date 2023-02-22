@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { TokenInfoItem, TokenInfoValue } from '../../token-info';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { Column, Columns, Inset } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/utils/ens';
 import { useENSAvatar, useENSRegistration } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';

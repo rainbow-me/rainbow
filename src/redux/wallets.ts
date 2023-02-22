@@ -9,8 +9,8 @@ import {
   getWalletNames,
   saveWalletNames,
 } from '../handlers/localstorage/walletNames';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import WalletTypes from '../helpers/walletTypes';
+import WalletBackupTypes from '@rainbow-me/utils/walletBackupTypes';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
 import { PreferenceActionType, setPreference } from '../model/preferences';
@@ -41,7 +41,7 @@ import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { WalletLoadingState } from '@/helpers/walletLoadingStates';
+import { WalletLoadingState } from '@/utils/walletLoadingStates';
 import { lightModeThemeColors } from '@/styles';
 
 // -- Types ---------------------------------------- //

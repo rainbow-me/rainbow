@@ -14,7 +14,7 @@ import usePrevious from './usePrevious';
 import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
@@ -23,9 +23,9 @@ import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
   isValidWallet,
-} from '@/helpers/validators';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+} from '@/utils/validators';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
+import { WalletLoadingStates } from '@/utils/walletLoadingStates';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';

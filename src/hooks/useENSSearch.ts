@@ -10,12 +10,12 @@ import {
   getENSRegistrarControllerContract,
   getNameExpires,
   getRentPrice,
-} from '@/helpers/ens';
-import { Network } from '@/helpers/networkTypes';
+} from '@/utils/ens';
+import { Network } from '@/utils/networkTypes';
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
 
-const formatTime = (timestamp: string, abbreviated: boolean = true) => {
+const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
   return format(new Date(Number(timestamp) * 1000), style);
 };

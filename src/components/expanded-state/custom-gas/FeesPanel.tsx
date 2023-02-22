@@ -13,20 +13,20 @@ import {
 } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../alerts';
-import { useTheme } from '../../../theme/ThemeContext';
+import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../../animations';
 import FeesGweiInput from './FeesGweiInput';
 import {
   calculateMinerTipAddDifference,
   calculateMinerTipSubstDifference,
-} from '@/helpers/gas';
+} from '@/utils/gas';
 import {
   add,
   greaterThan,
   isZero,
   multiply,
   toFixedDecimals,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import {
   useFeesPanelInputRefs,
   useGas,

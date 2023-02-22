@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 

@@ -50,9 +50,9 @@ import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+} from '@/utils/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/utils/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/utils/validators';
 import {
   useAccountSettings,
   useAccountTransactions,

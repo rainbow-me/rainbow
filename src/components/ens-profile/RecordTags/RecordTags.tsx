@@ -16,7 +16,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { Records } from '@/entities';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/utils/ens';
 import { useENSRecordDisplayProperties } from '@/hooks';
 import { useTheme } from '@/theme';
 

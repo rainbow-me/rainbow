@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { EthereumAddress } from '@/entities';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { getAccountProfileInfo } from '@/utils/accountInfo';
 import { AppState } from '@/redux/store';
 import { RainbowWallet } from '@/model/wallet';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
 
 const walletSelector = (state: AppState) => ({
   wallets: state.wallets.wallets,

@@ -9,16 +9,16 @@ import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkInfo from '@/helpers/networkInfo';
+import { getAccountProfileInfo } from '@/utils/accountInfo';
+import { dappLogoOverride, dappNameOverride } from '@/utils/dappNameHandler';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
+import networkInfo from '@/utils/networkInfo';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@/helpers/walletConnectNetworks';
+} from '@/utils/walletConnectNetworks';
 import { useWalletConnectConnections, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

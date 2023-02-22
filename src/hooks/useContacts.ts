@@ -2,7 +2,7 @@ import { sortBy, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import networkTypes from '../helpers/networkTypes';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 import { AppState } from '@/redux/store';
 

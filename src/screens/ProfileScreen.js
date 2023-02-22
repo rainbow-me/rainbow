@@ -5,7 +5,7 @@ import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
 import TransactionList from '../components/transaction-list/TransactionList';
-import NetworkTypes from '../helpers/networkTypes';
+import NetworkTypes from '@rainbow-me/utils/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import {
   useAccountProfile,

@@ -1,4 +1,7 @@
-import { convertAmountToNativeDisplay, multiply } from '../helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  multiply,
+} from '@rainbow-me/utils/utilities';
 import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 

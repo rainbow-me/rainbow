@@ -25,7 +25,13 @@ import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
-import { TokenSectionTypes } from '@/helpers';
+import {
+  TokenSectionTypes,
+  abbreviations,
+  deviceUtils,
+  haptics,
+  magicMemo,
+} from '@/utils';
 import {
   useAndroidScrollViewGestureHandler,
   usePrevious,
@@ -36,7 +42,6 @@ import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
 import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';

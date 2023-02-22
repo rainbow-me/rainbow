@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
 import { getAccountLocal, saveAccountLocal } from './common';
-import { pickBy } from '@/helpers/utilities';
+import { pickBy } from '@/utils/utilities';
 
 const REQUESTS = 'requests';
 

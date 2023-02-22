@@ -16,7 +16,7 @@ import { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
+import { dappLogoOverride, dappNameOverride } from '@/utils/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
 import {
@@ -24,8 +24,8 @@ import {
   isTransactionDisplayType,
 } from '@/utils/signingMethods';
 import store from '@/redux/store';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import WalletTypes from '@/helpers/walletTypes';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
+import WalletTypes from '@/utils/walletTypes';
 import { ethereumUtils } from '@/utils';
 import { getRequestDisplayDetails } from '@/parsers';
 import {

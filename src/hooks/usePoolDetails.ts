@@ -5,7 +5,7 @@ import { uniswapClientDeprecated } from '../apollo/client';
 import { UNISWAP_PAIR_DATA_QUERY_VOLUME } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { bigNumberFormat } from '@/utils/bigNumberFormat';
 import { AppDispatch, AppState } from '@/redux/store';
 import { setPoolsDetails } from '@/redux/uniswapLiquidity';
 import { ethereumUtils, getBlocksFromTimestamps } from '@/utils';

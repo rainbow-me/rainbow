@@ -3,7 +3,7 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import logger from '@/utils/logger';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',

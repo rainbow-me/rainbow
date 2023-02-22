@@ -19,7 +19,6 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
   useSwapCurrencyHandlers,
@@ -28,9 +27,13 @@ import {
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { watchingAlert } from '@/utils';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+  watchingAlert,
+} from '@/utils';
 import Routes from '@rainbow-me/routes';
-import showWalletErrorAlert from '@/helpers/support';
+import showWalletErrorAlert from '@/utils/support';
 import { analytics, analyticsV2 } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';

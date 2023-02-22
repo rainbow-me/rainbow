@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
-import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
+import toLocaleStringPolyfill from '@/utils/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
 import 'fast-text-encoding';
 

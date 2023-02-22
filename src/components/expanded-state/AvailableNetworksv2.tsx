@@ -5,13 +5,17 @@ import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
-import { ethereumUtils } from '@/utils';
-import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
+import {
+  ethereumUtils,
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+  Network,
+} from '@/utils';
 import { useSwapCurrencyHandlers } from '@/hooks';
 import { AssetType, RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';

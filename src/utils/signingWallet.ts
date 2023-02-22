@@ -6,16 +6,16 @@ import {
   loadString,
   publicAccessControlOptions,
   saveString,
-} from '../model/keychain';
-import { loadWallet } from '../model/wallet';
+} from '@/model/keychain';
+import { loadWallet } from '@/model/wallet';
 import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
-} from '../utils/keychainConstants';
+} from './keychainConstants';
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix } from '@/handlers/web3';
-import { logger } from '@/utils';
+import logger from './logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
 

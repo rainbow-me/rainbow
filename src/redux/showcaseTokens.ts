@@ -9,8 +9,8 @@ import {
   saveShowcaseTokens,
   saveWebDataEnabled,
 } from '@/handlers/localstorage/accountLocal';
-import networkTypes from '@/helpers/networkTypes';
-import WalletTypes from '@/helpers/walletTypes';
+import networkTypes from '@/utils/networkTypes';
+import WalletTypes from '@/utils/walletTypes';
 
 // -- Constants --------------------------------------- //
 

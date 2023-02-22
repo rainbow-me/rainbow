@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
 import { Text } from '../../text';
 import InputPill from './InputPill';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/utilities';
 import { usePrevious } from '@/hooks';
 import styled from '@/styled-thing';
 

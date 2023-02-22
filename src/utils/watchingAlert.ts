@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 

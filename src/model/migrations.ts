@@ -11,7 +11,7 @@ import {
   getMigrationVersion,
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
-import WalletTypes from '../helpers/walletTypes';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
@@ -54,7 +54,7 @@ import {
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { returnStringFirstEmoji } from '@/utils/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';

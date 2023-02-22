@@ -4,7 +4,7 @@ import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';

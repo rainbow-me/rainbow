@@ -10,7 +10,7 @@ import {
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
+import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/utils/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';

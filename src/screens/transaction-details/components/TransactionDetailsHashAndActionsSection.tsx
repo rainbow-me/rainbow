@@ -17,7 +17,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 
 type Props = {
   transaction: RainbowTransaction;

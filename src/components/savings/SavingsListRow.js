@@ -18,7 +18,7 @@ import {
   calculateAPY,
   calculateCompoundInterestInDays,
   formatSavingsAmount,
-} from '@/helpers/savings';
+} from '@/utils/savings';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

@@ -11,8 +11,8 @@ import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { AppState } from '@/redux/store';
-import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { buildBriefWalletSectionsSelector } from '@/utils/buildWalletSections';
+import { readableUniswapSelector } from '@/utils/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData({
   type,

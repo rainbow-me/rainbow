@@ -18,7 +18,7 @@ import {
   saveUniswapFavoritesMetadata,
 } from '@/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@/handlers/swap';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,

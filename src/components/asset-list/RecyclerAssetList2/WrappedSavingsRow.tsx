@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import useSavingsAccount from '../../../hooks/useSavingsAccount';
 
 import SavingsListRow from '../../savings/SavingsListRow';
-import { multiply } from '@/helpers/utilities';
+import { multiply } from '@/utils/utilities';
 
 export default React.memo(function WrappedSavingsRow({
   address,

@@ -21,12 +21,12 @@ import NetworkSection from './NetworkSection';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
-import { RainbowContext } from '@/helpers/RainbowContext';
-import isTestFlight from '@/helpers/isTestFlight';
-import networkTypes, { Network } from '@/helpers/networkTypes';
+import { RainbowContext } from '@/utils/RainbowContext';
+import isTestFlight from '@/utils/isTestFlight';
+import networkTypes, { Network } from '@/utils/networkTypes';
 import {
   useAccountSettings,
   useInitializeAccountData,

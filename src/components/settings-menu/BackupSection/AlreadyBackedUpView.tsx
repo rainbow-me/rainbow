@@ -7,9 +7,9 @@ import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Text } from '@/design-system';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
+import WalletBackupTypes from '@/utils/walletBackupTypes';
+import WalletTypes from '@/utils/walletTypes';
 import {
   useManageCloudBackups,
   useWalletCloudBackup,

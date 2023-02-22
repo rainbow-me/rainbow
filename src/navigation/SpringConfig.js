@@ -1,4 +1,4 @@
-import { sortList } from '../helpers/sortList';
+import { sortList } from '@rainbow-me/utils/sortList';
 import { reduceArrayToObject } from '../utils';
 
 const DefaultConfig = {

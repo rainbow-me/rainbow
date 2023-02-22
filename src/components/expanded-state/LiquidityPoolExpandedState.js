@@ -22,8 +22,8 @@ import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { toChecksumAddress } from '@/handlers/web3';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
-import chartTypes from '@/helpers/chartTypes';
+import { bigNumberFormat } from '@/utils/bigNumberFormat';
+import chartTypes from '@/utils/chartTypes';
 import {
   useAccountSettings,
   useAsset,

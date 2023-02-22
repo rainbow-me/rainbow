@@ -12,9 +12,9 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
-import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
+import networkInfo from '@/utils/networkInfo';
+import networkTypes from '@/utils/networkTypes';
+import { add, greaterThan, toFixedDecimals } from '@/utils/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
   useAccountSettings,

@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
-import { StatusBarHelper } from '@/helpers';
+import { StatusBarHelper } from '@/utils';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 

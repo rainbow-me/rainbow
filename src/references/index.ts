@@ -2,7 +2,7 @@ import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chains } from './chains.json';

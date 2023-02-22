@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { RainbowToken, SwappableAsset } from '@/entities';
-import { Network } from '@/helpers';
+import { Network, ethereumUtils } from '@/utils';
 import { AppState } from '@/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 import { useTheme } from '@/theme';
@@ -14,8 +14,7 @@ import {
   greaterThanOrEqualTo,
   isPositive,
   subtract,
-} from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
+} from '@/utils/utilities';
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;

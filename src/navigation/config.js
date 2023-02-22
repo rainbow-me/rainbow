@@ -12,9 +12,9 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/Sen
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
-import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import networkInfo from '@/utils/networkInfo';
+import networkTypes from '@/utils/networkTypes';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';

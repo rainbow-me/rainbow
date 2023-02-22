@@ -2,13 +2,13 @@ import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
 import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes from '@/utils/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToBalance,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
 

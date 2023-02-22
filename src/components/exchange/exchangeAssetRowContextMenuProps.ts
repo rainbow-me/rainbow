@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import {
   abbreviations,
   ethereumUtils,

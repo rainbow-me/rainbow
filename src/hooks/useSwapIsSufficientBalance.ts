@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { ExchangeModalTypes } from '@/helpers';
+import { ExchangeModalTypes, ethereumUtils } from '@/utils';
 import { AppState } from '@/redux/store';
-import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
+import { greaterThanOrEqualTo } from '@/utils/utilities';
 
 export default function useSwapIsSufficientBalance(inputAmount: string | null) {
   const inputCurrencyUniqueId = useSelector(

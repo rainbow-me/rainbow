@@ -2,6 +2,8 @@
 // this folder - it wouldn't make sense to separate them there
 // and break imports concept just to remove eslint error here
 
+import * as StatusBarHelper from './statusBarHelper';
+
 export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
@@ -58,3 +60,11 @@ export { default as withSpeed } from './withSpeed';
 export { default as CoinIcon } from './CoinIcons/CoinIcon';
 export { default as FallbackIcon } from './CoinIcons/FallbackIcon';
 export { default as getExchangeIconUrl } from './getExchangeIconUrl';
+export { default as BiometryTypes } from './biometryTypes';
+export { default as CurrencySelectionTypes } from './currencySelectionTypes';
+export { default as ExchangeModalTypes } from './exchangeModalTypes';
+export { default as isKeyboardOpen } from './isKeyboardOpen';
+export { default as isReanimatedAvailable } from './isReanimatedAvailable';
+export { default as NetworkTypes, Network } from './networkTypes';
+export { default as TokenSectionTypes } from './tokenSectionTypes';
+export { StatusBarHelper };

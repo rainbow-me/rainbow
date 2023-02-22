@@ -2,7 +2,7 @@ import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import networkInfo from '../../helpers/networkInfo';
+import networkInfo from '@rainbow-me/utils/networkInfo';
 import { settingsUpdateNetwork } from '../../redux/settings';
 import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';

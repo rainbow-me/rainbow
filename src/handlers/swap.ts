@@ -30,8 +30,8 @@ import {
   lessThan,
   multiply,
   subtract,
-} from '@/helpers/utilities';
-import { Network } from '@/helpers/networkTypes';
+} from '@/utils/utilities';
+import { Network } from '@/utils/networkTypes';
 import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
 

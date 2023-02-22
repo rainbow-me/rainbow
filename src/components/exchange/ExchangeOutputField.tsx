@@ -2,7 +2,7 @@ import React, { MutableRefObject } from 'react';
 import { TextInput } from 'react-native';
 import ExchangeField from './ExchangeField';
 import { Box } from '@rainbow-me/design-system';
-import { Network } from '@rainbow-me/helpers';
+import { Network } from '@/utils';
 
 interface ExchangeOutputFieldProps {
   editable: boolean;

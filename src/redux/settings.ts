@@ -6,7 +6,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
 import { analytics } from '@/analytics';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 
 import {
   getAppIcon,
@@ -23,7 +23,7 @@ import {
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import { dataResetState } from '@/redux/data';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';

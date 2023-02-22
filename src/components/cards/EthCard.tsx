@@ -31,10 +31,10 @@ import {
 import { CoinIcon } from '../coin-icon';
 import { AssetType } from '@/entities';
 import Labels from '../value-chart/ExtremeLabels';
-import showWalletErrorAlert from '@/helpers/support';
+import showWalletErrorAlert from '@/utils/support';
 import { IS_IOS } from '@/env';
 import { emitChartsRequest } from '@/redux/explorer';
-import chartTypes from '@/helpers/chartTypes';
+import chartTypes from '@/utils/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';

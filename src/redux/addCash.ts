@@ -21,7 +21,7 @@ import {
   WyreError,
   WyreOrderStatusType,
   WyreReferenceInfo,
-} from '@/helpers/wyreStatusTypes';
+} from '@/utils/wyreStatusTypes';
 import {
   AddCashCurrencies,
   AddCashCurrencyAsset,

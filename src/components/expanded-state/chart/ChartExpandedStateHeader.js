@@ -12,9 +12,9 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { useChartData } from '@/react-native-animated-charts/src';
-import { Network } from '@/helpers';
-import ChartTypes from '@/helpers/chartTypes';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { Network } from '@/utils';
+import ChartTypes from '@/utils/chartTypes';
+import { convertAmountToNativeDisplay } from '@/utils/utilities';
 import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';

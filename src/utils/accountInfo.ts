@@ -1,9 +1,9 @@
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '../helpers/emojiHandler';
-import { address } from '../utils/abbreviations';
-import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
+} from './emojiHandler';
+import { address } from './abbreviations';
+import { addressHashedEmoji, isValidImagePath } from './profileUtils';
 
 export function getAccountProfileInfo(
   selectedWallet: any,

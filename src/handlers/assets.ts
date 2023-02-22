@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { AssetTypes } from '@/entities';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes from '@/utils/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   BNB_BSC_ADDRESS,
@@ -12,7 +12,7 @@ import {
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 
 const nativeAssetsPerNetwork = {
   [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,

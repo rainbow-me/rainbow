@@ -41,10 +41,10 @@ import {
   isHardHat,
   web3Provider,
 } from '@/handlers/web3';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
-import currencyTypes from '@/helpers/currencyTypes';
-import networkInfo from '@/helpers/networkInfo';
-import { Network } from '@/helpers/networkTypes';
+import ChartTypes, { ChartType } from '@/utils/chartTypes';
+import currencyTypes from '@/utils/currencyTypes';
+import networkInfo from '@/utils/networkInfo';
+import { Network } from '@/utils/networkTypes';
 import {
   balanceCheckerContractAbi,
   BNB_MAINNET_ADDRESS,

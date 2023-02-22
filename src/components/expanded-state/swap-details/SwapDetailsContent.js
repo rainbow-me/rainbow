@@ -20,9 +20,8 @@ import {
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, Network } from '@/utils';
 import { useNavigation } from '@/navigation';
-import { Network } from '@/helpers';
 
 const Container = styled(Box).attrs({
   flex: 1,

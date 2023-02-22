@@ -11,7 +11,7 @@ import { position } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 

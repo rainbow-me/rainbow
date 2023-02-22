@@ -13,7 +13,7 @@ import BscBadge from '../assets/badges/bscBadge.png';
 import BscBadgeDark from '../assets/badges/bscBadgeDark.png';
 import BscBadgeNoShadow from '../assets/badges/bscBadgeNoShadow.png';
 import { Centered } from './layout';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes from '@/utils/networkTypes';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 

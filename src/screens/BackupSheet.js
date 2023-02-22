@@ -15,8 +15,8 @@ import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@/analytics';
-import showWalletErrorAlert from '@/helpers/support';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import showWalletErrorAlert from '@/utils/support';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,

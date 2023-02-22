@@ -4,7 +4,7 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
 import { Stack } from '@/design-system';
 import { Records } from '@/entities';
-import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
+import { deprecatedTextRecordFields, ENS_RECORDS } from '@/utils/ens';
 import { useENSRecordDisplayProperties } from '@/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];

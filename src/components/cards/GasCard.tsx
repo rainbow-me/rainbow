@@ -19,7 +19,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { add } from '@/helpers/utilities';
+import { add } from '@/utils/utilities';
 import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';

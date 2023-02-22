@@ -9,7 +9,7 @@ import { useGenericAssets } from './useGenericAsset';
 import { compoundClientDeprecated } from '@/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@/apollo/queries';
 import { AssetTypes } from '@/entities';
-import { multiply } from '@/helpers/utilities';
+import { multiply } from '@/utils/utilities';
 import { parseAssetName, parseAssetSymbol } from '@/parsers';
 import { emitAssetRequest } from '@/redux/explorer';
 import { AppState } from '@/redux/store';

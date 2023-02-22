@@ -16,7 +16,7 @@ import { TransactionStatusTypes } from '@/entities';
 import {
   ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
-} from '@/helpers/wyreStatusTypes';
+} from '@/utils/wyreStatusTypes';
 import { useDimensions, useTimeout } from '@/hooks';
 import { useNavigation } from '@/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@/references';

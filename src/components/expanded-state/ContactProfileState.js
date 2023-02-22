@@ -10,7 +10,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+} from '@/utils/emojiHandler';
 import {
   useAccountSettings,
   useContacts,

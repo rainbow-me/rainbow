@@ -1,4 +1,4 @@
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import { Network as APINetwork } from '@/screens/AddCash/types';
 
 export function convertAPINetworkToInternalNetwork(

@@ -1,4 +1,4 @@
-import { memoFn } from '../utils/memoFn';
+import { memoFn } from './memoFn';
 /**
  * @desc subtracts two numbers
  * @param  {String}   str

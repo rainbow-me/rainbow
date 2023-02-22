@@ -23,7 +23,7 @@ import {
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes } from '@/entities';
@@ -38,12 +38,12 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@/handlers/web3';
-import Network from '@/helpers/networkTypes';
+import Network from '@/utils/networkTypes';
 import {
   checkIsValidAddressOrDomain,
   checkIsValidAddressOrDomainFormat,
   isENSAddressFormat,
-} from '@/helpers/validators';
+} from '@/utils/validators';
 import {
   prefetchENSAvatar,
   prefetchENSCover,
@@ -77,7 +77,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';

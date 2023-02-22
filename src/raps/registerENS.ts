@@ -14,7 +14,7 @@ import {
   getTransactionTypeForRecords,
   recordsForTransactionAreValid,
 } from '@/handlers/ens';
-import { ENS_RECORDS } from '@/helpers/ens';
+import { ENS_RECORDS } from '@/utils/ens';
 
 export const createSetRecordsENSRap = async (
   ensActionParameters: ENSActionParameters

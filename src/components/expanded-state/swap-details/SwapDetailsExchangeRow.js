@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { Fragment, useMemo } from 'react';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
+import { convertAmountToPercentageDisplay } from '@rainbow-me/utils/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
 import { SwapDetailsLabel, SwapDetailsValue } from './SwapDetailsRow';
@@ -17,7 +17,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';

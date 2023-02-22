@@ -8,7 +8,7 @@ import { PromoSheet } from '@/components/PromoSheet';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
 import headerImageIOS from '@/assets/notificationsPromoSheetHeaderIOS.png';
 import headerImageAndroid from '@/assets/notificationsPromoSheetHeaderAndroid.png';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/utilities';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';

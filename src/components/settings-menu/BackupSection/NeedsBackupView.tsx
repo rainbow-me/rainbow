@@ -8,14 +8,14 @@ import { analytics } from '@/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
 import { Box, Stack, Text } from '@/design-system';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
 import { useWallets } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 
 const BackupButton = styled(RainbowButton).attrs({

@@ -15,8 +15,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import networkTypes from '../../helpers/networkTypes';
-import WalletTypes from '../../helpers/walletTypes';
+import networkTypes from '@rainbow-me/utils/networkTypes';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
 import { EmptyAssetList } from '../asset-list';

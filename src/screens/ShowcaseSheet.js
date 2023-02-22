@@ -9,7 +9,7 @@ import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { buildUniqueTokenList } from '@/helpers/assets';
+import { buildUniqueTokenList } from '@/utils/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@/styled-thing';

@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import zxcvbn from 'zxcvbn';
-import { isSamsungGalaxy } from '../../helpers/samsung';
+import { isSamsungGalaxy } from '@/utils/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';
@@ -17,7 +17,7 @@ import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
 } from '@/handlers/cloudBackup';
-import showWalletErrorAlert from '@/helpers/support';
+import showWalletErrorAlert from '@/utils/support';
 import {
   useDimensions,
   useMagicAutofocus,

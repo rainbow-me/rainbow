@@ -14,7 +14,7 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditAction from '@/helpers/EditAction';
+import EditAction from '@/utils/EditAction';
 import {
   useAccountSettings,
   useCoinListEditOptions,

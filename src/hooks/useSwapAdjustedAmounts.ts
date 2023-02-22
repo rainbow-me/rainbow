@@ -8,7 +8,7 @@ import {
   WMATIC_POLYGON_ADDRESS,
   WBNB_BSC_ADDRESS,
 } from '@/references';
-import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
+import { fromWei, updatePrecisionToDisplay } from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import { computeSlippageAdjustedAmounts, Field } from '@/handlers/swap';
 

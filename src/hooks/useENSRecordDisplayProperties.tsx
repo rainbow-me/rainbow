@@ -6,11 +6,7 @@ import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  ENS_RECORDS,
-  REGISTRATION_MODES,
-  textRecordFields,
-} from '@/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '@/utils/ens';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';

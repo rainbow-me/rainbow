@@ -13,7 +13,7 @@ import {
   saveAccountLocal,
   saveGlobal,
 } from './common';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 
 const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';

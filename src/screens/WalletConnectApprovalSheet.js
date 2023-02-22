@@ -14,7 +14,7 @@ import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import { Alert } from '../components/alerts';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '../components/coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
@@ -24,24 +24,22 @@ import {
   SheetActionButtonRow,
 } from '../components/sheet';
 import { analytics } from '@/analytics';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { getDappHostname } from '@/helpers/dappNameHandler';
-import networkInfo from '@/helpers/networkInfo';
-import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import { getAccountProfileInfo } from '@/utils/accountInfo';
+import { getDappHostname } from '@/utils/dappNameHandler';
+import networkInfo from '@/utils/networkInfo';
+import WalletConnectApprovalSheetType from '@/utils/walletConnectApprovalSheetTypes';
 import {
   androidShowNetworksActionSheet,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
-} from '@/helpers/walletConnectNetworks';
+} from '@/utils/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
+import { ethereumUtils, Network } from '@/utils';
 import { Box, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import { position } from '@/styles';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';

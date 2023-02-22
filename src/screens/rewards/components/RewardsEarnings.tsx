@@ -26,7 +26,7 @@ import Routes from '@/navigation/routesNames';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';

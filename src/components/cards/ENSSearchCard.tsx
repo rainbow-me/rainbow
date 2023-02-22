@@ -13,7 +13,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/utils/ens';
 import { useENSPendingRegistrations, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';

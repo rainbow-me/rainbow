@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
-import { StatusBarHelper } from '@/helpers';
 import styled from '@/styled-thing';
+import { StatusBarHelper } from '@/utils';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

@@ -16,7 +16,7 @@ import { Chart } from '../value-chart';
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import AssetInputTypes from '@/utils/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
@@ -30,7 +30,7 @@ import {
   handleSignificantDecimals,
   multiply,
   times,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 

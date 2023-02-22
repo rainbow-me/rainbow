@@ -9,7 +9,7 @@ import { disableCharts } from '../../config/debug';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { useNavigation } from '@/navigation';
-import chartTypes, { ChartType } from '@/helpers/chartTypes';
+import chartTypes, { ChartType } from '@/utils/chartTypes';
 
 const formatChartData = (chart: any) => {
   if (!chart || isEmpty(chart)) return null;

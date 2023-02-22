@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { buildAssetUniqueIdentifier } from '@rainbow-me/utils/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';

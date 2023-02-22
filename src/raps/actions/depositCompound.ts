@@ -22,7 +22,7 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@/references';
-import { convertAmountToRawAmount } from '@/helpers/utilities';
+import { convertAmountToRawAmount } from '@/utils/utilities';
 import { gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamsForTransaction } from '@/parsers';

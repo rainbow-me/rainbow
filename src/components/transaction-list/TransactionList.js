@@ -4,9 +4,9 @@ import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FloatingEmojis } from '../floating-emojis';
 import { analyticsV2 } from '@/analytics';
-import showWalletErrorAlert from '@/helpers/support';
+import showWalletErrorAlert from '@/utils/support';
 
-import { pickShallow } from '@/helpers/utilities';
+import { pickShallow } from '@/utils/utilities';
 import {
   useAccountProfile,
   useOnAvatarPress,

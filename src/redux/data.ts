@@ -43,10 +43,10 @@ import {
   isL2Network,
   web3Provider,
 } from '@/handlers/web3';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import {
   parseAccountAssets,
   parseAsset,
@@ -56,7 +56,7 @@ import {
 import { setHiddenCoins } from '@/redux/editOptions';
 import { ETH_ADDRESS, shitcoins } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { pickBy } from '@/helpers/utilities';
+import { pickBy } from '@/utils/utilities';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import logger from '@/utils/logger';
 import {

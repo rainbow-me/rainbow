@@ -11,7 +11,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { ethereumUtils } from '@/utils';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 
 const L2Disclaimer = ({
   assetType,

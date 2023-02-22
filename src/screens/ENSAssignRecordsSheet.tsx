@@ -58,7 +58,7 @@ import {
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 import {
   useAccountProfile,
   useDimensions,

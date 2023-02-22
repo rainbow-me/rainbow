@@ -7,7 +7,7 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';

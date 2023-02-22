@@ -22,8 +22,8 @@ import {
 } from '../components/sheet';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { isSymbolStablecoin } from '@/helpers/savings';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isSymbolStablecoin } from '@/utils/savings';
+import { convertAmountToNativeDisplay } from '@/utils/utilities';
 import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

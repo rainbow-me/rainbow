@@ -1,11 +1,11 @@
 import { values } from 'lodash';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
-import walletTypes from '@/helpers/walletTypes';
+import walletTypes from '@/utils/walletTypes';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useMemo } from 'react';
 import { RainbowAccount } from '@/model/wallet';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();

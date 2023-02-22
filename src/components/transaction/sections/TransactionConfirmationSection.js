@@ -6,7 +6,7 @@ import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
-import { formatFixedDecimals } from '@/helpers/utilities';
+import { formatFixedDecimals } from '@/utils/utilities';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 

@@ -4,7 +4,7 @@ import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
-import EditAction from '@/helpers/EditAction';
+import EditAction from '@/utils/EditAction';
 import { setHiddenCoins as reduxSetHiddenCoins } from '@/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>({

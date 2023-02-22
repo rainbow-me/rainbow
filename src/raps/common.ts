@@ -37,8 +37,8 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@/handlers/ens';
-import { ExchangeModalTypes } from '@/helpers';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { ExchangeModalTypes } from '@/utils';
+import { REGISTRATION_MODES } from '@/utils/ens';
 import logger from '@/utils/logger';
 import {
   createUnlockAndCrosschainSwapRap,

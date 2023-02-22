@@ -3,13 +3,13 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { isNativeAsset } from '@/handlers/assets';
-import { ExchangeModalTypes } from '@/helpers';
+import { ExchangeModalTypes, ethereumUtils } from '@/utils';
 import {
   greaterThan,
   multiply,
   subtract,
   toFixedDecimals,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useGas } from '@/hooks';
 import { AppState } from '@/redux/store';
 import {
@@ -17,7 +17,6 @@ import {
   updateSwapNativeAmount,
   updateSwapOutputAmount,
 } from '@/redux/swap';
-import { ethereumUtils } from '@/utils';
 
 export default function useSwapInputHandlers() {
   const dispatch = useDispatch();

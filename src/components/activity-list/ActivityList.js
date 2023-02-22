@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
-import networkTypes from '../../helpers/networkTypes';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';

@@ -1,5 +1,5 @@
 import URL from 'url-parse';
-import { memoFn } from '../utils/memoFn';
+import { memoFn } from './memoFn';
 
 const buildAssetUrl = (hostname: any) =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;

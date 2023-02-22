@@ -9,7 +9,7 @@ import {
 } from './common';
 import { isNativeAsset } from '@/handlers/assets';
 import store from '@/redux/store';
-import { add } from '@/helpers/utilities';
+import { add } from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 

@@ -9,9 +9,9 @@ import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager, View } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletBackupTypes from '@/utils/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
@@ -20,14 +20,14 @@ import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
 } from '@/handlers/cloudBackup';
-import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import showWalletErrorAlert from '@/utils/support';
+import { WalletLoadingStates } from '@/utils/walletLoadingStates';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 // @ts-ignore ts is complaining about this import
 import RNCloudFs from 'react-native-cloud-fs';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;

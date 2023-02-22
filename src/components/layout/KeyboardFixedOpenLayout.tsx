@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
-import { KeyboardType } from '@/helpers/keyboardTypes';
+import { KeyboardType } from '@/utils/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
 
 interface KeyboardFixedOpenLayoutProps {

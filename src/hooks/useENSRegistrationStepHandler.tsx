@@ -16,7 +16,7 @@ import {
   ENS_SECONDS_WAIT_WITH_PADDING,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 
 const checkRegisterBlockTimestamp = async ({

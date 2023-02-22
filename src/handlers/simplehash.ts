@@ -2,11 +2,10 @@ import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
 
-import { Network } from '@/helpers';
+import { Network, logger } from '@/utils';
 import { parseSimplehashNfts } from '@/parsers';
 import { queryClient } from '@/react-query/queryClient';
 
-import { logger } from '@/utils';
 import { EthereumAddress, UniqueAsset } from '@/entities';
 
 interface SimplehashMarketplace {

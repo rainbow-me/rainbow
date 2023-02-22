@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { SwapDetailsLabel, SwapDetailsValue } from './SwapDetailsRow';
-import { convertRawAmountToBalance } from '@/helpers/utilities';
+import { convertRawAmountToBalance } from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import { Box, Column, Columns, Rows } from '@/design-system';
 import styled from '@/styled-thing';

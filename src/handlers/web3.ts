@@ -19,8 +19,8 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { RainbowConfig } from '../model/config';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers/networkTypes';
-import { isUnstoppableAddressFormat } from '@/helpers/validators';
+import { Network } from '@/utils/networkTypes';
+import { isUnstoppableAddressFormat } from '@/utils/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -38,7 +38,7 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import { fetchContractABI } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';

@@ -1,4 +1,4 @@
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 import { RainbowFetchClient } from '../rainbow-fetch';
 
 const rainbowMeteorologyApi = new RainbowFetchClient({

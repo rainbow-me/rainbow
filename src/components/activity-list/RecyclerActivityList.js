@@ -17,7 +17,7 @@ import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@/entities';
-import { buildTransactionUniqueIdentifier } from '@/helpers/transactions';
+import { buildTransactionUniqueIdentifier } from '@/utils/transactions';
 import styled from '@/styled-thing';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 

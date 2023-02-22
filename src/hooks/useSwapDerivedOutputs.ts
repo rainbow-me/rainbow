@@ -15,7 +15,7 @@ import { useCallback, useMemo, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@/helpers/isTestFlight';
+import isTestFlight from '@/utils/isTestFlight';
 import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
@@ -32,7 +32,7 @@ import {
   convertRawAmountToDecimalFormat,
   isZero,
   updatePrecisionToDisplay,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 import Logger from '@/utils/logger';
 

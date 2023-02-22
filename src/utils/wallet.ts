@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 import { hdkey } from 'ethereumjs-wallet';
 import { Wallet } from '@ethersproject/wallet';
 import { addHexPrefix, toChecksumAddress } from '@/handlers/web3';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 import {
   DEFAULT_HD_PATH,
   identifyWalletType,

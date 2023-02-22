@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { UniswapInvestmentRow } from '../../investment-cards';
 import { Bleed } from '@/design-system';
-import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { readableUniswapSelector } from '@/utils/uniswapLiquidityTokenInfoSelector';
 
 export default React.memo(function WrappedPoolRow({
   address,

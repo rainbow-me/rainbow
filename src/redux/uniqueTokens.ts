@@ -22,7 +22,7 @@ import {
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 
 // -- Constants ------------------------------------------------------------- //
 

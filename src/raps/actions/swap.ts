@@ -22,7 +22,7 @@ import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { greaterThan } from '@/helpers/utilities';
+import { greaterThan } from '@/utils/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateSwapGasLimit } from '@/handlers/swap';

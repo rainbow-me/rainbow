@@ -6,7 +6,7 @@ import {
   fetchRecords,
 } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import { ENS_RECORDS } from '@/helpers/ens';
+import { ENS_RECORDS } from '@/utils/ens';
 import {
   queryClient,
   QueryConfigDeprecated,

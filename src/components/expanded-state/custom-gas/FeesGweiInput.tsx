@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../../animations';
 import GweiInputPill from './GweiInputPill';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/utilities';
 import { usePrevious } from '@/hooks';
 import { TextInput } from 'react-native';
 import { Box, Inline, Text } from '@/design-system';

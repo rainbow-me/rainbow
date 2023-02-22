@@ -9,7 +9,7 @@ import {
   REGISTRATION_MODES,
   TextRecordField,
   textRecordFields,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 
 const disabledAtom = atom({
   default: false,

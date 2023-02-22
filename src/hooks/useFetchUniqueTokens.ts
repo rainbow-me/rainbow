@@ -16,7 +16,7 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/opensea-api';
 import { fetchPoaps } from '@/handlers/poap';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',

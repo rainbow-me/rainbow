@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { buildTransactionsSectionsSelector } from '../helpers/buildTransactionsSectionsSelector';
-import NetworkTypes from '../helpers/networkTypes';
+import { buildTransactionsSectionsSelector } from '@/utils/buildTransactionsSectionsSelector';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
+import { NetworkTypes } from '@/utils';
 
 export const NOE_PAGE = 30;
 

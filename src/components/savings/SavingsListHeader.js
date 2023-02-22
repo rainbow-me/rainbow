@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Easing } from 'react-native';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import { convertAmountToNativeDisplay } from '@rainbow-me/utils/utilities';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';

@@ -1,5 +1,5 @@
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, NetworkTypes } from '@/utils';
 import useMinRefuelAmount from './useMinRefuelAmount';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import {
@@ -9,13 +9,13 @@ import {
   lessThan,
   multiply,
   subtract,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useEffect, useMemo, useState } from 'react';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useGas } from '.';
 import { isNativeAsset } from '@/handlers/assets';
-import { NetworkTypes } from '@/helpers';
 import { toWei } from '@/handlers/web3';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import useGas from '@/hooks/useGas';
 
 export enum RefuelState {
   'Add' = 'Add',

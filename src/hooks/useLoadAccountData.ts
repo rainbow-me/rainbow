@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import networkTypes from '../helpers/networkTypes';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';

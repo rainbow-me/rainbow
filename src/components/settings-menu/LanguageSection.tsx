@@ -4,7 +4,7 @@ import Menu from './components/Menu';
 import MenuContainer from './components/MenuContainer';
 import MenuItem from './components/MenuItem';
 import { analytics } from '@/analytics';
-import { pickBy } from '@/helpers/utilities';
+import { pickBy } from '@/utils/utilities';
 import { useAccountSettings } from '@/hooks';
 
 const languagesWithWalletTranslations = Object.keys(

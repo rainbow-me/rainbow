@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import { calculateAPY } from '../../helpers/savings';
-import { convertAmountToBalanceDisplay } from '../../helpers/utilities';
+import { calculateAPY } from '@rainbow-me/utils/savings';
+import { convertAmountToBalanceDisplay } from '@rainbow-me/utils/utilities';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Column, FlexItem, Row, RowWithMargins } from '../layout';

@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { web3Provider } from '../../handlers/web3';
-import networkTypes from '../../helpers/networkTypes';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import Toast from './Toast';
 import { useAccountSettings, useInternetStatus } from '@/hooks';
 

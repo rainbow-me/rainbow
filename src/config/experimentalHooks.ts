@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { defaultConfig } from './experimental';
-import { RainbowContext } from '@/helpers/RainbowContext';
+import { RainbowContext } from '@/utils/RainbowContext';
 import { IS_DEV } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
+import isTestFlight from '@/utils/isTestFlight';
 
 const useExperimentalFlag = (name: any) => {
   if (IS_DEV || isTestFlight) {

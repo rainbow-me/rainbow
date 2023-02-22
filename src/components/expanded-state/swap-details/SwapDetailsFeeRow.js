@@ -6,7 +6,7 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   isZero,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useAccountSettings, useStepper } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

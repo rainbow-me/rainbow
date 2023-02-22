@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
-import EditAction from '@/helpers/EditAction';
+import EditAction from '@/utils/EditAction';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,

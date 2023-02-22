@@ -27,7 +27,7 @@ import {
 } from '@/entities';
 import { getTransactionMethodName } from '@/handlers/transactions';
 import { isL2Network } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import {
   ETH_ADDRESS,
   savingsAssetsList,
@@ -36,7 +36,7 @@ import {
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethereumUtils, getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import {
   RAINBOW_ROUTER_CONTRACT_ADDRESS,

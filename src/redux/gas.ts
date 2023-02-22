@@ -29,7 +29,7 @@ import {
   isL2Network,
   web3Provider,
 } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -42,7 +42,7 @@ import {
   weiToGwei,
 } from '@/parsers';
 import { ethUnits, supportedNativeCurrencies } from '@/references';
-import { multiply } from '@/helpers/utilities';
+import { multiply } from '@/utils/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;

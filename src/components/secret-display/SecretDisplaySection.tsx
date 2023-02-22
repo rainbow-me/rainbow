@@ -15,7 +15,7 @@ import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/utils/walletTypes';
 import { useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin, position, shadow } from '@/styles';

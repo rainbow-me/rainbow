@@ -3,7 +3,7 @@ import React from 'react';
 import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';

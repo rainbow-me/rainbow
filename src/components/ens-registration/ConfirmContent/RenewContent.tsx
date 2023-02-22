@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Inset, Separator, Stack } from '@/design-system';
-import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
+import { ENS_DOMAIN, REGISTRATION_MODES } from '@/utils/ens';
 import { useDimensions, useENSRegistrant } from '@/hooks';
 import { timeUnits } from '@/references';
 

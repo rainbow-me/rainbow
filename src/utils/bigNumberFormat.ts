@@ -3,7 +3,7 @@ import {
   convertAmountToNativeDisplay,
   divide,
   greaterThan,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { NativeCurrencyKey } from '@/entities';
 
 export const bigNumberFormat = memoFn(

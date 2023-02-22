@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { calculateAPY } from '../../helpers/savings';
+import { calculateAPY } from '@rainbow-me/utils/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';

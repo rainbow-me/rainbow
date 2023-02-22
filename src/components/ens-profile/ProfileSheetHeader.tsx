@@ -23,7 +23,7 @@ import {
   Separator,
   Stack,
 } from '@/design-system';
-import { ENS_RECORDS } from '@/helpers/ens';
+import { ENS_RECORDS } from '@/utils/ens';
 import {
   useENSAvatar,
   useENSCover,

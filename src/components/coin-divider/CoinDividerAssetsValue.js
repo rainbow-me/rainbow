@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertAmountToNativeDisplay } from '../../helpers/utilities';
+import { convertAmountToNativeDisplay } from '@rainbow-me/utils/utilities';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 import styled from '@/styled-thing';

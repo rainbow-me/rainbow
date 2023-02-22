@@ -7,11 +7,11 @@ import {
   WALLET_BALANCES_FROM_STORAGE,
 } from '@/handlers/localstorage/walletBalances';
 import { web3Provider } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query';
 import { balanceCheckerContractAbi } from '@/references';
-import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
+import { fromWei, handleSignificantDecimals } from '@/utils/utilities';
 import logger from '@/utils/logger';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';

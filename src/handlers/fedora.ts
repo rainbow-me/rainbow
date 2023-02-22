@@ -11,7 +11,7 @@ import {
   CODE_PUSH_DEPLOYMENT_KEY_IOS,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 

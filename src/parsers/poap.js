@@ -1,6 +1,6 @@
 import { AssetTypes } from '@/entities';
 import { imageToPng } from '@/handlers/imgix';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 
 /**
  * @desc parse poaps

@@ -21,7 +21,7 @@ import {
 import BackupSection from '../components/settings-menu/BackupSection/BackupSection';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
-import WalletTypes from '../helpers/walletTypes';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useTheme } from '../theme/ThemeContext';
 import { Box } from '@/design-system';

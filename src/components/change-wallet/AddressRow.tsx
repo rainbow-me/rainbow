@@ -18,7 +18,7 @@ import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+} from '@/utils/emojiHandler';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, getFontSize } from '@/styles';
 import { abbreviations, deviceUtils, profileUtils } from '@/utils';

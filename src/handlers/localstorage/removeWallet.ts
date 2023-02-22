@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { keys } from 'lodash';
-import NetworkTypes from '../../helpers/networkTypes';
+import NetworkTypes from '@rainbow-me/utils/networkTypes';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';

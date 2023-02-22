@@ -3,8 +3,8 @@ import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { runCampaignChecks } from '@/campaigns/campaignChecks';
 import { EthereumAddress } from '@/entities';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletBackupStepTypes from '@/utils/walletBackupStepTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { featureUnlockChecks } from '@/featuresToUnlock';
 import {
   AllRainbowWallets,

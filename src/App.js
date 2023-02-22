@@ -38,9 +38,9 @@ import {
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
-import RainbowContextWrapper from './helpers/RainbowContext';
-import isTestFlight from './helpers/isTestFlight';
-import networkTypes from './helpers/networkTypes';
+import RainbowContextWrapper from '@rainbow-me/utils/RainbowContext';
+import isTestFlight from '@rainbow-me/utils/isTestFlight';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
@@ -64,7 +64,7 @@ import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { addressKey } from './utils/keychainConstants';
 import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
-import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
+import { SharedValuesProvider } from '@/utils/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import logger from '@/utils/logger';

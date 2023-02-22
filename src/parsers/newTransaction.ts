@@ -11,7 +11,7 @@ import { ETH_ADDRESS } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethereumUtils } from '@/utils';
 
 /**

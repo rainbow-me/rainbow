@@ -17,7 +17,7 @@ import {
 } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
+import { Network, labelhash, logger, profileUtils } from '@/utils';
 import {
   ENS_DOMAIN,
   ENS_RECORDS,
@@ -25,8 +25,8 @@ import {
   generateSalt,
   getENSExecutionDetails,
   getNameOwner,
-} from '@/helpers/ens';
-import { add } from '@/helpers/utilities';
+} from '@/utils/ens';
+import { add } from '@/utils/utilities';
 import { ImgixImage } from '@/components/images';
 import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
 import {
@@ -34,7 +34,6 @@ import {
   ensIntroMarqueeNames,
   ethUnits,
 } from '@/references';
-import { labelhash, logger, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';

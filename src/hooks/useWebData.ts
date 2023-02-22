@@ -9,9 +9,9 @@ import {
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { containsEmoji } from '@/helpers/strings';
-import WalletTypes from '@/helpers/walletTypes';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
+import { containsEmoji } from '@/utils/strings';
+import WalletTypes from '@/utils/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';

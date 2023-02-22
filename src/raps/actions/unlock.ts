@@ -20,7 +20,7 @@ import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
-import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
+import { convertAmountToRawAmount, greaterThan } from '@/utils/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 

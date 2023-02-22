@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { isSamsungGalaxy } from '../../helpers/samsung';
+import { isSamsungGalaxy } from '@rainbow-me/utils/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
 import { DelayedAlert } from '../alerts';

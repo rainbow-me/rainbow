@@ -23,12 +23,12 @@ import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+} from '@/utils/emojiHandler';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { IS_IOS } from '@/env';
-import { isENSAddressFormat } from '@/helpers/validators';
+import { isENSAddressFormat } from '@/utils/validators';
 import * as i18n from '@/languages';
 
 type Props = {

@@ -1,6 +1,6 @@
 import { UniqueAsset } from '@/entities';
-import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
-import supportedUriExtensions from '@/helpers/supportedUriExtensions';
+import isSupportedUriExtension from '@/utils/isSupportedUriExtension';
+import supportedUriExtensions from '@/utils/supportedUriExtensions';
 
 export const uniqueTokenTypes = {
   ENS: 'ENS',

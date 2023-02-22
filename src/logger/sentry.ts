@@ -4,7 +4,7 @@ import VersionNumber from 'react-native-version-number';
 
 import { IS_PROD } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import isTestFlight from '@/helpers/isTestFlight';
+import isTestFlight from '@/utils/isTestFlight';
 
 /**
  * We need to disable React Navigation instrumentation for E2E tests because

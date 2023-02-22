@@ -4,7 +4,7 @@ import { InteractionManager } from 'react-native';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import AssetInputTypes from '@/utils/assetInputTypes';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 

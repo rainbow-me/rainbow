@@ -8,7 +8,7 @@ import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { AssetType } from '@/entities';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import { ButtonPressAnimation } from '@/components/animations';

@@ -9,7 +9,7 @@ import MenuItem from './components/MenuItem';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { useAccountSettings, useAppState, useWallets } from '@/hooks';
 import { requestPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
@@ -18,7 +18,7 @@ import { Box } from '@/design-system';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+} from '@/utils/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';

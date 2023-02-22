@@ -2,7 +2,7 @@ import React from 'react';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
-import ChartTypes from '@/helpers/chartTypes';
+import ChartTypes from '@/utils/chartTypes';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 

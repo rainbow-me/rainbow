@@ -18,7 +18,7 @@ import { isL2Network, toHex } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { greaterThan } from '@/helpers/utilities';
+import { greaterThan } from '@/utils/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';

@@ -35,8 +35,8 @@ import profileUtils, {
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { WrappedAlert as Alert } from '@/utils/alert';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
 import {
@@ -53,10 +53,10 @@ import {
   isValidMnemonic,
   web3Provider,
 } from '@/handlers/web3';
-import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { createSignature } from '@/utils/signingWallet';
+import showWalletErrorAlert from '@/utils/support';
+import { WalletLoadingStates } from '@/utils/walletLoadingStates';
+import walletTypes, { EthereumWalletType } from '@/utils/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
 import { setIsWalletLoading } from '@/redux/wallets';

@@ -8,7 +8,7 @@ import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
-import { getTrendKey } from '@/helpers/gas';
+import { getTrendKey } from '@/utils/gas';
 import {
   useAccountSettings,
   useColorForAsset,

@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import { checkIsValidAddressOrDomain } from '@/helpers/validators';
+import { checkIsValidAddressOrDomain } from '@/utils/validators';
 import { useClipboard, useInvalidPaste } from '@/hooks';
 import { deviceUtils } from '@/utils';
 

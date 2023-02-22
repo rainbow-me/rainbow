@@ -21,7 +21,7 @@ import {
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
 } from './ViewTypes';
-import assertNever from '@/helpers/assertNever';
+import assertNever from '@/utils/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
 import { ProfileStickyHeader } from '../profile-header/ProfileStickyHeader';
 import { ProfileActionButtonsRow } from '../profile-header/ProfileActionButtonsRow';

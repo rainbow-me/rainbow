@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
+} from '@rainbow-me/utils/emojiHandler';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -12,8 +12,8 @@ import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { ENS_DOMAIN } from '@/helpers/ens';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import { ENS_DOMAIN } from '@/utils/ens';
+import { isENSAddressFormat, isValidDomainFormat } from '@/utils/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';

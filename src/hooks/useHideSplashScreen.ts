@@ -5,7 +5,7 @@ import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
-import { StatusBarHelper } from '@/helpers';
+import { StatusBarHelper } from '@/utils';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 

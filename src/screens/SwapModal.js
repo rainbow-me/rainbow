@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@/helpers';
+import { ExchangeModalTypes } from '@/utils';
 import { useNavigation } from '@/navigation';
 
 const SwapModal = (props, ref) => {

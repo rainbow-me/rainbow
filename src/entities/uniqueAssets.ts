@@ -1,4 +1,4 @@
-import { Network } from '../helpers/networkTypes';
+import { Network } from '@rainbow-me/utils/networkTypes';
 import { AssetContract, AssetType } from '.';
 
 interface UniqueAssetLastSale {

@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
-import { BiometryTypes } from '@/helpers';
+import { BiometryTypes } from '@/utils';
 import { useBiometryType, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 

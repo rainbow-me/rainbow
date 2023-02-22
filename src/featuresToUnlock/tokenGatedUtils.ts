@@ -1,7 +1,7 @@
 import { Contract } from 'ethers';
 import { EthereumAddress } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 import { tokenGateCheckerAbi } from '@/references';
 
 const TOKEN_GATE_CHECKER_ADDRESS: Record<string, string> = {

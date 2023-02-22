@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { Network } from '@/helpers/networkTypes';
-import { omitFlatten } from '@/helpers/utilities';
+import { Network } from '@/utils/networkTypes';
+import { omitFlatten } from '@/utils/utilities';
 import { AppGetState } from '@/redux/store';
 
 // -- Constants --------------------------------------- //

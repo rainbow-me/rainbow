@@ -17,7 +17,7 @@ import { SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI } from '@/references';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { getTitle, getTransactionLabel } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
+import { isZero } from '@/utils/utilities';
 import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';

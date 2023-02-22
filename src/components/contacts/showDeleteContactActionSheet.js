@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString } from '@/utils/emojiHandler';
 import { showActionSheetWithOptions } from '@/utils';
 
 const showDeleteContactActionSheet = ({

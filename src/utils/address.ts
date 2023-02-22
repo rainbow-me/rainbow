@@ -1,4 +1,4 @@
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
+import { checkIsValidAddressOrDomain } from './validators';
 import { EthereumAddress } from '@/entities';
 
 /**

@@ -1,11 +1,14 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+  ethereumUtils,
+} from '@/utils';
+import AssetInputTypes from '@/utils/assetInputTypes';
 import { useExpandedStateNavigation, useSwapCurrencyHandlers } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
 
 function SwapActionButton({
   asset,

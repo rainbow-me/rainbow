@@ -15,12 +15,8 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
-import networkTypes, { Network } from '@/helpers/networkTypes';
-import {
-  fromWei,
-  greaterThan,
-  greaterThanOrEqualTo,
-} from '@/helpers/utilities';
+import networkTypes, { Network } from '@/utils/networkTypes';
+import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/utils/utilities';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,

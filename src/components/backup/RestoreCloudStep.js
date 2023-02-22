@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { isSamsungGalaxy } from '../../helpers/samsung';
+import { isSamsungGalaxy } from '@/utils/samsung';
 import {
   fetchBackupPassword,
   restoreCloudBackup,
@@ -13,14 +13,14 @@ import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import walletBackupTypes from '@/utils/walletBackupTypes';
+import { WalletLoadingStates } from '@/utils/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,

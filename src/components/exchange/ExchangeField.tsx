@@ -17,7 +17,7 @@ import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { AssetType } from '@/entities';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';

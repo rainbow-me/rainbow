@@ -1,6 +1,6 @@
 import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes from '@/utils/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';

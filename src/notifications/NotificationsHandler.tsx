@@ -38,10 +38,10 @@ import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
 import { TransactionDirection, TransactionStatus } from '@/entities';
 import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
-import { getConfirmedState } from '@/helpers/transactions';
+import { isZero } from '@/utils/utilities';
+import { getConfirmedState } from '@/utils/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
-import walletTypes from '@/helpers/walletTypes';
+import walletTypes from '@/utils/walletTypes';
 import {
   NotificationSubscriptionChangesListener,
   registerNotificationSubscriptionChangesListener,

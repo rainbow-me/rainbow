@@ -12,7 +12,7 @@ import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
-import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
+import CurrencySelectionTypes from '@/utils/currencySelectionTypes';
 import { emitAssetRequest } from '@/redux/explorer';
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
@@ -31,8 +31,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
+import { ethereumUtils, Network } from '@/utils';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

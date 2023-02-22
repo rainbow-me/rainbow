@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { sortList } from '../../helpers/sortList';
+import { sortList } from '@rainbow-me/utils/sortList';
 import { magicMemo } from '../../utils';
 import Tag from './Tag';
 import { Inline } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import isHttpUrl from '@/helpers/isHttpUrl';
-import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUniqueAssetTraitsForPresentation';
-import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
+import isHttpUrl from '@/utils/isHttpUrl';
+import transformUniqueAssetTraitsForPresentation from '@/utils/transformUniqueAssetTraitsForPresentation';
+import uniqueAssetTraitDisplayTypeCompareFunction from '@/utils/uniqueAssetTraitDisplayTypeCompareFunction';
 
 interface UniqueTokenAttributesProps {
   color: string;

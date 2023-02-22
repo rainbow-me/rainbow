@@ -37,7 +37,13 @@ import { STORAGE_IDS } from '../model/mmkv';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
-import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
+import {
+  CurrencySelectionTypes,
+  Network,
+  TokenSectionTypes,
+  ethereumUtils,
+  filterList,
+} from '@/utils';
 import {
   useAssetsInWallet,
   useCoinListEditOptions,
@@ -52,7 +58,6 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';

@@ -1,4 +1,4 @@
-import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
+import isSupportedUriExtension from '@/utils/isSupportedUriExtension';
 
 const svgRegexList = [
   new RegExp(

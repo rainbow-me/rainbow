@@ -23,7 +23,7 @@ import {
   generateSalt,
   getRentPrice,
   REGISTRATION_STEPS,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 import { loadWallet } from '@/model/wallet';
 import { executeRap } from '@/raps';
 import { timeUnits } from '@/references';

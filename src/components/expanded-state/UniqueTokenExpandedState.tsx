@@ -53,9 +53,8 @@ import {
   TextProps,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
-import { buildUniqueTokenName } from '@/helpers/assets';
-import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import { buildUniqueTokenName } from '@/utils/assets';
+import { ENS_RECORDS, REGISTRATION_MODES } from '@/utils/ens';
 import {
   useAccountProfile,
   useBooleanState,
@@ -75,6 +74,7 @@ import {
   buildRainbowUrl,
   getUniqueTokenType,
   magicMemo,
+  Network,
   safeAreaInsetValues,
 } from '@/utils';
 

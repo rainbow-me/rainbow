@@ -3,11 +3,11 @@ import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
-import { calculateEarningsInDays, isSymbolStablecoin } from '@/helpers/savings';
+import { calculateEarningsInDays, isSymbolStablecoin } from '@/utils/savings';
 import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useAccountSettings, useStepper } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';

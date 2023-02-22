@@ -6,7 +6,7 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   handleSignificantDecimals,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useStepper, useSwapCurrencies } from '@/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {

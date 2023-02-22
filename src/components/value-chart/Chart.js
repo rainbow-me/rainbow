@@ -20,7 +20,7 @@ import {
   ChartPath,
   useChartData,
 } from '@/react-native-animated-charts/src';
-import ChartTypes from '@/helpers/chartTypes';
+import ChartTypes from '@/utils/chartTypes';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';

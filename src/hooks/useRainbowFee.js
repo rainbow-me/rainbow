@@ -5,7 +5,7 @@ import {
   divide,
   multiply,
   subtract,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { useAccountSettings, useSwapCurrencies } from '@/hooks';
 import { ethereumUtils } from '@/utils';
 

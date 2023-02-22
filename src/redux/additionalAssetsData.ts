@@ -4,9 +4,8 @@ import { dataUpdateAsset } from './data';
 import { ParsedAddressAsset, SwappableAsset } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProviderForNetwork, isL2Network } from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { Network, ethereumUtils } from '@/utils';
 import { AppDispatch, AppGetState } from '@/redux/store';
-import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 
 // -- Constants ------------------------------------------------------------- //

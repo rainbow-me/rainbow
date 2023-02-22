@@ -10,8 +10,7 @@ import { FloatingPanel } from '../../floating-panels';
 import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
 import SourcePicker from './SourcePicker';
-
-import { Network } from '@/helpers';
+import { Network, deviceUtils } from '@/utils';
 import {
   Box,
   ColorModeProvider,
@@ -31,7 +30,6 @@ import {
 import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
-import { deviceUtils } from '@/utils';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();

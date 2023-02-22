@@ -3,8 +3,13 @@ import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
 import { AssetType } from '@/entities';
-import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
-import { updatePrecisionToDisplay } from '@/helpers/utilities';
+import {
+  CurrencySelectionTypes,
+  ExchangeModalTypes,
+  Network,
+  ethereumUtils,
+} from '@/utils';
+import { updatePrecisionToDisplay } from '@/utils/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { emitAssetRequest } from '@/redux/explorer';
@@ -17,7 +22,6 @@ import {
 } from '@/redux/swap';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;

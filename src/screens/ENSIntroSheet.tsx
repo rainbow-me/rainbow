@@ -25,7 +25,7 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/utils/ens';
 import {
   useAccountENSDomains,
   useDimensions,

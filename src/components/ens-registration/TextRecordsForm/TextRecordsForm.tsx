@@ -5,7 +5,7 @@ import { TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
-import { ENS_RECORDS } from '@/helpers/ens';
+import { ENS_RECORDS } from '@/utils/ens';
 import { useENSRegistrationForm } from '@/hooks';
 
 export default function TextRecordsForm({

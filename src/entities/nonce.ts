@@ -1,5 +1,5 @@
 import { EthereumAddress } from '.';
-import { Network } from '@/helpers/networkTypes';
+import { Network } from '@/utils/networkTypes';
 
 interface NetworkNonceInfo {
   nonce: number;

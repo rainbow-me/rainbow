@@ -1,7 +1,7 @@
 import React from 'react';
 import { AssetListItemSkeleton } from '../asset-list';
 import { Column } from '../layout';
-import { times } from '@/helpers/utilities';
+import { times } from '@/utils/utilities';
 
 const LoadingState = ({ children }) => (
   <Column flex={1}>

@@ -1,13 +1,12 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
-import { Network } from '@/helpers';
+import { Network, ethereumUtils } from '@/utils';
 import { useAssetsInWallet, useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import {
   EthereumAddress,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
 } from '@rainbow-me/swaps';
-import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type SwappableAddresses = {

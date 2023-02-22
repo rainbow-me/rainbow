@@ -14,7 +14,7 @@ import {
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
 } from '@/handlers/ens';
-import { NetworkTypes } from '@/helpers';
+import { NetworkTypes, ethereumUtils, gasUtils } from '@/utils';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -24,8 +24,8 @@ import {
   getRentPrice,
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
-} from '@/helpers/ens';
-import { Network } from '@/helpers/networkTypes';
+} from '@/utils/ens';
+import { Network } from '@/utils/networkTypes';
 import {
   add,
   addBuffer,
@@ -33,9 +33,8 @@ import {
   fromWei,
   greaterThanOrEqualTo,
   multiply,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { ethUnits, timeUnits } from '@/references';
-import { ethereumUtils, gasUtils } from '@/utils';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',

@@ -12,19 +12,18 @@ import {
   formatRecordsForTransaction,
 } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
-import { NetworkTypes } from '@/helpers';
+import { NetworkTypes, ethereumUtils } from '@/utils';
 import {
   ENSRegistrationTransactionType,
   getENSExecutionDetails,
   REGISTRATION_MODES,
-} from '@/helpers/ens';
+} from '@/utils/ens';
 import { dataAddNewTransaction } from '@/redux/data';
 import {
   saveCommitRegistrationParameters,
   updateTransactionRegistrationParameters,
 } from '@/redux/ensRegistration';
 import store from '@/redux/store';
-import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamsForTransaction } from '@/parsers';
 const executeCommit = async (

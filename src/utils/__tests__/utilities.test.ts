@@ -4,7 +4,7 @@ import {
   convertBipsToPercentage,
   handleSignificantDecimals,
   updatePrecisionToDisplay,
-} from '../utilities';
+} from '@/utils/utilities';
 
 it('convertAmountFromNativeValue', () => {
   const result = convertAmountFromNativeValue('1', '40.00505', 5);

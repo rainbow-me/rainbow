@@ -18,11 +18,10 @@ import Animated, {
 import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
-import { StatusBarHelper } from '@/helpers';
+import { StatusBarHelper, safeAreaInsetValues } from '@/utils';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { safeAreaInsetValues } from '@/utils';
 
 const adjustConfig = {
   duration: 300,

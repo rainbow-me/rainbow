@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { bigNumberFormat } from '@/utils/bigNumberFormat';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';

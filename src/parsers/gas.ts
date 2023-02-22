@@ -19,7 +19,7 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
-import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
+import { getMinimalTimeUnitStringForMs } from '@/utils/time';
 import { ethUnits, timeUnits } from '@/references';
 import {
   add,
@@ -30,7 +30,7 @@ import {
   lessThan,
   multiply,
   toFixedDecimals,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 
 type BigNumberish = number | string | BigNumber;
 

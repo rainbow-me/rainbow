@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text } from '../text';
-import { BiometryTypes } from '@/helpers';
 import { useBiometryType } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
+import { BiometryTypes } from '@/utils';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
 

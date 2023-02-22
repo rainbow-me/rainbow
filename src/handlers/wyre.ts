@@ -14,9 +14,9 @@ import {
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
 import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
-import NetworkTypes from '@/helpers/networkTypes';
+import NetworkTypes from '@/utils/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@/references';
-import { subtract } from '@/helpers/utilities';
+import { subtract } from '@/utils/utilities';
 import logger from '@/utils/logger';
 
 const SOURCE_CURRENCY_USD = 'USD';

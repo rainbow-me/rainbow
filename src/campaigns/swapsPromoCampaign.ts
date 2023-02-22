@@ -6,9 +6,9 @@ import {
   GenericCampaignCheckResponse,
 } from './campaignChecks';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
-import networkInfo from '@/helpers/networkInfo';
-import { Network } from '@/helpers/networkTypes';
-import WalletTypes from '@/helpers/walletTypes';
+import networkInfo from '@/utils/networkInfo';
+import { Network } from '@/utils/networkTypes';
+import WalletTypes from '@/utils/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { ethereumUtils, logger } from '@/utils';

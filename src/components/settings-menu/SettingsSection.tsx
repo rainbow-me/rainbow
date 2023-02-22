@@ -33,8 +33,8 @@ import useExperimentalFlag, {
 } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
 import { isCustomBuild, setOriginalDeploymentKey } from '@/handlers/fedora';
-import networkInfo from '@/helpers/networkInfo';
-import WalletTypes from '@/helpers/walletTypes';
+import networkInfo from '@/utils/networkInfo';
+import WalletTypes from '@/utils/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';

@@ -14,19 +14,22 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
-import WalletTypes from '../helpers/walletTypes';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+} from '@rainbow-me/utils/dappNameHandler';
+import WalletTypes from '@rainbow-me/utils/walletTypes';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove, RequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
-import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
-import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
+import networkTypes from '@/utils/networkTypes';
+import { convertHexToString, delay, omitBy, pickBy } from '@/utils/utilities';
+import WalletConnectApprovalSheetType from '@/utils/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';

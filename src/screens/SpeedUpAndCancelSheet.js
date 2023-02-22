@@ -26,7 +26,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import {
   removeRegistrationByName,
   saveCommitRegistrationParameters,
@@ -38,8 +38,8 @@ import {
   isL2Network,
   toHex,
 } from '@/handlers/web3';
-import { Network } from '@/helpers';
-import { greaterThan } from '@/helpers/utilities';
+import { Network, gasUtils, safeAreaInsetValues } from '@/utils';
+import { greaterThan } from '@/utils/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -49,7 +49,6 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 
 const { CUSTOM, URGENT } = gasUtils;

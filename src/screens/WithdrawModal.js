@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import ExchangeModal from './ExchangeModal';
-import { ExchangeModalTypes } from '@/helpers';
+import { ExchangeModalTypes } from '@/utils';
 import { ExchangeNavigatorFactory, useStatusBarManaging } from '@/navigation';
 
 const WithdrawModal = props => {

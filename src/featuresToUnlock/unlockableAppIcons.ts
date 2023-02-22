@@ -1,5 +1,5 @@
 import { EthereumAddress } from '@/entities';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 
 // optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress =

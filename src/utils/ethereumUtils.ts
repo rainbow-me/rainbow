@@ -18,7 +18,7 @@ import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import {
   AssetType,
   EthereumAddress,
@@ -37,8 +37,8 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
-import { Network } from '@/helpers/networkTypes';
+import networkInfo from '@/utils/networkInfo';
+import { Network } from '@/utils/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -48,7 +48,7 @@ import {
   greaterThan,
   isZero,
   subtract,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';

@@ -3,7 +3,7 @@ import React from 'react';
 import LargeCountdownClock from '../../../components/large-countdown-clock/LargeCountdownClock';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { ENS_SECONDS_WAIT } from '@/helpers/ens';
+import { ENS_SECONDS_WAIT } from '@/utils/ens';
 
 const WaitENSConfirmationContent = ({
   seconds,

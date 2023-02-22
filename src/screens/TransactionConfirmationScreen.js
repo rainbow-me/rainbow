@@ -45,7 +45,7 @@ import {
 import { FLASHBOTS_WC } from '../config/experimental';
 import useExperimentalFlag from '../config/experimentalHooks';
 import { lightModeThemeColors } from '../styles/colors';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import config from '@/model/config';
@@ -58,11 +58,11 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import { Network } from '@/helpers';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { isDappAuthenticated } from '@/helpers/dappNameHandler';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
+import { Network, ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { getAccountProfileInfo } from '@/utils/accountInfo';
+import { isDappAuthenticated } from '@/utils/dappNameHandler';
+import { findWalletWithAccount } from '@/utils/findWalletWithAccount';
+import networkTypes from '@/utils/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -95,8 +95,7 @@ import {
   greaterThanOrEqualTo,
   multiply,
   omitFlatten,
-} from '@/helpers/utilities';
-import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+} from '@/utils/utilities';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {

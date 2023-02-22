@@ -18,7 +18,7 @@ import {
   ethUnits,
   savingsAssetsListByUnderlying,
 } from '@/references';
-import { convertAmountToRawAmount, isEqual } from '@/helpers/utilities';
+import { convertAmountToRawAmount, isEqual } from '@/utils/utilities';
 import { gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamsForTransaction } from '@/parsers';

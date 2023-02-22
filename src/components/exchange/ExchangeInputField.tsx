@@ -4,7 +4,7 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { Network } from '@/helpers';
+import { Network } from '@/utils';
 import styled from '@/styled-thing';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({

@@ -5,8 +5,8 @@ import useWallets from './useWallets';
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
 import { fetchAccountDomains } from '@/handlers/ens';
-import { ENS_RECORDS } from '@/helpers/ens';
-import walletTypes from '@/helpers/walletTypes';
+import { ENS_RECORDS } from '@/utils/ens';
+import walletTypes from '@/utils/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 
 export default function useTrackENSProfile() {

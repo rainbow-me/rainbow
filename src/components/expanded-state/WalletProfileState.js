@@ -4,14 +4,14 @@ import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
+import { removeFirstEmojiFromString } from '@/utils/emojiHandler';
+import { getWalletProfileMeta } from '@/utils/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { delay } from '@/utils/utilities';
 
 export default function WalletProfileState({
   actionType,

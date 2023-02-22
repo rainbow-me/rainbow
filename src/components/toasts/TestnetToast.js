@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import networkInfo from '../../helpers/networkInfo';
-import networkTypes from '../../helpers/networkTypes';
+import networkInfo from '@rainbow-me/utils/networkInfo';
+import networkTypes from '@rainbow-me/utils/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';

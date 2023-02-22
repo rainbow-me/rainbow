@@ -13,12 +13,9 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
-import { TransactionActions } from '@/helpers/transactionActions';
-import {
-  getHumanReadableDate,
-  hasAddableContact,
-} from '@/helpers/transactions';
-import { isValidDomainFormat } from '@/helpers/validators';
+import { TransactionActions } from '@/utils/transactionActions';
+import { getHumanReadableDate, hasAddableContact } from '@/utils/transactions';
+import { isValidDomainFormat } from '@/utils/validators';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

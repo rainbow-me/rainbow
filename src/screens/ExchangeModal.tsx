@@ -37,7 +37,7 @@ import { GasSpeedButton } from '../components/gas';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import config from '../model/config';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { WrappedAlert as Alert } from '@/utils/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import {
@@ -48,8 +48,14 @@ import {
   ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
-import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
-import { KeyboardType } from '@/helpers/keyboardTypes';
+import {
+  ExchangeModalTypes,
+  isKeyboardOpen,
+  Network,
+  ethereumUtils,
+  gasUtils,
+} from '@/utils';
+import { KeyboardType } from '@/utils/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
 import {
   divide,
@@ -57,7 +63,7 @@ import {
   greaterThan,
   multiply,
   subtract,
-} from '@/helpers/utilities';
+} from '@/utils/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -88,7 +94,6 @@ import {
 } from '@/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import logger from '@/utils/logger';

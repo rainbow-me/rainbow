@@ -3,13 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
 import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
-import { Network } from '@/helpers';
+import { Network, ethereumUtils } from '@/utils';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
+import { convertAmountToNativeDisplay } from '@/utils/utilities';
 
 const NONE = 'None';
 

@@ -7,7 +7,7 @@ import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
-import { times } from '@/helpers/utilities';
+import { times } from '@/utils/utilities';
 import { useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

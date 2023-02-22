@@ -7,7 +7,7 @@ import { UniqueAsset } from '@/entities';
 import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
 import { getNFTByTokenId } from '@/handlers/simplehash';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { NetworkTypes } from '@/helpers';
+import { NetworkTypes } from '@/utils';
 
 const abi = [
   'function uri(uint256 _id) public view returns (string memory)',

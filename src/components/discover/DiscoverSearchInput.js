@@ -24,7 +24,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
-import networkInfo from '@/helpers/networkInfo';
+import networkInfo from '@/utils/networkInfo';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
 
 export const ExchangeSearchHeight = 40;

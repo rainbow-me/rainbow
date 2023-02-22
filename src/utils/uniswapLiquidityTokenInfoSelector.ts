@@ -12,8 +12,8 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
-} from '@/helpers/utilities';
-import { getTokenMetadata } from '@/utils';
+} from '@/utils/utilities';
+import { getTokenMetadata } from '@/utils/index';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;

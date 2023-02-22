@@ -4,11 +4,10 @@ import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
 import { EthereumAddress } from '@/entities';
 import { getAdditionalAssetData } from '@/handlers/dispersion';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
-import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
+import { bigNumberFormat } from '@/utils/bigNumberFormat';
+import { greaterThanOrEqualTo, multiply } from '@/utils/utilities';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
 import { implementation } from '@/entities/dispersion';
-import { Network } from '@/helpers';
 
 export default function useAdditionalAssetData(
   rawAddress: EthereumAddress,

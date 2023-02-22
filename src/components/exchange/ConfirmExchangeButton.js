@@ -6,7 +6,7 @@ import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
-import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
+import { ExchangeModalTypes, NetworkTypes } from '@/utils';
 import {
   useColorForAsset,
   useGas,
