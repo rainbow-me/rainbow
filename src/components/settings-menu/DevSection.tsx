@@ -14,6 +14,7 @@ import {
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
+import Clipboard from '@react-native-community/clipboard';
 import { defaultConfig } from '../../config/experimental';
 import useAppVersion from '../../hooks/useAppVersion';
 import { settingsUpdateNetwork } from '../../redux/settings';
@@ -55,6 +56,7 @@ import {
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
 import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
+import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -432,6 +434,22 @@ const DevSection = () => {
                 <MenuItem.Title
                   text={lang.t('developer_settings.navigation_entry_point')}
                 />
+              }
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🤖" isEmoji />}
+              onPress={async () => {
+                const publicKey = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+
+                if (publicKey) {
+                  Clipboard.setString(publicKey);
+                }
+
+                Alert.alert(publicKey ? `Copied` : `Couldn't get public key`);
+              }}
+              size={52}
+              titleComponent={
+                <MenuItem.Title text={'Copy signing wallet address'} />
               }
             />
           </Menu>
