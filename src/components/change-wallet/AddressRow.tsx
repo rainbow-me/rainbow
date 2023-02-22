@@ -283,7 +283,6 @@ export default function AddressRow({
               <LinearGradient
                 {...linearGradientProps}
                 // @ts-expect-error JavaScript component
-
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
