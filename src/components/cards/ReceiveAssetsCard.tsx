@@ -5,7 +5,6 @@ import { useAccountProfile, useClipboard } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { useRecoilState } from 'recoil';
-import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -15,6 +14,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import * as i18n from '@/languages';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 
 export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
