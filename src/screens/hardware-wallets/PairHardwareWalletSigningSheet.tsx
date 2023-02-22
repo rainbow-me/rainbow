@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
-import React from 'react';
-import { Linking } from 'react-native';
+import React, { useCallback } from 'react';
+import { Alert, Linking } from 'react-native';
 import {
   Box,
   Column,
@@ -12,9 +12,14 @@ import {
 } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useDimensions } from '@/hooks';
-import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useDimensions, useImportingWallet } from '@/hooks';
+import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { useRecoilValue } from 'recoil';
+import { logger } from '@/logger';
+import { DebugContext } from '@/logger/debugContext';
+import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
@@ -77,9 +82,15 @@ const Item = ({ item, rank }: ItemProps) => {
   );
 };
 
-export const PairHardwareWalletSigningSheet = () => {
-  const { isSmallPhone } = useDimensions();
+export function PairHardwareWalletSigningSheet() {
   const { navigate } = useNavigation();
+  const { isSmallPhone } = useDimensions();
+  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const {
+    busy,
+    handleSetSeedPhrase,
+    handlePressImportButton,
+  } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
     {
@@ -101,6 +112,61 @@ export const PairHardwareWalletSigningSheet = () => {
       ),
     },
   ];
+
+  const importHardwareWallet = useCallback(
+    async (deviceId: string) => {
+      if (busy) {
+        logger.debug(
+          '[importHardwareWallet] - busy, already trying to import',
+          { deviceId },
+          DebugContext.ledger
+        );
+        return;
+      }
+      logger.debug(
+        '[importHardwareWallet] - importing Hardware Wallet',
+        { deviceId },
+        DebugContext.ledger
+      );
+      handleSetSeedPhrase(deviceId);
+      handlePressImportButton(null, deviceId, null, null);
+    },
+    [busy, handlePressImportButton, handleSetSeedPhrase]
+  );
+
+  const successCallback = useCallback(
+    (deviceId: string) => {
+      importHardwareWallet(deviceId);
+    },
+    [importHardwareWallet]
+  );
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      if (
+        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
+        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
+      ) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
+          params: {
+            errorType,
+            deviceId,
+          },
+        });
+      } else {
+        Alert.alert(
+          'Error',
+          'Something went wrong. Please restart the app and try again.'
+        );
+      }
+    },
+    [deviceId, navigate]
+  );
+
+  const handleButtonPress = useCallback(async (): Promise<void> => {
+    await checkLedgerConnection({ deviceId, successCallback, errorCallback });
+  }, [deviceId, successCallback, errorCallback]);
 
   return (
     <Layout>
@@ -146,9 +212,9 @@ export const PairHardwareWalletSigningSheet = () => {
         </Stack>
       </Inset>
       <ActionButton
-        label={i18n.t(TRANSLATIONS.blind_signing_enabled)}
-        onPress={() => navigate(Routes.WALLET_SCREEN)}
+        label={i18n.t(TRANSLATIONS.finish_importing)}
+        onPress={() => handleButtonPress()}
       />
     </Layout>
   );
-};
+}
