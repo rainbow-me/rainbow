@@ -718,6 +718,8 @@ export default function TransactionConfirmationScreen() {
       'chainId',
     ]);
 
+    logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
+
     let response = null;
 
     try {

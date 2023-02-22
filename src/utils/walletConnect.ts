@@ -19,10 +19,6 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
-import {
-  isSigningMethod,
-  isTransactionDisplayType,
-} from '@/utils/signingMethods';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
@@ -208,6 +204,12 @@ export function isSupportedTransactionMethod(method: RPCMethod) {
   return [RPCMethod.SendTransaction].includes(method);
 }
 
+export function isSupportedMethod(method: RPCMethod) {
+  return (
+    isSupportedSigningMethod(method) || isSupportedTransactionMethod(method)
+  );
+}
+
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
@@ -369,7 +371,20 @@ export async function onSessionProposal(
    * probably not a big deal right now.
    */
   if (!requiredNamespaces.eip155) {
-    logger.error(new RainbowError(`WC v2: missing required namespace eip155`));
+    logger.error(new RainbowError(`WC v2: missing required namespace eip155`), {
+      requiredNamespaces,
+    });
+    return;
+  }
+
+  /**
+   * Trying to be defensive here, but I'm not sure we support this anyway so
+   * probably not a big deal right now.
+   */
+  if (!requiredNamespaces.eip155.chains) {
+    logger.error(new RainbowError(`WC v2: namespace is missing chains prop`), {
+      requiredNamespaces,
+    });
     return;
   }
 
@@ -381,13 +396,16 @@ export async function onSessionProposal(
     peerMeta.name ||
     lang.t(lang.l.walletconnect.unknown_dapp);
 
-  for (const method of methods) {
-    if (!isSigningMethod(method)) {
-      await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
-      showErrorSheet({ reason: 'failed_wc_invalid_methods' });
-      return;
-    }
-  }
+  /**
+   * Log these, but it's OK if they list them now, we'll just ignore requests
+   * to use them later.
+   */
+  const unspportedMethods = methods.filter(
+    method => !isSupportedMethod(method as RPCMethod)
+  );
+  logger.warn(`WC v2: dapp requested unsupported RPC methods`, {
+    methods: unspportedMethods,
+  });
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
@@ -430,6 +448,7 @@ export async function onSessionProposal(
             events: value.events,
           };
 
+          // @ts-expect-error We checked the namespace for chains prop above
           for (const chain of value.chains) {
             const chainId = parseInt(chain.split(`${key}:`)[1]);
             namespaces[key].accounts.push(
@@ -528,7 +547,7 @@ export async function onSessionRequest(
     logger.DebugContext.walletconnect
   );
 
-  if (isSigningMethod(method)) {
+  if (isSupportedMethod(method as RPCMethod)) {
     const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
     const { address, message } = parseRPCParams({
       method: method as RPCMethod,
@@ -753,9 +772,18 @@ export async function updateSession(
       events: value.events,
     };
 
-    for (const chain of value.chains) {
-      const chainId = parseInt(chain.split(`${key}:`)[1]);
-      namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
+    if (value.chains) {
+      for (const chain of value.chains) {
+        const chainId = parseInt(chain.split(`${key}:`)[1]);
+        namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
+      }
+    } else {
+      logger.error(
+        new RainbowError(
+          `WC v2: namespace is missing chains prop when updating`
+        ),
+        { requiredNamespaces: session.requiredNamespaces }
+      );
     }
   }
 
