@@ -286,7 +286,7 @@ export default function AddressRow({
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.ledger')}
+                  {lang.t('wallet.change_wallet.watching')}
                 </ReadOnlyText>
               </LinearGradient>
             )}
