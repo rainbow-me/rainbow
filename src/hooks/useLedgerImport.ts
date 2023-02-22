@@ -1,5 +1,5 @@
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger, RainbowError } from '@/logger';
 import { Subscription } from '@ledgerhq/hw-transport';
@@ -22,12 +22,8 @@ export function useLedgerImport({
   successCallback?: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const [observer, setObserverSubscription] = useState<Subscription | null>(
-    null
-  );
-  const [listener, setListenerSubscription] = useState<Subscription | null>(
-    null
-  );
+  const observer = useRef<Subscription | null>(null);
+  const listener = useRef<Subscription | null>(null);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
@@ -126,11 +122,11 @@ export function useLedgerImport({
               }
             },
           });
-          setListenerSubscription(newListener);
+          listener.current = newListener;
         }
       },
     });
-    setObserverSubscription(newObserver);
+    observer.current = newObserver;
   }, [handlePairError, handlePairSuccess]);
 
   /**
@@ -164,8 +160,8 @@ export function useLedgerImport({
 
     // cleanup
     return () => {
-      observer?.unsubscribe();
-      listener?.unsubscribe();
+      observer?.current?.unsubscribe();
+      listener?.current?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
