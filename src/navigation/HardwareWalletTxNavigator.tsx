@@ -51,64 +51,7 @@ export const readyForPollingAtom = atom({
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
-  const { selectedWallet } = useWallets();
-  const {
-    params: { submit },
-  } = useRoute<RouteProp<RouteParams, 'HardwareWalletTxParams'>>();
 
-  const { navigate } = useNavigation();
-
-  const deviceId = selectedWallet?.deviceId;
-  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
-  const [readyForPolling, setReadyForPolling] = useRecoilState(
-    readyForPollingAtom
-  );
-
-  const errorCallback = useCallback(
-    (errorType: LEDGER_ERROR_CODES) => {
-      console.log('error callbaxk', errorType);
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
-        navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
-          errorType,
-          deviceId,
-        });
-      } else {
-        // silent for now
-      }
-    },
-    [deviceId, navigate]
-  );
-  const successCallback = useCallback(() => {
-    logger.debug('[LedgerTx] - submitting tx', {}, DebugContext.ledger);
-    if (!isReady) {
-      setReadyForPolling(false);
-      setIsReady(true);
-      setHardwareTXError(false);
-      submit();
-    } else {
-      logger.debug('[LedgerTx] - already submitted', {}, DebugContext.ledger);
-    }
-  }, [isReady, setIsReady, setReadyForPolling, submit]);
-
-  useLedgerConnect({
-    deviceId,
-    readyForPolling,
-    errorCallback,
-    successCallback,
-  });
-
-  // reset state when navigating away
-  useEffect(() => {
-    return () => {
-      setIsReady(false);
-      setReadyForPolling(true);
-      setHardwareTXError(false);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (

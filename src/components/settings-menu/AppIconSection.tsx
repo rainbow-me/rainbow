@@ -9,6 +9,7 @@ import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPixel from '@/assets/appIconPixel.png';
+import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import { Box } from '@/design-system';
@@ -19,6 +20,7 @@ import Logger from '@/utils/logger';
 import {
   GoldDogeIcon,
   OptimismIcon,
+  PoolyIcon,
   RainDogeIcon,
   SmolIcon,
   ZoraIcon,
@@ -87,6 +89,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     source: AppIconRainDoge,
     unlock_key: RainDogeIcon.unlockKey,
   },
+  pooly: {
+    accentColor: 'poolyPurple',
+    key: PoolyIcon.key,
+    name: 'Rainbow Pooly',
+    source: AppIconPooly,
+    unlock_key: PoolyIcon.unlockKey,
+  },
 };
 
 const mmkv = new MMKV();
@@ -144,6 +153,7 @@ const AppIconSection = () => {
                       height: 36,
                       width: 36,
                     }}
+                    size={30}
                   />
                 </Box>
               }

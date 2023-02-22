@@ -678,13 +678,15 @@
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that’s made for magical pondering.",
-        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu’s 17th birthday.",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
-        "button": "Snag the icon"
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon! :)",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering. :)",
+        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
+        "pooly_title": "You've unlocked a\nRainbow Pooly :)",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
+        "button": "Snag the icon :)"
       },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
@@ -1314,6 +1316,8 @@
       "next_airdrop": "Next Airdrop :)",
       "last_airdrop": "Last Airdrop :)",
       "my_stats": "My Stats :)",
+      "swapped": "Swapped :)",
+      "bridged": "Bridged :)",
       "position": "Position :)",
       "leaderboard": "Leaderboard :)",
       "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected. :)",
@@ -1341,8 +1345,8 @@
           "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet. :)"
         },
         "amount_distributed": {
-          "title": "30,000 OP Every Week :)",
-          "text": "Up to 30,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
+          "title": "28,000 OP Every Week :)",
+          "text": "Up to 28,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
         },
         "bridge": {
           "title": "Earn 0.125% on Bridging :)",
@@ -1956,7 +1960,9 @@
       "requesting_network": "Requesting %{num} network :)",
       "requesting_networks": "Requesting %{num} networks :)",
       "unknown_dapp": "Unknown Dapp :)",
-      "unknown_url": "Unknown URL :)"
+      "unknown_url": "Unknown URL :)",
+      "approval_sheet_network": "Network :)",
+      "approval_sheet_networks": "%{length} Networks :)"
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",

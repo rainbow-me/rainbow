@@ -86,6 +86,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
           source={eyeSlash as Source}
           style={{ height: 17, width: 25 }}
           tintColor={colors.blueGreyDark60}
+          size={30}
         />
       </View>
     );

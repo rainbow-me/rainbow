@@ -359,7 +359,7 @@ export const fetchImage = async (
       allowNonOwnerNFTs: true,
       type: imageType,
     });
-    ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])]);
+    ImgixImage.preload([...(imageUrl ? [{ uri: imageUrl }] : [])], 100);
     saveENSData(imageType, ensName, { imageUrl });
   } catch (err) {
     // Fallback to storage images

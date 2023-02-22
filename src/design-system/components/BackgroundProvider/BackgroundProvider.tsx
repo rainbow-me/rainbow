@@ -51,3 +51,8 @@ export function BackgroundProvider({
 
   return <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>;
 }
+
+export function useBackgroundColor(color: BackgroundColor) {
+  const { backgroundColors } = useContext(ColorModeContext);
+  return backgroundColors[color].color;
+}

@@ -1,11 +1,10 @@
-import { useRoute } from '@react-navigation/native';
-import { compact, isEmpty, keys } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { isEmpty, keys } from 'lodash';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { OpacityToggler } from '../components/animations';
-import { AssetList } from '../components/asset-list';
-import { Page } from '../components/layout';
+import { OpacityToggler } from '../../components/animations';
+import { AssetList } from '../../components/asset-list';
+import { Page } from '../../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
@@ -31,44 +30,32 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { updateRefetchSavings } from '@/redux/data';
-import { emitChartsRequest, emitPortfolioRequest } from '@/redux/explorer';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
+import { emitPortfolioRequest } from '@/redux/explorer';
+import Routes from '@rainbow-me/routes';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { atom, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analytics } from '@/analytics';
+import { AppState } from '@/redux/store';
+import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 
-export const addressCopiedToastAtom = atom({
-  default: false,
-  key: 'addressCopiedToast',
-});
+type RouteParams = {
+  WalletScreen: {
+    initialized?: boolean;
+    emptyWallet?: boolean;
+  };
+};
 
-const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
-  endingOpacity: 0.4,
-  pointerEvents: isVisible ? 'none' : 'auto',
-}))({
-  elevation: 1,
-  zIndex: 1,
-});
+type Props = MaterialTopTabScreenProps<RouteParams, 'WalletScreen'>;
 
-const WalletPage = styled(Page)({
-  ...position.sizeAsObject('100%'),
-  flex: 1,
-});
-
-export default function WalletScreen() {
-  const { params } = useRoute();
-  const {
-    setParams,
-    dangerouslyGetState,
-    dangerouslyGetParent,
-  } = useNavigation();
+export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { params } = route;
+  const { setParams, dangerouslyGetState, dangerouslyGetParent } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
-  const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
   const { trackENSProfile } = useTrackENSProfile();
@@ -105,7 +92,7 @@ export default function WalletScreen() {
   }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(
-    ({ appState: { walletReady } }) => walletReady
+    ({ appState: { walletReady } }: AppState) => walletReady
   );
   const {
     isWalletEthZero,
@@ -122,7 +109,7 @@ export default function WalletScreen() {
       return;
     }
     const isWelcomeScreen =
-      dangerouslyGetParent().dangerouslyGetState().routes[0].name ===
+      dangerouslyGetParent()?.dangerouslyGetState().routes[0].name ===
       Routes.WELCOME_SCREEN;
     if (isWelcomeScreen) {
       removeFirst();
@@ -132,7 +119,7 @@ export default function WalletScreen() {
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 
   const { addressSocket, assetsSocket } = useSelector(
-    ({ explorer: { addressSocket, assetsSocket } }) => ({
+    ({ explorer: { addressSocket, assetsSocket } }: AppState) => ({
       addressSocket,
       assetsSocket,
     })
@@ -152,6 +139,7 @@ export default function WalletScreen() {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
+      // @ts-expect-error messed up initializeWallet types
       await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
@@ -243,11 +231,17 @@ export default function WalletScreen() {
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
 
   const isLoadingAssets =
-    useSelector(state => state.data.isLoadingAssets) && !!accountAddress;
+    useSelector((state: AppState) => state.data.isLoadingAssets) &&
+    !!accountAddress;
 
   return (
-    <WalletPage testID="wallet-screen">
-      <HeaderOpacityToggler isVisible={isCoinListEdited}>
+    <Page testID="wallet-screen" style={styles.page}>
+      <OpacityToggler
+        endingOpacity={0.4}
+        pointerEvents={isCoinListEdited ? 'none' : 'auto'}
+        isVisible={isCoinListEdited}
+        style={styles.opacityToggler}
+      >
         <Navbar
           hasStatusBarInset
           leftComponent={
@@ -269,10 +263,11 @@ export default function WalletScreen() {
             </Inline>
           }
         />
-      </HeaderOpacityToggler>
+      </OpacityToggler>
       <Box
         style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
       >
+        {/* @ts-expect-error JavaScript component */}
         <AssetList
           disableRefreshControl={isLoadingAssets}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
@@ -289,6 +284,17 @@ export default function WalletScreen() {
           testID="address-copied-toast"
         />
       </ToastPositionContainer>
-    </WalletPage>
+    </Page>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  opacityToggler: {
+    elevation: 1,
+    zIndex: 1,
+  },
+  page: {
+    ...position.sizeAsObject('100%'),
+    flex: 1,
+  },
+});

@@ -1,13 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
-
-export enum LEDGER_CONNECTION_STATUS {
-  LOADING = 'loading',
-  READY = 'ready',
-  ERROR = 'error',
-}
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -23,30 +17,11 @@ export function useLedgerConnect({
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const [
-    connectionStatus,
-    setConnectionStatus,
-  ] = useState<LEDGER_CONNECTION_STATUS>(LEDGER_CONNECTION_STATUS.LOADING);
-  const [errorCode, setErrorCode] = useState<LEDGER_ERROR_CODES | null>(null);
-
   /**
    * Handles local error handling for useLedgerStatusCheck
    */
   const handleLedgerError = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      // just saving these in case we need them
-      /*
-      if (error.message.toLowerCase().includes('disconnected')) {
-        setConnectionStatus(LEDGER_CONNECTION_STATUS.LOADING);
-        //setErrorCode(LEDGER_ERROR_CODES.DISCONNECTED);
-        return;
-      }*/
-
-      /*
-      if (error.message.includes('Ledger Device is busy (lock')) {
-      } */
-      setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
-      setErrorCode(errorType);
       errorCallback?.(errorType);
     },
     [errorCallback]
@@ -56,8 +31,6 @@ export function useLedgerConnect({
    * Handles successful ledger connection
    */
   const handleLedgerSuccess = useCallback(() => {
-    setConnectionStatus(LEDGER_CONNECTION_STATUS.READY);
-    setErrorCode(null);
     successCallback?.(deviceId);
   }, [deviceId, successCallback]);
 
@@ -102,6 +75,4 @@ export function useLedgerConnect({
       pollerCleanup(timer);
     };
   }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling]);
-
-  return { connectionStatus, errorCode };
 }

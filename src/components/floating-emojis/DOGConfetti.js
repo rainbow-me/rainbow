@@ -118,7 +118,11 @@ export const DOGConfetti = () => {
                 {key % 2 === 0 ? (
                   <Emoji name="rainbow" style={styles.confetti} />
                 ) : (
-                  <ImgixImage source={dogSunglasses} style={styles.confetti} />
+                  <ImgixImage
+                    source={dogSunglasses}
+                    style={styles.confetti}
+                    size={30}
+                  />
                 )}
               </Animated.View>
             </React.Fragment>

@@ -21,6 +21,7 @@ const openWidth = 78;
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
+  size: 30,
 }))({
   height: 18,
   width: 8,

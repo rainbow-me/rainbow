@@ -18,7 +18,7 @@ import { removeRequest } from '@/redux/requests';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import config from '@/model/config';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 

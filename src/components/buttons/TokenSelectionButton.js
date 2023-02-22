@@ -29,6 +29,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
   tintColor: colors.whiteLabel,
+  size: 30,
 }))({
   height: 18,
   top: 0.5,

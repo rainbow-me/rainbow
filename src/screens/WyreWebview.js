@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import Spinner from '../components/Spinner';

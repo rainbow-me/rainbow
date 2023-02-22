@@ -200,7 +200,7 @@ export const addRequestToApprove = (
   }
   const unsafeImageUrl =
     dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
-  const imageUrl = maybeSignUri(unsafeImageUrl);
+  const imageUrl = maybeSignUri(unsafeImageUrl, { w: 200 });
   const dappName =
     dappNameOverride(peerMeta?.url) || peerMeta?.name || 'Unknown Dapp';
   const dappUrl = peerMeta?.url || 'Unknown Url';

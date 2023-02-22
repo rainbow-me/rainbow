@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect } from 'react';

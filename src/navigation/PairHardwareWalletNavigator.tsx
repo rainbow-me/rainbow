@@ -30,11 +30,10 @@ export const LedgerImportDeviceIdAtom = atom({
 });
 
 export function PairHardwareWalletNavigator() {
-  const { height, width } = useDimensions();
-
   const { params } = useRoute<
     RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
   >();
+  const { height, width } = useDimensions();
 
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET

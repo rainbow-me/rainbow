@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Inset, Stack, Text } from '@/design-system';
+import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useSetRecoilState } from 'recoil';
@@ -9,9 +9,10 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
+import { CancelButton } from './components/CancelButton';
 
 export const PairHardwareWalletSearchSheet = () => {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
   const [isConnected, setIsConnected] = React.useState(false);
 
@@ -43,12 +44,19 @@ export const PairHardwareWalletSearchSheet = () => {
           </Text>
         </Stack>
       </Inset>
-      {isConnected && (
-        <ActionButton
-          label={i18n.t(i18n.l.button.next)}
-          onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)}
-        />
-      )}
+      <Box width="full">
+        <Stack space="16px">
+          {isConnected && (
+            <ActionButton
+              label={i18n.t(i18n.l.button.next)}
+              onPress={() =>
+                navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)
+              }
+            />
+          )}
+          <CancelButton onPress={goBack} />
+        </Stack>
+      </Box>
     </Layout>
   );
 };

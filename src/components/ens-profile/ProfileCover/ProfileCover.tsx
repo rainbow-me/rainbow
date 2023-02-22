@@ -8,6 +8,7 @@ import { Box, useForegroundColor } from '@/design-system';
 import { useFadeImage } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { CardSize } from '@/components/unique-token/CardSize';
 
 const imagePreviewOverlayTopOffset = ios ? 68 + sharedCoolModalTopOffset : 107;
 
@@ -32,6 +33,7 @@ export default function ProfileCover({
   const showSkeleton = isLoading || !isFetched;
   const showRadialGradient = ios && !coverUrl && isFetched && !isLoading;
 
+  console.log('coverUrl: ', coverUrl);
   return (
     <>
       {showSkeleton && (
@@ -84,6 +86,7 @@ export default function ProfileCover({
               height="126px"
               onLoadEnd={onLoadEnd}
               source={{ uri: coverUrl || '' }}
+              size={200}
             />
           </ImagePreviewOverlayTarget>
         </Box>

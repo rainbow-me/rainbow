@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
@@ -71,7 +71,7 @@ export default function ProfileSheet() {
   );
 
   const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatar?.imageUrl ?? '') ?? ''
+    maybeSignUri(avatar?.imageUrl ?? '', { w: 200 }) ?? ''
   );
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [

@@ -282,18 +282,19 @@ export default function AddressRow({
             {isReadOnly && (
               <LinearGradient
                 {...linearGradientProps}
-                // @ts-ignore
+                // @ts-expect-error JavaScript component
+
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.watching')}
+                  {lang.t('wallet.change_wallet.ledger')}
                 </ReadOnlyText>
               </LinearGradient>
             )}
             {isLedger && (
               <LinearGradient
                 {...linearGradientProps}
-                // @ts-ignore
+                // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
@@ -302,7 +303,7 @@ export default function AddressRow({
               </LinearGradient>
             )}
             {!editMode && isSelected && (
-              // @ts-ignore
+              // @ts-expect-error JavaScript component
               <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode &&

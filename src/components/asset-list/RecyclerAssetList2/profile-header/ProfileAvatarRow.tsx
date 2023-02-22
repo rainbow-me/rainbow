@@ -47,7 +47,7 @@ export function ProfileAvatarRow({
   } = useOnAvatarPress({ screenType: 'wallet' });
 
   const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
+    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
   );
 
   // ////////////////////////////////////////////////////
@@ -227,6 +227,7 @@ export function ProfileAvatarRow({
                         height={{ custom: size }}
                         source={{ uri: accountImage }}
                         width={{ custom: size }}
+                        size={100}
                       />
                     ) : (
                       <EmojiAvatar size={size} />

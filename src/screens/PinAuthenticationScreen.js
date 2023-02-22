@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -23,6 +23,7 @@ import { haptics } from '@/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
+  size: 80,
 })({
   height: 80,
   width: 80,
