@@ -262,14 +262,16 @@ function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
+  const [renderForcer, setRenderForcer] = React.useState(0);
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
   );
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
-  const [activeWCV2Sessions, setActiveWCV2Sessions] = React.useState(
-    getAllActiveSessionsSync()
+  const [hasWCv2Connections, setHasWCv2Connections] = React.useState(
+    Boolean(getAllActiveSessionsSync().length)
   );
+  const hasWCv1Connections = Boolean(useWalletConnectConnections().mostRecentWalletConnectors.length);
 
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {
@@ -296,7 +298,7 @@ function MoreButton() {
   // ////////////////////////////////////////////////////
   // Context Menu
 
-  const { mostRecentWalletConnectors } = useWalletConnectConnections();
+  const shouldShowConnectedApps = hasWCv1Connections || hasWCv2Connections;
 
   const menuConfig = {
     menuItems: [
@@ -310,16 +312,16 @@ function MoreButton() {
         actionTitle: lang.t('button.my_qr_code'),
         icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
       },
-      mostRecentWalletConnectors.length > 0 || activeWCV2Sessions.length > 0
-        ? {
-            actionKey: 'connectedApps',
-            actionTitle: lang.t('wallet.connected_apps'),
-            icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-          }
-        : null,
+      shouldShowConnectedApps && {
+        actionKey: 'connectedApps',
+        actionTitle: lang.t('wallet.connected_apps'),
+        icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+      },
     ].filter(Boolean),
     ...(ios ? { menuTitle: '' } : {}),
   };
+
+  console.log(JSON.stringify({ hasWCv1Connections, hasWCv2Connections, menuConfig }, null, 2))
 
   const handlePressMenuItem = React.useCallback(
     e => {
@@ -337,12 +339,14 @@ function MoreButton() {
   );
 
   const onMenuWillShow = React.useCallback(() => {
+    setRenderForcer(prev => prev + 1);
     // update state to potentially hide the menu button
-    setActiveWCV2Sessions(getAllActiveSessionsSync());
-  }, [setActiveWCV2Sessions]);
+    setHasWCv2Connections(Boolean(getAllActiveSessionsSync().length));
+  }, [setHasWCv2Connections, setRenderForcer]);
 
   return (
     <ContextMenuButton
+      enableContextMenu
       onMenuWillShow={onMenuWillShow}
       menuConfig={menuConfig}
       onPressMenuItem={handlePressMenuItem}
