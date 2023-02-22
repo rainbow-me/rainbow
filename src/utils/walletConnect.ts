@@ -32,6 +32,7 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
+import { chains as supportedChainConfigs } from '@/references';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -390,6 +391,23 @@ export async function onSessionProposal(
 
   const { chains, methods } = requiredNamespaces.eip155;
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
+  const unsupportedChains = chainIds.filter(id => {
+    for (const config of supportedChainConfigs) {
+      if (config.chain_id === id) return false;
+    }
+    return true;
+  });
+
+  if (unsupportedChains.length) {
+    logger.warn(`WC v2: session proposal requested unsupported chains`, {
+      unsupportedChains,
+    });
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
+    maybeGoBackAndClearHasPendingRedirect();
+    showErrorSheet({ reason: 'failed_wc_invalid_chains' });
+    return;
+  }
+
   const peerMeta = proposer.metadata;
   const dappName =
     dappNameOverride(peerMeta.url) ||
