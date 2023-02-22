@@ -37,6 +37,58 @@ import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
 
+enum RPCMethod {
+  Sign = 'eth_sign',
+  PersonalSign = 'personal_sign',
+  SignTypedData = 'eth_signTypedData',
+  SignTypedDataV1 = 'eth_signTypedData_v1',
+  SignTypedDataV3 = 'eth_signTypedData_v3',
+  SignTypedDataV4 = 'eth_signTypedData_v4',
+  SendTransaction = 'eth_sendTransaction',
+  /**
+   * @deprecated DO NOT USE, or ask Bruno
+   */
+  SignTransaction = 'eth_signTransaction',
+  /**
+   * @deprecated DO NOT USE, or ask Bruno
+   */
+  SendRawTransaction = 'eth_sendRawTransaction',
+}
+
+type RPCPayload =
+  | {
+      method: RPCMethod.Sign | RPCMethod.PersonalSign;
+      params: [string, string];
+    }
+  | {
+      method:
+        | RPCMethod.SignTypedData
+        | RPCMethod.SignTypedDataV1
+        | RPCMethod.SignTypedDataV3
+        | RPCMethod.SignTypedDataV4;
+      params: [
+        string, // address
+        string // stringify typed object
+      ];
+    }
+  | {
+      method: RPCMethod.SendTransaction;
+      params: [
+        {
+          from: string;
+          to: string;
+          data: string;
+          gasPrice: string;
+          gasLimit: string;
+          value: string;
+        }
+      ];
+    }
+  | {
+      method: RPCMethod; // for TS safety, but others are not supported
+      params: any[];
+    };
+
 /**
  * Indicates that the app should redirect or go back after the next action
  * completes
@@ -94,38 +146,66 @@ export const signClient = Promise.resolve(
 function parseRPCParams({
   method,
   params,
-}: {
-  method: string;
-  params: string[];
-}) {
-  if (method === 'eth_sign' || method === 'personal_sign') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
-    const isHexString = ethersUtils.isHexString(message);
+}: RPCPayload): {
+  address?: string;
+  message?: string;
+} {
+  switch (method) {
+    case 'eth_sign':
+    case 'personal_sign': {
+      const [address, message] = params.sort(a =>
+        ethersUtils.isAddress(a) ? -1 : 1
+      );
+      const isHexString = ethersUtils.isHexString(message);
 
-    const decodedMessage = isHexString
-      ? ethersUtils.toUtf8String(message)
-      : message;
+      const decodedMessage = isHexString
+        ? ethersUtils.toUtf8String(message)
+        : message;
 
-    return {
-      address,
-      message: decodedMessage,
-    };
+      return {
+        address,
+        message: decodedMessage,
+      };
+    }
+    /**
+     * @see https://eips.ethereum.org/EIPS/eip-712#specification-of-the-eth_signtypeddata-json-rpc
+     * @see https://docs.metamask.io/guide/signing-data.html#a-brief-history
+     */
+    case 'eth_signTypedData':
+    case 'eth_signTypedData_v1':
+    case 'eth_signTypedData_v3':
+    case 'eth_signTypedData_v4': {
+      const [address, message] = params;
+
+      return {
+        address,
+        message: JSON.parse(message),
+      };
+    }
+    case 'eth_sendTransaction': {
+      const [tx] = params;
+      return {
+        address: tx.from,
+      };
+    }
+    default:
+      return {};
   }
+}
 
-  if (method === 'eth_signTypedData' || method === 'eth_signTypedData_v4') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
+export function isSupportedSigningMethod(method: RPCMethod) {
+  return [
+    RPCMethod.Sign,
+    RPCMethod.PersonalSign,
+    RPCMethod.SignTypedData,
+    RPCMethod.SignTypedDataV1,
+    RPCMethod.SignTypedDataV3,
+    RPCMethod.SignTypedDataV4,
+  ].includes(method);
+}
 
-    return {
-      address,
-      message: JSON.parse(message),
-    };
-  }
-
-  return {};
+export function isSupportedTransactionMethod(method: RPCMethod) {
+  return [RPCMethod.SendTransaction].includes(method);
 }
 
 /**
@@ -442,17 +522,25 @@ export async function onSessionRequest(
   const { id, topic } = event;
   const { method, params } = event.params.request;
 
+  logger.debug(
+    `WC v2: session_request method`,
+    { method, params },
+    logger.DebugContext.walletconnect
+  );
+
   if (isSigningMethod(method)) {
-    // transactions aren't a `[address, message]` tuple
-    const isTransactionMethod = isTransactionDisplayType(method);
-    let { address, message } = parseRPCParams({ method, params });
+    const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
+    const { address, message } = parseRPCParams({
+      method: method as RPCMethod,
+      params,
+    });
     const allWallets = store.getState().wallets.wallets;
 
-    if (!isTransactionMethod) {
+    if (isSigningMethod) {
       if (!address || !message) {
         logger.error(
           new RainbowError(
-            `WC v2: session_request exited, no address or messsage`
+            `WC v2: session_request exited, signing request had no address and/or messsage`
           ),
           {
             address,
@@ -494,8 +582,6 @@ export async function onSessionRequest(
 
         return;
       }
-    } else {
-      address = params[0].from;
     }
 
     const session = client.session.get(topic);
@@ -529,7 +615,7 @@ export async function onSessionRequest(
         chainId, // required by screen
         onComplete() {
           maybeGoBackAndClearHasPendingRedirect();
-        }
+        },
       },
     };
 
