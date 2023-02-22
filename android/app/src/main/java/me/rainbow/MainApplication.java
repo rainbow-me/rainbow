@@ -1,5 +1,8 @@
 package me.rainbow;
 
+import android.content.res.Configuration;
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.ReactNativeHostWrapper;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -42,7 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
     private static final long START_MARK = System.currentTimeMillis();
     private static Context context;
     private final ReactNativeHost mReactNativeHost =
-      new ReactNativeHost(this) {
+      new ReactNativeHostWrapper(this, new ReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
@@ -82,7 +85,7 @@ public class MainApplication extends Application implements ReactApplication {
            return new RainbowJSIModulePackage();
          }
          // */
-      };
+      });
 
   @Override
   public ReactNativeHost getReactNativeHost() {
@@ -130,7 +133,13 @@ public class MainApplication extends Application implements ReactApplication {
       }
     }
   }
-    public static Context getAppContext() {
+  public static Context getAppContext() {
         return MainApplication.context;
     }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
+  }
 }

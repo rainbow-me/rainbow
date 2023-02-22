@@ -159,6 +159,8 @@
     "ethereumjs-util": "6.2.1",
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
+    "expo": "47.0.13",
+    "expo-constants": "~14.0.2",
     "fast-text-encoding": "1.0.4",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
@@ -416,6 +418,16 @@
     "**/ua-parser-js": "0.7.33",
     "**/http-cache-semantics": "4.1.1",
     "**/@sideway/formula": "3.0.1"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "expo-keep-awake",
+        "expo-asset",
+        "expo-file-system",
+        "expo-font"
+      ]
+    }
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

@@ -5,6 +5,7 @@
 
 #import "Firebase.h"
 #import "AppDelegate.h"
+#import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBridge.h>
@@ -80,7 +81,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
   [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
 
   // React Native - Defaults
-  self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  self.bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.bridge
                                                    moduleName:@"Rainbow"
                                             initialProperties:nil];
@@ -88,10 +89,11 @@ RCT_EXPORT_METHOD(hideAnimated) {
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
+  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
   selector:@selector(handleRapInProgress:)
@@ -110,7 +112,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
   // Splashscreen - react-native-splash-screen
   [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
-
 
   return YES;
 }
