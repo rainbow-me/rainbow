@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native';
 import SignClient from '@walletconnect/sign-client';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
@@ -110,10 +111,16 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
 /**
  * Called in case we're on mobile and have a pending redirect
  */
-export function maybeGoBackAndClearHasPendingRedirect() {
+export function maybeGoBackAndClearHasPendingRedirect({
+  delay = 0,
+}: { delay?: number } = {}) {
   if (hasDeeplinkPendingRedirect) {
-    setHasPendingDeeplinkPendingRedirect(false);
-    Minimizer.goBack();
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        setHasPendingDeeplinkPendingRedirect(false);
+        Minimizer.goBack();
+      }, delay);
+    });
   }
 }
 
@@ -403,7 +410,6 @@ export async function onSessionProposal(
       unsupportedChains,
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
-    maybeGoBackAndClearHasPendingRedirect();
     showErrorSheet({ reason: 'failed_wc_invalid_chains' });
     return;
   }
@@ -590,24 +596,30 @@ export async function onSessionRequest(
           response: formatJsonRpcError(id, `Invalid RPC params`),
         });
 
-        maybeGoBackAndClearHasPendingRedirect();
-
+        showErrorSheet();
         return;
       }
 
       // for TS only, should never happen
       if (!allWallets) {
-        logger.error(new RainbowError(`WC v2: allWallets is null`));
+        logger.error(
+          new RainbowError(
+            `WC v2: allWallets is null, this should never happen`
+          )
+        );
         return;
       }
 
       const selectedWallet = findWalletWithAccount(allWallets, address);
 
       if (!selectedWallet || selectedWallet?.type === WalletTypes.readOnly) {
-        logger.debug(
-          `WC v2: session_request exited, selectedWallet was falsy or read only`,
-          {},
-          logger.DebugContext.walletconnect
+        logger.error(
+          new RainbowError(
+            `WC v2: session_request exited, selectedWallet was falsy or read only`
+          ),
+          {
+            selectedWalletType: selectedWallet?.type,
+          }
         );
 
         await client.respond({
@@ -615,8 +627,7 @@ export async function onSessionRequest(
           response: formatJsonRpcError(id, `Wallet is read-only`),
         });
 
-        maybeGoBackAndClearHasPendingRedirect();
-
+        showErrorSheet();
         return;
       }
     }
@@ -651,7 +662,7 @@ export async function onSessionRequest(
         address, // required by screen
         chainId, // required by screen
         onComplete() {
-          maybeGoBackAndClearHasPendingRedirect();
+          maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
         },
       },
     };
@@ -701,13 +712,12 @@ export async function onSessionRequest(
       }
     );
 
-    // TODO what happens in this state?
-    maybeGoBackAndClearHasPendingRedirect();
-
     await client.respond({
       topic,
       response: formatJsonRpcError(id, getSdkError('UNSUPPORTED_METHODS')),
     });
+
+    maybeGoBackAndClearHasPendingRedirect();
   }
 }
 
