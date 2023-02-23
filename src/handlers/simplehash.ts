@@ -84,8 +84,8 @@ const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
 
-const getCursorSuffix = (cursor: string) =>
-  cursor === START_CURSOR ? '' : `?cursor=${cursor}`;
+const createCursorSuffix = (cursor: string) =>
+  cursor === START_CURSOR ? '' : `&cursor=${cursor}`;
 
 export async function fetchSimplehashNft(
   contractAddress: string,
@@ -122,19 +122,17 @@ export async function fetchSimplehashNfts(
   let nextCursor;
   try {
     const chainsParam = `${chains.ethereum},${chains.arbitrum},${chains.optimism},${chains.polygon},${chains.bsc},${chains.gnosis}`;
-    const response = await simplehashApi.get(`/v0/nfts/owners`, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'x-api-key': SIMPLEHASH_API_KEY,
-      },
-      //@ts-ignore
-      params: {
-        chains: chainsParam,
-        ...(cursor !== START_CURSOR && { cursor }),
-        wallet_addresses: walletAddress,
-      },
-    });
+    const cursorSuffix = createCursorSuffix(cursor);
+    const response = await simplehashApi.get(
+      `/v0/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': SIMPLEHASH_API_KEY,
+        },
+      }
+    );
     nextCursor = (qs.parse(response.data.next) as any)['cursor'];
     if (response.data?.nfts?.length) {
       rawNftData = [...rawNftData, ...response.data.nfts];
@@ -155,13 +153,13 @@ export async function fetchSimplehashNftListing(
   contractAddress: string,
   tokenId: string
 ) {
-  const chain = getSimplehashChainFromNetwork(network);
   // array of all eth listings on opensea for this token
   let listings: SimplehashListing[] = [];
   let cursor = START_CURSOR;
+  const chain = getSimplehashChainFromNetwork(network);
   try {
     while (cursor) {
-      const cursorSuffix = getCursorSuffix(cursor);
+      const cursorSuffix = createCursorSuffix(cursor);
       // eslint-disable-next-line no-await-in-loop
       const response = await simplehashApi.get(
         // opensea ETH offers only for now
