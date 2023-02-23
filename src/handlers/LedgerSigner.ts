@@ -5,6 +5,8 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { ethers } from 'ethers';
 import { logger, RainbowError } from '@/logger';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 function waiter(duration: number): Promise<void> {
   return new Promise(resolve => {
@@ -81,6 +83,15 @@ export class LedgerSigner extends ethers.Signer {
           return resolve(result);
         } catch (error: any) {
           logger.error(new RainbowError('Ledger: Transport error'), error);
+
+          // blind signing isnt enabled
+          if (error.name === 'EthAppPleaseEnableContractData')
+            Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+              screen: Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET,
+              params: {
+                shouldGoBack: true,
+              },
+            });
           if (error.id !== 'TransportLocked') {
             return reject(error);
           }

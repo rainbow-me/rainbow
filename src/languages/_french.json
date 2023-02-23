@@ -1610,6 +1610,7 @@
       "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device. :)",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",
+      "blind_signing_enabled": "Blind signing enabled :)",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
       "learn_more": "Learn More :)",
       "finish_importing": "Finish importing :)",

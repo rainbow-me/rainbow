@@ -22,6 +22,7 @@ import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigat
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -82,8 +83,19 @@ const Item = ({ item, rank }: ItemProps) => {
   );
 };
 
+export type PairHardwareWalletSigningSheetParams = {
+  shouldGoBack: boolean;
+};
+
+type RouteParams = {
+  PairHardwareWalletSigningSheetParams: PairHardwareWalletSigningSheetParams;
+};
+
 export function PairHardwareWalletSigningSheet() {
-  const { navigate } = useNavigation();
+  const route = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>
+  >();
+  const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const {
@@ -212,8 +224,14 @@ export function PairHardwareWalletSigningSheet() {
         </Stack>
       </Inset>
       <ActionButton
-        label={i18n.t(TRANSLATIONS.finish_importing)}
-        onPress={() => handleButtonPress()}
+        label={
+          route?.params?.shouldGoBack
+            ? i18n.t(TRANSLATIONS.blind_signing_enabled)
+            : i18n.t(TRANSLATIONS.finish_importing)
+        }
+        onPress={() =>
+          route?.params?.shouldGoBack ? goBack() : handleButtonPress()
+        }
       />
     </Layout>
   );
