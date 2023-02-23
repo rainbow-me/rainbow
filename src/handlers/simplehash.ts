@@ -4,6 +4,8 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { Network } from '@/helpers';
 import { qs } from 'url-parse';
 import { logger, RainbowError } from '@/logger';
+import { getSimplehashChainFromNetwork } from '@/parsers/uniqueTokens';
+import { SimplehashListing } from '@/entities/uniqueAssets';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -75,10 +77,15 @@ const chains = {
 type SimpleHashChain = keyof typeof chains;
 
 const START_CURSOR = 'start';
+export const OPENSEA_MARKETPLACE_ID = 'opensea';
+export const ETH_PAYMENT_TOKEN_ID = 'ethereum.native';
 
 const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
+
+const getCursorSuffix = (cursor: string) =>
+  cursor === START_CURSOR ? '' : `?cursor=${cursor}`;
 
 export async function fetchSimplehashNft(
   contractAddress: string,
@@ -143,26 +150,49 @@ export async function fetchSimplehashNfts(
   return { rawNftData, nextCursor };
 }
 
-export async function fetchSimplehashNftCollectionListings(
-  collectionId: string
+export async function fetchSimplehashNftListing(
+  network: Network,
+  contractAddress: string,
+  tokenId: string
 ) {
+  const chain = getSimplehashChainFromNetwork(network);
+  // array of all eth listings on opensea for this token
+  let listings: SimplehashListing[] = [];
+  let cursor = START_CURSOR;
   try {
-    const response = await simplehashApi.get(
-      // opensea only for now
-      `/v0/nfts/listings/collection/${collectionId}?marketplaces=opensea`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'x-api-key': SIMPLEHASH_API_KEY,
-        },
-      }
+    while (cursor) {
+      const cursorSuffix = getCursorSuffix(cursor);
+      // eslint-disable-next-line no-await-in-loop
+      const response = await simplehashApi.get(
+        // opensea ETH offers only for now
+        `/v0/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${OPENSEA_MARKETPLACE_ID}${cursorSuffix}`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': SIMPLEHASH_API_KEY,
+          },
+        }
+      );
+      cursor = (qs.parse(response.data.next) as any)['cursor'];
+      // aggregate array of eth listings on opensea
+      listings = [
+        ...listings,
+        response?.data?.listings?.find(
+          (listing: SimplehashListing) =>
+            listing?.payment_token?.payment_token_id === ETH_PAYMENT_TOKEN_ID
+        ),
+      ];
+    }
+    // cheapest eth listing
+    const cheapestListing = listings.reduce((prev, curr) =>
+      curr.price < prev.price ? curr : prev
     );
-    console.log('response', response);
+    return cheapestListing;
   } catch (error) {
     logger.error(
       new RainbowError(
-        `Error fetching simplehash nft collection listings for collectionId: ${collectionId} - ${error}`
+        `Error fetching listing for simplehash nft: (chain: ${chain}, contractAddress: ${contractAddress}, tokenId: ${tokenId}) - ${error}`
       )
     );
     captureException(error);

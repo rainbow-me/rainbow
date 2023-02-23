@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
 import { Network } from '@/helpers';
@@ -14,11 +14,13 @@ import {
   SimplehashFloorPrice,
   SimplehashLastSale,
 } from '@/entities/uniqueAssets';
-import { fetchSimplehashNftCollectionListings } from '@/handlers/simplehash';
+import {
+  ETH_PAYMENT_TOKEN_ID,
+  fetchSimplehashNftListing,
+  OPENSEA_MARKETPLACE_ID,
+} from '@/handlers/simplehash';
 
 const NONE = 'None';
-const OPENSEA_MARKETPLACE_ID = 'opensea';
-const ETH_PAYMENT_TOKEN_ID = 'ethereum.native';
 
 const getIsFloorPriceSupported = (network: Network) => {
   switch (network) {
@@ -82,11 +84,6 @@ export default function NFTBriefTokenInfoRow({
 }: {
   asset: UniqueAsset;
 }) {
-  // TODO
-  const currentPrice = null;
-
-  fetchSimplehashNftCollectionListings(asset?.collection?.collection_id);
-
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
@@ -94,6 +91,27 @@ export default function NFTBriefTokenInfoRow({
   const { nativeCurrency } = useAccountSettings();
 
   const floorPrice = getOpenSeaFloorPrice(asset);
+
+  const [currentPrice, setCurrentPrice] = useState<string | null>();
+
+  useEffect(() => {
+    const fetchCurrentPrice = async () => {
+      const listing = await fetchSimplehashNftListing(
+        asset?.network,
+        asset?.asset_contract?.address || '',
+        asset?.id
+      );
+      const price = getRoundedValueFromRawAmount(
+        listing?.price,
+        listing?.payment_token?.decimals
+      );
+      if (price !== null) {
+        setCurrentPrice(price + ' ETH');
+      }
+    };
+
+    fetchCurrentPrice();
+  }, [asset?.asset_contract?.address, asset?.id, asset?.network]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -139,7 +157,6 @@ export default function NFTBriefTokenInfoRow({
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
           ? currentPrice || lastSalePrice
           : convertAmountToNativeDisplay(
-              // @ts-expect-error currentPrice is a number?
               parseFloat(currentPrice) * priceOfEth,
               nativeCurrency
             )}
@@ -154,7 +171,6 @@ export default function NFTBriefTokenInfoRow({
         }
         enableHapticFeedback={floorPrice !== NONE}
         isNft
-        loading={!floorPrice}
         onInfoPress={handlePressCollectionFloor}
         onPress={toggleFloorDisplayCurrency}
         showInfoButton

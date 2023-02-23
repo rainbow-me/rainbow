@@ -39,6 +39,23 @@ export interface SimplehashLastSale {
   total_price: number | null;
 }
 
+export interface SimplehashListing {
+  id: string;
+  permalink: string;
+  bundle_item_number: number | null;
+  listing_timestamp: string;
+  expiration_timestamp: string;
+  seller_address: string;
+  auction_type: string | null;
+  quantity: number;
+  quantity_remaining: number;
+  price: number;
+  marketplace_id: string;
+  collection_id: string;
+  nft_id: string;
+  payment_token: SimplehashPaymentToken | null;
+}
+
 export interface UniqueAsset {
   animation_url?: string | null;
   description?: string | null;
@@ -54,7 +71,6 @@ export interface UniqueAsset {
   asset_contract: AssetContract;
   background: string | null;
   collection: {
-    collection_id: string | null;
     description?: string | null;
     discord_url?: string | null;
     external_url?: string | null;
