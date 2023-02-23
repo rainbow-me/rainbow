@@ -100,13 +100,11 @@ export const HardwareWalletTxNavigator = () => {
     successCallback,
   });
 
-  // reset state when navigating away
+  // reset state when opening the sheet
   useEffect(() => {
-    return () => {
-      setIsReady(false);
-      setReadyForPolling(true);
-      setHardwareTXError(false);
-    };
+    setIsReady(false);
+    setReadyForPolling(true);
+    setHardwareTXError(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

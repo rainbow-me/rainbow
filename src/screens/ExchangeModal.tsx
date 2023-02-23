@@ -51,13 +51,7 @@ import {
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
-import {
-  divide,
-  fromWei,
-  greaterThan,
-  multiply,
-  subtract,
-} from '@/helpers/utilities';
+import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -71,6 +65,7 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
+  useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -168,6 +163,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }: ExchangeModalProps) {
+  const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const {
     slippageInBips,
@@ -664,10 +660,12 @@ export default function ExchangeModal({
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
+        let isSucessful = false;
         const callback = (
           success = false,
           errorMessage: string | null = null
         ) => {
+          isSucessful = success;
           setIsAuthorizing(false);
           if (success) {
             setParams({ focused: false });
@@ -712,6 +710,12 @@ export default function ExchangeModal({
 
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
+
+        // if the transaction was not successful, we need to bubble that up to the caller
+        if (!isSucessful) {
+          return false;
+        }
+
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
@@ -884,6 +888,7 @@ export default function ExchangeModal({
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      isHardwareWallet,
       quoteError,
       tradeDetails,
       type,
