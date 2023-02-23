@@ -63,7 +63,6 @@ import {
   useENSProfile,
   useENSRegistration,
   useHiddenTokens,
-  usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -77,6 +76,7 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@/utils';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -358,9 +358,7 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
-    colors.paleBlue;
+    usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
