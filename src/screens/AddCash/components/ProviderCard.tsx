@@ -11,7 +11,6 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
-import { ButtonPressAnimation } from '@/components/animations';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
