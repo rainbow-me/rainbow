@@ -1,5 +1,5 @@
 import { Network } from '../helpers/networkTypes';
-import { AssetContract, AssetType } from '.';
+import { AssetContract, AssetType, EthereumAddress } from '.';
 
 interface UniqueAssetLastSale {
   total_price: string;
@@ -56,7 +56,90 @@ export interface SimplehashListing {
   payment_token: SimplehashPaymentToken | null;
 }
 
+export interface SimplehashNft {
+  nft_id: string;
+  chain: Network;
+  contract_address: string;
+  token_id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  video_url: string | null;
+  audio_url: string | null;
+  model_url: string | null;
+  previews: {
+    image_small_url: string | null;
+    image_medium_url: string | null;
+    image_large_url: string | null;
+    image_opengraph_url: string | null;
+    blurhash: string | null;
+  };
+  background_color: string | null;
+  external_url: string | null;
+  created_date: string | null;
+  status: string;
+  token_count: number;
+  owner_count: number;
+  contract: {
+    type: string;
+    name: string;
+    symbol: string;
+  };
+  collection: SimplehashCollection;
+  extra_metadata: any | null;
+}
+
+export interface Marketplace {
+  simplehashId: string | null;
+  name: string | null;
+  nftUrl: string | null;
+  collectionUrl: string | null;
+  slug: string | null;
+  verified: boolean | null;
+}
+
+export interface Collection {
+  description: string | null;
+  discord: string | null;
+  externalUrl: string | null;
+  floor_prices?: SimplehashFloorPrice[];
+  imageUrl: string | null;
+  name: string | null;
+  twitter: string | null;
+  wiki_link?: string | null;
+}
+
 export interface UniqueAsset {
+  network: Network;
+  contractAddress: string;
+  tokenId: string;
+  name: string | null;
+  description: string | null;
+  externalUrl: string | null;
+  content: {
+    animationUrl: string | null;
+    backgroundColor: string | null;
+    cachedImageUrl: string | null;
+    imageUrlSmall: string | null;
+    imageUrlMedium: string | null;
+    imageUrlLarge: string | null;
+  };
+  last_sale: UniqueAssetLastSale | null;
+  collection: Collection;
+  //TODO
+  floorPrice: number | null;
+  isPoap: boolean;
+  isSendable: boolean;
+  simplehashSpamScore: number | null;
+  /**
+   * @description a computed unique value comprised of <network>_<address>_<token_id>
+   */
+  uniqueId: string;
+  marketplaces: Marketplace[];
+  traits: UniqueAssetTrait[];
+}
+
+export interface UniqueAssetV2 {
   animation_url?: string | null;
   description?: string | null;
   external_link?: string | null;
