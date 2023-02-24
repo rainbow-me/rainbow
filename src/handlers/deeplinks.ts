@@ -58,7 +58,7 @@ export default async function handleDeeplink(
   logger.info('Handling deeplink', { url });
   const urlObj = new URL(url);
 
-  logger.debug(`Handling deeplink`, { url })
+  logger.debug(`Handling deeplink`, { url });
 
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
