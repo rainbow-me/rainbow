@@ -7,7 +7,7 @@ import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
@@ -19,14 +19,13 @@ import {
   backupUserDataIntoCloud,
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
+  logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
-// @ts-ignore ts is complaining about this import
-import RNCloudFs from 'react-native-cloud-fs';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 
@@ -241,6 +240,7 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     if (IS_ANDROID) {
+      await logoutFromGoogleDrive();
       const isAvailable = await isCloudBackupAvailable();
       if (isAvailable) {
         let proceed = false;
@@ -268,7 +268,6 @@ export const AddWalletSheet = () => {
               i18n.t(TRANSLATIONS.options.cloud.no_backups),
               i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
             );
-            await RNCloudFs.logout();
           }
         }
       }
