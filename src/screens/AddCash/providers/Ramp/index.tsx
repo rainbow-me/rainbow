@@ -99,6 +99,7 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
           hostApiKey: RAMP_HOST_API_KEY,
           userAddress: accountAddress,
           defaultAsset: 'ETH',
+          swapAsset: 'ETH_*,MATIC_*,ARBITRUM_*,BSC_*,OPTIMISM_*',
           finalUrl: `https://rnbw.app/f2c?provider=${FiatProviderName.Ramp}&sessionId=${sessionId}`,
         });
         const uri = `${host}/?${params}`;
