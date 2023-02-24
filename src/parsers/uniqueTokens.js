@@ -294,10 +294,15 @@ export const parseSimplehashNfts = nftData => {
       simplehashNft?.previews?.image_small_url
     );
 
+    if (collection?.name?.includes('Ascended')) {
+      console.log(simplehashNft.extra_metadata?.animation_original_url);
+      console.log(simplehashNft?.video_url);
+    }
+
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
 
     const parsedNft = {
-      animation_url: simplehashNft.extra_metadata?.animation_original_url,
+      animation_url: simplehashNft.video_url,
       asset_contract: {
         address: simplehashNft.contract_address,
         name: simplehashNft.contract.name,
