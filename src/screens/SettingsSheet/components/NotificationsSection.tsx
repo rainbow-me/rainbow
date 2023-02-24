@@ -1,11 +1,11 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Linking, Switch } from 'react-native';
-import { ContactAvatar } from '../contacts';
-import ImageAvatar from '../contacts/ImageAvatar';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import { ContactAvatar } from '../../../components/contacts';
+import ImageAvatar from '../../../components/contacts/ImageAvatar';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -22,11 +22,11 @@ import {
 import { RainbowAccount } from '@/model/wallet';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
-import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
   showOfflineAlert,
-} from '@/components/settings-menu/notificationAlerts';
+} from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
   NotificationRelationship,

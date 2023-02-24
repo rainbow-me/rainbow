@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
 import { MMKV } from 'react-native-mmkv';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
