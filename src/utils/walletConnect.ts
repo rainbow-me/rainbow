@@ -3,7 +3,6 @@ import SignClient from '@walletconnect/sign-client';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
-import { NavigationContainerRef } from '@react-navigation/native';
 import Minimizer from 'react-native-minimizer';
 import { utils as ethersUtils } from 'ethers';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
@@ -86,6 +85,8 @@ type RPCPayload =
       method: RPCMethod; // for TS safety, but others are not supported
       params: any[];
     };
+
+let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -223,25 +224,15 @@ export function isSupportedMethod(method: RPCMethod) {
  * shows the text configured by the `reason` string, which is a key of the
  * `explainers` object in `ExplainSheet`
  */
-function showErrorSheet({ reason }: { reason?: string } = {}) {
-  const route: ReturnType<
-    NavigationContainerRef['getCurrentRoute']
-  > = getActiveRoute();
-
-  const routeParams: WalletconnectApprovalSheetRouteParams = {
-    receivedTimestamp: Date.now(),
-    timedOut: true,
-    failureExplainSheetVariant: reason || 'failed_wc_connection',
-    // empty, the sheet will show the error state
-    async callback() {},
-  };
-
-  // end load state with `timedOut` and provide failure callback
-  Navigation.handleAction(
-    Routes.WALLET_CONNECT_APPROVAL_SHEET,
-    routeParams,
-    route?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-  );
+function showErrorSheet({
+  reason,
+  onClose,
+}: { reason?: string; onClose?: () => void } = {}) {
+  logger.debug(`showErrorSheet`, { reason });
+  Navigation.handleAction(Routes.EXPLAIN_SHEET, {
+    type: reason || 'failed_wc_connection',
+    onClose,
+  });
 }
 
 async function rejectProposal({
@@ -251,7 +242,7 @@ async function rejectProposal({
   proposal: SignClientTypes.EventArguments['session_proposal'];
   reason: Parameters<typeof getSdkError>[0];
 }) {
-  logger.error(new RainbowError(`WC v2: session approval denied`), {
+  logger.warn(`WC v2: session approval denied`, {
     reason,
     proposal,
   });
@@ -260,8 +251,6 @@ async function rejectProposal({
   const { id, proposer } = proposal.params;
 
   await client.reject({ id, reason: getSdkError(reason) });
-
-  setHasPendingDeeplinkPendingRedirect(false);
 
   analytics.track('Rejected new WalletConnect session', {
     dappName: proposer.metadata.name,
@@ -272,35 +261,35 @@ async function rejectProposal({
 export async function pair({ uri }: { uri: string }) {
   logger.debug(`WC v2: pair`, { uri }, logger.DebugContext.walletconnect);
 
-  try {
-    // show loading state as feedback for user
-    Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {});
+  /**
+   * Make sure this is cleared if we get multiple pairings in rapid succession
+   */
+  if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
 
-    const { topic } = parseUri(uri);
-    const client = await signClient;
+  const { topic } = parseUri(uri);
+  const client = await signClient;
 
-    await client.core.pairing.pair({ uri });
-
-    const timeout = setTimeout(() => {
-      showErrorSheet();
-      analytics.track('New WalletConnect session time out');
-    }, 10_000);
-
-    const handler = (
-      proposal: SignClientTypes.EventArguments['session_proposal']
-    ) => {
-      // listen for THIS topic pairing, and clear timeout if received
-      if (proposal.params.pairingTopic === topic) {
-        client.off('session_proposal', handler);
-        clearTimeout(timeout);
-      }
-    };
-
-    client.on('session_proposal', handler);
-  } catch (e) {
-    logger.error(new RainbowError(`WC v2: pairing failed`), { error: e });
-    showErrorSheet();
+  // listen for THIS topic pairing, and clear timeout if received
+  function handler(
+    proposal: SignClientTypes.EventArguments['session_proposal']
+  ) {
+    if (proposal.params.pairingTopic === topic) {
+      if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
+    }
   }
+
+  // set new timeout
+  PAIRING_TIMEOUT = setTimeout(() => {
+    client.off('session_proposal', handler);
+    showErrorSheet();
+    analytics.track('New WalletConnect session time out');
+  }, 5_000);
+
+  // CAN get fired on subsequent pairs, so need to make sure we clean up
+  client.on('session_proposal', handler);
+
+  // init pairing
+  await client.core.pairing.pair({ uri });
 }
 
 export async function initListeners() {
@@ -410,7 +399,12 @@ export async function onSessionProposal(
       unsupportedChains,
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
-    showErrorSheet({ reason: 'failed_wc_invalid_chains' });
+    showErrorSheet({
+      reason: 'failed_wc_invalid_chains',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
     return;
   }
 
@@ -596,7 +590,11 @@ export async function onSessionRequest(
           response: formatJsonRpcError(id, `Invalid RPC params`),
         });
 
-        showErrorSheet();
+        showErrorSheet({
+          onClose() {
+            maybeGoBackAndClearHasPendingRedirect();
+          },
+        });
         return;
       }
 
@@ -627,7 +625,11 @@ export async function onSessionRequest(
           response: formatJsonRpcError(id, `Wallet is read-only`),
         });
 
-        showErrorSheet();
+        showErrorSheet({
+          onClose() {
+            maybeGoBackAndClearHasPendingRedirect();
+          },
+        });
         return;
       }
     }
@@ -712,12 +714,23 @@ export async function onSessionRequest(
       }
     );
 
-    await client.respond({
-      topic,
-      response: formatJsonRpcError(id, getSdkError('UNSUPPORTED_METHODS')),
-    });
+    try {
+      await client.respond({
+        topic,
+        response: formatJsonRpcError(id, `Method ${method} not supported`),
+      });
+    } catch (e) {
+      logger.error(new RainbowError(`WC v2: error rejecting session_request`), {
+        error: (e as Error).message,
+      });
+    }
 
-    maybeGoBackAndClearHasPendingRedirect();
+    showErrorSheet({
+      reason: 'failed_wc_invalid_methods',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
   }
 }
 
