@@ -216,7 +216,7 @@ const UniqueTokenExpandedStateHeader = ({
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.viewCollection],
-                discoverabilityTitle: asset.marketplaceName ?? '',
+                discoverabilityTitle: asset.marketplaces.opensea.name ?? '',
               },
             ]
           : []),
@@ -246,12 +246,12 @@ const UniqueTokenExpandedStateHeader = ({
       menuTitle: '',
     };
   }, [
-    asset.collection.discord_url,
+    hideNftMarketplaceAction,
+    asset.marketplaces.opensea.name,
+    asset.external_link,
     asset.collection.external_url,
     asset.collection.twitter_username,
-    asset.external_link,
-    asset.marketplaceName,
-    hideNftMarketplaceAction,
+    asset.collection.discord_url,
     formattedCollectionUrl,
   ]);
 
@@ -328,11 +328,9 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (
-        actionKey === FamilyActionsEnum.viewCollection &&
-        asset.marketplaceCollectionUrl
-      ) {
-        Linking.openURL(asset.marketplaceCollectionUrl);
+      const collectionUrl = asset.marketplaces.opensea.collectionUrl;
+      if (actionKey === FamilyActionsEnum.viewCollection && collectionUrl) {
+        Linking.openURL(collectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
@@ -401,7 +399,8 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const onPressAndroidFamily = useCallback(() => {
-    const hasCollection = !!asset.marketplaceCollectionUrl;
+    const collectionUrl = asset.marketplaces.opensea.collectionUrl;
+    const hasCollection = !!collectionUrl;
     const hasWebsite = !!(asset.external_link || asset.collection.external_url);
     const hasTwitter = !!asset.collection.twitter_username;
     const hasDiscord = !!asset.collection.discord_url;
@@ -429,8 +428,8 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       (idx: number) => {
-        if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          Linking.openURL(asset.marketplaceCollectionUrl);
+        if (idx === collectionIndex && collectionUrl) {
+          Linking.openURL(collectionUrl);
         } else if (idx === websiteIndex) {
           Linking.openURL(
             // @ts-expect-error external_link and external_url could be null or undefined?
@@ -450,7 +449,7 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.external_url,
     asset.collection.twitter_username,
     asset.external_link,
-    asset.marketplaceCollectionUrl,
+    asset.marketplaces.opensea.collectionUrl,
   ]);
 
   const onPressAndroidAsset = useCallback(() => {

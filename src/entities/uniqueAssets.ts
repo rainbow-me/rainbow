@@ -90,12 +90,13 @@ export interface SimplehashNft {
 }
 
 export interface Marketplace {
-  simplehashId: string | null;
+  id: string | null;
   name: string | null;
   nftUrl: string | null;
   collectionUrl: string | null;
-  slug: string | null;
+  collectionId: string | null;
   verified: boolean | null;
+  floorPrice: number | null;
 }
 
 export interface Collection {
@@ -109,7 +110,7 @@ export interface Collection {
   wiki_link?: string | null;
 }
 
-export interface UniqueAsset {
+export interface UniqueAssetV2 {
   network: Network;
   contractAddress: string;
   tokenId: string;
@@ -135,13 +136,14 @@ export interface UniqueAsset {
    * @description a computed unique value comprised of <network>_<address>_<token_id>
    */
   uniqueId: string;
-  marketplaces: Marketplace[];
+  marketplaces: { opensea: Marketplace };
   traits: UniqueAssetTrait[];
 }
 
-export interface UniqueAssetV2 {
-  animation_url?: string | null;
+export interface UniqueAsset {
+  videoUrl: string | null;
   description?: string | null;
+  marketplaces: { opensea: Marketplace };
   external_link?: string | null;
   image_original_url?: string | null;
   image_preview_url?: string | null;

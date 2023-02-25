@@ -9,22 +9,22 @@ import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUnique
 import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
 
 interface UniqueTokenAttributesProps {
+  asset: UniqueAsset;
   color: string;
   hideNftMarketplaceAction: boolean;
-  marketplaceId?: string | null;
-  marketplaceName?: string | null;
-  slug: string;
-  traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({
+  asset,
   color,
   hideNftMarketplaceAction,
-  marketplaceId,
-  marketplaceName,
-  slug,
-  traits,
 }: UniqueTokenAttributesProps) => {
+  const {
+    marketplaces: {
+      opensea: { id: marketplaceId, name: marketplaceName, collectionId: slug },
+    },
+    traits,
+  } = asset;
   const sortedTraits = useMemo(
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)

@@ -7,7 +7,7 @@ export default function buildRainbowUrl(
   accountAddress: EthereumAddress
 ): string {
   const address = accountENS || accountAddress;
-  const slug = asset?.collection?.slug;
+  const slug = asset?.marketplaces.opensea.collectionId;
   const assetId = asset?.uniqueId;
 
   const familyString = slug ? `?family=${slug}` : '';

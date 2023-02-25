@@ -3,7 +3,7 @@ import { UniqueAssetTrait } from '../entities/uniqueAssets';
 
 interface AdditionalProperties {
   color: string;
-  slug: string;
+  slug: string | null;
 }
 
 type MappedTrait = UniqueAssetTrait & {

@@ -3,7 +3,13 @@ import { useFocusEffect } from '@react-navigation/core';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, Linking, Share, View } from 'react-native';
+import {
+  InteractionManager,
+  Linking,
+  Share,
+  ShareContent,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
@@ -258,23 +264,21 @@ const UniqueTokenExpandedState = ({
   const { isReadOnlyWallet } = useWallets();
 
   const {
-    collection: {
-      description: familyDescription,
-      external_url: familyLink,
-      slug,
-    },
+    collection: { description: familyDescription, external_url: familyLink },
     description,
     familyImage,
     familyName,
     isSendable,
-    marketplaceName,
+    marketplaces: {
+      opensea: { name: marketplaceName, collectionId: slug },
+    },
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);
+  const openseaNftUrl = asset.marketplaces.opensea.nftUrl;
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
   const isPoap = uniqueTokenType === 'POAP';
@@ -368,10 +372,9 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(
-    () => Linking.openURL(asset.permalink),
-    [asset.permalink]
-  );
+  const handlePressMarketplaceName = useCallback(() => {
+    if (openseaNftUrl) Linking.openURL(openseaNftUrl);
+  }, [openseaNftUrl]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -393,14 +396,16 @@ const UniqueTokenExpandedState = ({
   ]);
 
   const handlePressShare = useCallback(() => {
-    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
+    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : openseaNftUrl;
 
-    Share.share({
-      message: android ? shareUrl : undefined,
-      title: `Share ${buildUniqueTokenName(asset)} Info`,
-      url: shareUrl,
-    });
-  }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
+    if (shareUrl) {
+      Share.share({
+        message: android ? shareUrl : undefined,
+        title: `Share ${buildUniqueTokenName(asset)} Info`,
+        url: shareUrl,
+      });
+    }
+  }, [asset, isSupportedOnRainbowWeb, openseaNftUrl, rainbowWebUrl]);
 
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
@@ -519,7 +524,7 @@ const UniqueTokenExpandedState = ({
                         ) : (
                           <View />
                         )}
-                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                        {isSupportedOnRainbowWeb || openseaNftUrl ? (
                           <TextButton align="right" onPress={handlePressShare}>
                             􀈂 {lang.t('button.share')}
                           </TextButton>
@@ -547,7 +552,7 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
-                        ) : asset.permalink ? (
+                        ) : openseaNftUrl ? (
                           <SheetActionButton
                             color={imageColor}
                             label={
@@ -634,12 +639,11 @@ const UniqueTokenExpandedState = ({
                               titleEmoji="🎨"
                             >
                               <UniqueTokenAttributes
-                                {...asset}
+                                asset={asset}
                                 color={imageColor}
                                 hideNftMarketplaceAction={
                                   hideNftMarketplaceAction
                                 }
-                                slug={slug}
                               />
                             </Section>
                           ) : null}

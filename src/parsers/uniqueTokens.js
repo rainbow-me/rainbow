@@ -285,6 +285,13 @@ export const getNetworkFromSimplehashChain = chain =>
 export const getSimplehashChainFromNetwork = network =>
   network === Network.mainnet ? 'ethereum' : network;
 
+const getRoundedValueFromRawAmount = (rawAmount, decimals) => {
+  if (rawAmount && decimals) {
+    return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
+  }
+  return null;
+};
+
 export const parseSimplehashNfts = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
@@ -299,10 +306,20 @@ export const parseSimplehashNfts = nftData => {
       console.log(simplehashNft?.video_url);
     }
 
+    const openSeaFloorPriceEth = collection?.floor_prices?.find(
+      floorPrice =>
+        floorPrice?.marketplace_id === 'opensea' &&
+        floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
+    );
+
     const marketplaceInfo = getSimplehashMarketplaceInfo(simplehashNft);
 
+    const openSea = simplehashNft.collection.marketplace_pages.find(
+      marketplace => marketplace.marketplace_id === 'opensea'
+    );
+
     const parsedNft = {
-      animation_url: simplehashNft.video_url,
+      videoUrl: simplehashNft.video_url,
       asset_contract: {
         address: simplehashNft.contract_address,
         name: simplehashNft.contract.name,
@@ -314,7 +331,7 @@ export const parseSimplehashNfts = nftData => {
         description: collection.description,
         discord_url: collection.discord_url,
         external_url: collection.external_url,
-        floor_prices: collection.floor_prices,
+        // floor_prices: collection.floor_prices,
         image_url: collection.image_url,
         name: collection.name,
         slug: marketplaceInfo?.collectionId,
@@ -340,15 +357,31 @@ export const parseSimplehashNfts = nftData => {
           simplehashNft.contract.type === 'ERC1155'),
       lastSale: simplehashNft.last_sale,
       lowResUrl,
-      marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
-      marketplaceId: marketplaceInfo?.marketplaceId,
-      marketplaceName: marketplaceInfo?.marketplaceName,
+      // marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
+      // marketplaceId: marketplaceInfo?.marketplaceId,
+      // marketplaceName: marketplaceInfo?.marketplaceName,
       name: simplehashNft.name,
       network: getNetworkFromSimplehashChain(simplehashNft.chain),
-      permalink: marketplaceInfo?.permalink,
+      // permalink: marketplaceInfo?.permalink,
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      marketplaces: {
+        opensea: {
+          id: openSea?.marketplace_id ?? null,
+          name: openSea?.marketplace_name ?? null,
+          nftUrl: openSea?.nft_url ?? null,
+          collectionUrl: openSea?.collection_url ?? null,
+          collectionId: openSea?.marketplace_collection_id ?? null,
+          // we don't use verified status yet but i think we should
+          verified: openSea?.verified ?? null,
+          // we only use eth floor prices right now
+          floorPrice: getRoundedValueFromRawAmount(
+            openSeaFloorPriceEth?.value,
+            openSeaFloorPriceEth?.payment_token?.decimals
+          ),
+        },
+      },
     };
     return parsedNft;
   });

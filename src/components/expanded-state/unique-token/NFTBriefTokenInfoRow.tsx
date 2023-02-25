@@ -90,7 +90,10 @@ export default function NFTBriefTokenInfoRow({
 
   const { nativeCurrency } = useAccountSettings();
 
-  const floorPrice = getOpenSeaFloorPrice(asset);
+  const openseaFloorPriceEth = asset?.marketplaces.opensea.floorPrice;
+  const floorPrice = openseaFloorPriceEth
+    ? `${openseaFloorPriceEth} ETH`
+    : NONE;
 
   const [currentPrice, setCurrentPrice] = useState<string | null>();
 
