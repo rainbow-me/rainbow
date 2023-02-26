@@ -19,6 +19,9 @@ export default function useInitializeDiscoverData() {
     try {
       InteractionManager.runAfterInteractions(() => {
         // Other discover related actions should be triggered here
+
+        // leaving a note on if we even need this, why not add to late global data or combine with favorites
+
         dispatch(userListsLoadState());
       });
     } catch (error) {
