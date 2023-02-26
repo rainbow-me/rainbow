@@ -25,6 +25,8 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
     const walletBalances: { [address: string]: string } = {};
 
     // Get list of addresses to get balances for
+
+    // this should be the previous balances instead of 0
     Object.values(wallets).forEach((wallet: any) => {
       wallet.addresses.forEach((account: any) => {
         walletBalances[account.address] = '0.00';

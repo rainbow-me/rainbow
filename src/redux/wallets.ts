@@ -206,6 +206,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
         }
       }
       if (!account) return;
+      console.log('IM ABOUT TO UPDATE 1');
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
       logger.sentry(

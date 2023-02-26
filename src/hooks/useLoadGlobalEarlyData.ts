@@ -15,13 +15,9 @@ export default function useLoadGlobalEarlyData() {
     logger.sentry('Load wallet global early data');
     const promises = [];
     const p1 = dispatch(settingsLoadState());
-    const p2 = dispatch(imageMetadataCacheLoadState());
-    const p3 = dispatch(keyboardHeightsLoadState());
-    const p4 = dispatch(transactionSignaturesLoadState());
-    const p5 = dispatch(contactsLoadState());
-    const p6 = dispatch(settingsLoadLanguage());
+    const p2 = dispatch(settingsLoadLanguage());
 
-    promises.push(p1, p2, p3, p4, p5, p6);
+    promises.push(p1, p2);
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: Dispatch<any>) => Pr... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);

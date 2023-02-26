@@ -1,7 +1,8 @@
 import { captureException } from '@sentry/react-native';
-import { QUIET_OLD_LOGGER } from 'react-native-dotenv';
+//import { QUIET_OLD_LOGGER } from 'react-native-dotenv';
 import sentryUtils from './sentry';
 
+const QUIET_OLD_LOGGER = true;
 /**
  * @deprecated use `@/logger` instead, and see `@/logger/README` for documentation
  */

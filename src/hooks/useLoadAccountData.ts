@@ -28,12 +28,19 @@ export default function useLoadAccountData() {
         const p2 = dispatch(uniqueTokensLoadState());
         promises.push(p1, p2);
       }
+      // WC requests + connections
       const p3 = dispatch(requestsLoadState());
       const p4 = dispatch(walletConnectLoadState());
+
+      // favorites
       const p5 = dispatch(uniswapLoadState());
+      // add cash
       const p6 = dispatch(addCashLoadState());
+      // uniswap LP info
       const p7 = dispatch(uniswapLiquidityLoadState());
       const p8 = dispatch(uniswapPositionsLoadState());
+
+      // ens registrations
       const p9 = dispatch(ensRegistrationsLoadState());
       promises.push(p3, p4, p5, p6, p7, p8, p9);
 

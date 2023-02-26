@@ -106,8 +106,10 @@ export default function useInitializeWallet() {
         if (!switching) {
           // Run keychain integrity checks right after walletInit
           // Except when switching wallets!
+
           await runKeychainIntegrityChecks();
         }
+        hideSplashScreen();
 
         if (seedPhrase || isNew) {
           logger.sentry('walletsLoadState call #2');
@@ -122,23 +124,30 @@ export default function useInitializeWallet() {
           }
           return null;
         }
+        // we should set the account address as soon as possible
+        await dispatch(settingsUpdateAccountAddress(walletAddress));
+        logger.sentry('updated settings address', walletAddress);
 
         if (!(isNew || isImporting)) {
+          // this loads settings currency, testnets enabled,  app icon, & language
           await loadGlobalEarlyData();
           logger.sentry('loaded global data...');
         }
 
-        await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.sentry('updated settings address', walletAddress);
+        // the q here is should we wait for tokens and nfts to load before hiding splash screen?
+        // imo we should full send it and hide the splash screen asap
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
+          // tokens, nfts, favs, uniswap, ens
           await loadAccountData(network);
           logger.sentry('loaded account data', network);
         }
 
-        hideSplashScreen();
+        //hideSplashScreen();
         logger.sentry('Hide splash screen');
+
+        // this fetches token balances, nfts, uniV2 positions
         initializeAccountData();
 
         dispatch(appStateUpdate({ walletReady: true }));

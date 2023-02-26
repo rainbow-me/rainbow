@@ -9,6 +9,10 @@ import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
 import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
+import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
+import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
+import { contactsLoadState } from '@/redux/contacts';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
@@ -28,7 +32,11 @@ export default function useLoadGlobalLateData() {
     const promises = [];
     const p1 = loadWalletBalanceNamesToCache();
     const p2 = dispatch(nonceManagerLoadState());
-    promises.push(p1, p2);
+    const p3 = dispatch(imageMetadataCacheLoadState());
+    const p4 = dispatch(keyboardHeightsLoadState());
+    const p5 = dispatch(transactionSignaturesLoadState());
+    const p6 = dispatch(contactsLoadState());
+    promises.push(p1, p2, p3, p4, p5, p6);
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);
