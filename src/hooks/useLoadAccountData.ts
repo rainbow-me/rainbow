@@ -7,22 +7,20 @@ import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
-import { uniswapLoadState } from '../redux/uniswap';
-import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
-import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
-import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
 import logger from '@/utils/logger';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
+
   const loadAccountData = useCallback(
     async network => {
       logger.sentry('Load wallet account data');
       await dispatch(showcaseTokensLoadState());
       await dispatch(hiddenTokensLoadState());
       const promises = [];
+
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
         const p2 = dispatch(uniqueTokensLoadState());
@@ -32,17 +30,10 @@ export default function useLoadAccountData() {
       const p3 = dispatch(requestsLoadState());
       const p4 = dispatch(walletConnectLoadState());
 
-      // favorites
-      const p5 = dispatch(uniswapLoadState());
       // add cash
-      const p6 = dispatch(addCashLoadState());
-      // uniswap LP info
-      const p7 = dispatch(uniswapLiquidityLoadState());
-      const p8 = dispatch(uniswapPositionsLoadState());
+      const p5 = dispatch(addCashLoadState());
 
-      // ens registrations
-      const p9 = dispatch(ensRegistrationsLoadState());
-      promises.push(p3, p4, p5, p6, p7, p8, p9);
+      promises.push(p3, p4, p5);
 
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);
