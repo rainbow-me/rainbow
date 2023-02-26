@@ -5,7 +5,7 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Monospace } from '../text';
+import { Text as LegacyText } from '../text';
 import { Text } from '@/design-system';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
@@ -102,14 +102,14 @@ const UniqueTokenImage = ({
           )}
         </Fragment>
       ) : (
-        <Monospace
+        <LegacyText
           align="center"
           color={getFallbackTextColor(backgroundColor, isDarkMode, colors)}
           lineHeight="looser"
           size="smedium"
         >
           {buildUniqueTokenName(item)}
-        </Monospace>
+        </LegacyText>
       )}
 
       {isHiddenToken && isCard && (

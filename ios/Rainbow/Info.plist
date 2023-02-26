@@ -179,8 +179,6 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-		<string>SFMono-Medium.otf</string>
-		<string>SFMono-Regular.otf</string>
 		<string>SF-Pro-Rounded-Bold.otf</string>
 		<string>SF-Pro-Rounded-Heavy.otf</string>
 		<string>SF-Pro-Rounded-Medium.otf</string>
