@@ -34,6 +34,10 @@ export function SettingsSheet() {
         type?: string;
         walletId?: string;
       } = {};
+      // for android we need to exit early to display google account information
+      if (IS_ANDROID) {
+        return { params: { ...params, ...paramsToPass }, route };
+      }
       const nonReadonlyWallets = Object.keys(wallets!).filter(
         key => wallets![key].type !== WalletTypes.readOnly
       );

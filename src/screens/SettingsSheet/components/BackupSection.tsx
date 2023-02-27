@@ -12,6 +12,8 @@ import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
+import { IS_ANDROID } from '@/env';
+import { GoogleAccountSection } from '@/components/settings-menu/BackupSection/GoogleAccountSection';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();
@@ -74,6 +76,7 @@ const BackupSection = () => {
 
   return (
     <MenuContainer>
+      <GoogleAccountSection />
       <Menu>
         {backups.map(
           ({

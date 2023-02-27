@@ -1405,6 +1405,9 @@
     },
     "settings": {
       "backup": "Sauvegarder",
+      "backup_switch_google_account": "Switch Google Account :)",
+      "backup_sign_out": "Sign out :)",
+      "backup_sign_in": "Sign in :)",
       "currency": "Devise",
       "app_icon": "App Icon",
       "dev": "Dev :)",

@@ -3,7 +3,10 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  fetchUserDataFromCloud,
+} from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
@@ -323,6 +326,63 @@ export const setWalletBackedUp = (
       throw e;
     }
   }
+};
+
+export const updateWalletBackupStatuses = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
+  const { wallets, selected } = getState().wallets;
+  const newWallets = { ...wallets };
+
+  let currentUserData: { wallets: { [p: string]: RainbowWallet } } | undefined;
+  try {
+    currentUserData = await fetchUserDataFromCloud();
+  } catch (e) {
+    return;
+  }
+  if (currentUserData === undefined) {
+    return;
+  }
+
+  console.log('DUPA KEYS: ', Object.keys(newWallets));
+  console.log('DUPA 2 KEYS: ', Object.keys(currentUserData));
+
+  Object.entries(newWallets).forEach(
+    ([key, value]: [string, RainbowWallet]) => {
+      const walletId = value.id;
+      const walletMetadata = currentUserData?.wallets[walletId];
+      if (walletMetadata) {
+        newWallets[key] = {
+          ...newWallets[key],
+          backedUp: walletMetadata.backedUp,
+          backupDate: walletMetadata.backupDate,
+          backupFile: walletMetadata.backupFile,
+          backupType: walletMetadata.backupType,
+        };
+      }
+    }
+  );
+
+  await dispatch(walletsUpdate(newWallets));
+  if (selected?.id) {
+    await dispatch(walletsSetSelected(newWallets[selected.id]));
+  }
+};
+export const clearWalletBackupStateFromAllWallets = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
+  const { wallets } = getState().wallets;
+  const newWallets = { ...wallets };
+  Object.keys(newWallets).forEach(key => {
+    newWallets[key].backedUp = undefined;
+    newWallets[key].backupDate = undefined;
+    newWallets[key].backupFile = undefined;
+    newWallets[key].backupType = undefined;
+  });
+
+  await dispatch(walletsUpdate(newWallets));
 };
 
 /**

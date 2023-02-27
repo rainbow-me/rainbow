@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
@@ -18,7 +19,6 @@ export default function useManageCloudBackups() {
   const { wallets } = useWallets();
   const { navigate } = useNavigation();
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const manageCloudBackups = useCallback(() => {
     const buttons = [
       `Restore from ${cloudPlatform} Backups`,
