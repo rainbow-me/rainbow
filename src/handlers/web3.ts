@@ -16,9 +16,7 @@ import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
@@ -44,6 +42,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { fetchContractABI } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
+import { IS_IOS } from '@/env';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -287,9 +286,9 @@ export const isValidMnemonic = (value: string): boolean =>
  * @return Whether or not the string was a valid bluetooth device id
  */
 export const isValidBluetoothDeviceId = (value: string): boolean => {
-  return (
-    value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
-  );
+  return IS_IOS
+    ? value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
+    : value.length === 17 && isHexStringIgnorePrefix(value.replaceAll(':', ''));
 };
 
 /**
@@ -839,57 +838,5 @@ export const estimateGasLimit = async (
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
     return estimateGas(estimateGasData, provider);
-  }
-};
-
-const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
-  [Network.mainnet]: false,
-  [Network.goerli]: false,
-};
-const hasMergedStorage = new MMKV();
-export const getHasMerged = (network: Network) => {
-  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
-  if (storage) {
-    const data = JSON.parse(storage);
-    const hasMerged = data[network];
-    if (hasMerged === undefined) {
-      data[network] = HAS_MERGED_DEFAULTS[network];
-      hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
-    }
-    return data[network];
-  } else {
-    hasMergedStorage.set(
-      STORAGE_IDS.HAS_MERGED,
-      JSON.stringify(HAS_MERGED_DEFAULTS)
-    );
-  }
-};
-const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
-  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
-  if (storage) {
-    const data = JSON.parse(storage);
-    data[network] = setting;
-    hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
-  }
-};
-export const setHasMerged = (network: Network) => {
-  getSetMergeStorageKey(true)(network);
-};
-export const setHasNotMerged = (network: Network) => {
-  getSetMergeStorageKey(false)(network);
-};
-export const checkForTheMerge = async (
-  provider: JsonRpcProvider,
-  network: Network
-) => {
-  const currentHasMerged = getHasMerged(network);
-  if (currentHasMerged !== true) {
-    const block = await provider.getBlock('latest');
-    const { _difficulty } = block;
-    if (_difficulty.toString() === '0') {
-      setHasMerged(network);
-    } else if (currentHasMerged) {
-      setHasNotMerged(network);
-    }
   }
 };

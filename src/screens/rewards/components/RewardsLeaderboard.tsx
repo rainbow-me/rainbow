@@ -3,23 +3,11 @@ import { Box, Columns, Separator, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
-import { differenceInDays, format, fromUnixTime } from 'date-fns';
+import { differenceInDays, fromUnixTime } from 'date-fns';
 import {
   RewardsLeaderboardAccount,
   RewardsMetaStatus,
 } from '@/graphql/__generated__/metadata';
-
-type GetRHSValueBasedOnStatusParams =
-  | {
-      status: RewardsMetaStatus.Paused;
-    }
-  | {
-      status: RewardsMetaStatus.Finished;
-    }
-  | {
-      status: RewardsMetaStatus.Ongoing;
-      value: string;
-    };
 
 const getRHSValueBasedOnStatus = (
   status: RewardsMetaStatus,

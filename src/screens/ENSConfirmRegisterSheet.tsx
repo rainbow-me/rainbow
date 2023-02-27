@@ -45,13 +45,13 @@ import {
   useENSRegistrationForm,
   useENSRegistrationStepHandler,
   useENSSearch,
-  usePersistentDominantColorFromImage,
   useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -125,9 +125,7 @@ export default function ENSConfirmRegisterSheet() {
 
   const avatarImage =
     avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
-  );
+  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   useEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {

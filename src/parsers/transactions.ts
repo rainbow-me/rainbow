@@ -69,7 +69,7 @@ const dataFromLastTxHash = (
 export const parseTransactions = async (
   transactionData: ZerionTransaction[],
   accountAddress: EthereumAddress,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   existingTransactions: RainbowTransaction[],
   pendingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
@@ -311,7 +311,7 @@ const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
 
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   network: Network
 ) => {
   const methodName = await getTransactionMethodName(txn);
@@ -361,7 +361,7 @@ const parseTransactionWithEmptyChanges = async (
 
 const parseTransaction = async (
   transaction: ZerionTransaction,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   purchaseTransactionsHashes: string[],
   network: Network
 ): Promise<RainbowTransaction[]> => {

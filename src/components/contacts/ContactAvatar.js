@@ -7,6 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { IS_ANDROID } from '@/env';
 
 const buildShadows = (color, size, darkMode, colors) => {
   // TODO: remove `legacySmall` size once rainbow home screen revamp is released
@@ -40,7 +41,7 @@ const buildShadows = (color, size, darkMode, colors) => {
       [
         0,
         4,
-        android ? 5 : 12,
+        IS_ANDROID ? 5 : 12,
         darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
         0.4,
       ],
@@ -95,6 +96,16 @@ const sizeConfigs = colors => ({
   },
   smedium: {
     dimensions: 36,
+    textSize: 'large',
+  },
+  rewards: {
+    dimensions: 36,
+    shadow: IS_ANDROID
+      ? [[0, 4, 5, colors.shadow, 0.16]]
+      : [
+          [0, 4, 12, colors.shadow, 0.16],
+          [0, 2, 6, colors.shadow, 0.02],
+        ],
     textSize: 'large',
   },
 });

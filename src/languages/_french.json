@@ -162,6 +162,20 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName} :)"
       }
     },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off :)",
+        "message": "Please turn on Bluetooth to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions :)",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
+      }
+    },
     "button": {
       "add": "Ajouter",
       "add_cash": "Ajouter de l'argent",
@@ -664,13 +678,15 @@
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that’s made for magical pondering.",
-        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu’s 17th birthday.",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
-        "button": "Snag the icon"
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon! :)",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering. :)",
+        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
+        "pooly_title": "You've unlocked a\nRainbow Pooly :)",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
+        "button": "Snag the icon :)"
       },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
@@ -1587,12 +1603,12 @@
       "pair_a_new_ledger": "Pair a new Ledger :)",
       "looking_for_devices": "Looking for devices :)",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
-      "pair_successful": "Pair successful :)",
+      "device_connected": "Device connected",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
       "learn_more": "Learn More :)",
-      "blind_signing_enabled": "Blind signing is enabled :)",
+      "finish_importing": "Finish importing :)",
       "blind_signing_instructions": {
         "step_1": {
           "title": "On Ledger, open the ETH app :)",
@@ -1709,7 +1725,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH :)",
-        "watching": "Watching :)"
+        "watching": "Watching :)",
+        "ledger": "Ledger :)"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",
@@ -1947,7 +1964,9 @@
       "requesting_network": "Requesting %{num} network :)",
       "requesting_networks": "Requesting %{num} networks :)",
       "unknown_dapp": "Unknown Dapp :)",
-      "unknown_url": "Unknown URL :)"
+      "unknown_url": "Unknown URL :)",
+      "approval_sheet_network": "Network :)",
+      "approval_sheet_networks": "%{length} Networks :)"
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",

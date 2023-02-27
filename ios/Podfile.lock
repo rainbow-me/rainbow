@@ -190,11 +190,11 @@ PODS:
   - nanopb/encode (2.30908.0)
   - OpenSSL-Universal (1.1.1100)
   - PanModal (1.2.7)
-  - Permission-Camera (3.0.5):
+  - Permission-Camera (3.6.1):
     - RNPermissions
-  - Permission-FaceID (3.0.5):
+  - Permission-FaceID (3.6.1):
     - RNPermissions
-  - Permission-Notifications (3.0.5):
+  - Permission-Notifications (3.6.1):
     - RNPermissions
   - Plaid (4.1.0)
   - PromisesObjC (2.0.0)
@@ -672,7 +672,7 @@ PODS:
     - React-Core
   - RNOS (1.2.8):
     - React
-  - RNPermissions (3.0.5):
+  - RNPermissions (3.6.1):
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
@@ -1222,9 +1222,9 @@ SPEC CHECKSUMS:
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-  Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
-  Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
-  Permission-Notifications: 16ccd862111103378a7bab9fb1c5c71addffc348
+  Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
+  Permission-FaceID: e70223280292a1a5e4b8ad943b70cd9229a7d2c3
+  Permission-Notifications: 150484ae586eb9be4e32217582a78350a9bb31c3
   Plaid: 7d340abeadb46c7aa1a91f896c5b22395a31fcf2
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
@@ -1311,7 +1311,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
+  RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
