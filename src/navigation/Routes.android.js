@@ -402,7 +402,7 @@ function AuthNavigator() {
       <AuthStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
-        options={{ ...sheetPreset, gestureEnabled: false }}
+        options={{ ...sheetPreset, gestureEnabled: true }}
       />
     </AuthStack.Navigator>
   );
