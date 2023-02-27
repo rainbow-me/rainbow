@@ -19,10 +19,9 @@ async function maybeSaveFakeAuthKey() {
 }
 
 export async function isAuthenticated() {
-  await maybeSaveFakeAuthKey();
-  const options = await keychain.getPrivateAccessControlOptions();
-
   if (IS_IOS) {
+    await maybeSaveFakeAuthKey();
+    const options = await keychain.getPrivateAccessControlOptions();
     const value = await keychain.loadString(FAKE_LOCAL_AUTH_KEY, options);
     return Boolean(value === FAKE_LOCAL_AUTH_VALUE);
   } else {
