@@ -240,6 +240,7 @@ export const useEthUSDPrice = (): number => {
 };
 
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
+  // network.getPriceForNativeAsset()
   if (network === Network.polygon) {
     return getMaticPriceUnit();
   } else if (network === Network.bsc) {
@@ -400,6 +401,7 @@ const getChainIdFromNetwork = (network: Network): number => {
  */
 function getEtherscanHostForNetwork(network?: Network): string {
   const base_host = 'etherscan.io';
+  // network.blockExplorerUrl
   if (network === Network.optimism) {
     return OPTIMISM_BLOCK_EXPLORER_URL;
   } else if (network === Network.polygon) {
@@ -628,6 +630,10 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
+// 1. this isnt being used everywhere it should be, which makes me thing it should go
+// 2. extra reason to use a standard instead of special for mainnet
+// extra: should be able to get the network object from the _${network}
+
 const getUniqueId = (address: EthereumAddress, network: Network) =>
   network === Network.mainnet ? address : `${address}_${network}`;
 
@@ -675,6 +681,7 @@ const calculateL1FeeOptimism = async (
   }
 };
 
+// needs some thinking here, idealy we should have all of this included in the token object
 const getMultichainAssetAddress = (
   asset: RainbowToken,
   network: Network

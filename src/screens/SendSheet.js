@@ -343,6 +343,7 @@ export default function SendSheet(props) {
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
+        // network.provider
         switch (selected.type) {
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
@@ -531,6 +532,7 @@ export default function SendSheet(props) {
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
+            // optimism gas BS
             if (currentNetwork === Network.optimism) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
@@ -710,6 +712,8 @@ export default function SendSheet(props) {
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
+
+      // lang.t('button.confirm_exchange.insufficient_native_token', {nativeToken: network.nativeToken.symbol})
       if (currentNetwork === Network.polygon) {
         label = lang.t('button.confirm_exchange.insufficient_matic');
       } else if (currentNetwork === Network.bsc) {
@@ -852,6 +856,7 @@ export default function SendSheet(props) {
   const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
     if (
+      // this is only for tests, maybe !network.istestnet ?
       network === Network.mainnet &&
       !recipientOverride &&
       recipient?.length
@@ -903,6 +908,7 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(async gasLimit => {
+          // optimism gas bs
           if (currentNetwork === Network.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {

@@ -317,6 +317,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
+        // if tx.network.flashbotsEnabled  ? network.flashbotsProvider : network.provider
         if (tx.network === Network.mainnet && tx.flashbots) {
           logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();

@@ -52,6 +52,7 @@ const mutex = new Mutex();
 const withRunExclusive = async (callback: (...args: any[]) => void) =>
   await mutex.runExclusive(callback);
 
+// network.gas.PollingInterval -> shouldnt this just be network.blockTime
 const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
     case Network.polygon:
@@ -64,6 +65,7 @@ const getGasPricePollingInterval = (network: Network): number => {
   }
 };
 
+// network.gas.defaultGaslimit
 const getDefaultGasLimit = (
   network: Network,
   defaultGasLimit: number
@@ -428,6 +430,9 @@ export const gasPricesStartPolling = (
             let dataIsReady = true;
             if (isL2) {
               let adjustedGasFees;
+
+              // should be something like
+              // network.getPrices();
               if (network === Network.polygon) {
                 adjustedGasFees = await getPolygonGasPrices();
               } else if (network === Network.arbitrum) {
@@ -645,6 +650,7 @@ export const gasUpdateTxFee = (
     } = getState().gas;
 
     const { nativeCurrency } = getState().settings;
+    // optimism gas bs
     if (
       isEmpty(gasFeeParamsBySpeed) ||
       (txNetwork === Network.optimism && l1GasFeeOptimism === null)

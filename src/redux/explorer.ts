@@ -362,6 +362,7 @@ const addressAssetsRequest = (
   },
 ];
 
+// network in networks. txHistoryEnabled
 /**
  * Configures a layer-2 transaction history request for a given address.
  *
@@ -956,6 +957,7 @@ const listenOnAddressMessages = (socket: Socket) => (
     }
   );
 
+  // ignoring these for NOW
   socket.on(
     messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM,
     (message: L2AddressAssetsReceivedMessage) => {

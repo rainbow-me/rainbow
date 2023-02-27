@@ -283,6 +283,7 @@ export default function TransactionConfirmationScreen() {
   useEffect(() => {
     const initProvider = async () => {
       let p;
+      // if tx.network.flashbotsEnabled  ? network.flashbotsProvider : network.provider
       if (currentNetwork === Network.mainnet && flashbotsEnabled) {
         p = await getFlashbotsProvider(currentNetwork);
       } else {

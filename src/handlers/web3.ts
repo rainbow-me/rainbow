@@ -97,6 +97,7 @@ type NewTransactionNonNullable = {
   [key in keyof NewTransaction]-?: NonNullable<NewTransaction[key]>;
 };
 
+// dont think we need to touch this
 /**
  * @desc Configures `rpcEndpoints` based on a given `RainbowConfig`.
  * @param config The `RainbowConfig` to use.

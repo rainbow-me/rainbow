@@ -103,6 +103,7 @@ import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from 'ethers';
 
+// Network.swap.default_slippage_bips
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
@@ -318,6 +319,7 @@ export default function ExchangeModal({
           }
           newOutput.type = defaultInputAsset.type;
         }
+        // needs something like network.buildUniqueId() or should all uniqueIds be built same way? ex: 0x....69_ethereum
         newOutput.uniqueId =
           newOutput.type === Network.mainnet
             ? defaultOutputAsset?.address
@@ -354,6 +356,7 @@ export default function ExchangeModal({
   });
   const speedUrgentSelected = useRef(false);
 
+  // something like network.gasType === GasTypes.EIP1559 || GasTypes.Legacy
   useEffect(() => {
     if (
       !speedUrgentSelected.current &&
@@ -434,6 +437,9 @@ export default function ExchangeModal({
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
   const hideFlashbotsPostMerge = !config.flashbots_enabled;
+
+  // network.flashbotsEnabled
+
   const swapSupportsFlashbots =
     currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
@@ -501,6 +507,7 @@ export default function ExchangeModal({
       const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
+        // how can we move this out entirely
         if (currentNetwork === Network.optimism) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
@@ -653,6 +660,8 @@ export default function ExchangeModal({
 
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
+
+        // flashbots && network.flashbotsEnabled
         if (
           flashbots &&
           currentNetwork === Network.mainnet &&
@@ -1092,6 +1101,7 @@ export default function ExchangeModal({
                   onPressSelectOutputCurrency={() => {
                     navigateToSelectOutputCurrency(chainId);
                   }}
+                  // theres a bigger q here but may have to add an entire swaps config for each network?
                   {...((currentNetwork === Network.arbitrum ||
                     isCrosschainSwap) &&
                     !!outputCurrency && {

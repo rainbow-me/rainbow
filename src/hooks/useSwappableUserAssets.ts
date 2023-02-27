@@ -10,6 +10,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+// networks.swapsEnabled ?
 type SwappableAddresses = {
   [Network.mainnet]: EthereumAddress[];
   [Network.optimism]: EthereumAddress[];
@@ -23,6 +24,8 @@ export const useSwappableUserAssets = (params: {
   const { outputCurrency } = params;
   const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
+
+  // networks.swapsEnabled ?
   const [swappableAssets, setSwappableAssets] = useState<SwappableAddresses>({
     [Network.mainnet]: [],
     [Network.optimism]: [],
@@ -65,13 +68,14 @@ export const useSwappableUserAssets = (params: {
     },
     [outputCurrency]
   );
-
+  // networks.swapsEnabled ?
   const getSwappableAddressesInWallet = useCallback(async () => {
     const networks = [
       Network.mainnet,
       Network.optimism,
       Network.polygon,
       Network.arbitrum,
+      Network.bsc,
     ];
     const walletFilterRequests: Promise<void>[] = [];
     networks.forEach(network => {

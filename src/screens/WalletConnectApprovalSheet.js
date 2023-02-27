@@ -112,6 +112,9 @@ const NetworkPill = ({ chainIds }) => {
 
   const availableNetworks = useMemo(() => {
     // we dont want to show mainnet
+    // need to ask eric about this one but should be able to map through config
+    // for Network in networks -> network.walletconectEnabled
+
     return chainIds
       .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
       .sort(network => (network === Network.mainnet ? -1 : 1));

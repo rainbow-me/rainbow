@@ -47,6 +47,7 @@ const uniswapFavoriteMetadataSelector = (state: AppState) =>
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
 
+// networks.swapEnabled ?
 type CrosschainVerifiedAssets = {
   [Network.mainnet]: RT[];
   [Network.optimism]: RT[];
@@ -122,6 +123,8 @@ const useSwapCurrencyList = (
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
     false
   );
+
+  // networks.swapsEnabled ?
   const [
     crosschainVerifiedAssets,
     setCrosschainVerifiedAssets,
