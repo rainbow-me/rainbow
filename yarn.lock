@@ -2878,10 +2878,10 @@
     "@metamask/eth-sig-util" "4.0.0"
     ethereumjs-util "6.2.1"
 
-"@ratio.me/ratio-react-native-library@0.7.11":
-  version "0.7.11"
-  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.7.11.tgz#cdf76fd8e6f0559819412d3f7c0fc567cc25d8f4"
-  integrity sha512-HnyrTyMteYldZB8GBDbUMSOSTzlr4WIp8XkG+DZ+VN4D+vA0sFtDWGpwEJtg25KjLMF8n8T115w6VDeyvS2ysw==
+"@ratio.me/ratio-react-native-library@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.8.0.tgz#530ef98b31c37f1aff9d80e009f1acecf97b317d"
+  integrity sha512-J/LXtuX84c54KAI4EOEAPmEYwtoS+DcNBcc4B3BpTuA3E6buDI8re7NtceoW6G0g+Z/P+AliUbanIaQP3qRViQ==
   dependencies:
     react-native-swipe-gestures "^1.0.5"
 

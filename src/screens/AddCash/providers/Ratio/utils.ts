@@ -65,7 +65,6 @@ export async function ratioOrderToNewTransaction({
     throw new RainbowError(`Ratio: could not determine asset address`);
   }
 
-  // TODO if account doesn't have this token, we fail here I.e. new wallets
   const asset = await ethereumUtils.getNativeAssetForNetwork(
     parsedNetwork,
     destAssetAddress
