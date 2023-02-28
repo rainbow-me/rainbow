@@ -264,10 +264,13 @@ const UniqueTokenExpandedState = ({
   const { isReadOnlyWallet } = useWallets();
 
   const {
-    collection: { description: familyDescription, external_url: familyLink },
     description,
-    familyImage,
-    familyName,
+    collection: {
+      imageUrl: familyImage,
+      name: familyName,
+      description: familyDescription,
+      externalUrl: familyLink,
+    },
     isSendable,
     marketplaces: {
       opensea: { name: marketplaceName, collectionId: slug },

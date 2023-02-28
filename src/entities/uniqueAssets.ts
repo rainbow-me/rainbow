@@ -101,13 +101,9 @@ export interface Marketplace {
 
 export interface Collection {
   description: string | null;
-  discord: string | null;
   externalUrl: string | null;
-  floor_prices?: SimplehashFloorPrice[];
   imageUrl: string | null;
   name: string | null;
-  twitter: string | null;
-  wiki_link?: string | null;
 }
 
 export interface UniqueAssetV2 {
@@ -152,23 +148,24 @@ export interface UniqueAsset {
   last_sale?: UniqueAssetLastSale | null;
   name: string;
   permalink: string;
+  collection: Collection;
   traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
-  collection: {
-    description?: string | null;
-    discord_url?: string | null;
-    external_url?: string | null;
-    featured_image_url?: string | null;
-    floor_prices?: SimplehashFloorPrice[];
-    hidden?: boolean | null;
-    image_url?: string | null;
-    name: string;
-    short_description?: string | null;
-    slug: string;
-    twitter_username?: string | null;
-    wiki_link?: string | null;
-  };
+  // collection: {
+  //   description?: string | null;
+  //   discord_url?: string | null;
+  //   external_url?: string | null;
+  //   featured_image_url?: string | null;
+  //   floor_prices?: SimplehashFloorPrice[];
+  //   hidden?: boolean | null;
+  //   image_url?: string | null;
+  //   name: string;
+  //   short_description?: string | null;
+  //   slug: string;
+  //   twitter_username?: string | null;
+  //   wiki_link?: string | null;
+  // };
   familyImage: string | null | undefined;
   familyName: string | null | undefined;
   id: string;
@@ -178,7 +175,7 @@ export interface UniqueAsset {
   marketplaceCollectionUrl?: string | null;
   marketplaceId: string | null;
   marketplaceName: string | null;
-  spamScore: number;
+  simplehashSpamScore: number | null;
   type: AssetType;
   uniqueId: string;
   /**

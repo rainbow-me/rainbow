@@ -11,7 +11,7 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const sendableUniqueTokens = uniqueTokens?.filter(
     (uniqueToken: any) => uniqueToken.isSendable
   );
-  const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
+  const grouped = groupBy(sendableUniqueTokens, token => token.collection.name);
   const families = Object.keys(grouped).sort();
   let sendableTokens = [];
   for (let i = 0; i < families.length; i++) {
@@ -19,7 +19,7 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
     newObject = {
       data: grouped[families[i]],
       familyId: i,
-      familyImage: grouped[families[i]][0].familyImage,
+      familyImage: grouped[families[i]][0].collection.imageUrl,
       name: families[i],
     };
     sendableTokens.push(newObject);

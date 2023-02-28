@@ -568,7 +568,7 @@ export default function SendConfirmationSheet() {
                     weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
-                      ? asset.familyName
+                      ? asset.collection.name
                       : `${amountDetails.assetAmount} ${asset.symbol}`}
                   </Text>
                 </Row>

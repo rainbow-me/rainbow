@@ -188,6 +188,7 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
+  const collection = asset.collection;
   const isHiddenAsset = useMemo(
     () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
     [hiddenTokens, asset.fullUniqueId]
@@ -203,11 +204,11 @@ const UniqueTokenExpandedStateHeader = ({
     const { hostname } = new URL(asset.external_link);
     const { hostname: hostnameFallback } = new URL(
       // @ts-expect-error external_url could be null or undefined?
-      asset.collection.external_url
+      collection.externalUrl
     );
     const formattedUrl = hostname || hostnameFallback;
     return formattedUrl;
-  }, [asset.collection.external_url, asset.external_link]);
+  }, [collection.externalUrl, asset.external_link]);
 
   const familyMenuConfig = useMemo(() => {
     return {
@@ -220,7 +221,7 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.external_link || asset.collection.external_url
+        ...(asset.external_link || collection.externalUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.collectionWebsite],
@@ -228,14 +229,14 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.collection.twitter_username
+        ...(collection.twitter
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.twitter],
               },
             ]
           : []),
-        ...(asset.collection.discord_url
+        ...(collection.discord
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.discord],
@@ -249,9 +250,9 @@ const UniqueTokenExpandedStateHeader = ({
     hideNftMarketplaceAction,
     asset.marketplaces.opensea.name,
     asset.external_link,
-    asset.collection.external_url,
-    asset.collection.twitter_username,
-    asset.collection.discord_url,
+    collection.externalUrl,
+    collection.twitter,
+    collection.discord,
     formattedCollectionUrl,
   ]);
 
@@ -333,19 +334,23 @@ const UniqueTokenExpandedStateHeader = ({
         Linking.openURL(collectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
-        Linking.openURL(asset.external_link || asset.collection.external_url);
+        Linking.openURL(asset.external_link || collection.externalUrl);
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        Linking.openURL(
-          'https://twitter.com/' + asset.collection.twitter_username
-        );
+        Linking.openURL('https://twitter.com/' + collection.twitter);
       } else if (
         actionKey === FamilyActionsEnum.discord &&
-        asset.collection.discord_url
+        collection.discord
       ) {
-        Linking.openURL(asset.collection.discord_url);
+        Linking.openURL(collection.discord);
       }
     },
-    [asset]
+    [
+      asset.external_link,
+      asset.marketplaces.opensea.collectionUrl,
+      collection.discord,
+      collection.externalUrl,
+      collection.twitter,
+    ]
   );
 
   const handlePressAssetMenuItem = useCallback(
@@ -401,9 +406,9 @@ const UniqueTokenExpandedStateHeader = ({
   const onPressAndroidFamily = useCallback(() => {
     const collectionUrl = asset.marketplaces.opensea.collectionUrl;
     const hasCollection = !!collectionUrl;
-    const hasWebsite = !!(asset.external_link || asset.collection.external_url);
-    const hasTwitter = !!asset.collection.twitter_username;
-    const hasDiscord = !!asset.collection.discord_url;
+    const hasWebsite = !!(asset.external_link || collection.externalUrl);
+    const hasTwitter = !!collection.twitter;
+    const hasDiscord = !!collection.discord;
 
     const baseActions = [
       ...(hasCollection
@@ -433,23 +438,21 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (idx === websiteIndex) {
           Linking.openURL(
             // @ts-expect-error external_link and external_url could be null or undefined?
-            asset.external_link || asset.collection.external_url
+            asset.external_link || collection.externalUrl
           );
         } else if (idx === twitterIndex) {
-          Linking.openURL(
-            'https://twitter.com/' + asset.collection.twitter_username
-          );
-        } else if (idx === discordIndex && asset.collection.discord_url) {
-          Linking.openURL(asset.collection.discord_url);
+          Linking.openURL('https://twitter.com/' + collection.twitter);
+        } else if (idx === discordIndex && collection.discord) {
+          Linking.openURL(collection.discord);
         }
       }
     );
   }, [
-    asset.collection.discord_url,
-    asset.collection.external_url,
-    asset.collection.twitter_username,
     asset.external_link,
     asset.marketplaces.opensea.collectionUrl,
+    collection.discord,
+    collection.externalUrl,
+    collection.twitter,
   ]);
 
   const onPressAndroidAsset = useCallback(() => {
@@ -589,10 +592,10 @@ const UniqueTokenExpandedStateHeader = ({
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>
                 <Inline alignVertical="center" space="6px" wrap={false}>
-                  {asset.familyImage ? (
+                  {collection.imageUrl ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage source={{ uri: asset.familyImage }} />
+                        <FamilyImage source={{ uri: collection.imageUrl }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
@@ -608,7 +611,7 @@ const UniqueTokenExpandedStateHeader = ({
                         size="16px / 22px (Deprecated)"
                         weight="bold"
                       >
-                        {asset.familyName}
+                        {collection.name}
                       </Text>
                     </View>
                     <Text

@@ -327,23 +327,26 @@ export const parseSimplehashNfts = nftData => {
         symbol: simplehashNft.contract.symbol,
       },
       background: simplehashNft.background_color,
-      collection: {
-        description: collection.description,
-        discord_url: collection.discord_url,
-        external_url: collection.external_url,
-        // floor_prices: collection.floor_prices,
-        image_url: collection.image_url,
-        name: collection.name,
-        slug: marketplaceInfo?.collectionId,
-        twitter_username: collection.twitter_username,
-      },
+      // collection: {
+      //   // description: collection.description,
+      //   // discord_url: collection.discord_url,
+      //   external_url: collection.external_url,
+      //   // floor_prices: collection.floor_prices,
+      //   image_url: collection.image_url,
+      //   name:
+      //     simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
+      //       ? 'ENS'
+      //       : collection.name,
+      //   // slug: marketplaceInfo?.collectionId,
+      //   // twitter_username: collection.twitter_username,
+      // },
       description: simplehashNft.description,
       external_link: simplehashNft.external_url,
-      familyImage: collection.image_url,
-      familyName:
-        simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
-          ? 'ENS'
-          : collection.name,
+      // familyImage: collection.image_url,
+      // familyName:
+      //   simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
+      //     ? 'ENS'
+      //     : collection.name,
       fullUniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
       id: simplehashNft.token_id,
       image_original_url: simplehashNft.extra_metadata?.image_original_url,
@@ -366,6 +369,16 @@ export const parseSimplehashNfts = nftData => {
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      simplehashSpamScore: collection?.spam_score,
+      collection: {
+        imageUrl: collection.image_url,
+        name:
+          simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
+            ? 'ENS'
+            : collection.name,
+        description: collection.description,
+        externalUrl: collection.external_url,
+      },
       marketplaces: {
         opensea: {
           id: openSea?.marketplace_id ?? null,

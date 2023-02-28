@@ -182,7 +182,7 @@ export const buildUniqueTokenList = (
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
+  const grouped = groupBy(uniqueTokens, token => token.collection.name);
   const families = Object.keys(grouped);
 
   for (let family of families) {
@@ -209,7 +209,7 @@ export const buildUniqueTokenList = (
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
-        familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
+        familyImage: tokensRow?.[0]?.[0]?.collection.imageUrl,
         familyName: family,
         isHeader: index === 0,
         stableId: id,
@@ -286,7 +286,10 @@ export const buildBriefUniqueTokenList = (
     }
     return true;
   });
-  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
+  const grouped2 = groupBy(
+    filteredUniqueTokens,
+    token => token.collection.name
+  );
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
@@ -339,7 +342,7 @@ export const buildBriefUniqueTokenList = (
   for (let family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      image: grouped2[family][0].familyImage,
+      image: grouped2[family][0].collection.imageUrl,
       name: family,
       total: grouped2[family].length,
       type: 'FAMILY_HEADER',

@@ -7,7 +7,8 @@ export const filterNfts = (nfts: UniqueAsset[], polygonAllowlist: string[]) =>
     if (!nft.collection.name) return false;
 
     // filter out spam
-    if (nft.spamScore === null || nft.spamScore >= 85) return false;
+    if (nft.simplehashSpamScore === null || nft.simplehashSpamScore >= 85)
+      return false;
 
     // filter gnosis NFTs that are not POAPs
     if (

@@ -121,7 +121,7 @@ const UniqueTokenImage = ({
               size="14px / 19px (Deprecated)"
               weight="semibold"
             >
-              {`${item.familyName} #${item.id}`}
+              {`${item.collection.name} #${item.id}`}
             </Text>
           </View>
         </>

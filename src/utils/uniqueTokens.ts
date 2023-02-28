@@ -18,7 +18,10 @@ export const uniqueTokenFormats = {
 export type UniqueTokenFormat = keyof typeof uniqueTokenFormats;
 
 export function getUniqueTokenType(asset: UniqueAsset) {
-  const { familyName, uniqueId } = asset;
+  const {
+    collection: { name: familyName },
+    uniqueId,
+  } = asset;
   if (asset.isPoap) return uniqueTokenTypes.POAP;
   if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
     return uniqueTokenTypes.ENS;
@@ -27,8 +30,8 @@ export function getUniqueTokenType(asset: UniqueAsset) {
 }
 
 export function getUniqueTokenFormat(asset: UniqueAsset) {
-  const { animation_url, image_url } = asset;
-  const assetUrl = animation_url || image_url || '';
+  const { videoUrl, image_url } = asset;
+  const assetUrl = videoUrl || image_url || '';
   if (
     isSupportedUriExtension(
       assetUrl,
