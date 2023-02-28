@@ -46,9 +46,6 @@ export default function useColorForAsset(
       color2Return = colorDerivedFromAddress;
     } else if (accountAsset?.colors?.primary) {
       color2Return = accountAsset?.colors?.primary;
-      if (!isDarkMode && colors.isColorLight(color2Return)) {
-        return colors.darken(color2Return);
-      }
     } else if (derivedColor) {
       color2Return = derivedColor;
     } else if (accountAsset?.colors?.fallback) {
