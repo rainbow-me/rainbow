@@ -18,7 +18,7 @@ export default function useInitializeDiscoverData() {
     }
     try {
       InteractionManager.runAfterInteractions(() => {
-        // Other discover related actions should be triggered here
+        // should prob move this one too, we use user lists outside of the discover section as well
         dispatch(userListsLoadState());
       });
     } catch (error) {
