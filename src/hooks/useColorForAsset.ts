@@ -18,9 +18,6 @@ export default function useColorForAsset(
   );
   const resolvedAddress = mainnet_address || address || accountAsset?.address;
 
-  console.log('triggered for: ', accountAsset?.symbol, accountAsset?.colors);
-  console.log(accountAsset);
-
   const derivedColor = usePersistentDominantColorFromImage(
     accountAsset?.icon_url
   );
