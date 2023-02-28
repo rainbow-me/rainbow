@@ -328,7 +328,11 @@ export const setWalletBackedUp = (
   }
 };
 
-export const updateWalletBackupStatuses = () => async (
+/**
+ * Grabs user data stored in the cloud and based on this data marks wallets
+ * as backed up or not
+ */
+export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
@@ -345,28 +349,67 @@ export const updateWalletBackupStatuses = () => async (
     return;
   }
 
-  Object.entries(newWallets).forEach(
-    ([key, value]: [string, RainbowWallet]) => {
-      const walletId = value.id;
-      const walletMetadata = currentUserData?.wallets[walletId];
-      if (walletMetadata) {
-        newWallets[key] = {
-          ...newWallets[key],
-          backedUp: walletMetadata.backedUp,
-          backupDate: walletMetadata.backupDate,
-          backupFile: walletMetadata.backupFile,
-          backupType: walletMetadata.backupType,
-        };
+  // build hashmap of address to wallet based on backup metadata
+  const addressToWalletLookup = new Map<string, RainbowWallet>();
+  Object.values(currentUserData.wallets).forEach(wallet => {
+    wallet.addresses.forEach(address => {
+      addressToWalletLookup.set(address.address, wallet);
+    });
+  });
+
+  /*
+    marking wallet as already backed up if all addresses are backed up properly
+    and linked to the same wallet
+    
+    we assume it's not backed up if:
+    * we don't have an address in the backup metadata
+    * we have an address in the backup metadata, but it's linked to multiple
+      wallet ids (should never happen, but that's a sanity check)
+  */
+  Object.values(newWallets).forEach(wallet => {
+    const currentWalletId = wallet.id;
+
+    let relatedBackedUpWalletId: string | null = null;
+    for (const account of wallet.addresses) {
+      const walletDataForCurrentAddress = addressToWalletLookup.get(
+        account.address
+      );
+      if (!walletDataForCurrentAddress) {
+        return;
+      }
+      if (relatedBackedUpWalletId === null) {
+        relatedBackedUpWalletId = walletDataForCurrentAddress.id;
+      } else if (relatedBackedUpWalletId !== walletDataForCurrentAddress.id) {
+        return;
       }
     }
-  );
+
+    if (relatedBackedUpWalletId === null) {
+      return;
+    }
+
+    const backupData = currentUserData?.wallets[relatedBackedUpWalletId];
+    if (backupData) {
+      newWallets[currentWalletId] = {
+        ...newWallets[currentWalletId],
+        backedUp: backupData.backedUp,
+        backupDate: backupData.backupDate,
+        backupFile: backupData.backupFile,
+        backupType: backupData.backupType,
+      };
+    }
+  });
 
   await dispatch(walletsUpdate(newWallets));
   if (selected?.id) {
     await dispatch(walletsSetSelected(newWallets[selected.id]));
   }
 };
-export const clearWalletBackupStateFromAllWallets = () => async (
+
+/**
+ * Clears backup status for all users' wallets
+ */
+export const clearAllWalletsBackupStatus = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {

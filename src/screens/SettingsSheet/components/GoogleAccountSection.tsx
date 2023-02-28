@@ -8,10 +8,9 @@ import {
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { useWallets } from '@/hooks';
 import {
-  clearWalletBackupStateFromAllWallets,
-  updateWalletBackupStatuses,
+  clearAllWalletsBackupStatus,
+  updateWalletBackupStatusesBasedOnCloudUserData,
 } from '@/redux/wallets';
 import { useDispatch } from 'react-redux';
 import Menu from './Menu';
@@ -23,7 +22,6 @@ export const GoogleAccountSection: React.FC = () => {
     GoogleDriveUserData | undefined
   >(undefined);
   const [loading, setLoading] = useState(true);
-  const { wallets } = useWallets();
 
   useEffect(() => {
     getGoogleAccountUserData()
@@ -40,7 +38,7 @@ export const GoogleAccountSection: React.FC = () => {
 
   const removeBackupStateFromAllWallets = async () => {
     setLoading(true);
-    await dispatch(clearWalletBackupStateFromAllWallets());
+    await dispatch(clearAllWalletsBackupStatus());
     setLoading(false);
   };
 
@@ -70,7 +68,7 @@ export const GoogleAccountSection: React.FC = () => {
 
   const loginToGoogleDrive = async () => {
     setLoading(true);
-    await dispatch(updateWalletBackupStatuses());
+    await dispatch(updateWalletBackupStatusesBasedOnCloudUserData());
     try {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);
