@@ -1,13 +1,8 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
-import useImageMetadata from './useImageMetadata';
-import { AssetType, ParsedAddressAsset } from '@/entities';
-import {
-  getTokenMetadata,
-  getUrlForTrustIconFallback,
-  isETH,
-  pseudoRandomArrayItemFromString,
-} from '@/utils';
+import { ParsedAddressAsset } from '@/entities';
+import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
+import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
@@ -17,61 +12,68 @@ export default function useColorForAsset(
 ) {
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
-  const { address, color, mainnet_address, type } = asset;
-  const token = getTokenMetadata(mainnet_address || address!);
-  const tokenListColor = token?.color;
+  const { address, mainnet_address, type } = asset;
+  const accountAsset = ethereumUtils.getAssetFromAllAssets(
+    asset?.uniqueId || mainnet_address || address
+  );
+  const resolvedAddress = mainnet_address || address || accountAsset?.address;
 
-  const { color: imageColor } = useImageMetadata(
-    getUrlForTrustIconFallback(
-      mainnet_address || address!,
-      mainnet_address ? AssetType.token : (type as AssetType)
-    )
-  ) as any;
+  console.log('triggered for: ', accountAsset?.symbol, accountAsset?.colors);
+  console.log(accountAsset);
 
+  const derivedColor = usePersistentDominantColorFromImage(
+    accountAsset?.icon_url
+  );
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    const color =
-      isETH(address) || isETH(mainnet_address)
-        ? isDarkMode
-          ? forceETHColor
-            ? colors.appleBlue
-            : colors.brighten(lightModeThemeColors.dark)
-          : colors.dark
-        : pseudoRandomArrayItemFromString(
-            mainnet_address || address!,
-            colors.avatarBackgrounds
-          );
+    const color = isETH(resolvedAddress)
+      ? isDarkMode
+        ? forceETHColor
+          ? colors.appleBlue
+          : colors.brighten(lightModeThemeColors.dark)
+        : colors.dark
+      : pseudoRandomArrayItemFromString(
+          resolvedAddress,
+          colors.avatarBackgrounds
+        );
     return color;
-  }, [address, colors, forceETHColor, isDarkMode, mainnet_address]);
+  }, [colors, forceETHColor, isDarkMode, resolvedAddress]);
 
   return useMemo(() => {
     let color2Return;
-    if (color) {
-      color2Return = color;
-    } else if (tokenListColor) {
-      color2Return = tokenListColor;
-    } else if (imageColor) {
-      color2Return = imageColor;
+    if (isETH(resolvedAddress)) {
+      color2Return = colorDerivedFromAddress;
+    } else if (accountAsset?.colors?.primary) {
+      color2Return = accountAsset?.colors?.primary;
+      if (!isDarkMode && colors.isColorLight(color2Return)) {
+        return colors.darken(color2Return);
+      }
+    } else if (derivedColor) {
+      color2Return = derivedColor;
+    } else if (accountAsset?.colors?.fallback) {
+      color2Return = accountAsset?.colors?.fallback;
     } else if (fallbackColor) {
       color2Return = fallbackColor;
     } else {
       color2Return = colorDerivedFromAddress;
     }
     try {
-      return isDarkMode && colors.isColorDark(color2Return)
-        ? colors.brighten(color2Return)
-        : color2Return;
+      if (isDarkMode && colors.isColorDark(color2Return)) {
+        return colors.brighten(color2Return);
+      }
+      return color2Return;
     } catch (e) {
       return color2Return;
     }
   }, [
-    color,
+    accountAsset?.colors?.fallback,
+    accountAsset?.colors?.primary,
     colorDerivedFromAddress,
     colors,
+    derivedColor,
     fallbackColor,
-    imageColor,
     isDarkMode,
-    tokenListColor,
+    resolvedAddress,
   ]);
 }
