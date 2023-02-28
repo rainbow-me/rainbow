@@ -12,8 +12,7 @@ import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { IS_ANDROID } from '@/env';
-import { GoogleAccountSection } from '@/components/settings-menu/BackupSection/GoogleAccountSection';
+import { GoogleAccountSection } from './GoogleAccountSection';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();

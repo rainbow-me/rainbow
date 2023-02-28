@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { IS_ANDROID } from '@/env';
-import Menu from '@/components/settings-menu/components/Menu';
-import MenuItem from '@/components/settings-menu/components/MenuItem';
 import {
   getGoogleAccountUserData,
   GoogleDriveUserData,
@@ -14,9 +12,10 @@ import { useWallets } from '@/hooks';
 import {
   clearWalletBackupStateFromAllWallets,
   updateWalletBackupStatuses,
-  walletsUpdate,
 } from '@/redux/wallets';
 import { useDispatch } from 'react-redux';
+import Menu from './Menu';
+import MenuItem from './MenuItem';
 
 export const GoogleAccountSection: React.FC = () => {
   const dispatch = useDispatch();

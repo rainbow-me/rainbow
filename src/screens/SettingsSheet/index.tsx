@@ -17,6 +17,7 @@ import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
+import { IS_ANDROID } from '@/env';
 
 const Stack = createStackNavigator();
 

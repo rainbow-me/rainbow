@@ -345,9 +345,6 @@ export const updateWalletBackupStatuses = () => async (
     return;
   }
 
-  console.log('DUPA KEYS: ', Object.keys(newWallets));
-  console.log('DUPA 2 KEYS: ', Object.keys(currentUserData));
-
   Object.entries(newWallets).forEach(
     ([key, value]: [string, RainbowWallet]) => {
       const walletId = value.id;
