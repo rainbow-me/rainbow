@@ -42,20 +42,34 @@ export default function useColorForAsset(
 
   return useMemo(() => {
     let color2Return;
+
+    // we have special handling for eth color
     if (isETH(resolvedAddress)) {
       color2Return = colorDerivedFromAddress;
+
+      // token image derived color from BE
     } else if (accountAsset?.colors?.primary) {
       color2Return = accountAsset?.colors?.primary;
+
+      // token image derived color on client
     } else if (derivedColor) {
       color2Return = derivedColor;
+
+      // fallback color from BE
     } else if (accountAsset?.colors?.fallback) {
       color2Return = accountAsset?.colors?.fallback;
+
+      // custom fallback color from args
     } else if (fallbackColor) {
       color2Return = fallbackColor;
+
+      // fallback color derived from address
     } else {
       color2Return = colorDerivedFromAddress;
     }
+
     try {
+      // brighten up dark colors in dark mode
       if (isDarkMode && colors.isColorDark(color2Return)) {
         return colors.brighten(color2Return);
       }
