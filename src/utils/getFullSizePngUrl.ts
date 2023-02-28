@@ -1,5 +1,5 @@
 import { PixelRatio } from 'react-native';
-import { maybeSignUri } from '@/handlers/imgix';
+import { imageToPng } from '@/handlers/imgix';
 import { deviceUtils } from '@/utils';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
@@ -8,9 +8,5 @@ const deviceWidth = deviceUtils.dimensions.width;
 const size = deviceWidth * pixelRatio;
 const MAX_IMAGE_SCALE = 3;
 
-export const getFullSizeUrl = (url: string) => {
-  if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-    return `${url}=w${size * MAX_IMAGE_SCALE}`;
-  }
-  return maybeSignUri(url, { w: size * MAX_IMAGE_SCALE });
-};
+export const getFullSizePngUrl = (url: string) =>
+  imageToPng(url, size * MAX_IMAGE_SCALE);

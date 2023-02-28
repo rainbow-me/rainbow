@@ -2,12 +2,12 @@ import { isNil } from 'lodash';
 import { CardSize } from '../components/unique-token/CardSize';
 import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
-import { maybeSignUri } from '@/handlers/imgix';
+import { maybeSignUri, imageToPng } from '@/handlers/imgix';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
 import { pickShallow } from '@/helpers/utilities';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
-import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
+import { getFullSizePngUrl } from '@/utils/getFullSizePngUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
 import isSVGImage from '@/utils/isSVG';
 
@@ -44,25 +44,19 @@ export const getOpenSeaCollectionUrl = slug =>
  * @return {Object}
  */
 
-export const handleAndSignImages = (imageUrl, previewUrl, originalUrl) => {
-  if (!imageUrl && !previewUrl && !originalUrl) {
-    return { imageUrl: undefined, lowResUrl: undefined };
+export const handleAndSignImages = (originalImageUrl, nonSVGUrl, isSVG) => {
+  if (!originalImageUrl) {
+    return { originalImageUrl: null, lowResPngUrl: null, fullResPngUrl: null };
   }
 
-  const lowResImageOptions = {
-    w: CardSize,
-  };
-  const isSVG = isSVGImage(imageUrl);
-  const image = imageUrl || originalUrl || previewUrl;
-  const fullImage = isSVG ? image : getFullSizeUrl(image);
-
-  const lowResUrl = isSVG
-    ? maybeSignUri(svgToPngIfNeeded(image), lowResImageOptions)
-    : getLowResUrl(image);
+  const safeNonSvgUrl = nonSVGUrl ?? svgToPngIfNeeded(originalImageUrl);
+  const fullResPngUrl = getFullSizePngUrl(safeNonSvgUrl);
+  const fullImage = isSVG ? originalImageUrl : fullResPngUrl;
 
   return {
-    imageUrl: fullImage,
-    lowResUrl,
+    fullResUrl: fullImage,
+    lowResPngUrl: imageToPng(safeNonSvgUrl, CardSize),
+    fullResPngUrl,
   };
 };
 
@@ -295,15 +289,31 @@ const getRoundedValueFromRawAmount = (rawAmount, decimals) => {
 export const parseSimplehashNfts = nftData => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
-    const { imageUrl, lowResUrl } = handleAndSignImages(
-      simplehashNft.image_url,
-      simplehashNft.extra_metadata?.image_original_url,
-      simplehashNft?.previews?.image_small_url
+    // slices off simplehash's sizing suffix s=1000
+    const fullSizeNonSVGUrl = simplehashNft.previews.image_large_url?.slice(
+      0,
+      -6
     );
 
-    if (collection?.name?.includes('Ascended')) {
-      console.log(simplehashNft.extra_metadata?.animation_original_url);
-      console.log(simplehashNft?.video_url);
+    const { fullResUrl, lowResPngUrl, fullResPngUrl } = handleAndSignImages(
+      simplehashNft.image_url ??
+        simplehashNft.extra_metadata?.image_original_url,
+      fullSizeNonSVGUrl,
+      simplehashNft?.image_properties?.mime_type
+    );
+
+    if (simplehashNft?.image_properties?.mime_type?.includes('jpeg')) {
+      console.log(simplehashNft?.image_properties?.mime_type);
+      console.log('zoooopy');
+      console.log(simplehashNft?.image_url);
+      console.log('fdsffdsfds');
+      console.log(simplehashNft?.previews);
+      console.log('DANIL');
+      console.log(simplehashNft?.extra_metadata?.image_original_url);
+      console.log('LWO');
+      console.log(imageToPng(simplehashNft?.previews?.image_large_url, 200));
+      console.log(imageToPng(simplehashNft?.previews?.image_small_url, 200));
+      console.log(fullSizeNonSVGUrl);
     }
 
     const openSeaFloorPriceEth = collection?.floor_prices?.find(
@@ -326,46 +336,32 @@ export const parseSimplehashNfts = nftData => {
         schema_name: simplehashNft.contract.type,
         symbol: simplehashNft.contract.symbol,
       },
+      images: {
+        fullSizeUrl:
+          simplehashNft.image_url ||
+          simplehashNft.extra_metadata?.image_original_url,
+        fullSizePngUrl: imageToPng(fullSizeNonSVGUrl, 200),
+        lowResPngUrl: 'x',
+        isSVG: simplehashNft.image_properties?.mime_type === 'image/svg+xml',
+      },
       background: simplehashNft.background_color,
-      // collection: {
-      //   // description: collection.description,
-      //   // discord_url: collection.discord_url,
-      //   external_url: collection.external_url,
-      //   // floor_prices: collection.floor_prices,
-      //   image_url: collection.image_url,
-      //   name:
-      //     simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
-      //       ? 'ENS'
-      //       : collection.name,
-      //   // slug: marketplaceInfo?.collectionId,
-      //   // twitter_username: collection.twitter_username,
-      // },
       description: simplehashNft.description,
       external_link: simplehashNft.external_url,
-      // familyImage: collection.image_url,
-      // familyName:
-      //   simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
-      //     ? 'ENS'
-      //     : collection.name,
       fullUniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
       id: simplehashNft.token_id,
       image_original_url: simplehashNft.extra_metadata?.image_original_url,
-      image_preview_url: lowResUrl,
-      image_thumbnail_url: lowResUrl,
-      image_url: imageUrl,
+      image_preview_url: lowResPngUrl,
+      image_thumbnail_url: lowResPngUrl,
+      image_url: fullResUrl,
       isPoap: simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
       isSendable:
         simplehashNft.chain === 'ethereum' &&
         (simplehashNft.contract.type === 'ERC721' ||
           simplehashNft.contract.type === 'ERC1155'),
       lastSale: simplehashNft.last_sale,
-      lowResUrl,
-      // marketplaceCollectionUrl: marketplaceInfo?.collectionUrl,
-      // marketplaceId: marketplaceInfo?.marketplaceId,
-      // marketplaceName: marketplaceInfo?.marketplaceName,
+      lowResUrl: lowResPngUrl,
       name: simplehashNft.name,
       network: getNetworkFromSimplehashChain(simplehashNft.chain),
-      // permalink: marketplaceInfo?.permalink,
       traits: simplehashNft.extra_metadata?.attributes ?? [],
       type: AssetTypes.nft,
       uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
