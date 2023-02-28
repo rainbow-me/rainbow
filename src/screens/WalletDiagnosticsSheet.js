@@ -33,6 +33,7 @@ import Routes from '@/navigation/routesNames';
 import { haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
+import { getDeviceId } from '@/analytics/utils';
 
 export const WalletDiagnosticsSheetHeight = '100%';
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -209,13 +210,15 @@ const WalletDiagnosticsSheet = () => {
   useEffect(() => {
     const init = async () => {
       try {
+        // get and set uuid
+        const userIdentifier = await getDeviceId();
+        setUuid(userIdentifier);
+
+        // get wallet and set wallet data
         const allKeys = await loadAllKeys();
         const processedKeys = await Promise.all(
           allKeys
             .filter(key => {
-              if (key?.username === 'analyticsUserIdentifier') {
-                setUuid(key.password);
-              }
               return (
                 key?.username?.indexOf(seedPhraseKey) !== -1 ||
                 key?.username?.indexOf(privateKeyKey) !== -1
