@@ -35,7 +35,11 @@ export function SettingsSheet() {
         type?: string;
         walletId?: string;
       } = {};
-      // for android we need to exit early to display google account information
+      /*
+       On Android, we exit early and always navigate to the list of wallets 
+       even if there's only a single wallet, because we need to show 
+       the currently signed in Google account.
+      */
       if (IS_ANDROID) {
         return { params: { ...params, ...paramsToPass }, route };
       }

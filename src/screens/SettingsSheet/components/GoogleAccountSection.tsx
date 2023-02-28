@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { IS_ANDROID } from '@/env';
 import {
   getGoogleAccountUserData,
   GoogleDriveUserData,
@@ -79,56 +78,50 @@ export const GoogleAccountSection: React.FC = () => {
     }
   };
 
-  if (IS_ANDROID) {
-    return (
-      <Menu header="Google account used for backups">
-        {loading && !accountDetails && (
-          <MenuItem
-            hasSfSymbol
-            size={52}
-            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-            titleComponent={<MenuItem.Title text={'Loading...'} isLink />}
-          />
-        )}
-        {!loading && accountDetails && (
-          <MenuItem
-            size={60}
-            leftComponent={
-              accountDetails.avatarUrl ? (
-                <ImageAvatar image={accountDetails.avatarUrl} size="smedium" />
-              ) : undefined
-            }
-            titleComponent={
-              <MenuItem.Title
-                text={
-                  accountDetails.name ??
-                  accountDetails.email ??
-                  'Google Account'
-                }
-              />
-            }
-            labelComponent={
-              accountDetails.name &&
-              accountDetails.email && (
-                <MenuItem.Label text={accountDetails.email ?? ''} />
-              )
-            }
-            rightComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
-            onPress={onGoogleAccountPress}
-          />
-        )}
-        {!loading && !accountDetails && (
-          <MenuItem
-            hasSfSymbol
-            size={52}
-            titleComponent={<MenuItem.Title text="Sign in" isLink />}
-            leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-            onPress={loginToGoogleDrive}
-          />
-        )}
-      </Menu>
-    );
-  } else {
-    return null;
-  }
+  return (
+    <Menu header="Google account used for backups">
+      {loading && !accountDetails && (
+        <MenuItem
+          hasSfSymbol
+          size={52}
+          leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
+          titleComponent={<MenuItem.Title text={'Loading...'} isLink />}
+        />
+      )}
+      {!loading && accountDetails && (
+        <MenuItem
+          size={60}
+          leftComponent={
+            accountDetails.avatarUrl ? (
+              <ImageAvatar image={accountDetails.avatarUrl} size="smedium" />
+            ) : undefined
+          }
+          titleComponent={
+            <MenuItem.Title
+              text={
+                accountDetails.name ?? accountDetails.email ?? 'Google Account'
+              }
+            />
+          }
+          labelComponent={
+            accountDetails.name &&
+            accountDetails.email && (
+              <MenuItem.Label text={accountDetails.email ?? ''} />
+            )
+          }
+          rightComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
+          onPress={onGoogleAccountPress}
+        />
+      )}
+      {!loading && !accountDetails && (
+        <MenuItem
+          hasSfSymbol
+          size={52}
+          titleComponent={<MenuItem.Title text="Sign in" isLink />}
+          leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
+          onPress={loginToGoogleDrive}
+        />
+      )}
+    </Menu>
+  );
 };

@@ -13,6 +13,7 @@ import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { GoogleAccountSection } from './GoogleAccountSection';
+import { IS_ANDROID } from '@/env';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();
@@ -75,7 +76,7 @@ const BackupSection = () => {
 
   return (
     <MenuContainer>
-      <GoogleAccountSection />
+      {IS_ANDROID && <GoogleAccountSection />}
       <Menu>
         {backups.map(
           ({

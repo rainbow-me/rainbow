@@ -352,8 +352,8 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
   // build hashmap of address to wallet based on backup metadata
   const addressToWalletLookup = new Map<string, RainbowWallet>();
   Object.values(currentUserData.wallets).forEach(wallet => {
-    wallet.addresses.forEach(address => {
-      addressToWalletLookup.set(address.address, wallet);
+    wallet.addresses.forEach(account => {
+      addressToWalletLookup.set(account.address, wallet);
     });
   });
 
@@ -367,9 +367,9 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
       wallet ids (should never happen, but that's a sanity check)
   */
   Object.values(newWallets).forEach(wallet => {
-    const currentWalletId = wallet.id;
+    const localWalletId = wallet.id;
 
-    let relatedBackedUpWalletId: string | null = null;
+    let relatedCloudWalletId: string | null = null;
     for (const account of wallet.addresses) {
       const walletDataForCurrentAddress = addressToWalletLookup.get(
         account.address
@@ -377,25 +377,26 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
       if (!walletDataForCurrentAddress) {
         return;
       }
-      if (relatedBackedUpWalletId === null) {
-        relatedBackedUpWalletId = walletDataForCurrentAddress.id;
-      } else if (relatedBackedUpWalletId !== walletDataForCurrentAddress.id) {
+      if (relatedCloudWalletId === null) {
+        relatedCloudWalletId = walletDataForCurrentAddress.id;
+      } else if (relatedCloudWalletId !== walletDataForCurrentAddress.id) {
         return;
       }
     }
 
-    if (relatedBackedUpWalletId === null) {
+    if (relatedCloudWalletId === null) {
       return;
     }
 
-    const backupData = currentUserData?.wallets[relatedBackedUpWalletId];
-    if (backupData) {
-      newWallets[currentWalletId] = {
-        ...newWallets[currentWalletId],
-        backedUp: backupData.backedUp,
-        backupDate: backupData.backupDate,
-        backupFile: backupData.backupFile,
-        backupType: backupData.backupType,
+    // update only if we checked the wallet is actually backed up
+    const cloudBackupData = currentUserData?.wallets[relatedCloudWalletId];
+    if (cloudBackupData) {
+      newWallets[localWalletId] = {
+        ...newWallets[localWalletId],
+        backedUp: cloudBackupData.backedUp,
+        backupDate: cloudBackupData.backupDate,
+        backupFile: cloudBackupData.backupFile,
+        backupType: cloudBackupData.backupType,
       };
     }
   });
