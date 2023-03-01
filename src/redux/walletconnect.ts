@@ -3,7 +3,6 @@ import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -31,7 +30,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
-import { IS_DEV } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -271,7 +270,7 @@ export const walletConnectRemovePendingRedirect = (
         Minimizer.goBack();
       }, 300);
     } else {
-      IS_TESTING !== 'true' && Minimizer.goBack();
+      !IS_TEST && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect
@@ -434,12 +433,12 @@ export const walletConnectOnSessionRequest = (
 
       let waitingFn: (callback: () => unknown, timeout: number) => unknown =
         InteractionManager.runAfterInteractions;
-      if (IS_TESTING === 'true') {
+      if (IS_TEST) {
         waitingFn = setTimeout;
       }
 
       waitingFn(async () => {
-        if (IS_TESTING !== 'true') {
+        if (IS_TEST) {
           // Wait until the app is idle so we can navigate
           // This usually happens only when coming from a cold start
           while (!getState().appState.walletReady) {
