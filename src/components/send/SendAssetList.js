@@ -106,10 +106,10 @@ export default class SendAssetList extends React.Component {
     const imageTokens = [];
     uniqueTokens.forEach(family => {
       family.data.forEach(token => {
-        if (token.image_thumbnail_url) {
+        if (token.images.lowResPngUrl) {
           imageTokens.push({
             id: token.id,
-            uri: token.image_thumbnail_url,
+            uri: token.images.lowResPngUrl,
           });
         }
       });

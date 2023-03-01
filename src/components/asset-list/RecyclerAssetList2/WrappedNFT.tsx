@@ -27,7 +27,14 @@ export default React.memo(function WrappedNFT({
     () => ({
       ...assetCollectible,
       ...(IS_TESTING === 'true'
-        ? { image_original_url: null, image_preview_url: null, image_url: null }
+        ? {
+            images: {
+              fullResUrl: null,
+              fullResPngUrl: null,
+              lowResPngUrl: null,
+              isSvg: false,
+            },
+          }
         : {}),
     }),
     [assetCollectible]

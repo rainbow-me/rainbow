@@ -30,10 +30,10 @@ export function getENSNFTAvatarUrl(
           token.asset_contract.address?.toLowerCase() ===
             contractAddress.toLowerCase() && token.id === tokenId
       );
-      if (uniqueToken?.image_url) {
-        avatarUrl = uniqueToken?.image_url;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        avatarUrl = uniqueToken?.image_thumbnail_url;
+      if (uniqueToken?.images.fullResPngUrl) {
+        avatarUrl = uniqueToken?.images.fullResPngUrl;
+      } else if (uniqueToken?.images.lowResPngUrl) {
+        avatarUrl = uniqueToken?.images.lowResPngUrl;
       }
     } else if (
       avatar.startsWith('http') ||

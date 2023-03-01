@@ -269,10 +269,10 @@ export const buildBriefUniqueTokenList = (
   isReadOnlyWallet = false
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
-    .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
+    .filter(({ uniqueId }: any) => hiddenTokens.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
   const nonHiddenUniqueTokens = uniqueTokens.filter(
-    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
+    ({ uniqueId }: any) => !hiddenTokens.includes(uniqueId)
   );
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))

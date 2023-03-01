@@ -302,19 +302,7 @@ export const parseSimplehashNfts = nftData => {
       simplehashNft?.image_properties?.mime_type
     );
 
-    if (simplehashNft?.image_properties?.mime_type?.includes('jpeg')) {
-      console.log(simplehashNft?.image_properties?.mime_type);
-      console.log('zoooopy');
-      console.log(simplehashNft?.image_url);
-      console.log('fdsffdsfds');
-      console.log(simplehashNft?.previews);
-      console.log('DANIL');
-      console.log(simplehashNft?.extra_metadata?.image_original_url);
-      console.log('LWO');
-      console.log(imageToPng(simplehashNft?.previews?.image_large_url, 200));
-      console.log(imageToPng(simplehashNft?.previews?.image_small_url, 200));
-      console.log(fullSizeNonSVGUrl);
-    }
+    console.log(simplehashNft.extra_metadata?.attributes);
 
     const openSeaFloorPriceEth = collection?.floor_prices?.find(
       floorPrice =>
@@ -328,8 +316,13 @@ export const parseSimplehashNfts = nftData => {
       marketplace => marketplace.marketplace_id === 'opensea'
     );
 
+    const network = getNetworkFromSimplehashChain(simplehashNft.chain);
+
     const parsedNft = {
-      videoUrl: simplehashNft.video_url,
+      videos: {
+        url: simplehashNft.video_url,
+        mimeType: simplehashNft.video_properties?.mime_type,
+      },
       asset_contract: {
         address: simplehashNft.contract_address,
         name: simplehashNft.contract.name,
@@ -337,43 +330,45 @@ export const parseSimplehashNfts = nftData => {
         symbol: simplehashNft.contract.symbol,
       },
       images: {
-        fullSizeUrl:
-          simplehashNft.image_url ||
-          simplehashNft.extra_metadata?.image_original_url,
-        fullSizePngUrl: imageToPng(fullSizeNonSVGUrl, 200),
-        lowResPngUrl: 'x',
-        isSVG: simplehashNft.image_properties?.mime_type === 'image/svg+xml',
+        fullResUrl,
+        fullResPngUrl,
+        lowResPngUrl,
+        mimeType: simplehashNft.image_properties?.mime_type,
+        blurhash: simplehashNft.previews?.blurhash,
       },
-      background: simplehashNft.background_color,
+      backgroundColor: simplehashNft.background_color,
+      predominantColor: simplehashNft.previews?.predominant_color,
       description: simplehashNft.description,
-      external_link: simplehashNft.external_url,
-      fullUniqueId: `${simplehashNft.chain}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
-      id: simplehashNft.token_id,
-      image_original_url: simplehashNft.extra_metadata?.image_original_url,
-      image_preview_url: lowResPngUrl,
-      image_thumbnail_url: lowResPngUrl,
-      image_url: fullResUrl,
+      externalUrl: simplehashNft.external_url,
+      uniqueId: `${network}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      tokenId: simplehashNft.token_id,
       isPoap: simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
       isSendable:
-        simplehashNft.chain === 'ethereum' &&
+        network === Network.mainnet &&
         (simplehashNft.contract.type === 'ERC721' ||
           simplehashNft.contract.type === 'ERC1155'),
       lastSale: simplehashNft.last_sale,
-      lowResUrl: lowResPngUrl,
       name: simplehashNft.name,
-      network: getNetworkFromSimplehashChain(simplehashNft.chain),
-      traits: simplehashNft.extra_metadata?.attributes ?? [],
+      network,
+      traits: simplehashNft.extra_metadata?.attributes
+        ?.map(trait => ({
+          displayType: trait?.display_type,
+          traitType: trait.trait_type,
+          value: trait.value,
+        }))
+        .filter(trait => trait.displayType && trait.traitType && trait.value),
       type: AssetTypes.nft,
-      uniqueId: `${simplehashNft.contract_address}_${simplehashNft.token_id}`,
       simplehashSpamScore: collection?.spam_score,
       collection: {
-        imageUrl: collection.image_url,
+        imageUrl: maybeSignUri(collection.image_url),
         name:
           simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
             ? 'ENS'
             : collection.name,
         description: collection.description,
         externalUrl: collection.external_url,
+        twitter: collection.twitter_username,
+        discord: collection.discord_url,
       },
       marketplaces: {
         opensea: {
@@ -382,8 +377,6 @@ export const parseSimplehashNfts = nftData => {
           nftUrl: openSea?.nft_url ?? null,
           collectionUrl: openSea?.collection_url ?? null,
           collectionId: openSea?.marketplace_collection_id ?? null,
-          // we don't use verified status yet but i think we should
-          verified: openSea?.verified ?? null,
           // we only use eth floor prices right now
           floorPrice: getRoundedValueFromRawAmount(
             openSeaFloorPriceEth?.value,

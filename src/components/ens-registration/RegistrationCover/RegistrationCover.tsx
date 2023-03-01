@@ -72,16 +72,15 @@ const RegistrationCover = ({
       setCoverMetadata(image);
       setCoverUrl(
         image?.tmpPath ||
-          asset?.image_url ||
-          asset?.lowResUrl ||
-          asset?.image_thumbnail_url ||
+          asset?.images.fullResPngUrl ||
+          asset?.images.lowResPngUrl ||
           ''
       );
 
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
-        const tokenId = asset.id;
+        const tokenId = asset.tokenId;
         onBlurField({
           key: 'header',
           value: stringifyENSNFTRecord({

@@ -36,15 +36,15 @@ const UniqueTokenExpandedStateContent = ({
   onContentBlur,
 }) => {
   const url = useMemo(() => {
-    if (asset.isPoap) return asset.videoUrl;
-    return asset.image_url;
-  }, [asset.videoUrl, asset.image_url, asset.isPoap]);
+    if (asset.isPoap) return asset.videos.url;
+    return asset.images.fullResUrl;
+  }, [asset.isPoap, asset.videos.url, asset.images.fullResUrl]);
 
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
+  const aspectRatio = usePersistentAspectRatio(asset.images.lowResPngUrl);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
@@ -73,24 +73,24 @@ const UniqueTokenExpandedStateContent = ({
             posterUri={url}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset.videoUrl || url}
+            uri={asset.videos.url || url}
           />
         ) : supports3d ? (
           <ModelView
             fallbackUri={url}
             loading={loading}
             setLoading={setLoading}
-            uri={asset.videoUrl || url}
+            uri={asset.videos.url || url}
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.videoUrl || url}
+            uri={asset.videos.url || url}
           />
         ) : (
           <UniqueTokenImage
-            backgroundColor={asset.background}
+            backgroundColor={asset.backgroundColor}
             imageUrl={url}
             item={asset}
             resizeMode={resizeMode}

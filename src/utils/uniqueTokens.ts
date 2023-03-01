@@ -30,8 +30,11 @@ export function getUniqueTokenType(asset: UniqueAsset) {
 }
 
 export function getUniqueTokenFormat(asset: UniqueAsset) {
-  const { videoUrl, image_url } = asset;
-  const assetUrl = videoUrl || image_url || '';
+  const {
+    videos: { url: videoUrl },
+    images: { fullResUrl: imageUrl },
+  } = asset;
+  const assetUrl = videoUrl || imageUrl || '';
   if (
     isSupportedUriExtension(
       assetUrl,

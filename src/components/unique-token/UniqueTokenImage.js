@@ -7,7 +7,6 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace } from '../text';
 import { Text } from '@/design-system';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -53,7 +52,7 @@ const UniqueTokenImage = ({
   const isENS =
     item.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  const isSVG = isSVGImage(imageUrl);
+  const isSVG = item.images.mimeType === 'image/svg+xml';
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -62,7 +61,7 @@ const UniqueTokenImage = ({
   const backgroundColor = givenBackgroundColor;
   const { hiddenTokens } = useHiddenTokens();
   const isHiddenToken = React.useMemo(() => {
-    return hiddenTokens.find(token => token === item.fullUniqueId);
+    return hiddenTokens.find(token => token === item.uniqueId);
   }, [hiddenTokens, item]);
 
   return (
@@ -70,12 +69,12 @@ const UniqueTokenImage = ({
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
-          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
-          lowResFallbackUri={item.lowResUrl}
+          fallbackUri={item.images.fullResPngUrl}
+          lowResFallbackUri={item.images.lowResPngUrl}
           onError={handleError}
           resizeMode={resizeMode}
           style={position.coverAsObject}
-          uri={item.image_url}
+          uri={item.images.fullResUrl}
         />
       ) : imageUrl && !error ? (
         <Fragment>
@@ -94,7 +93,7 @@ const UniqueTokenImage = ({
               fm="png"
               playing={false}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              source={{ uri: item.lowResUrl }}
+              source={{ uri: item.images.lowResPngUrl }}
               style={position.coverAsObject}
             />
           )}
@@ -121,7 +120,7 @@ const UniqueTokenImage = ({
               size="14px / 19px (Deprecated)"
               weight="semibold"
             >
-              {`${item.collection.name} #${item.id}`}
+              {`${item.collection.name} #${item.tokenId}`}
             </Text>
           </View>
         </>

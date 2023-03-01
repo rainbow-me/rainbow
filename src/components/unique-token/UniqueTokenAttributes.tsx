@@ -27,13 +27,13 @@ const UniqueTokenAttributes = ({
   } = asset;
   const sortedTraits = useMemo(
     () =>
-      (sortList(traits, 'trait_type', 'asc') as typeof traits)
+      (sortList(traits, 'traitType', 'asc') as typeof traits)
         .filter(
           trait =>
             trait.value !== undefined &&
             trait.value !== null &&
             trait.value !== '' &&
-            trait.trait_type &&
+            trait.traitType &&
             !isHttpUrl(trait.value)
         )
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
@@ -55,8 +55,7 @@ const UniqueTokenAttributes = ({
           lowercase,
           value,
           originalValue,
-          trait_type: type,
-          max_value: maxValue,
+          traitType: type,
         }) => (
           <Tag
             color={color}
@@ -66,7 +65,6 @@ const UniqueTokenAttributes = ({
             lowercase={lowercase}
             marketplaceId={marketplaceId}
             marketplaceName={marketplaceName}
-            maxValue={maxValue}
             originalValue={originalValue}
             slug={slug}
             text={value}

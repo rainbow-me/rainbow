@@ -9,7 +9,6 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -39,10 +38,8 @@ const UniqueTokenCard = ({
   style = undefined,
   ...props
 }) => {
-  usePersistentAspectRatio(item.lowResUrl);
-  usePersistentDominantColorFromImage(item.lowResUrl);
-
-  const isSVG = isSVGImage(item.image_url);
+  usePersistentAspectRatio(item.images.lowResPngUrl);
+  usePersistentDominantColorFromImage(item.images.lowResPngUrl);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -68,7 +65,7 @@ const UniqueTokenCard = ({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={isSVG ? item.lowResUrl : item.image_url}
+          imageUrl={item.images.fullResPngUrl}
           isCard
           item={item}
           resizeMode={resizeMode}

@@ -15,8 +15,8 @@ export default function uniqueAssetTraitDisplayTypeCompareFunction(
   a: UniqueAssetTrait,
   b: UniqueAssetTrait
 ): number {
-  const aTypeRank = displayTypeRanks?.[a.display_type] ?? 0;
-  const bTypeRank = displayTypeRanks?.[b.display_type] ?? 0;
+  const aTypeRank = displayTypeRanks?.[a.displayType] ?? 0;
+  const bTypeRank = displayTypeRanks?.[b.displayType] ?? 0;
   if (aTypeRank < bTypeRank) {
     return -1;
   } else if (aTypeRank > bTypeRank) {

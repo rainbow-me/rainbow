@@ -32,7 +32,6 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
-import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 
 const AssetActionsEnum = {
@@ -190,8 +189,8 @@ const UniqueTokenExpandedStateHeader = ({
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
   const collection = asset.collection;
   const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
-    [hiddenTokens, asset.fullUniqueId]
+    () => hiddenTokens.includes(asset.uniqueId) as boolean,
+    [hiddenTokens, asset.uniqueId]
   );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(asset.uniqueId) as boolean,
@@ -200,15 +199,15 @@ const UniqueTokenExpandedStateHeader = ({
   const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
-    // @ts-expect-error external_link could be null or undefined?
-    const { hostname } = new URL(asset.external_link);
+    // @ts-expect-error externalUrl could be null or undefined?
+    const { hostname } = new URL(asset.externalUrl);
     const { hostname: hostnameFallback } = new URL(
       // @ts-expect-error external_url could be null or undefined?
       collection.externalUrl
     );
     const formattedUrl = hostname || hostnameFallback;
     return formattedUrl;
-  }, [collection.externalUrl, asset.external_link]);
+  }, [collection.externalUrl, asset.externalUrl]);
 
   const familyMenuConfig = useMemo(() => {
     return {
@@ -221,7 +220,7 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.external_link || collection.externalUrl
+        ...(asset.externalUrl || collection.externalUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.collectionWebsite],
@@ -249,20 +248,18 @@ const UniqueTokenExpandedStateHeader = ({
   }, [
     hideNftMarketplaceAction,
     asset.marketplaces.opensea.name,
-    asset.external_link,
+    asset.externalUrl,
     collection.externalUrl,
     collection.twitter,
     collection.discord,
     formattedCollectionUrl,
   ]);
 
-  // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSVGImage(asset.image_url);
   const isENS =
     asset.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
-  const isPhotoDownloadAvailable = !isSVG && !isENS;
+  const isPhotoDownloadAvailable = !isENS;
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 
@@ -292,7 +289,9 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.copyTokenID],
           discoverabilityTitle:
-            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+            asset.tokenId.length > 15
+              ? `${asset.tokenId.slice(0, 15)}...`
+              : asset.tokenId,
         },
         ...(isSupportedOnRainbowWeb
           ? [
@@ -319,7 +318,7 @@ const UniqueTokenExpandedStateHeader = ({
       menuTitle: '',
     };
   }, [
-    asset.id,
+    asset.tokenId,
     asset?.network,
     isPhotoDownloadAvailable,
     isHiddenAsset,
@@ -333,8 +332,8 @@ const UniqueTokenExpandedStateHeader = ({
       if (actionKey === FamilyActionsEnum.viewCollection && collectionUrl) {
         Linking.openURL(collectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        // @ts-expect-error external_link and external_url could be null or undefined?
-        Linking.openURL(asset.external_link || collection.externalUrl);
+        // @ts-expect-error externalUrl and external_url could be null or undefined?
+        Linking.openURL(asset.externalUrl || collection.externalUrl);
       } else if (actionKey === FamilyActionsEnum.twitter) {
         Linking.openURL('https://twitter.com/' + collection.twitter);
       } else if (
@@ -345,7 +344,7 @@ const UniqueTokenExpandedStateHeader = ({
       }
     },
     [
-      asset.external_link,
+      asset.externalUrl,
       asset.marketplaces.opensea.collectionUrl,
       collection.discord,
       collection.externalUrl,
@@ -359,23 +358,23 @@ const UniqueTokenExpandedStateHeader = ({
         ethereumUtils.openNftInBlockExplorer(
           // @ts-expect-error address could be undefined?
           asset.asset_contract.address,
-          asset.id,
+          asset.tokenId,
           asset.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
         Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
+          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.looksrare) {
         Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
+          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
-        setClipboard(asset.id);
+        setClipboard(asset.tokenId);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_original_url));
+        saveToCameraRoll(asset.images.fullResPngUrl);
       } else if (actionKey === AssetActionsEnum.hide) {
         if (isHiddenAsset) {
           removeHiddenToken(asset);
@@ -406,7 +405,7 @@ const UniqueTokenExpandedStateHeader = ({
   const onPressAndroidFamily = useCallback(() => {
     const collectionUrl = asset.marketplaces.opensea.collectionUrl;
     const hasCollection = !!collectionUrl;
-    const hasWebsite = !!(asset.external_link || collection.externalUrl);
+    const hasWebsite = !!(asset.externalUrl || collection.externalUrl);
     const hasTwitter = !!collection.twitter;
     const hasDiscord = !!collection.discord;
 
@@ -437,8 +436,8 @@ const UniqueTokenExpandedStateHeader = ({
           Linking.openURL(collectionUrl);
         } else if (idx === websiteIndex) {
           Linking.openURL(
-            // @ts-expect-error external_link and external_url could be null or undefined?
-            asset.external_link || collection.externalUrl
+            // @ts-expect-error externalUrl and external_url could be null or undefined?
+            asset.externalUrl || collection.externalUrl
           );
         } else if (idx === twitterIndex) {
           Linking.openURL('https://twitter.com/' + collection.twitter);
@@ -448,7 +447,7 @@ const UniqueTokenExpandedStateHeader = ({
       }
     );
   }, [
-    asset.external_link,
+    asset.externalUrl,
     asset.marketplaces.opensea.collectionUrl,
     collection.discord,
     collection.externalUrl,
@@ -504,13 +503,13 @@ const UniqueTokenExpandedStateHeader = ({
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
             asset.asset_contract.address,
-            asset.id,
+            asset.tokenId,
             asset.network
           );
         } else if (idx === photoDownloadIndex) {
-          saveToCameraRoll(getFullResUrl(asset.image_original_url));
+          saveToCameraRoll(asset.images.fullResPngUrl);
         } else if (idx === copyTokenIndex) {
-          setClipboard(asset.id);
+          setClipboard(asset.tokenId);
         } else if (idx === hideTokenIndex) {
           if (isHiddenAsset) {
             removeHiddenToken(asset);

@@ -518,11 +518,6 @@ export default function SendConfirmationSheet() {
     ? avatar?.imageUrl || existingAccount?.image
     : existingAccount?.image;
 
-  const imageUrl = svgToPngIfNeeded(
-    asset.image_thumbnail_url || asset.image_url,
-    true
-  );
-
   const contentHeight = getSheetHeight({
     checkboxes,
     isENS,
@@ -578,11 +573,13 @@ export default function SendConfirmationSheet() {
                   {isNft ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || colors.lightestGrey}
+                      backgroundColor={
+                        asset.backgroundColor || colors.lightestGrey
+                      }
                       badgeXPosition={-7}
                       badgeYPosition={0}
                       borderRadius={10}
-                      imageUrl={imageUrl}
+                      imageUrl={asset.images.lowResPngUrl}
                       network={asset.network}
                       showLargeShadow
                       size={50}

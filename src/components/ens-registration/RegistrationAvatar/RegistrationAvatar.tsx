@@ -90,16 +90,12 @@ const RegistrationAvatar = ({
       image?: Image & { tmpPath?: string };
     }) => {
       setAvatarMetadata(image);
-      setAvatarUrl(
-        image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
-      );
-      onChangeAvatarUrl(
-        image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
-      );
+      setAvatarUrl(image?.tmpPath || asset?.images.lowResPngUrl || '');
+      onChangeAvatarUrl(image?.path || asset?.images.lowResPngUrl || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
-        const tokenId = asset.id;
+        const tokenId = asset.tokenId;
         onBlurField({
           key: 'avatar',
           value: stringifyENSNFTRecord({

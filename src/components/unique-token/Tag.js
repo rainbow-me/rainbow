@@ -256,7 +256,6 @@ export default magicMemo(Tag, [
   'title',
   'marketplaceId',
   'marketplaceName',
-  'maxValue',
   'originalValue',
   'hideNftMarketplaceAction',
 ]);

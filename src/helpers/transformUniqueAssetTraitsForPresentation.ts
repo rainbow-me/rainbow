@@ -24,7 +24,7 @@ export default function transformUniqueAssetTraitsForPresentation(
   trait: UniqueAssetTrait,
   additionalProperties: AdditionalProperties
 ): MappedTrait {
-  const { display_type, value } = trait;
+  const { displayType, value } = trait;
   const mappedTrait: MappedTrait = {
     ...trait,
     ...additionalProperties,
@@ -32,7 +32,7 @@ export default function transformUniqueAssetTraitsForPresentation(
     originalValue: value,
   };
 
-  if (display_type === 'date') {
+  if (displayType === 'date') {
     // the value is in seconds with milliseconds in the decimal part
     // formatted like Jan 29th, 2022
     mappedTrait.value =
@@ -45,9 +45,9 @@ export default function transformUniqueAssetTraitsForPresentation(
     const poapDate = parse(value, poapDateFormatString, new Date());
 
     mappedTrait.value = format(poapDate, targetDateFormatString);
-  } else if (display_type === 'boost_percentage') {
+  } else if (displayType === 'boost_percentage') {
     mappedTrait.value = `+${value}%`;
-  } else if (display_type === 'boost_number') {
+  } else if (displayType === 'boost_number') {
     mappedTrait.value = `+${value}`;
   } else if (
     typeof value === 'string' &&

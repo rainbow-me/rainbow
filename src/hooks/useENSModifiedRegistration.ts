@@ -41,12 +41,10 @@ const getImageUrl = (
           token.asset_contract.address === contractAddress &&
           token.id === tokenId
       );
-      if (uniqueToken?.image_url) {
-        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
-      } else if (uniqueToken?.lowResUrl) {
-        imageUrl = uniqueToken?.lowResUrl;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        imageUrl = uniqueToken?.image_thumbnail_url;
+      if (uniqueToken?.images.fullResPngUrl) {
+        imageUrl = uniqueToken?.images.fullResPngUrl;
+      } else if (uniqueToken?.images.lowResPngUrl) {
+        imageUrl = uniqueToken?.images.lowResPngUrl;
       }
     } else if (
       recordValue?.startsWith('http') ||

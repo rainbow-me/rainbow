@@ -69,7 +69,6 @@ import {
   useENSProfile,
   useENSRegistration,
   useHiddenTokens,
-  usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -277,7 +276,6 @@ const UniqueTokenExpandedState = ({
     },
     traits,
     uniqueId,
-    fullUniqueId,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);
@@ -350,8 +348,8 @@ const UniqueTokenExpandedState = ({
   }, [asset.network, navigate]);
 
   const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(fullUniqueId) as boolean,
-    [hiddenTokens, fullUniqueId]
+    () => hiddenTokens.includes(uniqueId) as boolean,
+    [hiddenTokens, uniqueId]
   );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
@@ -360,10 +358,7 @@ const UniqueTokenExpandedState = ({
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
-  const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
-    colors.paleBlue;
+  const imageColor = asset.predominantColor || colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -417,12 +412,18 @@ const UniqueTokenExpandedState = ({
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
-          externalAvatarUrl: asset?.lowResUrl,
+          externalAvatarUrl: asset?.images.lowResPngUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
+  }, [
+    isENS,
+    startRegistration,
+    uniqueId,
+    navigate,
+    asset?.images.lowResPngUrl,
+  ]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -450,8 +451,8 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background || imageColor}
-              imageUrl={asset.lowResUrl}
+              backgroundColor={asset.backgroundColor || imageColor}
+              imageUrl={asset.images.lowResPngUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
@@ -613,7 +614,7 @@ const UniqueTokenExpandedState = ({
                               color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration?.expiryDate}
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset?.images.lowResPngUrl}
                               registrationDate={
                                 ensData?.registration?.registrationDate
                               }
@@ -694,7 +695,7 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset?.images.lowResPngUrl}
                               isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}

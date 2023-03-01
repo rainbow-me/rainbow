@@ -104,6 +104,8 @@ export interface Collection {
   externalUrl: string | null;
   imageUrl: string | null;
   name: string | null;
+  twitter: string | null;
+  discord: string | null;
 }
 
 export interface UniqueAssetV2 {
@@ -137,9 +139,18 @@ export interface UniqueAssetV2 {
 }
 
 export interface UniqueAsset {
-  videoUrl: string | null;
+  videos: { url: string | null; mimeType: string | null };
   description?: string | null;
   marketplaces: { opensea: Marketplace };
+  images: {
+    fullResUrl: string | null;
+    lowResPngUrl: string | null;
+    fullResPngUrl: string | null;
+    mimeType: string | null;
+    blurhash: string | null;
+  };
+  backgroundColor: string | null;
+  predominantColor: string | null;
   external_link?: string | null;
   image_original_url?: string | null;
   image_preview_url?: string | null;
@@ -152,6 +163,8 @@ export interface UniqueAsset {
   traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
+  tokenId: string;
+  externalUrl: string | null;
   // collection: {
   //   description?: string | null;
   //   discord_url?: string | null;
@@ -188,10 +201,9 @@ export interface UniqueAsset {
 }
 
 export interface UniqueAssetTrait {
-  trait_type?: string;
+  traitType?: string;
   value?: string | number | null | undefined;
-  display_type?: string;
-  max_value?: string | number | null | undefined;
+  displayType?: string;
 }
 
 export interface SeaportOrder {

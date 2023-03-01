@@ -11,7 +11,6 @@ import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
 
 const dividerHeight = 22;
@@ -80,21 +79,19 @@ const UniqueTokenCoinIcon = magicMemo(
     const {
       collection: { name },
       background,
-      image_thumbnail_url,
-      image_url,
+      images: { fullResPngUrl },
       selected,
       shouldPrioritizeImageLoading,
       ...props
     } = asset;
     const { colors } = useTheme();
-    const imageUrl = svgToPngIfNeeded(image_thumbnail_url || image_url, true);
     return (
       <Centered>
         <RequestVendorLogoIcon
           backgroundColor={background || colors.lightestGrey}
           borderRadius={10}
           dappName={name}
-          imageUrl={imageUrl}
+          imageUrl={fullResPngUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
           {...props}
@@ -102,7 +99,7 @@ const UniqueTokenCoinIcon = magicMemo(
       </Centered>
     );
   },
-  ['background', 'image_thumbnail_url']
+  ['background', 'fullResPngUrl']
 );
 
 const CollectiblesSendRow = React.memo(
@@ -130,10 +127,10 @@ const CollectiblesSendRow = React.memo(
     const subtitle = useMemo(
       () =>
         item.name && !isENS
-          ? `${item.collection.name} #${item.id}`
+          ? `${item.collection.name} #${item.tokenId}`
           : item.collection.name,
 
-      [isENS, item.collection.name, item.id, item.name]
+      [isENS, item.collection.name, item.tokenId, item.name]
     );
 
     const Wrapper = disablePressAnimation
