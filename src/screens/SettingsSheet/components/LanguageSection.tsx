@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
-import { resources, supportedLanguages } from '../../languages';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import { resources, supportedLanguages } from '../../../languages';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { pickBy } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';

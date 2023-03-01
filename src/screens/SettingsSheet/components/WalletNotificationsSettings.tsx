@@ -6,9 +6,9 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
@@ -21,11 +21,11 @@ import {
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
-import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
   showOfflineAlert,
-} from '@/components/settings-menu/notificationAlerts';
+} from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { updateSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 

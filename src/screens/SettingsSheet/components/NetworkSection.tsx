@@ -2,11 +2,9 @@ import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import networkInfo from '../../helpers/networkInfo';
-import { settingsUpdateNetwork } from '../../redux/settings';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import {
@@ -15,6 +13,8 @@ import {
   useLoadAccountData,
   useResetAccountState,
 } from '@/hooks';
+import { settingsUpdateNetwork } from '@/redux/settings';
+import networkInfo from '@/helpers/networkInfo';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 

@@ -1,8 +1,8 @@
 import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
 import { useNavigation } from '@/navigation';

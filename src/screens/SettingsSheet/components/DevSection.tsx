@@ -14,13 +14,11 @@ import {
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
-import { defaultConfig } from '../../config/experimental';
-import useAppVersion from '../../hooks/useAppVersion';
-import { settingsUpdateNetwork } from '../../redux/settings';
+import useAppVersion from '../../../hooks/useAppVersion';
 import NetworkSection from './NetworkSection';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
@@ -47,14 +45,16 @@ import { walletsUpdate } from '@/redux/wallets';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
+import logger from 'logger';
 import {
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
   addDefaultNotificationGroupSettings,
 } from '@/notifications/settings';
 import { IS_DEV } from '@/env';
-import { SettingsLoadingIndicator } from '@/components/settings-menu/SettingsLoadingIndicator';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { defaultConfig } from '@/config';
+import { settingsUpdateNetwork } from '@/redux/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

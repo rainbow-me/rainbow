@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { cloudPlatform } from '../../../utils/platform';
-import { RainbowButton } from '../../buttons';
-import { SheetActionButton } from '../../sheet';
+import { cloudPlatform } from '@/utils/platform';
+import { RainbowButton } from '../../../components/buttons';
+import { SheetActionButton } from '../../../components/sheet';
 import { analytics } from '@/analytics';
 import BackupIcon from '@/assets/backupIcon.png';
 import BackupIconDark from '@/assets/backupIconDark.png';
@@ -41,7 +41,7 @@ export default function NeedsBackupView() {
     // We can't use a readonly wallet to back up, so we need to find the primary
     if (selectedWallet.type === WalletTypes.readOnly) {
       // Loop through the wallets and find the primary
-      for (let wallet of Object.values(wallets)) {
+      for (const wallet of Object.values(wallets)) {
         const rainbowWallet = wallet as RainbowWallet;
         // Found the non watched wallet, take the id and break out of the loop
         if (rainbowWallet.type !== WalletTypes.readOnly) {

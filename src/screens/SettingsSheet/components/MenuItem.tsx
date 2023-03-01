@@ -1,8 +1,8 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
-import { ButtonPressAnimation } from '../../animations';
-import CheckmarkCircledIcon from '../../icons/svg/CheckmarkCircledIcon';
-import WarningIcon from '../../icons/svg/WarningIcon';
+import { ButtonPressAnimation } from '../../../components/animations';
+import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircledIcon';
+import WarningIcon from '../../../components/icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';

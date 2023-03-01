@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { Platform } from 'react-native';
 import { reloadTimelines } from 'react-native-widgetkit';
-import { CoinIcon } from '../coin-icon';
-import Menu from './components/Menu';
-import MenuContainer from './components/MenuContainer';
-import MenuItem from './components/MenuItem';
+import { CoinIcon } from '../../../components/coin-icon';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { emojis, supportedNativeCurrencies } from '@/references';
