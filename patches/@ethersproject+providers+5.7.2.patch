@@ -1,9 +1,8 @@
 diff --git a/node_modules/@ethersproject/providers/.DS_Store b/node_modules/@ethersproject/providers/.DS_Store
 new file mode 100644
-index 0000000..10f4d43
-Binary files /dev/null and b/node_modules/@ethersproject/providers/.DS_Store differ
+index 0000000..e69de29
 diff --git a/node_modules/@ethersproject/providers/lib/base-provider.js b/node_modules/@ethersproject/providers/lib/base-provider.js
-index 9bfac00..896e95b 100644
+index 95762d7..9556f08 100644
 --- a/node_modules/@ethersproject/providers/lib/base-provider.js
 +++ b/node_modules/@ethersproject/providers/lib/base-provider.js
 @@ -880,12 +880,13 @@ var BaseProvider = /** @class */ (function (_super) {
