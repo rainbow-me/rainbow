@@ -274,7 +274,7 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
 };
 
 export const getNetworkFromSimplehashChain = chain =>
-  chain === 'ethereum' ? Network.mainnet : chain;
+  chain === 'ethereum' || chain === 'gnosis' ? Network.mainnet : chain;
 
 export const getSimplehashChainFromNetwork = network =>
   network === Network.mainnet ? 'ethereum' : network;
@@ -302,8 +302,6 @@ export const parseSimplehashNfts = nftData => {
       simplehashNft?.image_properties?.mime_type
     );
 
-    console.log(simplehashNft.extra_metadata?.attributes);
-
     const openSeaFloorPriceEth = collection?.floor_prices?.find(
       floorPrice =>
         floorPrice?.marketplace_id === 'opensea' &&
@@ -318,6 +316,15 @@ export const parseSimplehashNfts = nftData => {
 
     const network = getNetworkFromSimplehashChain(simplehashNft.chain);
 
+    const isPoap =
+      simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+    const isEns =
+      simplehashNft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
+
+    if (simplehashNft.contract.type === 'ERC721') {
+      console.log(simplehashNft.collection.name);
+    }
+    console.log(simplehashNft);
     const parsedNft = {
       videos: {
         url: simplehashNft.video_url,
@@ -342,29 +349,26 @@ export const parseSimplehashNfts = nftData => {
       externalUrl: simplehashNft.external_url,
       uniqueId: `${network}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
       tokenId: simplehashNft.token_id,
-      isPoap: simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+      isPoap,
+      isEns,
       isSendable:
-        network === Network.mainnet &&
+        !isPoap &&
         (simplehashNft.contract.type === 'ERC721' ||
           simplehashNft.contract.type === 'ERC1155'),
       lastSale: simplehashNft.last_sale,
       name: simplehashNft.name,
       network,
-      traits: simplehashNft.extra_metadata?.attributes
-        ?.map(trait => ({
+      traits:
+        simplehashNft.extra_metadata?.attributes?.map(trait => ({
           displayType: trait?.display_type,
           traitType: trait.trait_type,
           value: trait.value,
-        }))
-        .filter(trait => trait.displayType && trait.traitType && trait.value),
+        })) ?? [],
       type: AssetTypes.nft,
       simplehashSpamScore: collection?.spam_score,
       collection: {
         imageUrl: maybeSignUri(collection.image_url),
-        name:
-          simplehashNft.contract_address === ENS_NFT_CONTRACT_ADDRESS
-            ? 'ENS'
-            : collection.name,
+        name: isEns ? 'ENS' : collection.name,
         description: collection.description,
         externalUrl: collection.external_url,
         twitter: collection.twitter_username,

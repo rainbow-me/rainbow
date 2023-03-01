@@ -695,15 +695,15 @@ export const getDataForNftTransfer = async (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): Promise<string> => {
-  const nftVersion = asset.asset_contract?.nft_version;
+): Promise<string | undefined> => {
   const schema_name = asset.asset_contract?.schema_name;
-  if (nftVersion === '3.0') {
-    const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
+  if (schema_name === 'ERC721') {
+    const transferMethodHash =
+      smartContractMethods.erc721_safe_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(asset.tokenId),
     ]);
     return data;
   } else if (schema_name === 'ERC1155') {
@@ -712,37 +712,13 @@ export const getDataForNftTransfer = async (
     const data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(asset.tokenId),
       convertStringToHex('1'),
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
     return data;
-  } else if (IS_TESTING === 'true') {
-    const transferMethodHash = smartContractMethods.nft_transfer.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
-    ]);
-    return data;
   }
-
-  const address = asset.asset_contract?.address!;
-  const abi = await fetchContractABI(address);
-  const iface = new Interface(abi);
-
-  const isTransferFrom =
-    iface.functions?.[smartContractMethods.nft_transfer_from.method];
-  const transferMethodHash = isTransferFrom
-    ? smartContractMethods.nft_transfer_from.hash
-    : smartContractMethods.nft_transfer.hash;
-
-  const data = ethereumUtils.getDataString(transferMethodHash, [
-    ...(isTransferFrom ? [ethereumUtils.removeHexPrefix(from)] : []),
-    ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(asset.id),
-  ]);
-  return data;
 };
 
 /**

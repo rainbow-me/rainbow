@@ -49,9 +49,6 @@ const UniqueTokenImage = ({
   size,
   transformSvgs = true,
 }) => {
-  const isENS =
-    item.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   const isSVG = item.images.mimeType === 'image/svg+xml';
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
@@ -68,7 +65,7 @@ const UniqueTokenImage = ({
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
-          fallbackIfNonAnimated={!isENS || isCard}
+          fallbackIfNonAnimated={!item.isEns || isCard}
           fallbackUri={item.images.fullResPngUrl}
           lowResFallbackUri={item.images.lowResPngUrl}
           onError={handleError}

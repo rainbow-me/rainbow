@@ -255,11 +255,7 @@ const UniqueTokenExpandedStateHeader = ({
     formattedCollectionUrl,
   ]);
 
-  const isENS =
-    asset.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-
-  const isPhotoDownloadAvailable = !isENS;
+  const isPhotoDownloadAvailable = !asset.isEns;
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 

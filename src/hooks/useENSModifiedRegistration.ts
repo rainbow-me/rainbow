@@ -9,7 +9,6 @@ import {
   usePrevious,
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';

@@ -45,7 +45,6 @@ import {
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/handlers/ens';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
@@ -692,6 +691,7 @@ export default function SendConfirmationSheet() {
                       hideDivider
                       marginBottom={0}
                       marginHorizontal={0}
+                      network={network}
                       onPress={handleL2DisclaimerPress}
                       prominent
                       sending

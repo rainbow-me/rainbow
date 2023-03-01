@@ -12,6 +12,7 @@ import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { ethereumUtils } from '@/utils';
 import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers';
 
 const L2Disclaimer = ({
   assetType,
@@ -20,6 +21,7 @@ const L2Disclaimer = ({
   isNft = false,
   marginBottom = 24,
   marginHorizontal = 19,
+  network,
   onPress,
   prominent,
   sending,
@@ -37,7 +39,7 @@ const L2Disclaimer = ({
     },
   };
 
-  const isL2 = isL2Asset(assetType);
+  const isL2 = network ? network !== Network.mainnet : isL2Asset(assetType);
 
   return (
     <>
@@ -59,7 +61,7 @@ const L2Disclaimer = ({
           <Column justify="center">
             {isL2 ? (
               <ChainBadge
-                assetType={assetType}
+                assetType={network ?? assetType}
                 position="relative"
                 size="small"
               />
@@ -79,7 +81,11 @@ const L2Disclaimer = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {verb ? verb : sending ? `Sending` : `This ${symbol} is`} on the{' '}
-              {networkInfo[ethereumUtils.getNetworkFromType(assetType)].name}{' '}
+              {
+                networkInfo[
+                  network ?? ethereumUtils.getNetworkFromType(assetType)
+                ].name
+              }{' '}
               network
             </Text>
           </Column>

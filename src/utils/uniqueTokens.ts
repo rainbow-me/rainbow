@@ -18,12 +18,8 @@ export const uniqueTokenFormats = {
 export type UniqueTokenFormat = keyof typeof uniqueTokenFormats;
 
 export function getUniqueTokenType(asset: UniqueAsset) {
-  const {
-    collection: { name: familyName },
-    uniqueId,
-  } = asset;
   if (asset.isPoap) return uniqueTokenTypes.POAP;
-  if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
+  if (asset.isEns) {
     return uniqueTokenTypes.ENS;
   }
   return uniqueTokenTypes.NFT;

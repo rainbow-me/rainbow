@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -35,10 +35,7 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }) => {
-  const url = useMemo(() => {
-    if (asset.isPoap) return asset.videos.url;
-    return asset.images.fullResUrl;
-  }, [asset.isPoap, asset.videos.url, asset.images.fullResUrl]);
+  const url = asset.images.fullResUrl;
 
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 

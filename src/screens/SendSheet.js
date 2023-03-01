@@ -352,6 +352,10 @@ export default function SendSheet(props) {
             setCurrentNetwork(Network.optimism);
             provider = await getProviderForNetwork(Network.optimism);
             break;
+          case AssetTypes.nft:
+            setCurrentNetwork(selected.network);
+            provider = await getProviderForNetwork(selected.network);
+            break;
           default:
             setCurrentNetwork(network);
         }
@@ -359,7 +363,14 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
-  }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
+  }, [
+    currentNetwork,
+    network,
+    prevNetwork,
+    selected.network,
+    selected.type,
+    sendUpdateSelected,
+  ]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
@@ -710,7 +721,6 @@ export default function SendSheet(props) {
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
-
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
@@ -902,7 +912,12 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+    const assetNetwork = isL2Asset(selected?.type)
+      ? selected.type
+      : selected?.type === AssetTypes.nft
+      ? selected?.network
+      : network;
+
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&

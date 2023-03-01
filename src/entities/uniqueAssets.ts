@@ -181,6 +181,7 @@ export interface UniqueAsset {
   // };
   familyImage: string | null | undefined;
   familyName: string | null | undefined;
+  isEns: boolean;
   id: string;
   isSendable: boolean;
   lastSale: SimplehashLastSale | null;

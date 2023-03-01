@@ -36,8 +36,8 @@ export default function transformUniqueAssetTraitsForPresentation(
     // the value is in seconds with milliseconds in the decimal part
     // formatted like Jan 29th, 2022
     mappedTrait.value =
-      typeof value === 'number'
-        ? format(value * 1000, targetDateFormatString)
+      typeof value === 'number' || typeof value === 'string'
+        ? format(Number(value) * 1000, targetDateFormatString)
         : value;
     mappedTrait.disableMenu = true;
     // Checking whether the string value is a POAP date format to convert to our date format

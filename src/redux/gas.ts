@@ -168,6 +168,7 @@ const getUpdatedGasFeeParams = (
         nativeTokenPriceUnit,
         nativeCurrency
       );
+
   const selectedGasParams = getSelectedGasFee(
     gasFeeParamsBySpeed,
     gasFeesBySpeed,
@@ -257,6 +258,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     newGasFeesBySpeed,
     CUSTOM
   );
+
   dispatch({
     payload: {
       customGasFeeModifiedByUser: true,
@@ -445,6 +447,7 @@ export const gasPricesStartPolling = (
               const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
               const _gasLimit =
                 gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
+
               const {
                 selectedGasFee: updatedSelectedGasFee,
                 gasFeesBySpeed: updatedGasFeesBySpeed,
@@ -605,6 +608,7 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (
     if (oldSelectedFee.option === newGasPriceOption) return;
 
     const gasPriceOption = newGasPriceOption || NORMAL;
+
     if (isEmpty(gasFeeParamsBySpeed)) return;
     const selectedGasFee = getSelectedGasFee(
       gasFeeParamsBySpeed,
