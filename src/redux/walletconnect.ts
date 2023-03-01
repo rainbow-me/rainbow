@@ -31,6 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
+import { IS_DEV } from '@/env';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -198,15 +199,13 @@ const WALLETCONNECT_ADD_URI = 'walletconnect/WALLETCONNECT_ADD_URI';
  */
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
-  let token = null;
-  try {
-    token = await getFCMToken();
-  } catch (error) {
+  const token = await getFCMToken();
+
+  if (!token && !IS_DEV) {
     logger.error(
       new RainbowError(
-        'WC: Error getting FCM token, ignoring token for WC connection'
-      ),
-      { error }
+        `WC: FCM token not found, push notifications will not be received`
+      )
     );
   }
 
