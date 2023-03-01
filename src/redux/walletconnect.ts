@@ -397,7 +397,7 @@ export const walletConnectOnSessionRequest = (
             error,
             payload,
           });
-          throw error;
+          return;
         }
         const { peerId, peerMeta, chainId } = payload.params[0];
 
@@ -512,15 +512,19 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       { error, payload },
       logger.DebugContext.walletconnect
     );
+
     if (error) {
       analytics.track('Error on wc call_request', {
         // @ts-ignore
         error,
         payload,
       });
-      logger.error(new RainbowError('WC: Error on wc call_request'));
-      throw error;
+      logger.error(new RainbowError('WC: Error on wc call_request'), {
+        message: error,
+      });
+      return;
     }
+
     const { clientId, peerId, peerMeta } = walletConnector;
     const imageUrl = dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
     const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
@@ -658,8 +662,14 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
   });
   walletConnector.on('disconnect', error => {
     if (error) {
-      throw error;
+      logger.error(new RainbowError('WC: Error on wc disconnect'), {
+        message: error,
+      });
+
+      // we used to throw, so for parity, return
+      return;
     }
+
     dispatch(
       walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta!.url, false)
     );
