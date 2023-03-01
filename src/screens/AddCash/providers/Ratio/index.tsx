@@ -36,6 +36,7 @@ import {
   ratioOrderToNewTransaction,
   parseRatioNetworkToInternalNetwork,
 } from './utils';
+import { isAuthenticated } from '@/utils/authentication';
 
 const providerConfig = {
   name: FiatProviderName.Ratio,
@@ -205,6 +206,13 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       fetchSessionToken={async () => {
         logger.debug(`Ratio: fetchSessionToken`, {}, logger.DebugContext.f2c);
 
+        const isAuthed = await isAuthenticated();
+
+        if (!isAuthed) {
+          // TODO this is being swallowed by the OS/bridge
+          throw new Error(`user_unauthenticated`);
+        }
+
         const signingAddress = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
         const { data, error } = await gretch<{ id: string }>(
@@ -246,15 +254,21 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           provider: FiatProviderName.Ratio,
           sessionId: analyticsSessionId,
         });
-        WrappedAlert.alert(
-          lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
-          lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
-          [
-            {
-              text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
-            },
-          ]
-        );
+
+        let title = lang.l.wallet.add_cash_v2.generic_error.title;
+        let message = lang.l.wallet.add_cash_v2.generic_error.message;
+
+        if (error.includes('user_unauthenticated')) {
+          title = lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title;
+          message =
+            lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message;
+        }
+
+        WrappedAlert.alert(title, message, [
+          {
+            text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+          },
+        ]);
       }}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);

@@ -1689,6 +1689,10 @@
           "message": "Our team has been notified and will look into it ASAP. :)",
           "button": "OK :)"
         },
+        "unauthenticated_ratio_error": {
+          "title": "We're sorry, you failed authentication",
+          "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
+        },
         "support_email_subject": "I need help buying crypto with %{provider} :)"
       },
       "alert": {
