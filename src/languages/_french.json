@@ -1409,6 +1409,7 @@
       "backup_sign_out": "Sign out :)",
       "backup_sign_in": "Sign in :)",
       "backup_loading": "Loading... :)",
+      "backup_google_account": "Google Account :)",
       "currency": "Devise",
       "app_icon": "App Icon",
       "dev": "Dev :)",

@@ -125,7 +125,9 @@ export const GoogleAccountSection: React.FC = () => {
           titleComponent={
             <MenuItem.Title
               text={
-                accountDetails.name ?? accountDetails.email ?? 'Google Account'
+                accountDetails.name ??
+                accountDetails.email ??
+                i18n.t(i18n.l.settings.backup_google_account)
               }
             />
           }
