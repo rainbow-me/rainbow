@@ -14,6 +14,7 @@ import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { contactsLoadState } from '@/redux/contacts';
 import { uniswapLoadState } from '@/redux/uniswap';
+import { userListsLoadState } from '@/redux/userLists';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
@@ -38,6 +39,9 @@ export default function useLoadGlobalLateData() {
     // mainnet eth balances for all wallets
     const p2 = loadWalletBalanceNamesToCache();
 
+    // user lists
+    const p3 = dispatch(userListsLoadState());
+
     // favorites
     const p4 = dispatch(uniswapLoadState());
 
@@ -53,9 +57,9 @@ export default function useLoadGlobalLateData() {
     // tx method names
     const p8 = dispatch(transactionSignaturesLoadState());
 
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     promises.push(p1, p2, p3, p4, p5, p6, p7, p8);
 
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch, walletReady]);
 
