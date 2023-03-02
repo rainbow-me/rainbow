@@ -19,6 +19,11 @@ import {
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
 import { logger, RainbowError } from '@/logger';
+import { MMKV } from 'react-native-mmkv';
+
+const keychainLocalStorage = new MMKV({
+  id: 'rainbowKeychainLocalStorage',
+});
 
 interface AnonymousKey {
   length: number;
@@ -30,6 +35,14 @@ interface AnonymousKeyData {
   [key: string]: AnonymousKey;
 }
 
+const saveStringMMKV = (key: string, value: string) => {
+  keychainLocalStorage.set(key, value);
+};
+
+const loadStringMMKV = (key: string) => {
+  return keychainLocalStorage.getString(key);
+};
+
 export async function saveString(
   key: string,
   value: string,
@@ -37,6 +50,12 @@ export async function saveString(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
+      // if data is public, save to local storage
+      if (!accessControlOptions?.accessControl) {
+        saveStringMMKV(key, value);
+      }
+
+      // save to keychain
       await setInternetCredentials(key, key, value, accessControlOptions);
       logger.info(`Keychain: saved string for key: ${key}`);
       resolve();
@@ -70,6 +89,15 @@ export async function loadString(
   options?: Options
 ): Promise<null | string | -1 | -2> {
   try {
+    // if the data is public, try to load data from mmkv first
+    const data = loadStringMMKV(key);
+    if (data) {
+      console.log('data is found: ', data);
+      return data;
+    }
+    console.log('data is not found using keychain');
+
+    // if not found or private, load from keychain
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.info(`Keychain: loaded string for key: ${key}`);
@@ -136,6 +164,12 @@ export async function saveObject(
   accessControlOptions: Options
 ): Promise<void> {
   const jsonValue = JSON.stringify(value);
+
+  // if data is public, save to MMKV
+  if (!accessControlOptions?.accessControl) {
+    saveStringMMKV(key, jsonValue);
+  }
+  // save to keychain
   return saveString(key, jsonValue, accessControlOptions);
 }
 
@@ -143,6 +177,25 @@ export async function loadObject(
   key: string,
   options?: Options
 ): Promise<null | Record<string, any> | -1 | -2> {
+  // if data is public, try to load data from mmkv first
+  const jsonValueMMKV = loadStringMMKV(key);
+
+  if (jsonValueMMKV) {
+    try {
+      console.log('data is found: ', jsonValueMMKV);
+      const objectValue = JSON.parse(jsonValueMMKV);
+      return objectValue;
+    } catch (err) {
+      logger.error(
+        new RainbowError(
+          `Keychain MMKV: failed to parse object for key: ${key} error: ${err}`
+        )
+      );
+    }
+  }
+  console.log(' !!!!!!data is not found using keychain');
+
+  // if not found or private, load from keychain
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   if (jsonValue === -1 || jsonValue === -2) {
@@ -164,6 +217,10 @@ export async function loadObject(
 
 export async function remove(key: string): Promise<void> {
   try {
+    // remove from MMKV
+    keychainLocalStorage.delete(key);
+
+    // remove from keychain
     await resetInternetCredentials(key);
     logger.info(`Keychain: removed value for key: ${key}`);
   } catch (err) {
@@ -232,6 +289,10 @@ export async function hasKey(key: string): Promise<boolean | Result> {
 
 export async function wipeKeychain(): Promise<void> {
   try {
+    // clear local storage
+    keychainLocalStorage.clearAll();
+
+    // clear keychain
     const results = await loadAllKeys();
     if (results) {
       await Promise.all(
