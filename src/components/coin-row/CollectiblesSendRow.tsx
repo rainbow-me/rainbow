@@ -100,7 +100,7 @@ const UniqueTokenCoinIcon = magicMemo(
       </Centered>
     );
   },
-  ['background', 'fullResPngUrl']
+  ['background', 'lowResPngUrl']
 );
 
 const CollectiblesSendRow = React.memo(
