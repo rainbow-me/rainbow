@@ -8,6 +8,7 @@ import { getFullSizePngUrl } from '@/utils/getFullSizePngUrl';
 import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
 import { Trait } from '@/entities/uniqueAssets';
 import {
+  simplehashChains,
   SimplehashFloorPrice,
   SimplehashMarketplace,
   SimplehashNft,
@@ -15,36 +16,11 @@ import {
 } from '@/entities/simplehash';
 
 const SVG_MIME_TYPE = 'image/svg+xml';
-
-/**
- * @desc signs and handles low res + full res images
- * @param  {Object}
- * @return {Object}
- */
-
-export const handleAndSignImages = (
-  originalImageUrl: string,
-  nonSVGUrl: string,
-  isSVG: string
-) => {
-  if (!originalImageUrl) {
-    return { originalImageUrl: null, lowResPngUrl: null, fullResPngUrl: null };
-  }
-
-  const safeNonSvgUrl = nonSVGUrl ?? svgToPngIfNeeded(originalImageUrl);
-  const fullResPngUrl = getFullSizePngUrl(safeNonSvgUrl);
-  const fullImage = isSVG ? originalImageUrl : fullResPngUrl;
-
-  return {
-    fullResUrl: fullImage,
-    lowResPngUrl: imageToPng(safeNonSvgUrl, CardSize),
-    fullResPngUrl,
-  };
-};
+const GOOGLE_CDN_URL_SIZE_1000_SUFIX = '=s1000';
 
 export const getNetworkFromSimplehashChain = (chain: string) =>
   // techinically we don't support gnosis but we can still get gnosis nfts
-  chain === 'ethereum' || chain === 'gnosis'
+  chain === simplehashChains.ethereum || chain === simplehashChains.gnosis
     ? Network.mainnet
     : (chain as Network);
 
@@ -58,10 +34,12 @@ const getRoundedValueFromRawAmount = (
   if (rawAmount && decimals) {
     return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
   }
-  return null;
 };
 
-export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
+export const parseSimplehashNfts = (
+  nftData: SimplehashNft[],
+  polygonAllowlist: string[]
+): UniqueAsset[] => {
   const results = nftData?.map((simplehashNft: SimplehashNft) => {
     const address = simplehashNft.contract_address.toLowerCase();
     const collection = simplehashNft.collection;
@@ -72,18 +50,20 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
         floorPrice?.marketplace_id === 'opensea' &&
         floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
     );
-    const openseaFloorPriceEth = getRoundedValueFromRawAmount(
-      floorPriceData?.value,
-      floorPriceData?.payment_token?.decimals
-    );
+    const openseaFloorPriceEth =
+      getRoundedValueFromRawAmount(
+        floorPriceData?.value,
+        floorPriceData?.payment_token?.decimals
+      ) ?? null;
     const opensea = simplehashNft.collection.marketplace_pages.find(
       (marketplace: SimplehashMarketplace) =>
         marketplace.marketplace_id === 'opensea'
     );
-    const lastEthSale = getRoundedValueFromRawAmount(
-      simplehashNft?.last_sale?.unit_price,
-      simplehashNft?.last_sale?.payment_token?.decimals
-    );
+    const lastEthSale =
+      getRoundedValueFromRawAmount(
+        simplehashNft?.last_sale?.unit_price,
+        simplehashNft?.last_sale?.payment_token?.decimals
+      ) ?? null;
     let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
     if (address === POAP_NFT_ADDRESS) {
       uniqueTokenType = uniqueTokenTypes.POAP;
@@ -98,7 +78,15 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
       !name ||
       !network ||
       !opensea ||
-      !simplehashNft?.token_id
+      !simplehashNft?.token_id ||
+      collection.spam_score === null ||
+      collection.spam_score >= 85 ||
+      (network === Network.gnosis &&
+        uniqueTokenType !== uniqueTokenTypes.POAP) ||
+      (network === Network.polygon &&
+        !polygonAllowlist.includes(
+          simplehashNft.contract_address?.toLowerCase()
+        ))
     ) {
       return;
     }
@@ -109,10 +97,11 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
 
     // slices off url sizing suffix s=1000 - simplehash image previews are stored on google cdn
     // simplehash preview images will never be svgs, so we don't need to worry about conversion
-    const fullSizeNonSVGUrl = simplehashNft.previews.image_large_url?.slice(
-      0,
-      -6
-    );
+    const fullSizeNonSVGUrl =
+      simplehashNft.previews.image_large_url?.slice(-6) ===
+      GOOGLE_CDN_URL_SIZE_1000_SUFIX
+        ? simplehashNft.previews.image_large_url?.slice(0, -6)
+        : simplehashNft.previews.image_large_url;
 
     const originalImageUrl =
       simplehashNft.image_url ??
@@ -208,5 +197,7 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
       },
     };
   });
-  return results.filter((nft: UniqueAsset | undefined) => !!nft);
+  return results.filter(
+    (nft: UniqueAsset | undefined) => !!nft
+  ) as UniqueAsset[];
 };

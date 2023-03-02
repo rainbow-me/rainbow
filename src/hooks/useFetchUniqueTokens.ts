@@ -16,7 +16,6 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/simplehash';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
-import { filterNfts } from '@/helpers/uniqueTokens';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
@@ -36,7 +35,7 @@ export default function useFetchUniqueTokens({
   const mounted = useIsMounted();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
-  const [cursor, setCursor] = useState<string>();
+  const [cursor, setCursor] = useState<string | null>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -72,10 +71,7 @@ export default function useFetchUniqueTokens({
         ]);
         const { rawNftData, nextCursor } = uniqueTokensResponse;
         setCursor(nextCursor);
-        uniqueTokens = filterNfts(
-          parseSimplehashNfts(rawNftData),
-          polygonAllowlist
-        );
+        uniqueTokens = parseSimplehashNfts(rawNftData, polygonAllowlist);
       }
 
       return uniqueTokens;
@@ -83,7 +79,7 @@ export default function useFetchUniqueTokens({
     {
       enabled: Boolean(address),
       onSuccess: () =>
-        shouldFetchMore === undefined ? setShouldFetchMore(true) : null,
+        shouldFetchMore === undefined && setShouldFetchMore(true),
       staleTime,
     }
   );
@@ -111,17 +107,17 @@ export default function useFetchUniqueTokens({
       ]);
       const { rawNftData, nextCursor } = uniqueTokensResponse;
 
-      const moreUniqueTokens = filterNfts(
-        parseSimplehashNfts(rawNftData),
+      const moreUniqueTokens = parseSimplehashNfts(
+        rawNftData,
         polygonAllowlist
       );
 
       if (!hasStoredTokens) {
         queryClient.setQueryData<UniqueAsset[]>(
           uniqueTokensQueryKey({ address }),
-          tokens =>
+          (tokens: UniqueAsset[] | undefined) =>
             tokens
-              ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId')
+              ? uniqBy([...tokens, ...moreUniqueTokens], 'uniqueId') ?? []
               : moreUniqueTokens
         );
       }
@@ -147,6 +143,7 @@ export default function useFetchUniqueTokens({
     if (
       infinite &&
       shouldFetchMore &&
+      cursor !== null &&
       uniqueTokens &&
       uniqueTokens.length > 0
     ) {
@@ -157,7 +154,7 @@ export default function useFetchUniqueTokens({
           network,
           // If there are stored tokens in storage, then we want
           // to do a background refresh.
-          cursor,
+          cursor: cursor as string,
           uniqueTokens: hasStoredTokens ? [] : uniqueTokens,
         });
 

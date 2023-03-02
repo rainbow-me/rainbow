@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -10,22 +9,9 @@ import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { UniqueAsset } from '@/entities';
-import {
-  ETH_PAYMENT_TOKEN_ID,
-  fetchSimplehashNftListing,
-  OPENSEA_MARKETPLACE_ID,
-} from '@/handlers/simplehash';
+import { fetchSimplehashNftListing } from '@/handlers/simplehash';
 
 const NONE = 'None';
-
-const getIsFloorPriceSupported = (network: Network) => {
-  switch (network) {
-    case Network.mainnet:
-      return true;
-    default:
-      return false;
-  }
-};
 
 const getRoundedValueFromRawAmount = (
   rawAmount: number | null | undefined,

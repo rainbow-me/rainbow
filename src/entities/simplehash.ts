@@ -1,3 +1,14 @@
+export const simplehashChains = {
+  arbitrum: 'arbitrum',
+  bsc: 'bsc',
+  ethereum: 'ethereum',
+  gnosis: 'gnosis',
+  optimism: 'optimism',
+  polygon: 'polygon',
+};
+
+export const simplehashMarketplaceIds = { opensea: 'opensea' };
+
 export interface SimplehashTrait {
   trait_type: string;
   value: string | number;
@@ -16,6 +27,23 @@ interface SimplehashPaymentToken {
   symbol: string | null;
   address: string | null;
   decimals: number;
+}
+
+export interface SimplehashListing {
+  id: string;
+  permalink: string;
+  bundle_item_number: number | null;
+  listing_timestamp: string;
+  expiration_timestamp: string;
+  seller_address: string;
+  auction_type: string | null;
+  quantity: number;
+  quantity_remaining: number;
+  price: number;
+  marketplace_id: string;
+  collection_id: string | null;
+  nft_id: string;
+  payment_token: SimplehashPaymentToken | null;
 }
 
 export interface SimplehashFloorPrice {
