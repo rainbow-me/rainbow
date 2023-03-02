@@ -86,6 +86,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   });
   const pendingTransactionSheetExplainerType = React.useRef('');
   const { navigate } = useNavigation();
+  const onErrorAlreadyCalled = React.useRef(false);
 
   const onTransactionComplete = React.useCallback(
     async (order: RatioOrderStatus) => {
@@ -209,7 +210,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         const isAuthed = await isAuthenticated();
 
         if (!isAuthed) {
-          // TODO this is being swallowed by the OS/bridge
           throw new Error(`user_unauthenticated`);
         }
 
@@ -246,29 +246,46 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       }}
       onTransactionComplete={onTransactionComplete}
       onError={error => {
-        logger.error(
-          new RainbowError(`Ratio component threw an error: ${error}`),
-          { error }
-        );
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
-          provider: FiatProviderName.Ratio,
-          sessionId: analyticsSessionId,
-        });
-
-        let title = lang.l.wallet.add_cash_v2.generic_error.title;
-        let message = lang.l.wallet.add_cash_v2.generic_error.message;
-
-        if (error.includes('user_unauthenticated')) {
-          title = lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title;
-          message =
-            lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message;
+        if (onErrorAlreadyCalled.current) {
+          logger.debug(`onError called more than once`);
+          return;
         }
 
-        WrappedAlert.alert(title, message, [
-          {
-            text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
-          },
-        ]);
+        onErrorAlreadyCalled.current = true;
+
+        try {
+          logger.error(
+            new RainbowError(`Ratio component threw an error: ${error}`),
+            { error }
+          );
+
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
+            provider: FiatProviderName.Ratio,
+            sessionId: analyticsSessionId,
+          });
+
+          let title = lang.t(lang.l.wallet.add_cash_v2.generic_error.title);
+          let message = lang.t(lang.l.wallet.add_cash_v2.generic_error.message);
+
+          if (error.includes('user_unauthenticated')) {
+            title = lang.t(
+              lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title
+            );
+            message = lang.t(
+              lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message
+            );
+          }
+
+          WrappedAlert.alert(title, message, [
+            {
+              text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+            },
+          ]);
+        } catch (e) {
+          logger.error(new RainbowError(`Ratio: error handling error`), {
+            error: (e as Error).message,
+          });
+        }
       }}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
