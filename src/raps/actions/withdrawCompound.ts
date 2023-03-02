@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { Signer } from 'ethers';
+import { Signer } from '@ethersproject/abstract-signer';
 import { captureException } from '@sentry/react-native';
 import {
   Rap,
