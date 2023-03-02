@@ -387,16 +387,22 @@ export async function onSessionProposal(
 
   const { chains, methods } = requiredNamespaces.eip155;
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
-  const unsupportedChains = chainIds.filter(id => {
+  const supportedChainIds = chainIds.filter(id => {
+    for (const config of supportedChainConfigs) {
+      if (config.chain_id === id) return true;
+    }
+    return false;
+  });
+  const unsupportedChainIds = chainIds.filter(id => {
     for (const config of supportedChainConfigs) {
       if (config.chain_id === id) return false;
     }
     return true;
   });
 
-  if (unsupportedChains.length) {
+  if (unsupportedChainIds.length && !supportedChainIds.length) {
     logger.warn(`WC v2: session proposal requested unsupported chains`, {
-      unsupportedChains,
+      unsupportedChainIds,
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
@@ -428,7 +434,7 @@ export async function onSessionProposal(
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
     meta: {
-      chainIds,
+      chainIds: supportedChainIds,
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
@@ -637,6 +643,10 @@ export async function onSessionRequest(
     const session = client.session.get(topic);
     const { nativeCurrency, network } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
+
+    // TODO reject unsupported chains
+    console.log('chainId', chainId);
+
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(
       event.params.request,
