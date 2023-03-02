@@ -5,8 +5,6 @@ import svgToPngIfNeeded from '@/handlers/svgs';
 import { Network } from '@/helpers/networkTypes';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { getFullSizePngUrl } from '@/utils/getFullSizePngUrl';
-import { getLowResUrl } from '@/utils/getLowResUrl';
-import isSVGImage from '@/utils/isSVG';
 import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
 import { Trait } from '@/entities/uniqueAssets';
 import {
@@ -17,33 +15,6 @@ import {
 } from '@/entities/simplehash';
 
 const SVG_MIME_TYPE = 'image/svg+xml';
-
-// const parseLastSalePrice = lastSale =>
-//   lastSale
-//     ? Math.round(
-//         (lastSale?.total_price / 1000000000000000000 + Number.EPSILON) * 1000
-//       ) / 1000
-//     : null;
-
-// const getCurrentPrice = ({ currentPrice, token }) => {
-//   if (!token || !currentPrice) {
-//     return null;
-//   }
-
-//   const paymentToken = OpenseaPaymentTokens.find(
-//     osToken => osToken.address.toLowerCase() === token.toLowerCase()
-//   );
-
-//   if (!currentPrice || !paymentToken) return null;
-//   // Use the decimals returned from the token list to calculate a human readable value. Add 1 to decimals as padEnd includes the first digit
-//   const price =
-//     Number(currentPrice) / Number('1'.padEnd(paymentToken.decimals + 1, '0'));
-
-//   return `${price} ${paymentToken.symbol}`;
-// };
-
-export const getOpenSeaCollectionUrl = (slug: string) =>
-  `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`;
 
 /**
  * @desc signs and handles low res + full res images
@@ -80,7 +51,10 @@ export const getNetworkFromSimplehashChain = (chain: string) =>
 export const getSimplehashChainFromNetwork = (network: Network) =>
   network === Network.mainnet ? 'ethereum' : network;
 
-const getRoundedValueFromRawAmount = (rawAmount: number, decimals: number) => {
+const getRoundedValueFromRawAmount = (
+  rawAmount: number | null | undefined,
+  decimals: number | null | undefined
+) => {
   if (rawAmount && decimals) {
     return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
   }
@@ -93,14 +67,22 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
     const collection = simplehashNft.collection;
     const name = simplehashNft.name;
     const network = getNetworkFromSimplehashChain(simplehashNft.chain);
-    const openSeaFloorPriceEth = collection?.floor_prices?.find(
+    const floorPriceData = collection?.floor_prices?.find(
       (floorPrice: SimplehashFloorPrice) =>
         floorPrice?.marketplace_id === 'opensea' &&
         floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
     );
-    const openSea = simplehashNft.collection.marketplace_pages.find(
+    const openseaFloorPriceEth = getRoundedValueFromRawAmount(
+      floorPriceData?.value,
+      floorPriceData?.payment_token?.decimals
+    );
+    const opensea = simplehashNft.collection.marketplace_pages.find(
       (marketplace: SimplehashMarketplace) =>
         marketplace.marketplace_id === 'opensea'
+    );
+    const lastEthSale = getRoundedValueFromRawAmount(
+      simplehashNft?.last_sale?.unit_price,
+      simplehashNft?.last_sale?.payment_token?.decimals
     );
     let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
     if (address === POAP_NFT_ADDRESS) {
@@ -115,7 +97,7 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
       !collection?.name ||
       !name ||
       !network ||
-      !openSea ||
+      !opensea ||
       !simplehashNft?.token_id
     ) {
       return;
@@ -183,21 +165,17 @@ export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
         uniqueTokenType !== uniqueTokenTypes.POAP &&
         (simplehashNft.contract.type === 'ERC721' ||
           simplehashNft.contract.type === 'ERC1155'),
-      lastSale: simplehashNft.last_sale,
+      // we only show last eth sale right now for whatever reason
+      lastEthSale,
       marketplaces: {
         opensea: {
-          collectionId: openSea?.marketplace_collection_id ?? null,
-          collectionUrl: openSea?.collection_url ?? null,
+          collectionId: opensea?.marketplace_collection_id ?? null,
+          collectionUrl: opensea?.collection_url ?? null,
           // we only use eth floor prices right now
-          floorPrice: openSeaFloorPriceEth
-            ? getRoundedValueFromRawAmount(
-                openSeaFloorPriceEth?.value,
-                openSeaFloorPriceEth?.payment_token?.decimals
-              ) ?? null
-            : null,
-          id: openSea?.marketplace_id ?? null,
-          name: openSea?.marketplace_name ?? null,
-          nftUrl: openSea?.nft_url ?? null,
+          floorPrice: openseaFloorPriceEth,
+          id: opensea?.marketplace_id,
+          name: opensea?.marketplace_name,
+          nftUrl: opensea?.nft_url,
         },
       },
       name,

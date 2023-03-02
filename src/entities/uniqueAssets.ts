@@ -61,7 +61,7 @@ export interface UniqueAsset {
     mimeType: string | null;
   };
   isSendable: boolean;
-  lastSale: LastSale | null;
+  lastEthSale: number | null;
   marketplaces: { opensea: Marketplace };
   name: string;
   network: Network;

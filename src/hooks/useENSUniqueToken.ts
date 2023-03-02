@@ -15,7 +15,7 @@ export default function useENSUniqueToken({
     return (
       token.contract.address?.toLowerCase() ===
         contractAddress?.toLowerCase() &&
-      token.id?.toLowerCase() === tokenId?.toLowerCase()
+      token.tokenId?.toLowerCase() === tokenId?.toLowerCase()
     );
   });
   return uniqueToken;

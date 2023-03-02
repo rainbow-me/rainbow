@@ -29,10 +29,11 @@ export default React.memo(function WrappedNFT({
       ...(IS_TESTING === 'true'
         ? {
             images: {
+              blurhash: null,
               fullResUrl: null,
               fullResPngUrl: null,
               lowResPngUrl: null,
-              isSvg: false,
+              mimeType: null,
             },
           }
         : {}),

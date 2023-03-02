@@ -27,8 +27,4 @@ export {
   getDescription,
   getTransactionLabel,
 } from './transactions';
-export {
-  parseSimplehashNfts,
-  handleAndSignImages,
-  getOpenSeaCollectionUrl,
-} from './uniqueTokens';
+export { parseSimplehashNfts, handleAndSignImages } from './uniqueTokens';

@@ -11,10 +11,6 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { UniqueAsset } from '@/entities';
 import {
-  SimplehashFloorPrice,
-  SimplehashLastSale,
-} from '@/entities/uniqueAssets';
-import {
   ETH_PAYMENT_TOKEN_ID,
   fetchSimplehashNftListing,
   OPENSEA_MARKETPLACE_ID,
@@ -41,44 +37,6 @@ const getRoundedValueFromRawAmount = (
   return null;
 };
 
-const getLastSaleString = (lastSale: SimplehashLastSale | null) => {
-  const value = getRoundedValueFromRawAmount(
-    lastSale?.unit_price,
-    lastSale?.payment_token?.decimals
-  );
-  if (value !== null) {
-    const tokenSymbol = lastSale?.payment_token?.symbol;
-    if (value === 0) {
-      return `< 0.001 ${tokenSymbol}`;
-    } else {
-      return `${value} ${tokenSymbol}`;
-    }
-  }
-  return NONE;
-};
-
-const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
-  if (getIsFloorPriceSupported(asset?.network)) {
-    const floorPrices = asset?.collection?.floor_prices;
-    const openSeaFloorPrice = floorPrices?.find(
-      (floorPrice: SimplehashFloorPrice) =>
-        floorPrice.marketplace_id === OPENSEA_MARKETPLACE_ID
-    );
-    if (
-      openSeaFloorPrice?.payment_token.payment_token_id === ETH_PAYMENT_TOKEN_ID
-    ) {
-      const roundedValue = getRoundedValueFromRawAmount(
-        openSeaFloorPrice.value,
-        openSeaFloorPrice?.payment_token.decimals
-      );
-      if (roundedValue) {
-        return `${roundedValue} ETH`;
-      }
-    }
-  }
-  return NONE;
-};
-
 export default function NFTBriefTokenInfoRow({
   asset,
 }: {
@@ -91,9 +49,10 @@ export default function NFTBriefTokenInfoRow({
   const { nativeCurrency } = useAccountSettings();
 
   const openseaFloorPriceEth = asset?.marketplaces.opensea.floorPrice;
-  const floorPrice = openseaFloorPriceEth
-    ? `${openseaFloorPriceEth} ETH`
-    : NONE;
+  const floorPrice =
+    openseaFloorPriceEth !== null
+      ? `${openseaFloorPriceEth || '< 0.001'} ETH`
+      : NONE;
 
   const [currentPrice, setCurrentPrice] = useState<string | null>();
 
@@ -102,7 +61,7 @@ export default function NFTBriefTokenInfoRow({
       const listing = await fetchSimplehashNftListing(
         asset?.network,
         asset?.contract?.address || '',
-        asset?.id
+        asset?.tokenId
       );
       const price = getRoundedValueFromRawAmount(
         listing?.price,
@@ -114,7 +73,7 @@ export default function NFTBriefTokenInfoRow({
     };
 
     fetchCurrentPrice();
-  }, [asset?.contract?.address, asset?.id, asset?.network]);
+  }, [asset?.contract?.address, asset.tokenId, asset?.network]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -134,7 +93,10 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const lastSalePrice = getLastSaleString(asset?.lastSale);
+  const lastSalePrice =
+    asset?.lastEthSale !== null
+      ? `${asset.lastEthSale || '< 0.001'} ETH`
+      : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
