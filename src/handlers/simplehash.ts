@@ -5,7 +5,6 @@ import { Network } from '@/helpers';
 import { qs } from 'url-parse';
 import { logger, RainbowError } from '@/logger';
 import { getSimplehashChainFromNetwork } from '@/parsers/uniqueTokens';
-import { SimplehashListing } from '@/entities/uniqueAssets';
 
 interface SimplehashMarketplace {
   marketplace_id: string;

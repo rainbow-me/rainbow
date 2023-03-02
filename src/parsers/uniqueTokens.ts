@@ -8,6 +8,13 @@ import { getFullSizePngUrl } from '@/utils/getFullSizePngUrl';
 import { getLowResUrl } from '@/utils/getLowResUrl';
 import isSVGImage from '@/utils/isSVG';
 import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
+import { Trait } from '@/entities/uniqueAssets';
+import {
+  SimplehashFloorPrice,
+  SimplehashMarketplace,
+  SimplehashNft,
+  SimplehashTrait,
+} from '@/entities/simplehash';
 
 const SVG_MIME_TYPE = 'image/svg+xml';
 
@@ -80,9 +87,39 @@ const getRoundedValueFromRawAmount = (rawAmount: number, decimals: number) => {
   return null;
 };
 
-export const parseSimplehashNfts = (nftData: any) => {
-  const results = nftData?.map((simplehashNft: any) => {
+export const parseSimplehashNfts = (nftData: SimplehashNft[]) => {
+  const results = nftData?.map((simplehashNft: SimplehashNft) => {
+    const address = simplehashNft.contract_address.toLowerCase();
     const collection = simplehashNft.collection;
+    const name = simplehashNft.name;
+    const network = getNetworkFromSimplehashChain(simplehashNft.chain);
+    const openSeaFloorPriceEth = collection?.floor_prices?.find(
+      (floorPrice: SimplehashFloorPrice) =>
+        floorPrice?.marketplace_id === 'opensea' &&
+        floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
+    );
+    const openSea = simplehashNft.collection.marketplace_pages.find(
+      (marketplace: SimplehashMarketplace) =>
+        marketplace.marketplace_id === 'opensea'
+    );
+    let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
+    if (address === POAP_NFT_ADDRESS) {
+      uniqueTokenType = uniqueTokenTypes.POAP;
+    } else if (address === ENS_NFT_CONTRACT_ADDRESS) {
+      uniqueTokenType = uniqueTokenTypes.ENS;
+    }
+
+    // if any of these are missing, we shouldn't attempt to show the nft to the user
+    if (
+      !address ||
+      !collection?.name ||
+      !name ||
+      !network ||
+      !openSea ||
+      !simplehashNft?.token_id
+    ) {
+      return;
+    }
 
     //
     // handle images
@@ -111,31 +148,21 @@ export const parseSimplehashNfts = (nftData: any) => {
         ? originalImageUrl
         : fullResPngUrl;
 
-    const openSeaFloorPriceEth = collection?.floor_prices?.find(
-      (floorPrice: any) =>
-        floorPrice?.marketplace_id === 'opensea' &&
-        floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
-    );
+    const collectionImageUrl = collection?.image_url
+      ? maybeSignUri(collection.image_url) ?? null
+      : null;
 
-    const openSea = simplehashNft.collection.marketplace_pages.find(
-      (marketplace: any) => marketplace.marketplace_id === 'opensea'
-    );
-
-    const network = getNetworkFromSimplehashChain(simplehashNft.chain);
-
-    let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
-    if (simplehashNft.contract_address.toLowerCase() === POAP_NFT_ADDRESS) {
-      uniqueTokenType = uniqueTokenTypes.POAP;
-    } else if (
-      simplehashNft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS
-    ) {
-      uniqueTokenType = uniqueTokenTypes.ENS;
-    }
-
-    const parsedNft: UniqueAsset = {
-      videos: {
-        url: simplehashNft.video_url,
-        mimeType: simplehashNft.video_properties?.mime_type,
+    return {
+      backgroundColor: simplehashNft.background_color,
+      collection: {
+        description: collection.description,
+        discord: collection.discord_url,
+        externalUrl: collection.external_url,
+        imageUrl: collectionImageUrl,
+        name:
+          uniqueTokenType === uniqueTokenTypes.ENS ? 'ENS' : collection.name,
+        simplehashSpamScore: collection?.spam_score,
+        twitter: collection.twitter_username,
       },
       contract: {
         address: simplehashNft.contract_address,
@@ -143,60 +170,65 @@ export const parseSimplehashNfts = (nftData: any) => {
         standard: simplehashNft.contract.type,
         symbol: simplehashNft.contract.symbol,
       },
-      images: {
-        fullResUrl,
-        fullResPngUrl,
-        lowResPngUrl,
-        mimeType: simplehashNft.image_properties?.mime_type,
-        blurhash: simplehashNft.previews?.blurhash,
-      },
-      backgroundColor: simplehashNft.background_color,
-      predominantColor: simplehashNft.previews?.predominant_color,
       description: simplehashNft.description,
       externalUrl: simplehashNft.external_url,
-      uniqueId: `${network}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
-      tokenId: simplehashNft.token_id,
+      images: {
+        blurhash: simplehashNft.previews?.blurhash,
+        fullResPngUrl,
+        fullResUrl,
+        lowResPngUrl,
+        mimeType: simplehashNft.image_properties?.mime_type ?? null,
+      },
       isSendable:
         uniqueTokenType !== uniqueTokenTypes.POAP &&
         (simplehashNft.contract.type === 'ERC721' ||
           simplehashNft.contract.type === 'ERC1155'),
       lastSale: simplehashNft.last_sale,
-      name: simplehashNft.name,
-      network,
-      traits:
-        simplehashNft.extra_metadata?.attributes?.map((trait: any) => ({
-          displayType: trait?.display_type,
-          traitType: trait.trait_type,
-          value: trait.value,
-        })) ?? [],
-      type: AssetTypes.nft as AssetType,
-      uniqueTokenType,
-      collection: {
-        imageUrl: maybeSignUri(collection.image_url) ?? null,
-        name:
-          uniqueTokenType === uniqueTokenTypes.ENS ? 'ENS' : collection.name,
-        description: collection.description,
-        externalUrl: collection.external_url,
-        twitter: collection.twitter_username,
-        discord: collection.discord_url,
-        simplehashSpamScore: collection?.spam_score,
-      },
       marketplaces: {
         opensea: {
+          collectionId: openSea?.marketplace_collection_id ?? null,
+          collectionUrl: openSea?.collection_url ?? null,
+          // we only use eth floor prices right now
+          floorPrice: openSeaFloorPriceEth
+            ? getRoundedValueFromRawAmount(
+                openSeaFloorPriceEth?.value,
+                openSeaFloorPriceEth?.payment_token?.decimals
+              ) ?? null
+            : null,
           id: openSea?.marketplace_id ?? null,
           name: openSea?.marketplace_name ?? null,
           nftUrl: openSea?.nft_url ?? null,
-          collectionUrl: openSea?.collection_url ?? null,
-          collectionId: openSea?.marketplace_collection_id ?? null,
-          // we only use eth floor prices right now
-          floorPrice: getRoundedValueFromRawAmount(
-            openSeaFloorPriceEth?.value,
-            openSeaFloorPriceEth?.payment_token?.decimals
-          ),
         },
       },
+      name,
+      network,
+      predominantColor: simplehashNft.previews?.predominant_color,
+      tokenId: simplehashNft.token_id,
+      traits:
+        (simplehashNft.extra_metadata?.attributes
+          ?.map((trait: SimplehashTrait) => {
+            if (
+              trait.trait_type !== null &&
+              trait.trait_type !== undefined &&
+              trait.value !== null &&
+              trait.value !== undefined
+            ) {
+              return {
+                displayType: trait?.display_type,
+                traitType: trait.trait_type,
+                value: trait.value,
+              };
+            }
+          })
+          ?.filter((trait: Trait | undefined) => !!trait) as Trait[]) ?? [],
+      type: AssetTypes.nft as AssetType,
+      uniqueId: `${network}_${simplehashNft.contract_address}_${simplehashNft.token_id}`,
+      uniqueTokenType,
+      videos: {
+        mimeType: simplehashNft.video_properties?.mime_type ?? null,
+        url: simplehashNft.video_url,
+      },
     };
-    return parsedNft;
   });
-  return results.filter((nft: UniqueAsset) => !!nft);
+  return results.filter((nft: UniqueAsset | undefined) => !!nft);
 };

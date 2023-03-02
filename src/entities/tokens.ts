@@ -35,9 +35,9 @@ export interface SavingsAsset extends Asset {
 
 export interface AssetContract {
   address: string | null;
-  name: string;
-  standard: string;
-  symbol: string;
+  name: string | null;
+  standard: string | null;
+  symbol: string | null;
 }
 
 // Represents fields in `RainbowToken` that are not present in `Asset`. These
