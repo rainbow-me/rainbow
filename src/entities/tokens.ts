@@ -34,12 +34,10 @@ export interface SavingsAsset extends Asset {
 }
 
 export interface AssetContract {
-  address?: string;
-  name?: string;
-  nft_version?: string;
-  schema_name?: string;
-  symbol?: string;
-  total_supply?: number | null;
+  address: string | null;
+  name: string;
+  standard: string;
+  symbol: string;
 }
 
 // Represents fields in `RainbowToken` that are not present in `Asset`. These
@@ -65,9 +63,9 @@ export interface ParsedAddressAsset
     relative_change_24h?: number;
     value?: number;
   };
-  asset_contract?: AssetContract;
+  contract?: AssetContract;
   type: string;
-  id: string;
+  tokenId: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;

@@ -76,12 +76,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import {
-  buildRainbowUrl,
-  getUniqueTokenType,
-  magicMemo,
-  safeAreaInsetValues,
-} from '@/utils';
+import { buildRainbowUrl, magicMemo, safeAreaInsetValues } from '@/utils';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -278,13 +274,12 @@ const UniqueTokenExpandedState = ({
     uniqueId,
   } = asset;
 
-  const uniqueTokenType = getUniqueTokenType(asset);
   const openseaNftUrl = asset.marketplaces.opensea.nftUrl;
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = uniqueTokenType === 'POAP';
-  const isENS = uniqueTokenType === 'ENS';
-  const isNFT = uniqueTokenType === 'NFT';
+  const isPoap = asset.uniqueTokenType === uniqueTokenTypes.POAP;
+  const isENS = asset.uniqueTokenType === uniqueTokenTypes.ENS;
+  const isNFT = asset.uniqueTokenType === uniqueTokenTypes.NFT;
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS
@@ -299,10 +294,10 @@ const UniqueTokenExpandedState = ({
 
   useFocusEffect(
     useCallback(() => {
-      if (uniqueTokenType === 'ENS') {
+      if (isENS) {
         setOptions({ limitActiveModals: false });
       }
-    }, [setOptions, uniqueTokenType])
+    }, [isENS, setOptions])
   );
 
   const profileInfoSectionAvailable = useMemo(() => {

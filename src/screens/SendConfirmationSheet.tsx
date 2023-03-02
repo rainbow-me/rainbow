@@ -68,8 +68,9 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -302,8 +303,8 @@ export default function SendConfirmationSheet() {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset);
-  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
+  const isENS =
+    asset.uniqueTokenType === uniqueTokenTypes.ENS && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
     getDefaultCheckboxes({ ensProfile, isENS, network, toAddress })

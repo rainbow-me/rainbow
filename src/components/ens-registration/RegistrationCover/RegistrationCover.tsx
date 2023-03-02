@@ -78,8 +78,8 @@ const RegistrationCover = ({
       );
 
       if (asset) {
-        const standard = asset.asset_contract?.schema_name || '';
-        const contractAddress = asset.asset_contract?.address || '';
+        const standard = asset.contract?.standard || '';
+        const contractAddress = asset.contract?.address || '';
         const tokenId = asset.tokenId;
         onBlurField({
           key: 'header',

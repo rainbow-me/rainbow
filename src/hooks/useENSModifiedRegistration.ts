@@ -37,8 +37,7 @@ const getImageUrl = (
       );
       const uniqueToken = uniqueTokens.find(
         token =>
-          token.asset_contract.address === contractAddress &&
-          token.id === tokenId
+          token.contract.address === contractAddress && token.id === tokenId
       );
       if (uniqueToken?.images.fullResPngUrl) {
         imageUrl = uniqueToken?.images.fullResPngUrl;

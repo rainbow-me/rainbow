@@ -78,11 +78,12 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
@@ -194,8 +195,7 @@ export default function SendSheet(props) {
     colorForAsset = colors.appleBlue;
   }
 
-  const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
-  const isENS = uniqueTokenType === 'ENS';
+  const isENS = selected.uniqueTokenType === uniqueTokenTypes.ENS;
 
   const ensName = selected.uniqueId
     ? selected.uniqueId?.split(' ')?.[0]
@@ -793,8 +793,8 @@ export default function SendSheet(props) {
       });
       return;
     }
-    const uniqueTokenType = getUniqueTokenType(selected);
-    const isENS = uniqueTokenType === 'ENS';
+
+    const isENS = selected.uniqueTokenType === uniqueTokenTypes.ENS;
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
       isENS: true,

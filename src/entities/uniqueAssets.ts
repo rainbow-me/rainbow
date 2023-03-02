@@ -1,5 +1,6 @@
 import { Network } from '../helpers/networkTypes';
-import { AssetContract, AssetType, EthereumAddress } from '.';
+import { AssetContract, AssetType } from '.';
+import { UniqueTokenType } from '@/utils/uniqueTokens';
 
 interface UniqueAssetLastSale {
   total_price: string;
@@ -95,7 +96,6 @@ export interface Marketplace {
   nftUrl: string | null;
   collectionUrl: string | null;
   collectionId: string | null;
-  verified: boolean | null;
   floorPrice: number | null;
 }
 
@@ -106,36 +106,7 @@ export interface Collection {
   name: string | null;
   twitter: string | null;
   discord: string | null;
-}
-
-export interface UniqueAssetV2 {
-  network: Network;
-  contractAddress: string;
-  tokenId: string;
-  name: string | null;
-  description: string | null;
-  externalUrl: string | null;
-  content: {
-    animationUrl: string | null;
-    backgroundColor: string | null;
-    cachedImageUrl: string | null;
-    imageUrlSmall: string | null;
-    imageUrlMedium: string | null;
-    imageUrlLarge: string | null;
-  };
-  last_sale: UniqueAssetLastSale | null;
-  collection: Collection;
-  //TODO
-  floorPrice: number | null;
-  isPoap: boolean;
-  isSendable: boolean;
   simplehashSpamScore: number | null;
-  /**
-   * @description a computed unique value comprised of <network>_<address>_<token_id>
-   */
-  uniqueId: string;
-  marketplaces: { opensea: Marketplace };
-  traits: UniqueAssetTrait[];
 }
 
 export interface UniqueAsset {
@@ -152,53 +123,19 @@ export interface UniqueAsset {
   backgroundColor: string | null;
   predominantColor: string | null;
   external_link?: string | null;
-  image_original_url?: string | null;
-  image_preview_url?: string | null;
-  image_thumbnail_url?: string | null;
-  image_url?: string | null;
-  last_sale?: UniqueAssetLastSale | null;
   name: string;
-  permalink: string;
   collection: Collection;
   traits: UniqueAssetTrait[];
-  asset_contract: AssetContract;
+  contract: AssetContract;
+  uniqueTokenType: UniqueTokenType;
   background: string | null;
   tokenId: string;
   externalUrl: string | null;
-  // collection: {
-  //   description?: string | null;
-  //   discord_url?: string | null;
-  //   external_url?: string | null;
-  //   featured_image_url?: string | null;
-  //   floor_prices?: SimplehashFloorPrice[];
-  //   hidden?: boolean | null;
-  //   image_url?: string | null;
-  //   name: string;
-  //   short_description?: string | null;
-  //   slug: string;
-  //   twitter_username?: string | null;
-  //   wiki_link?: string | null;
-  // };
-  familyImage: string | null | undefined;
-  familyName: string | null | undefined;
-  isEns: boolean;
-  id: string;
   isSendable: boolean;
   lastSale: SimplehashLastSale | null;
-  lowResUrl: string | undefined | null;
-  marketplaceCollectionUrl?: string | null;
-  marketplaceId: string | null;
-  marketplaceName: string | null;
-  simplehashSpamScore: number | null;
   type: AssetType;
   uniqueId: string;
-  /**
-   * @description a computed unique value comprised of <network>_<address>_<token_id>
-   */
-  fullUniqueId: string;
-  isPoap?: boolean;
   network: Network;
-  seaport_sell_orders?: SeaportOrder[];
 }
 
 export interface UniqueAssetTrait {

@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -15,7 +14,6 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -42,8 +40,10 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { fetchContractABI } from '@/utils/ethereumUtils';
 import logger from '@/utils/logger';
+
+const ERC721 = 'ERC721';
+const ERC1155 = 'ERC1155';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -571,7 +571,7 @@ export const getTransferNftTransaction = async (
   }
 
   const { from, nonce } = transaction;
-  const contractAddress = transaction.asset.asset_contract?.address;
+  const contractAddress = transaction.asset.contract?.address;
   const data = await getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -696,8 +696,8 @@ export const getDataForNftTransfer = async (
   to: string,
   asset: ParsedAddressAsset
 ): Promise<string | undefined> => {
-  const schema_name = asset.asset_contract?.schema_name;
-  if (schema_name === 'ERC721') {
+  const standard = asset.contract?.standard;
+  if (standard === ERC721) {
     const transferMethodHash =
       smartContractMethods.erc721_safe_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
@@ -706,7 +706,7 @@ export const getDataForNftTransfer = async (
       convertStringToHex(asset.tokenId),
     ]);
     return data;
-  } else if (schema_name === 'ERC1155') {
+  } else if (standard === ERC1155) {
     const transferMethodHash =
       smartContractMethods.erc1155_safe_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
@@ -759,7 +759,7 @@ export const buildTransaction = async (
     value,
   };
   if (asset.type === AssetType.nft) {
-    const contractAddress = asset.asset_contract?.address;
+    const contractAddress = asset.contract?.address;
     const data = await getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,

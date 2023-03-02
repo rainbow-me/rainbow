@@ -13,7 +13,7 @@ export default function useENSUniqueToken({
   const { contractAddress, tokenId } = parseENSNFTRecord(value);
   const uniqueToken = uniqueTokens?.find(token => {
     return (
-      token.asset_contract.address?.toLowerCase() ===
+      token.contract.address?.toLowerCase() ===
         contractAddress?.toLowerCase() &&
       token.id?.toLowerCase() === tokenId?.toLowerCase()
     );

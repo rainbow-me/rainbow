@@ -48,21 +48,19 @@ import { deviceUtils } from '@/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
-    tokens: { asset_contract: { address: EthereumAddress }; id: string }[][];
+    tokens: { contract: { address: EthereumAddress }; id: string }[][];
   };
 }) => {
   try {
     let tokenAddresses = '';
     row.item?.tokens?.forEach(
-      (
-        token: { asset_contract: { address: EthereumAddress }; id: string }[]
-      ) => {
+      (token: { contract: { address: EthereumAddress }; id: string }[]) => {
         token.forEach(
           (individualToken: {
-            asset_contract: { address: EthereumAddress };
+            contract: { address: EthereumAddress };
             id: string;
           }) => {
-            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken?.id}||`;
+            tokenAddresses += `${individualToken?.contract?.address}|${individualToken?.id}||`;
           }
         );
       }

@@ -17,14 +17,6 @@ export const uniqueTokenFormats = {
 } as const;
 export type UniqueTokenFormat = keyof typeof uniqueTokenFormats;
 
-export function getUniqueTokenType(asset: UniqueAsset) {
-  if (asset.isPoap) return uniqueTokenTypes.POAP;
-  if (asset.isEns) {
-    return uniqueTokenTypes.ENS;
-  }
-  return uniqueTokenTypes.NFT;
-}
-
 export function getUniqueTokenFormat(asset: UniqueAsset) {
   const {
     videos: { url: videoUrl },

@@ -27,7 +27,7 @@ export function getENSNFTAvatarUrl(
       const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
         token =>
-          token.asset_contract.address?.toLowerCase() ===
+          token.contract.address?.toLowerCase() ===
             contractAddress.toLowerCase() && token.id === tokenId
       );
       if (uniqueToken?.images.fullResPngUrl) {

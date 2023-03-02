@@ -353,7 +353,7 @@ const UniqueTokenExpandedStateHeader = ({
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer(
           // @ts-expect-error address could be undefined?
-          asset.asset_contract.address,
+          asset.contract.address,
           asset.tokenId,
           asset.network
         );
@@ -361,11 +361,11 @@ const UniqueTokenExpandedStateHeader = ({
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
         Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.tokenId}`
+          `https://opensea.io/assets/${asset.contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.looksrare) {
         Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.tokenId}`
+          `https://looksrare.org/collections/${asset.contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.tokenId);
@@ -498,7 +498,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (idx === blockExplorerIndex) {
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
-            asset.asset_contract.address,
+            asset.contract.address,
             asset.tokenId,
             asset.network
           );

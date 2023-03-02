@@ -130,9 +130,9 @@ export function onNavigationStateChange(currentState) {
     if (routeName === Routes.EXPANDED_ASSET_SHEET) {
       const { asset, type } = Navigation.getActiveRoute().params;
       paramsToTrack = {
-        assetContractAddress: asset.address || asset?.asset_contract?.address,
+        assetContractAddress: asset.address || asset?.contract?.address,
         assetName: asset.name,
-        assetSymbol: asset.symbol || asset?.asset_contract?.symbol,
+        assetSymbol: asset.symbol || asset?.contract?.symbol,
         assetType: type,
       };
     }

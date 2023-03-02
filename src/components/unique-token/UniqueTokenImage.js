@@ -9,10 +9,10 @@ import { Monospace } from '../text';
 import { Text } from '@/design-system';
 import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
+
+const SVG_MIME_TYPE = 'image/svg+xml';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -49,7 +49,7 @@ const UniqueTokenImage = ({
   size,
   transformSvgs = true,
 }) => {
-  const isSVG = item.images.mimeType === 'image/svg+xml';
+  const isSVG = item.images.mimeType === SVG_MIME_TYPE;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();

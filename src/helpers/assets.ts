@@ -1,18 +1,10 @@
 import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import store from '@/redux/store';
-import {
-  ETH_ADDRESS,
-  ETH_ICON_URL,
-  supportedNativeCurrencies,
-} from '@/references';
-import {
-  ethereumUtils,
-  getUniqueTokenFormat,
-  getUniqueTokenType,
-} from '@/utils';
+import { supportedNativeCurrencies } from '@/references';
+import { getUniqueTokenFormat } from '@/utils';
+import { uniqueTokenFormats, uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const COINS_TO_SHOW = 5;
 
@@ -281,8 +273,10 @@ export const buildBriefUniqueTokenList = (
   const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
-      return format === 'image' && type === 'NFT';
+      return (
+        format === uniqueTokenFormats.image &&
+        token.uniqueTokenType === uniqueTokenTypes.NFT
+      );
     }
     return true;
   });

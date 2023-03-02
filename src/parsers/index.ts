@@ -20,7 +20,6 @@ export {
   parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
-export { parsePoaps } from './poap';
 export { getRequestDisplayDetails } from './requests';
 export {
   parseTransactions,
@@ -29,8 +28,6 @@ export {
   getTransactionLabel,
 } from './transactions';
 export {
-  parseAccountUniqueTokens,
-  parseAccountUniqueTokensPolygon,
   parseSimplehashNfts,
   handleAndSignImages,
   getOpenSeaCollectionUrl,

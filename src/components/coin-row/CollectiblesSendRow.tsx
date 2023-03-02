@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
+import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -12,6 +12,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { UniqueAsset } from '@/entities';
 import { padding } from '@/styles';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const dividerHeight = 22;
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
@@ -79,7 +80,7 @@ const UniqueTokenCoinIcon = magicMemo(
     const {
       collection: { name },
       background,
-      images: { fullResPngUrl },
+      images: { lowResPngUrl },
       selected,
       shouldPrioritizeImageLoading,
       ...props
@@ -91,7 +92,7 @@ const UniqueTokenCoinIcon = magicMemo(
           backgroundColor={background || colors.lightestGrey}
           borderRadius={10}
           dappName={name}
-          imageUrl={fullResPngUrl}
+          imageUrl={lowResPngUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
           {...props}
@@ -121,8 +122,7 @@ const CollectiblesSendRow = React.memo(
   }) => {
     const { colors } = useTheme();
 
-    const uniqueTokenType = getUniqueTokenType(item);
-    const isENS = uniqueTokenType === 'ENS';
+    const isENS = item.uniqueTokenType === uniqueTokenTypes.ENS;
 
     const subtitle = useMemo(
       () =>

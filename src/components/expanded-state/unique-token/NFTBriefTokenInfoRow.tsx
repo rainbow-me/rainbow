@@ -101,7 +101,7 @@ export default function NFTBriefTokenInfoRow({
     const fetchCurrentPrice = async () => {
       const listing = await fetchSimplehashNftListing(
         asset?.network,
-        asset?.asset_contract?.address || '',
+        asset?.contract?.address || '',
         asset?.id
       );
       const price = getRoundedValueFromRawAmount(
@@ -114,7 +114,7 @@ export default function NFTBriefTokenInfoRow({
     };
 
     fetchCurrentPrice();
-  }, [asset?.asset_contract?.address, asset?.id, asset?.network]);
+  }, [asset?.contract?.address, asset?.id, asset?.network]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
