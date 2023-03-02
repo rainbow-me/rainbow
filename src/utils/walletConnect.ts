@@ -219,6 +219,12 @@ export function isSupportedMethod(method: RPCMethod) {
   );
 }
 
+export function isSupportedChain(chainId: number) {
+  for (const config of supportedChainConfigs) {
+    if (config.chain_id === chainId) return true;
+  }
+}
+
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
@@ -363,46 +369,17 @@ export async function onSessionProposal(
   const receivedTimestamp = Date.now();
   const { proposer, requiredNamespaces } = proposal.params;
 
-  /**
-   * Trying to be defensive here, but I'm not sure we support this anyway so
-   * probably not a big deal right now.
-   */
-  if (!requiredNamespaces.eip155) {
-    logger.error(new RainbowError(`WC v2: missing required namespace eip155`), {
-      requiredNamespaces,
-    });
-    return;
-  }
+  const requiredNamespaceKeys = Object.keys(requiredNamespaces);
+  const supportedNamespaces = requiredNamespaceKeys.filter(
+    key => key === 'eip155'
+  );
+  const unsupportedNamespaces = requiredNamespaceKeys.filter(
+    key => key !== 'eip155'
+  );
 
-  /**
-   * Trying to be defensive here, but I'm not sure we support this anyway so
-   * probably not a big deal right now.
-   */
-  if (!requiredNamespaces.eip155.chains) {
-    logger.error(new RainbowError(`WC v2: namespace is missing chains prop`), {
-      requiredNamespaces,
-    });
-    return;
-  }
-
-  const { chains, methods } = requiredNamespaces.eip155;
-  const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
-  const supportedChainIds = chainIds.filter(id => {
-    for (const config of supportedChainConfigs) {
-      if (config.chain_id === id) return true;
-    }
-    return false;
-  });
-  const unsupportedChainIds = chainIds.filter(id => {
-    for (const config of supportedChainConfigs) {
-      if (config.chain_id === id) return false;
-    }
-    return true;
-  });
-
-  if (unsupportedChainIds.length && !supportedChainIds.length) {
-    logger.warn(`WC v2: session proposal requested unsupported chains`, {
-      unsupportedChainIds,
+  if (unsupportedNamespaces.length || !supportedNamespaces.length) {
+    logger.warn(`WC v2: session proposal requested unsupported namespaces`, {
+      unsupportedNamespaces,
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
@@ -412,6 +389,37 @@ export async function onSessionProposal(
       },
     });
     return;
+  }
+
+  const { chains, methods } = requiredNamespaces.eip155;
+  // we already checked for eip155 namespace above
+  const chainIds = chains!.map(chain => parseInt(chain.split('eip155:')[1]));
+  const supportedChainIds = chainIds.filter(isSupportedChain);
+  const unsupportedChainIds = chainIds.filter(id => !isSupportedChain(id));
+
+  if (
+    (unsupportedChainIds.length && !supportedChainIds.length) ||
+    unsupportedNamespaces.length
+  ) {
+    logger.warn(
+      `WC v2: session proposal requested unsupported networks or namespaces`,
+      {
+        unsupportedChainIds,
+        unsupportedNamespaces,
+      }
+    );
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
+    showErrorSheet({
+      reason: 'failed_wc_invalid_chains',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
+    return;
+  } else if (unsupportedChainIds.length) {
+    logger.info(`WC v2: session proposal requested unsupported networks`, {
+      unsupportedChainIds,
+    });
   }
 
   const peerMeta = proposer.metadata;
@@ -427,7 +435,7 @@ export async function onSessionProposal(
   const unspportedMethods = methods.filter(
     method => !isSupportedMethod(method as RPCMethod)
   );
-  logger.warn(`WC v2: dapp requested unsupported RPC methods`, {
+  logger.info(`WC v2: dapp requested unsupported RPC methods`, {
     methods: unspportedMethods,
   });
 
@@ -643,9 +651,39 @@ export async function onSessionRequest(
     const session = client.session.get(topic);
     const { nativeCurrency, network } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
+    const isSupportedNetwork = isSupportedChain(chainId);
 
-    // TODO reject unsupported chains
-    console.log('chainId', chainId);
+    if (!isSupportedNetwork) {
+      logger.error(
+        new RainbowError(`WC v2: session_request was for unsupported network`),
+        {
+          chainId,
+        }
+      );
+
+      try {
+        await client.respond({
+          topic,
+          response: formatJsonRpcError(id, `Network not supported`),
+        });
+      } catch (e) {
+        logger.error(
+          new RainbowError(`WC v2: error rejecting session_request`),
+          {
+            error: (e as Error).message,
+          }
+        );
+      }
+
+      showErrorSheet({
+        reason: 'failed_wc_invalid_chain',
+        onClose() {
+          maybeGoBackAndClearHasPendingRedirect();
+        },
+      });
+
+      return;
+    }
 
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(
