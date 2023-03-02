@@ -14,6 +14,7 @@ import {
 import { useDispatch } from 'react-redux';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
+import { logger, RainbowError } from '@/logger';
 
 export const GoogleAccountSection: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,13 +28,17 @@ export const GoogleAccountSection: React.FC = () => {
       .then(accountDetails => {
         setAccountDetails(accountDetails ?? undefined);
       })
-      .catch(e => {
-        console.log('Error while getting google account data', e);
+      .catch(error => {
+        logger.error(
+          new RainbowError(
+            `Something went wrong when trying to fetch google account data to display in Backups Section, error: ${error?.toString()}`
+          )
+        );
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [setAccountDetails]);
+  }, []);
 
   const removeBackupStateFromAllWallets = async () => {
     setLoading(true);
@@ -71,21 +76,42 @@ export const GoogleAccountSection: React.FC = () => {
     try {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);
-    } catch (e) {
-      // don't have to handle an error case
+    } catch (error) {
+      logger.error(
+        new RainbowError(
+          `Something went wrong when logging into Google Drive, error: ${error?.toString()}`
+        )
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const onSignInPress = async () => {
+    setLoading(true);
+    /*
+     * Just in case the account state gets broken,
+     * we will log out the user when logging in.
+     * This should handle any cases where the user didn't have the internet and
+     * the Google account data fetching failed.
+     */
+    await logoutFromGoogleDrive();
+    await loginToGoogleDrive();
+  };
+
   return (
     <Menu header="Google account used for backups">
-      {loading && !accountDetails && (
+      {loading && (
         <MenuItem
           hasSfSymbol
           size={52}
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-          titleComponent={<MenuItem.Title text={'Loading...'} isLink />}
+          titleComponent={
+            <MenuItem.Title
+              text={i18n.t(i18n.l.settings.backup_loading)}
+              isLink
+            />
+          }
         />
       )}
       {!loading && accountDetails && (
@@ -117,9 +143,14 @@ export const GoogleAccountSection: React.FC = () => {
         <MenuItem
           hasSfSymbol
           size={52}
-          titleComponent={<MenuItem.Title text="Sign in" isLink />}
+          titleComponent={
+            <MenuItem.Title
+              text={i18n.t(i18n.l.settings.backup_sign_in)}
+              isLink
+            />
+          }
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-          onPress={loginToGoogleDrive}
+          onPress={onSignInPress}
         />
       )}
     </Menu>

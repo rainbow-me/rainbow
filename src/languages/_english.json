@@ -1407,6 +1407,7 @@
       "backup_switch_google_account": "Switch Google Account",
       "backup_sign_out": "Sign out",
       "backup_sign_in": "Sign in",
+      "backup_loading": "Loading...",
       "currency": "Currency",
       "app_icon": "App Icon",
       "dev": "Dev",

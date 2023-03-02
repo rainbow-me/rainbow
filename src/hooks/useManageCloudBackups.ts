@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
-import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   deleteAllBackups,
@@ -10,7 +9,7 @@ import {
   fetchUserDataFromCloud,
 } from '@/handlers/cloudBackup';
 import { useNavigation } from '@/navigation/Navigation';
-import { clearAllWalletsBackupStatus, walletsUpdate } from '@/redux/wallets';
+import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
 
