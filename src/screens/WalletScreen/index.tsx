@@ -17,7 +17,6 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeAccountData,
-  useInitializeDiscoverData,
   useInitializeWallet,
   useLoadAccountData,
   useLoadAccountLateData,
@@ -68,7 +67,6 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
-  const initializeDiscoverData = useInitializeDiscoverData();
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -186,15 +184,8 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
     if (walletReady && assetsSocket) {
       loadAccountLateData();
       loadGlobalLateData();
-      initializeDiscoverData();
     }
-  }, [
-    assetsSocket,
-    initializeDiscoverData,
-    loadAccountLateData,
-    loadGlobalLateData,
-    walletReady,
-  ]);
+  }, [assetsSocket, loadAccountLateData, loadGlobalLateData, walletReady]);
 
   useEffect(() => {
     if (walletReady && profilesEnabled) {

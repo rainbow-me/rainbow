@@ -78,7 +78,6 @@ export { default as useHeight } from './useHeight';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
 export { default as useImageMetadata } from './useImageMetadata';
 export { default as useInitializeAccountData } from './useInitializeAccountData';
-export { default as useInitializeDiscoverData } from './useInitializeDiscoverData';
 export { default as useInitializeWallet } from './useInitializeWallet';
 export { default as useInteraction } from './useInteraction';
 export { default as useInternetStatus } from './useInternetStatus';
