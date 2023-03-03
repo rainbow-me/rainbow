@@ -98,13 +98,31 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         logger.DebugContext.f2c
       );
 
-      analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
-        provider: FiatProviderName.Ratio,
-        success,
-        sessionId: analyticsSessionId,
-      });
-
       if (success) {
+        try {
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+            provider: FiatProviderName.Ratio,
+            success: true,
+            sessionId: analyticsSessionId,
+            fiat_amount: order.data.activity.fiat.amount,
+            fiat_currency: order.data.activity.fiat.currency,
+            fiat_source: 'bank',
+            crypto_network: order.data.activity.crypto.wallet.network,
+            crypto_amount: order.data.activity.crypto.amount || undefined,
+            crypto_price: order.data.activity.crypto.price || undefined,
+            crypto_currency: order.data.activity.crypto.currency,
+            crypto_fee: order.data.activity.crypto.networkFee || undefined,
+          });
+        } catch (e) {
+          // Just in case data changes during early stages of launch
+          logger.error(
+            new RainbowError(
+              `Ratio: error tracking f2cProviderFlowCompleted event`
+            ),
+            { message: (e as Error).message }
+          );
+        }
+
         try {
           const networkName = parseRatioNetworkToInternalNetwork(
             order.data.activity.crypto.wallet.network
@@ -171,6 +189,12 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           }
         }
       } else {
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          provider: FiatProviderName.Ratio,
+          success: true,
+          sessionId: analyticsSessionId,
+        });
+
         logger.warn(`Ratio: order completed but success === false`, {
           error: order.error,
         });

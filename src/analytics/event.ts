@@ -153,6 +153,17 @@ export type EventProperties = {
      * that this provider doesn't give us enough info to determine this.
      */
     success?: boolean;
+    /**
+     * The following properties are only available on some providers e.g. Ratio
+     */
+    fiat_amount?: string;
+    fiat_currency?: string;
+    fiat_source?: 'bank' | 'card';
+    crypto_network?: string;
+    crypto_amount?: string;
+    crypto_price?: string;
+    crypto_currency?: string;
+    crypto_fee?: string;
   };
   [event.f2cProviderFlowErrored]: {
     /**
