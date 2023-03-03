@@ -36,7 +36,7 @@ const absoluteFill = {
 const StyledBackground = styled(View)({
   ...absoluteFill,
   // @ts-ignore
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }) => 'transparent',
 });
 
 const StyledVideo = styled(Video)(absoluteFill);
@@ -67,7 +67,7 @@ export default function SimpleVideo({
   const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
   );
-
+  console.log(loading);
   useEffect(() => {
     Animated.timing(opacity, {
       duration: 225,
@@ -92,9 +92,9 @@ export default function SimpleVideo({
       onPress={() => !controlsEnabled && setControlsEnabled(true)}
     >
       <View style={[styles.flex, StyleSheet.flatten(style)]}>
-        <StyledBackground />
         <StyledVideo
           controls={controlsEnabled}
+          hideShutterView
           ignoreSilentSwitch="obey"
           onLoad={() => setLoading(false)}
           ref={ref}
