@@ -197,7 +197,9 @@ export const parseSimplehashNfts = (
       uniqueTokenType,
       videos: {
         mimeType: simplehashNft.video_properties?.mime_type ?? null,
-        url: simplehashNft.video_url,
+        url:
+          simplehashNft.video_url ??
+          simplehashNft.extra_metadata?.animation_original_url,
       },
     };
   });

@@ -28,11 +28,9 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
-import isSVGImage from '@/utils/isSVG';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
