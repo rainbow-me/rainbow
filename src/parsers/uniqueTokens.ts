@@ -80,7 +80,6 @@ export const parseSimplehashNfts = (
       !collection?.name ||
       !name ||
       !network ||
-      !opensea ||
       !simplehashNft?.token_id ||
       collection.spam_score === null ||
       collection.spam_score >= 85 ||
@@ -165,10 +164,10 @@ export const parseSimplehashNfts = (
           collectionId: opensea?.marketplace_collection_id ?? null,
           collectionUrl: opensea?.collection_url ?? null,
           // we only use eth floor prices right now
-          floorPrice: openseaFloorPriceEth,
-          id: opensea?.marketplace_id,
-          name: opensea?.marketplace_name,
-          nftUrl: opensea?.nft_url,
+          floorPrice: openseaFloorPriceEth ?? null,
+          id: opensea?.marketplace_id ?? null,
+          name: opensea?.marketplace_name ?? null,
+          nftUrl: opensea?.nft_url ?? null,
         },
       },
       name,
