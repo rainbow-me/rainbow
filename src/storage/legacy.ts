@@ -1,7 +1,7 @@
 import { Storage } from '@/storage';
 import {
-  getLocalAsync,
-  removeLocalAsync,
+  deprecatedGetLocal,
+  deprecatedRemoveLocal,
 } from '@/handlers/localstorage/common';
 
 import { Legacy } from '@/storage/schema';
@@ -35,9 +35,9 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<
 
     if (!res) {
       try {
-        const legacyValue = await getLocalAsync(key); // get old value from AsyncStorage
+        const legacyValue = await deprecatedGetLocal(key); // get old value from AsyncStorage
         this.set(scopes, legacyValue); // set first
-        removeLocalAsync(key); // then remove if successful
+        deprecatedRemoveLocal(key); // then remove if successful
         return this.get(scopes); // continue as normal
       } catch (e) {
         logger.error(new RainbowError(`Storage: error migrating legacy data`), {
@@ -54,7 +54,7 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<
 
 /**
  * IMPORTANT: This uses the same MMKV storage key as our device data so that in
- * the future we can simply move to using out other global `device` storage
+ * the future we can simply move to using our other global `device` storage
  * instance instead of this one.
  */
 export const legacy = new LegacyStorage<[], Legacy>({ id: 'global' });
