@@ -1,11 +1,10 @@
-import { captureException } from '@sentry/react-native';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
 import { Navigation } from '../navigation';
 import { pinKey } from '../utils/keychainConstants';
 import Routes from '@/navigation/routesNames';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 const encryptor = new AesEncryptor();
 
@@ -29,9 +28,8 @@ export async function savePIN(pin: any) {
       // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
       await keychain.saveString(pinKey, encryptedPin);
     }
-  } catch (e) {
-    logger.sentry('Error saving pin');
-    captureException(e);
+  } catch (e: any) {
+    logger.error(new RainbowError('savePin error'), { message: e.message });
   }
 }
 
