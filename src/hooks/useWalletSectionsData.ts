@@ -24,9 +24,7 @@ export default function useWalletSectionsData({
 
   const { language, network, nativeCurrency } = useAccountSettings();
   const sendableUniqueTokens = useSendableUniqueTokens();
-  const allUniqueTokens = useSelector(
-    (state: AppState) => state.uniqueTokens.uniqueTokens
-  );
+
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -66,7 +64,9 @@ export default function useWalletSectionsData({
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
       accountInfo
     );
-    const hasNFTs = allUniqueTokens.length > 0;
+    const hasNFTs =
+      sendableUniqueTokens.uniqueTokens &&
+      sendableUniqueTokens.uniqueTokens.length > 0;
 
     return {
       hasNFTs,
@@ -77,7 +77,6 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    allUniqueTokens,
     hiddenCoins,
     hiddenTokens,
     isCoinListEdited,

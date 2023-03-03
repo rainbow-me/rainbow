@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
@@ -12,13 +11,11 @@ import {
   useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
-import { AppState } from '@/redux/store';
 import {
   Bleed,
   Box,
   Inline,
   Inset,
-  Space,
   Text,
   useForegroundColor,
 } from '@/design-system';
@@ -221,9 +218,12 @@ function ImageValue({
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const uniqueTokensAccount = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { data: uniqueTokensAccount } = useFetchUniqueTokens({
+    address: accountAddress,
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
+
   const { data: uniqueTokensProfile } = useFetchUniqueTokens({
     address: address ?? '',
     // Don't want to refetch tokens if we already have them.

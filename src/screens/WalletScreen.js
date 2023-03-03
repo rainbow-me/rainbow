@@ -68,7 +68,6 @@ export default function WalletScreen() {
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
-  const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { isCoinListEdited } = useCoinListEdited();
   const { trackENSProfile } = useTrackENSProfile();

@@ -1,17 +1,18 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
+  useAccountProfile,
   useENSAvatar,
   useENSCover,
   useENSRecords,
   useENSRegistration,
+  useFetchUniqueTokens,
   usePrevious,
 } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { AppState } from '@/redux/store';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 
 const getImageUrl = (
@@ -66,11 +67,14 @@ export default function useENSModifiedRegistration({
   modifyChangedRecords?: boolean;
 } = {}) {
   const dispatch = useDispatch();
+  const { accountAddress } = useAccountProfile();
   const { records, initialRecords, name, mode } = useENSRegistration();
 
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { data: uniqueTokens } = useFetchUniqueTokens({
+    address: accountAddress,
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
 
   const fetchEnabled =
     mode === REGISTRATION_MODES.EDIT ||
@@ -187,22 +191,26 @@ export default function useENSModifiedRegistration({
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
   const images = useMemo(() => {
-    const avatarUrl = getImageUrl(
-      'avatar',
-      records,
-      changedRecords,
-      uniqueTokens,
-      avatar?.imageUrl,
-      mode
-    );
-    const coverUrl = getImageUrl(
-      'header',
-      records,
-      changedRecords,
-      uniqueTokens,
-      cover?.imageUrl,
-      mode
-    );
+    const avatarUrl =
+      uniqueTokens &&
+      getImageUrl(
+        'avatar',
+        records,
+        changedRecords,
+        uniqueTokens,
+        avatar?.imageUrl,
+        mode
+      );
+    const coverUrl =
+      uniqueTokens &&
+      getImageUrl(
+        'header',
+        records,
+        changedRecords,
+        uniqueTokens,
+        cover?.imageUrl,
+        mode
+      );
 
     return {
       avatarUrl,

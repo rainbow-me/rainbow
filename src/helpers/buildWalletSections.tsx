@@ -1,4 +1,3 @@
-import React from 'react';
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
@@ -33,6 +32,8 @@ const EMPTY_WALLET_CONTENT = [
 
 const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
+const uniqueTokensSelector = (state: any) => state.uniqueTokens;
+const accountAddressSelector = (state: any) => state.accountAddress;
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
@@ -45,7 +46,6 @@ const savingsSelector = (state: any) => state.savings;
 const sellingTokensSelector = (state: any) => state.sellingTokens;
 const showcaseTokensSelector = (state: any) => state.showcaseTokens;
 const hiddenTokensSelector = (state: any) => state.hiddenTokens;
-const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const uniswapSelector = (state: any) => state.uniswap;
 const uniswapTotalSelector = (state: any) => state.uniswapTotal;
 const listTypeSelector = (state: any) => state.listType;
@@ -147,8 +147,7 @@ const withBriefBalanceSection = (
   hiddenCoins: any,
   collectibles: any,
   savingsSection: any,
-  uniswapTotal: any,
-  uniqueTokens: any
+  uniswapTotal: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -256,7 +255,7 @@ const withBriefBalanceSection = (
 
 const briefUniqueTokenDataSelector = createSelector(
   [
-    uniqueTokensSelector,
+    accountAddressSelector,
     showcaseTokensSelector,
     sellingTokensSelector,
     hiddenTokensSelector,
@@ -267,12 +266,7 @@ const briefUniqueTokenDataSelector = createSelector(
 );
 
 const briefBalanceSavingsSectionSelector = createSelector(
-  [
-    savingsSelector,
-    isLoadingAssetsSelector,
-    networkSelector,
-    uniqueTokensSelector,
-  ],
+  [savingsSelector, isLoadingAssetsSelector, networkSelector],
   withBriefBalanceSavingsSection
 );
 

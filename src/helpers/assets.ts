@@ -5,6 +5,9 @@ import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
 import { getUniqueTokenFormat } from '@/utils';
 import { uniqueTokenFormats, uniqueTokenTypes } from '@/utils/uniqueTokens';
+import { queryClient } from '@/react-query';
+import { uniqueTokensQueryKey } from '@/hooks/useFetchUniqueTokens';
+import { UniqueAsset } from '@/entities';
 
 const COINS_TO_SHOW = 5;
 
@@ -253,24 +256,28 @@ export const buildUniqueTokenList = (
 const regex = RegExp(/\s*(the)\s/, 'i');
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: any,
+  address: string,
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false
 ) => {
+  const uniqueTokens = queryClient.getQueryData<UniqueAsset[]>(
+    uniqueTokensQueryKey({ address })
+  );
+
   const hiddenUniqueTokensIds = uniqueTokens
-    .filter(({ uniqueId }: any) => hiddenTokens.includes(uniqueId))
+    ?.filter(({ uniqueId }: any) => hiddenTokens.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(
+  const nonHiddenUniqueTokens = uniqueTokens?.filter(
     ({ uniqueId }: any) => !hiddenTokens.includes(uniqueId)
   );
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
-    .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
+    ?.filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
 
-  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
+  const filteredUniqueTokens = nonHiddenUniqueTokens?.filter((token: any) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       return (
@@ -292,7 +299,11 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
+  if (
+    uniqueTokensInShowcaseIds &&
+    uniqueTokensInShowcaseIds.length > 0 &&
+    listType !== 'select-nft'
+  ) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: 'Showcase',
@@ -353,6 +364,7 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
   if (
+    hiddenUniqueTokensIds &&
     hiddenUniqueTokensIds.length > 0 &&
     listType === 'wallet' &&
     !isReadOnlyWallet

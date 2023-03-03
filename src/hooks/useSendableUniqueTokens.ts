@@ -1,19 +1,20 @@
 import { groupBy } from 'lodash';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { UniqueAsset } from '@/entities';
-import { AppState } from '@/redux/store';
+import useFetchUniqueTokens from './useFetchUniqueTokens';
+import useAccountProfile from './useAccountProfile';
 
-const uniqueTokensSelector = (state: AppState) =>
-  state.uniqueTokens.uniqueTokens;
+export default function useSendableUniqueTokens() {
+  const { accountAddress } = useAccountProfile();
+  const { data: uniqueTokens } = useFetchUniqueTokens({
+    address: accountAddress,
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
 
-const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
-  const sendableUniqueTokens = uniqueTokens?.filter(
-    (uniqueToken: any) => uniqueToken.isSendable
-  );
+  const sendableUniqueTokens = uniqueTokens?.filter(token => token.isSendable);
+
   const grouped = groupBy(sendableUniqueTokens, token => token.collection.name);
   const families = Object.keys(grouped).sort();
-  let sendableTokens = [];
+  const sendableTokens = [];
   for (let i = 0; i < families.length; i++) {
     let newObject = {};
     newObject = {
@@ -25,13 +26,4 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
     sendableTokens.push(newObject);
   }
   return { sendableUniqueTokens: sendableTokens, uniqueTokens };
-};
-
-const sendableUniqueTokensSelector = createSelector(
-  [uniqueTokensSelector],
-  sendableUniqueTokens
-);
-
-export default function useSendableUniqueTokens() {
-  return useSelector(sendableUniqueTokensSelector);
 }

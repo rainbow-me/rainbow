@@ -1,6 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccountSettings, useENSRegistration } from '.';
+import {
+  useAccountSettings,
+  useENSRegistration,
+  useFetchUniqueTokens,
+} from '.';
 import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
@@ -38,13 +42,17 @@ export default function useENSPendingRegistrations() {
     }
   );
 
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { data: uniqueTokens } = useFetchUniqueTokens({
+    address: accountAddress,
+    // Don't want to refetch tokens if we already have them.
+    staleTime: Infinity,
+  });
+
   const registrationImages = useMemo(() => {
     const registrationImagesArray = pendingRegistrations?.map(
       ({ name, records }) => {
-        const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
+        const avatarUrl =
+          uniqueTokens && getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
         return {
           avatarUrl,
           name,
