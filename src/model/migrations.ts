@@ -50,6 +50,7 @@ import {
   getPinnedCoins,
   saveHiddenCoins,
   savePinnedCoins,
+  saveUniqueTokens,
 } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
@@ -673,6 +674,19 @@ export default async function runMigrations() {
   };
 
   migrations.push(v17);
+
+  /**
+  *************** Migration v18 ******************
+  Removes unique tokens from local storage
+  */
+  const v18 = async () => {
+    const accountAddress = store.getState().settings.accountAddress;
+    const network = store.getState().settings.network;
+
+    await saveUniqueTokens([], accountAddress, network);
+  };
+
+  migrations.push(v18);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
