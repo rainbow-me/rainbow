@@ -11,7 +11,9 @@ import {
   simplehashChains,
   SimplehashFloorPrice,
   SimplehashMarketplace,
+  simplehashMarketplaceIds,
   SimplehashNft,
+  simplehashPaymentTokenIds,
   SimplehashTrait,
 } from '@/entities/simplehash';
 
@@ -47,8 +49,9 @@ export const parseSimplehashNfts = (
     const network = getNetworkFromSimplehashChain(simplehashNft.chain);
     const floorPriceData = collection?.floor_prices?.find(
       (floorPrice: SimplehashFloorPrice) =>
-        floorPrice?.marketplace_id === 'opensea' &&
-        floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
+        floorPrice?.marketplace_id === simplehashMarketplaceIds.opensea &&
+        floorPrice?.payment_token?.payment_token_id ===
+          simplehashPaymentTokenIds.eth
     );
     const openseaFloorPriceEth =
       getRoundedValueFromRawAmount(
@@ -57,7 +60,7 @@ export const parseSimplehashNfts = (
       ) ?? null;
     const opensea = simplehashNft.collection.marketplace_pages.find(
       (marketplace: SimplehashMarketplace) =>
-        marketplace.marketplace_id === 'opensea'
+        marketplace.marketplace_id === simplehashMarketplaceIds.opensea
     );
     const lastEthSale =
       getRoundedValueFromRawAmount(
@@ -148,6 +151,7 @@ export const parseSimplehashNfts = (
         fullResPngUrl,
         fullResUrl,
         lowResPngUrl,
+        // mimeType only corresponds to fullResUrl
         mimeType: simplehashNft.image_properties?.mime_type ?? null,
       },
       isSendable:

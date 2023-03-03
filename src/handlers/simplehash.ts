@@ -9,13 +9,13 @@ import {
   SimplehashListing,
   simplehashMarketplaceIds,
   SimplehashNft,
+  simplehashPaymentTokenIds,
 } from '@/entities/simplehash';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 const START_CURSOR = 'start';
-export const ETH_PAYMENT_TOKEN_ID = 'ethereum.native';
 
 const simplehashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
@@ -116,7 +116,8 @@ export async function fetchSimplehashNftListing(
         ...listings,
         response?.data?.listings?.find(
           (listing: SimplehashListing) =>
-            listing?.payment_token?.payment_token_id === ETH_PAYMENT_TOKEN_ID
+            listing?.payment_token?.payment_token_id ===
+            simplehashPaymentTokenIds.eth
         ),
       ];
     }
