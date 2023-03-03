@@ -33,12 +33,6 @@ const absoluteFill = {
   ...position.sizeAsObject('100%'),
 };
 
-const StyledBackground = styled(View)({
-  ...absoluteFill,
-  // @ts-ignore
-  backgroundColor: ({ theme: { colors } }) => 'transparent',
-});
-
 const StyledVideo = styled(Video)(absoluteFill);
 
 const StyledPosterContainer = styled(Animated.View)(absoluteFill);
@@ -67,7 +61,7 @@ export default function SimpleVideo({
   const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
   );
-  console.log(loading);
+
   useEffect(() => {
     Animated.timing(opacity, {
       duration: 225,
