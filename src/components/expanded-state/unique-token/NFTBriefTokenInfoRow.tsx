@@ -14,11 +14,11 @@ import {
   SimplehashFloorPrice,
   SimplehashLastSale,
 } from '@/entities/uniqueAssets';
+import { fetchSimplehashNftListing } from '@/handlers/simplehash';
 import {
-  ETH_PAYMENT_TOKEN_ID,
-  fetchSimplehashNftListing,
-  OPENSEA_MARKETPLACE_ID,
-} from '@/handlers/simplehash';
+  simplehashMarketplaceIds,
+  simplehashPaymentTokenIds,
+} from '@/entities/simplehash';
 
 const NONE = 'None';
 
@@ -62,10 +62,11 @@ const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
     const floorPrices = asset?.collection?.floor_prices;
     const openSeaFloorPrice = floorPrices?.find(
       (floorPrice: SimplehashFloorPrice) =>
-        floorPrice.marketplace_id === OPENSEA_MARKETPLACE_ID
+        floorPrice.marketplace_id === simplehashMarketplaceIds.opensea
     );
     if (
-      openSeaFloorPrice?.payment_token.payment_token_id === ETH_PAYMENT_TOKEN_ID
+      openSeaFloorPrice?.payment_token.payment_token_id ===
+      simplehashPaymentTokenIds.eth
     ) {
       const roundedValue = getRoundedValueFromRawAmount(
         openSeaFloorPrice?.value,
