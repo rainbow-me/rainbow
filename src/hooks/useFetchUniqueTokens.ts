@@ -36,7 +36,7 @@ export default function useFetchUniqueTokens({
   const mounted = useIsMounted();
 
   const [shouldFetchMore, setShouldFetchMore] = useState<boolean>();
-  const [cursor, setCursor] = useState<string>();
+  const [cursor, setCursor] = useState<string | null>();
 
   // Get unique tokens from device storage
   const [hasStoredTokens, setHasStoredTokens] = useState(false);
@@ -147,6 +147,7 @@ export default function useFetchUniqueTokens({
     if (
       infinite &&
       shouldFetchMore &&
+      cursor !== null &&
       uniqueTokens &&
       uniqueTokens.length > 0
     ) {

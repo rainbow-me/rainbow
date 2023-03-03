@@ -68,7 +68,7 @@ const getOpenSeaFloorPrice = (asset: UniqueAsset) => {
       openSeaFloorPrice?.payment_token.payment_token_id === ETH_PAYMENT_TOKEN_ID
     ) {
       const roundedValue = getRoundedValueFromRawAmount(
-        openSeaFloorPrice.value,
+        openSeaFloorPrice?.value,
         openSeaFloorPrice?.payment_token.decimals
       );
       if (roundedValue) {

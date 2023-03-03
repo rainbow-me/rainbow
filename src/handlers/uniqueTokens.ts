@@ -51,7 +51,7 @@ export const fetchAllUniqueTokens = async (
     // eslint-disable-next-line no-await-in-loop
     const { rawNftData, nextCursor } = await fetchSimplehashNfts(
       address,
-      cursor
+      cursor as string
     );
 
     const newUniqueTokens = filterNfts(
