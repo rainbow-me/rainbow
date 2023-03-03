@@ -16,7 +16,6 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@/handlers/simplehash';
 import { fetchPolygonAllowlist } from '@/resources/polygonAllowlistQuery';
-import { filterNfts } from '@/helpers/uniqueTokens';
 
 export const uniqueTokensQueryKey = ({ address }: { address?: string }) => [
   'unique-tokens',
@@ -72,10 +71,7 @@ export default function useFetchUniqueTokens({
         ]);
         const { rawNftData, nextCursor } = uniqueTokensResponse;
         setCursor(nextCursor);
-        uniqueTokens = filterNfts(
-          parseSimplehashNfts(rawNftData),
-          polygonAllowlist
-        );
+        uniqueTokens = parseSimplehashNfts(rawNftData, polygonAllowlist);
       }
 
       return uniqueTokens;
@@ -111,8 +107,8 @@ export default function useFetchUniqueTokens({
       ]);
       const { rawNftData, nextCursor } = uniqueTokensResponse;
 
-      const moreUniqueTokens = filterNfts(
-        parseSimplehashNfts(rawNftData),
+      const moreUniqueTokens = parseSimplehashNfts(
+        rawNftData,
         polygonAllowlist
       );
 

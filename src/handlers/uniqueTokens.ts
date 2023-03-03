@@ -25,7 +25,6 @@ import { queryClient } from '@/react-query';
 import { UniqueAsset } from '@/entities';
 import store from '@/redux/store';
 import { uniqueTokensQueryKey } from '@/hooks/useFetchUniqueTokens';
-import { filterNfts } from '@/helpers/uniqueTokens';
 
 export const fetchAllUniqueTokens = async (
   address: string,
@@ -39,10 +38,7 @@ export const fetchAllUniqueTokens = async (
   const { rawNftData, nextCursor } = newUniqueTokensResponse;
 
   let cursor = nextCursor;
-  let uniqueTokens = filterNfts(
-    parseSimplehashNfts(rawNftData),
-    polygonAllowlist
-  );
+  let uniqueTokens = parseSimplehashNfts(rawNftData, polygonAllowlist);
 
   let shouldFetchMore =
     cursor && rawNftData?.length === UNIQUE_TOKENS_LIMIT_PER_PAGE;
@@ -54,10 +50,7 @@ export const fetchAllUniqueTokens = async (
       cursor as string
     );
 
-    const newUniqueTokens = filterNfts(
-      parseSimplehashNfts(rawNftData),
-      polygonAllowlist
-    );
+    const newUniqueTokens = parseSimplehashNfts(rawNftData, polygonAllowlist);
 
     uniqueTokens = [...uniqueTokens, ...newUniqueTokens];
     cursor = nextCursor;

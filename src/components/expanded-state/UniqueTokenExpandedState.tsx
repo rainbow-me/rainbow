@@ -271,7 +271,6 @@ const UniqueTokenExpandedState = ({
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);

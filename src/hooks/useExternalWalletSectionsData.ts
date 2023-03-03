@@ -22,10 +22,12 @@ export default function useExternalWalletSectionsData({
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
-  const sellingTokens = useMemo(
-    () => uniqueTokens?.filter(token => token.currentPrice) || [],
-    [uniqueTokens]
-  );
+  // simplehash doesn't have an endpoint for this atm
+  const sellingTokens = useMemo(() => [], []);
+  // const sellingTokens = useMemo(
+  //   () => uniqueTokens?.filter(token => token.currentPrice) || [],
+  //   [uniqueTokens]
+  // );
 
   const briefSectionsData = useMemo(
     () =>

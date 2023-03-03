@@ -280,14 +280,30 @@ const getSimplehashMarketplaceInfo = simplehashNft => {
 };
 
 export const getNetworkFromSimplehashChain = chain =>
-  chain === 'ethereum' ? Network.mainnet : chain;
+  chain === 'ethereum' || chain === 'gnosis' ? Network.mainnet : chain;
 
 export const getSimplehashChainFromNetwork = network =>
   network === Network.mainnet ? 'ethereum' : network;
 
-export const parseSimplehashNfts = nftData => {
+export const parseSimplehashNfts = (nftData, polygonAllowlist) => {
   const results = nftData?.map(simplehashNft => {
     const collection = simplehashNft.collection;
+
+    if (
+      !collection.name ||
+      simplehashNft.spamScore === null ||
+      simplehashNft.spamScore >= 85 ||
+      (simplehashNft.chain === 'gnosis' &&
+        simplehashNft.contract_address &&
+        simplehashNft?.contract_address?.toLowerCase() !== POAP_NFT_ADDRESS) ||
+      (simplehashNft.chain === 'polygon' &&
+        !polygonAllowlist.includes(
+          simplehashNft.contract_address.toLowerCase()
+        ))
+    ) {
+      return;
+    }
+
     const { imageUrl, lowResUrl } = handleAndSignImages(
       simplehashNft.image_url,
       simplehashNft.extra_metadata?.image_original_url,
@@ -347,5 +363,5 @@ export const parseSimplehashNfts = nftData => {
     };
     return parsedNft;
   });
-  return results;
+  return results.filter(nft => !!nft);
 };
