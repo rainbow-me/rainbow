@@ -116,7 +116,7 @@ export const getLocalAsync = async (key = '', version = defaultVersion) => {
     });
     if (result && result.storageVersion === version) {
       return result;
-    } else if (result && result.storageVersion !== version) {
+    } else if (result) {
       removeLocalAsync(key);
       return null;
     }
@@ -143,6 +143,13 @@ export const getLocal = async (key = '', version = defaultVersion) => {
     } else {
       // otherwise we want to get the data from the legacy async storage
       const result = await getLocalAsync(key, version);
+
+      //  and migrate it to mmkv
+      saveLocalMMKV({ key, data: result, version });
+
+      // and remove it from the legacy async storage
+      removeLocalAsync(key);
+
       return result;
     }
   } catch {
@@ -165,9 +172,6 @@ export const saveLocal = async (
 ) => {
   try {
     saveLocalMMKV({ key, data, version });
-
-    // once we save to mmkv lets check if we have data in async storage and remove it
-    removeLocalAsync(key);
   } catch (error) {
     logger.log('Storage: error saving to local for key', { key });
   }
