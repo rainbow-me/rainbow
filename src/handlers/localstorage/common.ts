@@ -107,12 +107,17 @@ export const deprecatedRemoveLocal = (key = '') => {
   }
 };
 
-export const getGlobal = async (key: any, emptyState: any) => {
+export const getGlobal = async (
+  key: any,
+  emptyState: any,
+  version = defaultVersion
+) => {
   const result = await getLocal(key);
   return result ? result.data : emptyState;
 };
 
-export const saveGlobal = (key: any, data: any) => saveLocal(key, { data });
+export const saveGlobal = (key: any, data: any, version = defaultVersion) =>
+  saveLocal(key, { data });
 
 export const getAccountLocal = async (
   prefix: any,
