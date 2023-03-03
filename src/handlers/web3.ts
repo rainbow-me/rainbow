@@ -42,8 +42,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 
-const ERC721 = 'ERC721';
-const ERC1155 = 'ERC1155';
+export const ERC721 = 'ERC721';
+export const ERC1155 = 'ERC1155';
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -580,7 +580,7 @@ export const getTransferNftTransaction = async (
     gasLimit: transaction.gasLimit?.toString(),
     network: transaction.network,
     nonce,
-    to: contractAddress,
+    to: contractAddress ?? undefined,
     ...gasParams,
   };
 };
@@ -696,6 +696,7 @@ export const getDataForNftTransfer = async (
   to: string,
   asset: ParsedAddressAsset
 ): Promise<string | undefined> => {
+  if (!asset.tokenId) return;
   const standard = asset.contract?.standard;
   if (standard === ERC721) {
     const transferMethodHash =
@@ -764,7 +765,7 @@ export const buildTransaction = async (
     txData = {
       data,
       from: address,
-      to: contractAddress,
+      to: contractAddress ?? undefined,
     };
   } else if (!isNativeAsset(asset.address, network)) {
     const transferData = getDataForTokenTransfer(value, _recipient);

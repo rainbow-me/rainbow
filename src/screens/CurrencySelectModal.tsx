@@ -140,6 +140,8 @@ export default function CurrencySelectModal() {
     },
   } = useRoute<RouteProp<ParamList, 'Currency'>>();
 
+  console.log(defaultInputAsset);
+
   const listRef = useRef<SectionList<any, DefaultSectionT>>(null);
 
   const scrollPosition = (usePagerPosition() as unknown) as { value: number };

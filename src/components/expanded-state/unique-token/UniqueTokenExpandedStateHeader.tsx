@@ -31,6 +31,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -253,7 +254,8 @@ const UniqueTokenExpandedStateHeader = ({
     formattedCollectionUrl,
   ]);
 
-  const isPhotoDownloadAvailable = !asset.isEns;
+  const isPhotoDownloadAvailable =
+    asset.uniqueTokenType !== uniqueTokenTypes.ENS;
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 

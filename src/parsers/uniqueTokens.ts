@@ -16,27 +16,21 @@ import {
   simplehashPaymentTokenIds,
   SimplehashTrait,
 } from '@/entities/simplehash';
+import { getRoundedValueFromRawAmount } from '@/helpers/utilities';
+import { ERC1155, ERC721 } from '@/handlers/web3';
 
 const SVG_MIME_TYPE = 'image/svg+xml';
 const GOOGLE_CDN_URL_SIZE_1000_SUFIX = '=s1000';
+const ENS_COLLECTION_NAME = 'ENS';
 
-export const getNetworkFromSimplehashChain = (chain: string) =>
+const getNetworkFromSimplehashChain = (chain: string) =>
   // techinically we don't support gnosis but we can still get gnosis nfts
   chain === simplehashChains.ethereum || chain === simplehashChains.gnosis
     ? Network.mainnet
     : (chain as Network);
 
 export const getSimplehashChainFromNetwork = (network: Network) =>
-  network === Network.mainnet ? 'ethereum' : network;
-
-const getRoundedValueFromRawAmount = (
-  rawAmount: number | null | undefined,
-  decimals: number | null | undefined
-) => {
-  if (rawAmount && decimals) {
-    return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
-  }
-};
+  network === Network.mainnet ? simplehashChains.ethereum : network;
 
 export const parseSimplehashNfts = (
   nftData: SimplehashNft[],
@@ -133,7 +127,9 @@ export const parseSimplehashNfts = (
         externalUrl: collection.external_url,
         imageUrl: collectionImageUrl,
         name:
-          uniqueTokenType === uniqueTokenTypes.ENS ? 'ENS' : collection.name,
+          uniqueTokenType === uniqueTokenTypes.ENS
+            ? ENS_COLLECTION_NAME
+            : collection.name,
         simplehashSpamScore: collection?.spam_score,
         twitter: collection.twitter_username,
       },
@@ -154,9 +150,10 @@ export const parseSimplehashNfts = (
         mimeType: simplehashNft.image_properties?.mime_type ?? null,
       },
       isSendable:
+        // can't send poaps because they're on gnosis
         uniqueTokenType !== uniqueTokenTypes.POAP &&
-        (simplehashNft.contract.type === 'ERC721' ||
-          simplehashNft.contract.type === 'ERC1155'),
+        (simplehashNft.contract.type === ERC721 ||
+          simplehashNft.contract.type === ERC1155),
       // we only show last eth sale right now for whatever reason
       lastEthSale,
       marketplaces: {
