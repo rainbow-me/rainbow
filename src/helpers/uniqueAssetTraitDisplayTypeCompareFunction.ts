@@ -1,5 +1,5 @@
 // lower number = higher precedence
-import { UniqueAssetTrait } from '../entities/uniqueAssets';
+import { Trait } from '../entities/uniqueAssets';
 
 const displayTypeRanks: Record<string, number> = {
   boost_number: 1,
@@ -12,11 +12,11 @@ const displayTypeRanks: Record<string, number> = {
  * This sorting mimics how OpenSea displays traits separated by display type
  */
 export default function uniqueAssetTraitDisplayTypeCompareFunction(
-  a: UniqueAssetTrait,
-  b: UniqueAssetTrait
+  a: Trait,
+  b: Trait
 ): number {
-  const aTypeRank = displayTypeRanks?.[a.displayType] ?? 0;
-  const bTypeRank = displayTypeRanks?.[b.displayType] ?? 0;
+  const aTypeRank = a.displayType ? displayTypeRanks?.[a.displayType] ?? 0 : 0;
+  const bTypeRank = b.displayType ? displayTypeRanks?.[b.displayType] ?? 0 : 0;
   if (aTypeRank < bTypeRank) {
     return -1;
   } else if (aTypeRank > bTypeRank) {

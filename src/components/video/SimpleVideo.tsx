@@ -33,12 +33,6 @@ const absoluteFill = {
   ...position.sizeAsObject('100%'),
 };
 
-const StyledBackground = styled(View)({
-  ...absoluteFill,
-  // @ts-ignore
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-});
-
 const StyledVideo = styled(Video)(absoluteFill);
 
 const StyledPosterContainer = styled(Animated.View)(absoluteFill);
@@ -92,9 +86,9 @@ export default function SimpleVideo({
       onPress={() => !controlsEnabled && setControlsEnabled(true)}
     >
       <View style={[styles.flex, StyleSheet.flatten(style)]}>
-        <StyledBackground />
         <StyledVideo
           controls={controlsEnabled}
+          hideShutterView
           ignoreSilentSwitch="obey"
           onLoad={() => setLoading(false)}
           ref={ref}

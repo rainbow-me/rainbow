@@ -21,26 +21,6 @@ interface Collection {
   twitter: string | null;
 }
 
-interface LastSale {
-  from_address: string | null;
-  to_address: string | null;
-  quantity: number | null;
-  timestamp: string;
-  transaction: string;
-  marketplace_id: string;
-  marketplace_name: string;
-  is_bundle_sale: boolean;
-  payment_token: {
-    payment_token_id: string;
-    name: string | null;
-    symbol: string | null;
-    address: string | null;
-    decimals: number;
-  } | null;
-  unit_price: number | null;
-  total_price: number | null;
-}
-
 export interface Trait {
   displayType: string | null;
   traitType: string;

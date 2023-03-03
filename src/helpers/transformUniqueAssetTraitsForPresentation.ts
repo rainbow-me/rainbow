@@ -1,12 +1,12 @@
 import { format, parse } from 'date-fns';
-import { UniqueAssetTrait } from '../entities/uniqueAssets';
+import { Trait } from '../entities/uniqueAssets';
 
 interface AdditionalProperties {
   color: string;
   slug: string | null;
 }
 
-type MappedTrait = UniqueAssetTrait & {
+type MappedTrait = Trait & {
   originalValue: string | number | null | undefined;
   lowercase?: boolean;
   disableMenu?: boolean;
@@ -21,7 +21,7 @@ const targetDateFormatString = 'MMM do, y';
  * data type and other qualities. Like if it's a link it is shortening it.
  */
 export default function transformUniqueAssetTraitsForPresentation(
-  trait: UniqueAssetTrait,
+  trait: Trait,
   additionalProperties: AdditionalProperties
 ): MappedTrait {
   const { displayType, value } = trait;

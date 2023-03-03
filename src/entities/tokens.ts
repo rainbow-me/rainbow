@@ -65,7 +65,8 @@ export interface ParsedAddressAsset
   };
   contract?: AssetContract;
   type: string;
-  tokenId: string;
+  tokenId?: string;
+  id?: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;

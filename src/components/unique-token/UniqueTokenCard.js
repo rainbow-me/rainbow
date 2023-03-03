@@ -64,8 +64,8 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
-          backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={item.images.fullResPngUrl}
+          backgroundColor={item.backgroundColor || colors.lightestGrey}
+          imageUrl={item.images.lowResPngUrl}
           isCard
           item={item}
           resizeMode={resizeMode}

@@ -6,22 +6,15 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  getRoundedValueFromRawAmount,
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { UniqueAsset } from '@/entities';
 import { fetchSimplehashNftListing } from '@/handlers/simplehash';
 
 const NONE = 'None';
-
-const getRoundedValueFromRawAmount = (
-  rawAmount: number | null | undefined,
-  decimals: number | null | undefined
-) => {
-  if (rawAmount && decimals) {
-    return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
-  }
-  return null;
-};
 
 export default function NFTBriefTokenInfoRow({
   asset,

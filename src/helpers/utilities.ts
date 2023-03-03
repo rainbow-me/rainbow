@@ -505,3 +505,17 @@ export const pickBy = <T>(
       return acc;
     }, {} as Dictionary<T>);
 };
+
+/**
+ * @param rawAmount a number
+ * @param decimals rawAmount will be multiplied by 10^-decimals
+ * @returns rawAmount * 10 ^-decimals rounded to 3 decimal places
+ */
+export const getRoundedValueFromRawAmount = (
+  rawAmount: number | null | undefined,
+  decimals: number | null | undefined
+) => {
+  if (rawAmount && decimals) {
+    return Math.round(rawAmount * 10 ** -decimals * 1000) / 1000;
+  }
+};

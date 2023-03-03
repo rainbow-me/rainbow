@@ -28,11 +28,10 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
-import isSVGImage from '@/utils/isSVG';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -255,7 +254,8 @@ const UniqueTokenExpandedStateHeader = ({
     formattedCollectionUrl,
   ]);
 
-  const isPhotoDownloadAvailable = !asset.isEns;
+  const isPhotoDownloadAvailable =
+    asset.uniqueTokenType !== uniqueTokenTypes.ENS;
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 

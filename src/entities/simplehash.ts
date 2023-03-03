@@ -9,6 +9,8 @@ export const simplehashChains = {
 
 export const simplehashMarketplaceIds = { opensea: 'opensea' };
 
+export const simplehashPaymentTokenIds = { eth: 'ethereum.native' };
+
 export interface SimplehashTrait {
   trait_type: string;
   value: string | number;
