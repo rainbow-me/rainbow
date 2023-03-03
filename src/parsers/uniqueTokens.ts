@@ -83,9 +83,9 @@ export const parseSimplehashNfts = (
       !simplehashNft?.token_id ||
       collection.spam_score === null ||
       collection.spam_score >= 85 ||
-      (network === Network.gnosis &&
+      (simplehashNft.chain === simplehashChains.gnosis &&
         uniqueTokenType !== uniqueTokenTypes.POAP) ||
-      (network === Network.polygon &&
+      (simplehashNft.chain === simplehashChains.polygon &&
         !polygonAllowlist.includes(
           simplehashNft.contract_address?.toLowerCase()
         ))
