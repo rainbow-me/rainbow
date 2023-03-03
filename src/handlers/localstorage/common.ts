@@ -1,17 +1,16 @@
 /*global storage*/
 import { MMKV } from 'react-native-mmkv';
 import { logger, RainbowError } from '@/logger';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 const defaultVersion = '0.1.0';
-
-const LEGACY_STORAGE_KEY = 'rainbowLegacyStorage';
 
 /**
  * @desc untyped mmkv storage to replace AsyncStorage
  *
  * @deprecated do not use this for new storage, use @/storage instead
  */
-const legacyStorage = new MMKV({ id: LEGACY_STORAGE_KEY });
+const legacyStorage = new MMKV({ id: STORAGE_IDS.LEGACY_STORAGE });
 
 export const getKey = (prefix: any, accountAddress: any, network: any) =>
   `${prefix}-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
