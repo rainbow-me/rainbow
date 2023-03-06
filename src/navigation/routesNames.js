@@ -23,7 +23,6 @@ const Routes = {
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
   ENS_INTRO_SHEET: 'ENSIntroSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',
-  EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
@@ -107,9 +106,6 @@ export const NATIVE_ROUTES = [
 
 const RoutesWithPlatformDifferences = {
   ...Routes,
-  ADD_CASH_FLOW: IS_IOS
-    ? Routes.ADD_CASH_SCREEN_NAVIGATOR
-    : Routes.ADD_CASH_SHEET,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 

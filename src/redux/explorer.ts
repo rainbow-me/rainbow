@@ -37,7 +37,6 @@ import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
-  checkForTheMerge,
   getProviderForNetwork,
   isHardHat,
   web3Provider,
@@ -636,7 +635,6 @@ export const explorerInit = () => async (
 
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
-  checkForTheMerge(provider, network);
   if (isHardHat(providerUrl) || network !== Network.mainnet) {
     dispatch(
       fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
@@ -823,7 +821,9 @@ export const fetchAssetsFromRefraction = () => (
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
-  addressSocket!.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  if (addressSocket) {
+    addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  }
 };
 
 /**

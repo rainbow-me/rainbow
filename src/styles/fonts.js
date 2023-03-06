@@ -1,7 +1,6 @@
 const font = {};
 
 font.family = {
-  SFMono: 'SFMono-Regular',
   SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
 };
 

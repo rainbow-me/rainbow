@@ -1,16 +1,11 @@
-import { maybeSignUri } from '@/handlers/imgix';
 import { useTheme } from '@/theme';
-import {
-  useAccountProfile,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { useAccountProfile } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 export function useAccountAccentColor() {
   const { accountColor, accountImage, accountSymbol } = useAccountProfile();
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
+  const dominantColor = usePersistentDominantColorFromImage(accountImage);
 
   const { colors } = useTheme();
   let accentColor = colors.appleBlue;
@@ -20,8 +15,7 @@ export function useAccountAccentColor() {
     accentColor = colors.avatarBackgrounds[accountColor];
   }
 
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = accountImage || accountSymbol || hasImageColorLoaded;
+  const hasLoaded = accountImage || accountSymbol;
 
   return {
     accentColor,

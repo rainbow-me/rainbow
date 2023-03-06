@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Source } from 'react-native-fast-image';
 import Animated, {
   Easing,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -23,6 +24,7 @@ import { ImgixImage } from '@/components/images';
 import { useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
+import { useTheme } from '@/theme';
 
 const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;
 const CIRCLES_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
@@ -32,10 +34,12 @@ export const LEDGER_NANO_WIDTH = 216 * SCALE_FACTOR;
 
 type Props = {
   state: 'idle' | 'loading';
+  isConnected?: boolean;
 };
 
-export function NanoXDeviceAnimation({ state }: Props) {
+export function NanoXDeviceAnimation({ state, isConnected }: Props) {
   const { colorMode } = useColorMode();
+  const { colors } = useTheme();
   const { width, height } = useDimensions();
 
   // //////////////////////////////////////////////////////////////////
@@ -71,7 +75,7 @@ export function NanoXDeviceAnimation({ state }: Props) {
   // //////////////////////////////////////////////////////////////////
   // Circle
 
-  const colors = [
+  const circleColors = [
     // red
     'rgb(255, 0, 0)',
     // green
@@ -110,12 +114,13 @@ export function NanoXDeviceAnimation({ state }: Props) {
       </Animated.View>
       <Animated.View style={animatedCirclesWrapperStyle}>
         <Canvas style={{ width: CIRCLES_SIZE, height: CIRCLES_SIZE }}>
-          {colors.map((color, index) => (
+          {circleColors.map((color, index) => (
             <AnimatedCircle
               key={index}
               color={color}
               xOrigin={xOrigin}
               yOrigin={yOrigin}
+              isConnected={isConnected}
             />
           ))}
         </Canvas>
@@ -140,15 +145,21 @@ function AnimatedCircle({
   color,
   xOrigin,
   yOrigin,
+  isConnected,
 }: {
   color: string;
   xOrigin: SkiaMutableValue<number>;
   yOrigin: SkiaMutableValue<number>;
+  isConnected?: boolean;
 }) {
+  const isConnectedValue = useSharedValue(isConnected ? 1 : 0);
   const circleRadius = 48;
 
   const progressOffset = getRandom(0, 2 * Math.PI);
   const progress = useSharedValue(progressOffset);
+
+  const { colors } = useTheme();
+  const colorValue = useValue(color);
 
   const x = useValue(0);
   const xOffset = useValue(circleRadius * getRandom(-1, 1));
@@ -168,28 +179,48 @@ function AnimatedCircle({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useSharedValueEffect(() => {
-    const scalar = 0.2;
-    x.current =
-      xOrigin.current -
-      mix(
-        Math.cos(progress.value),
-        scalar * -circleRadius,
-        scalar * circleRadius
-      ) +
-      xOffset.current;
-    y.current =
-      yOrigin.current -
-      mix(
-        Math.sin(progress.value),
-        scalar * -circleRadius,
-        scalar * circleRadius
-      ) +
-      yOffset.current;
-  }, progress);
+  useEffect(() => {
+    // logic for connected animation
+    isConnectedValue.value = withTiming(isConnected ? 1 : 0, {
+      duration: 3000,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+  }, [isConnected, isConnectedValue]);
+
+  useSharedValueEffect(
+    () => {
+      // position animation
+      const scalar = 0.5 - 0.4 * isConnectedValue.value;
+      x.current =
+        xOrigin.current -
+        mix(
+          Math.cos(progress.value),
+          scalar * -circleRadius,
+          scalar * circleRadius
+        ) +
+        xOffset.current;
+      y.current =
+        yOrigin.current -
+        mix(
+          Math.sin(progress.value),
+          scalar * -circleRadius,
+          scalar * circleRadius
+        ) +
+        yOffset.current;
+
+      // color animation
+      colorValue.current = interpolateColor(
+        isConnectedValue.value,
+        [0, 1],
+        [color, colors.green]
+      );
+    },
+    progress,
+    isConnectedValue
+  );
 
   return (
-    <Circle r={circleRadius} cx={x} cy={y} color={color} opacity={0.3}>
+    <Circle r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
       <BlurMask blur={32} style="normal" />
     </Circle>
   );

@@ -1,13 +1,12 @@
 import { createClient, SegmentClient } from '@segment/analytics-react-native';
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
-  LOG_LEVEL,
   LOG_DEBUG,
 } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
-import { LogLevel, logger } from '@/logger';
+import { logger } from '@/logger';
 import { device } from '@/storage';
 
 export class Analytics {
@@ -19,9 +18,7 @@ export class Analytics {
 
   constructor() {
     this.client = createClient({
-      debug:
-        (LOG_DEBUG || '').includes(logger.DebugContext.analytics) ||
-        LOG_LEVEL === LogLevel.Debug,
+      debug: (LOG_DEBUG || '').includes(logger.DebugContext.analytics),
       trackAppLifecycleEvents: true,
       trackDeepLinks: true,
       writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,

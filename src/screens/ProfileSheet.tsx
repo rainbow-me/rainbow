@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
@@ -14,13 +14,11 @@ import {
   Inset,
   Stack,
 } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountSettings,
   useDimensions,
   useENSAvatar,
   useExternalWalletSectionsData,
-  usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
@@ -28,6 +26,7 @@ import { useTheme } from '@/theme';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -70,9 +69,7 @@ export default function ProfileSheet() {
     [profileAddress]
   );
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(avatar?.imageUrl ?? '') ?? ''
-  );
+  const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
 
   const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
     contentHeight,
@@ -81,7 +78,7 @@ export default function ProfileSheet() {
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
-    isAvatarFetched && state !== 1 && typeof colorIndex === 'number'
+    isAvatarFetched && typeof colorIndex === 'number'
       ? dominantColor ||
         colors.avatarBackgrounds[colorIndex] ||
         colors.appleBlue

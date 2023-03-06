@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -70,10 +70,10 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
-  usePersistentDominantColorFromImage,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -133,9 +133,7 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarImage =
     avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
-  );
+  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall

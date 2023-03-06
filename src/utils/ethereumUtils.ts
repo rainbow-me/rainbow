@@ -24,6 +24,7 @@ import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -104,10 +105,10 @@ const getNativeAssetForNetwork = async (
   const { accountAddress } = store.getState().settings;
   const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
-  let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
+  let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
   // If the asset is on a different wallet, or not available in this wallet
-  if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
+  if (differentWallet || !nativeAsset) {
     let mainnetAddress = ETH_ADDRESS;
 
     switch (network) {
@@ -276,7 +277,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => {
   return {
     ...asset,

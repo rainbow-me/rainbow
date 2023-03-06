@@ -1,12 +1,13 @@
 import { getDescription, getTitle } from './transactions';
 import {
+  NativeCurrencyKey,
   NewTransactionOrAddCashTransaction,
   RainbowTransaction,
   TransactionStatus,
   TransactionType,
 } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -21,7 +22,7 @@ import { ethereumUtils } from '@/utils';
  */
 export const parseNewTransaction = async (
   txDetails: NewTransactionOrAddCashTransaction,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ): Promise<RainbowTransaction> => {
   let balance = null;
   const {
