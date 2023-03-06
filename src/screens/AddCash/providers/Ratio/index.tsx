@@ -38,6 +38,8 @@ import {
 } from './utils';
 import { isAuthenticated } from '@/utils/authentication';
 
+const ERROR_USER_FAILED_AUTH = 'user_failed_auth';
+
 const providerConfig = {
   name: FiatProviderName.Ratio,
   enabled: true,
@@ -233,7 +235,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         const isAuthed = await isAuthenticated();
 
         if (!isAuthed) {
-          throw new Error(`user_unauthenticated`);
+          throw new Error(ERROR_USER_FAILED_AUTH);
         }
 
         const signingAddress = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
@@ -269,26 +271,30 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       }}
       onTransactionComplete={onTransactionComplete}
       onError={error => {
-        logger.error(
-          new RainbowError(`Ratio component threw an error: ${error}`),
-          { error }
-        );
-
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
-          provider: FiatProviderName.Ratio,
-          sessionId: analyticsSessionId,
-        });
-
         let title = lang.t(lang.l.wallet.add_cash_v2.generic_error.title);
         let message = lang.t(lang.l.wallet.add_cash_v2.generic_error.message);
 
-        if (error.includes('user_unauthenticated')) {
+        /**
+         * If this is thrown by the Ratio SDK, it's a known error. It's what we
+         * throw to fail authentication.
+         */
+        if (error.includes(ERROR_USER_FAILED_AUTH)) {
           title = lang.t(
             lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title
           );
           message = lang.t(
             lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message
           );
+        } else {
+          logger.error(
+            new RainbowError(`Ratio component threw an error: ${error}`),
+            { error }
+          );
+
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
+            provider: FiatProviderName.Ratio,
+            sessionId: analyticsSessionId,
+          });
         }
 
         WrappedAlert.alert(title, message, [
