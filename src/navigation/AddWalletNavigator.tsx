@@ -11,7 +11,7 @@ import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
 import { StatusBar, View } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();

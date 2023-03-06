@@ -50,6 +50,7 @@ export interface RainbowConfig extends Record<string, any> {
   swagg_enabled?: boolean;
   trace_call_block_number_offset?: number;
   wyre_enabled?: boolean;
+  profiles_enabled?: boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -78,6 +79,7 @@ const DEFAULT_CONFIG = {
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   wyre_enabled: true,
+  profiles_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -111,7 +113,8 @@ const init = async () => {
         key === 'wyre_enabled' ||
         key === 'f2c_enabled' ||
         key === 'swagg_enabled' ||
-        key === 'op_rewards_enabled'
+        key === 'op_rewards_enabled' ||
+        key === 'profiles_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

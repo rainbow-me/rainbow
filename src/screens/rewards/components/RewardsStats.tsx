@@ -19,6 +19,7 @@ import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
+import { STATS_TITLES } from '@/screens/rewards/constants';
 
 const getPositionChangeSymbol = (positionChange: number) => {
   if (positionChange > 0) {
@@ -131,7 +132,7 @@ export const RewardsStats: React.FC<Props> = ({
                 return (
                   <RewardsStatsCard
                     key={action.type}
-                    title={capitalize(action.type)}
+                    title={STATS_TITLES[action.type]}
                     value={value}
                     secondaryValue={i18n.t(i18n.l.rewards.percent, {
                       percent: action.rewardPercent,

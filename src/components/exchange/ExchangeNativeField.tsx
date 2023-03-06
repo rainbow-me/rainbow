@@ -9,7 +9,6 @@ import React, {
 import { TextInput, TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import ExchangeInput from './ExchangeInput';
-import { useColorForAsset } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
@@ -26,7 +25,7 @@ const NativeInput = styled(ExchangeInput).attrs({
 });
 
 interface ExchangeNativeFieldProps {
-  address: string;
+  color: string;
   editable: boolean;
   height: number;
   loading: boolean;
@@ -35,8 +34,6 @@ interface ExchangeNativeFieldProps {
   onFocus: ({ target }: { target: Element }) => void;
   setNativeAmount: (value: string | null) => void;
   updateOnFocus: boolean;
-  mainnetAddress?: string;
-  type?: string;
   testID: string;
 }
 
@@ -45,7 +42,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   ExchangeNativeFieldProps
 > = (
   {
-    address,
+    color,
     editable,
     height,
     loading,
@@ -54,18 +51,12 @@ const ExchangeNativeField: ForwardRefRenderFunction<
     onFocus,
     setNativeAmount,
     updateOnFocus,
-    mainnetAddress,
-    type,
     testID,
   },
   ref
 ) => {
   const nativeFieldRef = ref as MutableRefObject<TextInput>;
-  const colorForAsset = useColorForAsset({
-    address,
-    mainnet_address: mainnetAddress,
-    type,
-  });
+
   const [value, setValue] = useState(nativeAmount);
 
   const { mask, placeholder, symbol } = supportedNativeCurrencies[
@@ -137,7 +128,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
           onFocus={handleFocus}
           placeholder={placeholder}
           ref={nativeFieldRef}
-          selectionColor={colorForAsset}
+          selectionColor={color}
           testID={testID}
           value={isFocused ? value : nativeAmount}
         />

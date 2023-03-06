@@ -4,7 +4,6 @@ import useDimensions from './useDimensions';
 import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
 import { position } from '@/styles';
-import { getDominantColorFromImage } from '@/utils';
 
 export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();
@@ -28,16 +27,11 @@ export default function useImageMetadata(imageUrl: string | null) {
   const onCacheImageMetadata = useCallback(
     async ({ color, height, width }) => {
       if (isCached || !imageUrl) return;
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
-      const colorFromImage = await getDominantColorFromImage(imageUrl);
 
       dispatch(
         updateImageMetadataCache({
           id: imageUrl,
           metadata: {
-            ...(color || colorFromImage
-              ? { color: color || colorFromImage }
-              : {}),
             dimensions: {
               height,
               isSquare: height === width,

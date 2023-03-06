@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -164,6 +164,7 @@ export default function ENSSearchSheet() {
                   <ImgixImage
                     source={dice as Source}
                     style={{ height: 20, top: -0.5, width: 20 }}
+                    size={30}
                   />
                 </Box>
                 <Text

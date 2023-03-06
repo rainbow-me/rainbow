@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import useENSUniqueToken from './useENSUniqueToken';
 import { UniqueAsset } from '@/entities';
 import { useNavigation } from '@/navigation';

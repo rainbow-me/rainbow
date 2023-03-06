@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -9,7 +9,6 @@ import { StatusBar } from 'react-native';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { ethereumUtils } from '@/utils';
 import { useFocusEffect } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 
@@ -24,15 +23,17 @@ export const RewardsSheet: React.FC = () => {
     address: accountAddress,
   });
 
-  const assetPriceInNativeCurrency = useMemo(() => {
-    const assetCode = data?.rewards?.meta.token.asset.assetCode;
-
-    if (!assetCode) {
-      return undefined;
-    }
-
-    return ethereumUtils.getAssetPrice(assetCode);
-  }, [data?.rewards?.meta.token.asset]);
+  // TODO: For now we are disabling using the asset price in native currency
+  //  we will use the fallback which is price in USD provided by backend
+  // const assetPriceInNativeCurrency = useMemo(() => {
+  //   const assetCode = data?.rewards?.meta.token.asset.assetCode;
+  //
+  //   if (!assetCode) {
+  //     return undefined;
+  //   }
+  //
+  //   return ethereumUtils.getAssetPrice(assetCode);
+  // }, [data?.rewards?.meta.token.asset]);
 
   useEffect(() => {
     setIsLoading(queryIsLoading);
@@ -58,7 +59,8 @@ export const RewardsSheet: React.FC = () => {
           <Box padding="20px">
             <RewardsContent
               data={data}
-              assetPrice={assetPriceInNativeCurrency}
+              // TODO: For now we are disabling using the asset price in native currency
+              assetPrice={undefined}
               isLoadingError={isLoadingError}
               isLoading={isLoading}
             />

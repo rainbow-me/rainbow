@@ -3,12 +3,10 @@ import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
-import {
-  usePersistentAspectRatio,
-  usePersistentDominantColorFromImage,
-} from '@/hooks';
+import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
