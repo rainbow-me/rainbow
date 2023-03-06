@@ -7,7 +7,7 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function selectBestFontFit(mono, weight) {
+function selectBestFontFit(weight) {
   if (weight) {
     if (weight === 900) {
       return 'Heavy';
@@ -18,29 +18,21 @@ function selectBestFontFit(mono, weight) {
     if (weight >= 500) {
       return 'Semibold';
     }
-    return weight <= 400
-      ? 'Regular'
-      : mono
-      ? 'Medium'
-      : capitalizeFirstLetter(weight);
+    return weight <= 400 ? 'Regular' : capitalizeFirstLetter(weight);
   } else {
     return 'Regular';
   }
 }
 
-function familyFontWithAndroidWidth(weight, family, mono) {
-  return `${
-    fonts.family[
-      mono
-        ? `SFMono${android ? `-${selectBestFontFit(mono, weight)}` : ''}`
-        : family
-    ]
-  }${android ? `-${selectBestFontFit(mono, weight)}` : ''}`;
+function familyFontWithAndroidWidth(weight, family) {
+  return `${fonts.family[family]}${
+    android ? `-${selectBestFontFit(weight)}` : ''
+  }`;
 }
 
-export function fontWithWidth(weight, family = 'SFProRounded', mono = false) {
+export function fontWithWidth(weight, family = 'SFProRounded') {
   return {
-    fontFamily: familyFontWithAndroidWidth(weight, family, mono),
+    fontFamily: familyFontWithAndroidWidth(weight, family),
     // https://github.com/facebook/react-native/issues/18820
     // https://www.youtube.com/watch?v=87rhZTumujw
     ...(ios ? { fontWeight: weight } : { fontWeight: 'normal' }),

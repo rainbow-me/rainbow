@@ -1,4 +1,3 @@
-import isNil from 'lodash/isNil';
 import DeviceInfo from 'react-native-device-info';
 import { IS_TESTING } from 'react-native-dotenv';
 import {
@@ -7,7 +6,6 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
   getAllInternetCredentials,
-  getAllInternetCredentialsKeys,
   getInternetCredentials,
   getSupportedBiometryType,
   hasInternetCredentials,
@@ -19,6 +17,12 @@ import {
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
 import { logger, RainbowError } from '@/logger';
+
+/**
+ * IMPORTANT
+ *
+ * Log keys in debug mode only, do not send to Sentry.
+ */
 
 interface AnonymousKey {
   length: number;
@@ -38,13 +42,21 @@ export async function saveString(
   return new Promise(async (resolve, reject) => {
     try {
       await setInternetCredentials(key, key, value, accessControlOptions);
-      logger.info(`Keychain: saved string for key: ${key}`);
+
+      logger.debug(
+        `Keychain: saved string`,
+        { key },
+        logger.DebugContext.keychain
+      );
+
       resolve();
     } catch (e) {
-      logger.warn(
-        `Keychain: first attempt failed to save string for key: ${key}`
-      );
+      logger.info(`Keychain: first attempt failed to save string`, {
+        type: 'error',
+      });
+
       await delay(1000);
+
       try {
         let acOptions = accessControlOptions;
         // This is a bug on iOS 14 and 15 simulators
@@ -52,13 +64,20 @@ export async function saveString(
         if (IS_TESTING === 'true') {
           acOptions.accessControl = undefined;
         }
+
         await setInternetCredentials(key, key, value, acOptions);
-        logger.info(`Keychain: saved string for key: ${key} on second attempt`);
+
+        logger.debug(
+          `Keychain: saved string on second attempt`,
+          { key },
+          logger.DebugContext.keychain
+        );
+
         resolve();
       } catch (e) {
-        logger.error(
-          new RainbowError(`Keychain: failed to save string for key: ${key}`)
-        );
+        logger.error(new RainbowError(`Keychain: failed to save string`), {
+          message: (e as Error).message,
+        });
         reject(e);
       }
     }
@@ -71,61 +90,94 @@ export async function loadString(
 ): Promise<null | string | -1 | -2> {
   try {
     const credentials = await getInternetCredentials(key, options);
+
+    logger.debug(
+      `Keychain: loading string`,
+      { key },
+      logger.DebugContext.keychain
+    );
+
     if (credentials) {
-      logger.info(`Keychain: loaded string for key: ${key}`);
       return credentials.password;
     }
-    logger.error(
-      new RainbowError(`Keychain: string does not exist for key: ${key}`)
-    );
-  } catch (err: any) {
-    if (err.toString() === 'Error: User canceled the operation.') {
-      logger.warn(`Keychain: user canceled the operation`);
+
+    logger.info(`Keychain: string does not exist`, {
+      type: 'error',
+    });
+  } catch (e) {
+    /**
+     * Note on this error handling: we can't realistically handle all the
+     * possible errors here, so we just handle the few we want to handle
+     */
+
+    if ((e as Error).toString() === 'Error: User canceled the operation.') {
+      logger.info(`Keychain: user canceled the operation`);
       return -1;
     }
-    if (err.toString() === 'Error: Wrapped error: User not authenticated') {
-      logger.warn(`Keychain: user not authenticated`);
+    if (
+      (e as Error).toString() === 'Error: Wrapped error: User not authenticated'
+    ) {
+      logger.info(`Keychain: user not authenticated`);
       return -2;
     }
+
     if (
-      err.toString() ===
+      (e as Error).toString() ===
       'Error: The user name or passphrase you entered is not correct.'
     ) {
-      logger.warn('Keychain read first attempt failed');
+      logger.info('Keychain: load string first attempt failed', {
+        type: 'error',
+      });
+
       await delay(1000);
+
       try {
         const credentials = await getInternetCredentials(key, options);
+
         if (credentials) {
-          logger.info(
-            `Keychain: loaded string for key on second attempt: ${key}`
-          );
+          logger.info(`Keychain: loaded string on second attempt`);
           return credentials.password;
         }
-        logger.error(
-          new RainbowError(`Keychain: string does not exist for key: ${key}`)
-        );
+
+        logger.info(`Keychain: string does not exist`, {
+          type: 'error',
+        });
       } catch (e) {
-        if (err.toString() === 'Error: User canceled the operation.') {
-          logger.warn(`Keychain: user canceled the operation`);
+        if ((e as Error).toString() === 'Error: User canceled the operation.') {
+          logger.info(`Keychain: user canceled the operation`);
           return -1;
         }
-        if (err.toString() === 'Error: Wrapped error: User not authenticated') {
-          logger.warn(`Keychain: user not authenticated`);
+        if (
+          (e as Error).toString() ===
+          'Error: Wrapped error: User not authenticated'
+        ) {
+          logger.info(`Keychain: user not authenticated`);
           return -2;
         }
-        logger.error(
-          new RainbowError(
-            `Keychain: failed to load string for key: ${key} error: ${err}`
-          )
-        );
+
+        /**
+         * Could fail here for any unknown or unhandled reason e.g.
+         * "Fingerprint operation cancelled by user".
+         *
+         * Therefore, we just add a breadcrumb. If it causes issues at the
+         * callsite, we should be emitting better errors there with more
+         * context.
+         */
+        logger.info(`Keychain: failed to load string`, {
+          message: (e as Error).message,
+          type: 'error',
+        });
       }
       return null;
     }
-    logger.error(
-      new RainbowError(
-        `Keychain: failed to load string for key: ${key} error: ${err}`
-      )
-    );
+
+    /**
+     * See last comment, same thing.
+     */
+    logger.info(`Keychain: failed to load string`, {
+      message: (e as Error).message,
+      type: 'error',
+    });
   }
   return null;
 }
@@ -135,6 +187,11 @@ export async function saveObject(
   value: Record<string, unknown>,
   accessControlOptions: Options
 ): Promise<void> {
+  logger.debug(
+    `Keychain: save object`,
+    { key, accessControlOptions },
+    logger.DebugContext.keychain
+  );
   const jsonValue = JSON.stringify(value);
   return saveString(key, jsonValue, accessControlOptions);
 }
@@ -143,6 +200,12 @@ export async function loadObject(
   key: string,
   options?: Options
 ): Promise<null | Record<string, any> | -1 | -2> {
+  logger.debug(
+    `Keychain: load object`,
+    { key, options },
+    logger.DebugContext.keychain
+  );
+
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   if (jsonValue === -1 || jsonValue === -2) {
@@ -150,97 +213,75 @@ export async function loadObject(
   }
   try {
     const objectValue = JSON.parse(jsonValue);
-    logger.info(`Keychain: parsed object for key: ${key}`);
     return objectValue;
-  } catch (err) {
-    logger.error(
-      new RainbowError(
-        `Keychain: failed to parse object for key: ${key} error: ${err}`
-      )
-    );
+  } catch (e) {
+    logger.error(new RainbowError(`Keychain: failed to parse object`), {
+      message: (e as Error).message,
+    });
   }
   return null;
 }
 
 export async function remove(key: string): Promise<void> {
+  logger.debug(
+    `Keychain: removed value`,
+    { key },
+    logger.DebugContext.keychain
+  );
+
   try {
     await resetInternetCredentials(key);
-    logger.info(`Keychain: removed value for key: ${key}`);
-  } catch (err) {
-    logger.error(
-      new RainbowError(
-        `Keychain: failed to remove value for key: ${key} error: ${err}`
-      )
-    );
+  } catch (e) {
+    logger.error(new RainbowError(`Keychain: failed to remove value`), {
+      message: (e as Error).message,
+    });
   }
 }
 
 export async function loadAllKeys(): Promise<null | UserCredentials[]> {
+  logger.debug(`Keychain: loadAllKeys`, {}, logger.DebugContext.keychain);
+
   try {
     const response = await getAllInternetCredentials();
     if (response) {
       return response.results;
     }
-  } catch (err) {
-    logger.error(
-      new RainbowError(`Keychain: failed to loadAllKeys error: ${err}`)
-    );
-  }
-  return null;
-}
-
-export async function getAllKeysAnonymized(): Promise<null | AnonymousKeyData> {
-  const data: AnonymousKeyData = {};
-  const results = await loadAllKeys();
-  results?.forEach(result => {
-    data[result?.username] = {
-      length: result?.password?.length,
-      nil: isNil(result?.password),
-      type: typeof result?.password,
-    };
-  });
-  return data;
-}
-
-export async function loadAllKeysOnly(): Promise<null | string[]> {
-  try {
-    const response = await getAllInternetCredentialsKeys();
-    if (response) {
-      return response.results;
-    }
-  } catch (err) {
-    logger.error(
-      new RainbowError(`Keychain: failed to loadAllKeys error: ${err}`)
-    );
+  } catch (e) {
+    logger.error(new RainbowError(`Keychain: failed to loadAllKeys`), {
+      message: (e as Error).message,
+    });
   }
   return null;
 }
 
 export async function hasKey(key: string): Promise<boolean | Result> {
+  logger.debug(`Keychain: hasKey`, { key }, logger.DebugContext.keychain);
+
   try {
     const result = await hasInternetCredentials(key);
     return result;
-  } catch (err) {
-    logger.error(
-      new RainbowError(
-        `Keychain: failed to check if key ${key} exists -  error: ${err}`
-      )
-    );
+  } catch (e) {
+    logger.error(new RainbowError(`Keychain: failed to check if key exists`), {
+      message: (e as Error).message,
+    });
   }
   return false;
 }
 
 export async function wipeKeychain(): Promise<void> {
+  logger.info('Keychain: wipeKeychain');
+
   try {
     const results = await loadAllKeys();
     if (results) {
       await Promise.all(
         results?.map(result => resetInternetCredentials(result.username))
       );
-      logger.info('Keychain: wiped');
     }
   } catch (e) {
-    logger.error(new RainbowError('Keychain: error while wiping keychain'));
+    logger.error(new RainbowError('Keychain: error while wiping keychain'), {
+      message: (e as Error).message,
+    });
   }
 }
 

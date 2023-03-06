@@ -16,9 +16,7 @@ import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
-import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
@@ -38,6 +36,7 @@ const Input = styled(ExchangeInput).attrs({
 
 interface ExchangeFieldProps {
   address: string;
+  color: string;
   mainnetAddress?: string;
   amount: string | null;
   disableCurrencySelection?: boolean;
@@ -62,6 +61,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
     address,
     mainnetAddress,
     amount,
+    color,
     disableCurrencySelection,
     editable,
     loading,
@@ -84,14 +84,6 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   const { colors } = useTheme();
   const [value, setValue] = useState(amount);
 
-  const colorForAsset = useColorForAsset(
-    {
-      address,
-      mainnet_address: mainnetAddress,
-      type: mainnetAddress ? AssetType.token : type,
-    },
-    address ? undefined : colors.appleBlue
-  );
   const handleFocusField = useCallback(() => {
     inputRef?.current?.focus();
   }, [inputRef]);
@@ -182,10 +174,10 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
 
           <Input
             {...(android &&
-              colorForAsset && {
-                selectionColor: colors.alpha(colorForAsset, 0.4),
+              color && {
+                selectionColor: colors.alpha(color, 0.4),
               })}
-            color={colorForAsset}
+            color={color}
             editable={editable}
             onBlur={handleBlur}
             onChangeText={onChangeText}
@@ -202,12 +194,10 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
         <TokenSelectionButton
-          address={address}
-          mainnetAddress={mainnetAddress}
+          color={color}
           onPress={onPressSelectCurrency}
           symbol={symbol}
           testID={testID + '-selection-button'}
-          type={type}
         />
       )}
     </Box>

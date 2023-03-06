@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.13)
+
+### Added
+
+- BSC release
+
+### Changed
+
+- Other bug fixes and performance improvements
+
 ## [1.8.12] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.12)
 
 ### Changed
