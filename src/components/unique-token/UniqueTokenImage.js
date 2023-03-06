@@ -5,12 +5,13 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Monospace } from '../text';
+import { Text as LegacyText } from '../text';
 import { Text } from '@/design-system';
 import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { CardSize } from './CardSize';
 
 const SVG_MIME_TYPE = 'image/svg+xml';
 
@@ -92,18 +93,19 @@ const UniqueTokenImage = ({
               resizeMode={ImgixImage.resizeMode[resizeMode]}
               source={{ uri: item.images.lowResPngUrl }}
               style={position.coverAsObject}
+              size={CardSize}
             />
           )}
         </Fragment>
       ) : (
-        <Monospace
+        <LegacyText
           align="center"
           color={getFallbackTextColor(backgroundColor, isDarkMode, colors)}
           lineHeight="looser"
           size="smedium"
         >
           {buildUniqueTokenName(item)}
-        </Monospace>
+        </LegacyText>
       )}
 
       {isHiddenToken && isCard && (

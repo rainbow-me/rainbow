@@ -5,6 +5,7 @@ import { Box } from '@rainbow-me/design-system';
 import { Network } from '@rainbow-me/helpers';
 
 interface ExchangeOutputFieldProps {
+  color: string;
   editable: boolean;
   loading: boolean;
   network: Network;
@@ -23,6 +24,7 @@ interface ExchangeOutputFieldProps {
 }
 
 export default function ExchangeOutputField({
+  color,
   editable,
   loading,
   network,
@@ -50,6 +52,7 @@ export default function ExchangeOutputField({
       <ExchangeField
         address={outputCurrencyAddress}
         amount={outputAmount}
+        color={color}
         editable={editable}
         loading={loading}
         mainnetAddress={outputCurrencyMainnetAddress}

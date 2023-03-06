@@ -17,7 +17,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
@@ -136,7 +135,6 @@ export const PairHardwareWalletAgainSheet = () => {
           </ImgixImage>
         </ImgixImage>
       </Box>
-      <CancelButton />
     </Layout>
   );
 };

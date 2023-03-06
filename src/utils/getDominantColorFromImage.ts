@@ -7,7 +7,6 @@ export default async function getDominantColorFromImage(
   imageUrl: string,
   colorToMeasureAgainst: string
 ) {
-  if (IS_TESTING === 'true') return undefined;
   let colors: IPalette;
   if (/^http/.test(imageUrl)) {
     colors = await Palette.getNamedSwatchesFromUrl(imageUrl);

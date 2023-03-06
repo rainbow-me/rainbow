@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import qs from 'qs';
 import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
@@ -35,6 +34,8 @@ import {
   pair as pairWalletConnect,
   setHasPendingDeeplinkPendingRedirect,
 } from '@/utils/walletConnect';
+import { analyticsV2 } from '@/analytics';
+import { FiatProviderName } from '@/entities/f2c';
 
 // initial research into refactoring deep links
 //                         eip      native deeplink  rainbow.me profiles
@@ -54,6 +55,7 @@ export default async function handleDeeplink(
   while (store.getState().data.isLoadingAssets) {
     await delay(300);
   }
+  logger.info('Handling deeplink', { url });
   const urlObj = new URL(url);
   if (urlObj.protocol === 'ethereum:') {
     ethereumUtils.parseEthereumUrl(url);
@@ -64,15 +66,13 @@ export default async function handleDeeplink(
         : urlObj.host;
     switch (action) {
       case 'wc': {
-        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri } = urlObj.query;
         handleWalletConnect(uri);
         break;
       }
       case 'token': {
         const { dispatch } = store;
-        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { addr } = qs.parse(urlObj.query?.substring(1));
+        const { addr } = urlObj.query;
         const address = (addr as string)?.toLowerCase() ?? '';
         if (address && address.length > 0) {
           const asset = ethereumUtils.getAssetFromAllAssets(address);
@@ -113,7 +113,6 @@ export default async function handleDeeplink(
 
         break;
       }
-
       case 'update-android': {
         const code = urlObj.pathname.split('/')[2];
         if (ios) {
@@ -123,7 +122,24 @@ export default async function handleDeeplink(
         }
         break;
       }
+      case 'f2c': {
+        logger.log('Handling F2C deeplink', { url });
 
+        const { provider, sessionId } = urlObj.query;
+
+        if (!provider || !sessionId) {
+          logger.warn('Received FWC deeplink with invalid params', {
+            query: urlObj.query,
+          });
+        }
+
+        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          provider: provider as FiatProviderName,
+          sessionId: sessionId as string,
+        });
+
+        break;
+      }
       default: {
         const addressOrENS = urlObj.pathname?.split('/')?.[1];
         if (addressOrENS) {

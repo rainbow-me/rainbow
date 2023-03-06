@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
-  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
@@ -267,8 +266,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const disableFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const disableFlashbotsPostMerge = !config.flashbots_enabled;
   const flashbotsEnabled =
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
@@ -805,6 +803,7 @@ export default function TransactionConfirmationScreen() {
         formattedDappUrl,
         isAuthenticated,
         rpcMethod: method,
+        network: currentNetwork,
       });
 
       await onCancel(error);
@@ -1010,7 +1009,8 @@ export default function TransactionConfirmationScreen() {
 
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
-      const nativeAssetPrice = genericNativeAsset?.price?.value;
+      const nativeAssetPrice =
+        genericNativeAsset?.price?.value || nativeAsset?.price?.value;
       const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
@@ -1044,6 +1044,7 @@ export default function TransactionConfirmationScreen() {
     request?.data,
     request?.value,
     request.message,
+    nativeAsset,
     genericNativeAsset?.price?.value,
     nativeCurrency,
   ]);

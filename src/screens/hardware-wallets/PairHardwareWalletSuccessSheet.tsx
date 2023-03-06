@@ -16,7 +16,7 @@ export const PairHardwareWalletSuccessSheet = () => {
       <Inset horizontal="36px">
         <Stack alignHorizontal="center" space="20px">
           <Text align="center" color="label" weight="bold" size="26pt">
-            {i18n.t(TRANSLATIONS.pair_successful)}
+            {i18n.t(TRANSLATIONS.device_connected)}
           </Text>
           <Stack space="10px">
             <Text

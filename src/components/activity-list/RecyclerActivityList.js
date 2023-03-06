@@ -189,22 +189,24 @@ export default class RecyclerActivityList extends PureComponent {
     return <TransactionCoinRow item={data} />;
   };
 
-  render = () => (
-    <Wrapper>
-      <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
-        <RecyclerListView
-          dataProvider={this.state.dataProvider}
-          layoutProvider={this.layoutProvider}
-          ref={this.handleListRef}
-          renderAheadOffset={deviceUtils.dimensions.height}
-          rowRenderer={this.rowRenderer}
-          scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
-          scrollIndicatorInsets={{
-            bottom: safeAreaInsetValues.bottom,
-          }}
-          style={{ minHeight: 1 }}
-        />
-      </StickyContainer>
-    </Wrapper>
-  );
+  render() {
+    return (
+      <Wrapper>
+        <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
+          <RecyclerListView
+            dataProvider={this.state.dataProvider}
+            layoutProvider={this.layoutProvider}
+            ref={this.handleListRef}
+            renderAheadOffset={deviceUtils.dimensions.height}
+            rowRenderer={this.rowRenderer}
+            scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
+            scrollIndicatorInsets={{
+              bottom: safeAreaInsetValues.bottom,
+            }}
+            style={{ minHeight: 1 }}
+          />
+        </StickyContainer>
+      </Wrapper>
+    );
+  }
 }

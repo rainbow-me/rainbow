@@ -92,6 +92,7 @@ const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  size: 30,
 }))({
   height: 20,
   width: 20,

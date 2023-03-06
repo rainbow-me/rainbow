@@ -162,6 +162,20 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
       }
     },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off",
+        "message": "Please turn on Bluetooth to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      }
+    },
     "button": {
       "add": "Add",
       "add_cash": "Add Cash",
@@ -663,11 +677,13 @@
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
         "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that’s made for magical pondering.",
+        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering.",
         "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu’s 17th birthday.",
+        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
+        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom.",
+        "pooly_title": "You've unlocked a\nRainbow Pooly",
         "title": "You've unlocked\nRainbow 􀆄 %{partner}",
         "button": "Snag the icon"
       },
@@ -732,7 +748,7 @@
         "title": "What's Polygon?"
       },
       "bsc": {
-        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum.",
+        "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Binance Smart Chain?"
       },
       "read_more": "Read More",
@@ -1299,6 +1315,8 @@
       "next_airdrop": "Next Airdrop",
       "last_airdrop": "Last Airdrop",
       "my_stats": "My Stats",
+      "swapped": "Swapped",
+      "bridged": "Bridged",
       "position": "Position",
       "leaderboard": "Leaderboard",
       "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected.",
@@ -1326,8 +1344,8 @@
           "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet."
         },
         "amount_distributed": {
-          "title": "30,000 OP Every Week",
-          "text": "Up to 30,000 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
+          "title": "67,850 OP Every Week",
+          "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
         },
         "bridge": {
           "title": "Earn 0.125% on Bridging",
@@ -1584,12 +1602,12 @@
       "pair_a_new_ledger": "Pair a new Ledger",
       "looking_for_devices": "Looking for devices",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked.",
-      "pair_successful": "Pair successful",
+      "device_connected": "Device connected",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device.",
       "enable_blind_signing": "Enable blind signing",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions.",
       "learn_more": "Learn More",
-      "blind_signing_enabled": "Blind signing is enabled",
+      "finish_importing": "Finish importing",
       "blind_signing_instructions": {
         "step_1": {
           "title": "On Ledger, open the ETH app",
@@ -1698,7 +1716,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
-        "watching": "Watching"
+        "watching": "Watching",
+        "ledger": "Ledger"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",
@@ -1936,7 +1955,9 @@
       "requesting_network": "Requesting %{num} network",
       "requesting_networks": "Requesting %{num} networks",
       "unknown_dapp": "Unknown Dapp",
-      "unknown_url": "Unknown URL"
+      "unknown_url": "Unknown URL",
+      "approval_sheet_network": "Network",
+      "approval_sheet_networks": "%{length} Networks"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

@@ -206,7 +206,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.grey100,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -216,7 +216,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -226,7 +226,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -236,7 +236,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.blueGrey100,
+      color: deprecatedColors.dark,
       mode: 'dark',
     },
   },

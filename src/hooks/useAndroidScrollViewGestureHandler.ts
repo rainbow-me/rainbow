@@ -1,4 +1,4 @@
-import { NavigationProp } from '@react-navigation/core';
+import { NavigationProp } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
 import { useNavigation } from '../navigation';
 

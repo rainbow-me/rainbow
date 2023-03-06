@@ -20,7 +20,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import config from '@/model/config';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 
 const ContainerWidth = 261;
 
@@ -200,32 +200,16 @@ const AddFundsInterstitial = ({ network }) => {
         return;
       }
 
-      if (ios) {
-        navigate(Routes.ADD_CASH_FLOW, {
-          params: !isNaN(amount) ? { amount } : null,
-          screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
-        });
-        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-          amount,
-          componentName: 'AddFundsInterstitial',
-          newWallet: true,
-          routeName,
-        });
-      } else {
-        navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-          params: {
-            address: accountAddress,
-            amount: !isNaN(amount) ? amount : null,
-          },
-          screen: Routes.WYRE_WEBVIEW,
-        });
-        analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-          amount,
-          componentName: 'AddFundsInterstitial',
-          newWallet: true,
-          routeName,
-        });
-      }
+      navigate(Routes.ADD_CASH_SHEET, {
+        params: !isNaN(amount) ? { amount } : null,
+        screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
+      });
+      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+        amount,
+        componentName: 'AddFundsInterstitial',
+        newWallet: true,
+        routeName,
+      });
     },
     [isDamaged, navigate, routeName, accountAddress]
   );

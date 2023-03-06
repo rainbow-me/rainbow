@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
@@ -39,10 +38,15 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import { Box, Inline, Text } from '@/design-system';
+import {
+  Box,
+  Columns,
+  Column as RDSColumn,
+  Inline,
+  Text,
+} from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
-import { position } from '@/styles';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
@@ -63,11 +67,6 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
   })
 )({
   marginBottom: 24,
-});
-
-const AvatarWrapper = styled(Column)({
-  marginRight: 5,
-  marginTop: 1,
 });
 
 const LabelText = ({ children, ...props }) => {
@@ -99,16 +98,6 @@ const SwitchText = ({ children, ...props }) => {
 
 const NetworkPill = ({ chainIds }) => {
   const { colors } = useTheme();
-
-  const radialGradientProps = {
-    center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
-    pointerEvents: 'none',
-    style: {
-      ...position.coverAsObject,
-      overflow: 'hidden',
-    },
-  };
 
   const availableNetworks = useMemo(() => {
     // we dont want to show mainnet
@@ -153,31 +142,30 @@ const NetworkPill = ({ chainIds }) => {
         scaleTo={0.96}
         onPress={() => {}}
         testID={'available-networks-v2'}
+        paddingTop="8px"
+        marginRight={{ custom: -2 }}
       >
         <Box
-          borderRadius={99}
-          paddingVertical="8px"
-          paddingHorizontal="12px"
-          justifyContent="center"
+          flexDirection="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          width="100%"
         >
-          <RadialGradient
-            {...radialGradientProps}
-            // @ts-expect-error overloaded props RadialGradient
-            borderRadius={99}
-            radius={600}
-          />
-          <Inline alignVertical="center" width="100%">
-            <Box style={{ flexDirection: 'row' }}>
-              {availableNetworks?.map((network, index) => {
+          {availableNetworks.length > 1 ? (
+            <>
+              {availableNetworks.map((network, index) => {
                 return (
                   <Box
-                    background="body (Deprecated)"
                     key={`availableNetwork-${network}`}
-                    marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                    marginTop={{ custom: -2 }}
+                    marginLeft={{ custom: index > 0 ? -6 : 0 }}
                     style={{
+                      position: 'relative',
                       backgroundColor: colors.transparent,
-                      zIndex: availableNetworks?.length - index,
+                      zIndex: availableNetworks.length - index,
                       borderRadius: 30,
+                      borderWidth: 2,
+                      borderColor: 'white',
                     }}
                   >
                     {network !== Network.mainnet ? (
@@ -197,26 +185,36 @@ const NetworkPill = ({ chainIds }) => {
                   </Box>
                 );
               })}
-            </Box>
+            </>
+          ) : (
+            <Inline alignVertical="center">
+              {availableNetworks[0] !== Network.mainnet ? (
+                <ChainBadge
+                  assetType={availableNetworks[0]}
+                  position="relative"
+                  size="small"
+                />
+              ) : (
+                <CoinIcon
+                  address={ETH_ADDRESS}
+                  size={20}
+                  symbol={ETH_SYMBOL}
+                  type={AssetType.token}
+                />
+              )}
 
-            <Box paddingHorizontal="12px">
-              <Text
-                color="secondary60 (Deprecated)"
-                size="14px / 19px (Deprecated)"
-                weight="semibold"
-                numberOfLines={2}
-              >
-                {lang.t(
-                  availableNetworks.length > 1
-                    ? lang.l.walletconnect.requesting_networks
-                    : lang.l.walletconnect.requesting_network,
-                  {
-                    num: availableNetworks?.length,
-                  }
-                )}
-              </Text>
-            </Box>
-          </Inline>
+              <Box paddingLeft="6px">
+                <Text
+                  color="primary (Deprecated)"
+                  numberOfLines={1}
+                  size="18px / 27px (Deprecated)"
+                  weight="bold"
+                >
+                  {networkInfo[availableNetworks[0]].name}
+                </Text>
+              </Box>
+            </Inline>
+          )}
         </Box>
       </Box>
     </ContextMenuButton>
@@ -449,6 +447,7 @@ export default function WalletConnectApprovalSheet() {
     type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
   return (
+    // <Sheet>
     <Sheet>
       {!Object.keys(meta).length ? (
         <Centered height={sheetHeight}>
@@ -520,106 +519,120 @@ export default function WalletConnectApprovalSheet() {
               weight="heavy"
             />
           </SheetActionButtonRow>
-          <Row justify="space-between" paddingBottom={8} paddingHorizontal={24}>
-            <Column
-              style={{ flex: 1, marginRight: isWalletConnectV2 ? 0 : 16 }}
-            >
-              <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
-              <ButtonPressAnimation
-                onPress={handlePressChangeWallet}
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  height: 38,
-                }}
-              >
-                <Flex direction="row" align="center">
-                  <AvatarWrapper>
-                    {approvalAccountInfo.accountImage ? (
-                      <ImageAvatar
-                        image={approvalAccountInfo.accountImage}
-                        size="smaller"
-                      />
-                    ) : (
-                      <ContactAvatar
-                        color={
-                          isNaN(approvalAccountInfo.accountColor)
-                            ? colors.skeleton
-                            : approvalAccountInfo.accountColor
-                        }
-                        size="smaller"
-                        value={approvalAccountInfo.accountSymbol}
-                      />
-                    )}
-                  </AvatarWrapper>
-                  <LabelText position="relative">
-                    {approvalAccountInfo.accountLabel}
-                  </LabelText>
-                </Flex>
-                {type === WalletConnectApprovalSheetType.connect && (
-                  <LabelText> 􀁰</LabelText>
-                )}
-              </ButtonPressAnimation>
-            </Column>
-            {isWalletConnectV2 ? null : (
-              <Column>
+          <Box
+            paddingBottom={{ custom: 21 }}
+            paddingHorizontal={{ custom: 24 }}
+          >
+            <Columns>
+              <RDSColumn>
+                <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
+                <ButtonPressAnimation
+                  onPress={handlePressChangeWallet}
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    height: 38,
+                  }}
+                >
+                  {approvalAccountInfo.accountImage ? (
+                    <ImageAvatar
+                      image={approvalAccountInfo.accountImage}
+                      size="smaller"
+                    />
+                  ) : (
+                    <ContactAvatar
+                      color={
+                        isNaN(approvalAccountInfo.accountColor)
+                          ? colors.skeleton
+                          : approvalAccountInfo.accountColor
+                      }
+                      size="smaller"
+                      value={approvalAccountInfo.accountSymbol}
+                    />
+                  )}
+                  <Box
+                    // avatar width (22) + avatar right margin (5)
+                    paddingLeft={{ custom: 27 }}
+                    position="absolute"
+                    width="full"
+                    justifyContent="center"
+                  >
+                    <LabelText position="relative" ellipsizeMode="middle">
+                      {`${approvalAccountInfo.accountLabel} ${
+                        type === WalletConnectApprovalSheetType.connect
+                          ? '􀁰'
+                          : ''
+                      }`}
+                    </LabelText>
+                  </Box>
+                </ButtonPressAnimation>
+              </RDSColumn>
+              {/* spacer */}
+              <RDSColumn width={{ custom: 6 }} />
+              <RDSColumn width="content">
                 <Flex justify="end">
                   <SwitchText align="right">
-                    {lang.t('wallet.network_title')}
+                    {chainIds.length > 1
+                      ? lang.t(lang.l.walletconnect.approval_sheet_networks, {
+                          length: chainIds.length,
+                        })
+                      : lang.t(lang.l.walletconnect.approval_sheet_network)}
                   </SwitchText>
                 </Flex>
-                <NetworkSwitcherParent
-                  activeOpacity={0}
-                  isMenuPrimaryAction
-                  {...(android ? { onPress: onPressAndroid } : {})}
-                  menuConfig={{
-                    menuItems,
-                    menuTitle: lang.t('walletconnect.available_networks'),
-                  }}
-                  onPressMenuItem={handleOnPressNetworksMenuItem}
-                  useActionSheetFallback={false}
-                  wrapNativeComponent={false}
-                >
-                  <ButtonPressAnimation
-                    style={{
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      height: 38,
+                {isWalletConnectV2 ? (
+                  <NetworkPill chainIds={chainIds} />
+                ) : (
+                  <NetworkSwitcherParent
+                    activeOpacity={0}
+                    isMenuPrimaryAction
+                    {...(android ? { onPress: onPressAndroid } : {})}
+                    menuConfig={{
+                      menuItems,
+                      menuTitle: lang.t('walletconnect.available_networks'),
                     }}
+                    onPressMenuItem={handleOnPressNetworksMenuItem}
+                    useActionSheetFallback={false}
+                    wrapNativeComponent={false}
                   >
-                    <Centered marginRight={5}>
-                      <ChainLogo
-                        network={
+                    <ButtonPressAnimation
+                      style={{
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        height: 38,
+                      }}
+                    >
+                      <Centered marginRight={5}>
+                        <ChainLogo
+                          network={
+                            type === WalletConnectApprovalSheetType.connect
+                              ? approvalNetworkInfo.value
+                              : ethereumUtils.getNetworkFromChainId(
+                                  Number(chainId)
+                                )
+                          }
+                        />
+                      </Centered>
+                      <LabelText align="right" numberOfLines={1}>
+                        {`${
                           type === WalletConnectApprovalSheetType.connect
-                            ? approvalNetworkInfo.value
-                            : ethereumUtils.getNetworkFromChainId(
+                            ? approvalNetworkInfo.name
+                            : ethereumUtils.getNetworkNameFromChainId(
                                 Number(chainId)
                               )
-                        }
-                      />
-                    </Centered>
-                    <LabelText align="right" numberOfLines={1}>
-                      {type === WalletConnectApprovalSheetType.connect
-                        ? approvalNetworkInfo.name
-                        : ethereumUtils.getNetworkNameFromChainId(
-                            Number(chainId)
-                          )}
-                    </LabelText>
-                    {type === WalletConnectApprovalSheetType.connect &&
-                      menuItems.length > 1 && (
-                        <LabelText align="right"> 􀁰</LabelText>
-                      )}
-                  </ButtonPressAnimation>
-                </NetworkSwitcherParent>
-              </Column>
-            )}
-          </Row>
-          {isWalletConnectV2 && (
-            <Row paddingBottom={21} paddingHorizontal={24}>
-              <NetworkPill chainIds={chainIds} />
-            </Row>
-          )}
+                        } ${
+                          type === WalletConnectApprovalSheetType.connect &&
+                          menuItems.length > 1
+                            ? '􀁰'
+                            : ''
+                        }`}
+                      </LabelText>
+                    </ButtonPressAnimation>
+                  </NetworkSwitcherParent>
+                )}
+              </RDSColumn>
+            </Columns>
+          </Box>
         </Flex>
       )}
     </Sheet>

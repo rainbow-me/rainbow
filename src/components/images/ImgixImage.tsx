@@ -5,7 +5,7 @@ import { maybeSignSource } from '../../handlers/imgix';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
-  readonly size?: number;
+  readonly size: number;
 };
 
 // Here we're emulating the pattern used in react-native-fast-image:
@@ -14,7 +14,7 @@ type HiddenImgixImageProps = {
   forwardedRef: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
-  size?: number;
+  size: number;
   fm?: string;
 };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;

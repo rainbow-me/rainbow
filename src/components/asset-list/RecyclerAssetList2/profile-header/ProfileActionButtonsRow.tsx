@@ -34,10 +34,10 @@ import showWalletErrorAlert from '@/helpers/support';
 import { analytics, analyticsV2 } from '@/analytics';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
-import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { getAllActiveSessionsSync } from '@/utils/walletConnect';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -183,16 +183,7 @@ function BuyButton() {
       category: 'home screen',
     });
 
-    if (ios) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
-      });
-    }
+    navigate(Routes.ADD_CASH_SHEET);
   }, [accountAddress, isDamaged, navigate]);
 
   return (

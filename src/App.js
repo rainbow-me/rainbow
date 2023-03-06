@@ -254,24 +254,26 @@ class OldApp extends Component {
     );
   };
 
-  render = () => (
-    <Portal>
-      <View style={containerStyle}>
-        {this.state.initialRoute && (
-          <InitialRouteContext.Provider value={this.state.initialRoute}>
-            <RoutesComponent
-              onReady={this.handleSentryNavigationIntegration}
-              ref={this.handleNavigatorRef}
-            />
-            <PortalConsumer />
-          </InitialRouteContext.Provider>
-        )}
-        <OfflineToast />
-        <FedoraToast ref={FedoraToastRef} />
-      </View>
-      <NotificationsHandler walletReady={this.props.walletReady} />
-    </Portal>
-  );
+  render() {
+    return (
+      <Portal>
+        <View style={containerStyle}>
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent
+                onReady={this.handleSentryNavigationIntegration}
+                ref={this.handleNavigatorRef}
+              />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
+          )}
+          <OfflineToast />
+          <FedoraToast ref={FedoraToastRef} />
+        </View>
+        <NotificationsHandler walletReady={this.props.walletReady} />
+      </Portal>
+    );
+  }
 }
 
 const OldAppWithRedux = connect(state => ({

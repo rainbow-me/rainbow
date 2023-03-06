@@ -490,7 +490,8 @@ export const executeRap = async (
       rapName,
       nonce
     );
-    if (baseNonce) {
+
+    if (typeof baseNonce === 'number') {
       for (let index = 1; index < actions.length; index++) {
         const action = actions[index];
         await executeAction(action, wallet, rap, index, rapName, baseNonce);

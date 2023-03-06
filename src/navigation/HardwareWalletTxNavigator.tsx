@@ -8,7 +8,7 @@ import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHar
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 const Swipe = createMaterialTopTabNavigator();
-export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 580;
+export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();

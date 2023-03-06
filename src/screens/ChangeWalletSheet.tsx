@@ -1,5 +1,5 @@
 import { IS_TESTING } from 'react-native-dotenv';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
