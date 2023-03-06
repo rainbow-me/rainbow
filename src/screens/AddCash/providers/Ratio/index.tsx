@@ -191,7 +191,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       } else {
         analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
           provider: FiatProviderName.Ratio,
-          success: true,
+          success: false,
           sessionId: analyticsSessionId,
         });
 

@@ -15,6 +15,7 @@ import config from '@/model/config';
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import * as lang from '@/languages';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
@@ -85,12 +86,14 @@ export function AddCashSheet() {
             >
               <Box paddingBottom="12px">
                 <Text size="17pt" weight="bold" color="labelTertiary">
-                  􀵲 {`Can't find your preferred provider?`}
+                  􀵲 {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.title)}
                 </Text>
               </Box>
 
               <Text size="15pt" weight="semibold" color="labelQuaternary">
-                Check back soon for more options
+                {lang.t(
+                  lang.l.wallet.add_cash_v2.sheet_empty_state.description
+                )}
               </Text>
             </Box>
           </Box>
