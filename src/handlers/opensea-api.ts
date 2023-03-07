@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import PQueue from 'p-queue/dist';
 import {
   // @ts-ignore
@@ -13,7 +12,7 @@ import {
   parseAccountUniqueTokensPolygon,
 } from '@/parsers';
 import { handleSignificantDecimals } from '@/helpers/utilities';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -60,16 +59,15 @@ export const apiGetAccountUniqueTokens = async (
     );
 
     return parseAccountUniqueTokens(data);
-  } catch (error: any) {
+  } catch (e: any) {
     // opensea gives us an error if the account has no tokens on the network, we want to ignore this error
-    if (
-      error.responseBody[0]?.includes('does not exist for chain identifier')
-    ) {
+    if (e.responseBody[0]?.includes('does not exist for chain identifier')) {
       return [];
     } else {
-      logger.sentry('Error getting unique tokens', error);
-      captureException(new Error('Opensea: Error getting unique tokens'));
-      throw error;
+      logger.error(new RainbowError(`Opensea: Error getting unique tokens`), {
+        message: e.message,
+      });
+      throw e;
     }
   }
 };
@@ -106,10 +104,11 @@ export const apiGetAccountUniqueToken = async (
           data: { results: [data] },
         })?.[0]
       : parseAccountUniqueTokens({ data: { assets: [data] } })?.[0];
-  } catch (error) {
-    logger.sentry('Error getting unique token', error);
-    captureException(new Error('Opensea: Error getting unique token'));
-    throw error;
+  } catch (e: any) {
+    logger.error(new RainbowError(`Opensea: Error getting unique token`), {
+      message: e.message,
+    });
+    throw e;
   }
 };
 
@@ -156,9 +155,10 @@ export const apiGetUniqueTokenFloorPrice = async (
     const tempFloorPrice = handleSignificantDecimals(tempPrice, 5);
 
     return parseFloat(tempFloorPrice) + ' ETH';
-  } catch (error) {
-    logger.sentry('Error getting NFT floor price', error);
-    captureException(new Error('Opensea: Error getting NFT floor price'));
-    throw error;
+  } catch (e: any) {
+    logger.error(new RainbowError(`Opensea: Error getting NFT floor price`), {
+      message: e.message,
+    });
+    throw e;
   }
 };
