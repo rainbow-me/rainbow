@@ -155,12 +155,12 @@ export default function useWalletCloudBackup() {
             `adding wallet to ${cloudPlatform} backup`,
             wallets![walletId]
           );
-          updatedBackupFile = await addWalletToCloudBackup(
-            fetchedPassword,
-            wallets![walletId],
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
-            latestBackup
-          );
+          updatedBackupFile = await addWalletToCloudBackup({
+            password: fetchedPassword,
+            wallet: wallets![walletId],
+            filename: latestBackup,
+            userPIN,
+          });
         }
       } catch (e: any) {
         const userError = getUserError(e);

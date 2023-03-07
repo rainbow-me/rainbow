@@ -73,6 +73,7 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
+import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 
 const encryptor = new AesEncryptor();
@@ -618,7 +619,7 @@ export const loadPrivateKey = async (
       privateKey = privateKeyData?.privateKey ?? null;
 
       let userPIN = null;
-      if (android) {
+      if (IS_ANDROID) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         // Fallback to custom PIN
         if (!hasBiometricsEnabled) {
@@ -677,10 +678,10 @@ export const createWallet = async (
   seed: null | EthereumSeed = null,
   color: null | number = null,
   name: null | string = null,
-  overwrite: boolean = false,
+  overwrite = false,
   checkedWallet: null | EthereumWalletFromSeed = null,
   image: null | string = null,
-  silent: boolean = false,
+  silent = false,
   clearCallbackOnStartCreation = false
 ): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
@@ -693,7 +694,7 @@ export const createWallet = async (
     logger.info('Creating new wallet');
   }
   const walletSeed = seed || generateMnemonic();
-  let addresses: RainbowAccount[] = [];
+  const addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
 
@@ -786,7 +787,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
-    if (android && !isReadOnlyType && !isHardwareWallet) {
+    if (IS_ANDROID && !isReadOnlyType && !isHardwareWallet) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
@@ -858,7 +859,7 @@ export const createWallet = async (
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
-    let label = name || '';
+    const label = name || '';
 
     addresses.push({
       address: walletAddress,
@@ -1392,7 +1393,7 @@ export const generateAccount = async (
     }
 
     let userPIN = null;
-    if (android) {
+    if (IS_ANDROID) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
@@ -1709,7 +1710,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
-      if (android) {
+      if (IS_ANDROID) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
           logger.debug(

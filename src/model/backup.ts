@@ -95,7 +95,51 @@ export async function backupWalletToCloud({
 }) {
   const now = Date.now();
   const secrets = await extractSecretsForWallet(wallet);
+  const processedSecrets = await decryptPinEncryptedSecretsIfNeeded(
+    secrets,
+    userPIN
+  );
+  const data = {
+    createdAt: now,
+    secrets: processedSecrets,
+  };
+  console.log('#BACKUP\n:', JSON.stringify(data, null, 2));
+  return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
+}
 
+export async function addWalletToCloudBackup({
+  password,
+  wallet,
+  filename,
+  userPIN,
+}: {
+  password: BackupPassword;
+  wallet: RainbowWallet;
+  filename: string;
+  userPIN?: string;
+}): Promise<null | boolean> {
+  // @ts-ignore
+  const backup = await getDataFromCloud(password, filename);
+  const now = Date.now();
+  const newSecretsToBeAddedToBackup = await extractSecretsForWallet(wallet);
+  const processedNewSecrets = await decryptPinEncryptedSecretsIfNeeded(
+    newSecretsToBeAddedToBackup,
+    userPIN
+  );
+  backup.updatedAt = now;
+  // Merge existing secrets with the ones from this wallet
+  backup.secrets = {
+    ...backup.secrets,
+    ...processedNewSecrets,
+  };
+  return encryptAndSaveDataToCloud(backup, password, filename);
+}
+
+async function decryptPinEncryptedSecretsIfNeeded(
+  secrets: Record<string, string>,
+  userPIN?: string
+) {
+  const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
   const hasBiometricsEnabled = await getSupportedBiometryType();
   if (IS_ANDROID && !hasBiometricsEnabled) {
@@ -107,56 +151,35 @@ export async function backupWalletToCloud({
     if (userPIN === undefined) {
       throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
     }
-    let privateKey: string;
 
     // We go through each secret here and try to decrypt it if it's needed
     await Promise.all(
-      Object.keys(secrets).map(async key => {
-        const secret = secrets[key];
+      Object.keys(processedSecrets).map(async key => {
+        const secret = processedSecrets[key];
 
         if (key.endsWith(seedPhraseKey)) {
           const parsedSecret = JSON.parse(secret);
           const seedphrase = parsedSecret.seedphrase;
 
           if (userPIN && seedphrase && seedphrase?.includes('cipher')) {
-            privateKey = await encryptor.decrypt(userPIN, seedphrase);
-          }
+            const decryptedSeedPhrase = await encryptor.decrypt(
+              userPIN,
+              seedphrase
+            );
 
-          secrets[key] = JSON.stringify({
-            ...parsedSecret,
-            seedphrase: privateKey,
-          });
+            processedSecrets[key] = JSON.stringify({
+              ...parsedSecret,
+              seedphrase: decryptedSeedPhrase,
+            });
+          }
         }
       })
     );
+
+    return processedSecrets;
+  } else {
+    return secrets;
   }
-
-  const data = {
-    createdAt: now,
-    secrets,
-  };
-  return encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
-}
-
-export async function addWalletToCloudBackup(
-  password: BackupPassword,
-  wallet: RainbowWallet,
-  filename: string
-): Promise<null | boolean> {
-  // @ts-ignore
-  const backup = await getDataFromCloud(password, filename);
-
-  const now = Date.now();
-
-  const secrets = await extractSecretsForWallet(wallet);
-
-  backup.updatedAt = now;
-  // Merge existing secrets with the ones from this wallet
-  backup.secrets = {
-    ...backup.secrets,
-    ...secrets,
-  };
-  return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
 export function findLatestBackUp(
