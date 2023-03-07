@@ -183,10 +183,24 @@ export default async function handleDeeplink(
           });
         }
 
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
-          provider: provider as FiatProviderName,
-          sessionId: sessionId as string,
-        });
+        if (provider === FiatProviderName.Ramp) {
+          /**
+           * Ramp atm is special because the only way we return back here from
+           * their flow is after a successful purchase. So we can safely set
+           * `success: true` here. Eventually we may need to revisit this so
+           * that we can add more properties as they become available.
+           */
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+            provider: provider as FiatProviderName,
+            sessionId: sessionId as string,
+            success: true,
+          });
+        } else {
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+            provider: provider as FiatProviderName,
+            sessionId: sessionId as string,
+          });
+        }
 
         break;
       }
