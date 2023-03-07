@@ -1,6 +1,7 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
+  getSupportedBiometryType,
   Options,
   requestSharedWebCredentials,
   setSharedWebCredentials,
@@ -26,8 +27,11 @@ import {
   RainbowWallet,
 } from './wallet';
 import { analytics } from '@/analytics';
-
 import logger from '@/utils/logger';
+import { IS_ANDROID } from '@/env';
+import AesEncryptor from '../handlers/aesEncryption';
+
+const encryptor = new AesEncryptor();
 
 type BackupPassword = string;
 
@@ -80,13 +84,53 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
-export async function backupWalletToCloud(
-  password: BackupPassword,
-  wallet: RainbowWallet
-) {
+export async function backupWalletToCloud({
+  password,
+  wallet,
+  userPIN,
+}: {
+  password: BackupPassword;
+  wallet: RainbowWallet;
+  userPIN?: string;
+}) {
   const now = Date.now();
-
   const secrets = await extractSecretsForWallet(wallet);
+
+  // We need to decrypt PIN code encrypted secrets before backup
+  const hasBiometricsEnabled = await getSupportedBiometryType();
+  if (IS_ANDROID && !hasBiometricsEnabled) {
+    /**
+     * Pin is passed and authentication is handled by the caller.
+     * If we don't have a PIN, we throw an error both for the developer
+     * and the user if something goes wrong.
+     */
+    if (userPIN === undefined) {
+      throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
+    }
+    let privateKey: string;
+
+    // We go through each secret here and try to decrypt it if it's needed
+    await Promise.all(
+      Object.keys(secrets).map(async key => {
+        const secret = secrets[key];
+
+        if (key.endsWith(seedPhraseKey)) {
+          const parsedSecret = JSON.parse(secret);
+          const seedphrase = parsedSecret.seedphrase;
+
+          if (userPIN && seedphrase && seedphrase?.includes('cipher')) {
+            privateKey = await encryptor.decrypt(userPIN, seedphrase);
+          }
+
+          secrets[key] = JSON.stringify({
+            ...parsedSecret,
+            seedphrase: privateKey,
+          });
+        }
+      })
+    );
+  }
+
   const data = {
     createdAt: now,
     secrets,
@@ -162,7 +206,7 @@ export async function restoreCloudBackup(
     if (!data) {
       throw new Error('Invalid password');
     }
-    let dataToRestore = {
+    const dataToRestore = {
       ...data.secrets,
     };
 

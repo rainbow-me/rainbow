@@ -8,13 +8,13 @@ import { logger, RainbowError } from '@/logger';
 
 const encryptor = new AesEncryptor();
 
-export async function getExistingPIN() {
+export async function getExistingPIN(): Promise<string | null> {
   try {
     const encryptedPin = await keychain.loadString(pinKey);
     // The user has a PIN already, we need to decrypt it
     if (encryptedPin) {
       const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
-      return userPIN;
+      return userPIN as string;
     }
     // eslint-disable-next-line no-empty
   } catch (e) {}
@@ -58,8 +58,8 @@ export async function authenticateWithPINAndCreateIfNeeded() {
   });
 }
 
-export async function authenticateWithPIN() {
-  let validPin: any;
+export async function authenticateWithPIN(): Promise<string | null> {
+  let validPin: string | null;
   try {
     validPin = await getExistingPIN();
     // eslint-disable-next-line no-empty
@@ -67,7 +67,7 @@ export async function authenticateWithPIN() {
   return new Promise((resolve, reject) => {
     return Navigation.handleAction(Routes.PIN_AUTHENTICATION_SCREEN, {
       onCancel: () => reject(),
-      onSuccess: async (pin: any) => {
+      onSuccess: async (pin: string | null) => {
         resolve(pin);
       },
       validPin,

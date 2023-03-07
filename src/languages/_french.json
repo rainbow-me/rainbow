@@ -79,6 +79,7 @@
       }
     },
     "back_up": {
+      "wrong_pin": "You provided incorrect PIN, can't proceed with backup. :)",
       "already_backed_up": {
         "backed_up": "Backed up :)",
         "backed_up_manually": "Backed up manually :)",
