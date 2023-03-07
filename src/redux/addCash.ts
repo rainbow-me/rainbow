@@ -15,13 +15,6 @@ import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '@/handlers/localstorage/accountLocal';
-import { trackWyreOrder, trackWyreTransfer } from '@/handlers/wyre';
-import {
-  WYRE_ORDER_STATUS_TYPES,
-  WyreError,
-  WyreOrderStatusType,
-  WyreReferenceInfo,
-} from '@/helpers/wyreStatusTypes';
 import {
   AddCashCurrencies,
   AddCashCurrencyAsset,
@@ -30,6 +23,9 @@ import {
 import { ethereumUtils } from '@/utils';
 import maybeReviewAlert from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
+import { WYRE_ENDPOINT, WYRE_ENDPOINT_TEST } from 'react-native-dotenv';
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import NetworkTypes from '@/helpers/networkTypes';
 
 // -- Constants --------------------------------------- //
 
@@ -52,6 +48,35 @@ const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
+export const WYRE_ORDER_STATUS_TYPES = {
+  checking: 'RUNNING_CHECKS',
+  failed: 'FAILED',
+  pending: 'PROCESSING',
+  success: 'COMPLETE',
+} as const;
+
+export type WyreOrderStatusType = typeof WYRE_ORDER_STATUS_TYPES[keyof typeof WYRE_ORDER_STATUS_TYPES];
+
+export const ADD_CASH_DISPLAYED_STATUS_TYPES = {
+  checking: 'RUNNING_CHECKS',
+  failed: 'FAILED',
+  pending: 'PENDING',
+  success: 'COMPLETED',
+} as const;
+
+export type AddCashDisplayedStatusType = typeof ADD_CASH_DISPLAYED_STATUS_TYPES[keyof typeof ADD_CASH_DISPLAYED_STATUS_TYPES];
+
+export interface WyreError {
+  errorCategory: string;
+  errorCode: string;
+  errorMessage: string;
+}
+
+export interface WyreReferenceInfo {
+  referenceId: string;
+  orderId: string;
+  transferId?: string;
+}
 
 /**
  * Represents the state of the `addCash` reducer.
@@ -156,6 +181,45 @@ let transferHashHandle: null | ReturnType<typeof setTimeout> = null;
 
 const MAX_TRIES = 10 * 60;
 const MAX_ERROR_TRIES = 3;
+
+// Former @/handlers/wyre.ts
+const getBaseUrl = (network: any) =>
+  network === NetworkTypes.mainnet ? WYRE_ENDPOINT : WYRE_ENDPOINT_TEST;
+
+const wyreApi = new RainbowFetchClient({
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 secs
+});
+
+export const trackWyreOrder = async (
+  referenceInfo: any,
+  orderId: any,
+  network: any
+) => {
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(`${baseUrl}/v3/orders/${orderId}`);
+  const orderStatus = response?.data?.status;
+  const transferId = response?.data?.transferId;
+  return { data: response.data, orderStatus, transferId };
+};
+
+export const trackWyreTransfer = async (
+  referenceInfo: any,
+  transferId: any,
+  network: any
+) => {
+  const baseUrl = getBaseUrl(network);
+  const response = await wyreApi.get(
+    `${baseUrl}/v2/transfer/${transferId}/track`
+  );
+  const transferHash = response?.data?.blockchainNetworkTx;
+  const destAmount = response?.data?.destAmount;
+  const destCurrency = response?.data?.destCurrency;
+  return { destAmount, destCurrency, transferHash };
+};
 
 /**
  * Loads past purchase transactions into the reducer's state from local storage.

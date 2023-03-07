@@ -14,7 +14,6 @@ import { padding, position } from '@/styles';
 
 const ModalTypes = {
   contact_profile: ContactProfileState,
-  supported_countries: SupportedCountriesExpandedState,
   wallet_profile: WalletProfileState,
 };
 
