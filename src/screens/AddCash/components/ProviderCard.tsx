@@ -11,7 +11,6 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
-import { ButtonPressAnimation } from '@/components/animations';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
@@ -125,206 +124,194 @@ function NetworkIcons({ networks }: { networks: Network[] }) {
   );
 }
 
-export function ProviderCard({
-  config,
-  onPress,
-}: {
-  config: ProviderConfig;
-  onPress?: () => void;
-}) {
+export function ProviderCard({ config }: { config: ProviderConfig }) {
   const backgroundColor = useBackgroundColor('surfaceSecondaryElevated');
   const backgroundColorAlpha = React.useMemo(() => {
     return `rgba(${chroma(backgroundColor).rgb()},0)`;
   }, [backgroundColor]);
   const Logo = React.useMemo(() => providerLogos[config.name], [config.name]);
-  const handleOnPress = React.useCallback(() => {
-    onPress?.();
-  }, [onPress]);
 
   return (
-    <ButtonPressAnimation onPress={handleOnPress}>
-      <Box
-        background="surfaceSecondaryElevated"
-        paddingTop="20px"
-        paddingHorizontal="20px"
-        borderRadius={20}
-        shadow="12px"
-        style={{ flex: IS_IOS ? 0 : undefined }}
-      >
-        <Inline alignVertical="center">
-          <Box
-            borderRadius={24}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            style={{ backgroundColor: config.metadata.accentColor }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Logo width={14} height={14} color="white" />
-          </Box>
-          <Box paddingLeft="8px">
-            <Text size="20pt" weight="heavy" color="label">
-              {providerNames[config.name]}
-            </Text>
-          </Box>
-        </Inline>
-
-        <Box paddingTop="8px" paddingBottom="20px">
-          <Text size="17pt" weight="semibold" color="labelSecondary">
-            {providerDescriptions[config.name]}
+    <Box
+      background="surfaceSecondaryElevated"
+      paddingTop="20px"
+      paddingHorizontal="20px"
+      borderRadius={20}
+      shadow="12px"
+      style={{ flex: IS_IOS ? 0 : undefined }}
+    >
+      <Inline alignVertical="center">
+        <Box
+          borderRadius={24}
+          height={{ custom: 24 }}
+          width={{ custom: 24 }}
+          style={{ backgroundColor: config.metadata.accentColor }}
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Logo width={14} height={14} color="white" />
+        </Box>
+        <Box paddingLeft="8px">
+          <Text size="20pt" weight="heavy" color="label">
+            {providerNames[config.name]}
           </Text>
         </Box>
+      </Inline>
 
-        <Bleed horizontal="20px">
-          <LinearGradient
-            colors={[backgroundColor, backgroundColorAlpha]}
-            end={{ x: 1, y: 0.5 }}
-            style={{
-              position: 'absolute',
-              height: '100%',
-              left: 0,
-              width: 20,
-              zIndex: 1,
-              bottom: 20,
-            }}
-            start={{ x: 0, y: 0.5 }}
-          />
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Box
-              flexDirection="row"
-              paddingHorizontal="20px"
-              paddingBottom="20px"
-            >
-              {config.callouts.map(callout => {
-                let title = '';
-                let content = null;
-
-                switch (callout.type) {
-                  case CalloutType.Rate: {
-                    title = 'Fees';
-                    content = (
-                      <Box
-                        flexDirection="row"
-                        alignItems="center"
-                        paddingTop="12px"
-                      >
-                        <Text size="15pt" weight="bold" color="label">
-                          {callout.value}
-                        </Text>
-                      </Box>
-                    );
-                    break;
-                  }
-                  case CalloutType.InstantAvailable: {
-                    title = 'Instant';
-                    content = (
-                      <Box
-                        flexDirection="row"
-                        alignItems="center"
-                        paddingTop="12px"
-                      >
-                        <Text
-                          size="12pt"
-                          weight="bold"
-                          color={{ custom: config.metadata.accentColor }}
-                        >
-                          􀋦
-                        </Text>
-                        <Box paddingLeft="2px">
-                          <Text size="15pt" weight="bold" color="label">
-                            {callout.value || 'Yes'}
-                          </Text>
-                        </Box>
-                      </Box>
-                    );
-                    break;
-                  }
-                  case CalloutType.PaymentMethods: {
-                    const methods = getPaymentMethodConfigs(callout.methods);
-                    const multi = methods.length > 1;
-                    title = multi ? 'Methods' : 'Method';
-                    content = (
-                      <Box flexDirection="row">
-                        {methods.map(m => {
-                          return (
-                            <Box
-                              key={m.name}
-                              flexDirection="row"
-                              alignItems="center"
-                              paddingTop="12px"
-                              paddingRight="4px"
-                            >
-                              <Text
-                                size="13pt"
-                                weight="bold"
-                                color={{ custom: config.metadata.accentColor }}
-                              >
-                                {m.icon}
-                              </Text>
-
-                              {!multi && (
-                                <Box paddingLeft="4px">
-                                  <Text size="15pt" weight="bold" color="label">
-                                    {m.name}
-                                  </Text>
-                                </Box>
-                              )}
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                    );
-                    break;
-                  }
-                  case CalloutType.Networks: {
-                    title =
-                      callout.networks.length > 1 ? 'Networks' : 'Network';
-                    content = (
-                      <Box
-                        flexDirection="row"
-                        alignItems="center"
-                        paddingTop="8px"
-                      >
-                        <NetworkIcons
-                          /* @ts-ignore */
-                          networks={callout.networks
-                            .map(convertAPINetworkToInternalNetwork)
-                            .filter(Boolean)}
-                        />
-                      </Box>
-                    );
-                  }
-                }
-
-                return (
-                  <Box key={callout.type} paddingRight="16px">
-                    <Text size="13pt" weight="semibold" color="labelTertiary">
-                      {title}
-                    </Text>
-
-                    {content}
-                  </Box>
-                );
-              })}
-            </Box>
-          </ScrollView>
-
-          <LinearGradient
-            colors={[backgroundColorAlpha, backgroundColor]}
-            end={{ x: 1, y: 0.5 }}
-            style={{
-              position: 'absolute',
-              height: '100%',
-              right: 0,
-              width: 20,
-              zIndex: 1,
-              bottom: 20,
-            }}
-            start={{ x: 0, y: 0.5 }}
-          />
-        </Bleed>
+      <Box paddingTop="8px" paddingBottom="20px">
+        <Text size="17pt" weight="semibold" color="labelSecondary">
+          {providerDescriptions[config.name]}
+        </Text>
       </Box>
-    </ButtonPressAnimation>
+
+      <Bleed horizontal="20px">
+        <LinearGradient
+          colors={[backgroundColor, backgroundColorAlpha]}
+          end={{ x: 1, y: 0.5 }}
+          style={{
+            position: 'absolute',
+            height: '100%',
+            left: 0,
+            width: 20,
+            zIndex: 1,
+            bottom: 20,
+          }}
+          start={{ x: 0, y: 0.5 }}
+        />
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <Box
+            flexDirection="row"
+            paddingHorizontal="20px"
+            paddingBottom="20px"
+          >
+            {config.callouts.map(callout => {
+              let title = '';
+              let content = null;
+
+              switch (callout.type) {
+                case CalloutType.Rate: {
+                  title = 'Fees';
+                  content = (
+                    <Box
+                      flexDirection="row"
+                      alignItems="center"
+                      paddingTop="12px"
+                    >
+                      <Text size="15pt" weight="bold" color="label">
+                        {callout.value}
+                      </Text>
+                    </Box>
+                  );
+                  break;
+                }
+                case CalloutType.InstantAvailable: {
+                  title = 'Instant';
+                  content = (
+                    <Box
+                      flexDirection="row"
+                      alignItems="center"
+                      paddingTop="12px"
+                    >
+                      <Text
+                        size="12pt"
+                        weight="bold"
+                        color={{ custom: config.metadata.accentColor }}
+                      >
+                        􀋦
+                      </Text>
+                      <Box paddingLeft="2px">
+                        <Text size="15pt" weight="bold" color="label">
+                          {callout.value || 'Yes'}
+                        </Text>
+                      </Box>
+                    </Box>
+                  );
+                  break;
+                }
+                case CalloutType.PaymentMethods: {
+                  const methods = getPaymentMethodConfigs(callout.methods);
+                  const multi = methods.length > 1;
+                  title = multi ? 'Methods' : 'Method';
+                  content = (
+                    <Box flexDirection="row">
+                      {methods.map(m => {
+                        return (
+                          <Box
+                            key={m.name}
+                            flexDirection="row"
+                            alignItems="center"
+                            paddingTop="12px"
+                            paddingRight="4px"
+                          >
+                            <Text
+                              size="13pt"
+                              weight="bold"
+                              color={{ custom: config.metadata.accentColor }}
+                            >
+                              {m.icon}
+                            </Text>
+
+                            {!multi && (
+                              <Box paddingLeft="4px">
+                                <Text size="15pt" weight="bold" color="label">
+                                  {m.name}
+                                </Text>
+                              </Box>
+                            )}
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  );
+                  break;
+                }
+                case CalloutType.Networks: {
+                  title = callout.networks.length > 1 ? 'Networks' : 'Network';
+                  content = (
+                    <Box
+                      flexDirection="row"
+                      alignItems="center"
+                      paddingTop="8px"
+                    >
+                      <NetworkIcons
+                        /* @ts-ignore */
+                        networks={callout.networks
+                          .map(convertAPINetworkToInternalNetwork)
+                          .filter(Boolean)}
+                      />
+                    </Box>
+                  );
+                }
+              }
+
+              return (
+                <Box key={callout.type} paddingRight="16px">
+                  <Text size="13pt" weight="semibold" color="labelTertiary">
+                    {title}
+                  </Text>
+
+                  {content}
+                </Box>
+              );
+            })}
+          </Box>
+        </ScrollView>
+
+        <LinearGradient
+          colors={[backgroundColorAlpha, backgroundColor]}
+          end={{ x: 1, y: 0.5 }}
+          style={{
+            position: 'absolute',
+            height: '100%',
+            right: 0,
+            width: 20,
+            zIndex: 1,
+            bottom: 20,
+          }}
+          start={{ x: 0, y: 0.5 }}
+        />
+      </Bleed>
+    </Box>
   );
 }

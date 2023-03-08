@@ -59,7 +59,9 @@ export const EthCard = () => {
 
   const handlePressBuy = useCallback(
     e => {
-      e.stopPropagation();
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+      }
 
       if (isDamaged) {
         showWalletErrorAlert();

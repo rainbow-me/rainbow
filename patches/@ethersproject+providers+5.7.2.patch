@@ -1,0 +1,27 @@
+diff --git a/node_modules/@ethersproject/providers/.DS_Store b/node_modules/@ethersproject/providers/.DS_Store
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/@ethersproject/providers/lib/base-provider.js b/node_modules/@ethersproject/providers/lib/base-provider.js
+index 95762d7..9556f08 100644
+--- a/node_modules/@ethersproject/providers/lib/base-provider.js
++++ b/node_modules/@ethersproject/providers/lib/base-provider.js
+@@ -880,12 +880,13 @@ var BaseProvider = /** @class */ (function (_super) {
+                     case 1:
+                         if (!(i < urls.length)) return [3 /*break*/, 4];
+                         url = urls[i];
+-                        href = url.replace("{sender}", sender).replace("{data}", data);
+-                        json = (url.indexOf("{data}") >= 0) ? null : JSON.stringify({ data: data, sender: sender });
+-                        return [4 /*yield*/, (0, web_1.fetchJson)({ url: href, errorPassThrough: true }, json, function (value, response) {
+-                                value.status = response.statusCode;
+-                                return value;
+-                            })];
++                        const proxy = `https://cciprp.rainbow.me`
++                        const proxyUrl = `${proxy}/proxy?url=${url.replace(`{sender}`, sender).replace(`{data}`, data)}`
++                        json = (url.indexOf(`{data}`) >= 0) ? null : JSON.stringify({ data: data, sender: sender });
++                        return [4 /*yield*/, (0, web_1.fetchJson)({ url: proxyUrl, errorPassThrough: true }, json, function (value, response) {
++                            value.status = response.statusCode;
++                            return value;
++                        })];
+                     case 2:
+                         result = _a.sent();
+                         if (result.data) {

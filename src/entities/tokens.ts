@@ -59,6 +59,10 @@ export interface ParsedAddressAsset
     display?: string;
   };
   color?: string;
+  colors?: {
+    primary?: string;
+    fallback?: string;
+  };
   icon_url?: string;
   price?: {
     changed_at?: number;

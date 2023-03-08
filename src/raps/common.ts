@@ -490,20 +490,17 @@ export const executeRap = async (
       rapName,
       nonce
     );
-    try {
-      if (baseNonce) {
-        for (let index = 1; index < actions.length; index++) {
-          const action = actions[index];
-          await executeAction(action, wallet, rap, index, rapName, baseNonce);
-        }
-        nonce = baseNonce + actions.length - 1;
-        callback(true);
-      } else {
-        // Callback with failure state
-        callback(false, errorMessage);
+
+    if (typeof baseNonce === 'number') {
+      for (let index = 1; index < actions.length; index++) {
+        const action = actions[index];
+        await executeAction(action, wallet, rap, index, rapName, baseNonce);
       }
-    } catch (e) {
-      callback(false);
+      nonce = baseNonce + actions.length - 1;
+      callback(true);
+    } else {
+      // Callback with failure state
+      callback(false, errorMessage);
     }
   }
 

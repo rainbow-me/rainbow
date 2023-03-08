@@ -6,6 +6,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
+import { IS_ANDROID } from '@/env';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -23,7 +24,7 @@ export const CLOUD_BACKUP_ERRORS = {
 };
 
 export function logoutFromGoogleDrive() {
-  android && RNCloudFs.logout();
+  IS_ANDROID && RNCloudFs.logout();
 }
 
 // This is used for dev purposes only!
@@ -126,7 +127,7 @@ export function syncCloud() {
 }
 
 export async function getDataFromCloud(backupPassword: any, filename = null) {
-  if (android) {
+  if (IS_ANDROID) {
     await RNCloudFs.loginIfNeeded();
   }
 

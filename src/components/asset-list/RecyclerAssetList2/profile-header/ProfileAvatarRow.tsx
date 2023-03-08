@@ -11,12 +11,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { maybeSignUri } from '@/handlers/imgix';
 import {
   useAccountProfile,
   useLatestCallback,
   useOnAvatarPress,
-  usePersistentDominantColorFromImage,
 } from '@/hooks';
 import { useTheme } from '@/theme';
 import { getFirstGrapheme } from '@/utils';
@@ -25,6 +23,7 @@ import { useRecyclerAssetListPosition } from '../core/Contexts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_ANDROID } from '@/env';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
@@ -46,9 +45,7 @@ export function ProfileAvatarRow({
     onSelectionCallback,
   } = useOnAvatarPress({ screenType: 'wallet' });
 
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '', { w: 200 }) ?? ''
-  );
+  const dominantColor = usePersistentDominantColorFromImage(accountImage);
 
   // ////////////////////////////////////////////////////
   // Context Menu
@@ -71,7 +68,7 @@ export function ProfileAvatarRow({
 
   let accentColor = colors.skeleton;
   if (accountImage) {
-    accentColor = dominantColor || colors.skeleton;
+    accentColor = dominantColor || colors.appleBlue;
   } else if (typeof accountColor === 'number') {
     accentColor = colors.avatarBackgrounds[accountColor];
   }

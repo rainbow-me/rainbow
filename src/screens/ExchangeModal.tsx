@@ -54,6 +54,7 @@ import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
 import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
+  useColorForAsset,
   useCurrentNonce,
   useGas,
   usePrevious,
@@ -98,6 +99,7 @@ import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from 'ethers';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { useTheme } from '@/theme';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -232,6 +234,13 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const { colors } = useTheme();
+  const inputCurrencyColor = useColorForAsset(inputCurrency, colors.appleBlue);
+  const outputCurrencyColor = useColorForAsset(
+    outputCurrency,
+    colors.appleBlue
+  );
 
   const {
     handleFocus,
@@ -753,6 +762,7 @@ export default function ExchangeModal({
       }
     },
     [
+      accountAddress,
       chainId,
       currentNetwork,
       debouncedIsHighPriceImpact,
@@ -1065,6 +1075,7 @@ export default function ExchangeModal({
               {showOutputField && <ExchangeNotch testID={testID} />}
               <ExchangeHeader testID={testID} title={title} />
               <ExchangeInputField
+                color={inputCurrencyColor}
                 disableInputCurrencySelection={isWithdrawal}
                 editable={!!inputCurrency}
                 inputAmount={inputAmountDisplay}
@@ -1092,6 +1103,7 @@ export default function ExchangeModal({
               />
               {showOutputField && (
                 <ExchangeOutputField
+                  color={outputCurrencyColor}
                   editable={
                     !!outputCurrency &&
                     currentNetwork !== Network.arbitrum &&

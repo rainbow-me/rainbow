@@ -14,10 +14,33 @@ index 1cfd46e..020d4e4 100644
  
  import com.facebook.common.executors.CallerThreadExecutor;
 diff --git a/node_modules/react-native-palette-full/ios/RNPalette.m b/node_modules/react-native-palette-full/ios/RNPalette.m
-index fc6704d..577fa35 100644
+index fc6704d..eaa5868 100644
 --- a/node_modules/react-native-palette-full/ios/RNPalette.m
 +++ b/node_modules/react-native-palette-full/ios/RNPalette.m
-@@ -162,7 +162,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -115,6 +115,11 @@ RCT_REMAP_METHOD(getNamedSwatches,
+   
+   //NSURL * urlImage = [NSURL URLWithString: url];
+   UIImage * image = [UIImage imageWithContentsOfFile:url];
++  if (image == nil) {
++    reject(@"500", @"Error image", nil);
++    return;
++  }
++    
+   [self getNamedSwatchesFromImage:image resolver:resolve rejecter:reject];
+   
+ }
+@@ -130,6 +135,10 @@ RCT_REMAP_METHOD(getAllSwatches,
+   
+   //NSURL * urlImage = [NSURL URLWithString: url];
+   UIImage * image = [UIImage imageWithContentsOfFile:url];
++  if (image == nil) {
++    reject(@"500", @"Error image", nil);
++    return;
++  }
+   [self getAllSwatchesFromImage:image resolver:resolve rejecter:reject];
+   
+ }
+@@ -162,7 +171,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"vibrant"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"vibrant"];
        [data addObject:@{
@@ -26,7 +49,7 @@ index fc6704d..577fa35 100644
            @"color":[vibrant  imageColorString],
            @"population" : [NSNumber numberWithInteger:[vibrant population]],
            @"percentage":[NSNumber numberWithFloat:[vibrant percentage]],
-@@ -171,7 +171,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -171,7 +180,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"dark_vibrant"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * dark_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_vibrant"];
        [data addObject:@{
@@ -35,7 +58,7 @@ index fc6704d..577fa35 100644
            @"color":[dark_vibrant  imageColorString],
            @"population" : [NSNumber numberWithInteger:[dark_vibrant population]],
            @"percentage":[NSNumber numberWithFloat:[dark_vibrant percentage]],
-@@ -180,7 +180,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -180,7 +189,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"light_vibrant"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * light_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_vibrant"];
        [data addObject:@{
@@ -44,7 +67,7 @@ index fc6704d..577fa35 100644
            @"color":[light_vibrant  imageColorString],
            @"population" : [NSNumber numberWithInteger:[light_vibrant population]],
            @"percentage":[NSNumber numberWithFloat:[light_vibrant percentage]],
-@@ -189,7 +189,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -189,7 +198,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"muted"];
        [data addObject:@{
@@ -53,7 +76,7 @@ index fc6704d..577fa35 100644
            @"color":[muted imageColorString],
            @"population" : [NSNumber numberWithInteger:[muted population]],
            @"percentage":[NSNumber numberWithFloat:[muted percentage]],
-@@ -198,7 +198,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -198,7 +207,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"dark_muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * dark_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_muted"];
        [data addObject:@{
@@ -62,7 +85,7 @@ index fc6704d..577fa35 100644
            @"color":[dark_muted imageColorString],
            @"population" : [NSNumber numberWithInteger:[dark_muted population]],
            @"percentage":[NSNumber numberWithFloat:[dark_muted percentage]],
-@@ -207,7 +207,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+@@ -207,7 +216,7 @@ RCT_REMAP_METHOD(getAllSwatches,
      if ([[allModeColorDic objectForKey:@"light_muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * light_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_muted"];
        [data addObject:@{
@@ -71,7 +94,7 @@ index fc6704d..577fa35 100644
            @"color":[light_muted imageColorString],
            @"population" : [NSNumber numberWithInteger:[light_muted population]],
            @"percentage":[NSNumber numberWithFloat:[light_muted percentage]],
-@@ -244,7 +244,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -244,7 +253,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[vibrant imageColorString],
          @"population":[NSNumber numberWithInteger:[vibrant population]],
          @"percentage":[NSNumber numberWithFloat:[vibrant percentage]]
@@ -80,7 +103,7 @@ index fc6704d..577fa35 100644
      }
      if ([[allModeColorDic objectForKey:@"dark_vibrant"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * dark_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_vibrant"];
-@@ -252,7 +252,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -252,7 +261,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[dark_vibrant imageColorString],
          @"population":[NSNumber numberWithInteger:[dark_vibrant population]],
          @"percentage":[NSNumber numberWithFloat:[dark_vibrant percentage]]
@@ -89,7 +112,7 @@ index fc6704d..577fa35 100644
  
      }
      if ([[allModeColorDic objectForKey:@"light_vibrant"] isKindOfClass:[PaletteColorModel class]]){
-@@ -261,7 +261,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -261,7 +270,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[light_vibrant imageColorString],
          @"population":[NSNumber numberWithInteger:[light_vibrant population]],
          @"percentage":[NSNumber numberWithFloat:[light_vibrant percentage]],
@@ -98,7 +121,7 @@ index fc6704d..577fa35 100644
      }
      if ([[allModeColorDic objectForKey:@"muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"muted"];
-@@ -269,7 +269,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -269,7 +278,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[muted imageColorString],
          @"population":[NSNumber numberWithInteger:[muted population]],
          @"percentage":[NSNumber numberWithFloat:[muted percentage]]
@@ -107,7 +130,7 @@ index fc6704d..577fa35 100644
      }
      if ([[allModeColorDic objectForKey:@"dark_muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * dark_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_muted"];
-@@ -277,7 +277,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -277,7 +286,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[dark_muted imageColorString],
          @"population":[NSNumber numberWithInteger:[dark_muted population]],
          @"percentage":[NSNumber numberWithFloat:[dark_muted percentage]]
@@ -116,7 +139,7 @@ index fc6704d..577fa35 100644
      }
      if ([[allModeColorDic objectForKey:@"light_muted"] isKindOfClass:[PaletteColorModel class]]){
        PaletteColorModel * light_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_muted"];
-@@ -285,7 +285,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+@@ -285,7 +294,7 @@ RCT_REMAP_METHOD(getAllSwatches,
          @"color":[light_muted imageColorString],
          @"population":[NSNumber numberWithInteger:[light_muted population]],
          @"percentage":[NSNumber numberWithFloat:[light_muted percentage]]

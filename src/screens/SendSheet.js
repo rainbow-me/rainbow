@@ -68,7 +68,7 @@ import {
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { chainAssets, rainbowTokenList } from '@/references';
+import { rainbowTokenList } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -105,6 +105,14 @@ const SheetContainer = styled(Column).attrs({
   height: sheetHeight,
   width: '100%',
 });
+
+const validateRecipient = toAddress => {
+  // Don't allow send to known ERC20 contracts on mainnet
+  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
+    return false;
+  }
+  return true;
+};
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -690,31 +698,6 @@ export default function SendSheet(props) {
     ]
   );
 
-  const validateRecipient = useCallback(
-    async toAddress => {
-      // Don't allow send to known ERC20 contracts on mainnet
-      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
-        return false;
-      }
-
-      // Don't allow sending funds directly to known ERC20 contracts on L2
-      if (isL2) {
-        const currentChainAssets = chainAssets[currentNetwork];
-        const found =
-          currentChainAssets &&
-          currentChainAssets.find(
-            item =>
-              item.asset?.asset_code?.toLowerCase() === toAddress.toLowerCase()
-          );
-        if (found) {
-          return false;
-        }
-      }
-      return true;
-    },
-    [currentNetwork, isL2]
-  );
-
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
 
@@ -773,7 +756,7 @@ export default function SendSheet(props) {
     if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = await validateRecipient(toAddress);
+    const validRecipient = validateRecipient(toAddress);
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
@@ -827,7 +810,6 @@ export default function SendSheet(props) {
     recipient,
     selected,
     submitTransaction,
-    validateRecipient,
   ]);
 
   const onResetAssetSelection = useCallback(() => {
