@@ -21,6 +21,15 @@ export async function getExistingPIN(): Promise<string | null> {
   return null;
 }
 
+export async function decryptPIN(encryptedPin: any) {
+  try {
+    const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
+    return userPIN;
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+  return null;
+}
+
 export async function savePIN(pin: any) {
   try {
     const encryptedPin = await encryptor.encrypt(RAINBOW_MASTER_KEY, pin);
