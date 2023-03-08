@@ -209,11 +209,21 @@ export function findLatestBackUp(
   return filename;
 }
 
-export async function restoreCloudBackup(
-  password: BackupPassword,
-  userData: BackupUserData | null,
-  backupSelected: string | null
-): Promise<boolean> {
+/**
+ * Restores a cloud backup, when userPIN is provided
+ * the seed phrase will be encrypted with the user's PIN code
+ */
+export async function restoreCloudBackup({
+  password,
+  userData,
+  backupSelected,
+  userPIN,
+}: {
+  password: BackupPassword;
+  userData: BackupUserData | null;
+  backupSelected: string | null;
+  userPIN?: string;
+}): Promise<boolean> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
@@ -230,6 +240,7 @@ export async function restoreCloudBackup(
     if (!data) {
       throw new Error('Invalid password');
     }
+
     const dataToRestore = {
       ...data.secrets,
     };
@@ -255,9 +266,9 @@ export async function restoreCloudBackup(
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      return restoreCurrentBackupIntoKeychain(dataToRestore);
+      return restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
     } else {
-      return restoreSpecificBackupIntoKeychain(dataToRestore);
+      return restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
     }
   } catch (e) {
     logger.sentry('Error while restoring back up');
@@ -267,23 +278,24 @@ export async function restoreCloudBackup(
 }
 
 async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData
+  backedUpData: BackedUpData,
+  newPIN?: string
 ): Promise<boolean> {
+  const encryptedBackupPinData = backedUpData[pinKey];
+  const backupPIN = await decryptPIN(encryptedBackupPinData);
+
   try {
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of Object.keys(backedUpData)) {
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
-        const encryptedBackupPinData = backedUpData[pinKey];
         const parsedValue = JSON.parse(valueStr);
-        let seedphrase = parsedValue.seedphrase;
-        if (backedUpData && seedphrase && seedphrase?.includes('cipher')) {
-          seedphrase = await decryptBackupPinEncryptedSeedPhrase(
-            seedphrase,
-            encryptedBackupPinData
-          );
-        }
-        await createWallet(seedphrase, null, null, true);
+        const processedSeedPhrase = await handleSeedPhrasePinEncryption({
+          seedPhrase: parsedValue.seedphrase,
+          newPIN,
+          backupPIN,
+        });
+        await createWallet(processedSeedPhrase, null, null, true);
       }
     }
     return true;
@@ -295,12 +307,14 @@ async function restoreSpecificBackupIntoKeychain(
 }
 
 async function restoreCurrentBackupIntoKeychain(
-  backedUpData: BackedUpData
+  backedUpData: BackedUpData,
+  newPIN?: string
 ): Promise<boolean> {
   try {
     // Access control config per each type of key
     const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
     const encryptedBackupPinData = backedUpData[pinKey];
+    const backupPIN = await decryptPIN(encryptedBackupPinData);
 
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
@@ -309,18 +323,13 @@ async function restoreCurrentBackupIntoKeychain(
         if (endsWith(key, seedPhraseKey)) {
           accessControl = privateAccessControlOptions;
           const parsedValue = JSON.parse(value);
-          const seedphrase = parsedValue.seedphrase;
-          if (
-            encryptedBackupPinData &&
-            seedphrase &&
-            seedphrase.includes('cipher')
-          ) {
-            parsedValue.seedphrase = await decryptBackupPinEncryptedSeedPhrase(
-              seedphrase,
-              encryptedBackupPinData
-            );
-            value = JSON.stringify(parsedValue);
-          }
+          const processedSeedPhrase = await handleSeedPhrasePinEncryption({
+            seedPhrase: parsedValue.seedphrase,
+            newPIN,
+            backupPIN,
+          });
+          parsedValue.seedphrase = processedSeedPhrase;
+          value = JSON.stringify(parsedValue);
         }
         if (endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
@@ -341,20 +350,69 @@ async function restoreCurrentBackupIntoKeychain(
   }
 }
 
+async function handleSeedPhrasePinEncryption({
+  seedPhrase,
+  newPIN,
+  backupPIN,
+}: {
+  seedPhrase?: string;
+  newPIN?: string;
+  backupPIN?: string;
+}) {
+  let processedSeedPhrase = seedPhrase;
+
+  if (!processedSeedPhrase) {
+    return seedPhrase;
+  }
+
+  /*
+   * We need to decrypt the seed with the PIN stored in the backup
+   * It is required for old backups created before we started storing
+   * seeds in backups without PIN encryption
+   */
+  if (backupPIN && processedSeedPhrase.includes('cipher')) {
+    processedSeedPhrase = await decryptBackupPinEncryptedSeedPhrase(
+      processedSeedPhrase,
+      backupPIN
+    );
+  }
+
+  /*
+   * For devices that don't support biometrics or for users without
+   * biometrics enabled, we need to encrypt the seed with the PIN
+   * for storage in Android device keychain
+   */
+  if (newPIN) {
+    processedSeedPhrase = await encryptSeedPhraseWithNewPinIfNeeded(
+      processedSeedPhrase,
+      newPIN
+    );
+  }
+  return processedSeedPhrase;
+}
+
 async function decryptBackupPinEncryptedSeedPhrase(
   seedPhrase: string,
-  pinData?: string
+  backupPIN?: string
 ): Promise<string> {
+  if (!backupPIN) return seedPhrase;
   try {
-    const pinSavedInBackup = await decryptPIN(pinData);
-    const decryptedSeedPhrase = await encryptor.decrypt(
-      pinSavedInBackup,
-      seedPhrase
-    );
+    const decryptedSeedPhrase = await encryptor.decrypt(backupPIN, seedPhrase);
     return decryptedSeedPhrase;
   } catch (e) {
     return seedPhrase;
   }
+}
+
+async function encryptSeedPhraseWithNewPinIfNeeded(
+  seedPhrase: string,
+  newPIN?: string
+) {
+  if (newPIN) {
+    const encryptedSeedPhrase = await encryptor.encrypt(newPIN, seedPhrase);
+    return encryptedSeedPhrase;
+  }
+  return seedPhrase;
 }
 
 // Attempts to save the password to decrypt the backup from the iCloud keychain

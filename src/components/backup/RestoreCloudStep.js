@@ -42,6 +42,8 @@ import logger from '@/utils/logger';
 import { Box } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
+import { getSupportedBiometryType } from 'react-native-keychain';
+import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -158,13 +160,24 @@ export default function RestoreCloudStep({
   );
 
   const onSubmit = useCallback(async () => {
+    let userPIN;
+    const hasBiometricsEnabled = await getSupportedBiometryType();
+    if (IS_ANDROID && !hasBiometricsEnabled) {
+      try {
+        userPIN = await authenticateWithPINAndCreateIfNeeded();
+      } catch (e) {
+        Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+        return;
+      }
+    }
     try {
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup(
+      const success = await restoreCloudBackup({
         password,
         userData,
-        backupSelected?.name
-      );
+        backupSelected: backupSelected?.name,
+        userPIN,
+      });
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
