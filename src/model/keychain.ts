@@ -50,7 +50,7 @@ export async function saveString(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-      // only say public data to mmkv
+      // only save public data to mmkv
       // private data has accessControl
       if (!accessControlOptions?.accessControl) {
         saveStringMMKV(key, value);
@@ -165,7 +165,7 @@ export async function saveObject(
 ): Promise<void> {
   const jsonValue = JSON.stringify(value);
 
-  // only say public data to mmkv
+  // only save public data to mmkv
   // private data has accessControl
   if (!accessControlOptions?.accessControl) {
     saveStringMMKV(key, jsonValue);
