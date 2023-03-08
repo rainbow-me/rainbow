@@ -719,8 +719,8 @@ export const explainers = (params, colors) => ({
   },
   f2cSemiSupportedAssetPurchased: {
     emoji: '🎉',
-    title: `Purchase successful!`,
-    text: `We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon.`,
+    title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
     extraHeight: -80,
   },
   insufficientLiquidity: {

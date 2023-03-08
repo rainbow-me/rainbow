@@ -1697,6 +1697,12 @@
         "sheet_empty_state": {
           "title": "Can't find your preferred provider? :)",
           "description": "Check back soon for more options :)"
+        },
+        "explain_sheet": {
+          "semi_supported": {
+            "title": "Purchase successful! :)",
+            "text": "We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon. :)"
+          }
         }
       },
       "alert": {
