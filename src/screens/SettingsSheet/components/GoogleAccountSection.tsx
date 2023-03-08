@@ -100,7 +100,7 @@ export const GoogleAccountSection: React.FC = () => {
   };
 
   return (
-    <Menu header="Google account used for backups">
+    <Menu header={i18n.t(i18n.l.settings.google_account_used)}>
       {loading && (
         <MenuItem
           hasSfSymbol

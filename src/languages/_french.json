@@ -1405,6 +1405,7 @@
     },
     "settings": {
       "backup": "Sauvegarder",
+      "google_account_used": "Google account used for backups :)",
       "backup_switch_google_account": "Switch Google Account :)",
       "backup_sign_out": "Sign out :)",
       "backup_sign_in": "Sign in :)",
