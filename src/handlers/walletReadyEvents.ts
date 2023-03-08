@@ -16,7 +16,7 @@ import { Navigation } from '@/navigation';
 import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -52,19 +52,19 @@ export const runWalletBackupStatusChecks = () => {
 
   if (!rainbowWalletsNotBackedUp.length) return;
 
-  logger.log('there is a rainbow wallet not backed up');
+  logger.debug('there is a rainbow wallet not backed up');
+
   const hasSelectedWallet = rainbowWalletsNotBackedUp.find(
     notBackedUpWallet => notBackedUpWallet.id === selected!.id
   );
 
-  logger.log(
-    'rainbow wallet not backed up that is selected?',
-    hasSelectedWallet
-  );
+  logger.debug('rainbow wallet not backed up that is selected?', {
+    hasSelectedWallet,
+  });
 
   // if one of them is selected, show the default BackupSheet
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
-    logger.log('showing default BackupSheet');
+    logger.debug('showing default BackupSheet');
     setTimeout(() => {
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
@@ -76,7 +76,7 @@ export const runWalletBackupStatusChecks = () => {
   // otherwise, show the BackupSheet redirecting to the WalletSelectionList
   IS_TESTING !== 'true' &&
     setTimeout(() => {
-      logger.log('showing BackupSheet with existing_user step');
+      logger.debug('showing BackupSheet with existing_user step');
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           single: true,
@@ -107,11 +107,11 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
     }
   });
 
-  logger.log('WALLETS TO CHECK', walletsToCheck);
+  logger.debug('WALLETS TO CHECK', { walletsToCheck });
 
   if (!walletsToCheck.length) return false;
 
-  logger.log('Feature Unlocks: Running Checks');
+  logger.debug('Feature Unlocks: Running Checks');
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {

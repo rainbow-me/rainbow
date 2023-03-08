@@ -1,6 +1,6 @@
 /*global storage*/
 import { legacy } from '@/storage/legacy';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 const defaultVersion = '0.1.0';
 
@@ -55,7 +55,7 @@ export const deprecatedSaveLocal = async (
       key,
     });
   } catch (error) {
-    logger.log('Storage: error saving to local for key', key);
+    logger.error(new RainbowError('Storage: saveLocal error'));
   }
 };
 
@@ -86,7 +86,7 @@ export const deprecatedGetLocal = async (
     }
     return null;
   } catch (error) {
-    logger.log('Storage: error getting from local for key', key);
+    logger.error(new RainbowError('Storage: getLocal error'));
     return null;
   }
 };
@@ -103,7 +103,7 @@ export const deprecatedRemoveLocal = (key = '') => {
     // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'storage'. Did you mean 'Storage'... Remove this comment to see the full error message
     storage.remove({ key });
   } catch (error) {
-    logger.log('Storage: error removing local with key', key);
+    logger.error(new RainbowError('Storage: removeLocal error'));
   }
 };
 
