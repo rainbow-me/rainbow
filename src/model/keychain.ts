@@ -50,7 +50,8 @@ export async function saveString(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-      // if data is public, save to local storage
+      // only say public data to mmkv
+      // private data has accessControl
       if (!accessControlOptions?.accessControl) {
         saveStringMMKV(key, value);
       }
@@ -89,13 +90,14 @@ export async function loadString(
   options?: Options
 ): Promise<null | string | -1 | -2> {
   try {
-    // if the data is public, try to load data from mmkv first
+    // try to load data from mmkv first
+    // if its private or does not exist, it will return undefined
     const data = loadStringMMKV(key);
     if (data) {
       return data;
     }
 
-    // if not found or private, load from keychain
+    // load from keychain if not found in MMKV (private or does not exist)
     const credentials = await getInternetCredentials(key, options);
     if (credentials) {
       logger.info(`Keychain: loaded string for key: ${key}`);
@@ -163,7 +165,8 @@ export async function saveObject(
 ): Promise<void> {
   const jsonValue = JSON.stringify(value);
 
-  // if data is public, save to MMKV
+  // only say public data to mmkv
+  // private data has accessControl
   if (!accessControlOptions?.accessControl) {
     saveStringMMKV(key, jsonValue);
   }
@@ -175,12 +178,12 @@ export async function loadObject(
   key: string,
   options?: Options
 ): Promise<null | Record<string, any> | -1 | -2> {
-  // if data is public, try to load data from mmkv first
+  // try to load data from mmkv first
+  // if its private or does not exist, it will return undefined
   const jsonValueMMKV = loadStringMMKV(key);
 
   if (jsonValueMMKV) {
     try {
-      console.log('data is found: ', jsonValueMMKV);
       const objectValue = JSON.parse(jsonValueMMKV);
       return objectValue;
     } catch (err) {
@@ -192,7 +195,7 @@ export async function loadObject(
     }
   }
 
-  // if not found or private, load from keychain
+  // load from keychain if not found in MMKV (private or does not exist)
   const jsonValue = await loadString(key, options);
   if (!jsonValue) return null;
   if (jsonValue === -1 || jsonValue === -2) {
