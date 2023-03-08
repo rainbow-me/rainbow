@@ -92,10 +92,8 @@ export async function loadString(
     // if the data is public, try to load data from mmkv first
     const data = loadStringMMKV(key);
     if (data) {
-      console.log('data is found: ', data);
       return data;
     }
-    console.log('data is not found using keychain');
 
     // if not found or private, load from keychain
     const credentials = await getInternetCredentials(key, options);
@@ -193,7 +191,6 @@ export async function loadObject(
       );
     }
   }
-  console.log(' !!!!!!data is not found using keychain');
 
   // if not found or private, load from keychain
   const jsonValue = await loadString(key, options);
