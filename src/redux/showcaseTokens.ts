@@ -16,6 +16,10 @@ import WalletTypes from '@/helpers/walletTypes';
 
 const SHOWCASE_TOKENS_LOAD_SUCCESS =
   'showcaseTokens/SHOWCASE_TOKENS_LOAD_SUCCESS';
+const SHOWCASE_TOKENS_FETCH_SUCCESS =
+  'showcaseTokens/SHOWCASE_TOKENS_FETCH_SUCCESS';
+const SHOWCASE_TOKENS_FETCH_FAILURE =
+  'showcaseTokens/SHOWCASE_TOKENS_FETCH_FAILURE';
 const SHOWCASE_TOKENS_LOAD_FAILURE =
   'showcaseTokens/SHOWCASE_TOKENS_LOAD_FAILURE';
 const UPDATE_WEB_DATA_ENABLED = 'showcaseTokens/UPDATE_WEB_DATA_ENABLED';
@@ -43,6 +47,8 @@ interface ShowcaseTokensState {
  */
 type ShowcaseTokensAction =
   | ShowcaseTokensLoadSuccessAction
+  | ShowcaseTokensFetchSuccessAction
+  | ShowcaseTokensFetchFailureAction
   | ShowcaseTokensLoadFailureAction
   | ShowcaseTokensUpdateWebDataEnabledAction
   | ShowcaseTokensUpdateAction;
@@ -57,6 +63,25 @@ interface ShowcaseTokensLoadSuccessAction {
     showcaseTokens: string[];
     webDataEnabled: boolean;
   };
+}
+
+/**
+ * The action used when information about showcased tokens has been loaded from firebase
+ * successfully.
+ */
+interface ShowcaseTokensFetchSuccessAction {
+  type: typeof SHOWCASE_TOKENS_FETCH_SUCCESS;
+  payload: {
+    showcaseTokens: string[];
+    webDataEnabled: boolean;
+  };
+}
+
+/**
+ * The action used when fetching information about showcased tokens from firebase fails.
+ */
+interface ShowcaseTokensFetchFailureAction {
+  type: typeof SHOWCASE_TOKENS_FETCH_FAILURE;
 }
 
 /**
@@ -93,11 +118,37 @@ export const showcaseTokensLoadState = () => async (
   getState: AppGetState
 ) => {
   try {
-    const account = getState().wallets?.selected;
-    const isReadOnlyWallet = account?.type === WalletTypes.readOnly;
     const { accountAddress, network } = getState().settings;
 
-    let showcaseTokens = await getShowcaseTokens(accountAddress, network);
+    const showcaseTokens = await getShowcaseTokens(accountAddress, network);
+    const pref = await getWebDataEnabled(accountAddress, network);
+
+    dispatch({
+      payload: {
+        showcaseTokens,
+        webDataEnabled: !!pref,
+      },
+      type: SHOWCASE_TOKENS_LOAD_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({ type: SHOWCASE_TOKENS_LOAD_FAILURE });
+  }
+};
+
+/**
+ * Loads showcased token IDs and web-data settings from firebase and
+ * updates state.
+ */
+export const showcaseTokensUpdateStateFromWeb = (enabled: boolean) => async (
+  dispatch: Dispatch<
+    ShowcaseTokensFetchSuccessAction | ShowcaseTokensFetchFailureAction
+  >,
+  getState: AppGetState
+) => {
+  try {
+    const isReadOnlyWallet =
+      getState().wallets.selected?.type === WalletTypes.readOnly;
+    const { accountAddress, network } = getState().settings;
 
     // if web data is enabled, fetch values from cloud
     const pref = await getWebDataEnabled(accountAddress, network);
@@ -111,19 +162,17 @@ export const showcaseTokensLoadState = () => async (
         showcaseTokensFromCloud?.showcase?.ids &&
         showcaseTokensFromCloud?.showcase?.ids.length > 0
       ) {
-        showcaseTokens = showcaseTokensFromCloud.showcase.ids;
+        dispatch({
+          payload: {
+            showcaseTokens: showcaseTokensFromCloud.showcase.ids,
+            webDataEnabled: !!pref,
+          },
+          type: SHOWCASE_TOKENS_FETCH_SUCCESS,
+        });
       }
     }
-
-    dispatch({
-      payload: {
-        showcaseTokens,
-        webDataEnabled: !!pref,
-      },
-      type: SHOWCASE_TOKENS_LOAD_SUCCESS,
-    });
   } catch (error) {
-    dispatch({ type: SHOWCASE_TOKENS_LOAD_FAILURE });
+    dispatch({ type: SHOWCASE_TOKENS_FETCH_FAILURE });
   }
 };
 
@@ -210,7 +259,10 @@ export default (
   produce(state, draft => {
     if (action.type === SHOWCASE_TOKENS_UPDATE) {
       draft.showcaseTokens = action.payload;
-    } else if (action.type === SHOWCASE_TOKENS_LOAD_SUCCESS) {
+    } else if (
+      action.type === SHOWCASE_TOKENS_LOAD_SUCCESS ||
+      action.type === SHOWCASE_TOKENS_FETCH_SUCCESS
+    ) {
       draft.showcaseTokens = action.payload.showcaseTokens;
       draft.webDataEnabled = action.payload.webDataEnabled;
     } else if (action.type === UPDATE_WEB_DATA_ENABLED) {
