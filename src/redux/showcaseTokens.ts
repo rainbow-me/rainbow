@@ -139,7 +139,7 @@ export const showcaseTokensLoadState = () => async (
  * Loads showcased token IDs and web-data settings from firebase and
  * updates state.
  */
-export const showcaseTokensUpdateStateFromWeb = (enabled: boolean) => async (
+export const showcaseTokensUpdateStateFromWeb = () => async (
   dispatch: Dispatch<
     ShowcaseTokensFetchSuccessAction | ShowcaseTokensFetchFailureAction
   >,
