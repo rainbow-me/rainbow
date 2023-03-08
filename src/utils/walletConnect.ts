@@ -36,6 +36,7 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
+import { IS_DEV } from '@/env';
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -218,23 +219,31 @@ export async function initListeners() {
   client.on('session_request', onSessionRequest);
 
   try {
-    const token = await getFCMToken(); // will throw
-    const client_id = await client.core.crypto.getClientId();
+    const token = await getFCMToken();
 
-    // initial subscription
-    await subscribeToEchoServer({ token, client_id });
+    if (token) {
+      const client_id = await client.core.crypto.getClientId();
 
-    /**
-     * Ensure that if the FCM token changes we update the echo server
-     */
-    messaging().onTokenRefresh(async token => {
+      // initial subscription
       await subscribeToEchoServer({ token, client_id });
-    });
+
+      /**
+       * Ensure that if the FCM token changes we update the echo server
+       */
+      messaging().onTokenRefresh(async token => {
+        await subscribeToEchoServer({ token, client_id });
+      });
+    } else {
+      if (!IS_DEV) {
+        logger.error(
+          new RainbowError(
+            `WC v2: FCM token not found, push notifications will not be received`
+          )
+        );
+      }
+    }
   } catch (e) {
-    logger.error(
-      new RainbowError(`WC v2: echo server FCM token retrieval failed`),
-      { error: e }
-    );
+    logger.error(new RainbowError(`WC v2: initListeners failed`), { error: e });
   }
 }
 
