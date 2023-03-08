@@ -85,8 +85,21 @@ export const deprecatedGetLocal = async (
       return null;
     }
     return null;
-  } catch (error) {
-    logger.error(new RainbowError('Storage: deprecatedGetLocal error'));
+  } catch (error: any) {
+    /**
+     * react-native-storage throws errors when the key is not found or it's
+     * expired, and we don't need to send those to Sentry
+     *
+     * @see https://github.com/sunnylqm/react-native-storage/blob/96df43f0028a6afd08bc56e80d327fabb5fff583/README.md?plain=1#L107-L114
+     */
+    switch (error.name) {
+      case 'NotFoundError':
+      case 'ExpiredError':
+        break;
+      default:
+        logger.error(new RainbowError('Storage: deprecatedGetLocal error'));
+    }
+
     return null;
   }
 };

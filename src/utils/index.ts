@@ -12,8 +12,6 @@ export { default as contenthash } from './contenthash';
 export { default as deviceUtils } from './deviceUtils';
 export { default as profileUtils } from './profileUtils';
 export { default as doesWalletsContainAddress } from './doesWalletsContainAddress';
-export { default as dimensionsPropType } from './dimensionsPropType';
-export { default as directionPropType } from './directionPropType';
 export {
   getENSNFTAvatarUrl,
   isENSNFTRecord,
