@@ -23,6 +23,7 @@ import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -177,7 +178,13 @@ export function PairHardwareWalletSigningSheet() {
   );
 
   const handleButtonPress = useCallback(async (): Promise<void> => {
-    await checkLedgerConnection({ deviceId, successCallback, errorCallback });
+    const transport = await TransportBLE.open(deviceId);
+    await checkLedgerConnection({
+      transport,
+      deviceId,
+      successCallback,
+      errorCallback,
+    });
   }, [deviceId, successCallback, errorCallback]);
 
   return (

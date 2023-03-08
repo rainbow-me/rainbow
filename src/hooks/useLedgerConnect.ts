@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { DebugContext } from '@/logger/debugContext';
 import { logger } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -17,14 +18,31 @@ export function useLedgerConnect({
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
+  const transport = useRef<TransportBLE | null>();
+
   /**
    * Handles local error handling for useLedgerStatusCheck
    */
   const handleLedgerError = useCallback(
-    (errorType: LEDGER_ERROR_CODES) => {
-      errorCallback?.(errorType);
+    async (errorType: LEDGER_ERROR_CODES) => {
+      if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
+        logger.debug(
+          '[LedgerConnect] - Device Disconnected - Attempting Reconnect',
+          {},
+          DebugContext.ledger
+        );
+        transport.current = null;
+        try {
+          transport.current = await TransportBLE.open(deviceId);
+        } catch (e) {
+          logger.warn('[LedgerConnect] - Reconnect Error', { error: e });
+          errorCallback?.(errorType);
+        }
+      } else {
+        errorCallback?.(errorType);
+      }
     },
-    [errorCallback]
+    [deviceId, errorCallback]
   );
 
   /**
@@ -61,12 +79,18 @@ export function useLedgerConnect({
         DebugContext.ledger
       );
       timer = setInterval(async () => {
-        if (readyForPolling) {
-          await checkLedgerConnection({
-            deviceId,
-            successCallback: handleLedgerSuccess,
-            errorCallback: handleLedgerError,
-          });
+        if (transport.current) {
+          if (readyForPolling) {
+            await checkLedgerConnection({
+              transport: transport.current,
+              deviceId,
+              successCallback: handleLedgerSuccess,
+              errorCallback: handleLedgerError,
+            });
+          }
+        } else {
+          // eslint-disable-next-line require-atomic-updates
+          transport.current = await TransportBLE.open(deviceId);
         }
       }, 2000);
     }

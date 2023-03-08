@@ -48,15 +48,16 @@ export const getEthApp = async (deviceId: string) => {
 };
 
 export const checkLedgerConnection = async ({
+  transport,
   deviceId,
   successCallback,
   errorCallback,
 }: {
+  transport: TransportBLE;
   deviceId: string;
   successCallback?: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) => {
-  const transport = await TransportBLE.open(deviceId);
   const ethApp = new AppEth(transport);
   const path = getHdPath({ type: WalletLibraryType.ledger, index: 1 });
   ethApp
