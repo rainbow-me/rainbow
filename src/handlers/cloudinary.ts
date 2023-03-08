@@ -37,10 +37,7 @@ export const signUrl = memoFn(
 
     const directory = internalAddress.split('/')[0];
 
-    const usedWidth = supportedSizeTransformations[directory]
-      ? pickScale(supportedSizeTransformations[directory], width)
-      : width;
-
+    const usedWidth = pickScale(supportedSizeTransformations[directory], width);
     const cloudinaryImg = cloudinaryURL(internalAddress, {
       height: usedWidth,
       sign_url: true,
