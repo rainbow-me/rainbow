@@ -2,7 +2,7 @@ import { ApolloClient } from '@apollo/client';
 import { DocumentNode } from 'graphql';
 import { blockClientDeprecated } from '@/apollo/client';
 import { GET_BLOCKS_QUERY } from '@/apollo/queries';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 async function splitQuery(
   query: DocumentNode,
@@ -40,8 +40,10 @@ async function splitQuery(
       } else {
         skip += skipCount;
       }
-    } catch (e) {
-      logger.log('🦄 Pools split query error', e);
+    } catch (e: any) {
+      logger.error(new RainbowError('🦄 Pools split query error'), {
+        message: e.message,
+      });
     }
   }
 
