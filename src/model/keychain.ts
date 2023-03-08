@@ -243,11 +243,12 @@ export async function loadObject(
     try {
       const objectValue = JSON.parse(jsonValueMMKV);
       return objectValue;
-    } catch (err) {
+    } catch (e) {
       logger.error(
-        new RainbowError(
-          `Keychain MMKV: failed to parse object for key: ${key} error: ${err}`
-        )
+        new RainbowError('Keychain MMKV: failed to parse object for key'),
+        {
+          message: (e as Error).message,
+        }
       );
     }
   }
