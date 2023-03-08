@@ -1,9 +1,7 @@
-import { captureException } from '@sentry/react-native';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
-import logger from '@/utils/logger';
-import { Network } from '@/helpers';
+import { logger, RainbowError } from '@/logger';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -28,9 +26,10 @@ export const getUniswapV2Tokens = async (
       UniswapAssetsCache.cache[key] = res?.data?.tokens;
       return res?.data?.tokens ?? null;
     }
-  } catch (error) {
-    logger.sentry(`Error fetching uniswap v2 tokens: ${error}`);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError(`Error fetching uniswap v2 tokens`), {
+      message: e.message,
+    });
   }
   return null;
 };
@@ -42,9 +41,10 @@ export const getDPIBalance = async (): Promise<{
   try {
     const res = await dispersionApi.get('/dispersion/v1/dpi');
     return res?.data?.data ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching dpi balance: ${error}`);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError(`Error fetching dpi balance`), {
+      message: e.message,
+    });
     return null;
   }
 };
@@ -55,9 +55,10 @@ export const getTrendingAddresses = async (): Promise<
   try {
     const res = await dispersionApi.get('/dispersion/v1/trending');
     return res?.data?.data?.trending ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching trending addresses: ${error}`);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError(`Error fetching trending addresses`), {
+      message: e.message,
+    });
     return null;
   }
 };
@@ -71,9 +72,10 @@ export const getAdditionalAssetData = async (
       `/dispersion/v1/expanded/${chainId}/${address}`
     );
     return res?.data?.data ?? null;
-  } catch (error) {
-    logger.sentry(`Error fetching additional asset data: ${error}`);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError(`Error fetching additional asset data`), {
+      message: e.message,
+    });
     return null;
   }
 };

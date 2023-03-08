@@ -22,6 +22,7 @@ const NativeFieldRow = styled(Row).attrs({
 });
 
 interface ExchangeInputFieldProps {
+  color: string;
   disableInputCurrencySelection: boolean;
   editable: boolean;
   loading: boolean;
@@ -45,6 +46,7 @@ interface ExchangeInputFieldProps {
 }
 
 export default function ExchangeInputField({
+  color,
   disableInputCurrencySelection,
   editable,
   inputAmount,
@@ -70,6 +72,7 @@ export default function ExchangeInputField({
     <Container>
       <ExchangeField
         address={inputCurrencyAddress}
+        color={color}
         amount={inputAmount}
         disableCurrencySelection={disableInputCurrencySelection}
         editable={editable}
@@ -88,27 +91,23 @@ export default function ExchangeInputField({
       />
       <NativeFieldRow>
         <ExchangeNativeField
-          address={inputCurrencyAddress}
+          color={color}
           editable={editable}
           height={64}
           loading={loading}
-          mainnetAddress={inputCurrencyMainnetAddress}
           nativeAmount={nativeAmount}
           nativeCurrency={nativeCurrency}
           onFocus={onFocus}
           ref={nativeFieldRef}
           setNativeAmount={setNativeAmount}
           testID={testID + '-native'}
-          type={inputCurrencyAssetType}
           updateOnFocus={updateAmountOnFocus}
         />
         <ExchangeMaxButton
-          address={inputCurrencyAddress}
+          color={color}
           disabled={!inputCurrencySymbol}
-          mainnetAddress={inputCurrencyMainnetAddress}
           onPress={onPressMaxBalance}
           testID={testID + '-max'}
-          type={inputCurrencyAssetType}
         />
       </NativeFieldRow>
     </Container>

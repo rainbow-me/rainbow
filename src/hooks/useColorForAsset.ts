@@ -12,14 +12,14 @@ export default function useColorForAsset(
 ) {
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
-  const { address, mainnet_address, type } = asset;
   const accountAsset = ethereumUtils.getAssetFromAllAssets(
-    asset?.uniqueId || mainnet_address || address
+    asset?.uniqueId || asset?.mainnet_address || asset?.address
   );
-  const resolvedAddress = mainnet_address || address || accountAsset?.address;
+  const resolvedAddress =
+    asset?.mainnet_address || asset?.address || accountAsset?.address;
 
   const derivedColor = usePersistentDominantColorFromImage(
-    accountAsset?.icon_url
+    accountAsset?.icon_url || asset?.icon_url
   );
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
@@ -43,6 +43,10 @@ export default function useColorForAsset(
     // we have special handling for eth color
     if (isETH(resolvedAddress)) {
       color2Return = colorDerivedFromAddress;
+
+      // image derived color from BE for tokens passed via params (usually assets not in wallet)
+    } else if (asset?.colors?.primary) {
+      color2Return = asset?.colors?.primary;
 
       // token image derived color from BE
     } else if (accountAsset?.colors?.primary) {
@@ -77,6 +81,7 @@ export default function useColorForAsset(
   }, [
     accountAsset?.colors?.fallback,
     accountAsset?.colors?.primary,
+    asset?.colors?.primary,
     colorDerivedFromAddress,
     colors,
     derivedColor,

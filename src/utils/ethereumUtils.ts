@@ -3,7 +3,6 @@ import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { captureException } from '@sentry/react-native';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import {
@@ -67,11 +66,10 @@ import {
   OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
   BSC_BLOCK_EXPLORER_URL,
-  supportedNativeCurrencies,
   BNB_MAINNET_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
 const getNetworkNativeAsset = (
@@ -500,9 +498,10 @@ const checkIfUrlIsAScam = async (url: string) => {
       return true;
     }
     return false;
-  } catch (e) {
-    logger.sentry('Error fetching cryptoscamdb.org list');
-    captureException(e);
+  } catch (e: any) {
+    logger.error(new RainbowError('Error fetching cryptoscamdb.org list'), {
+      message: e.message,
+    });
   }
 };
 
@@ -670,8 +669,10 @@ const calculateL1FeeOptimism = async (
     );
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
     return l1FeeInWei;
-  } catch (e) {
-    logger.log('error calculating l1 fee', e);
+  } catch (e: any) {
+    logger.error(new RainbowError('error calculating l1 fee'), {
+      message: e.message,
+    });
   }
 };
 
