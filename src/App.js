@@ -134,15 +134,9 @@ class OldApp extends Component {
     this.branchListener = await branchListener(this.handleOpenLinkingURL);
     // Walletconnect uses direct deeplinks
     if (android) {
-      try {
-        const initialUrl = await Linking.getInitialURL();
-        if (initialUrl) {
-          this.handleOpenLinkingURL(initialUrl);
-        }
-      } catch (e) {
-        logger.error(new RainbowError('Error opening deeplink'), {
-          message: e.message,
-        });
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        this.handleOpenLinkingURL(initialUrl);
       }
       Linking.addEventListener('url', ({ url }) => {
         this.handleOpenLinkingURL(url);
