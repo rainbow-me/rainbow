@@ -1,5 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
-import { Signer } from 'ethers';
+import { Signer } from '@ethersproject/abstract-signer';
 import {
   ChainId,
   CrosschainQuote,

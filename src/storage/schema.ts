@@ -18,3 +18,15 @@ export type Device = {
    */
   branchFirstReferringParamsSet: boolean;
 };
+
+/**
+ * This schema is used for legacy data that was previously stored in
+ * AsyncStorage. Since none of it is typed, we need to be overly permissive
+ * here. WHEN we get around to typing that data, we can add more specific
+ * properties here.
+ */
+export type Legacy = {
+  // example of more specific typing
+  // foo: boolean;
+  [key: string]: any;
+};

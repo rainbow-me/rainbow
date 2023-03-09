@@ -1,5 +1,4 @@
 import { logger } from '@/logger';
-import { DebugContext } from '@/logger/debugContext';
 import { getHdPath, WalletLibraryType } from '@/model/wallet';
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
@@ -66,7 +65,7 @@ export const checkLedgerConnection = async ({
       logger.debug(
         '[checkLedgerConnection] - ledger is ready',
         {},
-        DebugContext.ledger
+        logger.DebugContext.ledger
       );
       successCallback?.(deviceId);
     })
