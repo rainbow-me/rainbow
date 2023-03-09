@@ -1,5 +1,5 @@
-import qs from 'query-string';
 import lang from 'i18n-js';
+import URL from 'url-parse';
 
 import { parseUri } from '@walletconnect/utils';
 import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
@@ -53,8 +53,7 @@ export default async function handleDeeplink(
     await delay(300);
   }
 
-  const { protocol, host, pathname, search } = new URL(url);
-  const query = qs.parse(search);
+  const { protocol, host, pathname, query } = new URL(url);
 
   logger.info(`handleDeeplink: handling url`, {
     url,
@@ -260,8 +259,7 @@ export default async function handleDeeplink(
 }
 
 function handleWalletConnect(uri: string) {
-  const { search } = new URL(uri);
-  const query = qs.parse(search);
+  const { query } = new URL(uri);
   const parsedUri = uri ? parseUri(uri) : null;
 
   logger.debug(`handleWalletConnect`, { uri, query, parsedUri });
