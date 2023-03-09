@@ -224,6 +224,7 @@ describe('Register ENS Flow', () => {
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
     device.getPlatform() === 'android' && (await Helpers.delay(2000));
+    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.2);
     await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
