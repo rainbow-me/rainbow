@@ -2,7 +2,6 @@ import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
-import { logger, RainbowError } from '@/logger';
 
 import { getSimplehashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
 import {
@@ -13,9 +12,6 @@ import {
   SimplehashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
 
-export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
-export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
-
 export const START_CURSOR = 'start';
 
 const simplehashApi = new RainbowFetchClient({
@@ -25,7 +21,7 @@ const simplehashApi = new RainbowFetchClient({
 const createCursorSuffix = (cursor: string) =>
   cursor === START_CURSOR ? '' : `&cursor=${cursor}`;
 
-export async function fetchSimplehashNft(
+export async function fetchSimplehashNFT(
   contractAddress: string,
   tokenId: string,
   network: Omit<Network, Network.goerli> = Network.mainnet
@@ -44,7 +40,7 @@ export async function fetchSimplehashNft(
   return response?.data;
 }
 
-export async function fetchSimplehashNfts(
+export async function fetchSimplehashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
 ): Promise<{ nfts: SimplehashNFT[]; nextCursor: string | null }> {

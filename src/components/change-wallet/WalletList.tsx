@@ -30,7 +30,6 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
-import { useLegacyNFTs } from '@/resources/nfts';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -135,8 +134,6 @@ export default function WalletList({
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const nfts = useLegacyNFTs(accountAddress);
-  console.log(nfts?.length);
 
   // Update the rows when allWallets changes
   useEffect(() => {
