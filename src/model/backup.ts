@@ -268,7 +268,7 @@ export async function restoreCloudBackup({
       };
       return restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
     } else {
-      return restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
+      return restoreSpecificBackupIntoKeychain(dataToRestore);
     }
   } catch (e) {
     logger.sentry('Error while restoring back up');
@@ -278,11 +278,9 @@ export async function restoreCloudBackup({
 }
 
 async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData,
-  newPIN?: string
+  backedUpData: BackedUpData
 ): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
-  const backupPIN = await decryptPIN(encryptedBackupPinData);
 
   try {
     // Re-import all the seeds (and / or pkeys) one by one
@@ -290,11 +288,17 @@ async function restoreSpecificBackupIntoKeychain(
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const parsedValue = JSON.parse(valueStr);
-        const processedSeedPhrase = await handleSeedPhrasePinEncryption({
-          seedPhrase: parsedValue.seedphrase,
-          newPIN,
-          backupPIN,
-        });
+        // We only need to decrypt from backup since createWallet encrypts itself
+        let processedSeedPhrase = parsedValue.seedphrase;
+        if (processedSeedPhrase && processedSeedPhrase.includes('cipher')) {
+          const backupPIN = await decryptPIN(encryptedBackupPinData);
+          processedSeedPhrase = await decryptSeedFromBackupPinAndEncryptWithNewPin(
+            {
+              seedPhrase: parsedValue.seedphrase,
+              backupPIN,
+            }
+          );
+        }
         await createWallet(processedSeedPhrase, null, null, true);
       }
     }
@@ -323,11 +327,13 @@ async function restoreCurrentBackupIntoKeychain(
         if (endsWith(key, seedPhraseKey)) {
           accessControl = privateAccessControlOptions;
           const parsedValue = JSON.parse(value);
-          const processedSeedPhrase = await handleSeedPhrasePinEncryption({
-            seedPhrase: parsedValue.seedphrase,
-            newPIN,
-            backupPIN,
-          });
+          const processedSeedPhrase = await decryptSeedFromBackupPinAndEncryptWithNewPin(
+            {
+              seedPhrase: parsedValue.seedphrase,
+              newPIN,
+              backupPIN,
+            }
+          );
           parsedValue.seedphrase = processedSeedPhrase;
           value = JSON.stringify(parsedValue);
         }
@@ -350,7 +356,7 @@ async function restoreCurrentBackupIntoKeychain(
   }
 }
 
-async function handleSeedPhrasePinEncryption({
+async function decryptSeedFromBackupPinAndEncryptWithNewPin({
   seedPhrase,
   newPIN,
   backupPIN,

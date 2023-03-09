@@ -1726,7 +1726,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
-              // Dencrypt with the PIN
+              // Decrypt with the PIN
               seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
             } else {
               return null;
