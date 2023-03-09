@@ -6,6 +6,7 @@ import {
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
+import { POAP_NFT_ADDRESS } from '@/references';
 
 export function getSimplehashChainFromNetwork(
   network: Omit<Network, Network.goerli>
@@ -98,8 +99,8 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     image_preview_url: lowResUrl,
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
-    isPoap: false,
-    isSendable: false,
+    isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+    isSendable: nft.chain === SimplehashChain.Ethereum,
     lastPrice: getPriceFromLastSale(nft.last_sale) || null,
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,

@@ -28,19 +28,18 @@ export function useNFT(tokenId: string): NFT {
 export function useLegacyNFTs(address: string): UniqueAsset[] {
   const queryClient = useQueryClient();
   const mounted = useIsMounted();
+
   const [cursor, setCursor] = useState<string>();
   const [isFinished, finish] = useReducer(() => true, false);
 
-  const nftsQuery = useQuery<UniqueAsset[]>(
-    nftsQueryKey({ address }),
-    async () => [],
-    {
-      enabled: false,
-      staleTime: Infinity,
-    }
-  );
+  const queryKey = nftsQueryKey({ address });
 
-  const nfts = nftsQuery.data ?? [];
+  const query = useQuery<UniqueAsset[]>(queryKey, async () => [], {
+    enabled: false,
+    staleTime: Infinity,
+  });
+
+  const nfts = query.data ?? [];
 
   useEffect(() => {
     const fetchNFTs = async () => {
@@ -57,15 +56,22 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
 
       const newNfts = simplehashNfts.map(simplehashNFTToUniqueAsset);
 
-      queryClient.setQueryData<UniqueAsset[]>(
-        nftsQueryKey({ address }),
-        cachedNfts => uniqBy([...newNfts, ...(cachedNfts ?? [])], 'uniqueId')
+      queryClient.setQueryData<UniqueAsset[]>(queryKey, cachedNfts =>
+        uniqBy([...newNfts, ...(cachedNfts ?? [])], 'uniqueId')
       );
     };
     if (!isFinished && mounted.current && nfts.length < NFTS_LIMIT) {
       fetchNFTs();
     }
-  }, [address, cursor, isFinished, mounted, nfts.length, queryClient]);
+  }, [
+    address,
+    cursor,
+    isFinished,
+    mounted,
+    nfts.length,
+    queryClient,
+    queryKey,
+  ]);
 
   return nfts;
 }
