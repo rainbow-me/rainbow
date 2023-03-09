@@ -29,6 +29,7 @@ import { executeRap } from '@/raps';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { labelhash, logger } from '@/utils';
+import Wallet from 'ethereumjs-wallet';
 
 const NOOP = () => null;
 
@@ -61,7 +62,7 @@ export default function useENSRegistrationActionHandler(
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters } = useENSRegistration();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
 
@@ -94,7 +95,9 @@ export default function useENSRegistrationActionHandler(
   const commitAction = useCallback(
     async (callback: () => void = NOOP) => {
       updateAvatarsOnNextBlock.current = true;
-      const wallet = await loadWallet();
+
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -127,10 +130,15 @@ export default function useENSRegistrationActionHandler(
         wallet,
         RapActionTypes.commitENS,
         commitEnsRegistrationParameters,
-        callback
+        () => {
+          if (!(wallet instanceof Wallet)) {
+            goBack();
+          }
+          callback;
+        }
       );
     },
-    [getNextNonce, registrationParameters, duration, accountAddress]
+    [getNextNonce, registrationParameters, duration, accountAddress, goBack]
   );
 
   const speedUpCommitAction = useCallback(
@@ -167,7 +175,8 @@ export default function useENSRegistrationActionHandler(
         duration,
       } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -214,7 +223,8 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -246,7 +256,8 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -272,7 +283,8 @@ export default function useENSRegistrationActionHandler(
 
   const setRecordsAction = useCallback(
     async (callback: () => void = NOOP) => {
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -327,7 +339,11 @@ export default function useENSRegistrationActionHandler(
         wallet: walletOverride,
       }
     ) => {
-      const wallet = walletOverride || (await loadWallet());
+      let wallet = walletOverride;
+      if (!wallet) {
+        const provider = await getProviderForNetwork();
+        wallet = await loadWallet(undefined, false, provider);
+      }
       if (!wallet) {
         return;
       }
