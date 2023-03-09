@@ -3,7 +3,7 @@ import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import zxcvbn from 'zxcvbn';
+import { passwordStrength } from 'check-password-strength';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
@@ -199,8 +199,8 @@ export default function BackupCloudStep() {
       password.length >= cloudBackupPasswordMinLength &&
       passwordFocused
     ) {
-      const passInfo = zxcvbn(password);
-      switch (passInfo.score) {
+      const passInfo = passwordStrength(password);
+      switch (passInfo.id) {
         case 0:
         case 1:
           newLabel = `💩 ${lang.t('back_up.cloud.password.strength.level1')}`;

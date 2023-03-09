@@ -4,7 +4,7 @@ import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
-import { utils as ethersUtils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
@@ -33,6 +33,8 @@ import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
 import { chains as supportedChainConfigs } from '@/references';
+import { isHexString } from '@ethersproject/bytes';
+import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV } from '@/env';
 
 enum RPCMethod {
@@ -159,14 +161,10 @@ function parseRPCParams({
   switch (method) {
     case 'eth_sign':
     case 'personal_sign': {
-      const [address, message] = params.sort(a =>
-        ethersUtils.isAddress(a) ? -1 : 1
-      );
-      const isHexString = ethersUtils.isHexString(message);
+      const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
+      const isHex = isHexString(message);
 
-      const decodedMessage = isHexString
-        ? ethersUtils.toUtf8String(message)
-        : message;
+      const decodedMessage = isHex ? toUtf8String(message) : message;
 
       return {
         address,

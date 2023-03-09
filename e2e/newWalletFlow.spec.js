@@ -45,13 +45,8 @@ describe('New Wallet flow', () => {
   });
 
   it('should show "No transactions yet" in the activity list', async () => {
-    if (android) {
-      await Helpers.waitAndTap('activity-button');
-      await Helpers.checkIfElementByTextIsVisible('No transactions yet');
-    } else {
-      await Helpers.waitAndTap('activity-button');
-      await Helpers.checkForElementByLabel('no-transactions-yet-label');
-    }
+    await Helpers.waitAndTap('activity-button');
+    await Helpers.checkIfElementByTextIsVisible('No transactions yet');
   });
 
   afterAll(async () => {
