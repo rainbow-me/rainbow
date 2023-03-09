@@ -12,7 +12,8 @@ import {
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
-import { ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
+import { MaxUint256 } from '@ethersproject/constants';
 import { mapKeys, mapValues } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
@@ -139,7 +140,7 @@ export const getStateDiff = async (
   const tokenAddress = tradeDetails.sellTokenAddress;
   const fromAddr = tradeDetails.from;
   const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
-  const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, provider);
+  const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
   const {
     number: blockNumber,
   } = await (provider.getBlock as () => Promise<Block>)();
@@ -147,7 +148,7 @@ export const getStateDiff = async (
   // Get data
   const { data } = await tokenContract.populateTransaction.approve(
     toAddr,
-    ethers.constants.MaxUint256.toHexString()
+    MaxUint256.toHexString()
   );
 
   // trace_call default params
@@ -172,7 +173,7 @@ export const getStateDiff = async (
       const formattedStateDiff = {
         [tokenAddress]: {
           stateDiff: {
-            [slotAddress]: ethers.constants.MaxUint256.toHexString(),
+            [slotAddress]: MaxUint256.toHexString(),
           },
         },
       };

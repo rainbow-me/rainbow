@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect } from 'detox';
-import { ethers } from 'ethers';
+import { parseEther } from '@ethersproject/units';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -287,7 +287,7 @@ export async function sendETHtoTestWallet() {
   // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
     to: TESTING_WALLET,
-    value: ethers.utils.parseEther('20'),
+    value: parseEther('20'),
   });
   return true;
 }

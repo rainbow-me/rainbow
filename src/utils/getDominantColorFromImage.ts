@@ -1,6 +1,5 @@
 import c from 'chroma-js';
 import makeColorMoreChill from 'make-color-more-chill';
-import { IS_TESTING } from 'react-native-dotenv';
 import Palette, { IPalette } from 'react-native-palette-full';
 
 export default async function getDominantColorFromImage(

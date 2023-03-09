@@ -1,6 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { Signer } from 'ethers';
+import { Signer } from '@ethersproject/abstract-signer';
 import {
   ALLOWS_PERMIT,
   PermitSupportedTokenList,
