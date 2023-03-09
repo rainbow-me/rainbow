@@ -109,7 +109,7 @@ export async function loadString(
   options?: Options
 ): Promise<null | string | -1 | -2> {
   // if the data is public, try to load from MMKV first
-  if (!options) {
+  if (!options?.authenticationPrompt) {
     try {
       const data = loadStringMMKV(key);
       if (data) {
@@ -241,14 +241,18 @@ export async function loadObject(
   options?: Options
 ): Promise<null | Record<string, any> | -1 | -2> {
   // if the data is public, try to load from MMKV first
-  try {
-    const jsonValueMMKV = loadStringMMKV(key);
-    if (jsonValueMMKV) {
-      const objectValue = JSON.parse(jsonValueMMKV);
-      return objectValue;
+  if (!options?.authenticationPrompt) {
+    try {
+      const jsonValueMMKV = loadStringMMKV(key);
+      if (jsonValueMMKV) {
+        const objectValue = JSON.parse(jsonValueMMKV);
+        return objectValue;
+      }
+    } catch (e) {
+      logger.error(
+        new RainbowError('Keychain: failed to load object from MMKV')
+      );
     }
-  } catch (e) {
-    logger.error(new RainbowError('Keychain: failed to load object from MMKV'));
   }
 
   // load from keychain if not found in MMKV (private or does not exist)
