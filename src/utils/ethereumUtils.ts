@@ -10,7 +10,7 @@ import {
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
-import { Contract } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 import lang from 'i18n-js';
 import { isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
