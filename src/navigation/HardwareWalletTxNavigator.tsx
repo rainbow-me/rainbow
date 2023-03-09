@@ -23,7 +23,6 @@ export const ledgerStorage = new MMKV({
 export const HARDWARE_TX_ERROR_KEY = 'hardwareTXError';
 
 export const setHardwareTXError = (value: boolean) => {
-  console.log('setHardwareTXError', { value });
   logger.info(`setHardwareTXError`, { value });
   ledgerStorage.set(HARDWARE_TX_ERROR_KEY, value);
 };
