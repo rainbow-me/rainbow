@@ -61,11 +61,7 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
         finish();
       }
 
-      let newNfts = parseSimplehashNfts(simplehashNfts);
-
-      // If there are any "unknown" ENS names, fallback to the ENS
-      // metadata service.
-      newNfts = await applyENSMetadataFallbackToTokens(newNfts);
+      const newNfts = parseSimplehashNfts(simplehashNfts);
 
       queryClient.setQueryData<UniqueAsset[]>(
         nftsQueryKey({ address }),
