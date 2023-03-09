@@ -108,15 +108,20 @@ export async function loadString(
   key: string,
   options?: Options
 ): Promise<null | string | -1 | -2> {
-  try {
-    // try to load data from mmkv first
-    // if its private or does not exist, it will return undefined
-    const data = loadStringMMKV(key);
-    if (data) {
-      return data;
+  // if the data is public, try to load from MMKV first
+  if (!options) {
+    try {
+      const data = loadStringMMKV(key);
+      if (data) {
+        return data;
+      }
+    } catch (e) {
+      logger.info(`Keychain: failed to load string from MMKV`);
     }
+  }
 
-    // load from keychain if not found in MMKV (private or does not exist)
+  // load from keychain if not found in MMKV (private or does not exist)
+  try {
     const credentials = await getInternetCredentials(key, options);
 
     logger.debug(
@@ -235,22 +240,15 @@ export async function loadObject(
   key: string,
   options?: Options
 ): Promise<null | Record<string, any> | -1 | -2> {
-  // try to load data from mmkv first
-  // if its private or does not exist, it will return undefined
-  const jsonValueMMKV = loadStringMMKV(key);
-
-  if (jsonValueMMKV) {
-    try {
+  // if the data is public, try to load from MMKV first
+  try {
+    const jsonValueMMKV = loadStringMMKV(key);
+    if (jsonValueMMKV) {
       const objectValue = JSON.parse(jsonValueMMKV);
       return objectValue;
-    } catch (e) {
-      logger.error(
-        new RainbowError('Keychain MMKV: failed to parse object for key'),
-        {
-          message: (e as Error).message,
-        }
-      );
     }
+  } catch (e) {
+    logger.error(new RainbowError('Keychain: failed to load object from MMKV'));
   }
 
   // load from keychain if not found in MMKV (private or does not exist)
@@ -286,13 +284,25 @@ export async function remove(key: string): Promise<void> {
   try {
     // remove from MMKV
     keychainLocalStorage.delete(key);
+  } catch (e) {
+    logger.error(
+      new RainbowError(`Keychain: failed to remove value from MMKV`),
+      {
+        message: (e as Error).message,
+      }
+    );
+  }
 
+  try {
     // remove from keychain
     await resetInternetCredentials(key);
   } catch (e) {
-    logger.error(new RainbowError(`Keychain: failed to remove value`), {
-      message: (e as Error).message,
-    });
+    logger.error(
+      new RainbowError(`Keychain: failed to remove value from keychain`),
+      {
+        message: (e as Error).message,
+      }
+    );
   }
 }
 
@@ -330,9 +340,15 @@ export async function wipeKeychain(): Promise<void> {
   logger.info('Keychain: wipeKeychain');
 
   try {
-    // clear local storage
+    // clear mmkv storage
     keychainLocalStorage.clearAll();
+  } catch (e) {
+    logger.error(new RainbowError('Keychain: error while wiping MMKV'), {
+      message: (e as Error).message,
+    });
+  }
 
+  try {
     // clear keychain
     const results = await loadAllKeys();
     if (results) {
