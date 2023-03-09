@@ -3,10 +3,12 @@ import { createQueryKey, queryClient, QueryFunctionArgs } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import { useIsMounted } from '@/hooks';
-import { fetchSimplehashNfts } from './simplehash';
+import { fetchSimplehashNfts, START_CURSOR } from '@/resources/nfts/simplehash';
+import { SimplehashNFT } from '@/resources/nfts/simplehash/types';
 import { useEffect, useReducer, useState } from 'react';
 import { uniqBy } from 'lodash';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { logger } from '@/logger';
 
 const NFTS_LIMIT = 2000;
 
@@ -69,8 +71,35 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
   return nfts;
 }
 
-export function useLegacyNFT(): UniqueAsset {
-  // normal react query where we get UniqueAsset formatted data as an interim step
-  // @ts-ignore TODO implement
-  return {};
+export function useLegacyNFTsV2({
+  accountAddress,
+}: {
+  accountAddress: string;
+}) {
+  return useQuery(
+    ['nfts', accountAddress],
+    async () => {
+      const then = Date.now();
+      let cursor = START_CURSOR;
+      let nfts: SimplehashNFT[] = [];
+
+      await (async function fetch() {
+        const res = await fetchSimplehashNfts(accountAddress, cursor);
+
+        nfts.push(...res.nfts);
+
+        if (res.nextCursor) {
+          cursor = res.nextCursor;
+          await fetch();
+        }
+      })();
+
+      logger.debug(`Legacy NFTs loaded in ${Date.now() - then}ms`);
+
+      return nfts;
+    },
+    {
+      enabled: !!accountAddress,
+    }
+  );
 }
