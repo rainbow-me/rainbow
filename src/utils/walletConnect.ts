@@ -16,7 +16,6 @@ import { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
 import {
@@ -295,10 +294,7 @@ export async function onSessionProposal(
   const { chains, methods } = requiredNamespaces.eip155;
   const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
   const peerMeta = proposer.metadata;
-  const dappName =
-    dappNameOverride(peerMeta.url) ||
-    peerMeta.name ||
-    lang.t(lang.l.walletconnect.unknown_dapp);
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
   for (const method of methods) {
     if (!isSigningMethod(method)) {
@@ -510,15 +506,11 @@ export async function onSessionRequest(
       clientId: session.topic, // I don't think this is used
       peerId: session.topic, // I don't think this is used
       requestId: event.id,
-      dappName:
-        dappNameOverride(peerMeta.name) || peerMeta.name || 'Unknown Dapp',
+      dappName: peerMeta.name || 'Unknown Dapp',
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
-      imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta.url) || peerMeta.icons[0],
-        { w: 200 }
-      ),
+      imageUrl: maybeSignUri(peerMeta.icons[0], { w: 200 }),
       payload: event.params.request,
       walletConnectV2RequestValues: {
         sessionRequestEvent: event,
