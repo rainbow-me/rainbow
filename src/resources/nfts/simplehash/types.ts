@@ -86,9 +86,12 @@ type SimplehashCollection = {
   top_contracts: string[];
 };
 
+/**
+ * @see https://docs.simplehash.com/reference/nft-model
+ */
 export type SimplehashNFT = {
   nft_id: string;
-  chain: string;
+  chain: SimplehashChain;
   contract_address: string;
   token_id: string | null;
   name: string | null;

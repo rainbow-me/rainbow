@@ -3,7 +3,7 @@ import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
 
 import { Network } from '@/helpers';
-import { parseSimplehashNfts } from '@/parsers';
+import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { queryClient } from '@/react-query/queryClient';
 
 import { logger } from '@/utils';
@@ -158,9 +158,12 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     }
   );
 
-  return parseSimplehashNfts(rawResponseNfts).filter(
-    (token: UniqueAsset) =>
-      token.network !== Network.polygon ||
-      polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
-  );
+  // @ts-ignore Old Simplehash types are incomplete
+  return rawResponseNfts
+    .map(simplehashNFTToUniqueAsset)
+    .filter(
+      (token: UniqueAsset) =>
+        token.network !== Network.polygon ||
+        polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
+    );
 }

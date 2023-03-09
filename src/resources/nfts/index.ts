@@ -2,18 +2,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createQueryKey, queryClient, QueryFunctionArgs } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
-import { useAccountSettings, useIsMounted } from '@/hooks';
-import {
-  getUniqueTokens,
-  saveUniqueTokens,
-} from '@/handlers/localstorage/accountLocal';
+import { useIsMounted } from '@/hooks';
 import { fetchSimplehashNfts } from './simplehash';
 import { useEffect, useReducer, useState } from 'react';
-import {
-  applyENSMetadataFallbackToTokens,
-  parseSimplehashNfts,
-} from '@/parsers/uniqueTokens';
 import { uniqBy } from 'lodash';
+import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
 const NFTS_LIMIT = 2000;
 
@@ -61,7 +54,7 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
         finish();
       }
 
-      const newNfts = parseSimplehashNfts(simplehashNfts);
+      const newNfts = simplehashNfts.map(simplehashNFTToUniqueAsset);
 
       queryClient.setQueryData<UniqueAsset[]>(
         nftsQueryKey({ address }),
