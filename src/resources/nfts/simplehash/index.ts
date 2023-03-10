@@ -69,7 +69,7 @@ export async function fetchSimplehashNFTs(
   };
 }
 
-export async function fetchSimplehashNftListing(
+export async function fetchSimplehashNFTListing(
   network: Network,
   contractAddress: string,
   tokenId: string
