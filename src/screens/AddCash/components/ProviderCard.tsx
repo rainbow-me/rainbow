@@ -5,12 +5,14 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
-import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { AssetType } from '@/entities';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
+
+import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
+import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
@@ -27,14 +29,17 @@ type PaymentMethodConfig = {
 
 const providerNames = {
   [FiatProviderName.Ramp]: 'Ramp',
+  [FiatProviderName.Ratio]: 'Ratio',
 };
 
 const providerDescriptions = {
   [FiatProviderName.Ramp]: `Cards, banks, and international options`,
+  [FiatProviderName.Ratio]: `Any US bank account`,
 };
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
+  [FiatProviderName.Ratio]: RatioLogo,
 };
 
 const paymentMethodConfig: {
