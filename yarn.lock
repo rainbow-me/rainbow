@@ -2613,6 +2613,13 @@
     "@metamask/eth-sig-util" "4.0.0"
     ethereumjs-util "6.2.1"
 
+"@ratio.me/ratio-react-native-library@0.8.5":
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.8.5.tgz#d1b0647f482db5db13827037f1f9fa99b01b7692"
+  integrity sha512-fsw353L/LlQQ9+tqz3Fw15ZFJ85Akty075iqCmUxqJIm+pxRP3MhDhJjSgEJ01OgYoX2mDWKJG3UcDh7cE+Evw==
+  dependencies:
+    react-native-swipe-gestures "^1.0.5"
+
 "@react-native-async-storage/async-storage@1.17.7", "@react-native-async-storage/async-storage@^1.15.15", "@react-native-async-storage/async-storage@^1.15.17":
   version "1.17.7"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.7.tgz#f9213e8cc6202a8c29df5a4da1db588f3b0fa8a9"
@@ -4742,8 +4749,9 @@ app-module-path@^2.2.0:
   resolved "https://registry.yarnpkg.com/app-module-path/-/app-module-path-2.2.0.tgz#641aa55dfb7d6a6f0a8141c4b9c0aa50b6c24dd5"
 
 app-root-path@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-3.0.0.tgz#210b6f43873227e18a4b810a032283311555d5ad"
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-3.1.0.tgz#5971a2fc12ba170369a7a1ef018c71e6e47c2e86"
+  integrity sha512-biN3PwB2gUtjaYy/isrU3aNWI5w+fAfvHkSvCKeQGxhmYpwKFUxudR3Yya+KqVRHBmEDYh+/lTozYCFbmzX4nA==
 
 appcenter-file-upload-client@0.0.24:
   version "0.0.24"
@@ -11189,9 +11197,9 @@ metro-minify-uglify@0.67.0:
   dependencies:
     uglify-es "^3.1.9"
 
-metro-plugin-anisotropic-transform@rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802:
+"metro-plugin-anisotropic-transform@https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802":
   version "1.0.0"
-  resolved "https://codeload.github.com/rainbow-me/metro-plugin-anisotropic-transform/tar.gz/eaf2a2db95eeedd2f63ce8032c102a12c5a88802"
+  resolved "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802"
   dependencies:
     app-root-path "^3.0.0"
     deepmerge "^4.2.2"
@@ -13512,6 +13520,11 @@ react-native-permissions@3.6.1:
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.6.1.tgz#73adcc1cef8cd57a9ef167b4507405f4ff5749c4"
   integrity sha512-fzPpPQXeD34inUccqtoResSwYubfrwUguP4qrVUUv8+KSMjYSaHGoS5HaIJLZHlN9gO+TvLJZ2L5ZljTsb6qnQ==
 
+react-native-plaid-link-sdk@9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-plaid-link-sdk/-/react-native-plaid-link-sdk-9.0.1.tgz#47bcbc5b17b16483950c0c8f65855cbfee1bf00a"
+  integrity sha512-C7YK+0EpSHEYN/2SfGBr7Szq+zwf0KxfVbNpyuHhWCXkKke3gjOmZWGNnZJuzR9JyuKM3GNokUmMH3zJZhfjTw==
+
 react-native-quick-md5@3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/react-native-quick-md5/-/react-native-quick-md5-3.0.3.tgz#f75f2fc3f9b62f312eb27a223f4505f9f57e3550"
@@ -13616,6 +13629,11 @@ react-native-svg@rainbow-me/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
+
+react-native-swipe-gestures@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz#a172cb0f3e7478ccd681fd36b8bfbcdd098bde7c"
+  integrity sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==
 
 react-native-tab-view@2.14.2:
   version "2.14.2"

@@ -1,14 +1,14 @@
-import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import URL from 'url-parse';
+
 import { parseUri } from '@walletconnect/utils';
-import { initialChartExpandedStateSheetHeight } from '../components/expanded-state/asset/ChartExpandedState';
-import store from '../redux/store';
+import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
+import store from '@/redux/store';
 import {
   walletConnectOnSessionRequest,
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
-} from '../redux/walletconnect';
+} from '@/redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import {
@@ -26,7 +26,6 @@ import {
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
 import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
-import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { logger } from '@/logger';
@@ -37,57 +36,87 @@ import {
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 
-// initial research into refactoring deep links
-//                         eip      native deeplink  rainbow.me profiles
-type supportedProtocols = 'ethereum:' | 'rainbow:' | 'https';
-//                      walletconnect - expanded states - tophat updates
-type supportedActions = 'wc' | 'token' | 'update-ios' | 'update-android';
-// deeplink actions fall under 'host', http, native deeplink,
-// EIP needs more research, cant get them to link on sim
-
 export default async function handleDeeplink(
-  url: any,
+  url: string,
   initialRoute: any = null
 ) {
-  if (!url) return;
-  // We need to wait till the wallet is ready
-  // to handle any deeplink
+  if (!url) {
+    logger.warn(`handleDeeplink: No url provided`);
+    return;
+  }
+
+  /**
+   * We need to wait till the wallet is ready to handle any deeplink
+   */
   while (store.getState().data.isLoadingAssets) {
+    logger.info(`handleDeeplink: Waiting for wallet to be ready`);
     await delay(300);
   }
-  logger.info('Handling deeplink', { url });
-  const urlObj = new URL(url);
 
-  logger.debug(`Handling deeplink`, { url });
+  const { protocol, host, pathname, query } = new URL(url);
 
-  if (urlObj.protocol === 'ethereum:') {
+  logger.info(`handleDeeplink: handling url`, {
+    url,
+    protocol,
+    host,
+    pathname,
+    query,
+  });
+
+  if (protocol === 'ethereum:') {
+    /**
+     * Handling EIP deep links
+     *
+     * TODO apparently not working on sim, needs more research
+     */
+    logger.info(`handleDeeplink: ethereum:// protocol`);
     ethereumUtils.parseEthereumUrl(url);
-  } else if (urlObj.protocol === 'https:' || urlObj.protocol === 'rainbow:') {
-    const action =
-      urlObj.protocol === 'https:'
-        ? urlObj.pathname.split('/')[1]
-        : urlObj.host;
+  } else if (protocol === 'https:' || protocol === 'rainbow:') {
+    /**
+     * Any native iOS deep link OR universal links via HTTPS
+     */
+    logger.info(`handleDeeplink: https:// or rainbow:// protocol`);
+
+    /**
+     * The first path following the host (universal link) or protocol
+     * (deeplink) e.g. `https://rainbow.me/foo` or `rainbow://foo` where `foo`
+     * is the action.
+     */
+    const action = protocol === 'https:' ? pathname.split('/')[1] : host;
 
     switch (action) {
+      /**
+       * Universal links from WC e.g. when initiating a pairing on mobile, you
+       * tap "Rainbow" in Web3Modal and it hits this handler
+       */
       case 'wc': {
-        const { uri } = urlObj.query;
-        handleWalletConnect(uri);
+        logger.info(`handleDeeplink: wc`);
+        handleWalletConnect(query.uri as string);
         break;
       }
+
+      /**
+       * Links from website to an individual token
+       */
       case 'token': {
+        logger.info(`handleDeeplink: token`);
+
         const { dispatch } = store;
-        const { addr } = urlObj.query;
+        const { addr } = query;
         const address = (addr as string)?.toLowerCase() ?? '';
+
         if (address && address.length > 0) {
           const asset = ethereumUtils.getAssetFromAllAssets(address);
+
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
           if (initialRoute !== Routes.WELCOME_SCREEN) {
             // @ts-expect-error FIXME: Expected 2-3 arguments, but got 1.
             Navigation.handleAction(Routes.WALLET_SCREEN);
           }
+
           setTimeout(() => {
-            const action = (asset: any) => {
+            const _action = (asset: any) => {
               Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
                 asset,
                 fromDiscover: true,
@@ -97,18 +126,25 @@ export default async function handleDeeplink(
             };
 
             if (asset) {
-              action(asset);
+              _action(asset);
             } else {
               dispatch(emitAssetRequest(address));
               dispatch(emitChartsRequest(address));
-              scheduleActionOnAssetReceived(address, action);
+              scheduleActionOnAssetReceived(address, _action);
             }
           }, 50);
         }
         break;
       }
+
+      /**
+       * Top Hat stuff
+       */
       case 'update-ios': {
-        const code = urlObj.pathname.split('/')[2];
+        logger.info(`handleDeeplink: update-ios`);
+
+        const code = pathname.split('/')[2];
+
         if (android) {
           Alert.alert(lang.t('deeplinks.tried_to_use_ios'));
         } else {
@@ -117,23 +153,37 @@ export default async function handleDeeplink(
 
         break;
       }
+
+      /**
+       * Top Hat stuff
+       */
       case 'update-android': {
-        const code = urlObj.pathname.split('/')[2];
+        logger.info(`handleDeeplink: update-android`);
+
+        const code = pathname.split('/')[2];
+
         if (ios) {
           Alert.alert(lang.t('deeplinks.tried_to_use_android'));
         } else {
           setDeploymentKey(code);
         }
+
         break;
       }
-      case 'f2c': {
-        logger.log('Handling F2C deeplink', { url });
 
-        const { provider, sessionId } = urlObj.query;
+      /**
+       * Handle redirects after user completes an fiat onramp flow. This URL
+       * should contain metadata about the transaction, if we have it.
+       */
+      case 'f2c': {
+        logger.info(`handleDeeplink: f2c`);
+
+        const { provider, sessionId } = query;
 
         if (!provider || !sessionId) {
           logger.warn('Received FWC deeplink with invalid params', {
-            query: urlObj.query,
+            url,
+            query,
           });
         }
 
@@ -144,10 +194,27 @@ export default async function handleDeeplink(
 
         break;
       }
+
+      /**
+       * Handles redirects from Plaid OAuth flow, which originates (atm) within
+       * Ratio's onramp SDK.
+       */
+      case 'plaid': {
+        logger.log('handleDeeplink: handling Plaid redirect', { url });
+        break;
+      }
+
       default: {
-        const addressOrENS = urlObj.pathname?.split('/')?.[1];
+        const addressOrENS = pathname?.split('/')?.[1];
+
+        /**
+         * This handles ENS profile links on mobile i.e.
+         * `https://rainbow.me/0x123...` which is why it's in the default case
+         * here.
+         */
         if (addressOrENS) {
           const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+
           if (isValid) {
             const profilesEnabled = defaultConfig?.[PROFILES]?.value;
             const ensName = isENSAddressFormat(addressOrENS)
@@ -161,20 +228,37 @@ export default async function handleDeeplink(
               }
             );
           } else {
-            const error = new Error('Invalid deeplink: ' + url);
-            captureException(error);
-            Alert.alert(lang.t('deeplinks.couldnt_recognize_url'));
+            logger.warn(`handleDeeplink: invalid address or ENS provided`, {
+              url,
+              protocol,
+              host,
+              pathname,
+              query,
+              addressOrENS,
+            });
           }
+        } else {
+          /**
+           * This is a catch-all for any other deep links that we don't handle
+           */
+          logger.warn(`handleDeeplink: invalid or unknown deeplink`, {
+            url,
+            protocol,
+            host,
+            pathname,
+            query,
+          });
         }
       }
     }
     // Android uses normal deeplinks
-  } else if (urlObj.protocol === 'wc:') {
+  } else if (protocol === 'wc:') {
+    logger.info(`handleDeeplink: wc:// protocol`);
     handleWalletConnect(url);
   }
 }
 
-function handleWalletConnect(uri: any) {
+function handleWalletConnect(uri: string) {
   const { query } = new URL(uri);
   const parsedUri = uri ? parseUri(uri) : null;
 
