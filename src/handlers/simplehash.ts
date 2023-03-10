@@ -8,6 +8,7 @@ import { queryClient } from '@/react-query/queryClient';
 
 import { logger } from '@/utils';
 import { EthereumAddress, UniqueAsset } from '@/entities';
+import { SimplehashNFT } from '@/resources/nfts/simplehash/types';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -105,7 +106,7 @@ export async function getNFTByTokenId({
 }
 
 export async function getNftsByWalletAddress(walletAddress: string) {
-  let rawResponseNfts: SimplehashNft[] = [];
+  let rawResponseNfts: SimplehashNFT[] = [];
   try {
     const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon},${Network.bsc}`;
 
