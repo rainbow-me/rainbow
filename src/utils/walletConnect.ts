@@ -4,7 +4,7 @@ import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
-import { isAddress } from '@ethersproject/address';
+import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
@@ -167,7 +167,7 @@ function parseRPCParams({
       const decodedMessage = isHex ? toUtf8String(message) : message;
 
       return {
-        address,
+        address: getAddress(address),
         message: decodedMessage,
       };
     }
@@ -182,14 +182,14 @@ function parseRPCParams({
       const [address, message] = params;
 
       return {
-        address,
+        address: getAddress(address),
         message: JSON.parse(message),
       };
     }
     case 'eth_sendTransaction': {
       const [tx] = params;
       return {
-        address: tx.from,
+        address: getAddress(tx.from),
       };
     }
     default:
@@ -593,6 +593,12 @@ export async function onSessionRequest(
       params,
     });
     const allWallets = store.getState().wallets.wallets;
+
+    logger.debug(
+      `WC v2: session_request method is supported`,
+      { method, params, address, message },
+      logger.DebugContext.walletconnect
+    );
 
     if (isSigningMethod) {
       if (!address || !message) {
