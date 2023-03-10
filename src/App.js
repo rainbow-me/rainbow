@@ -80,7 +80,6 @@ import { logger as loggr, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
-import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 
@@ -159,9 +158,7 @@ class OldApp extends Component {
     /**
      * Needs to be called AFTER FCM token is loaded
      */
-    if (getExperimetalFlag(WC_V2)) {
-      initWalletConnectListeners();
-    }
+    initWalletConnectListeners();
   }
 
   componentDidUpdate(prevProps) {
