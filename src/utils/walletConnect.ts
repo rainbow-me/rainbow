@@ -439,12 +439,15 @@ export async function onSessionProposal(
    * Log these, but it's OK if they list them now, we'll just ignore requests
    * to use them later.
    */
-  const unspportedMethods = methods.filter(
+  const unsupportedMethods = methods.filter(
     method => !isSupportedMethod(method as RPCMethod)
   );
-  logger.info(`WC v2: dapp requested unsupported RPC methods`, {
-    methods: unspportedMethods,
-  });
+
+  if (unsupportedMethods.length) {
+    logger.info(`WC v2: dapp requested unsupported RPC methods`, {
+      methods: unsupportedMethods,
+    });
+  }
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,

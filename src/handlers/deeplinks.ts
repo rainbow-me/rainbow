@@ -53,7 +53,7 @@ export default async function handleDeeplink(
     await delay(300);
   }
 
-  const { protocol, host, pathname, query } = new URL(url);
+  const { protocol, host, pathname, query } = new URL(url, true);
 
   logger.info(`handleDeeplink: handling url`, {
     url,
