@@ -12,6 +12,7 @@ import {
   useCurrentNonce,
   useENSRegistration,
   useWalletENSAvatar,
+  useWallets,
 } from '.';
 import { Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
@@ -29,7 +30,6 @@ import { executeRap } from '@/raps';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { labelhash, logger } from '@/utils';
-import Wallet from 'ethereumjs-wallet';
 
 const NOOP = () => null;
 
@@ -65,6 +65,7 @@ export default function useENSRegistrationActionHandler(
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
+  const { isHardwareWallet } = useWallets();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -131,14 +132,21 @@ export default function useENSRegistrationActionHandler(
         RapActionTypes.commitENS,
         commitEnsRegistrationParameters,
         () => {
-          if (!(wallet instanceof Wallet)) {
+          if (isHardwareWallet) {
             goBack();
           }
           callback;
         }
       );
     },
-    [getNextNonce, registrationParameters, duration, accountAddress, goBack]
+    [
+      getNextNonce,
+      registrationParameters,
+      duration,
+      accountAddress,
+      isHardwareWallet,
+      goBack,
+    ]
   );
 
   const speedUpCommitAction = useCallback(
