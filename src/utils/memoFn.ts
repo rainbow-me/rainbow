@@ -1,6 +1,7 @@
-// let cachedCalls = 0;
+import { IS_DEV } from '@/env';
+import { logger } from '@/logger';
 
-import logger from './logger';
+// let cachedCalls = 0;
 
 /**
  * Memoization wrapper for common used PURE helper functions.
@@ -25,7 +26,7 @@ export function memoFn<TArgs extends unknown[], TReturn>(
   return function memoized(this: ThisType<typeof fn>, ...args: TArgs): TReturn {
     // if no arguments used we just want the developer and run the function as is
     if (args.length === 0) {
-      if (__DEV__) {
+      if (IS_DEV) {
         logger.warn(
           `memoized function ${fn.name} was called with no arguments`
         );
@@ -44,7 +45,7 @@ export function memoFn<TArgs extends unknown[], TReturn>(
           typeof arg !== 'boolean' &&
           typeof arg !== 'string'
         ) {
-          if (__DEV__) {
+          if (IS_DEV) {
             logger.warn(
               `memoized function ${
                 fn.name
@@ -66,8 +67,8 @@ export function memoFn<TArgs extends unknown[], TReturn>(
 
     if (cache.has(key)) {
       // For debugging
-      // logger.log(`Used cached ${cachedCall++} times result for function  ${fn.name} with arguments ${key});
-      // logger.log('Total cached', cachedCalls++);
+      // logger.debug(`Used cached ${cachedCall++} times result for function  ${fn.name} with arguments ${key});
+      // logger.debug('Total cached', cachedCalls++);
       // return cached result
 
       return cache.get(key)!; // we did a check for that key already

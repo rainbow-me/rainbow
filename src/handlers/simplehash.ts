@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
 
@@ -6,7 +5,7 @@ import { Network } from '@/helpers';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { queryClient } from '@/react-query/queryClient';
 
-import { logger } from '@/utils';
+import { logger, RainbowError } from '@/logger';
 import { EthereumAddress, UniqueAsset } from '@/entities';
 import { SimplehashNFT } from '@/resources/nfts/simplehash/types';
 
@@ -99,9 +98,10 @@ export async function getNFTByTokenId({
       }
     );
     return response.data;
-  } catch (error) {
-    logger.sentry(`Error fetching simplehash NFT: ${error}`);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new Error(`Error fetching simplehash NFT`), {
+      message: e.message,
+    });
   }
 }
 
@@ -129,11 +129,10 @@ export async function getNftsByWalletAddress(walletAddress: string) {
         rawResponseNfts = rawResponseNfts.concat(response.data.nfts);
       }
     }
-  } catch (error) {
-    logger.sentry(
-      `Error fetching simplehash NFTs for wallet address: ${walletAddress} - ${error}`
-    );
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError(`Error fetching simplehash NFTs`), {
+      message: e.message,
+    });
   }
 
   // TODO(jxom): migrate this to Async State RFC architecture once it's merged in.

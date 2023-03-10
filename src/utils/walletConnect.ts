@@ -4,7 +4,7 @@ import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import { NavigationContainerRef } from '@react-navigation/native';
 import Minimizer from 'react-native-minimizer';
-import { utils as ethersUtils } from 'ethers';
+import { isAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
@@ -36,6 +36,9 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
+import { isHexString } from '@ethersproject/bytes';
+import { toUtf8String } from '@ethersproject/strings';
+import { IS_DEV } from '@/env';
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -89,14 +92,10 @@ function parseRPCParams({
   params: string[];
 }) {
   if (method === 'eth_sign' || method === 'personal_sign') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
-    const isHexString = ethersUtils.isHexString(message);
+    const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
+    const isHex = isHexString(message);
 
-    const decodedMessage = isHexString
-      ? ethersUtils.toUtf8String(message)
-      : message;
+    const decodedMessage = isHex ? toUtf8String(message) : message;
 
     return {
       address,
@@ -105,9 +104,7 @@ function parseRPCParams({
   }
 
   if (method === 'eth_signTypedData' || method === 'eth_signTypedData_v4') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
+    const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
 
     return {
       address,
@@ -218,23 +215,31 @@ export async function initListeners() {
   client.on('session_request', onSessionRequest);
 
   try {
-    const token = await getFCMToken(); // will throw
-    const client_id = await client.core.crypto.getClientId();
+    const token = await getFCMToken();
 
-    // initial subscription
-    await subscribeToEchoServer({ token, client_id });
+    if (token) {
+      const client_id = await client.core.crypto.getClientId();
 
-    /**
-     * Ensure that if the FCM token changes we update the echo server
-     */
-    messaging().onTokenRefresh(async token => {
+      // initial subscription
       await subscribeToEchoServer({ token, client_id });
-    });
+
+      /**
+       * Ensure that if the FCM token changes we update the echo server
+       */
+      messaging().onTokenRefresh(async token => {
+        await subscribeToEchoServer({ token, client_id });
+      });
+    } else {
+      if (!IS_DEV) {
+        logger.error(
+          new RainbowError(
+            `WC v2: FCM token not found, push notifications will not be received`
+          )
+        );
+      }
+    }
   } catch (e) {
-    logger.error(
-      new RainbowError(`WC v2: echo server FCM token retrieval failed`),
-      { error: e }
-    );
+    logger.error(new RainbowError(`WC v2: initListeners failed`), { error: e });
   }
 }
 
