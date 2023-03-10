@@ -18,7 +18,9 @@ export function useNFTs(): NFT[] {
   return [];
 }
 
-export function useLegacyNFTs(address: string): UniqueAsset[] {
+export function useLegacyNFTs(
+  address: string
+): { nfts: UniqueAsset[]; isLoading: boolean } {
   const queryClient = useQueryClient();
   const mounted = useIsMounted();
 
@@ -55,7 +57,7 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
         uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
       );
     };
-    if (!isFinished && mounted.current && nfts.length < NFTS_LIMIT) {
+    if (address && !isFinished && mounted.current && nfts.length < NFTS_LIMIT) {
       fetchNFTs();
     }
   }, [
@@ -68,5 +70,5 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
     queryKey,
   ]);
 
-  return nfts;
+  return { nfts, isLoading: !isFinished };
 }

@@ -2,48 +2,41 @@ import { useMemo } from 'react';
 import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
-import useFetchUniqueTokens from './useFetchUniqueTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useExternalWalletSectionsData({
   address,
-  infinite = false,
   type,
 }: {
-  address?: string;
-  infinite?: boolean;
+  address: string;
   type?: AssetListType;
 }) {
-  const {
-    data: uniqueTokens,
-    isLoading: isUniqueTokensLoading,
-    isSuccess: isUniqueTokensSuccess,
-  } = useFetchUniqueTokens({ address, infinite });
+  const { nfts, isLoading } = useLegacyNFTs(address);
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
   const sellingTokens = useMemo(
-    () => uniqueTokens?.filter(token => token.currentPrice) || [],
-    [uniqueTokens]
+    () => nfts?.filter(token => token.currentPrice) || [],
+    [nfts]
   );
 
   const briefSectionsData = useMemo(
     () =>
-      uniqueTokens
+      nfts
         ? buildBriefUniqueTokenList(
-            uniqueTokens,
+            nfts,
             showcaseTokens,
             sellingTokens,
             hiddenTokens,
             type
           )
         : [],
-    [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
+    [nfts, showcaseTokens, sellingTokens, hiddenTokens, type]
   );
 
   return {
     briefSectionsData,
-    isLoading: isUniqueTokensLoading,
-    isSuccess: isUniqueTokensSuccess,
+    isSuccess: !isLoading || nfts.length,
   };
 }

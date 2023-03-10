@@ -41,7 +41,7 @@ export default function useMemoBriefSectionData({
     // `type` is a static prop, so hooks will always execute in order.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     sectionsDataToUse = useExternalWalletSectionsData({
-      address: externalAddress,
+      address: externalAddress ?? '',
       type,
     }).briefSectionsData;
   } else if (!briefSectionsData) {

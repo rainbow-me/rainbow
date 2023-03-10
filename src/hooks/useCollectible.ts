@@ -1,22 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { uniqueTokensQueryKey } from './useFetchUniqueTokens';
+import { useDispatch } from 'react-redux';
 import { ParsedAddressAsset, UniqueAsset } from '@/entities';
-import { AppState } from '@/redux/store';
 import { revalidateUniqueToken } from '@/redux/uniqueTokens';
+import { nftsQueryKey, useLegacyNFTs } from '@/resources/nfts';
+import { useAccountSettings } from '.';
 
 export default function useCollectible(
   initialAsset: Partial<ParsedAddressAsset>,
   { revalidateInBackground = false } = {},
   externalAddress?: string
 ) {
-  // Retrieve the unique tokens belonging to the current account address.
-  const selfUniqueTokens = useSelector(
-    ({ uniqueTokens: { uniqueTokens } }: AppState) => uniqueTokens
-  );
-  const { data: externalUniqueTokens } = useQuery<UniqueAsset[]>(
-    uniqueTokensQueryKey({ address: externalAddress }),
+  const { accountAddress } = useAccountSettings();
+  const { nfts: selfNFTs } = useLegacyNFTs(accountAddress);
+  const { data: externalNFTs } = useQuery<UniqueAsset[]>(
+    nftsQueryKey({ address: externalAddress ?? '' }),
     // We just want to watch for changes in the query key,
     // so just supplying a noop function & staleTime of Infinity.
     async () => [],
@@ -25,10 +23,11 @@ export default function useCollectible(
   const isExternal = Boolean(externalAddress);
   // Use the appropriate tokens based on if the user is viewing the
   // current accounts tokens, or external tokens (e.g. ProfileSheet)
-  const uniqueTokens = useMemo(
-    () => (isExternal ? externalUniqueTokens : selfUniqueTokens),
-    [externalUniqueTokens, isExternal, selfUniqueTokens]
-  );
+  const uniqueTokens = useMemo(() => (isExternal ? externalNFTs : selfNFTs), [
+    externalNFTs,
+    isExternal,
+    selfNFTs,
+  ]);
 
   const asset = useMemo(() => {
     let matched = uniqueTokens!.find(

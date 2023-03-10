@@ -135,7 +135,7 @@ export default function SendSheet(props) {
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const sendableUniqueTokens = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const { action: transferENS } = useENSRegistrationActionHandler({

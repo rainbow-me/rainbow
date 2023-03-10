@@ -6,13 +6,12 @@ import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
-import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
-import { AppState } from '@/redux/store';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
   type,
@@ -22,12 +21,9 @@ export default function useWalletSectionsData({
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { language, network, nativeCurrency } = useAccountSettings();
-  const sendableUniqueTokens = useSendableUniqueTokens();
-  const allUniqueTokens = useSelector(
-    (state: AppState) => state.uniqueTokens.uniqueTokens
-  );
+  const { accountAddress, network, nativeCurrency } = useAccountSettings();
   const uniswap = useSelector(readableUniswapSelector);
+  const { nfts } = useLegacyNFTs(accountAddress);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
@@ -47,16 +43,13 @@ export default function useWalletSectionsData({
     const accountInfo = {
       hiddenCoins,
       isCoinListEdited,
-      language,
       nativeCurrency,
       network,
       pinnedCoins,
       savings,
       ...sortedAccountData,
-      ...sendableUniqueTokens,
+      uniqueTokens: nfts,
       ...uniswap,
-      // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
-      ...isWalletEthZero,
       hiddenTokens,
       isReadOnlyWallet,
       listType: type,
@@ -66,7 +59,7 @@ export default function useWalletSectionsData({
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
       accountInfo
     );
-    const hasNFTs = allUniqueTokens.length > 0;
+    const hasNFTs = nfts.length > 0;
 
     return {
       hasNFTs,
@@ -77,24 +70,22 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    allUniqueTokens,
     hiddenCoins,
-    hiddenTokens,
     isCoinListEdited,
-    isReadOnlyWallet,
-    isWalletEthZero,
-    language,
     nativeCurrency,
     network,
     pinnedCoins,
-    refetchSavings,
     savings,
-    shouldRefetchSavings,
-    showcaseTokens,
     sortedAccountData,
-    type,
-    sendableUniqueTokens,
+    nfts,
     uniswap,
+    hiddenTokens,
+    isReadOnlyWallet,
+    type,
+    showcaseTokens,
+    isWalletEthZero,
+    refetchSavings,
+    shouldRefetchSavings,
   ]);
   return walletSections;
 }

@@ -60,8 +60,7 @@ export default function ProfileSheet() {
     isSuccess: hasListFetched,
     briefSectionsData,
   } = useExternalWalletSectionsData({
-    address: profileAddress || undefined,
-    infinite: true,
+    address: profileAddress || '',
   });
 
   const colorIndex = useMemo(
