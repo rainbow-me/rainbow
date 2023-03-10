@@ -36,6 +36,7 @@ export function useLegacyNFTs(address: string): UniqueAsset[] {
   const nfts = query.data ?? [];
 
   useEffect(() => {
+    // stream in NFTs one simplehash response page at a time
     const fetchNFTs = async () => {
       const { nfts: simplehashNFTs, nextCursor } = await fetchSimplehashNFTs(
         address,
