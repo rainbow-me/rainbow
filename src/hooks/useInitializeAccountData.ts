@@ -3,12 +3,14 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
-import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '@/redux/usersPositions';
 import logger from '@/utils/logger';
+import { fetchLegacyNFTs } from '@/resources/nfts';
+import { useAccountSettings } from '.';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
+  const { accountAddress } = useAccountSettings();
 
   const initializeAccountData = useCallback(async () => {
     try {
@@ -19,7 +21,7 @@ export default function useInitializeAccountData() {
 
       InteractionManager.runAfterInteractions(async () => {
         logger.sentry('Initialize uniqueTokens');
-        await dispatch(uniqueTokensRefreshState());
+        fetchLegacyNFTs(accountAddress);
       });
 
       InteractionManager.runAfterInteractions(async () => {
@@ -30,7 +32,7 @@ export default function useInitializeAccountData() {
       logger.sentry('Error initializing account data');
       captureException(error);
     }
-  }, [dispatch]);
+  }, [accountAddress, dispatch]);
 
   return initializeAccountData;
 }

@@ -10,10 +10,7 @@ import { AppGetState, AppState } from './store';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { fetchEnsTokens } from '@/handlers/ens';
-import {
-  getUniqueTokens,
-  saveUniqueTokens,
-} from '@/handlers/localstorage/accountLocal';
+import { saveUniqueTokens } from '@/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueToken,
   apiGetAccountUniqueTokens,
@@ -23,6 +20,8 @@ import {
 import { fetchPoaps } from '@/handlers/poap';
 import { getNftsByWalletAddress } from '@/handlers/simplehash';
 import { Network } from '@/helpers/networkTypes';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -171,26 +170,6 @@ interface UniqueTokensClearStateAction {
 interface UniqueTokensClearStateShowcaseAction {
   type: typeof UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE;
 }
-
-/**
- * Loads unique tokens from local storage and updates state.
- */
-export const uniqueTokensLoadState = () => async (
-  dispatch: Dispatch<UniqueTokensLoadAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
-  try {
-    const cachedUniqueTokens = await getUniqueTokens(accountAddress, network);
-    dispatch({
-      payload: cachedUniqueTokens,
-      type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE });
-  }
-};
 
 /**
  * Resets unique tokens, but not the showcase, in state.
@@ -372,8 +351,11 @@ export const revalidateUniqueToken = (
   getState: AppGetState
 ) => {
   const { network: currentNetwork } = getState().settings;
-  const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const accountAddress = getState().settings.accountAddress;
+  const existingNFTs =
+    queryClient.getQueryData<UniqueAsset[]>(
+      nftsQueryKey({ address: accountAddress })
+    ) ?? [];
 
   let token = await apiGetAccountUniqueToken(
     currentNetwork,
@@ -390,7 +372,7 @@ export const revalidateUniqueToken = (
     captureException(error);
   }
 
-  const uniqueTokens = existingUniqueTokens.map(existingToken =>
+  const uniqueTokens = existingNFTs.map(existingToken =>
     existingToken.id === tokenId ? token : existingToken
   );
 

@@ -1,7 +1,8 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
+  useAccountSettings,
   useENSAvatar,
   useENSCover,
   useENSRecords,
@@ -12,8 +13,8 @@ import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { AppState } from '@/redux/store';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
@@ -70,10 +71,8 @@ export default function useENSModifiedRegistration({
 } = {}) {
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
-
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { accountAddress } = useAccountSettings();
+  const { nfts } = useLegacyNFTs(accountAddress);
 
   const fetchEnabled =
     mode === REGISTRATION_MODES.EDIT ||
@@ -194,7 +193,7 @@ export default function useENSModifiedRegistration({
       'avatar',
       records,
       changedRecords,
-      uniqueTokens,
+      nfts,
       avatar?.imageUrl,
       mode
     );
@@ -202,7 +201,7 @@ export default function useENSModifiedRegistration({
       'header',
       records,
       changedRecords,
-      uniqueTokens,
+      nfts,
       cover?.imageUrl,
       mode
     );
@@ -211,14 +210,7 @@ export default function useENSModifiedRegistration({
       avatarUrl,
       coverUrl,
     };
-  }, [
-    records,
-    changedRecords,
-    uniqueTokens,
-    avatar?.imageUrl,
-    mode,
-    cover?.imageUrl,
-  ]);
+  }, [records, changedRecords, nfts, avatar?.imageUrl, mode, cover?.imageUrl]);
 
   return {
     changedRecords,

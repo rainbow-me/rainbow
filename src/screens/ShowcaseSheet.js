@@ -11,9 +11,9 @@ import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { fetchLegacyNFTs } from '@/resources/nfts';
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
@@ -65,7 +65,7 @@ export default function ShowcaseScreen() {
   }, [addressOrDomain]);
 
   useEffect(() => {
-    accountAddress && dispatch(fetchUniqueTokens(accountAddress));
+    accountAddress && fetchLegacyNFTs(accountAddress);
   }, [dispatch, accountAddress]);
 
   useEffect(() => {

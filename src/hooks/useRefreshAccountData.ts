@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { fetchAssetsFromRefraction } from '../redux/explorer';
-import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
@@ -12,10 +11,11 @@ import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
+import { fetchLegacyNFTs } from '@/resources/nfts';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
-  const { network } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -32,7 +32,7 @@ export default function useRefreshAccountData() {
       const getWalletENSAvatars = profilesEnabled
         ? dispatch(fetchWalletENSAvatars())
         : null;
-      const getUniqueTokens = dispatch(uniqueTokensRefreshState());
+      const getUniqueTokens = fetchLegacyNFTs(accountAddress);
       const balances = dispatch(fetchAssetsFromRefraction());
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
@@ -52,7 +52,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, profilesEnabled, refetchSavings]);
+  }, [accountAddress, dispatch, network, profilesEnabled, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

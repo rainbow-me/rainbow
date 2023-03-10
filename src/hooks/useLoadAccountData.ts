@@ -6,13 +6,16 @@ import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
-import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import logger from '@/utils/logger';
+import { useAccountSettings } from '.';
+import { fetchLegacyNFTs } from '@/resources/nfts';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
+  const { accountAddress } = useAccountSettings();
+
   const loadAccountData = useCallback(
     async network => {
       logger.sentry('Load wallet account data');
@@ -23,7 +26,7 @@ export default function useLoadAccountData() {
       // tokens + nfts
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
-        const p2 = dispatch(uniqueTokensLoadState());
+        const p2 = fetchLegacyNFTs(accountAddress);
         promises.push(p1, p2);
       }
       // WC requests + connections
