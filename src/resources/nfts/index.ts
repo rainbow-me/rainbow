@@ -75,7 +75,7 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
       })
       .map(simplehashNFTToUniqueAsset);
 
-    freshNFTs = [...newNFTs, ...freshNFTs];
+    freshNFTs = freshNFTs.concat(newNFTs);
 
     if (nextCursor && freshNFTs.length < NFTS_LIMIT) {
       cursor = nextCursor;
@@ -91,7 +91,8 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
     if (currentNFTs.length < NFTS_LIMIT) {
       queryClient.setQueryData<UniqueAsset[]>(
         nftsQueryKey({ address }),
-        cachedNFTs => uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
+        cachedNFTs =>
+          cachedNFTs ? uniqBy(cachedNFTs.concat(newNFTs), 'uniqueId') : newNFTs
       );
     }
   }
@@ -116,19 +117,19 @@ export function useLegacyNFTs(
   const queryClient = useQueryClient();
   const mounted = useIsMounted();
 
-  const [cursor, setCursor] = useState<string>();
-  const [isFinished, finish] = useReducer(() => true, false);
-  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
-
   const queryKey = nftsQueryKey({ address });
 
   // listen for query udpates
-  const query = useQuery<UniqueAsset[]>(queryKey, async () => [], {
+  const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
     enabled: false,
-    staleTime: Infinity,
+    staleTime: NFTS_STALE_TIME,
   });
 
-  const nfts = query.data ?? [];
+  const [cursor, setCursor] = useState<string>();
+  const [isFinished, finish] = useReducer(() => true, !isStale);
+  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
+
+  const nfts = data ?? [];
 
   useEffect(() => {
     // stream in NFTs one simplehash response page at a time
@@ -149,7 +150,7 @@ export function useLegacyNFTs(
         })
         .map(simplehashNFTToUniqueAsset);
 
-      const updatedFreshNFTs = [...newNFTs, ...freshNFTs];
+      const updatedFreshNFTs = freshNFTs.concat(newNFTs);
       setFreshNFTs(updatedFreshNFTs);
 
       if (nextCursor && updatedFreshNFTs.length < NFTS_LIMIT) {
@@ -161,7 +162,7 @@ export function useLegacyNFTs(
       // iteratively update query data with new NFTs until the limit is hit
       if (nfts.length < NFTS_LIMIT) {
         queryClient.setQueryData<UniqueAsset[]>(queryKey, cachedNFTs =>
-          uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
+          cachedNFTs ? uniqBy(cachedNFTs.concat(newNFTs), 'uniqueId') : newNFTs
         );
       }
     };
@@ -181,7 +182,7 @@ export function useLegacyNFTs(
 
   useEffect(() => {
     // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-    if (isFinished) {
+    if (isFinished && freshNFTs.length > 0) {
       queryClient.setQueryData<UniqueAsset[]>(queryKey, () => freshNFTs);
     }
   }, [freshNFTs, isFinished, queryClient, queryKey]);
