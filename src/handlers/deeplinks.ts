@@ -53,7 +53,7 @@ export default async function handleDeeplink(
     await delay(300);
   }
 
-  const { protocol, host, pathname, query } = new URL(url);
+  const { protocol, host, pathname, query } = new URL(url, true);
 
   logger.info(`handleDeeplink: handling url`, {
     url,
@@ -283,10 +283,13 @@ function handleWalletConnect(uri: string) {
     parsedUri.version === 2 &&
     getExperimetalFlag(WC_V2)
   ) {
+    logger.debug(`handleWalletConnect: handling v2`, { uri });
     setHasPendingDeeplinkPendingRedirect(true);
     pairWalletConnect({ uri });
   } else {
+    logger.debug(`handleWalletConnect: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
+    setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }
 }
