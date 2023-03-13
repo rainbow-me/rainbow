@@ -2,7 +2,6 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
-import { useIsMounted } from '@/hooks';
 import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect } from 'react';
 import { uniqBy } from 'lodash';
@@ -104,7 +103,6 @@ export function useNFTs(): NFT[] {
 }
 
 export function useLegacyNFTs({ address }: { address: string }) {
-  const mounted = useIsMounted();
   const { data: polygonAllowlist } = usePolygonAllowlist();
   const {
     data,
@@ -137,15 +135,10 @@ export function useLegacyNFTs({ address }: { address: string }) {
   const nfts = data ? data.pages.flatMap(page => page.data) : [];
 
   useEffect(() => {
-    if (
-      hasNextPage &&
-      !isFetchingNextPage &&
-      mounted.current &&
-      nfts.length < NFTS_LIMIT
-    ) {
+    if (hasNextPage && !isFetchingNextPage && nfts.length < NFTS_LIMIT) {
       fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage, mounted, nfts.length]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, nfts.length]);
 
   return {
     data: nfts,
