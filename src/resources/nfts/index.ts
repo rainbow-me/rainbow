@@ -16,7 +16,8 @@ import { SimplehashChain } from '@/resources/nfts/simplehash/types';
 import { POAP_NFT_ADDRESS } from '@/references';
 
 const NFTS_LIMIT = 2000;
-const STALE_TIME = 600000; // 10 minutes
+const NFTS_STALE_TIME = 300000; // 5 minutes
+const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
@@ -32,7 +33,7 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
         )
       ).data.data.addresses,
     {
-      staleTime: STALE_TIME,
+      staleTime: POLYGON_ALLOWLIST_STALE_TIME,
     }
   );
 }
@@ -47,7 +48,7 @@ export function usePolygonAllowlist() {
           { method: 'get' }
         )
       ).data.data.addresses,
-    staleTime: STALE_TIME,
+    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
   });
 }
 
@@ -231,7 +232,7 @@ export function useStreamingLegacyNFTs({ address }: { address: string }) {
     },
     getNextPageParam: lastPage => lastPage.nextCursor,
     keepPreviousData: true,
-    staleTime: STALE_TIME,
+    staleTime: NFTS_STALE_TIME,
     enabled: !!polygonAllowlist && !!address,
   });
 
