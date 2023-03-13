@@ -11,11 +11,7 @@ import {
 } from '@/redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import {
-  defaultConfig,
-  getExperimetalFlag,
-  WC_V2,
-} from '@/config/experimental';
+import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@/handlers/fedora';
 import { delay } from '@/helpers/utilities';
@@ -276,13 +272,7 @@ function handleWalletConnect(uri: string) {
         store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
       })
     );
-  } else if (
-    uri &&
-    query &&
-    parsedUri &&
-    parsedUri.version === 2 &&
-    getExperimetalFlag(WC_V2)
-  ) {
+  } else if (uri && query && parsedUri && parsedUri.version === 2) {
     logger.debug(`handleWalletConnect: handling v2`, { uri });
     setHasPendingDeeplinkPendingRedirect(true);
     pairWalletConnect({ uri });
