@@ -12,13 +12,11 @@ import { useEffect, useReducer, useState } from 'react';
 import { uniqBy } from 'lodash';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import {
-  SimplehashChain,
-  SimplehashNFT,
-} from '@/resources/nfts/simplehash/types';
+import { SimplehashChain } from '@/resources/nfts/simplehash/types';
+import { POAP_NFT_ADDRESS } from '@/references';
 
 const NFTS_LIMIT = 2000;
-const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
+const STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
@@ -34,7 +32,7 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
         )
       ).data.data.addresses,
     {
-      staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+      staleTime: STALE_TIME,
     }
   );
 }
@@ -49,7 +47,7 @@ export function usePolygonAllowlist() {
           { method: 'get' }
         )
       ).data.data.addresses,
-    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -191,6 +189,7 @@ export function useLegacyNFTs(
 }
 
 export function useStreamingLegacyNFTs({ address }: { address: string }) {
+  const mounted = useIsMounted();
   const { data: polygonAllowlist } = usePolygonAllowlist();
   const {
     data,
@@ -206,36 +205,51 @@ export function useStreamingLegacyNFTs({ address }: { address: string }) {
         address,
         pageParam
       );
-      return {
-        data: data.filter(nft => {
+      const newNFTs = data
+        .filter(nft => {
+          if (
+            !nft.name ||
+            !nft.collection?.name ||
+            !nft.contract_address ||
+            !nft.token_id
+          ) {
+            return false;
+          }
           if (nft.chain === SimplehashChain.Polygon) {
             return polygonAllowlist?.includes(nft.contract_address);
           }
+          if (nft.chain === SimplehashChain.Gnosis) {
+            return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+          }
           return true;
-        }),
+        })
+        .map(simplehashNFTToUniqueAsset);
+      return {
+        data: newNFTs,
         nextCursor,
       };
     },
-    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+    getNextPageParam: lastPage => lastPage.nextCursor,
     keepPreviousData: true,
-    staleTime: 0,
-    cacheTime: 0,
-    enabled: !!polygonAllowlist,
+    staleTime: STALE_TIME,
+    enabled: !!polygonAllowlist && !!address,
   });
 
+  const nfts = data ? data.pages.flatMap(page => page.data) : [];
+
   useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      console.log('fetching next page');
+    if (
+      hasNextPage &&
+      !isFetchingNextPage &&
+      mounted.current &&
+      nfts.length < NFTS_LIMIT
+    ) {
       fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, mounted, nfts.length]);
 
   return {
-    data: data?.pages
-      ? data.pages.reduce((acc, page) => {
-          return acc.concat(page.data);
-        }, [] as SimplehashNFT[])
-      : [],
+    data: nfts,
     error,
     isFetching,
   };
