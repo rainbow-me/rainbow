@@ -11,7 +11,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { SimplehashChain } from './simplehash/types';
 
 const NFTS_LIMIT = 2000;
-const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
+const STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
@@ -27,7 +27,7 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
         )
       ).data.data.addresses,
     {
-      staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+      staleTime: STALE_TIME,
     }
   );
 }
@@ -96,19 +96,19 @@ export function useLegacyNFTs(
   const queryClient = useQueryClient();
   const mounted = useIsMounted();
 
-  const [cursor, setCursor] = useState<string>();
-  const [isFinished, finish] = useReducer(() => true, false);
-  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
-
   const queryKey = nftsQueryKey({ address });
 
   // listen for query udpates
-  const query = useQuery<UniqueAsset[]>(queryKey, async () => [], {
+  const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
     enabled: false,
-    staleTime: Infinity,
+    staleTime: STALE_TIME,
   });
 
-  const nfts = query.data ?? [];
+  const [cursor, setCursor] = useState<string>();
+  const [isFinished, finish] = useReducer(() => true, !isStale);
+  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
+
+  const nfts = data ?? [];
 
   useEffect(() => {
     // stream in NFTs one simplehash response page at a time
@@ -161,7 +161,7 @@ export function useLegacyNFTs(
 
   useEffect(() => {
     // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-    if (isFinished) {
+    if (isFinished && freshNFTs.length > 0) {
       queryClient.setQueryData<UniqueAsset[]>(queryKey, () => freshNFTs);
     }
   }, [freshNFTs, isFinished, queryClient, queryKey]);
