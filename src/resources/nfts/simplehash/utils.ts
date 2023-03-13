@@ -70,7 +70,7 @@ export function getPriceFromLastSale(
     : undefined;
 }
 
-export function filterNFTs(
+export function filterSimplehashNFTs(
   nfts: SimplehashNFT[],
   polygonAllowlist?: string[]
 ): SimplehashNFT[] {
