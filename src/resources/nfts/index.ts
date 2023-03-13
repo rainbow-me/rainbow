@@ -1,4 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
@@ -8,7 +12,10 @@ import { useEffect, useReducer, useState } from 'react';
 import { uniqBy } from 'lodash';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { SimplehashChain } from './simplehash/types';
+import {
+  SimplehashChain,
+  SimplehashNFT,
+} from '@/resources/nfts/simplehash/types';
 
 const NFTS_LIMIT = 2000;
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
@@ -32,6 +39,20 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
   );
 }
 
+export function usePolygonAllowlist() {
+  return useQuery<string[]>({
+    queryKey: ['polygon-allowlist'],
+    queryFn: async () =>
+      (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses,
+    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+  });
+}
+
 export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
   let finished = false;
   let cursor: string | undefined;
@@ -44,7 +65,7 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
       fetchPolygonAllowlist(),
     ]);
 
-    const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+    const { data: simplehashNFTs, nextCursor } = simplehashResponse;
 
     const newNFTs = simplehashNFTs
       .filter(nft => {
@@ -118,7 +139,7 @@ export function useLegacyNFTs(
         fetchPolygonAllowlist(),
       ]);
 
-      const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+      const { data: simplehashNFTs, nextCursor } = simplehashResponse;
 
       const newNFTs = simplehashNFTs
         .filter(nft => {
@@ -167,4 +188,55 @@ export function useLegacyNFTs(
   }, [freshNFTs, isFinished, queryClient, queryKey]);
 
   return { nfts, isLoading: !isFinished };
+}
+
+export function useStreamingLegacyNFTs({ address }: { address: string }) {
+  const { data: polygonAllowlist } = usePolygonAllowlist();
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: nftsQueryKey({ address }),
+    queryFn: async ({ pageParam }) => {
+      const { data, nextCursor } = await fetchSimplehashNFTs(
+        address,
+        pageParam
+      );
+      return {
+        data: data.filter(nft => {
+          if (nft.chain === SimplehashChain.Polygon) {
+            return polygonAllowlist?.includes(nft.contract_address);
+          }
+          return true;
+        }),
+        nextCursor,
+      };
+    },
+    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+    keepPreviousData: true,
+    staleTime: 0,
+    cacheTime: 0,
+    enabled: !!polygonAllowlist,
+  });
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      console.log('fetching next page');
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+
+  return {
+    data: data?.pages
+      ? data.pages.reduce((acc, page) => {
+          return acc.concat(page.data);
+        }, [] as SimplehashNFT[])
+      : [],
+    error,
+    isFetching,
+  };
 }

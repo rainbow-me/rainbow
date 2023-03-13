@@ -50,7 +50,7 @@ export async function fetchSimplehashNFT(
 export async function fetchSimplehashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
-): Promise<{ nfts: SimplehashNFT[]; nextCursor: string | null }> {
+): Promise<{ data: SimplehashNFT[]; nextCursor: string | null }> {
   const chainsParam = [
     SimplehashChain.Ethereum,
     SimplehashChain.Arbitrum,
@@ -71,7 +71,7 @@ export async function fetchSimplehashNFTs(
     }
   );
   return {
-    nfts: response?.data?.nfts ?? [],
+    data: response?.data?.nfts ?? [],
     nextCursor: response?.data?.next_cursor,
   };
 }
