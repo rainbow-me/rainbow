@@ -27,6 +27,13 @@ export async function fetchSimplehashNFT(
   network: Omit<Network, Network.goerli> = Network.mainnet
 ): Promise<SimplehashNFT | undefined> {
   const chain = getSimplehashChainFromNetwork(network);
+
+  if (!chain) {
+    throw new Error(
+      `fetchSimpleHashNFT: no Simplehash chain for network: ${network}`
+    );
+  }
+
   const response = await simplehashApi.get(
     `/v0/nfts/${chain}/${contractAddress}/${tokenId}`,
     {
