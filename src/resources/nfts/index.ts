@@ -55,7 +55,7 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
       })
       .map(simplehashNFTToUniqueAsset);
 
-    freshNFTs = [...newNFTs, ...freshNFTs];
+    freshNFTs = freshNFTs.concat(newNFTs);
 
     if (nextCursor && freshNFTs.length < NFTS_LIMIT) {
       cursor = nextCursor;
@@ -71,7 +71,8 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
     if (currentNFTs.length < NFTS_LIMIT) {
       queryClient.setQueryData<UniqueAsset[]>(
         nftsQueryKey({ address }),
-        cachedNFTs => uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
+        cachedNFTs =>
+          cachedNFTs ? uniqBy(cachedNFTs.concat(newNFTs), 'uniqueId') : newNFTs
       );
     }
   }
@@ -129,7 +130,7 @@ export function useLegacyNFTs(
         })
         .map(simplehashNFTToUniqueAsset);
 
-      const updatedFreshNFTs = [...newNFTs, ...freshNFTs];
+      const updatedFreshNFTs = freshNFTs.concat(newNFTs);
       setFreshNFTs(updatedFreshNFTs);
 
       if (nextCursor && updatedFreshNFTs.length < NFTS_LIMIT) {
@@ -141,7 +142,7 @@ export function useLegacyNFTs(
       // iteratively update query data with new NFTs until the limit is hit
       if (nfts.length < NFTS_LIMIT) {
         queryClient.setQueryData<UniqueAsset[]>(queryKey, cachedNFTs =>
-          uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
+          cachedNFTs ? uniqBy(cachedNFTs.concat(newNFTs), 'uniqueId') : newNFTs
         );
       }
     };
