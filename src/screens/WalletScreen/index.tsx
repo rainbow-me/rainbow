@@ -39,7 +39,6 @@ import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useStreamingLegacyNFTs } from '@/resources/nfts';
 
 type RouteParams = {
   WalletScreen: {
@@ -64,20 +63,6 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
     accountAddress,
     appIcon,
   } = useAccountSettings();
-  const { data, error, isFetching } = useStreamingLegacyNFTs({
-    address: accountAddress,
-  });
-  console.log(
-    JSON.stringify(
-      {
-        nfts: data?.length,
-        error: error?.message,
-        isFetching,
-      },
-      null,
-      2
-    )
-  );
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();

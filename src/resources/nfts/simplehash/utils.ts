@@ -70,6 +70,29 @@ export function getPriceFromLastSale(
     : undefined;
 }
 
+export function filterNFTs(
+  nfts: SimplehashNFT[],
+  polygonAllowlist?: string[]
+): SimplehashNFT[] {
+  return nfts.filter(nft => {
+    if (
+      !nft.name ||
+      !nft.collection?.name ||
+      !nft.contract_address ||
+      !nft.token_id
+    ) {
+      return false;
+    }
+    if (polygonAllowlist && nft.chain === SimplehashChain.Polygon) {
+      return polygonAllowlist?.includes(nft.contract_address);
+    }
+    if (nft.chain === SimplehashChain.Gnosis) {
+      return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+    }
+    return true;
+  });
+}
+
 export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
   const collection = nft.collection;
 

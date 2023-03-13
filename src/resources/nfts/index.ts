@@ -1,19 +1,16 @@
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import { useIsMounted } from '@/hooks';
 import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect } from 'react';
 import { uniqBy } from 'lodash';
-import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import {
+  filterSimplehashNFTs,
+  simplehashNFTToUniqueAsset,
+} from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { SimplehashChain } from '@/resources/nfts/simplehash/types';
-import { POAP_NFT_ADDRESS } from '@/references';
 
 const NFTS_LIMIT = 2000;
 const NFTS_STALE_TIME = 300000; // 5 minutes
@@ -38,7 +35,7 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
   );
 }
 
-export function usePolygonAllowlist() {
+function usePolygonAllowlist() {
   return useQuery<string[]>({
     queryKey: ['polygon-allowlist'],
     queryFn: async () =>
@@ -66,14 +63,9 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
 
     const { data: simplehashNFTs, nextCursor } = simplehashResponse;
 
-    const newNFTs = simplehashNFTs
-      .filter(nft => {
-        if (nft.chain === SimplehashChain.Polygon) {
-          return polygonAllowlist.includes(nft.contract_address);
-        }
-        return true;
-      })
-      .map(simplehashNFTToUniqueAsset);
+    const newNFTs = filterSimplehashNFTs(simplehashNFTs, polygonAllowlist).map(
+      simplehashNFTToUniqueAsset
+    );
 
     freshNFTs = freshNFTs.concat(newNFTs);
 
@@ -111,86 +103,7 @@ export function useNFTs(): NFT[] {
   return [];
 }
 
-export function useLegacyNFTs(
-  address: string
-): { nfts: UniqueAsset[]; isLoading: boolean } {
-  const queryClient = useQueryClient();
-  const mounted = useIsMounted();
-
-  const queryKey = nftsQueryKey({ address });
-
-  // listen for query udpates
-  const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
-    enabled: false,
-    staleTime: NFTS_STALE_TIME,
-  });
-
-  const [cursor, setCursor] = useState<string>();
-  const [isFinished, finish] = useReducer(() => true, !isStale);
-  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
-
-  const nfts = data ?? [];
-
-  useEffect(() => {
-    // stream in NFTs one simplehash response page at a time
-    const fetchNFTs = async () => {
-      const [simplehashResponse, polygonAllowlist] = await Promise.all([
-        fetchSimplehashNFTs(address, cursor),
-        fetchPolygonAllowlist(),
-      ]);
-
-      const { data: simplehashNFTs, nextCursor } = simplehashResponse;
-
-      const newNFTs = simplehashNFTs
-        .filter(nft => {
-          if (nft.chain === SimplehashChain.Polygon) {
-            return polygonAllowlist.includes(nft.contract_address);
-          }
-          return true;
-        })
-        .map(simplehashNFTToUniqueAsset);
-
-      const updatedFreshNFTs = freshNFTs.concat(newNFTs);
-      setFreshNFTs(updatedFreshNFTs);
-
-      if (nextCursor && updatedFreshNFTs.length < NFTS_LIMIT) {
-        setCursor(nextCursor);
-      } else {
-        finish();
-      }
-
-      // iteratively update query data with new NFTs until the limit is hit
-      if (nfts.length < NFTS_LIMIT) {
-        queryClient.setQueryData<UniqueAsset[]>(queryKey, cachedNFTs =>
-          cachedNFTs ? uniqBy(cachedNFTs.concat(newNFTs), 'uniqueId') : newNFTs
-        );
-      }
-    };
-    if (address && !isFinished && mounted.current) {
-      fetchNFTs();
-    }
-  }, [
-    address,
-    cursor,
-    freshNFTs,
-    isFinished,
-    mounted,
-    nfts.length,
-    queryClient,
-    queryKey,
-  ]);
-
-  useEffect(() => {
-    // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-    if (isFinished && freshNFTs.length > 0) {
-      queryClient.setQueryData<UniqueAsset[]>(queryKey, () => freshNFTs);
-    }
-  }, [freshNFTs, isFinished, queryClient, queryKey]);
-
-  return { nfts, isLoading: !isFinished };
-}
-
-export function useStreamingLegacyNFTs({ address }: { address: string }) {
+export function useLegacyNFTs({ address }: { address: string }) {
   const mounted = useIsMounted();
   const { data: polygonAllowlist } = usePolygonAllowlist();
   const {
@@ -207,25 +120,9 @@ export function useStreamingLegacyNFTs({ address }: { address: string }) {
         address,
         pageParam
       );
-      const newNFTs = data
-        .filter(nft => {
-          if (
-            !nft.name ||
-            !nft.collection?.name ||
-            !nft.contract_address ||
-            !nft.token_id
-          ) {
-            return false;
-          }
-          if (nft.chain === SimplehashChain.Polygon) {
-            return polygonAllowlist?.includes(nft.contract_address);
-          }
-          if (nft.chain === SimplehashChain.Gnosis) {
-            return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
-          }
-          return true;
-        })
-        .map(simplehashNFTToUniqueAsset);
+      const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
+        simplehashNFTToUniqueAsset
+      );
       return {
         data: newNFTs,
         nextCursor,
