@@ -1,4 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { UniqueAsset } from '@/entities/uniqueAssets';
@@ -8,10 +12,12 @@ import { useEffect, useReducer, useState } from 'react';
 import { uniqBy } from 'lodash';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { SimplehashChain } from './simplehash/types';
+import { SimplehashChain } from '@/resources/nfts/simplehash/types';
+import { POAP_NFT_ADDRESS } from '@/references';
 
 const NFTS_LIMIT = 2000;
-const STALE_TIME = 600000; // 10 minutes
+const NFTS_STALE_TIME = 300000; // 5 minutes
+const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
@@ -27,9 +33,23 @@ async function fetchPolygonAllowlist(): Promise<string[]> {
         )
       ).data.data.addresses,
     {
-      staleTime: STALE_TIME,
+      staleTime: POLYGON_ALLOWLIST_STALE_TIME,
     }
   );
+}
+
+export function usePolygonAllowlist() {
+  return useQuery<string[]>({
+    queryKey: ['polygon-allowlist'],
+    queryFn: async () =>
+      (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses,
+    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+  });
 }
 
 export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
@@ -44,7 +64,7 @@ export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
       fetchPolygonAllowlist(),
     ]);
 
-    const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+    const { data: simplehashNFTs, nextCursor } = simplehashResponse;
 
     const newNFTs = simplehashNFTs
       .filter(nft => {
@@ -102,7 +122,7 @@ export function useLegacyNFTs(
   // listen for query udpates
   const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
     enabled: false,
-    staleTime: STALE_TIME,
+    staleTime: NFTS_STALE_TIME,
   });
 
   const [cursor, setCursor] = useState<string>();
@@ -119,7 +139,7 @@ export function useLegacyNFTs(
         fetchPolygonAllowlist(),
       ]);
 
-      const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+      const { data: simplehashNFTs, nextCursor } = simplehashResponse;
 
       const newNFTs = simplehashNFTs
         .filter(nft => {
@@ -168,4 +188,71 @@ export function useLegacyNFTs(
   }, [freshNFTs, isFinished, queryClient, queryKey]);
 
   return { nfts, isLoading: !isFinished };
+}
+
+export function useStreamingLegacyNFTs({ address }: { address: string }) {
+  const mounted = useIsMounted();
+  const { data: polygonAllowlist } = usePolygonAllowlist();
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: nftsQueryKey({ address }),
+    queryFn: async ({ pageParam }) => {
+      const { data, nextCursor } = await fetchSimplehashNFTs(
+        address,
+        pageParam
+      );
+      const newNFTs = data
+        .filter(nft => {
+          if (
+            !nft.name ||
+            !nft.collection?.name ||
+            !nft.contract_address ||
+            !nft.token_id
+          ) {
+            return false;
+          }
+          if (nft.chain === SimplehashChain.Polygon) {
+            return polygonAllowlist?.includes(nft.contract_address);
+          }
+          if (nft.chain === SimplehashChain.Gnosis) {
+            return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+          }
+          return true;
+        })
+        .map(simplehashNFTToUniqueAsset);
+      return {
+        data: newNFTs,
+        nextCursor,
+      };
+    },
+    getNextPageParam: lastPage => lastPage.nextCursor,
+    keepPreviousData: true,
+    staleTime: NFTS_STALE_TIME,
+    enabled: !!polygonAllowlist && !!address,
+  });
+
+  const nfts = data ? data.pages.flatMap(page => page.data) : [];
+
+  useEffect(() => {
+    if (
+      hasNextPage &&
+      !isFetchingNextPage &&
+      mounted.current &&
+      nfts.length < NFTS_LIMIT
+    ) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, mounted, nfts.length]);
+
+  return {
+    data: nfts,
+    error,
+    isFetching,
+  };
 }
