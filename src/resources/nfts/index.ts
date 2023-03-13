@@ -7,27 +7,54 @@ import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect, useReducer, useState } from 'react';
 import { uniqBy } from 'lodash';
 import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { rainbowFetch } from '@/rainbow-fetch';
+import { SimplehashChain } from './simplehash/types';
 
 const NFTS_LIMIT = 2000;
+const STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
 
-export const fetchLegacyNFTs = async (
-  address: string
-): Promise<UniqueAsset[]> => {
+async function fetchPolygonAllowlist(): Promise<string[]> {
+  return await queryClient.fetchQuery(
+    ['polygon-allowlist'],
+    async () =>
+      (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses,
+    {
+      staleTime: STALE_TIME,
+    }
+  );
+}
+
+export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
   let finished = false;
   let cursor: string | undefined;
   let freshNFTs: UniqueAsset[] = [];
 
   while (!finished) {
     // eslint-disable-next-line no-await-in-loop
-    const { nfts: simplehashNFTs, nextCursor } = await fetchSimplehashNFTs(
-      address,
-      cursor
-    );
+    const [simplehashResponse, polygonAllowlist] = await Promise.all([
+      fetchSimplehashNFTs(address, cursor),
+      fetchPolygonAllowlist(),
+    ]);
 
-    const newNFTs = simplehashNFTs.map(simplehashNFTToUniqueAsset);
+    const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+
+    const newNFTs = simplehashNFTs
+      .filter(nft => {
+        if (nft.chain === SimplehashChain.Polygon) {
+          return polygonAllowlist.includes(nft.contract_address);
+        }
+        return true;
+      })
+      .map(simplehashNFTToUniqueAsset);
+
     freshNFTs = [...newNFTs, ...freshNFTs];
 
     if (nextCursor && freshNFTs.length < NFTS_LIMIT) {
@@ -56,7 +83,7 @@ export const fetchLegacyNFTs = async (
   );
 
   return freshNFTs;
-};
+}
 
 export function useNFTs(): NFT[] {
   // normal react query where we get new NFT formatted data
@@ -69,29 +96,39 @@ export function useLegacyNFTs(
   const queryClient = useQueryClient();
   const mounted = useIsMounted();
 
-  const [cursor, setCursor] = useState<string>();
-  const [isFinished, finish] = useReducer(() => true, false);
-  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
-
   const queryKey = nftsQueryKey({ address });
 
   // listen for query udpates
-  const query = useQuery<UniqueAsset[]>(queryKey, async () => [], {
+  const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
     enabled: false,
-    staleTime: Infinity,
+    staleTime: STALE_TIME,
   });
 
-  const nfts = query.data ?? [];
+  const [cursor, setCursor] = useState<string>();
+  const [isFinished, finish] = useReducer(() => true, !isStale);
+  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
+
+  const nfts = data ?? [];
 
   useEffect(() => {
     // stream in NFTs one simplehash response page at a time
     const fetchNFTs = async () => {
-      const { nfts: simplehashNFTs, nextCursor } = await fetchSimplehashNFTs(
-        address,
-        cursor
-      );
+      const [simplehashResponse, polygonAllowlist] = await Promise.all([
+        fetchSimplehashNFTs(address, cursor),
+        fetchPolygonAllowlist(),
+      ]);
 
-      const newNFTs = simplehashNFTs.map(simplehashNFTToUniqueAsset);
+      const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
+
+      const newNFTs = simplehashNFTs
+        .filter(nft => {
+          if (nft.chain === SimplehashChain.Polygon) {
+            return polygonAllowlist.includes(nft.contract_address);
+          }
+          return true;
+        })
+        .map(simplehashNFTToUniqueAsset);
+
       const updatedFreshNFTs = [...newNFTs, ...freshNFTs];
       setFreshNFTs(updatedFreshNFTs);
 
@@ -124,7 +161,7 @@ export function useLegacyNFTs(
 
   useEffect(() => {
     // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-    if (isFinished) {
+    if (isFinished && freshNFTs.length > 0) {
       queryClient.setQueryData<UniqueAsset[]>(queryKey, () => freshNFTs);
     }
   }, [freshNFTs, isFinished, queryClient, queryKey]);
