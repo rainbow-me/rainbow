@@ -1,11 +1,11 @@
 import { isNil } from 'lodash';
 import { useEffect, useState } from 'react';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
-import * as Keychain from 'react-native-keychain';
 import useAppState from './useAppState';
 import useIsMounted from './useIsMounted';
 import usePrevious from './usePrevious';
 import { BiometryTypes } from '@/helpers';
+import * as keychain from '@/keychain';
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();
@@ -15,7 +15,7 @@ export default function useBiometryType() {
 
   useEffect(() => {
     const getSupportedBiometryType = async () => {
-      let type = await Keychain.getSupportedBiometryType();
+      let type = await keychain.getBiometryType();
 
       if (isNil(type)) {
         // 💡️ When `getSupportedBiometryType` returns `null` it can mean either:

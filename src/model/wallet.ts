@@ -17,7 +17,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -32,7 +31,8 @@ import profileUtils, {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import * as keychain from './keychain';
+import * as keychain from '@/model/keychain';
+import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -619,7 +619,7 @@ export const loadPrivateKey = async (
 
       let userPIN = null;
       if (android) {
-        const hasBiometricsEnabled = await getSupportedBiometryType();
+        const hasBiometricsEnabled = await kc.getBiometryType();
         // Fallback to custom PIN
         if (!hasBiometricsEnabled) {
           try {
@@ -787,7 +787,7 @@ export const createWallet = async (
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
     if (android && !isReadOnlyType && !isHardwareWallet) {
-      const hasBiometricsEnabled = await getSupportedBiometryType();
+      const hasBiometricsEnabled = await kc.getBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
         try {
@@ -1393,7 +1393,7 @@ export const generateAccount = async (
 
     let userPIN = null;
     if (android) {
-      const hasBiometricsEnabled = await getSupportedBiometryType();
+      const hasBiometricsEnabled = await kc.getBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
         try {
@@ -1710,7 +1710,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
       if (android) {
-        const hasBiometricsEnabled = await getSupportedBiometryType();
+        const hasBiometricsEnabled = await kc.getBiometryType();
         if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
           logger.debug(
             '[loadAndMigrate] - Wallet is created with biometric data, there is no access to the seed',
