@@ -2,68 +2,57 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
-import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  convertRawAmountToDecimalFormat,
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
+import { UniqueAsset } from '@/entities';
+import { fetchSimplehashNFTListing } from '@/resources/nfts/simplehash';
 
 const NONE = 'None';
 
-const getIsFloorPriceSupported = (network: Network) => {
-  switch (network) {
-    case Network.mainnet:
-      return true;
-    default:
-      return false;
-  }
-};
-
 export default function NFTBriefTokenInfoRow({
-  currentPrice,
-  lastPrice,
-  lastSalePaymentToken,
-  network: assetNetwork,
-  urlSuffixForAsset,
+  asset,
 }: {
-  currentPrice?: number | null;
-  lastPrice?: number | null;
-  lastSalePaymentToken?: string | null;
-  network: Network;
-  urlSuffixForAsset: string;
+  asset: UniqueAsset;
 }) {
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
 
-  const { nativeCurrency, network } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(null);
+  const floorPrice =
+    asset?.floorPriceEth !== undefined
+      ? `${asset?.floorPriceEth || '< 0.001'} ETH`
+      : NONE;
+
+  const [currentPrice, setCurrentPrice] = useState<string | null>();
 
   useEffect(() => {
-    const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
-
-    const fetchFloorPrice = async () => {
-      if (isFloorPriceSupported) {
-        try {
-          const result = await apiGetUniqueTokenFloorPrice(
-            network,
-            urlSuffixForAsset
-          );
-          setFloorPrice(result);
-        } catch (_) {
-          setFloorPrice(NONE);
-        }
-      } else {
-        setFloorPrice(NONE);
+    const fetchCurrentPrice = async () => {
+      const listing = await fetchSimplehashNFTListing(
+        asset?.network,
+        asset?.asset_contract.address || '',
+        asset?.id
+      );
+      if (listing?.price) {
+        const price = convertRawAmountToDecimalFormat(
+          listing?.price,
+          listing?.payment_token?.decimals,
+          3
+        );
+        setCurrentPrice((price || '< 0.001') + ' ETH');
       }
     };
 
-    fetchFloorPrice();
-  }, [assetNetwork, network, urlSuffixForAsset]);
+    fetchCurrentPrice();
+  }, [asset?.asset_contract.address, asset?.id, asset?.network]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -84,10 +73,8 @@ export default function NFTBriefTokenInfoRow({
   }, [navigate]);
 
   const lastSalePrice =
-    lastPrice != null
-      ? lastPrice === 0
-        ? `< 0.001 ${lastSalePaymentToken}`
-        : `${lastPrice} ${lastSalePaymentToken}`
+    asset?.lastPrice !== undefined
+      ? `${asset?.lastPrice || '< 0.001'} ${asset?.lastSalePaymentToken}`
       : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
@@ -114,7 +101,6 @@ export default function NFTBriefTokenInfoRow({
         {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
           ? currentPrice || lastSalePrice
           : convertAmountToNativeDisplay(
-              // @ts-expect-error currentPrice is a number?
               parseFloat(currentPrice) * priceOfEth,
               nativeCurrency
             )}
@@ -129,7 +115,6 @@ export default function NFTBriefTokenInfoRow({
         }
         enableHapticFeedback={floorPrice !== NONE}
         isNft
-        loading={!floorPrice}
         onInfoPress={handlePressCollectionFloor}
         onPress={toggleFloorDisplayCurrency}
         showInfoButton

@@ -415,9 +415,19 @@ export const convertAmountToNativeDisplay = (
  */
 export const convertRawAmountToDecimalFormat = (
   value: BigNumberish,
-  decimals = 18
-): string =>
-  new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
+  decimals = 18,
+  roundTo = 0
+): string => {
+  const unrounded = new BigNumber(value).dividedBy(
+    new BigNumber(10).pow(decimals)
+  );
+  if (roundTo) {
+    // remove trailing zeros
+    return parseFloat(unrounded.toFixed(roundTo)).toString();
+  } else {
+    return unrounded.toFixed();
+  }
+};
 
 export const fromWei = (number: BigNumberish): string =>
   convertRawAmountToDecimalFormat(number, 18);

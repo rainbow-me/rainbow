@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { createQueryKey } from '@/react-query';
+import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect } from 'react';
@@ -32,6 +32,20 @@ function usePolygonAllowlist() {
   });
 }
 
+function fetchPolygonAllowlist() {
+  return queryClient.fetchQuery<string[]>(
+    ['polygon-allowlist'],
+    async () =>
+      (
+        await rainbowFetch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
+          { method: 'get' }
+        )
+      ).data.data.addresses,
+    { staleTime: POLYGON_ALLOWLIST_STALE_TIME }
+  );
+}
+
 export function useNFTs(): NFT[] {
   // normal react query where we get new NFT formatted data
   return [];
@@ -40,7 +54,6 @@ export function useNFTs(): NFT[] {
 export function useLegacyNFTs({ address }: { address: string }) {
   const { accountAddress } = useAccountSettings();
   const isOwner = accountAddress === address;
-  const { data: polygonAllowlist } = usePolygonAllowlist();
   const {
     data,
     error,
@@ -51,10 +64,11 @@ export function useLegacyNFTs({ address }: { address: string }) {
   } = useInfiniteQuery({
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
-      const { data, nextCursor } = await fetchSimplehashNFTs(
-        address,
-        pageParam
-      );
+      const [simplehashResponse, polygonAllowlist] = await Promise.all([
+        fetchSimplehashNFTs(address, pageParam),
+        fetchPolygonAllowlist(),
+      ]);
+      const { data, nextCursor } = simplehashResponse;
       const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
         simplehashNFTToUniqueAsset
       );
@@ -72,7 +86,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
-    enabled: !!polygonAllowlist && !!address,
+    enabled: !!address,
   });
 
   const nfts = data?.pages ? data.pages.flatMap(page => page.data) : [];

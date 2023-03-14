@@ -601,15 +601,7 @@ const UniqueTokenExpandedState = ({
                           bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}
                         >
-                          {isNFT && (
-                            <NFTBriefTokenInfoRow
-                              currentPrice={currentPrice}
-                              lastPrice={lastPrice}
-                              lastSalePaymentToken={lastSalePaymentToken}
-                              network={asset.network}
-                              urlSuffixForAsset={urlSuffixForAsset}
-                            />
-                          )}
+                          {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}

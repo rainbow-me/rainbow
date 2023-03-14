@@ -3,10 +3,14 @@ import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimplehashNFT,
   SimplehashChain,
+  SimplehashFloorPrice,
+  SimplehashMarketplaceId,
+  SimplehashPaymentTokenId,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 
 /**
  * Returns a `SimplehashChain` from a given `Network`. Can return undefined if
@@ -63,10 +67,7 @@ export function getPriceFromLastSale(
   lastSale: SimplehashNFT['last_sale']
 ): number | undefined {
   return lastSale && lastSale?.total_price
-    ? Math.round(
-        (lastSale.total_price / 1_000_000_000_000_000_000 + Number.EPSILON) *
-          1000
-      ) / 1000
+    ? Math.round(lastSale.total_price * 1000) / 1000
     : undefined;
 }
 
@@ -114,8 +115,15 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
 
   const marketplace = nft.collection.marketplace_pages?.[0];
 
+  const floorPrice = collection?.floor_prices?.find(
+    (floorPrice: SimplehashFloorPrice) =>
+      floorPrice?.marketplace_id === SimplehashMarketplaceId.Opensea &&
+      floorPrice?.payment_token?.payment_token_id ===
+        SimplehashPaymentTokenId.Ethereum
+  );
+
   return {
-    animation_url: nft.extra_metadata?.animation_original_url,
+    animation_url: nft.video_url,
     asset_contract: {
       address: nft.contract_address,
       name: nft.contract.name || undefined,
@@ -136,6 +144,13 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     external_link: nft.external_url,
     familyImage: collection.image_url,
     familyName: collection.name,
+    floorPriceEth: floorPrice?.value
+      ? convertRawAmountToDecimalFormat(
+          floorPrice.value,
+          floorPrice?.payment_token?.decimals,
+          3
+        )
+      : undefined,
     fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     // @ts-ignore TODO
     id: nft.token_id,
@@ -145,7 +160,13 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
     isSendable: nft.chain === SimplehashChain.Ethereum,
-    lastPrice: getPriceFromLastSale(nft.last_sale) || null,
+    lastPrice: nft?.last_sale?.unit_price
+      ? convertRawAmountToDecimalFormat(
+          nft.last_sale.unit_price,
+          nft.last_sale.payment_token?.decimals,
+          3
+        )
+      : undefined,
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,
     marketplaceCollectionUrl: marketplace?.collection_url,
