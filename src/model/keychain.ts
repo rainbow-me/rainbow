@@ -12,9 +12,9 @@ export async function saveString(
 export async function loadString(
   key: string,
   options?: Options
-): Promise<null | string | -1 | -2> {
+): Promise<null | string | -1 | -2 | 0 | 1> {
   const { value, error } = await kc.get(key, options);
-  return value || error;
+  return value ? value : error || null;
 }
 
 export async function saveObject(
@@ -28,9 +28,9 @@ export async function saveObject(
 export async function loadObject(
   key: string,
   options?: Options
-): Promise<null | Record<string, any> | -1 | -2> {
+): Promise<null | Record<string, any> | -1 | -2 | 0 | 1> {
   const { value, error } = await kc.getObject(key, options);
-  return value || error;
+  return value ? value : error || null;
 }
 
 export async function remove(key: string): Promise<void> {
