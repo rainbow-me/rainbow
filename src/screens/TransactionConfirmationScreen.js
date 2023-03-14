@@ -435,6 +435,12 @@ export default function TransactionConfirmationScreen() {
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
+
+      if (walletConnectV2RequestValues?.onComplete) {
+        InteractionManager.runAfterInteractions(() => {
+          walletConnectV2RequestValues.onComplete();
+        });
+      }
     },
     [
       accountInfo.isHardwareWallet,
@@ -718,6 +724,8 @@ export default function TransactionConfirmationScreen() {
       'gas',
       'chainId',
     ]);
+
+    logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
 
     let response = null;
 

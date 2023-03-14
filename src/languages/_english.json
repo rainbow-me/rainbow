@@ -723,6 +723,14 @@
         "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow.",
         "title": "Connection failed"
       },
+      "failed_wc_invalid_chains": {
+        "text": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "title": "Connection failed"
+      },
+      "failed_wc_invalid_chain": {
+        "text": "The network specified in this request is not supported by Rainbow.",
+        "title": "Handling failed"
+      },
       "floor_price": {
         "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
         "title": "Collection floor price"
@@ -1686,6 +1694,28 @@
         "success_message": "It's here 🥳",
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
         "watching_mode_confirm_title": "You’re in Watching Mode"
+      },
+      "add_cash_v2": {
+        "generic_error": {
+          "title": "Something went wrong",
+          "message": "Our team has been notified and will look into it ASAP.",
+          "button": "OK"
+        },
+        "unauthenticated_ratio_error": {
+          "title": "We're sorry, you failed authentication",
+          "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
+        },
+        "support_email_subject": "I need help buying crypto with %{provider}",
+        "sheet_empty_state": {
+          "title": "Can't find your preferred provider?",
+          "description": "Check back soon for more options"
+        },
+        "explain_sheet": {
+          "semi_supported": {
+            "title": "Purchase successful!",
+            "text": "We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon."
+          }
+        }
       },
       "alert": {
         "finish_importing": "Finish Importing",

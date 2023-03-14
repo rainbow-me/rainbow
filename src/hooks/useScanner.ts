@@ -23,7 +23,6 @@ import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/utils/walletConnect';
-import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -125,7 +124,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         const { version } = parseUri(qrCodeData);
         if (version === 1) {
           await walletConnectOnSessionRequest(qrCodeData, () => {});
-        } else if (version === 2 && getExperimetalFlag(WC_V2)) {
+        } else if (version === 2) {
           await pairWalletConnect({ uri: qrCodeData });
         }
       } catch (e) {

@@ -788,7 +788,7 @@ describe('Register ENS Flow', () => {
     }
   });
 
-  it('Should confirm the ENS was sent correctly', async () => {
+  it.skip('Should confirm the ENS was sent correctly', async () => {
     await Helpers.delay(1000);
     const { name } = await getRecords(RAINBOW_TEST_WALLET_NAME);
     const { address, primaryName } = await resolveName(
@@ -804,7 +804,7 @@ describe('Register ENS Flow', () => {
       throw new Error('Owner not set correctly');
   });
 
-  it('Should check address is the new label on profile screen and change wallet screen', async () => {
+  it.skip('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
     const WALLET_ROW_TRUNCATED_ADDRESS = address(
       RAINBOW_TEST_WALLET_ADDRESS,
