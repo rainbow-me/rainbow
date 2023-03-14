@@ -724,6 +724,14 @@
         "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow. :)",
         "title": "Connection failed :)"
       },
+      "failed_wc_invalid_chains": {
+        "text": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "title": "Connection failed :)"
+      },
+      "failed_wc_invalid_chain": {
+        "text": "The network specified in this request is not supported by Rainbow. :)",
+        "title": "Handling failed :)"
+      },
       "floor_price": {
         "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
         "title": "Collection floor price"

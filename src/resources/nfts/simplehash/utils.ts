@@ -8,6 +8,10 @@ import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
 
+/**
+ * Returns a `SimplehashChain` from a given `Network`. Can return undefined if
+ * a `Network` has no counterpart in Simplehash.
+ */
 export function getSimplehashChainFromNetwork(
   network: Omit<Network, Network.goerli>
 ): SimplehashChain | undefined {
@@ -27,6 +31,10 @@ export function getSimplehashChainFromNetwork(
   }
 }
 
+/**
+ * Returns a `Network` from a `SimplehashChain`. If an invalid value is
+ * forcably passed in, it will throw.
+ */
 export function getNetworkFromSimplehashChain(chain: SimplehashChain): Network {
   switch (chain) {
     case SimplehashChain.Ethereum:
@@ -41,6 +49,10 @@ export function getNetworkFromSimplehashChain(chain: SimplehashChain): Network {
     case SimplehashChain.Bsc:
       return Network.bsc;
     default:
+      /*
+       * Throws here because according to TS types, we should NEVER hit this
+       * default branch in the logic
+       */
       throw new Error(
         `getNetworkFromSimplehashChain received unknown chain: ${chain}`
       );
@@ -58,6 +70,29 @@ export function getPriceFromLastSale(
     : undefined;
 }
 
+export function filterSimplehashNFTs(
+  nfts: SimplehashNFT[],
+  polygonAllowlist?: string[]
+): SimplehashNFT[] {
+  return nfts.filter(nft => {
+    if (
+      !nft.name ||
+      !nft.collection?.name ||
+      !nft.contract_address ||
+      !nft.token_id
+    ) {
+      return false;
+    }
+    if (polygonAllowlist && nft.chain === SimplehashChain.Polygon) {
+      return polygonAllowlist?.includes(nft.contract_address);
+    }
+    if (nft.chain === SimplehashChain.Gnosis) {
+      return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+    }
+    return true;
+  });
+}
+
 export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
   const collection = nft.collection;
 
@@ -66,7 +101,7 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     nft.image_url,
     nft.extra_metadata?.image_original_url,
     nft.previews.image_small_url
-  ) as { imageUrl?: string; lowResUrl?: string };
+  );
 
   const marketplace = nft.collection.marketplace_pages?.[0];
 

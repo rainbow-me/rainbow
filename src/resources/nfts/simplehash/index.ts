@@ -27,6 +27,13 @@ export async function fetchSimplehashNFT(
   network: Omit<Network, Network.goerli> = Network.mainnet
 ): Promise<SimplehashNFT | undefined> {
   const chain = getSimplehashChainFromNetwork(network);
+
+  if (!chain) {
+    throw new Error(
+      `fetchSimpleHashNFT: no Simplehash chain for network: ${network}`
+    );
+  }
+
   const response = await simplehashApi.get(
     `/v0/nfts/${chain}/${contractAddress}/${tokenId}`,
     {
@@ -43,7 +50,7 @@ export async function fetchSimplehashNFT(
 export async function fetchSimplehashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
-): Promise<{ nfts: SimplehashNFT[]; nextCursor: string | null }> {
+): Promise<{ data: SimplehashNFT[]; nextCursor: string | null }> {
   const chainsParam = [
     SimplehashChain.Ethereum,
     SimplehashChain.Arbitrum,
@@ -64,7 +71,7 @@ export async function fetchSimplehashNFTs(
     }
   );
   return {
-    nfts: response?.data?.nfts ?? [],
+    data: response?.data?.nfts ?? [],
     nextCursor: response?.data?.next_cursor,
   };
 }

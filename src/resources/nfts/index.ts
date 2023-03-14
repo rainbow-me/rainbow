@@ -1,88 +1,35 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createQueryKey, queryClient } from '@/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { UniqueAsset } from '@/entities/uniqueAssets';
-import { useIsMounted } from '@/hooks';
 import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect, useReducer, useState } from 'react';
-import { uniqBy } from 'lodash';
-import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { useEffect } from 'react';
+import {
+  filterSimplehashNFTs,
+  simplehashNFTToUniqueAsset,
+} from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { SimplehashChain } from './simplehash/types';
+import { useAccountSettings } from '@/hooks';
 
 const NFTS_LIMIT = 2000;
-const STALE_TIME = 600000; // 10 minutes
+const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
+const NFTS_STALE_TIME = 300000; // 5 minutes
+const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
 
-async function fetchPolygonAllowlist(): Promise<string[]> {
-  return await queryClient.fetchQuery(
-    ['polygon-allowlist'],
-    async () =>
+function usePolygonAllowlist() {
+  return useQuery<string[]>({
+    queryKey: ['polygon-allowlist'],
+    queryFn: async () =>
       (
         await rainbowFetch(
           'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
           { method: 'get' }
         )
       ).data.data.addresses,
-    {
-      staleTime: STALE_TIME,
-    }
-  );
-}
-
-export async function fetchLegacyNFTs(address: string): Promise<UniqueAsset[]> {
-  let finished = false;
-  let cursor: string | undefined;
-  let freshNFTs: UniqueAsset[] = [];
-
-  while (!finished) {
-    // eslint-disable-next-line no-await-in-loop
-    const [simplehashResponse, polygonAllowlist] = await Promise.all([
-      fetchSimplehashNFTs(address, cursor),
-      fetchPolygonAllowlist(),
-    ]);
-
-    const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
-
-    const newNFTs = simplehashNFTs
-      .filter(nft => {
-        if (nft.chain === SimplehashChain.Polygon) {
-          return polygonAllowlist.includes(nft.contract_address);
-        }
-        return true;
-      })
-      .map(simplehashNFTToUniqueAsset);
-
-    freshNFTs = [...newNFTs, ...freshNFTs];
-
-    if (nextCursor && freshNFTs.length < NFTS_LIMIT) {
-      cursor = nextCursor;
-    } else {
-      // eslint-disable-next-line require-atomic-updates
-      finished = true;
-    }
-
-    const currentNFTs =
-      queryClient.getQueryData<UniqueAsset[]>(nftsQueryKey({ address })) ?? [];
-
-    // iteratively update query data with new NFTs until the limit is hit
-    if (currentNFTs.length < NFTS_LIMIT) {
-      queryClient.setQueryData<UniqueAsset[]>(
-        nftsQueryKey({ address }),
-        cachedNFTs => uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
-      );
-    }
-  }
-
-  // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-  queryClient.setQueryData<UniqueAsset[]>(
-    nftsQueryKey({ address }),
-    () => freshNFTs
-  );
-
-  return freshNFTs;
+    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
+  });
 }
 
 export function useNFTs(): NFT[] {
@@ -90,81 +37,55 @@ export function useNFTs(): NFT[] {
   return [];
 }
 
-export function useLegacyNFTs(
-  address: string
-): { nfts: UniqueAsset[]; isLoading: boolean } {
-  const queryClient = useQueryClient();
-  const mounted = useIsMounted();
-
-  const queryKey = nftsQueryKey({ address });
-
-  // listen for query udpates
-  const { data, isStale } = useQuery<UniqueAsset[]>(queryKey, async () => [], {
-    enabled: false,
-    staleTime: STALE_TIME,
+export function useLegacyNFTs({ address }: { address: string }) {
+  const { accountAddress } = useAccountSettings();
+  const isOwner = accountAddress === address;
+  const { data: polygonAllowlist } = usePolygonAllowlist();
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: nftsQueryKey({ address }),
+    queryFn: async ({ pageParam }) => {
+      const { data, nextCursor } = await fetchSimplehashNFTs(
+        address,
+        pageParam
+      );
+      const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
+        simplehashNFTToUniqueAsset
+      );
+      return {
+        data: newNFTs,
+        nextCursor,
+      };
+    },
+    getNextPageParam: lastPage => lastPage.nextCursor,
+    keepPreviousData: true,
+    // this query will automatically refresh every 4 minutes
+    // this way we can minimize the amount of time the user sees partial/no data
+    refetchInterval: isOwner ? NFTS_REFETCH_INTERVAL : false,
+    refetchIntervalInBackground: isOwner,
+    // we still need to set a stale time because unlike the refetch interval,
+    // this will persist across app instances
+    staleTime: NFTS_STALE_TIME,
+    enabled: !!polygonAllowlist && !!address,
   });
 
-  const [cursor, setCursor] = useState<string>();
-  const [isFinished, finish] = useReducer(() => true, !isStale);
-  const [freshNFTs, setFreshNFTs] = useState<UniqueAsset[]>([]);
-
-  const nfts = data ?? [];
+  const nfts = data?.pages ? data.pages.flatMap(page => page.data) : [];
 
   useEffect(() => {
-    // stream in NFTs one simplehash response page at a time
-    const fetchNFTs = async () => {
-      const [simplehashResponse, polygonAllowlist] = await Promise.all([
-        fetchSimplehashNFTs(address, cursor),
-        fetchPolygonAllowlist(),
-      ]);
-
-      const { nfts: simplehashNFTs, nextCursor } = simplehashResponse;
-
-      const newNFTs = simplehashNFTs
-        .filter(nft => {
-          if (nft.chain === SimplehashChain.Polygon) {
-            return polygonAllowlist.includes(nft.contract_address);
-          }
-          return true;
-        })
-        .map(simplehashNFTToUniqueAsset);
-
-      const updatedFreshNFTs = [...newNFTs, ...freshNFTs];
-      setFreshNFTs(updatedFreshNFTs);
-
-      if (nextCursor && updatedFreshNFTs.length < NFTS_LIMIT) {
-        setCursor(nextCursor);
-      } else {
-        finish();
-      }
-
-      // iteratively update query data with new NFTs until the limit is hit
-      if (nfts.length < NFTS_LIMIT) {
-        queryClient.setQueryData<UniqueAsset[]>(queryKey, cachedNFTs =>
-          uniqBy([...newNFTs, ...(cachedNFTs ?? [])], 'uniqueId')
-        );
-      }
-    };
-    if (address && !isFinished && mounted.current) {
-      fetchNFTs();
+    if (hasNextPage && !isFetchingNextPage && nfts.length < NFTS_LIMIT) {
+      fetchNextPage();
     }
-  }, [
-    address,
-    cursor,
-    freshNFTs,
-    isFinished,
-    mounted,
-    nfts.length,
-    queryClient,
-    queryKey,
-  ]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, nfts.length]);
 
-  useEffect(() => {
-    // once we successfully fetch all NFTs, replace all cached NFTs with fresh ones
-    if (isFinished && freshNFTs.length > 0) {
-      queryClient.setQueryData<UniqueAsset[]>(queryKey, () => freshNFTs);
-    }
-  }, [freshNFTs, isFinished, queryClient, queryKey]);
-
-  return { nfts, isLoading: !isFinished };
+  return {
+    data: nfts,
+    error,
+    isFetching,
+  };
 }
