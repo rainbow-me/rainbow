@@ -697,7 +697,6 @@ export const transactionsReceived = (
   }
 
   const { accountAddress, nativeCurrency } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
@@ -712,7 +711,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     pendingTransactions,
-    purchaseTransactions,
+    undefined,
     currentNetwork,
     appended
   );

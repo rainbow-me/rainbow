@@ -72,13 +72,15 @@ export const parseTransactions = async (
   nativeCurrency: NativeCurrencyKey,
   existingTransactions: RainbowTransaction[],
   pendingTransactions: RainbowTransaction[],
-  purchaseTransactions: RainbowTransaction[],
+  purchaseTransactions: any,
   network: Network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = purchaseTransactions.map(txn =>
-    ethereumUtils.getHash(txn)
-  );
+  /**
+   * This is empty because it previously pulled in data from our `addCash`
+   * reducer, which was deprecated and removed.
+   */
+  const purchaseTransactionHashes: RainbowTransaction[] = [];
 
   // pending crosschain swaps transactions now depends on bridge status API
   // so we need to persist pending txs until bridge is done even tho the tx
