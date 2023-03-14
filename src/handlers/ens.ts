@@ -93,6 +93,7 @@ const buildEnsToken = ({
     familyImage:
       'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
     familyName: 'ENS',
+    floorPriceEth: undefined,
     fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
     id: tokenId,
     image_original_url: imageUrl,
@@ -100,7 +101,7 @@ const buildEnsToken = ({
     image_url: imageUrl,
     isSendable: true,
     last_sale: null,
-    lastPrice: null,
+    lastPrice: undefined,
     lastPriceUsd: null,
     lastSale: undefined,
     lastSalePaymentToken: null,
