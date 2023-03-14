@@ -8,6 +8,7 @@ import {
   simplehashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
+import { useAccountSettings } from '@/hooks';
 
 const NFTS_LIMIT = 2000;
 const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
@@ -37,6 +38,8 @@ export function useNFTs(): NFT[] {
 }
 
 export function useLegacyNFTs({ address }: { address: string }) {
+  const { accountAddress } = useAccountSettings();
+  const isOwner = accountAddress === address;
   const { data: polygonAllowlist } = usePolygonAllowlist();
   const {
     data,
@@ -64,8 +67,8 @@ export function useLegacyNFTs({ address }: { address: string }) {
     keepPreviousData: true,
     // this query will automatically refresh every 4 minutes
     // this way we can minimize the amount of time the user sees partial/no data
-    refetchInterval: NFTS_REFETCH_INTERVAL,
-    refetchIntervalInBackground: true,
+    refetchInterval: isOwner ? NFTS_REFETCH_INTERVAL : false,
+    refetchIntervalInBackground: isOwner,
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
