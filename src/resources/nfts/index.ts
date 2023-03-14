@@ -1,11 +1,6 @@
-import {
-  QueryClientConfig,
-  useInfiniteQuery,
-  useQuery,
-} from '@tanstack/react-query';
-import { createQueryKey, queryClient } from '@/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { UniqueAsset } from '@/entities/uniqueAssets';
 import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect } from 'react';
 import {
@@ -15,30 +10,12 @@ import {
 import { rainbowFetch } from '@/rainbow-fetch';
 
 const NFTS_LIMIT = 2000;
+const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
 const NFTS_STALE_TIME = 300000; // 5 minutes
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
-
-export const nftsStreamQueryKey = ({ address }: { address: string }) =>
-  createQueryKey('nftsStream', { address }, { persisterVersion: 1 });
-
-async function fetchPolygonAllowlist(): Promise<string[]> {
-  return await queryClient.fetchQuery(
-    ['polygon-allowlist'],
-    async () =>
-      (
-        await rainbowFetch(
-          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-          { method: 'get' }
-        )
-      ).data.data.addresses,
-    {
-      staleTime: POLYGON_ALLOWLIST_STALE_TIME,
-    }
-  );
-}
 
 function usePolygonAllowlist() {
   return useQuery<string[]>({
@@ -52,48 +29,6 @@ function usePolygonAllowlist() {
       ).data.data.addresses,
     staleTime: POLYGON_ALLOWLIST_STALE_TIME,
   });
-}
-
-export async function fetchLegacyNFTs({
-  address,
-  queryClientConfig,
-}: {
-  address: string;
-  queryClientConfig: QueryClientConfig;
-}): Promise<UniqueAsset[]> {
-  return queryClient.fetchQuery(
-    nftsQueryKey({ address }),
-    async () => {
-      let finished = false;
-      let cursor: string | undefined;
-      let nfts: UniqueAsset[] = [];
-      while (!finished) {
-        // eslint-disable-next-line no-await-in-loop
-        const [simplehashResponse, polygonAllowlist] = await Promise.all([
-          fetchSimplehashNFTs(address, cursor),
-          fetchPolygonAllowlist(),
-        ]);
-
-        const { data: simplehashNFTs, nextCursor } = simplehashResponse;
-
-        const newNFTs = filterSimplehashNFTs(
-          simplehashNFTs,
-          polygonAllowlist
-        ).map(simplehashNFTToUniqueAsset);
-
-        nfts = nfts.concat(newNFTs);
-
-        if (nextCursor && nfts.length < NFTS_LIMIT) {
-          cursor = nextCursor;
-        } else {
-          // eslint-disable-next-line require-atomic-updates
-          finished = true;
-        }
-      }
-      return nfts;
-    },
-    { staleTime: NFTS_STALE_TIME, ...queryClientConfig }
-  );
 }
 
 export function useNFTs(): NFT[] {
@@ -111,19 +46,8 @@ export function useLegacyNFTs({ address }: { address: string }) {
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: nftsStreamQueryKey({ address }),
+    queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
-      // if we haven't started streaming yet, check if we can
-      // borrow cache from non-streaming query key
-      if (!pageParam) {
-        const cache = queryClient.getQueryData<UniqueAsset[]>(
-          nftsQueryKey({ address })
-        );
-        return {
-          data: cache,
-          nextCursor: null,
-        };
-      }
       const { data, nextCursor } = await fetchSimplehashNFTs(
         address,
         pageParam
@@ -138,6 +62,12 @@ export function useLegacyNFTs({ address }: { address: string }) {
     },
     getNextPageParam: lastPage => lastPage.nextCursor,
     keepPreviousData: true,
+    // this query will automatically refresh every 4 minutes
+    // this way we can minimize the amount of time the user sees partial/no data
+    refetchInterval: NFTS_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+    // we still need to set a stale time because unlike the refetch interval,
+    // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
     enabled: !!polygonAllowlist && !!address,
   });
