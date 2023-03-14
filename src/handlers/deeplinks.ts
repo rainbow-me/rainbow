@@ -45,7 +45,7 @@ export default async function handleDeeplink(
    * We need to wait till the wallet is ready to handle any deeplink
    */
   while (store.getState().data.isLoadingAssets) {
-      logger.info(`handleDeeplink: Waiting for wallet to be ready`);
+    logger.info(`handleDeeplink: Waiting for wallet to be ready`);
     await delay(50);
   }
 
