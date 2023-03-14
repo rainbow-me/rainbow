@@ -11,11 +11,7 @@ import {
 } from '@/redux/walletconnect';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import {
-  defaultConfig,
-  getExperimetalFlag,
-  WC_V2,
-} from '@/config/experimental';
+import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { setDeploymentKey } from '@/handlers/fedora';
 import { delay } from '@/helpers/utilities';
@@ -53,7 +49,7 @@ export default async function handleDeeplink(
     await delay(50);
   }
 
-  const { protocol, host, pathname, query } = new URL(url);
+  const { protocol, host, pathname, query } = new URL(url, true);
 
   logger.info(`handleDeeplink: handling url`, {
     url,
@@ -276,17 +272,14 @@ function handleWalletConnect(uri: string) {
         store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
       })
     );
-  } else if (
-    uri &&
-    query &&
-    parsedUri &&
-    parsedUri.version === 2 &&
-    getExperimetalFlag(WC_V2)
-  ) {
+  } else if (uri && query && parsedUri && parsedUri.version === 2) {
+    logger.debug(`handleWalletConnect: handling v2`, { uri });
     setHasPendingDeeplinkPendingRedirect(true);
     pairWalletConnect({ uri });
   } else {
+    logger.debug(`handleWalletConnect: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
+    setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }
 }
