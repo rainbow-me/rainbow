@@ -70,6 +70,15 @@ export function getPriceFromLastSale(
     : undefined;
 }
 
+/**
+ * This function filters out NFTs that do not have a name, collection name,
+ * contract address, or token id. It also filters out Polygon NFTs that are
+ * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
+ *
+ * @param nfts array of SimplehashNFTs
+ * @param polygonAllowlist array of whitelisted Polygon nft contract addresses
+ * @returns array of filtered NFTs
+ */
 export function filterSimplehashNFTs(
   nfts: SimplehashNFT[],
   polygonAllowlist?: string[]
