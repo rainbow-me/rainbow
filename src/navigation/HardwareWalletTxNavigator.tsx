@@ -65,7 +65,6 @@ export const HardwareWalletTxNavigator = () => {
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      console.log('error callbaxk', errorType);
       if (
         errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
         errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
