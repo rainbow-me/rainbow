@@ -72,7 +72,7 @@ export default function useENSModifiedRegistration({
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
   const { accountAddress } = useAccountSettings();
-  const { nfts } = useLegacyNFTs(accountAddress);
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
 
   const fetchEnabled =
     mode === REGISTRATION_MODES.EDIT ||

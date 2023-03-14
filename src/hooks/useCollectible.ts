@@ -12,7 +12,7 @@ export default function useCollectible(
   externalAddress?: string
 ) {
   const { accountAddress } = useAccountSettings();
-  const { nfts: selfNFTs } = useLegacyNFTs(accountAddress);
+  const { data: selfNFTs } = useLegacyNFTs({ address: accountAddress });
   const { data: externalNFTs } = useQuery<UniqueAsset[]>(
     nftsQueryKey({ address: externalAddress ?? '' }),
     // We just want to watch for changes in the query key,

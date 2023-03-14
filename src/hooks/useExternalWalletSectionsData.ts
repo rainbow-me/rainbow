@@ -12,7 +12,7 @@ export default function useExternalWalletSectionsData({
   address: string;
   type?: AssetListType;
 }) {
-  const { nfts, isLoading } = useLegacyNFTs(address);
+  const { data: nfts, isFetching } = useLegacyNFTs({ address });
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
@@ -37,6 +37,6 @@ export default function useExternalWalletSectionsData({
 
   return {
     briefSectionsData,
-    isSuccess: !isLoading || nfts.length,
+    isSuccess: !isFetching || nfts.length,
   };
 }

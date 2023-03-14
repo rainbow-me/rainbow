@@ -5,7 +5,7 @@ import { useAccountSettings } from '.';
 
 export default function useSendableUniqueTokens() {
   const { accountAddress } = useAccountSettings();
-  const { nfts } = useLegacyNFTs(accountAddress);
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
 
   const sendableNFTs = nfts?.filter((nft: UniqueAsset) => nft.isSendable);
 

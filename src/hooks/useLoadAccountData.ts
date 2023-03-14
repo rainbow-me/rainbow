@@ -9,12 +9,9 @@ import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import logger from '@/utils/logger';
-import { useAccountSettings } from '.';
-import { fetchLegacyNFTs } from '@/resources/nfts';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
-  const { accountAddress } = useAccountSettings();
 
   const loadAccountData = useCallback(
     async network => {
@@ -26,17 +23,16 @@ export default function useLoadAccountData() {
       // tokens + nfts
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
-        const p2 = fetchLegacyNFTs(accountAddress);
-        promises.push(p1, p2);
+        promises.push(p1);
       }
       // WC requests + connections
-      const p3 = dispatch(requestsLoadState());
-      const p4 = dispatch(walletConnectLoadState());
+      const p2 = dispatch(requestsLoadState());
+      const p3 = dispatch(walletConnectLoadState());
 
       // add cash
-      const p5 = dispatch(addCashLoadState());
+      const p4 = dispatch(addCashLoadState());
 
-      promises.push(p3, p4, p5);
+      promises.push(p2, p3, p4);
 
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);

@@ -69,7 +69,7 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const { nfts } = useLegacyNFTs(profileAddress ?? '');
+  const { data: nfts } = useLegacyNFTs({ address: profileAddress ?? '' });
 
   const avatarUrl = avatar?.imageUrl;
   const { onPress: onPressAvatar } = useOpenENSNFTHandler({

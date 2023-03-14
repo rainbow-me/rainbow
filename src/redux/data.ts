@@ -80,7 +80,8 @@ import { SwapType } from '@rainbow-me/swaps';
 import { FiatProviderName } from '@/entities/f2c';
 import { logger as loggr, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
-import { fetchLegacyNFTs } from '@/resources/nfts';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 const storage = new MMKV();
 
@@ -733,7 +734,10 @@ export const transactionsReceived = (
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
-      fetchLegacyNFTs(accountAddress);
+      // invalidate the nfts query to force a refetch
+      queryClient.invalidateQueries({
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      });
     }, 60000);
   }
 

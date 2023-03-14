@@ -39,7 +39,7 @@ export default function useENSPendingRegistrations() {
     }
   );
 
-  const { nfts } = useLegacyNFTs(accountAddress);
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
   const registrationImages = useMemo(() => {
     const registrationImagesArray = pendingRegistrations?.map(
       ({ name, records }) => {

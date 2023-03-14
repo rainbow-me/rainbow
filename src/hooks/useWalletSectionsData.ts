@@ -23,7 +23,7 @@ export default function useWalletSectionsData({
 
   const { accountAddress, network, nativeCurrency } = useAccountSettings();
   const uniswap = useSelector(readableUniswapSelector);
-  const { nfts } = useLegacyNFTs(accountAddress);
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();

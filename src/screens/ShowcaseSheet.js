@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
@@ -13,7 +13,6 @@ import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { fetchLegacyNFTs } from '@/resources/nfts';
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
@@ -53,7 +52,6 @@ export default function ShowcaseScreen() {
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
-  const dispatch = useDispatch();
   const { isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
@@ -63,10 +61,6 @@ export default function ShowcaseScreen() {
     };
     init();
   }, [addressOrDomain]);
-
-  useEffect(() => {
-    accountAddress && fetchLegacyNFTs(accountAddress);
-  }, [dispatch, accountAddress]);
 
   useEffect(() => {
     async function fetchShowcase() {

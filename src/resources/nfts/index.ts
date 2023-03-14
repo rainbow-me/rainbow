@@ -55,6 +55,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
         address,
         pageParam
       );
+      console.log('FETCHING');
       const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
         simplehashNFTToUniqueAsset
       );

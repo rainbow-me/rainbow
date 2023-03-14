@@ -11,7 +11,8 @@ import useAccountSettings from './useAccountSettings';
 import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
-import { fetchLegacyNFTs } from '@/resources/nfts';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -26,20 +27,20 @@ export default function useRefreshAccountData() {
     if (network !== NetworkTypes.mainnet) {
       return Promise.all([delay(1250)]);
     }
-
+    queryClient.invalidateQueries({
+      queryKey: nftsQueryKey({ address: accountAddress }),
+    });
     try {
       const getWalletNames = dispatch(fetchWalletNames());
       const getWalletENSAvatars = profilesEnabled
         ? dispatch(fetchWalletENSAvatars())
         : null;
-      const getUniqueTokens = fetchLegacyNFTs(accountAddress);
       const balances = dispatch(fetchAssetsFromRefraction());
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
-        getUniqueTokens,
         getWalletENSAvatars,
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),

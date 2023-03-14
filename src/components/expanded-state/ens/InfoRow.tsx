@@ -216,8 +216,8 @@ function ImageValue({
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const { nfts: accountNFTs } = useLegacyNFTs(accountAddress);
-  const { nfts: profileNFTs } = useLegacyNFTs(address ?? '');
+  const { data: accountNFTs } = useLegacyNFTs({ address: accountAddress });
+  const { data: profileNFTs } = useLegacyNFTs({ address: address ?? '' });
 
   const isSelf = address === accountAddress;
   const nfts = isSelf ? accountNFTs : profileNFTs;
