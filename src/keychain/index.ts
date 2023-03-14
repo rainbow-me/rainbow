@@ -12,6 +12,7 @@ import {
   resetInternetCredentials,
   setInternetCredentials,
   UserCredentials,
+  BIOMETRY_TYPE,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
@@ -19,8 +20,6 @@ import { IS_DEV, IS_IOS } from '@/env';
 
 /**
  * TODO requestSharedWebCredentials in backup.ts
- * TODO getSupportedBiometryType in useBiometryType
- * TODO getSupportedBiometryType in model/wallet
  */
 
 enum ErrorType {
@@ -30,9 +29,9 @@ enum ErrorType {
   Unavailable = 1,
 }
 
-type Result =
+type Result<T = any> =
   | {
-      value: any;
+      value: T;
       error: undefined;
     }
   | {
@@ -48,7 +47,10 @@ export const publicAccessControlOptions = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
-export async function get(key: string, options: Options = {}): Promise<Result> {
+export async function get(
+  key: string,
+  options: Options = {}
+): Promise<Result<string>> {
   let data = cache.getString(key);
 
   if (!data) {
@@ -105,11 +107,11 @@ export async function set(
 export async function getObject(
   key: string,
   options: Options = {}
-): Promise<Result> {
+): Promise<Result<Record<string, unknown>>> {
   const { value, error } = await get(key, options);
 
-  if (error) {
-    return { value: undefined, error: error };
+  if (error || !value) {
+    return { value: undefined, error: error || ErrorType.Unknown };
   }
 
   return {
@@ -173,4 +175,8 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
   }
 
   return {};
+}
+
+export async function getBiometryType(): Promise<BIOMETRY_TYPE | undefined> {
+  return (await getSupportedBiometryType()) || undefined;
 }
