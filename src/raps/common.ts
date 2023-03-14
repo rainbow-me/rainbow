@@ -1,6 +1,6 @@
 import { Provider } from '@ethersproject/abstract-provider';
 import { Logger } from '@ethersproject/logger';
-import { Signer } from 'ethers';
+import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import {

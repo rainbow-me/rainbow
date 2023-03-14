@@ -102,7 +102,7 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
-import { Wallet } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
 import { useTheme } from '@/theme';
 
 export const DEFAULT_SLIPPAGE_BIPS = {

@@ -86,7 +86,7 @@ export function WalletConnectV2ListItem({
     const { chains } = requiredNamespaces.eip155;
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
-    if (!eip155Account) {
+    if (!eip155Account || !chains || !chains.length) {
       const e = new RainbowError(
         `WalletConnectV2ListItem: unsupported namespace`
       );

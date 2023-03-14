@@ -1,4 +1,5 @@
-import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import { keccak256 } from '@ethersproject/keccak256';
+import { toUtf8Bytes } from '@ethersproject/strings';
 import { normalizeENS } from './ens';
 
 export function encodeLabelhash(hash: string) {
@@ -35,7 +36,7 @@ export function isDecrypted(name: string) {
   const nameArray = name.split('.');
   const decrypted = nameArray.reduce((acc, label) => {
     if (acc === false) return false;
-    return isEncodedLabelhash(label) ? false : true;
+    return !isEncodedLabelhash(label);
   }, true);
 
   return decrypted;
