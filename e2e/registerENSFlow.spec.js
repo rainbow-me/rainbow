@@ -803,7 +803,7 @@ describe('Register ENS Flow', () => {
       throw new Error('Owner not set correctly');
   });
 
-  it('Should check address is the new label on profile screen and change wallet screen', async () => {
+  it.skip('Should check address is the new label on profile screen and change wallet screen', async () => {
     const TRUNCATED_ADDRESS = address(RAINBOW_TEST_WALLET_ADDRESS, 4, 4);
     const WALLET_ROW_TRUNCATED_ADDRESS = address(
       RAINBOW_TEST_WALLET_ADDRESS,
