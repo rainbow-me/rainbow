@@ -15,7 +15,7 @@ export default function useBiometryType() {
 
   useEffect(() => {
     const getSupportedBiometryType = async () => {
-      let type = await keychain.getBiometryType();
+      let type = await keychain.getSupportedBiometryType();
 
       if (isNil(type)) {
         // 💡️ When `getSupportedBiometryType` returns `null` it can mean either:

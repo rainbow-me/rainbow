@@ -6,21 +6,20 @@ import {
   canImplyAuthentication,
   getAllInternetCredentials,
   getInternetCredentials,
-  getSupportedBiometryType,
+  getSupportedBiometryType as originalGetSupportedBiometryType,
   hasInternetCredentials,
   Options,
   resetInternetCredentials,
   setInternetCredentials,
   UserCredentials,
   BIOMETRY_TYPE,
+  requestSharedWebCredentials,
+  setSharedWebCredentials as originalSetSharedWebCredentials,
+  SharedWebCredentials,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
 import { IS_DEV, IS_IOS } from '@/env';
-
-/**
- * TODO requestSharedWebCredentials in backup.ts
- */
 
 enum ErrorType {
   UserCanceled = -1, // legacy
@@ -43,7 +42,7 @@ const cache = new MMKV({
   id: 'rainbowKeychainLocalStorage',
 });
 
-export const publicAccessControlOptions = {
+export const publicAccessControlOptions: Options = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
@@ -152,6 +151,26 @@ export async function clear() {
   );
 }
 
+export async function getSupportedBiometryType(): Promise<
+  BIOMETRY_TYPE | undefined
+> {
+  return (await originalGetSupportedBiometryType()) || undefined;
+}
+
+export async function getSharedWebCredentials(): Promise<
+  SharedWebCredentials | undefined
+> {
+  const res = await requestSharedWebCredentials();
+  return res ? res : undefined;
+}
+
+export async function setSharedWebCredentials(
+  username: string,
+  password: string
+) {
+  await originalSetSharedWebCredentials('rainbow.me', username, password);
+}
+
 export async function getPrivateAccessControlOptions(): Promise<Options> {
   let canAuthenticate = false;
 
@@ -175,8 +194,4 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
   }
 
   return {};
-}
-
-export async function getBiometryType(): Promise<BIOMETRY_TYPE | undefined> {
-  return (await getSupportedBiometryType()) || undefined;
 }

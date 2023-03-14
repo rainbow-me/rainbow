@@ -1,11 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
-  Options,
-  requestSharedWebCredentials,
-  setSharedWebCredentials,
-} from 'react-native-keychain';
-import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
   getDataFromCloud,
@@ -18,7 +13,8 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
-import * as keychain from './keychain';
+import * as keychain from '@/model/keychain';
+import * as kc from '@/keychain';
 import {
   AllRainbowWallets,
   allWalletsVersion,
@@ -228,7 +224,7 @@ async function restoreCurrentBackupIntoKeychain(
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
         const value = backedUpData[key];
-        let accessControl: Options = keychain.publicAccessControlOptions;
+        let accessControl = keychain.publicAccessControlOptions;
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }
@@ -254,7 +250,7 @@ export async function saveBackupPassword(
 ): Promise<void> {
   try {
     if (ios) {
-      await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+      await kc.setSharedWebCredentials('Backup Password', password);
       analytics.track('Saved backup password on iCloud');
     }
   } catch (e) {
@@ -269,7 +265,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
   }
 
   try {
-    const results = await requestSharedWebCredentials();
+    const results = await kc.getSharedWebCredentials();
     if (results) {
       return results.password as BackupPassword;
     }
