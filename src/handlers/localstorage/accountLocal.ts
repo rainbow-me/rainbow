@@ -9,7 +9,6 @@ const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
 const savingsVersion = '0.2.0';
 const transactionsVersion = '0.3.0';
-const uniqueTokensVersion = '0.2.1';
 
 const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
 const ACCOUNT_INFO = 'accountInfo';
@@ -21,7 +20,6 @@ const SAVINGS = 'savings';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const HIDDEN_TOKENS = 'hiddenTokens';
 const TRANSACTIONS = 'transactions';
-const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
@@ -40,7 +38,6 @@ export const accountLocalKeys = [
   SAVINGS,
   SHOWCASE_TOKENS,
   TRANSACTIONS,
-  UNIQUE_TOKENS,
   PINNED_COINS,
   HIDDEN_COINS,
   WEB_DATA_ENABLED,
@@ -264,40 +261,6 @@ export const saveLocalENSRegistrations = (
     ensRegistrations,
     accountAddress,
     network
-  );
-
-/**
- * @desc get unique tokens
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getUniqueTokens = (accountAddress: any, network: any) =>
-  getAccountLocal(
-    UNIQUE_TOKENS,
-    accountAddress,
-    network,
-    [],
-    uniqueTokensVersion
-  );
-
-/**
- * @desc save unique tokens
- * @param  {String}   [address]
- * @param  {Array}    [uniqueTokens]
- * @param  {String}   [network]
- */
-export const saveUniqueTokens = (
-  uniqueTokens: any,
-  accountAddress: any,
-  network: any
-) =>
-  saveAccountLocal(
-    UNIQUE_TOKENS,
-    uniqueTokens,
-    accountAddress,
-    network,
-    uniqueTokensVersion
   );
 
 /**
