@@ -39,6 +39,7 @@ import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { wipeKeychain } from '@/model/keychain';
 
 type RouteParams = {
   WalletScreen: {

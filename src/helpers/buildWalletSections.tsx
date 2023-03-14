@@ -1,4 +1,3 @@
-import React from 'react';
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';

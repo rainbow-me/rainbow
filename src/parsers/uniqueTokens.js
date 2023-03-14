@@ -1,7 +1,6 @@
 import { isNil } from 'lodash';
 import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
-import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
 import { Network } from '@/helpers/networkTypes';
 import { pickShallow } from '@/helpers/utilities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -228,40 +227,6 @@ export const parseAccountUniqueTokensPolygon = data => {
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
 
   return erc721s;
-};
-
-export const applyENSMetadataFallbackToToken = async token => {
-  const isENS =
-    token?.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  if (isENS && isUnknownOpenSeaENS(token)) {
-    const { name, image_url } = await fetchMetadata({
-      tokenId: token.id,
-    });
-    const { imageUrl, lowResUrl } = handleAndSignImages(image_url);
-    return {
-      ...token,
-      image_preview_url: lowResUrl,
-      image_thumbnail_url: lowResUrl,
-      image_url: imageUrl,
-      lowResUrl,
-      name,
-      uniqueId: name,
-    };
-  }
-  return token;
-};
-
-export const applyENSMetadataFallbackToTokens = async data => {
-  return await Promise.all(
-    data.map(async token => {
-      try {
-        return await applyENSMetadataFallbackToToken(token);
-      } catch {
-        return token;
-      }
-    })
-  );
 };
 
 const getSimplehashMarketplaceInfo = simplehashNft => {

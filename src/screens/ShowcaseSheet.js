@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
@@ -13,6 +12,7 @@ import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
@@ -72,13 +72,7 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const uniqueTokensShowcase = useSelector(
-    state => state.uniqueTokens.uniqueTokensShowcase
-  );
-
-  const uniqueTokensShowcaseLoading = useSelector(
-    state => state.uniqueTokens.fetchingUniqueTokensShowcase
-  );
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress ?? '' });
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -86,13 +80,10 @@ export default function ShowcaseScreen() {
     () => [
       {
         collectibles: true,
-        data: buildUniqueTokenList(
-          uniqueTokensShowcase,
-          userData?.data?.showcase?.ids ?? []
-        ),
+        data: buildUniqueTokenList(nfts, userData?.data?.showcase?.ids ?? []),
         header: {
           title: '',
-          totalItems: uniqueTokensShowcase.length,
+          totalItems: nfts?.length,
           totalValue: '',
         },
         name: 'collectibles',
@@ -101,7 +92,7 @@ export default function ShowcaseScreen() {
         type: 'big',
       },
     ],
-    [uniqueTokensShowcase, userData?.data?.showcase?.ids, theme]
+    [nfts, userData?.data?.showcase?.ids, theme]
   );
 
   const contextValue = useMemo(
@@ -114,7 +105,7 @@ export default function ShowcaseScreen() {
     [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
   );
 
-  const loading = userData === null || uniqueTokensShowcaseLoading;
+  const loading = userData === null;
 
   useEffect(() => {
     setTimeout(() => layout?.(), 300);
