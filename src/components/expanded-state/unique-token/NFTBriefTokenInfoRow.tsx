@@ -29,7 +29,7 @@ export default function NFTBriefTokenInfoRow({
 
   const floorPrice =
     asset?.floorPriceEth !== undefined
-      ? `${asset?.floorPriceEth || '< 0.001'} ETH`
+      ? `${asset?.floorPriceEth !== '0' ? asset?.floorPriceEth : '< 0.001'} ETH`
       : NONE;
 
   const [currentPrice, setCurrentPrice] = useState<string | null>();
@@ -47,7 +47,7 @@ export default function NFTBriefTokenInfoRow({
           listing?.payment_token?.decimals,
           3
         );
-        setCurrentPrice((price || '< 0.001') + ' ETH');
+        setCurrentPrice((price !== '0' ? price : '< 0.001') + ' ETH');
       }
     };
 
@@ -74,7 +74,9 @@ export default function NFTBriefTokenInfoRow({
 
   const lastSalePrice =
     asset?.lastPrice !== undefined
-      ? `${asset?.lastPrice || '< 0.001'} ${asset?.lastSalePaymentToken}`
+      ? `${asset?.lastPrice !== '0' ? asset?.lastPrice : '< 0.001'} ${
+          asset?.lastSalePaymentToken
+        }`
       : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
