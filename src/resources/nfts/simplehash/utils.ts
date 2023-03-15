@@ -86,7 +86,7 @@ export function filterSimplehashNFTs(
       return false;
     }
     if (polygonAllowlist && nft.chain === SimplehashChain.Polygon) {
-      return polygonAllowlist?.includes(nft.contract_address);
+      return polygonAllowlist?.includes(nft.contract_address?.toLowerCase());
     }
     if (nft.chain === SimplehashChain.Gnosis) {
       return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
