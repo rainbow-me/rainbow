@@ -12,7 +12,7 @@ export function handleAndSignImages(
   imageUrl?: string;
   lowResUrl?: string;
 } {
-  const image = imageUrl || originalUrl || previewUrl;
+  const image = imageUrl || previewUrl || originalUrl;
 
   if (!image) {
     return {};

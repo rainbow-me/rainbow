@@ -101,8 +101,8 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
   const { imageUrl, lowResUrl } = handleAndSignImages(
     // @ts-ignore
     nft.image_url,
-    nft.extra_metadata?.image_original_url,
-    nft.previews.image_small_url
+    nft.previews.image_large_url,
+    nft.extra_metadata?.image_original_url
   );
 
   const marketplace = nft.collection.marketplace_pages?.[0];
@@ -144,8 +144,7 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
         )
       : undefined,
     fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
-    // @ts-ignore TODO
-    id: nft.token_id,
+    id: nft.token_id ?? '',
     image_original_url: nft.extra_metadata?.image_original_url,
     image_preview_url: lowResUrl,
     image_thumbnail_url: lowResUrl,
@@ -167,7 +166,7 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     name: nft.name || '',
     network: getNetworkFromSimplehashChain(nft.chain),
     permalink: marketplace?.nft_url,
-    // @ts-ignore TODO
+    //@ts-ignore
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,
     uniqueId: `${nft.contract_address}_${nft.token_id}`,
