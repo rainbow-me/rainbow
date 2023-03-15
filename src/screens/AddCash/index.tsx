@@ -65,7 +65,7 @@ export function AddCashSheet() {
         <Box paddingVertical="44px" width="full">
           <Separator color="separatorTertiary" />
 
-          {isRatioEnabled && (
+          {isRatioEnabled && IS_IOS && (
             <Box paddingTop="20px">
               <Ratio accountAddress={accountAddress} />
             </Box>
