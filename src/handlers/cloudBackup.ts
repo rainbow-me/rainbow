@@ -6,8 +6,7 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
-import { IS_ANDROID } from '@/env';
-
+import { IS_ANDROID, IS_IOS } from '@/env';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -162,7 +161,7 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
 
   let document;
   if (filename) {
-    if (ios) {
+    if (IS_IOS) {
       // .icloud are files that were not yet synced
       document = backups.files.find(
         (file: any) =>
