@@ -25,8 +25,9 @@ export async function decryptPIN(encryptedPin: any) {
   try {
     const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
     return userPIN;
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) {
+    // no-op
+  }
   return null;
 }
 

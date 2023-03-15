@@ -144,10 +144,11 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
   // We need to decrypt PIN code encrypted secrets before backup
   const hasBiometricsEnabled = await getSupportedBiometryType();
   if (IS_ANDROID && !hasBiometricsEnabled) {
-    /**
-     * Pin is passed and authentication is handled by the caller.
-     * If we don't have a PIN, we throw an error both for the developer
-     * and the user if something goes wrong.
+    /*
+     * The PIN code is passed as an argument.
+     * Authentication is handled at the call site.
+     * If we don't have PIN information, we throw an error.
+     * Both for the developer and the user if something goes wrong.
      */
     if (userPIN === undefined) {
       throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
@@ -210,8 +211,9 @@ export function findLatestBackUp(
 }
 
 /**
- * Restores a cloud backup, when userPIN is provided
- * the seed phrase will be encrypted with the user's PIN code
+ * Restores a cloud backup.
+ * When userPIN is provided in arguments, the seed phrase will be encrypted
+ * with that PIN code.
  */
 export async function restoreCloudBackup({
   password,
