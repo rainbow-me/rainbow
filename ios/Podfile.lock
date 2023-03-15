@@ -196,7 +196,6 @@ PODS:
     - RNPermissions
   - Permission-Notifications (3.6.1):
     - RNPermissions
-  - Plaid (4.1.0)
   - PromisesObjC (2.0.0)
   - Rainbow-Internals (0.1.0):
     - React-Core
@@ -475,9 +474,6 @@ PODS:
   - react-native-palette-full (1.2.0):
     - React
     - SDWebImage (~> 5)
-  - react-native-plaid-link-sdk (9.0.1):
-    - Plaid (~> 4.1.0)
-    - React-Core
   - react-native-quick-md5 (3.0.3):
     - React-Core
   - react-native-randombytes (3.5.3):
@@ -786,7 +782,6 @@ DEPENDENCIES:
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
-  - Plaid (~> 4.1.0)
   - Rainbow-Internals (from `./Internals`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -823,7 +818,6 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-palette-full (from `../node_modules/react-native-palette-full`)
-  - react-native-plaid-link-sdk (from `../node_modules/react-native-plaid-link-sdk`)
   - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
@@ -929,7 +923,6 @@ SPEC REPOS:
     - MultiplatformBleAdapter
     - nanopb
     - OpenSSL-Universal
-    - Plaid
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
@@ -1039,8 +1032,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pager-view"
   react-native-palette-full:
     :path: "../node_modules/react-native-palette-full"
-  react-native-plaid-link-sdk:
-    :path: "../node_modules/react-native-plaid-link-sdk"
   react-native-quick-md5:
     :path: "../node_modules/react-native-quick-md5"
   react-native-randombytes:
@@ -1225,7 +1216,6 @@ SPEC CHECKSUMS:
   Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
   Permission-FaceID: e70223280292a1a5e4b8ad943b70cd9229a7d2c3
   Permission-Notifications: 150484ae586eb9be4e32217582a78350a9bb31c3
-  Plaid: 7d340abeadb46c7aa1a91f896c5b22395a31fcf2
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
@@ -1261,7 +1251,6 @@ SPEC CHECKSUMS:
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
-  react-native-plaid-link-sdk: 825c6526bf4e038f6d0ee6c7e5412b4d319ea580
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
@@ -1335,6 +1324,6 @@ SPEC CHECKSUMS:
   Yoga: c4d61225a466f250c35c1ee78d2d0b3d41fe661c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 577ad1389ea1fff89e6cc5d3e2e02f9037049e88
+PODFILE CHECKSUM: 04f98d755bb6e3ef0671386e4fdb5ccc08264127
 
 COCOAPODS: 1.11.2

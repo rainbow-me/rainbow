@@ -3,21 +3,10 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  mapValues,
-  partition,
-  update,
-  cloneDeep,
-} from 'lodash';
+import { find, isEmpty, isNil, keys, mapValues, partition } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { gretch } from 'gretchen';
-import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import { addCashUpdatePurchases } from './addCash';
 import {
@@ -78,9 +67,6 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
-import { FiatProviderName } from '@/entities/f2c';
-import { logger as loggr, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
 
 const storage = new MMKV();
 
@@ -427,7 +413,6 @@ export interface AssetPricesChangedMessage {
  */
 export interface MessageMeta {
   address?: string;
-  addresses?: string[];
   currency?: string;
   status?: string;
   chain_id?: Network; // L2
@@ -559,7 +544,7 @@ const checkMeta = (message: DataMessage | undefined) => (
   getState: AppGetState
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const address = message?.meta?.address || message?.meta?.addresses?.[0];
+  const address = message?.meta?.address;
   const currency = message?.meta?.currency;
   return (
     isLowerCaseMatch(address!, accountAddress) &&
@@ -662,28 +647,10 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
-  loggr.debug('transactionsReceived', {
-    message: {
-      ...message,
-      payload: {
-        transactions: message?.payload?.transactions?.length,
-      },
-    },
-    appended,
-  });
-
   const isValidMeta = dispatch(checkMeta(message));
-
-  if (!isValidMeta) {
-    loggr.debug('transactionsReceived: !isValidMeta', { message });
-    return;
-  }
-
+  if (!isValidMeta) return;
   const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
-    loggr.debug(
-      'transactionsReceived: dispatching checkForConfirmedSavingsActions'
-    );
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
 
@@ -693,7 +660,6 @@ export const transactionsReceived = (
     currentNetwork = message?.meta?.chain_id;
   }
   if (transactionData.length && currentNetwork === Network.mainnet) {
-    loggr.debug('transactionsReceived: dispatching checkForUpdatedNonce');
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
@@ -701,8 +667,6 @@ export const transactionsReceived = (
   const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
-
-  loggr.debug('transactionsReceived: attempting to parse transactions');
 
   const {
     parsedTransactions,
@@ -720,28 +684,15 @@ export const transactionsReceived = (
 
   const isCurrentAccountAddress =
     accountAddress === getState().settings.accountAddress;
-  if (!isCurrentAccountAddress) {
-    loggr.debug(
-      'transactionsReceived: transaction accountAddress does not match current accountAddress',
-      {
-        transactionAccountAddress: accountAddress,
-        currentAccountAddress: getState().settings.accountAddress,
-      }
-    );
-    return;
-  }
+  if (!isCurrentAccountAddress) return;
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
       dispatch(uniqueTokensRefreshState());
     }, 60000);
   }
-
-  const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
-    cloneDeep(pendingTransactions)
-  );
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
+  const updatedPendingTransactions = pendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -775,103 +726,6 @@ export const transactionsReceived = (
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
-};
-
-/**
- * Maps over every pendingTransaction, and if it's a F2C transaction, fetches
- * the transaction has and updates the pendingTransaction with its hash.
- *
- * This method returns all pendingTransactions that were passed in, so 5 go in,
- * 5 come out, but they might have a tx hash added.
- */
-export const maybeFetchF2CHashForPendingTransactions = async (
-  pendingTransactions: RainbowTransaction[]
-) => {
-  loggr.debug(
-    `maybeFetchF2CHashForPendingTransactions`,
-    {},
-    loggr.DebugContext.f2c
-  );
-
-  return Promise.all(
-    pendingTransactions.map(async tx => {
-      // If not from a F2C provider, return the original tx
-      if (!tx.fiatProvider) return tx;
-      if (tx.hash) {
-        /**
-         * Sometimes `transactionsReceived` gets called more than once in quick
-         * succession, which can result it fetching order data more than once.
-         *
-         * So if we already have a tx hash, then we don't need to fetch
-         * anything else.
-         */
-        return tx;
-      }
-
-      // If it is from an F2C provider, see if we can add the tx hash to it
-      switch (tx.fiatProvider?.name) {
-        // handle Ratio case
-        case FiatProviderName.Ratio: {
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions`,
-            { provider: tx.fiatProvider?.name },
-            loggr.DebugContext.f2c
-          );
-
-          const { userId, orderId } = tx.fiatProvider;
-
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions: fetching order`
-          );
-
-          const { data, error } = await gretch<ActivityItem>(
-            `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
-          ).json();
-
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions: fetched order`,
-            {
-              hasData: Boolean(data),
-              hasError: Boolean(error),
-              hasHash: Boolean(data?.crypto?.transactionHash),
-            }
-          );
-
-          if (!data || error) {
-            loggr.error(
-              new RainbowError(
-                `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
-              ),
-              {
-                error,
-                provider: tx.fiatProvider.name,
-              }
-            );
-          } else if (data.crypto.transactionHash) {
-            tx.hash = data.crypto.transactionHash;
-
-            analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
-              provider: FiatProviderName.Ratio,
-              sessionId: tx.fiatProvider.analyticsSessionId,
-            });
-
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
-            );
-          } else {
-            loggr.info(
-              `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
-            );
-          }
-          break;
-        }
-
-        // handle other cases here once we have more providers
-      }
-
-      return tx;
-    })
-  );
 };
 
 /**
@@ -1123,23 +977,13 @@ export const dataAddNewTransaction = (
   >,
   getState: AppGetState
 ) => {
-  loggr.debug('dataAddNewTransaction', {}, loggr.DebugContext.f2c);
-
   const { pendingTransactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
-
   if (
     accountAddressToUpdate &&
     accountAddressToUpdate.toLowerCase() !== accountAddress.toLowerCase()
-  ) {
-    loggr.debug(
-      'dataAddNewTransaction: accountAddressToUpdate does not match accountAddress',
-      {},
-      loggr.DebugContext.f2c
-    );
+  )
     return;
-  }
-
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
@@ -1151,13 +995,6 @@ export const dataAddNewTransaction = (
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
     });
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
-
-    loggr.debug(
-      'dataAddNewTransaction: adding pending transactions',
-      {},
-      loggr.DebugContext.f2c
-    );
-
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
         // @ts-ignore-next-line
@@ -1173,11 +1010,6 @@ export const dataAddNewTransaction = (
       network !== Network.mainnet ||
       parsedTransaction?.network
     ) {
-      loggr.debug(
-        'dataAddNewTransaction: watching new pending transactions',
-        {},
-        loggr.DebugContext.f2c
-      );
       dispatch(
         watchPendingTransactions(
           accountAddress,
@@ -1190,13 +1022,9 @@ export const dataAddNewTransaction = (
         )
       );
     }
-
-    loggr.debug('dataAddNewTransaction: complete', {}, loggr.DebugContext.f2c);
-
     return parsedTransaction;
-  } catch (error) {
-    loggr.error(new Error('dataAddNewTransaction: failed'), { error });
-  }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 };
 
 /**

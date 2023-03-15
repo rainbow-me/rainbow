@@ -29,7 +29,6 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.plaid.PlaidPackage;
 
 class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
     @Override
@@ -68,7 +67,6 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
-          packages.add(new PlaidPackage());
 
             return packages;
         }
