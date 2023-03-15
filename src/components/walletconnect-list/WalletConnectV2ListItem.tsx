@@ -10,7 +10,6 @@ import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
 import { useWallets } from '@/hooks';
@@ -115,10 +114,9 @@ export function WalletConnectV2ListItem({
     }
 
     return {
-      dappName:
-        dappNameOverride(metadata.url) || metadata.name || 'Unknown Dapp',
+      dappName: metadata.name || 'Unknown Dapp',
       dappUrl: metadata.url || 'Unknown URL',
-      dappLogo: dappLogoOverride(metadata.url) || metadata.icons[0],
+      dappLogo: metadata.icons[0],
       address,
       chainIds,
     };
