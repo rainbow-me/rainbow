@@ -19,6 +19,7 @@ import {
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
+import { delay } from '@/helpers/utilities';
 import { IS_DEV, IS_IOS } from '@/env';
 
 enum ErrorType {
@@ -48,7 +49,8 @@ export const publicAccessControlOptions: Options = {
 
 export async function get(
   key: string,
-  options: Options = {}
+  options: Options = {},
+  attempts = 0
 ): Promise<Result<string>> {
   let data = cache.getString(key);
 
@@ -72,6 +74,18 @@ export async function get(
             value: undefined,
             error: ErrorType.NotAuthenticated,
           };
+        }
+        case 'Error: The user name or passphrase you entered is not correct.': {
+          if (attempts > 2) {
+            return {
+              value: undefined,
+              error: ErrorType.NotAuthenticated,
+            };
+          }
+
+          // try again
+          await delay(1000);
+          return get(key, options, attempts + 1);
         }
         default: {
           return {
