@@ -2,12 +2,12 @@ import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
 
 import { Network } from '@/helpers';
-import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simpleHash/utils';
+import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { queryClient } from '@/react-query/queryClient';
 
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress, UniqueAsset } from '@/entities';
-import { SimpleHashNFT } from '@/resources/nfts/simpleHash/types';
+import { SimpleHashNFT } from '@/resources/nfts/simplehash/types';
 
 interface SimplehashMarketplace {
   marketplace_id: string;

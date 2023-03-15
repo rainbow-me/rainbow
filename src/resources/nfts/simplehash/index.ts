@@ -1,13 +1,13 @@
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
-import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simpleHash/utils';
+import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
 import {
   SimpleHashChain,
   SimpleHashListing,
   SimpleHashNFT,
   SimpleHashMarketplaceId,
-} from '@/resources/nfts/simpleHash/types';
+} from '@/resources/nfts/simplehash/types';
 
 export const START_CURSOR = 'start';
 

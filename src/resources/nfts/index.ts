@@ -1,12 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { fetchSimpleHashNFTs } from '@/resources/nfts/simpleHash';
+import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect } from 'react';
 import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
-} from '@/resources/nfts/simpleHash/utils';
+} from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { useAccountSettings } from '@/hooks';
 

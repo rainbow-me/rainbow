@@ -3,7 +3,7 @@ import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
   SimpleHashChain,
-} from '@/resources/nfts/simpleHash/types';
+} from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
