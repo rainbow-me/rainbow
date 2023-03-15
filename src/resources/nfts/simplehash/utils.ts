@@ -63,14 +63,6 @@ export function getNetworkFromSimplehashChain(chain: SimplehashChain): Network {
   }
 }
 
-export function getPriceFromLastSale(
-  lastSale: SimplehashNFT['last_sale']
-): number | undefined {
-  return lastSale && lastSale?.total_price
-    ? Math.round(lastSale.total_price * 1000) / 1000
-    : undefined;
-}
-
 /**
  * This function filters out NFTs that do not have a name, collection name,
  * contract address, or token id. It also filters out Polygon NFTs that are
