@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid/non-secure';
-import { ethers } from 'ethers';
 import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
 
 import * as ls from '@/storage';
 import * as keychain from '@/model/keychain';
 import { analyticsUserIdentifier } from '@/utils/keychainConstants';
 import { logger, RainbowError } from '@/logger';
+import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID
@@ -75,8 +75,8 @@ export function securelyHashWalletAddress(
   }
 
   try {
-    const hmac = ethers.utils.computeHmac(
-      ethers.utils.SupportedAlgorithm.sha256,
+    const hmac = computeHmac(
+      SupportedAlgorithm.sha256,
       // must be hex `0x<key>` string
       SECURE_WALLET_HASH_KEY,
       // must be hex `0x<key>` string

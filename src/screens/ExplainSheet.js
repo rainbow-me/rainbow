@@ -673,9 +673,21 @@ export const explainers = (params, colors) => ({
   },
   failed_wc_invalid_methods: {
     emoji: '😵',
-    extraHeight: -50,
+    extraHeight: -100,
     text: lang.t('explain.failed_wc_invalid_methods.text'),
     title: lang.t('explain.failed_wc_invalid_methods.title'),
+  },
+  failed_wc_invalid_chains: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chains.text'),
+    title: lang.t('explain.failed_wc_invalid_chains.title'),
+  },
+  failed_wc_invalid_chain: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chain.text'),
+    title: lang.t('explain.failed_wc_invalid_chain.title'),
   },
   backup: {
     emoji: '🔐',
@@ -716,6 +728,12 @@ export const explainers = (params, colors) => ({
       ) : (
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
+  },
+  f2cSemiSupportedAssetPurchased: {
+    emoji: '🎉',
+    title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    extraHeight: -80,
   },
   insufficientLiquidity: {
     extraHeight: -20,

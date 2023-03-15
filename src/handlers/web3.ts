@@ -41,7 +41,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { fetchContractABI } from '@/utils/ethereumUtils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
 export const networkProviders: {
@@ -367,17 +367,16 @@ export async function estimateGasWithPadding(
       (!contractCallEstimateGas && !to) ||
       (to && !data && (!code || code === '0x'))
     ) {
-      logger.sentry(
-        '⛽ Skipping estimates, using default',
-        ethUnits.basic_tx.toString()
-      );
+      logger.info('⛽ Skipping estimates, using default', {
+        ethUnits: ethUnits.basic_tx.toString(),
+      });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.sentry('⛽ Calculating safer gas limit for last block');
+    logger.info('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
+    logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
@@ -392,7 +391,7 @@ export async function estimateGasWithPadding(
       estimatedGas.toString(),
       paddingFactor.toString()
     );
-    logger.sentry('⛽ GAS CALCULATIONS!', {
+    logger.info('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -401,22 +400,23 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.sentry(
-        '⛽ returning orginal gas estimation',
-        estimatedGas.toString()
-      );
+      logger.info('⛽ returning orginal gas estimation', {
+        esimatedGas: estimatedGas.toString(),
+      });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.sentry('⛽ returning padded gas estimation', paddedGas);
+      logger.info('⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
+    logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
-  } catch (error) {
-    logger.debug('Error calculating gas limit with padding', error);
+  } catch (e: any) {
+    logger.error(new RainbowError('Error calculating gas limit with padding'), {
+      message: e.message,
+    });
     return null;
   }
 }
@@ -519,7 +519,11 @@ export const resolveUnstoppableDomain = async (
     .then((address: string) => {
       return address;
     })
-    .catch((error: any) => logger.error(error));
+    .catch((error: any) => {
+      logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
+        message: error.message,
+      });
+    });
   return res;
 };
 

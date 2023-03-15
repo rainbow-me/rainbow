@@ -4,11 +4,9 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { ProfileMasthead } from '../components/profile';
-import TransactionList from '../components/transaction-list/TransactionList';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import {
-  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,
@@ -40,11 +38,10 @@ export default function ProfileScreen({ navigation }) {
   const {
     isLoadingTransactions: isLoading,
     sections,
-    transactions,
     transactionsCount,
   } = accountTransactions;
   const { contacts } = useContacts();
-  const { pendingRequestCount, requests } = useRequests();
+  const { pendingRequestCount } = useRequests();
   const { network } = useAccountSettings();
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
@@ -86,35 +83,23 @@ export default function ProfileScreen({ navigation }) {
           </Navbar.Item>
         }
       />
-      {network === NetworkTypes.mainnet && ios ? (
-        <TransactionList
-          addCashAvailable={addCashAvailable}
-          contacts={contacts}
-          initialized={activityListInitialized}
-          isLoading={isLoading}
-          network={network}
-          requests={requests}
-          transactions={transactions}
-        />
-      ) : (
-        <ActivityList
-          addCashAvailable={addCashAvailable}
-          contacts={contacts}
-          header={
-            <ProfileMasthead
-              addCashAvailable={addCashAvailable}
-              onChangeWallet={onChangeWallet}
-            />
-          }
-          isEmpty={isEmpty}
-          isLoading={isLoading}
-          navigation={navigation}
-          network={network}
-          recyclerListView={ios}
-          sections={sections}
-          {...accountTransactions}
-        />
-      )}
+
+      <ActivityList
+        addCashAvailable={addCashAvailable}
+        contacts={contacts}
+        header={
+          <ProfileMasthead
+            addCashAvailable={addCashAvailable}
+            onChangeWallet={onChangeWallet}
+          />
+        }
+        isEmpty={isEmpty}
+        isLoading={isLoading}
+        navigation={navigation}
+        network={network}
+        sections={sections}
+        {...accountTransactions}
+      />
     </ProfileScreenPage>
   );
 }

@@ -1,9 +1,8 @@
-import { captureException } from '@sentry/react-native';
 // @ts-ignore
 import { POAP_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import { parsePoaps } from '@/parsers';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 export const fetchPoaps = async (address: string) => {
   try {
@@ -15,8 +14,9 @@ export const fetchPoaps = async (address: string) => {
       timeout: 10000, // 10 secs
     });
     return parsePoaps(data);
-  } catch (error) {
-    logger.log('Error getting POAPs', error);
-    captureException(error);
+  } catch (e: any) {
+    logger.error(new RainbowError('Error getting POAPs'), {
+      message: e.message,
+    });
   }
 };

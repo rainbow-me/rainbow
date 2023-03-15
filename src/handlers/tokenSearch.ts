@@ -6,7 +6,7 @@ import {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from '@/entities';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 
 const tokenSearchApi = new RainbowFetchClient({
@@ -49,10 +49,13 @@ export const tokenSearch = async (searchParams: {
     const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
     const tokenSearch = await tokenSearchApi.get(url);
     return tokenSearch.data?.data;
-  } catch (e) {
+  } catch (e: any) {
     logger.error(
-      `An error occurred while searching for query: ${searchParams.query}.`,
-      e
+      new RainbowError(`An error occurred while searching for query`),
+      {
+        query: searchParams.query,
+        message: e.message,
+      }
     );
   }
 };
@@ -69,9 +72,14 @@ export const walletFilter = async (params: {
       toChainId,
     });
     return filteredAddresses?.data?.data || [];
-  } catch (e) {
+  } catch (e: any) {
     logger.error(
-      `An error occurred while filter wallet addresses: toChainId: ${params.toChainId} -> fromChainId: ${params.fromChainId}: ${e}`
+      new RainbowError(`An error occurred while filter wallet addresses`),
+      {
+        toChainId: params.toChainId,
+        fromChainId: params.fromChainId,
+        message: e.message,
+      }
     );
     throw e;
   }

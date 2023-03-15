@@ -16,8 +16,6 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1539422724C7C7E100E4A9D1 /* Settings.bundle */; };
 		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
-		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
-		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
 		15C398812880EDFF006033AC /* og@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987D2880EDFF006033AC /* og@3x.png */; };
 		15C398832880EDFF006033AC /* og@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987F2880EDFF006033AC /* og@2x.png */; };
 		15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BA2889AF7C005F92C9 /* optimism@3x.png */; };
@@ -39,30 +37,10 @@
 		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
 		66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */; };
 		66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A28EAF24CAF1B500410A88 /* TestFlight.m */; };
-		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
-		7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
-		A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */; };
-		A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */; };
-		A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4123C546D900E50E4B /* TransactionListView.swift */; };
-		A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */; };
-		A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A477567B23DB2FAA005AE8FD /* Transaction.swift */; };
-		A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */; };
-		A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */; };
-		A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */; };
-		A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52AE23DB411900A00918 /* TransactionRequest.swift */; };
-		A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */; };
-		A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */; };
-		A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */; };
-		A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BB23DBA61100A00918 /* TransactionData.swift */; };
-		A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */; };
-		A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B52C123DCD11D00A00918 /* TransactionSection.swift */; };
-		A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */; };
-		A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
-		A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */; };
 		AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
 		AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
@@ -78,7 +56,6 @@
 		B54C1D172935A54F007560D9 /* zora@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D152935A54F007560D9 /* zora@2x.png */; };
 		B5CE8FFE29A5758100EB1EFA /* pooly@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CE8FFC29A5758100EB1EFA /* pooly@2x.png */; };
 		B5CE8FFF29A5758100EB1EFA /* pooly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CE8FFD29A5758100EB1EFA /* pooly@3x.png */; };
-		B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
 		C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C1038337273C5C4200B18210 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF62272BA6EF00FF5C78 /* PriceWidget.swift */; };
@@ -127,10 +104,8 @@
 		C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFAA272BB8ED00FF5C78 /* PriceDataProvider.swift */; };
 		C1AA308F27338F2B00136A9A /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
 		C1AA309027338F2B00136A9A /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */; };
-		C1AA309127338F2B00136A9A /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
 		C1AA309227338F2B00136A9A /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
 		C1AA309327338F2B00136A9A /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
-		C1AA309427338F2B00136A9A /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C1AA309527338F2B00136A9A /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
 		C1C61A6E272C9C8D00E5C0B3 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */; };
 		C1C61A6F272C9C8D00E5C0B3 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */; };
@@ -205,8 +180,6 @@
 		1427FE856C997220EC915074 /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1539422724C7C7E100E4A9D1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBundleHelper.swift; sourceTree = "<group>"; };
-		153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListLoadingViewCell.swift; sourceTree = "<group>"; };
-		153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListLoadingViewCell.xib; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15C3987D2880EDFF006033AC /* og@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "og@3x.png"; sourceTree = "<group>"; };
@@ -252,7 +225,6 @@
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		664612ED274848B000B43F5A /* SelectTokenIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SelectTokenIntent.entitlements; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
-		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		668ADB2E25A4E3A40050859D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
@@ -263,7 +235,6 @@
 		66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMPortal.m; path = "../src/react-native-cool-modals/ios/RNCMPortal.m"; sourceTree = "<group>"; };
 		66A28EAF24CAF1B500410A88 /* TestFlight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestFlight.m; sourceTree = "<group>"; };
 		66A29CCA2511074500481F4A /* ReaHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaHeader.h; sourceTree = SOURCE_ROOT; };
-		66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerView.swift; sourceTree = "<group>"; };
 		687FA32D7E1426221E5B8FB4 /* Pods-SelectTokenIntent.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.localrelease.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.localrelease.xcconfig"; sourceTree = "<group>"; };
 		733AB399A15EAF2ADFC19E48 /* Pods-SelectTokenIntent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.release.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.release.xcconfig"; sourceTree = "<group>"; };
 		73692C04FBE90A5E2863CBEF /* Pods-ImageNotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.release.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.release.xcconfig"; sourceTree = "<group>"; };
@@ -271,32 +242,12 @@
 		87E09CA957E90697E3F0562B /* Pods-SelectTokenIntent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.debug.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.debug.xcconfig"; sourceTree = "<group>"; };
 		8CA10DEBDA87323582898A77 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		8E4467A9EA5AB1525FEB0644 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		95F2888C850F40C8A26E083B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinIconWithProgressBar.swift; sourceTree = "<group>"; };
-		A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
-		A4704B4123C546D900E50E4B /* TransactionListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
-		A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TransactionListViewCell.xib; sourceTree = "<group>"; };
-		A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+TransactionList.h"; sourceTree = "<group>"; };
-		A477567B23DB2FAA005AE8FD /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
-		A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
-		A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListViewHeader.xib; sourceTree = "<group>"; };
-		A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewHeader.swift; sourceTree = "<group>"; };
-		A49B52AE23DB411900A00918 /* TransactionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequest.swift; sourceTree = "<group>"; };
-		A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionItem.swift; sourceTree = "<group>"; };
-		A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelProtocol.swift; sourceTree = "<group>"; };
-		A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModelTransactionRequestItem.swift; sourceTree = "<group>"; };
-		A49B52BB23DBA61100A00918 /* TransactionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionData.swift; sourceTree = "<group>"; };
-		A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequestSection.swift; sourceTree = "<group>"; };
-		A49B52C123DCD11D00A00918 /* TransactionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSection.swift; sourceTree = "<group>"; };
-		A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListRequestViewCell.xib; sourceTree = "<group>"; };
-		A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListRequestViewCell.swift; sourceTree = "<group>"; };
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
-		A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListBaseCell.swift; sourceTree = "<group>"; };
 		AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
 		AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
@@ -431,7 +382,6 @@
 				157155042418734C009B698B /* RainbowDebug.entitlements */,
 				157155032418733F009B698B /* RainbowRelease.entitlements */,
 				A4D04BA723D12F27008C1DEC /* Button */,
-				A4277DA023CBD3590042BAF4 /* Transactions */,
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -626,59 +576,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A4277DA023CBD3590042BAF4 /* Transactions */ = {
-			isa = PBXGroup;
-			children = (
-				A49B52B223DB5CE600A00918 /* ViewModels */,
-				A49B52B123DB41DD00A00918 /* Bridging */,
-				A49B52B023DB41B900A00918 /* Models */,
-				A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */,
-				66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */,
-				A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */,
-				A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */,
-				A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */,
-				A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */,
-				A4AF3CCD23DA37F700F230F3 /* TransactionListRequestViewCell.xib */,
-				A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */,
-				A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */,
-				A4704B4123C546D900E50E4B /* TransactionListView.swift */,
-				A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */,
-				153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */,
-				153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */,
-			);
-			name = Transactions;
-			sourceTree = "<group>";
-		};
-		A49B52B023DB41B900A00918 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				A477567B23DB2FAA005AE8FD /* Transaction.swift */,
-				A49B52AE23DB411900A00918 /* TransactionRequest.swift */,
-				A49B52BB23DBA61100A00918 /* TransactionData.swift */,
-				A49B52BF23DCCDA800A00918 /* TransactionRequestSection.swift */,
-				A49B52C123DCD11D00A00918 /* TransactionSection.swift */,
-			);
-			name = Models;
-			sourceTree = "<group>";
-		};
-		A49B52B123DB41DD00A00918 /* Bridging */ = {
-			isa = PBXGroup;
-			children = (
-				A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */,
-			);
-			name = Bridging;
-			sourceTree = "<group>";
-		};
-		A49B52B223DB5CE600A00918 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				A49B52B323DB5D1100A00918 /* TransactionViewModelTransactionItem.swift */,
-				A49B52B723DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift */,
-				A49B52B523DB5D5600A00918 /* TransactionViewModelProtocol.swift */,
-			);
-			name = ViewModels;
-			sourceTree = "<group>";
-		};
 		A4D04BA723D12F27008C1DEC /* Button */ = {
 			isa = PBXGroup;
 			children = (
@@ -773,8 +670,6 @@
 		DCAC1D8CC45E468FBB7E1395 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */,
-				95F2888C850F40C8A26E083B /* SFMono-Regular.otf */,
 				AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */,
 				AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */,
 				AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */,
@@ -943,24 +838,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */,
 				B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				B54C1D162935A54F007560D9 /* zora@3x.png in Resources */,
-				A4AF3CCE23DA37F700F230F3 /* TransactionListRequestViewCell.xib in Resources */,
 				B5CE8FFE29A5758100EB1EFA /* pooly@2x.png in Resources */,
-				A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */,
-				A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */,
 				15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */,
 				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
-				7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
 				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
 				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,
 				15CF49C12889AFAD005F92C9 /* pixel@2x.png in Resources */,
-				B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */,
 				C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */,
 				C1C61A82272CBDA100E5C0B3 /* Images.xcassets in Resources */,
 				AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */,
@@ -984,11 +873,9 @@
 			files = (
 				C1AA308F27338F2B00136A9A /* SF-Pro-Rounded-Bold.otf in Resources */,
 				C1AA309027338F2B00136A9A /* SF-Pro-Rounded-Regular.otf in Resources */,
-				C1AA309427338F2B00136A9A /* SFMono-Regular.otf in Resources */,
 				C1C61A83272CBDA100E5C0B3 /* Images.xcassets in Resources */,
 				C1AA309227338F2B00136A9A /* SF-Pro-Rounded-Medium.otf in Resources */,
 				C1AA309527338F2B00136A9A /* SF-Pro-Rounded-Heavy.otf in Resources */,
-				C1AA309127338F2B00136A9A /* SFMono-Medium.otf in Resources */,
 				C1AA309327338F2B00136A9A /* SF-Pro-Rounded-Semibold.otf in Resources */,
 				C16DCF65272BA6F000FF5C78 /* Assets.xcassets in Resources */,
 			);
@@ -1217,26 +1104,16 @@
 				6630540924A38A1900E5B030 /* RainbowText.m in Sources */,
 				C18FCD42273C64E10079CE28 /* TokenProvider.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
 				C18FCD39273C64C90079CE28 /* TokenData.swift in Sources */,
 				6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
 				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,
-				A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */,
-				A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */,
 				66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */,
-				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
-				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
-				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
 				4D098C2F2811A9A5006A801A /* RNStartTime.m in Sources */,
-				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
-				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				C18FCD3E273C64D60079CE28 /* PriceData.swift in Sources */,
 				15D66135277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */,
 				C127238A274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
-				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
 				C18FCD32273C62230079CE28 /* PriceWidgetView.swift in Sources */,
 				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
@@ -1251,16 +1128,9 @@
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				C18FCD3F273C64D80079CE28 /* CoinGeckoToken.swift in Sources */,
 				C11640E8274DC10B00C9120A /* UIColor.swift in Sources */,
-				A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */,
-				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
-				A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */,
 				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
 				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
-				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
 				C18FCD43273C64E40079CE28 /* PriceDataProvider.swift in Sources */,
-				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
-				A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */,
-				A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1606,7 +1476,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.14;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1668,7 +1538,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.14;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1774,7 +1644,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.14;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1881,7 +1751,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.14;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (

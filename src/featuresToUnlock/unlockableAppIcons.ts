@@ -30,6 +30,8 @@ const RAINDOGE_NFT_ADDRESS: EthereumAddress =
 // pooly app icon unlocking NFTs
 const POOLY_NFT_ADDRESS: EthereumAddress =
   '0x86fa5a5927fbaa82218743607765ec0f63e46bfa';
+const POOLY_NFT_ADDRESS_2: EthereumAddress =
+  '0x90b3832e2f2ade2fe382a911805b6933c056d6ed';
 
 export interface UnlockableAppIcon {
   key: string; // string used for analytics
@@ -88,6 +90,6 @@ export const PoolyIcon: UnlockableAppIcon = {
   key: 'pooly',
   explainSheetType: 'pooly_app_icon',
   network: Network.mainnet,
-  unlockingNfts: [POOLY_NFT_ADDRESS],
+  unlockingNfts: [POOLY_NFT_ADDRESS, POOLY_NFT_ADDRESS_2],
   unlockKey: 'pooly_nft_app_icon',
 };
