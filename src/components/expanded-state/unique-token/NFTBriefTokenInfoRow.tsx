@@ -12,7 +12,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { UniqueAsset } from '@/entities';
-import { fetchSimplehashNFTListing } from '@/resources/nfts/simplehash';
+import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 
 const NONE = 'None';
 
@@ -36,7 +36,7 @@ export default function NFTBriefTokenInfoRow({
 
   useEffect(() => {
     const fetchCurrentPrice = async () => {
-      const listing = await fetchSimplehashNFTListing(
+      const listing = await fetchSimpleHashNFTListing(
         asset?.network,
         asset?.asset_contract.address || '',
         asset?.id

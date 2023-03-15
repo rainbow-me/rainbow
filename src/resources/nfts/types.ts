@@ -2,11 +2,16 @@ import { Network } from '@/helpers/networkTypes';
 import { AssetContract, AssetType } from '@/entities';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
 
+export enum NFTMarketplaceId {
+  OpenSea = 'opensea',
+}
+
 type NFTMarketplace = {
   collectionId: string | null;
   collectionUrl: string | null;
   floorPrice: number | null;
   id: string | null;
+  marketplaceId: NFTMarketplaceId;
   name: string | null;
   nftUrl: string | null;
 };
@@ -17,7 +22,7 @@ type NFTCollection = {
   externalUrl: string | null;
   imageUrl: string | null;
   name: string | null;
-  simplehashSpamScore: number | null;
+  simpleHashSpamScore: number | null;
   twitter: string | null;
 };
 
@@ -42,7 +47,7 @@ export type NFT = {
   };
   isSendable: boolean;
   lastEthSale: number | null;
-  marketplaces: { opensea: NFTMarketplace };
+  marketplaces: NFTMarketplace[];
   name: string;
   network: Network;
   predominantColor: string | null;

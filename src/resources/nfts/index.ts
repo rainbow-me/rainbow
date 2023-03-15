@@ -1,11 +1,11 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
+import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
 import { useEffect } from 'react';
 import {
-  filterSimplehashNFTs,
-  simplehashNFTToUniqueAsset,
+  filterSimpleHashNFTs,
+  simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { useAccountSettings } from '@/hooks';
@@ -17,20 +17,6 @@ const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
-
-function usePolygonAllowlist() {
-  return useQuery<string[]>({
-    queryKey: ['polygon-allowlist'],
-    queryFn: async () =>
-      (
-        await rainbowFetch(
-          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-          { method: 'get' }
-        )
-      ).data.data.addresses,
-    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
-  });
-}
 
 function fetchPolygonAllowlist() {
   return queryClient.fetchQuery<string[]>(
@@ -65,12 +51,12 @@ export function useLegacyNFTs({ address }: { address: string }) {
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
       const [simplehashResponse, polygonAllowlist] = await Promise.all([
-        fetchSimplehashNFTs(address, pageParam),
+        fetchSimpleHashNFTs(address, pageParam),
         fetchPolygonAllowlist(),
       ]);
       const { data, nextCursor } = simplehashResponse;
-      const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
-        simplehashNFTToUniqueAsset
+      const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(
+        simpleHashNFTToUniqueAsset
       );
       return {
         data: newNFTs,

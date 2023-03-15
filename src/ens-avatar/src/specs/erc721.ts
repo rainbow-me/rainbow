@@ -4,8 +4,8 @@ import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { fetchSimplehashNFT } from '@/resources/nfts/simplehash';
-import { simplehashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { fetchSimpleHashNFT } from '@/resources/nfts/simplehash';
+import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
 const abi = [
   'function tokenURI(uint256 tokenId) external view returns (string memory)',
@@ -49,8 +49,8 @@ export default class ERC721 {
     }
 
     try {
-      const data = await fetchSimplehashNFT(contractAddress, tokenID);
-      const nft = data && simplehashNFTToUniqueAsset(data);
+      const data = await fetchSimpleHashNFT(contractAddress, tokenID);
+      const nft = data && simpleHashNFTToUniqueAsset(data);
       image = svgToPngIfNeeded(nft?.image_url, false) || nft?.lowResUrl;
     } catch (error) {
       throw new Error('no image found');

@@ -16,7 +16,6 @@ import { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
 import store from '@/redux/store';
@@ -430,10 +429,7 @@ export async function onSessionProposal(
   }
 
   const peerMeta = proposer.metadata;
-  const dappName =
-    dappNameOverride(peerMeta.url) ||
-    peerMeta.name ||
-    lang.t(lang.l.walletconnect.unknown_dapp);
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
   /**
    * Log these, but it's OK if they list them now, we'll just ignore requests
@@ -456,10 +452,7 @@ export async function onSessionProposal(
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
-      imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0],
-        { w: 200 }
-      ),
+      imageUrl: maybeSignUri(peerMeta?.icons?.[0], { w: 200 }),
       peerId: proposer.publicKey,
       isWalletConnectV2: true,
     },
@@ -712,15 +705,11 @@ export async function onSessionRequest(
       clientId: session.topic, // I don't think this is used
       peerId: session.topic, // I don't think this is used
       requestId: event.id,
-      dappName:
-        dappNameOverride(peerMeta.name) || peerMeta.name || 'Unknown Dapp',
+      dappName: peerMeta.name || 'Unknown Dapp',
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
-      imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta.url) || peerMeta.icons[0],
-        { w: 200 }
-      ),
+      imageUrl: maybeSignUri(peerMeta.icons[0], { w: 200 }),
       payload: event.params.request,
       walletConnectV2RequestValues: {
         sessionRequestEvent: event,

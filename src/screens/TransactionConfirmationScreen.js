@@ -60,7 +60,6 @@ import {
 } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { isDappAuthenticated } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkTypes from '@/helpers/networkTypes';
 import {
@@ -351,10 +350,6 @@ export default function TransactionConfirmationScreen() {
   const formattedDappUrl = useMemo(() => {
     const { hostname } = new URL(dappUrl);
     return hostname;
-  }, [dappUrl]);
-
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
 
   const handleL2DisclaimerPress = useCallback(() => {
@@ -809,7 +804,6 @@ export default function TransactionConfirmationScreen() {
         dappScheme,
         dappUrl,
         formattedDappUrl,
-        isAuthenticated,
         rpcMethod: method,
         network: currentNetwork,
       });
@@ -847,7 +841,6 @@ export default function TransactionConfirmationScreen() {
     dappScheme,
     dappUrl,
     formattedDappUrl,
-    isAuthenticated,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -1189,7 +1182,7 @@ export default function TransactionConfirmationScreen() {
                       size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
-                      {isAuthenticated ? dappName : formattedDappUrl}
+                      {formattedDappUrl}
                     </Text>
                   </Row>
                 </Row>
