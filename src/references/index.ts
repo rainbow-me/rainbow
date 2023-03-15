@@ -62,6 +62,7 @@ export const ENS_NFT_CONTRACT_ADDRESS =
   '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 export const UNIV3_NFT_CONTRACT_ADDRESS =
   '0xc36442b4a4522e871399cd717abdd847ab11fe88';
+export const POAP_NFT_ADDRESS = '0x22c1f6050e56d2876009903609a2cc3fef83b415';
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';

@@ -28,7 +28,7 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import { getOpenSeaCollectionUrl, handleAndSignImages } from '@/parsers';
+import { getOpenSeaCollectionUrl } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -39,6 +39,7 @@ import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
+import { handleAndSignImages } from '@/utils/handleAndSignImages';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -58,7 +59,6 @@ const buildEnsToken = ({
   name: string;
   imageUrl: string;
 }) => {
-  // @ts-expect-error JavaScript function
   const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
   const slug = 'ens';
   return {
