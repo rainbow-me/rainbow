@@ -1,40 +1,37 @@
 import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
-
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
-
-import { getSimplehashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
+import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simpleHash/utils';
 import {
-  SimplehashChain,
-  SimplehashListing,
-  SimplehashNFT,
-  SimplehashPaymentTokenId,
-  SimplehashMarketplaceId,
-} from '@/resources/nfts/simplehash/types';
+  SimpleHashChain,
+  SimpleHashListing,
+  SimpleHashNFT,
+  SimpleHashMarketplaceId,
+} from '@/resources/nfts/simpleHash/types';
 
 export const START_CURSOR = 'start';
 
-const simplehashApi = new RainbowFetchClient({
+const simpleHashApi = new RainbowFetchClient({
   baseURL: 'https://api.simplehash.com/api',
 });
 
 const createCursorSuffix = (cursor: string) =>
   cursor === START_CURSOR ? '' : `&cursor=${cursor}`;
 
-export async function fetchSimplehashNFT(
+export async function fetchSimpleHashNFT(
   contractAddress: string,
   tokenId: string,
   network: Omit<Network, Network.goerli> = Network.mainnet
-): Promise<SimplehashNFT | undefined> {
-  const chain = getSimplehashChainFromNetwork(network);
+): Promise<SimpleHashNFT | undefined> {
+  const chain = getSimpleHashChainFromNetwork(network);
 
   if (!chain) {
     throw new Error(
-      `fetchSimpleHashNFT: no Simplehash chain for network: ${network}`
+      `fetchSimpleHashNFT: no SimpleHash chain for network: ${network}`
     );
   }
 
-  const response = await simplehashApi.get(
+  const response = await simpleHashApi.get(
     `/v0/nfts/${chain}/${contractAddress}/${tokenId}`,
     {
       headers: {
@@ -47,20 +44,20 @@ export async function fetchSimplehashNFT(
   return response?.data;
 }
 
-export async function fetchSimplehashNFTs(
+export async function fetchSimpleHashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
-): Promise<{ data: SimplehashNFT[]; nextCursor: string | null }> {
+): Promise<{ data: SimpleHashNFT[]; nextCursor: string | null }> {
   const chainsParam = [
-    SimplehashChain.Ethereum,
-    SimplehashChain.Arbitrum,
-    SimplehashChain.Optimism,
-    SimplehashChain.Polygon,
-    SimplehashChain.Bsc,
-    SimplehashChain.Gnosis,
+    SimpleHashChain.Ethereum,
+    SimpleHashChain.Arbitrum,
+    SimpleHashChain.Optimism,
+    SimpleHashChain.Polygon,
+    SimpleHashChain.Bsc,
+    SimpleHashChain.Gnosis,
   ].join(',');
   const cursorSuffix = createCursorSuffix(cursor);
-  const response = await simplehashApi.get(
+  const response = await simpleHashApi.get(
     `/v0/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
     {
       headers: {
@@ -76,22 +73,22 @@ export async function fetchSimplehashNFTs(
   };
 }
 
-export async function fetchSimplehashNFTListing(
+export async function fetchSimpleHashNFTListing(
   network: Network,
   contractAddress: string,
   tokenId: string
-): Promise<SimplehashListing | undefined> {
-  // array of all eth listings on opensea for this token
-  let listings: SimplehashListing[] = [];
+): Promise<SimpleHashListing | undefined> {
+  // array of all eth listings on OpenSea for this token
+  let listings: SimpleHashListing[] = [];
   let cursor = START_CURSOR;
-  const chain = getSimplehashChainFromNetwork(network);
+  const chain = getSimpleHashChainFromNetwork(network);
 
   while (cursor) {
     const cursorSuffix = createCursorSuffix(cursor);
     // eslint-disable-next-line no-await-in-loop
-    const response = await simplehashApi.get(
-      // opensea ETH offers only for now
-      `/v0/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimplehashMarketplaceId.Opensea}${cursorSuffix}`,
+    const response = await simpleHashApi.get(
+      // OpenSea ETH offers only for now
+      `/v0/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
       {
         headers: {
           'Accept': 'application/json',
@@ -101,13 +98,12 @@ export async function fetchSimplehashNFTListing(
       }
     );
     cursor = response?.data?.next_cursor;
-    // aggregate array of eth listings on opensea
+    // aggregate array of eth listings on OpenSea
     listings = [
       ...listings,
       response?.data?.listings?.find(
-        (listing: SimplehashListing) =>
-          listing?.payment_token?.payment_token_id ===
-          SimplehashPaymentTokenId.Ethereum
+        (listing: SimpleHashListing) =>
+          listing?.payment_token?.payment_token_id === 'ethereum.native'
       ),
     ];
   }

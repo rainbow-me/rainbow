@@ -1,52 +1,52 @@
 import { AssetType } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
-  SimplehashNFT,
-  SimplehashChain,
-} from '@/resources/nfts/simplehash/types';
+  SimpleHashNFT,
+  SimpleHashChain,
+} from '@/resources/nfts/simpleHash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
 
 /**
- * Returns a `SimplehashChain` from a given `Network`. Can return undefined if
- * a `Network` has no counterpart in Simplehash.
+ * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
+ * a `Network` has no counterpart in SimpleHash.
  */
-export function getSimplehashChainFromNetwork(
+export function getSimpleHashChainFromNetwork(
   network: Omit<Network, Network.goerli>
-): SimplehashChain | undefined {
+): SimpleHashChain | undefined {
   switch (network) {
     case Network.mainnet:
-      return SimplehashChain.Ethereum;
+      return SimpleHashChain.Ethereum;
     case Network.polygon:
-      return SimplehashChain.Polygon;
+      return SimpleHashChain.Polygon;
     case Network.arbitrum:
-      return SimplehashChain.Arbitrum;
+      return SimpleHashChain.Arbitrum;
     case Network.optimism:
-      return SimplehashChain.Optimism;
+      return SimpleHashChain.Optimism;
     case Network.bsc:
-      return SimplehashChain.Bsc;
+      return SimpleHashChain.Bsc;
     default:
       return undefined;
   }
 }
 
 /**
- * Returns a `Network` from a `SimplehashChain`. If an invalid value is
+ * Returns a `Network` from a `SimpleHashChain`. If an invalid value is
  * forcably passed in, it will throw.
  */
-export function getNetworkFromSimplehashChain(chain: SimplehashChain): Network {
+export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
   switch (chain) {
-    case SimplehashChain.Ethereum:
-    case SimplehashChain.Gnosis:
+    case SimpleHashChain.Ethereum:
+    case SimpleHashChain.Gnosis:
       return Network.mainnet;
-    case SimplehashChain.Polygon:
+    case SimpleHashChain.Polygon:
       return Network.polygon;
-    case SimplehashChain.Arbitrum:
+    case SimpleHashChain.Arbitrum:
       return Network.arbitrum;
-    case SimplehashChain.Optimism:
+    case SimpleHashChain.Optimism:
       return Network.optimism;
-    case SimplehashChain.Bsc:
+    case SimpleHashChain.Bsc:
       return Network.bsc;
     default:
       /*
@@ -54,13 +54,13 @@ export function getNetworkFromSimplehashChain(chain: SimplehashChain): Network {
        * default branch in the logic
        */
       throw new Error(
-        `getNetworkFromSimplehashChain received unknown chain: ${chain}`
+        `getNetworkFromSimpleHashChain received unknown chain: ${chain}`
       );
   }
 }
 
 export function getPriceFromLastSale(
-  lastSale: SimplehashNFT['last_sale']
+  lastSale: SimpleHashNFT['last_sale']
 ): number | undefined {
   return lastSale && lastSale?.total_price
     ? Math.round(
@@ -75,14 +75,14 @@ export function getPriceFromLastSale(
  * contract address, or token id. It also filters out Polygon NFTs that are
  * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
  *
- * @param nfts array of SimplehashNFTs
+ * @param nfts array of SimpleHashNFTs
  * @param polygonAllowlist array of whitelisted Polygon nft contract addresses
  * @returns array of filtered NFTs
  */
-export function filterSimplehashNFTs(
-  nfts: SimplehashNFT[],
+export function filterSimpleHashNFTs(
+  nfts: SimpleHashNFT[],
   polygonAllowlist?: string[]
-): SimplehashNFT[] {
+): SimpleHashNFT[] {
   return nfts.filter(nft => {
     if (
       !nft.name ||
@@ -92,17 +92,17 @@ export function filterSimplehashNFTs(
     ) {
       return false;
     }
-    if (polygonAllowlist && nft.chain === SimplehashChain.Polygon) {
+    if (polygonAllowlist && nft.chain === SimpleHashChain.Polygon) {
       return polygonAllowlist?.includes(nft.contract_address);
     }
-    if (nft.chain === SimplehashChain.Gnosis) {
+    if (nft.chain === SimpleHashChain.Gnosis) {
       return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
     }
     return true;
   });
 }
 
-export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
+export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const collection = nft.collection;
 
   const { imageUrl, lowResUrl } = handleAndSignImages(
@@ -144,7 +144,7 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
-    isSendable: nft.chain === SimplehashChain.Ethereum,
+    isSendable: nft.chain === SimpleHashChain.Ethereum,
     lastPrice: getPriceFromLastSale(nft.last_sale) || null,
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,
@@ -152,7 +152,7 @@ export function simplehashNFTToUniqueAsset(nft: SimplehashNFT): UniqueAsset {
     marketplaceId: marketplace?.marketplace_id,
     marketplaceName: marketplace?.marketplace_name,
     name: nft.name || '',
-    network: getNetworkFromSimplehashChain(nft.chain),
+    network: getNetworkFromSimpleHashChain(nft.chain),
     permalink: marketplace?.nft_url,
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],

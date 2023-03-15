@@ -1,12 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { fetchSimplehashNFTs } from '@/resources/nfts/simplehash';
+import { fetchSimpleHashNFTs } from '@/resources/nfts/simpleHash';
 import { useEffect } from 'react';
 import {
-  filterSimplehashNFTs,
-  simplehashNFTToUniqueAsset,
-} from '@/resources/nfts/simplehash/utils';
+  filterSimpleHashNFTs,
+  simpleHashNFTToUniqueAsset,
+} from '@/resources/nfts/simpleHash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { useAccountSettings } from '@/hooks';
 
@@ -51,12 +51,12 @@ export function useLegacyNFTs({ address }: { address: string }) {
   } = useInfiniteQuery({
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
-      const { data, nextCursor } = await fetchSimplehashNFTs(
+      const { data, nextCursor } = await fetchSimpleHashNFTs(
         address,
         pageParam
       );
-      const newNFTs = filterSimplehashNFTs(data, polygonAllowlist).map(
-        simplehashNFTToUniqueAsset
+      const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(
+        simpleHashNFTToUniqueAsset
       );
       return {
         data: newNFTs,

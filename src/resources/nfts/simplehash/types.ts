@@ -1,4 +1,4 @@
-export enum SimplehashChain {
+export enum SimpleHashChain {
   Arbitrum = 'arbitrum',
   Bsc = 'bsc',
   Ethereum = 'ethereum',
@@ -7,36 +7,40 @@ export enum SimplehashChain {
   Polygon = 'polygon',
 }
 
-export enum SimplehashMarketplaceId {
-  Opensea = 'opensea',
+/**
+ * @see https://docs.simplehash.com/reference/sale-model
+ */
+export enum SimpleHashMarketplaceId {
+  Blur = 'blur',
+  LooksRare = 'looksrare',
+  OpenSea = 'opensea',
+  X2Y2 = 'x2y2',
 }
 
-export enum SimplehashPaymentTokenId {
-  Ethereum = 'ethereum.native',
-}
+// the string is either the ERC20 contract address or "native" if it's ETH
+type SimpleHashPaymentTokenId = `ethereum.${string}`;
 
-// https://docs.simplehash.com/reference/sale-model
-export type SimplehashTrait = {
+export type SimpleHashTrait = {
   trait_type: string;
   value: string | number;
   display_type: string | null;
 };
 
-type SimplehashRarity = {
+type SimpleHashRarity = {
   rank: number | null;
   score: number | null;
   unique_attributes: number | null;
 };
 
-type SimplehashPaymentToken = {
-  payment_token_id: string;
+type SimpleHashPaymentToken = {
+  payment_token_id: SimpleHashPaymentTokenId;
   name: string | null;
   symbol: string | null;
   address: string | null;
   decimals: number;
 };
 
-export type SimplehashListing = {
+export type SimpleHashListing = {
   id: string;
   permalink: string;
   bundle_item_number: number | null;
@@ -50,17 +54,16 @@ export type SimplehashListing = {
   marketplace_id: string;
   collection_id: string | null;
   nft_id: string;
-  payment_token: SimplehashPaymentToken | null;
+  payment_token: SimpleHashPaymentToken | null;
 };
 
-// https://docs.simplehash.com/reference/floor-price-model
-export type SimplehashFloorPrice = {
+export type SimpleHashFloorPrice = {
   marketplace_id: string;
   value: number;
-  payment_token: SimplehashPaymentToken;
+  payment_token: SimpleHashPaymentToken;
 };
 
-export type SimplehashMarketplace = {
+export type SimpleHashMarketplace = {
   marketplace_id: string;
   marketplace_name: string;
   marketplace_collection_id: string;
@@ -69,7 +72,7 @@ export type SimplehashMarketplace = {
   verified: boolean | null;
 };
 
-type SimplehashCollection = {
+type SimpleHashCollection = {
   collection_id: string | null;
   name: string | null;
   description: string | null;
@@ -78,20 +81,20 @@ type SimplehashCollection = {
   external_url: string | null;
   twitter_username: string | null;
   discord_url: string | null;
-  marketplace_pages: SimplehashMarketplace[];
+  marketplace_pages: SimpleHashMarketplace[];
   metaplex_mint: string | null;
   metaplex_first_verified_creator: string | null;
   spam_score: number | null;
-  floor_prices: SimplehashFloorPrice[];
+  floor_prices: SimpleHashFloorPrice[];
   top_contracts: string[];
 };
 
 /**
  * @see https://docs.simplehash.com/reference/nft-model
  */
-export type SimplehashNFT = {
+export type SimpleHashNFT = {
   nft_id: string;
-  chain: SimplehashChain;
+  chain: SimpleHashChain;
   contract_address: string;
   token_id: string | null;
   name: string | null;
@@ -154,7 +157,7 @@ export type SimplehashNFT = {
     marketplace_id: string;
     marketplace_name: string;
     is_bundle_sale: boolean;
-    payment_token: SimplehashPaymentToken | null;
+    payment_token: SimpleHashPaymentToken | null;
     unit_price: number | null;
     total_price: number | null;
   } | null;
@@ -173,11 +176,11 @@ export type SimplehashNFT = {
     deployed_by: string | null;
     deployed_via: string | null;
   };
-  collection: SimplehashCollection;
-  rarity: SimplehashRarity;
+  collection: SimpleHashCollection;
+  rarity: SimpleHashRarity;
   extra_metadata: {
     image_original_url: string | null;
     animation_original_url: string | null;
-    attributes: SimplehashTrait[] | null | undefined;
+    attributes: SimpleHashTrait[] | null | undefined;
   };
 };
