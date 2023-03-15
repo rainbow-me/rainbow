@@ -423,10 +423,7 @@ export default function SendConfirmationSheet() {
     [amountDetails.nativeAmount, nativeCurrency]
   );
 
-  let color = useColorForAsset({
-    address: asset.mainnet_address || asset.address,
-    type: asset?.mainnet_address ? AssetTypes.token : asset?.type,
-  });
+  let color = useColorForAsset(asset);
 
   if (isNft) {
     color = colors.appleBlue;
