@@ -49,6 +49,7 @@ const FormContainer = styled(Column).attrs(
 export default function SendAssetForm({
   assetAmount,
   buttonRenderer,
+  colorForAsset,
   nativeAmount,
   nativeCurrency,
   onChangeAssetAmount,
@@ -86,14 +87,6 @@ export default function SendAssetForm({
   }, [nativeCurrencyInputRef, setLastFocusedInputHandle]);
 
   const { colors } = useTheme();
-
-  const address = selected?.mainnet_address || selected?.address;
-  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
-
-  let colorForAsset = useColorForAsset({ address, type });
-  if (isNft) {
-    colorForAsset = colors.appleBlue;
-  }
 
   const noShadows = [[0, 0, 0, colors.transparent, 0]];
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
