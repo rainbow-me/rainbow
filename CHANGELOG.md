@@ -11,7 +11,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+
 ### Removed
+
+## [1.8.14] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.14)
+
+### Added
+
+- Ratio to our f2c flow
+- Fixed colors on send sheet
+- Wallet connect V2
+- Performance improvements
 
 ## [1.8.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.13)
 
