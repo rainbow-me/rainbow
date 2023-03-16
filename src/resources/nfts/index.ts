@@ -71,7 +71,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
     refetchIntervalInBackground: isOwner,
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
-    staleTime: 0,
+    staleTime: NFTS_STALE_TIME,
     enabled: !!address,
   });
 
