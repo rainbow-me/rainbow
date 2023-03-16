@@ -71,7 +71,6 @@ export { default as useENSUniqueToken } from './useENSUniqueToken';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useExternalWalletSectionsData } from './useExternalWalletSectionsData';
 export { default as useFetchHiddenTokens } from './useFetchHiddenTokens';
-export { default as useFetchUniqueTokens } from './useFetchUniqueTokens';
 export { default as useGas } from './useGas';
 export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';

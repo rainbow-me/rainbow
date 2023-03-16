@@ -48,6 +48,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
     hasNextPage,
     isFetching,
     isFetchingNextPage,
+    isSuccess,
   } = useInfiniteQuery({
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
@@ -87,5 +88,6 @@ export function useLegacyNFTs({ address }: { address: string }) {
     data: nfts,
     error,
     isFetching,
+    isSuccess,
   };
 }

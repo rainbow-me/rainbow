@@ -7,11 +7,7 @@ import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
-import {
-  useAccountSettings,
-  useFetchUniqueTokens,
-  useOpenENSNFTHandler,
-} from '@/hooks';
+import { useAccountSettings, useOpenENSNFTHandler } from '@/hooks';
 import { AppState } from '@/redux/store';
 import {
   Bleed,
@@ -26,6 +22,7 @@ import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -225,10 +222,8 @@ function ImageValue({
   const uniqueTokensAccount = useSelector(
     ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
   );
-  const { data: uniqueTokensProfile } = useFetchUniqueTokens({
+  const { data: uniqueTokensProfile } = useLegacyNFTs({
     address: address ?? '',
-    // Don't want to refetch tokens if we already have them.
-    staleTime: Infinity,
   });
   const isSelf = address === accountAddress;
   const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
