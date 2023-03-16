@@ -59,6 +59,7 @@ import {
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
+  addCashSheet,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -157,7 +158,7 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
-        options={addTokenSheetConfig}
+        options={addCashSheet}
       />
       <Stack.Screen
         component={AddTokenSheet}
