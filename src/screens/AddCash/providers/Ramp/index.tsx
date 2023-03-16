@@ -119,6 +119,7 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
           });
         }
       }}
+      overflowMargin={30}
     >
       <ProviderCard
         /* @ts-ignore */

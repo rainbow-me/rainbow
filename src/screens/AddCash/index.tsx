@@ -40,10 +40,7 @@ export function AddCashSheet() {
       top={{ custom: insets.top + (IS_IOS ? 0 : statusBarHeight) }}
       width="full"
       style={{
-        ...borders.buildRadiusAsObject(
-          'top',
-          IS_IOS ? ScreenCornerRadius || 30 : 16
-        ),
+        ...borders.buildRadiusAsObject('top', ScreenCornerRadius || 30),
       }}
     >
       <Box

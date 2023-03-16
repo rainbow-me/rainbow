@@ -685,7 +685,7 @@ export const walletConnectLoadState = () => async (
   getState: AppGetState
 ) => {
   while (!getState().walletconnect.walletConnectors) {
-    await delay(300);
+    await delay(50);
   }
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};

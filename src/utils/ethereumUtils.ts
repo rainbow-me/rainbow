@@ -570,10 +570,6 @@ async function parseEthereumUrl(data: string) {
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
 
-  while (store.getState().data.isLoadingAssets) {
-    await delay(300);
-  }
-
   if (!functionName) {
     // Send native asset
     asset = getNetworkNativeAsset(network);
