@@ -28,7 +28,6 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import { getOpenSeaCollectionUrl } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -106,7 +105,7 @@ const buildEnsToken = ({
     lastSale: undefined,
     lastSalePaymentToken: null,
     lowResUrl,
-    marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceCollectionUrl: `https://opensea.io/collection/${slug}?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`,
     marketplaceId: 'opensea',
     marketplaceName: 'OpenSea',
     name,
