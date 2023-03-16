@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
@@ -45,8 +45,8 @@ export function useLegacyNFTs({ address }: { address: string }) {
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
+    isFetching,
   } = useInfiniteQuery({
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
@@ -71,7 +71,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
     refetchIntervalInBackground: isOwner,
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
-    staleTime: NFTS_STALE_TIME,
+    staleTime: 0,
     enabled: !!address,
   });
 
@@ -86,6 +86,6 @@ export function useLegacyNFTs({ address }: { address: string }) {
   return {
     data: nfts,
     error,
-    isFetching,
+    isInitialLoading: !nfts.length && isFetching,
   };
 }

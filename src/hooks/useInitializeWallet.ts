@@ -63,7 +63,6 @@ export default function useInitializeWallet() {
       image,
       silent = false
     ) => {
-      console.log('TEST1');
       try {
         PerformanceTracking.startMeasuring(
           PerformanceMetrics.useInitializeWallet
