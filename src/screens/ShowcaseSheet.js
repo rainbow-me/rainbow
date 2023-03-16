@@ -72,7 +72,9 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const { data: nfts } = useLegacyNFTs({ address: accountAddress ?? '' });
+  const { data: nfts, isInitialLoading } = useLegacyNFTs({
+    address: accountAddress ?? '',
+  });
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -105,7 +107,7 @@ export default function ShowcaseScreen() {
     [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
   );
 
-  const loading = userData === null;
+  const loading = userData === null || isInitialLoading;
 
   useEffect(() => {
     setTimeout(() => layout?.(), 300);
