@@ -13,6 +13,7 @@ import { useAccountSettings, useWallets } from '@/hooks';
 const NFTS_LIMIT = 2000;
 const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
 const NFTS_STALE_TIME = 300000; // 5 minutes
+const NFTS_CACHE_TIME = 600000; // 10 minutes
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
@@ -85,7 +86,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
-    cacheTime: isImportedWallet ? Infinity : 0,
+    cacheTime: isImportedWallet ? Infinity : NFTS_CACHE_TIME,
     enabled: !!address,
   });
 
