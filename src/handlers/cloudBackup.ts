@@ -7,7 +7,6 @@ import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger } from '../utils';
-import { IS_ANDROID } from '@/env';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -70,6 +69,11 @@ export async function encryptAndSaveDataToCloud(
       JSON.stringify(data)
     );
 
+    /**
+     * We need to normalize the filename on Android, because sometimes
+     * the filename is returned with the path used for Google Drive storage.
+     * That is with REMOTE_BACKUP_WALLET_DIR included.
+     */
     const backupFilename = IS_ANDROID
       ? normalizeAndroidBackupFilename(filename)
       : filename;

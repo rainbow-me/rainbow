@@ -191,7 +191,11 @@ export default function RestoreCloudStep({
                 let filename = backupSelected?.name;
 
                 if (IS_ANDROID && filename) {
-                  // removes rainbow.me/wallet-backups/ from filename
+                  /**
+                   * We need to normalize the filename on Android, because sometimes
+                   * the filename is returned with the path used for Google Drive storage.
+                   * That is with REMOTE_BACKUP_WALLET_DIR included.
+                   */
                   filename = normalizeAndroidBackupFilename(filename);
                 }
                 // Mark the wallet as backed up
