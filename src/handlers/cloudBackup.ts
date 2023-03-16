@@ -24,6 +24,10 @@ export const CLOUD_BACKUP_ERRORS = {
   MISSING_PIN: 'The PIN code you entered is invalid',
 };
 
+export function normalizeAndroidBackupFilename(filename: string) {
+  return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
+}
+
 export function logoutFromGoogleDrive() {
   IS_ANDROID && RNCloudFs.logout();
 }
@@ -80,16 +84,26 @@ export async function encryptAndSaveDataToCloud(
       password,
       JSON.stringify(data)
     );
+
+    /**
+     * We need to normalize the filename on Android, because sometimes
+     * the filename is returned with the path used for Google Drive storage.
+     * That is with REMOTE_BACKUP_WALLET_DIR included.
+     */
+    const backupFilename = IS_ANDROID
+      ? normalizeAndroidBackupFilename(filename)
+      : filename;
+
     // Store it on the FS first
-    const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+    const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
     await RNFS.writeFile(path, encryptedData, 'utf8');
     const sourceUri = { path };
-    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
+    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${backupFilename}`;
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    if (android) {
+    if (IS_ANDROID) {
       await RNCloudFs.loginIfNeeded();
     }
     const result = await RNCloudFs.copyToCloud({
@@ -100,7 +114,7 @@ export async function encryptAndSaveDataToCloud(
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      ios
+      IS_IOS
         ? {
             scope,
             targetPath: destinationPath,
