@@ -3,10 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
 >
-    <ImageView 
+
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="center"
-        android:background="@color/primary_dark"
-    />
+        android:background="@color/blue100"
+        android:scaleType="center" />
 </RelativeLayout>

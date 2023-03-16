@@ -34,7 +34,7 @@
       />
       <meta-data
         android:name="com.google.firebase.messaging.default_notification_color"
-        android:resource="@color/primary_dark"
+        android:resource="@color/blue100"
         tools:replace="android:resource"
       />
       <activity

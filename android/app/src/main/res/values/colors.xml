@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_dark">#001E5A</color>
+    <color name="blue60">#0E76FD</color>
+    <color name="blue100">#001E59</color>
     <color name="bootsplash_background">#FFFFFF</color>
 </resources>
