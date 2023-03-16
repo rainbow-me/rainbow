@@ -2,13 +2,13 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
 
 const NFTS_LIMIT = 2000;
 const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
@@ -39,7 +39,20 @@ export function useNFTs(): NFT[] {
 
 export function useLegacyNFTs({ address }: { address: string }) {
   const { accountAddress } = useAccountSettings();
-  const isOwner = accountAddress === address;
+  const { wallets } = useWallets();
+
+  const isSelectedWallet = accountAddress === address;
+  const walletAddresses = useMemo(
+    () =>
+      wallets
+        ? Object.values(wallets).flatMap(wallet =>
+            wallet.addresses.map(account => account.address)
+          )
+        : [],
+    [wallets]
+  );
+  const isImportedWallet = walletAddresses.includes(address);
+
   const {
     data,
     error,
@@ -67,11 +80,12 @@ export function useLegacyNFTs({ address }: { address: string }) {
     keepPreviousData: true,
     // this query will automatically refresh every 4 minutes
     // this way we can minimize the amount of time the user sees partial/no data
-    refetchInterval: isOwner ? NFTS_REFETCH_INTERVAL : false,
-    refetchIntervalInBackground: isOwner,
+    refetchInterval: isSelectedWallet ? NFTS_REFETCH_INTERVAL : false,
+    refetchIntervalInBackground: isSelectedWallet,
     // we still need to set a stale time because unlike the refetch interval,
     // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
+    cacheTime: isImportedWallet ? Infinity : 0,
     enabled: !!address,
   });
 
