@@ -46,7 +46,7 @@ export default async function handleDeeplink(
    */
   while (store.getState().data.isLoadingAssets) {
     logger.info(`handleDeeplink: Waiting for wallet to be ready`);
-    await delay(300);
+    await delay(50);
   }
 
   const { protocol, host, pathname, query } = new URL(url, true);
