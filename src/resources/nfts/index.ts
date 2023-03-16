@@ -8,12 +8,13 @@ import {
   simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 const NFTS_LIMIT = 2000;
-const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
 const NFTS_STALE_TIME = 300000; // 5 minutes
-const NFTS_CACHE_TIME = 600000; // 10 minutes
+const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
+const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
@@ -39,10 +40,8 @@ export function useNFTs(): NFT[] {
 }
 
 export function useLegacyNFTs({ address }: { address: string }) {
-  const { accountAddress } = useAccountSettings();
-  const { wallets } = useWallets();
+  const { wallets } = useSelector((state: AppState) => state.wallets);
 
-  const isSelectedWallet = accountAddress === address;
   const walletAddresses = useMemo(
     () =>
       wallets
@@ -79,14 +78,10 @@ export function useLegacyNFTs({ address }: { address: string }) {
     },
     getNextPageParam: lastPage => lastPage.nextCursor,
     keepPreviousData: true,
-    // this query will automatically refresh every 4 minutes
-    // this way we can minimize the amount of time the user sees partial/no data
-    refetchInterval: isSelectedWallet ? NFTS_REFETCH_INTERVAL : false,
-    refetchIntervalInBackground: isSelectedWallet,
-    // we still need to set a stale time because unlike the refetch interval,
-    // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
-    cacheTime: isImportedWallet ? Infinity : NFTS_CACHE_TIME,
+    cacheTime: isImportedWallet
+      ? NFTS_CACHE_TIME_INTERNAL
+      : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
   });
 

@@ -39,6 +39,7 @@ import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 type RouteParams = {
   WalletScreen: {
@@ -122,6 +123,8 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
       assetsSocket,
     })
   );
+
+  useLegacyNFTs({ address: accountAddress });
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
 

@@ -14,7 +14,7 @@ import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 
-const walletSelector = createSelector(
+export const walletSelector = createSelector(
   ({
     wallets: {
       isWalletLoading,
