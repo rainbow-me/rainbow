@@ -7,7 +7,6 @@ import {
   removeLocalRequest,
   saveLocalRequests,
 } from '@/handlers/localstorage/walletconnectRequests';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@/utils';
@@ -199,11 +198,9 @@ export const addRequestToApprove = (
     logger.log('request expired!');
     return;
   }
-  const unsafeImageUrl =
-    dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
+  const unsafeImageUrl = peerMeta?.icons?.[0];
   const imageUrl = maybeSignUri(unsafeImageUrl, { w: 200 });
-  const dappName =
-    dappNameOverride(peerMeta?.url) || peerMeta?.name || 'Unknown Dapp';
+  const dappName = peerMeta?.name || 'Unknown Dapp';
   const dappUrl = peerMeta?.url || 'Unknown Url';
   const dappScheme = peerMeta?.scheme || null;
 

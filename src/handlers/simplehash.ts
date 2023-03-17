@@ -2,11 +2,12 @@ import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
 import { RainbowFetchClient, rainbowFetch } from '../rainbow-fetch';
 
 import { Network } from '@/helpers';
-import { parseSimplehashNfts } from '@/parsers';
+import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { queryClient } from '@/react-query/queryClient';
 
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress, UniqueAsset } from '@/entities';
+import { SimpleHashNFT } from '@/resources/nfts/simplehash/types';
 
 interface SimplehashMarketplace {
   marketplace_id: string;
@@ -105,7 +106,7 @@ export async function getNFTByTokenId({
 }
 
 export async function getNftsByWalletAddress(walletAddress: string) {
-  let rawResponseNfts: SimplehashNft[] = [];
+  let rawResponseNfts: SimpleHashNFT[] = [];
   try {
     const chainsParam = `${Network.arbitrum},${Network.optimism},${Network.polygon},${Network.bsc}`;
 
@@ -157,9 +158,12 @@ export async function getNftsByWalletAddress(walletAddress: string) {
     }
   );
 
-  return parseSimplehashNfts(rawResponseNfts).filter(
-    (token: UniqueAsset) =>
-      token.network !== Network.polygon ||
-      polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
-  );
+  // @ts-ignore Old SimpleHash types are incomplete
+  return rawResponseNfts
+    .map(simpleHashNFTToUniqueAsset)
+    .filter(
+      (token: UniqueAsset) =>
+        token.network !== Network.polygon ||
+        polygonAllowlist[token.asset_contract?.address?.toLowerCase() || '']
+    );
 }

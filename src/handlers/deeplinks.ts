@@ -46,7 +46,7 @@ export default async function handleDeeplink(
    */
   while (store.getState().data.isLoadingAssets) {
     logger.info(`handleDeeplink: Waiting for wallet to be ready`);
-    await delay(300);
+    await delay(50);
   }
 
   const { protocol, host, pathname, query } = new URL(url, true);
@@ -183,10 +183,30 @@ export default async function handleDeeplink(
           });
         }
 
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
-          provider: provider as FiatProviderName,
-          sessionId: sessionId as string,
-        });
+        /**
+         * We fire these events here for F2C flows that we launch via a Safari
+         * browser. Some other providers (e.g. Ratio) have callbacks on their
+         * SDKs, so this same event is fired there, not here.
+         */
+        if (provider === FiatProviderName.Ramp) {
+          /**
+           * Ramp atm is special because the only way we return back here from
+           * their flow is after a successful purchase. So we can safely set
+           * `success: true` here. Eventually we may need to revisit this so
+           * that we can add more properties as they become available.
+           */
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+            provider: provider as FiatProviderName,
+            sessionId: sessionId as string,
+            success: true,
+          });
+        } else {
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+            provider: provider as FiatProviderName,
+            sessionId: sessionId as string,
+            // success is unknown
+          });
+        }
 
         break;
       }

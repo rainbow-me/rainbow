@@ -10,7 +10,6 @@ import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkInfo from '@/helpers/networkInfo';
 import {
@@ -83,14 +82,6 @@ export default function WalletConnectListItem({
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
 
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
-
   const approvalAccountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, account);
     const approvalAccountInfo = getAccountProfileInfo(
@@ -135,7 +126,7 @@ export default function WalletConnectListItem({
       {
         options: androidContextMenuActions,
         showSeparators: true,
-        title: overrideName || dappName,
+        title: dappName,
       },
       idx => {
         if (idx === 0 && networksAvailable.length > 1) {
@@ -165,7 +156,6 @@ export default function WalletConnectListItem({
     dappName,
     dappUrl,
     handlePressChangeWallet,
-    overrideName,
     walletConnectUpdateSessionConnectorByDappUrl,
     walletConnectDisconnectAllByDappUrl,
   ]);
@@ -202,7 +192,7 @@ export default function WalletConnectListItem({
   return (
     <ContextMenuButton
       menuItems={changeConnectionMenuItems()}
-      menuTitle={overrideName || dappName}
+      menuTitle={dappName}
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
@@ -211,7 +201,7 @@ export default function WalletConnectListItem({
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
-            imageUrl={overrideLogo || dappIcon}
+            imageUrl={dappIcon}
             size={VendorLogoIconSize}
           />
           <ColumnWithMargins
@@ -221,9 +211,7 @@ export default function WalletConnectListItem({
           >
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
-                {overrideName ||
-                  dappName ||
-                  lang.t('walletconnect.unknown_application')}
+                {dappName || lang.t('walletconnect.unknown_application')}
               </TruncatedText>
             </Row>
 

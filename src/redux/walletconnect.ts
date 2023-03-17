@@ -13,7 +13,6 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
@@ -399,9 +398,8 @@ export const walletConnectOnSessionRequest = (
         }
         const { peerId, peerMeta, chainId } = payload.params[0];
 
-        const imageUrl =
-          dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
-        const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+        const imageUrl = peerMeta?.icons?.[0];
+        const dappName = peerMeta?.name;
         const dappUrl = peerMeta?.url;
         const dappScheme = peerMeta?.scheme;
 
@@ -524,8 +522,8 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
     }
 
     const { clientId, peerId, peerMeta } = walletConnector;
-    const imageUrl = dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
-    const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+    const imageUrl = peerMeta?.icons?.[0];
+    const dappName = peerMeta?.name;
     const dappUrl = peerMeta?.url;
     const requestId = payload.id;
     if (
@@ -687,7 +685,7 @@ export const walletConnectLoadState = () => async (
   getState: AppGetState
 ) => {
   while (!getState().walletconnect.walletConnectors) {
-    await delay(300);
+    await delay(50);
   }
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};

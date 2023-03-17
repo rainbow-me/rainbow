@@ -189,17 +189,7 @@ export default function SendSheet(props) {
 
   const isNft = selected?.type === AssetTypes.nft;
 
-  const address = selected?.mainnet_address || selected?.address;
-  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
-  let colorForAsset = useColorForAsset(
-    {
-      address,
-      type,
-    },
-    null,
-    false,
-    true
-  );
+  let colorForAsset = useColorForAsset(selected, null, false, true);
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
@@ -947,6 +937,7 @@ export default function SendSheet(props) {
     <Container testID="send-sheet">
       <SheetContainer>
         <SendHeader
+          colorForAsset={colorForAsset}
           contacts={contacts}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
@@ -1027,6 +1018,7 @@ export default function SendSheet(props) {
                 weight="heavy"
               />
             }
+            colorForAsset={colorForAsset}
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
             nativeCurrencyInputRef={nativeCurrencyInputRef}
