@@ -8,8 +8,13 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import {
+  convertAmountToNativeDisplay,
+  convertRawAmountToDecimalFormat,
+} from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
+import { useNFTListing } from '@/resources/nfts';
+import { UniqueAsset } from '@/entities';
 
 const NONE = 'None';
 
@@ -23,47 +28,61 @@ const getIsFloorPriceSupported = (network: Network) => {
 };
 
 export default function NFTBriefTokenInfoRow({
-  currentPrice,
-  lastPrice,
-  lastSalePaymentToken,
-  network: assetNetwork,
-  urlSuffixForAsset,
+  asset,
 }: {
-  currentPrice?: number | null;
-  lastPrice?: number | null;
-  lastSalePaymentToken?: string | null;
-  network: Network;
-  urlSuffixForAsset: string;
+  asset: UniqueAsset;
 }) {
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
 
-  const { nativeCurrency, network } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(null);
+  const [floorPrice, setFloorPrice] = useState<string | null>(
+    asset?.floorPriceEth
+      ? `${
+          // TODO: switch to 0.001 once OS is gone
+          asset?.floorPriceEth === '0' ? '< 0.0001' : asset?.floorPriceEth
+        } ETH`
+      : null
+  );
+
+  const { data: listing } = useNFTListing({
+    contractAddress: asset?.asset_contract?.address ?? '',
+    tokenId: asset?.id,
+    network: asset?.network,
+  });
+
+  const listingValue =
+    listing &&
+    convertRawAmountToDecimalFormat(
+      listing?.price,
+      listing?.payment_token?.decimals,
+      3
+    );
+
+  const currentPrice =
+    asset?.currentPrice ??
+    (listingValue &&
+      `${listingValue === '0' ? '< 0.001' : listingValue} ${
+        listing?.payment_token?.symbol
+      }`);
 
   useEffect(() => {
-    const isFloorPriceSupported = getIsFloorPriceSupported(assetNetwork);
+    const isFloorPriceSupported = getIsFloorPriceSupported(asset?.network);
 
     const fetchFloorPrice = async () => {
-      if (isFloorPriceSupported) {
-        try {
-          const result = await apiGetUniqueTokenFloorPrice(
-            network,
-            urlSuffixForAsset
-          );
-          setFloorPrice(result);
-        } catch (_) {
-          setFloorPrice(NONE);
-        }
-      } else {
-        setFloorPrice(NONE);
+      if (isFloorPriceSupported && !floorPrice) {
+        const result = await apiGetUniqueTokenFloorPrice(
+          asset?.network,
+          asset?.urlSuffixForAsset
+        );
+        setFloorPrice(result);
       }
     };
 
     fetchFloorPrice();
-  }, [assetNetwork, network, urlSuffixForAsset]);
+  }, [asset?.network, asset?.urlSuffixForAsset, floorPrice]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -83,12 +102,11 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const lastSalePrice =
-    lastPrice != null
-      ? lastPrice === 0
-        ? `< 0.001 ${lastSalePaymentToken}`
-        : `${lastPrice} ${lastSalePaymentToken}`
-      : NONE;
+  const lastSalePrice = asset?.lastPrice
+    ? `${asset?.lastPrice === '0' ? '< 0.001' : asset?.lastPrice} ${
+        asset?.lastSalePaymentToken
+      }`
+    : NONE;
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (

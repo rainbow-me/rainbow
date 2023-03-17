@@ -3,10 +3,13 @@ import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
   SimpleHashChain,
+  SimpleHashFloorPrice,
+  SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -114,8 +117,14 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
 
   const marketplace = nft.collection.marketplace_pages?.[0];
 
+  const floorPrice = collection?.floor_prices?.find(
+    (floorPrice: SimpleHashFloorPrice) =>
+      floorPrice?.marketplace_id === SimpleHashMarketplaceId.OpenSea &&
+      floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
+  );
+
   return {
-    animation_url: nft.extra_metadata?.animation_original_url,
+    animation_url: nft?.video_url,
     asset_contract: {
       address: nft.contract_address,
       name: nft.contract.name || undefined,
@@ -136,6 +145,15 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     external_link: nft.external_url,
     familyImage: collection.image_url,
     familyName: collection.name,
+    floorPriceEth:
+      floorPrice?.value !== null && floorPrice?.value !== undefined
+        ? convertRawAmountToDecimalFormat(
+            floorPrice?.value,
+            floorPrice?.payment_token?.decimals,
+            // TODO: switch to 3 once OS is gone, doing this to match OS
+            4
+          )
+        : undefined,
     fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     // @ts-ignore TODO
     id: nft.token_id,
@@ -145,7 +163,15 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
     isSendable: nft.chain === SimpleHashChain.Ethereum,
-    lastPrice: getPriceFromLastSale(nft.last_sale) || null,
+    lastPrice:
+      nft?.last_sale?.unit_price !== null &&
+      nft?.last_sale?.unit_price !== undefined
+        ? convertRawAmountToDecimalFormat(
+            nft?.last_sale?.unit_price,
+            nft?.last_sale?.payment_token?.decimals,
+            3
+          )
+        : undefined,
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,
     marketplaceCollectionUrl: marketplace?.collection_url,

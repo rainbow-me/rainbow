@@ -1,7 +1,10 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
-import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
+import {
+  fetchSimpleHashNFTListing,
+  fetchSimpleHashNFTs,
+} from '@/resources/nfts/simplehash';
 import { useEffect, useMemo } from 'react';
 import {
   filterSimpleHashNFTs,
@@ -10,6 +13,7 @@ import {
 import { rainbowFetch } from '@/rainbow-fetch';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { Network } from '@/helpers';
 
 const NFTS_LIMIT = 2000;
 const NFTS_STALE_TIME = 300000; // 5 minutes
@@ -19,6 +23,16 @@ const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
+
+export const nftListingQueryKey = ({
+  contractAddress,
+  tokenId,
+  network,
+}: {
+  contractAddress: string;
+  tokenId: string;
+  network: Omit<Network, Network.goerli>;
+}) => createQueryKey('nftListing', { contractAddress, tokenId, network });
 
 function fetchPolygonAllowlist() {
   return queryClient.fetchQuery<string[]>(
@@ -98,4 +112,25 @@ export function useLegacyNFTs({ address }: { address: string }) {
     error,
     isInitialLoading: !nfts.length && isFetching,
   };
+}
+
+export function useNFTListing({
+  contractAddress,
+  tokenId,
+  network,
+}: {
+  contractAddress: string;
+  tokenId: string;
+  network: Omit<Network, Network.goerli>;
+}) {
+  return useQuery(
+    nftListingQueryKey({ contractAddress, tokenId, network }),
+    async () =>
+      (await fetchSimpleHashNFTListing(contractAddress, tokenId, network)) ??
+      null,
+    {
+      enabled: !!network && !!contractAddress && !!tokenId,
+      staleTime: NFTS_STALE_TIME,
+    }
+  );
 }

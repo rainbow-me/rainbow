@@ -39,9 +39,10 @@ export interface UniqueAsset {
   currentPrice: number | null;
   familyImage: string | null | undefined;
   familyName: string | null | undefined;
+  floorPriceEth?: string | undefined;
   id: string;
   isSendable: boolean;
-  lastPrice: number | null;
+  lastPrice: string | undefined;
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;

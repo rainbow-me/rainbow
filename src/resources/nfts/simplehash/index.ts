@@ -74,9 +74,9 @@ export async function fetchSimpleHashNFTs(
 }
 
 export async function fetchSimpleHashNFTListing(
-  network: Network,
   contractAddress: string,
-  tokenId: string
+  tokenId: string,
+  network: Omit<Network, Network.goerli> = Network.mainnet
 ): Promise<SimpleHashListing | undefined> {
   // array of all eth listings on OpenSea for this token
   let listings: SimpleHashListing[] = [];
