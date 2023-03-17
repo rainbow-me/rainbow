@@ -111,8 +111,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const { imageUrl, lowResUrl } = handleAndSignImages(
     // @ts-ignore
     nft.image_url,
-    nft.extra_metadata?.image_original_url,
-    nft.previews.image_small_url
+    nft.previews.image_large_url,
+    nft.extra_metadata?.image_original_url
   );
 
   const marketplace = nft.collection.marketplace_pages?.[0];
