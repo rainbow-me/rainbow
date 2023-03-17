@@ -333,6 +333,7 @@ export const sendTransaction = async ({
     logger.info('wallet: sending transaction', { transaction });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
     }
@@ -377,6 +378,7 @@ export const signTransaction = async ({
     logger.info('wallet: signing transaction');
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
     }
@@ -419,6 +421,7 @@ export const signMessage = async (
     logger.info('wallet: signing message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
     }
@@ -461,6 +464,7 @@ export const signPersonalMessage = async (
     logger.info('wallet: signing personal message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
     }
@@ -511,6 +515,7 @@ export const signTypedDataMessage = async (
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
+    // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
     }
@@ -536,6 +541,7 @@ export const signTypedDataMessage = async (
       }
 
       // Hardware wallets
+      // have to check inverse or we trigger unwanted BT permissions requests
       if (!(wallet instanceof Wallet)) {
         const result = await (wallet as LedgerSigner).signTypedDataMessage(
           parsedData,

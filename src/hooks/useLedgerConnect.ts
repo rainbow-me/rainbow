@@ -35,7 +35,9 @@ export function useLedgerConnect({
         try {
           transport.current = await TransportBLE.open(deviceId);
         } catch (e) {
-          logger.warn('[LedgerConnect] - Reconnect Error', { error: e });
+          logger.warn('[LedgerConnect] - Reconnect Error', {
+            error: (e as Error).message,
+          });
           errorCallback?.(errorType);
         }
       } else {

@@ -23,7 +23,7 @@ import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   HARDWARE_TX_ERROR_KEY,
   LedgerIsReadyAtom,
@@ -39,9 +39,7 @@ export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
 
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
-  const [readyForPolling, setReadyForPolling] = useRecoilState(
-    readyForPollingAtom
-  );
+  const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
   const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(
     HARDWARE_TX_ERROR_KEY,
     ledgerStorage
@@ -67,6 +65,26 @@ export const PairHardwareWalletAgainSheet = () => {
     opacity: indicatorOpacity.value,
   }));
 
+  const getSheetTitle = useCallback(() => {
+    if (hardwareTXError) {
+      return i18n.t(TRANSLATIONS.transaction_rejected);
+    } else if (isReady) {
+      return i18n.t(TRANSLATIONS.confirm_on_device);
+    } else {
+      return i18n.t(TRANSLATIONS.looking_for_devices);
+    }
+  }, [hardwareTXError, isReady]);
+
+  const getSheetSubtitle = useCallback(() => {
+    if (hardwareTXError) {
+      return i18n.t(TRANSLATIONS.please_try_again);
+    } else if (isReady) {
+      return i18n.t(TRANSLATIONS.connected_and_ready);
+    } else {
+      return i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled);
+    }
+  }, [hardwareTXError, isReady]);
+
   return (
     <>
       <Layout>
@@ -74,11 +92,7 @@ export const PairHardwareWalletAgainSheet = () => {
           <Inset horizontal="36px">
             <Stack alignHorizontal="center" space="20px">
               <Text align="center" color="label" weight="bold" size="26pt">
-                {hardwareTXError
-                  ? i18n.t(TRANSLATIONS.transaction_rejected)
-                  : isReady
-                  ? i18n.t(TRANSLATIONS.confirm_on_device)
-                  : i18n.t(TRANSLATIONS.looking_for_devices)}
+                {getSheetTitle()}
               </Text>
               <Stack space="10px">
                 <Text
@@ -87,11 +101,7 @@ export const PairHardwareWalletAgainSheet = () => {
                   weight="semibold"
                   size="15pt / 135%"
                 >
-                  {hardwareTXError
-                    ? i18n.t(TRANSLATIONS.please_try_again)
-                    : isReady
-                    ? i18n.t(TRANSLATIONS.connected_and_ready)
-                    : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+                  {getSheetSubtitle()}
                 </Text>
               </Stack>
             </Stack>

@@ -629,6 +629,7 @@ export default function SendSheet(props) {
         captureException(error);
 
         // if hardware wallet, we need to tell hardware flow there was error
+        // have to check inverse or we trigger unwanted BT permissions requests
         if (!(wallet instanceof Wallet)) {
           setHardwareTXError(true);
         }

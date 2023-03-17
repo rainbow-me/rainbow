@@ -232,6 +232,7 @@ export default function SpeedUpAndCancelSheet() {
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
+      // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
         goBack();
       }
@@ -306,6 +307,7 @@ export default function SpeedUpAndCancelSheet() {
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
+      // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
         goBack();
       }

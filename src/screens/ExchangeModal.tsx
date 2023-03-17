@@ -100,6 +100,7 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
+import { logger as loggr } from '@/logger';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -722,6 +723,7 @@ export default function ExchangeModal({
 
         // if the transaction was not successful, we need to bubble that up to the caller
         if (!isSucessful) {
+          loggr.debug('[ExchangeModal] transaction was not successful');
           return false;
         }
 
