@@ -100,7 +100,7 @@ const buildEnsToken = ({
     image_url: imageUrl,
     isSendable: true,
     last_sale: null,
-    lastPrice: undefined,
+    lastPrice: null,
     lastPriceUsd: null,
     lastSale: undefined,
     lastSalePaymentToken: null,

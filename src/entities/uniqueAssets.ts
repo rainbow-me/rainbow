@@ -42,7 +42,7 @@ export interface UniqueAsset {
   floorPriceEth?: string | undefined;
   id: string;
   isSendable: boolean;
-  lastPrice: string | undefined;
+  lastPrice: string | null;
   lastPriceUsd: string | undefined | null;
   lastSale: UniqueAssetLastSale | undefined;
   lastSalePaymentToken: string | undefined | null;

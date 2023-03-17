@@ -171,7 +171,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
             nft?.last_sale?.payment_token?.decimals,
             3
           )
-        : undefined,
+        : null,
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,
     marketplaceCollectionUrl: marketplace?.collection_url,

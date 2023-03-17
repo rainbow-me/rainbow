@@ -131,7 +131,7 @@ export const parseAccountUniqueTokens = data => {
                 18,
                 3
               )
-            : undefined,
+            : null,
           lastPriceUsd: asset.last_sale
             ? asset.last_sale?.payment_token?.usd_price
             : null,
@@ -221,7 +221,7 @@ export const parseAccountUniqueTokensPolygon = data => {
               18,
               3
             )
-          : undefined,
+          : null,
         lastPriceUsd: asset.last_sale
           ? asset.last_sale?.payment_token?.usd_price
           : null,
