@@ -9,7 +9,7 @@ import {
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -147,7 +147,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     familyName: collection.name,
     floorPriceEth:
       floorPrice?.value !== null && floorPrice?.value !== undefined
-        ? convertRawAmountToDecimalFormat(
+        ? convertRawAmountToRoundedDecimal(
             floorPrice?.value,
             floorPrice?.payment_token?.decimals,
             // TODO: switch to 3 once OS is gone, doing this to match OS
@@ -166,7 +166,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
       nft?.last_sale?.unit_price !== undefined
-        ? convertRawAmountToDecimalFormat(
+        ? convertRawAmountToRoundedDecimal(
             nft?.last_sale?.unit_price,
             nft?.last_sale?.payment_token?.decimals,
             3

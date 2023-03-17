@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import {
   convertAmountToNativeDisplay,
-  convertRawAmountToDecimalFormat,
+  convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
@@ -27,6 +27,14 @@ const getIsFloorPriceSupported = (network: Network) => {
   }
 };
 
+const formatPrice = (
+  price: number | null | undefined,
+  tokenSymbol: string | null | undefined = 'ETH'
+) => {
+  if (price === null || price === undefined || !tokenSymbol) return NONE;
+  return `${price === 0 ? '< 0.001' : price} ${tokenSymbol}`;
+};
+
 export default function NFTBriefTokenInfoRow({
   asset,
 }: {
@@ -39,12 +47,7 @@ export default function NFTBriefTokenInfoRow({
   const { nativeCurrency } = useAccountSettings();
 
   const [floorPrice, setFloorPrice] = useState<string | null>(
-    asset?.floorPriceEth
-      ? `${
-          // TODO: switch to 0.001 once OS is gone
-          asset?.floorPriceEth === '0' ? '< 0.0001' : asset?.floorPriceEth
-        } ETH`
-      : null
+    asset?.floorPriceEth ? formatPrice(asset?.floorPriceEth, 'ETH') : null
   );
 
   const { data: listing } = useNFTListing({
@@ -55,18 +58,13 @@ export default function NFTBriefTokenInfoRow({
 
   const listingValue =
     listing &&
-    convertRawAmountToDecimalFormat(
+    convertRawAmountToRoundedDecimal(
       listing?.price,
       listing?.payment_token?.decimals,
       3
     );
 
-  const currentPrice =
-    asset?.currentPrice ??
-    (listingValue &&
-      `${listingValue === '0' ? '< 0.001' : listingValue} ${
-        listing?.payment_token?.symbol
-      }`);
+  const currentPrice = asset?.currentPrice ?? listingValue;
 
   useEffect(() => {
     const isFloorPriceSupported = getIsFloorPriceSupported(asset?.network);
@@ -102,11 +100,10 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const lastSalePrice = asset?.lastPrice
-    ? `${asset?.lastPrice === '0' ? '< 0.001' : asset?.lastPrice} ${
-        asset?.lastSalePaymentToken
-      }`
-    : NONE;
+  const lastSalePrice = formatPrice(
+    asset?.lastPrice,
+    asset?.lastSalePaymentToken
+  );
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (

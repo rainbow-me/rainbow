@@ -3,10 +3,7 @@ import { OpenseaPaymentTokens } from '@/references/opensea';
 import { AssetTypes } from '@/entities';
 import { fetchMetadata, isUnknownOpenSeaENS } from '@/handlers/ens';
 import { Network } from '@/helpers/networkTypes';
-import {
-  convertRawAmountToDecimalFormat,
-  pickShallow,
-} from '@/helpers/utilities';
+import { pickShallow } from '@/helpers/utilities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 
@@ -125,13 +122,7 @@ export const parseAccountUniqueTokens = data => {
             asset_contract.nft_version === '3.0' ||
             asset_contract.schema_name === 'ERC721' ||
             asset_contract.schema_name === 'ERC1155',
-          lastPrice: asset?.last_sale
-            ? convertRawAmountToDecimalFormat(
-                asset?.last_sale?.total_price,
-                18,
-                3
-              )
-            : null,
+          lastPrice: parseLastSalePrice(asset.last_sale),
           lastPriceUsd: asset.last_sale
             ? asset.last_sale?.payment_token?.usd_price
             : null,
@@ -215,13 +206,7 @@ export const parseAccountUniqueTokensPolygon = data => {
         image_thumbnail_url: lowResUrl,
         image_url: imageUrl,
         isSendable: false,
-        lastPrice: asset?.last_sale
-          ? convertRawAmountToDecimalFormat(
-              asset?.last_sale?.total_price,
-              18,
-              3
-            )
-          : null,
+        lastPrice: parseLastSalePrice(asset.last_sale),
         lastPriceUsd: asset.last_sale
           ? asset.last_sale?.payment_token?.usd_price
           : null,
