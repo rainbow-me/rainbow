@@ -10,6 +10,7 @@ import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { PolygonAllowlist } from '..';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -85,15 +86,16 @@ export function getPriceFromLastSale(
  */
 export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
-  polygonAllowlist?: string[]
+  polygonAllowlist?: PolygonAllowlist
 ): SimpleHashNFT[] {
   return nfts.filter(nft => {
+    const lowercasedContractAddress = nft.contract_address?.toLowerCase();
     if (
       !nft.name ||
       !nft.collection?.name ||
       !nft.contract_address ||
       !nft.token_id ||
-      !nft?.collection?.marketplace_pages.some(
+      !nft.collection?.marketplace_pages.some(
         marketplace =>
           marketplace.marketplace_id === SimpleHashMarketplaceId.OpenSea
       )
@@ -101,10 +103,10 @@ export function filterSimpleHashNFTs(
       return false;
     }
     if (polygonAllowlist && nft.chain === SimpleHashChain.Polygon) {
-      return polygonAllowlist?.includes(nft.contract_address);
+      return lowercasedContractAddress in polygonAllowlist;
     }
     if (nft.chain === SimpleHashChain.Gnosis) {
-      return nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+      return lowercasedContractAddress === POAP_NFT_ADDRESS;
     }
     return true;
   });
@@ -147,7 +149,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       external_url: collection.external_url,
       image_url: collection.image_url,
       name: collection.name || '',
-      slug: marketplace?.marketplace_collection_id,
+      slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
     description: nft.description,
@@ -184,11 +186,11 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     lastSalePaymentToken: nft.last_sale?.payment_token?.symbol,
     lowResUrl: lowResUrl || null,
     marketplaceCollectionUrl: marketplace?.collection_url,
-    marketplaceId: marketplace?.marketplace_id,
-    marketplaceName: marketplace?.marketplace_name,
+    marketplaceId: marketplace?.marketplace_id ?? null,
+    marketplaceName: marketplace?.marketplace_name ?? null,
     name: nft.name || '',
     network: getNetworkFromSimpleHashChain(nft.chain),
-    permalink: marketplace?.nft_url,
+    permalink: marketplace?.nft_url ?? '',
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,

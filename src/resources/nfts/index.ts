@@ -34,8 +34,10 @@ export const nftListingQueryKey = ({
   network: Omit<Network, Network.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, network });
 
+export type PolygonAllowlist = { [key: string]: true };
+
 function fetchPolygonAllowlist() {
-  return queryClient.fetchQuery<string[]>(
+  return queryClient.fetchQuery<PolygonAllowlist>(
     ['polygon-allowlist'],
     async () =>
       (
