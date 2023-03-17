@@ -264,18 +264,14 @@ const UniqueTokenExpandedState = ({
       external_url: familyLink,
       slug,
     },
-    currentPrice,
     description,
     familyImage,
     familyName,
     isSendable,
-    lastPrice,
-    lastSalePaymentToken,
     marketplaceName,
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);

@@ -71,11 +71,15 @@ export default function NFTBriefTokenInfoRow({
 
     const fetchFloorPrice = async () => {
       if (isFloorPriceSupported && !floorPrice) {
-        const result = await apiGetUniqueTokenFloorPrice(
-          asset?.network,
-          asset?.urlSuffixForAsset
-        );
-        setFloorPrice(result);
+        try {
+          const result = await apiGetUniqueTokenFloorPrice(
+            asset?.network,
+            asset?.urlSuffixForAsset
+          );
+          setFloorPrice(result);
+        } catch {
+          setFloorPrice(NONE);
+        }
       }
     };
 
