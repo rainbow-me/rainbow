@@ -31,8 +31,9 @@ export const GoogleAccountSection: React.FC = () => {
       .catch(error => {
         logger.error(
           new RainbowError(
-            `Something went wrong when trying to fetch google account data to display in Backups Section, error: ${error?.toString()}`
-          )
+            `Fetching google account data to display in Backups Section failed`
+          ),
+          { error: (error as Error).message }
         );
       })
       .finally(() => {
@@ -77,16 +78,13 @@ export const GoogleAccountSection: React.FC = () => {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);
     } catch (error) {
-      logger.error(
-        new RainbowError(
-          `Something went wrong when logging into Google Drive, error: ${error?.toString()}`
-        )
-      );
+      logger.error(new RainbowError(`Logging into Google Drive failed.`), {
+        error: (error as Error).message,
+      });
     } finally {
       setLoading(false);
     }
   };
-
   const onSignInPress = async () => {
     setLoading(true);
     /*

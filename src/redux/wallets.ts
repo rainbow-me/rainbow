@@ -345,7 +345,13 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
   let currentUserData: { wallets: { [p: string]: RainbowWallet } } | undefined;
   try {
     currentUserData = await fetchUserDataFromCloud();
-  } catch (e) {
+  } catch (error) {
+    logger.error(
+      new RainbowError(
+        'There was an error when trying to update wallet backup statuses'
+      ),
+      { error: (error as Error).message }
+    );
     return;
   }
   if (currentUserData === undefined) {
@@ -384,7 +390,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
         relatedCloudWalletId = walletDataForCurrentAddress.id;
       } else if (relatedCloudWalletId !== walletDataForCurrentAddress.id) {
         logger.warn(
-          "Wallet address is linked to multiple or different accounts in the cloud backup metadata. We need to investigate why that's happening."
+          'Wallet address is linked to multiple or different accounts in the cloud backup metadata. It could mean that there is an issue with the cloud backup metadata.'
         );
         return;
       }
