@@ -6,7 +6,7 @@ import { PersistQueryClientOptions } from '@tanstack/react-query-persist-client'
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: Infinity,
+      cacheTime: 1000 * 60 * 60 * 24 * 7,
     },
   },
 });
