@@ -281,12 +281,67 @@ export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (
 };
 
 /**
+ * Marks all wallets with passed ids as backed-up
+ * using a specified method and file in storage
+ * and updates state accordingly.
+ *
+ * @param walletIds An array of wallet IDs to modify.
+ * @param method The backup type used.
+ * @param backupFile The backup file, if present.
+ * @param updateUserMetadata Whether to update user metadata.
+ */
+export const setAllWalletsWithIdsAsBackedUp = (
+  walletIds: RainbowWallet['id'][],
+  method: RainbowWallet['backupType'],
+  backupFile: RainbowWallet['backupFile'] = null,
+  updateUserMetadata = true
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
+  const { wallets, selected } = getState().wallets;
+  const newWallets = { ...wallets };
+
+  walletIds.forEach(walletId => {
+    newWallets[walletId] = {
+      ...newWallets[walletId],
+      backedUp: true,
+      // @ts-expect-error "Date" is not "string."
+      backupDate: Date.now(),
+      backupFile,
+      backupType: method,
+    };
+  });
+
+  await dispatch(walletsUpdate(newWallets));
+  if (selected?.id && walletIds.includes(selected?.id)) {
+    await dispatch(walletsSetSelected(newWallets[selected.id]));
+  }
+
+  // Reset the loading state 1 second later
+  setTimeout(() => {
+    dispatch(setIsWalletLoading(null));
+  }, 1000);
+
+  if (method === WalletBackupTypes.cloud && updateUserMetadata) {
+    try {
+      await backupUserDataIntoCloud({ wallets: newWallets });
+    } catch (e) {
+      logger.sentry('SAVING WALLET USERDATA FAILED');
+      captureException(e);
+      throw e;
+    }
+  }
+};
+
+/**
  * Marks a wallet as backed-up using a specified method and file in storage
  * and updates state accordingly.
  *
  * @param walletId The ID of the wallet to modify.
  * @param method The backup type used.
  * @param backupFile The backup file, if present.
+ * @param updateUserMetadata Whether to update user metadata.
  */
 export const setWalletBackedUp = (
   walletId: RainbowWallet['id'],
