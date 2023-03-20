@@ -24,10 +24,10 @@ import { IS_DEV, IS_IOS } from '@/env';
 import { logger } from '@/logger';
 
 enum ErrorType {
+  Unknown = 0,
   UserCanceled = -1, // legacy
   NotAuthenticated = -2, // legacy
-  Unknown = 0,
-  Unavailable = 1,
+  Unavailable = -3,
 }
 
 type Result<T = any> =
@@ -53,7 +53,7 @@ export async function get(
   options: Options = {},
   attempts = 0
 ): Promise<Result<string>> {
-  logger.debug(`keychain: get`, { key });
+  logger.debug(`keychain: get`, { key }, logger.DebugContext.keychain);
 
   let data = cache.getString(key);
 
@@ -111,7 +111,7 @@ export async function set(
   value: string,
   options: Options = {}
 ): Promise<void> {
-  logger.debug(`keychain: set`, { key });
+  logger.debug(`keychain: set`, { key }, logger.DebugContext.keychain);
 
   // only save public data to mmkv
   // private data has accessControl
@@ -126,7 +126,7 @@ export async function getObject(
   key: string,
   options: Options = {}
 ): Promise<Result<Record<string, unknown>>> {
-  logger.debug(`keychain: getObject`, { key });
+  logger.debug(`keychain: getObject`, { key }, logger.DebugContext.keychain);
 
   const { value, error } = await get(key, options);
 
@@ -145,31 +145,31 @@ export async function setObject(
   value: Record<string, any>,
   options: Options = {}
 ): Promise<void> {
-  logger.debug(`keychain: setObject`, { key });
+  logger.debug(`keychain: setObject`, { key }, logger.DebugContext.keychain);
 
   await set(key, JSON.stringify(value), options);
 }
 
 export async function has(key: string): Promise<boolean> {
-  logger.debug(`keychain: has`, { key });
+  logger.debug(`keychain: has`, { key }, logger.DebugContext.keychain);
   return Boolean(await hasInternetCredentials(key));
 }
 
 export async function remove(key: string) {
-  logger.debug(`keychain: remove`, { key });
+  logger.debug(`keychain: remove`, { key }, logger.DebugContext.keychain);
 
   cache.delete(key);
   await resetInternetCredentials(key);
 }
 
 export async function getAllCredentials(): Promise<UserCredentials[]> {
-  logger.debug(`keychain: getAllCredentials`);
+  logger.debug(`keychain: getAllCredentials`, {}, logger.DebugContext.keychain);
   const res = await getAllInternetCredentials();
   return res ? res.results : [];
 }
 
 export async function clear() {
-  logger.debug(`keychain: clear`);
+  logger.debug(`keychain: clear`, {}, logger.DebugContext.keychain);
 
   cache.clearAll();
 
@@ -183,14 +183,22 @@ export async function clear() {
 export async function getSupportedBiometryType(): Promise<
   BIOMETRY_TYPE | undefined
 > {
-  logger.debug(`keychain: getSupportedBiometryType`);
+  logger.debug(
+    `keychain: getSupportedBiometryType`,
+    {},
+    logger.DebugContext.keychain
+  );
   return (await originalGetSupportedBiometryType()) || undefined;
 }
 
 export async function getSharedWebCredentials(): Promise<
   SharedWebCredentials | undefined
 > {
-  logger.debug(`keychain: getSharedWebCredentials`);
+  logger.debug(
+    `keychain: getSharedWebCredentials`,
+    {},
+    logger.DebugContext.keychain
+  );
   const res = await requestSharedWebCredentials();
   return res ? res : undefined;
 }
@@ -199,12 +207,20 @@ export async function setSharedWebCredentials(
   username: string,
   password: string
 ) {
-  logger.debug(`keychain: setSharedWebCredentials`);
+  logger.debug(
+    `keychain: setSharedWebCredentials`,
+    {},
+    logger.DebugContext.keychain
+  );
   await originalSetSharedWebCredentials('rainbow.me', username, password);
 }
 
 export async function getPrivateAccessControlOptions(): Promise<Options> {
-  logger.debug(`keychain: getPrivateAccessControlOptions`);
+  logger.debug(
+    `keychain: getPrivateAccessControlOptions`,
+    {},
+    logger.DebugContext.keychain
+  );
 
   let canAuthenticate = false;
 
