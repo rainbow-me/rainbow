@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 
 interface ImageIconProps {
   size?: number;
-  source: StaticImageData;
+  source: StaticImageData | Source;
 }
 
 const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
