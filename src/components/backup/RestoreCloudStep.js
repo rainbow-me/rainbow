@@ -32,7 +32,7 @@ import {
 import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
-  setWalletBackedUp,
+  setAllWalletsWithIdsAsBackedUp,
   walletsLoadState,
   walletsSetSelected,
 } from '@/redux/wallets';
@@ -196,32 +196,28 @@ export default function RestoreCloudStep({
           if (!userData && backupSelected?.name) {
             goBack();
             logger.log('updating backup state of wallets');
-            await Promise.all(
-              Object.keys(wallets).map(walletId => {
-                logger.log('updating backup state of wallet', walletId);
-                logger.log('backupSelected?.name', backupSelected?.name);
-
-                let filename = backupSelected?.name;
-
-                if (IS_ANDROID && filename) {
-                  /**
-                   * We need to normalize the filename on Android, because sometimes
-                   * the filename is returned with the path used for Google Drive storage.
-                   * That is with REMOTE_BACKUP_WALLET_DIR included.
-                   */
-                  filename = normalizeAndroidBackupFilename(filename);
-                }
-
-                // Mark the wallet as backed up
-                return dispatch(
-                  setWalletBackedUp(
-                    walletId,
-                    walletBackupTypes.cloud,
-                    filename,
-                    false
-                  )
-                );
-              })
+            let filename = backupSelected?.name;
+            if (IS_ANDROID && filename) {
+              /**
+               * We need to normalize the filename on Android, because sometimes
+               * the filename is returned with the path used for Google Drive storage.
+               * That is with REMOTE_BACKUP_WALLET_DIR included.
+               */
+              filename = normalizeAndroidBackupFilename(filename);
+            }
+            const walletIdsToUpdate = Object.keys(wallets);
+            logger.log(
+              'updating backup state of wallets with ids',
+              JSON.stringify(walletIdsToUpdate)
+            );
+            logger.log('backupSelected?.name', backupSelected?.name);
+            await dispatch(
+              setAllWalletsWithIdsAsBackedUp(
+                walletIdsToUpdate,
+                walletBackupTypes.cloud,
+                filename,
+                false
+              )
             );
             logger.log('done updating backup state');
           }
