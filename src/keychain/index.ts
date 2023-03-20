@@ -21,6 +21,7 @@ import { MMKV } from 'react-native-mmkv';
 
 import { delay } from '@/helpers/utilities';
 import { IS_DEV, IS_IOS } from '@/env';
+import { logger } from '@/logger';
 
 enum ErrorType {
   UserCanceled = -1, // legacy
@@ -52,6 +53,8 @@ export async function get(
   options: Options = {},
   attempts = 0
 ): Promise<Result<string>> {
+  logger.debug(`keychain: get`, { key });
+
   let data = cache.getString(key);
 
   if (!data) {
@@ -108,19 +111,23 @@ export async function set(
   value: string,
   options: Options = {}
 ): Promise<void> {
+  logger.debug(`keychain: set`, { key });
+
   // only save public data to mmkv
   // private data has accessControl
   if (!options?.accessControl) {
     cache.set(key, value);
   }
 
-  await setInternetCredentials(key, key, value, options);
+  await setInternetCredentials(key, key, String(value), options);
 }
 
 export async function getObject(
   key: string,
   options: Options = {}
 ): Promise<Result<Record<string, unknown>>> {
+  logger.debug(`keychain: getObject`, { key });
+
   const { value, error } = await get(key, options);
 
   if (error || !value) {
@@ -138,24 +145,32 @@ export async function setObject(
   value: Record<string, any>,
   options: Options = {}
 ): Promise<void> {
+  logger.debug(`keychain: setObject`, { key });
+
   await set(key, JSON.stringify(value), options);
 }
 
 export async function has(key: string): Promise<boolean> {
+  logger.debug(`keychain: has`, { key });
   return Boolean(await hasInternetCredentials(key));
 }
 
 export async function remove(key: string) {
+  logger.debug(`keychain: remove`, { key });
+
   cache.delete(key);
   await resetInternetCredentials(key);
 }
 
 export async function getAllCredentials(): Promise<UserCredentials[]> {
+  logger.debug(`keychain: getAllCredentials`);
   const res = await getAllInternetCredentials();
   return res ? res.results : [];
 }
 
 export async function clear() {
+  logger.debug(`keychain: clear`);
+
   cache.clearAll();
 
   const credentials = await getAllCredentials();
@@ -168,12 +183,14 @@ export async function clear() {
 export async function getSupportedBiometryType(): Promise<
   BIOMETRY_TYPE | undefined
 > {
+  logger.debug(`keychain: getSupportedBiometryType`);
   return (await originalGetSupportedBiometryType()) || undefined;
 }
 
 export async function getSharedWebCredentials(): Promise<
   SharedWebCredentials | undefined
 > {
+  logger.debug(`keychain: getSharedWebCredentials`);
   const res = await requestSharedWebCredentials();
   return res ? res : undefined;
 }
@@ -182,10 +199,13 @@ export async function setSharedWebCredentials(
   username: string,
   password: string
 ) {
+  logger.debug(`keychain: setSharedWebCredentials`);
   await originalSetSharedWebCredentials('rainbow.me', username, password);
 }
 
 export async function getPrivateAccessControlOptions(): Promise<Options> {
+  logger.debug(`keychain: getPrivateAccessControlOptions`);
+
   let canAuthenticate = false;
 
   if (IS_IOS) {
