@@ -3,7 +3,10 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  fetchUserDataFromCloud,
+} from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import {
   getWalletNames,
@@ -25,7 +28,7 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-import { logger } from '../utils';
+import { logger as legacyLogger } from '../utils';
 import {
   addressKey,
   oldSeedPhraseMigratedKey,
@@ -43,6 +46,7 @@ import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@/styles';
+import { RainbowError, logger } from '@/logger';
 
 // -- Types ---------------------------------------- //
 
@@ -175,7 +179,9 @@ export const walletsLoadState = (profilesEnabled = false) => async (
         });
         if (found) {
           selectedWallet = someWallet;
-          logger.sentry('Found selected wallet based on loadAddress result');
+          legacyLogger.sentry(
+            'Found selected wallet based on loadAddress result'
+          );
         }
         return found;
       });
@@ -184,7 +190,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
-      logger.sentry(
+      legacyLogger.sentry(
         'addressFromKeychain wasnt set on settings so it is being loaded from loadAddress'
       );
     }
@@ -208,7 +214,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
       if (!account) return;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
-      logger.sentry(
+      legacyLogger.sentry(
         'Selected the first visible address because there was not selected one'
       );
     }
@@ -227,7 +233,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     profilesEnabled && dispatch(fetchWalletENSAvatars());
     return wallets;
   } catch (error) {
-    logger.sentry('Exception during walletsLoadState');
+    legacyLogger.sentry('Exception during walletsLoadState');
     captureException(error);
   }
 };
@@ -318,11 +324,118 @@ export const setWalletBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.sentry('SAVING WALLET USERDATA FAILED');
+      legacyLogger.sentry('SAVING WALLET USERDATA FAILED');
       captureException(e);
       throw e;
     }
   }
+};
+
+/**
+ * Grabs user data stored in the cloud and based on this data marks wallets
+ * as backed up or not
+ */
+export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
+  const { wallets, selected } = getState().wallets;
+  const newWallets = { ...wallets };
+
+  let currentUserData: { wallets: { [p: string]: RainbowWallet } } | undefined;
+  try {
+    currentUserData = await fetchUserDataFromCloud();
+  } catch (error) {
+    logger.error(
+      new RainbowError(
+        'There was an error when trying to update wallet backup statuses'
+      ),
+      { error: (error as Error).message }
+    );
+    return;
+  }
+  if (currentUserData === undefined) {
+    return;
+  }
+
+  // build hashmap of address to wallet based on backup metadata
+  const addressToWalletLookup = new Map<string, RainbowWallet>();
+  Object.values(currentUserData.wallets).forEach(wallet => {
+    wallet.addresses.forEach(account => {
+      addressToWalletLookup.set(account.address, wallet);
+    });
+  });
+
+  /*
+    marking wallet as already backed up if all addresses are backed up properly
+    and linked to the same wallet
+    
+    we assume it's not backed up if:
+    * we don't have an address in the backup metadata
+    * we have an address in the backup metadata, but it's linked to multiple
+      wallet ids (should never happen, but that's a sanity check)
+  */
+  Object.values(newWallets).forEach(wallet => {
+    const localWalletId = wallet.id;
+
+    let relatedCloudWalletId: string | null = null;
+    for (const account of wallet.addresses) {
+      const walletDataForCurrentAddress = addressToWalletLookup.get(
+        account.address
+      );
+      if (!walletDataForCurrentAddress) {
+        return;
+      }
+      if (relatedCloudWalletId === null) {
+        relatedCloudWalletId = walletDataForCurrentAddress.id;
+      } else if (relatedCloudWalletId !== walletDataForCurrentAddress.id) {
+        logger.warn(
+          'Wallet address is linked to multiple or different accounts in the cloud backup metadata. It could mean that there is an issue with the cloud backup metadata.'
+        );
+        return;
+      }
+    }
+
+    if (relatedCloudWalletId === null) {
+      return;
+    }
+
+    // update only if we checked the wallet is actually backed up
+    const cloudBackupData = currentUserData?.wallets[relatedCloudWalletId];
+    if (cloudBackupData) {
+      newWallets[localWalletId] = {
+        ...newWallets[localWalletId],
+        backedUp: cloudBackupData.backedUp,
+        backupDate: cloudBackupData.backupDate,
+        backupFile: cloudBackupData.backupFile,
+        backupType: cloudBackupData.backupType,
+      };
+    }
+  });
+
+  await dispatch(walletsUpdate(newWallets));
+  if (selected?.id) {
+    await dispatch(walletsSetSelected(newWallets[selected.id]));
+  }
+};
+
+/**
+ * Clears backup status for all users' wallets
+ */
+export const clearAllWalletsBackupStatus = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
+  const { wallets } = getState().wallets;
+  const newWallets = { ...wallets };
+  Object.keys(newWallets).forEach(key => {
+    newWallets[key].backedUp = undefined;
+    newWallets[key].backupDate = undefined;
+    newWallets[key].backupFile = undefined;
+    newWallets[key].backupType = undefined;
+  });
+
+  await dispatch(walletsUpdate(newWallets));
 };
 
 /**
@@ -532,46 +645,48 @@ export const checkKeychainIntegrity = () => async (
 ) => {
   try {
     let healthyKeychain = true;
-    logger.sentry('[KeychainIntegrityCheck]: starting checks');
+    legacyLogger.sentry('[KeychainIntegrityCheck]: starting checks');
 
     const hasAddress = await hasKey(addressKey);
     if (hasAddress) {
-      logger.sentry('[KeychainIntegrityCheck]: address is ok');
+      legacyLogger.sentry('[KeychainIntegrityCheck]: address is ok');
     } else {
       healthyKeychain = false;
-      logger.sentry(
+      legacyLogger.sentry(
         `[KeychainIntegrityCheck]: address is missing: ${hasAddress}`
       );
     }
 
     const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
     if (hasOldSeedPhraseMigratedFlag) {
-      logger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
+      legacyLogger.sentry('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
-      logger.sentry(
+      legacyLogger.sentry(
         `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`
       );
     }
 
     const hasOldSeedphrase = await hasKey(seedPhraseKey);
     if (hasOldSeedphrase) {
-      logger.sentry('[KeychainIntegrityCheck]: old seed is still present!');
+      legacyLogger.sentry(
+        '[KeychainIntegrityCheck]: old seed is still present!'
+      );
     } else {
-      logger.sentry(
+      legacyLogger.sentry(
         `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`
       );
     }
 
     const { wallets, selected } = getState().wallets;
     if (!wallets) {
-      logger.sentry(
+      legacyLogger.sentry(
         '[KeychainIntegrityCheck]: wallets are missing from redux',
         wallets
       );
     }
 
     if (!selected) {
-      logger.sentry(
+      legacyLogger.sentry(
         '[KeychainIntegrityCheck]: selectedwallet is missing from redux',
         selected
       );
@@ -583,26 +698,26 @@ export const checkKeychainIntegrity = () => async (
 
     for (const key of nonReadOnlyWalletKeys) {
       let healthyWallet = true;
-      logger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
+      legacyLogger.sentry(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets![key];
-      logger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
+      legacyLogger.sentry(`[KeychainIntegrityCheck]: Wallet data`, wallet);
       const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
-        logger.sentry('[KeychainIntegrityCheck]: seed key is missing');
+        legacyLogger.sentry('[KeychainIntegrityCheck]: seed key is missing');
       } else {
-        logger.sentry('[KeychainIntegrityCheck]: seed key is present');
+        legacyLogger.sentry('[KeychainIntegrityCheck]: seed key is present');
       }
 
       for (const account of wallet.addresses) {
         const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
-          logger.sentry(
+          legacyLogger.sentry(
             `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
           );
         } else {
-          logger.sentry(
+          legacyLogger.sentry(
             `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
           );
         }
@@ -622,7 +737,7 @@ export const checkKeychainIntegrity = () => async (
       }
 
       if (!healthyWallet) {
-        logger.sentry(
+        legacyLogger.sentry(
           '[KeychainIntegrityCheck]: declaring wallet unhealthy...'
         );
         healthyKeychain = false;
@@ -630,21 +745,21 @@ export const checkKeychainIntegrity = () => async (
         await dispatch(walletsUpdate(wallets!));
         // Update selected wallet if needed
         if (wallet.id === selected!.id) {
-          logger.sentry(
+          legacyLogger.sentry(
             '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
           );
           await dispatch(walletsSetSelected(wallets![wallet.id]));
         }
-        logger.sentry('[KeychainIntegrityCheck]: done updating wallets');
+        legacyLogger.sentry('[KeychainIntegrityCheck]: done updating wallets');
       }
     }
     if (!healthyKeychain) {
       captureMessage('Keychain Integrity is not OK');
     }
-    logger.sentry('[KeychainIntegrityCheck]: check completed');
+    legacyLogger.sentry('[KeychainIntegrityCheck]: check completed');
     await saveKeychainIntegrityState('done');
   } catch (e) {
-    logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
+    legacyLogger.sentry('[KeychainIntegrityCheck]: error thrown', e);
     captureMessage('Error running keychain integrity checks');
   }
 };

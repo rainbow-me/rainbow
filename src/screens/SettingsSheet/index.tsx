@@ -6,11 +6,9 @@ import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { Box } from '@/design-system';
-import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
-import WalletTypes from '@/helpers/walletTypes';
 import SettingsBackupView from './components/SettingsBackupView';
 import ShowSecretView from './components/ShowSecretView';
 import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
@@ -22,59 +20,12 @@ const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
-  const { wallets } = useWallets();
   const { params } = useRoute<any>();
   const { colors } = useTheme();
 
-  const getRealRoute = useCallback(
-    (key: any) => {
-      let route = key;
-      const paramsToPass: {
-        imported?: boolean;
-        type?: string;
-        walletId?: string;
-      } = {};
-      const nonReadonlyWallets = Object.keys(wallets!).filter(
-        key => wallets![key].type !== WalletTypes.readOnly
-      );
-      if (key === SettingsPages.backup.key) {
-        const walletId = params?.walletId;
-        // Check if we have more than 1 NON readonly wallets, then show the list of wallets
-        if (!walletId && nonReadonlyWallets.length > 1) {
-          route = 'BackupSection';
-          // Check if we have one wallet that's not readonly
-          // then show the single screen for that wallet.
-        } else {
-          if (wallets && nonReadonlyWallets.length === 1) {
-            // Get the non watched wallet
-            const defaultSelectedWalletId = Object.keys(wallets!).find(
-              (key: string) => wallets![key].type !== WalletTypes.readOnly
-            );
-            if (defaultSelectedWalletId) {
-              if (wallets[defaultSelectedWalletId].backedUp) {
-                paramsToPass.type = 'AlreadyBackedUpView';
-              }
-              if (wallets[defaultSelectedWalletId].imported) {
-                paramsToPass.imported = true;
-              }
-              paramsToPass.walletId = defaultSelectedWalletId;
-            }
-          }
-          route = 'SettingsBackupView';
-        }
-      }
-      return { params: { ...params, ...paramsToPass }, route };
-    },
-    [params, wallets]
-  );
-
-  const onPressSection = useCallback(
-    (section: any) => () => {
-      const { params, route } = getRealRoute(section.key);
-      navigate(route, params);
-    },
-    [getRealRoute, navigate]
-  );
+  const sectionOnPressFactory = (section: any) => () => {
+    navigate(section.key, params);
+  };
 
   const renderHeaderRight = useCallback(
     () =>
@@ -90,12 +41,11 @@ export function SettingsSheet() {
 
   useEffect(() => {
     if (params?.initialRoute) {
-      const { route, params: routeParams } = getRealRoute(params?.initialRoute);
       InteractionManager.runAfterInteractions(() => {
-        navigate(route, routeParams);
+        navigate(params?.initialRoute);
       });
     }
-  }, [getRealRoute, navigate, params]);
+  }, [navigate, params]);
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
@@ -126,14 +76,16 @@ export function SettingsSheet() {
           {() => (
             <SettingsSection
               onCloseModal={goBack}
-              onPressAppIcon={onPressSection(SettingsPages.appIcon)}
-              onPressBackup={onPressSection(SettingsPages.backup)}
-              onPressCurrency={onPressSection(SettingsPages.currency)}
-              onPressDev={onPressSection(SettingsPages.dev)}
-              onPressLanguage={onPressSection(SettingsPages.language)}
-              onPressNetwork={onPressSection(SettingsPages.network)}
-              onPressNotifications={onPressSection(SettingsPages.notifications)}
-              onPressPrivacy={onPressSection(SettingsPages.privacy)}
+              onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
+              onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
+              onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
+              onPressDev={sectionOnPressFactory(SettingsPages.dev)}
+              onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
+              onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
+              onPressNotifications={sectionOnPressFactory(
+                SettingsPages.notifications
+              )}
+              onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
             />
           )}
         </Stack.Screen>

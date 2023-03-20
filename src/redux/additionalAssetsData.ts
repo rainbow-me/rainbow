@@ -31,6 +31,7 @@ type AdditionalAssetDataAction =
 type L2AssetToWatch = {
   inputCurrency: SwappableAsset;
   outputCurrency: SwappableAsset;
+
   userAddress: string;
   network: Network;
   id: string;
