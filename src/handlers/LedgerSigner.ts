@@ -167,14 +167,16 @@ export class LedgerSigner extends Signer {
       data: tx.data || undefined,
       gasLimit: tx.gasLimit || undefined,
       gasPrice: tx.gasPrice || undefined,
-      maxFeePerGas: tx.maxFeePerGas || undefined,
-      maxPriorityFeePerGas: tx.maxPriorityFeePerGas || undefined,
+      // only add these fields if they are defined ( network supports EIP-1559)
+      ...(tx.maxFeePerGas && { maxFeePerGas: tx.maxFeePerGas }),
+      ...(!!tx.maxPriorityFeePerGas && {
+        maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+      }),
       nonce: tx.nonce ? BigNumber.from(tx.nonce).toNumber() : undefined,
       to: tx.to || undefined,
       type: tx.type || undefined,
       value: tx.value || undefined,
     };
-
     const unsignedTx = serialize(baseTx).substring(2);
 
     const resolution = await this._retry(eth =>
