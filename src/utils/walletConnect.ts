@@ -356,8 +356,7 @@ async function subscribeToEchoServer({
     },
   }).json();
 
-  // https://github.com/WalletConnect/echo-server/blob/a0afc940e1fc3ea8efb765fff5f4daeedec46d2a/spec/spec.md?plain=1#L14
-  if (res.error || res.data?.status !== 'OK') {
+  if (res.error) {
     logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
       error: res.error,
     });
