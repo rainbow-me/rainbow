@@ -22,6 +22,11 @@ import { margin, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';
 import logger from '@/utils/logger';
 
+const ErrorStates = {
+  noSeed: 'noSeed',
+  securedWithBiometrics: 'securedWithBiometrics',
+} as const;
+
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
   color: colors.appleBlue,
   name: 'copy',
@@ -52,7 +57,9 @@ export default function SecretDisplaySection({
   const walletId = (params as any)?.walletId || selectedWallet.id;
   const currentWallet = wallets?.[walletId];
   const [visible, setVisible] = useState(true);
-  const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
+  const [errorState, setErrorState] = useState<
+    keyof typeof ErrorStates | undefined
+  >();
   const [seed, setSeed] = useState<string | null>(null);
   const [type, setType] = useState(currentWallet?.type);
 
@@ -67,11 +74,13 @@ export default function SecretDisplaySection({
       }
       setVisible(!!s);
       onSecretLoaded?.(!!s);
-      setIsRecoveryPhraseVisible(!!s);
+      if (!s) {
+        setErrorState(ErrorStates.noSeed);
+      }
     } catch (e: any) {
       logger.sentry('Error while trying to reveal secret', e);
       if (e?.message === createdWithBiometricError) {
-        setIsRecoveryPhraseVisible(false);
+        setErrorState(ErrorStates.securedWithBiometrics);
       }
       captureException(e);
       setVisible(false);
@@ -95,38 +104,7 @@ export default function SecretDisplaySection({
   const { colors } = useTheme();
 
   const renderStepNoSeeds = useCallback(() => {
-    if (isRecoveryPhraseVisible) {
-      return (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="60px"
-        >
-          <Stack space="10px">
-            <Text
-              align="center"
-              color="secondary (Deprecated)"
-              size="18px / 27px (Deprecated)"
-              weight="regular"
-            >
-              {lang.t('back_up.secret.you_need_to_authenticate', {
-                typeName: typeLabel,
-              })}
-            </Text>
-            <ToggleSecretButton onPress={loadSeed}>
-              {/* @ts-ignore */}
-              <BiometricButtonContent
-                color={colors.white}
-                label={lang.t('back_up.secret.show_recovery', {
-                  typeName: upperFirst(typeLabel),
-                })}
-                showIcon={!seed}
-              />
-            </ToggleSecretButton>
-          </Stack>
-        </Box>
-      );
-    } else {
+    if (errorState) {
       return (
         <Box
           alignItems="center"
@@ -138,12 +116,41 @@ export default function SecretDisplaySection({
             color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
           >
-            {lang.t('back_up.secret.biometrically_secured')}
+            {errorState === ErrorStates.securedWithBiometrics &&
+              lang.t('back_up.secret.biometrically_secured')}
+            {errorState === ErrorStates.noSeed &&
+              lang.t('back_up.secret.no_seed_phrase')}
           </Text>
         </Box>
       );
     }
-  }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
+    return (
+      <Box alignItems="center" justifyContent="center" paddingHorizontal="60px">
+        <Stack space="10px">
+          <Text
+            align="center"
+            color="secondary (Deprecated)"
+            size="18px / 27px (Deprecated)"
+            weight="regular"
+          >
+            {lang.t('back_up.secret.you_need_to_authenticate', {
+              typeName: typeLabel,
+            })}
+          </Text>
+          <ToggleSecretButton onPress={loadSeed}>
+            {/* @ts-ignore */}
+            <BiometricButtonContent
+              color={colors.white}
+              label={lang.t('back_up.secret.show_recovery', {
+                typeName: upperFirst(typeLabel),
+              })}
+              showIcon={!seed}
+            />
+          </ToggleSecretButton>
+        </Stack>
+      </Box>
+    );
+  }, [errorState, typeLabel, loadSeed, colors.white, seed]);
   return (
     <>
       {visible ? (
