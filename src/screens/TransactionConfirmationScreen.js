@@ -89,6 +89,7 @@ import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
+  delay,
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
@@ -414,6 +415,7 @@ export default function TransactionConfirmationScreen() {
     canceled => {
       // we need to close the hw navigator too
       if (accountInfo.isHardwareWallet) {
+        delay(300);
         goBack();
       }
       goBack();

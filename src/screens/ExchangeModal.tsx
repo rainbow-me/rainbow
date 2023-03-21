@@ -51,7 +51,7 @@ import {
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
-import { divide, greaterThan, multiply } from '@/helpers/utilities';
+import { delay, divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -101,6 +101,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
 import { logger as loggr } from '@/logger';
+import { goBack } from 'react-native-minimizer';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -199,6 +200,7 @@ export default function ExchangeModal({
     { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
   const {
+    goBack,
     navigate,
     setParams,
     dangerouslyGetParent,
@@ -759,6 +761,11 @@ export default function ExchangeModal({
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         setParams({ focused: false });
+        // close the hardware wallet modal before navigating
+        if (isHardwareWallet) {
+          goBack();
+          await delay(100);
+        }
         navigate(Routes.WALLET_SCREEN);
         return false;
       }
@@ -770,9 +777,11 @@ export default function ExchangeModal({
       debouncedIsHighPriceImpact,
       flashbots,
       getNextNonce,
+      goBack,
       inputAmount,
       inputCurrency,
       isCrosschainSwap,
+      isHardwareWallet,
       navigate,
       outputAmount,
       outputCurrency,
