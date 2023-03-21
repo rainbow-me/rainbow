@@ -28,12 +28,14 @@ import {
   RainbowWallet,
 } from './wallet';
 import { analytics } from '@/analytics';
-import logger from '@/utils/logger';
+import oldLogger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
 import { decryptPIN } from '@/handlers/authentication';
 
 const encryptor = new AesEncryptor();
+const PIN_REGEX = /^\d{4}$/;
 
 type BackupPassword = string;
 
@@ -273,7 +275,7 @@ export async function restoreCloudBackup({
       return restoreSpecificBackupIntoKeychain(dataToRestore);
     }
   } catch (e) {
-    logger.sentry('Error while restoring back up');
+    oldLogger.sentry('Error while restoring back up');
     captureException(e);
     return false;
   }
@@ -306,7 +308,7 @@ async function restoreSpecificBackupIntoKeychain(
     }
     return true;
   } catch (e) {
-    logger.sentry('error in restoreSpecificBackupIntoKeychain');
+    oldLogger.sentry('error in restoreSpecificBackupIntoKeychain');
     captureException(e);
     return false;
   }
@@ -352,7 +354,7 @@ async function restoreCurrentBackupIntoKeychain(
 
     return true;
   } catch (e) {
-    logger.sentry('error in restoreBackupIntoKeychain');
+    oldLogger.sentry('error in restoreBackupIntoKeychain');
     captureException(e);
     return false;
   }
@@ -370,7 +372,7 @@ async function decryptSeedFromBackupPinAndEncryptWithNewPin({
   let processedSeedPhrase = seedPhrase;
 
   if (!processedSeedPhrase) {
-    return seedPhrase;
+    return processedSeedPhrase;
   }
 
   /*
@@ -378,11 +380,26 @@ async function decryptSeedFromBackupPinAndEncryptWithNewPin({
    * It is required for old backups created before we started storing
    * seeds in backups without PIN encryption
    */
-  if (backupPIN && processedSeedPhrase.includes('cipher')) {
-    processedSeedPhrase = await decryptBackupPinEncryptedSeedPhrase(
-      processedSeedPhrase,
-      backupPIN
+  if (
+    backupPIN &&
+    processedSeedPhrase.includes('cipher') &&
+    PIN_REGEX.test(backupPIN)
+  ) {
+    const decryptedSeedPhrase = await encryptor.decrypt(
+      backupPIN,
+      processedSeedPhrase
     );
+
+    if (decryptedSeedPhrase) {
+      processedSeedPhrase = decryptedSeedPhrase;
+    } else {
+      logger.error(
+        new RainbowError(
+          'Failed to decrypt backed up seed phrase using backup PIN.'
+        )
+      );
+      return processedSeedPhrase;
+    }
   }
 
   /*
@@ -390,37 +407,19 @@ async function decryptSeedFromBackupPinAndEncryptWithNewPin({
    * biometrics enabled, we need to encrypt the seed with the PIN
    * for storage in Android device keychain
    */
-  if (newPIN) {
-    processedSeedPhrase = await encryptSeedPhraseWithNewPinIfNeeded(
-      processedSeedPhrase,
-      newPIN
-    );
-  }
-  return processedSeedPhrase;
-}
-
-async function decryptBackupPinEncryptedSeedPhrase(
-  seedPhrase: string,
-  backupPIN?: string
-): Promise<string> {
-  if (!backupPIN) return seedPhrase;
-  try {
-    const decryptedSeedPhrase = await encryptor.decrypt(backupPIN, seedPhrase);
-    return decryptedSeedPhrase;
-  } catch (e) {
-    return seedPhrase;
-  }
-}
-
-async function encryptSeedPhraseWithNewPinIfNeeded(
-  seedPhrase: string,
-  newPIN?: string
-) {
-  if (newPIN) {
+  if (newPIN && PIN_REGEX.test(newPIN)) {
     const encryptedSeedPhrase = await encryptor.encrypt(newPIN, seedPhrase);
-    return encryptedSeedPhrase;
+
+    if (encryptedSeedPhrase) {
+      processedSeedPhrase = encryptedSeedPhrase;
+    } else {
+      logger.error(
+        new RainbowError('Failed to encrypt seed phrase with new PIN.')
+      );
+    }
   }
-  return seedPhrase;
+
+  return processedSeedPhrase;
 }
 
 // Attempts to save the password to decrypt the backup from the iCloud keychain
@@ -450,7 +449,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     }
     return null;
   } catch (e) {
-    logger.sentry('Error while fetching backup password', e);
+    oldLogger.sentry('Error while fetching backup password', e);
     captureException(e);
     return null;
   }
