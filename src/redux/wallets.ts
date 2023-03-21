@@ -327,7 +327,7 @@ export const setAllWalletsWithIdsAsBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.sentry('SAVING WALLET USERDATA FAILED');
+      legacyLogger.sentry('SAVING WALLET USERDATA FAILED');
       captureException(e);
       throw e;
     }
