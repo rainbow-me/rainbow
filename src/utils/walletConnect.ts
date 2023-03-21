@@ -131,7 +131,7 @@ export function maybeGoBackAndClearHasPendingRedirect({
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-export let syncWeb3WalletClient:
+let syncWeb3WalletClient:
   | Awaited<ReturnType<typeof Web3Wallet['init']>>
   | undefined;
 
