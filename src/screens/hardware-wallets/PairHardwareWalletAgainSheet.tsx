@@ -29,6 +29,7 @@ import {
   LedgerIsReadyAtom,
   ledgerStorage,
   readyForPollingAtom,
+  triggerPollerCleanupAtom,
 } from '@/navigation/HardwareWalletTxNavigator';
 import { TryAgainButton } from './components/TryAgainButton';
 import { useMMKVBoolean } from 'react-native-mmkv';
@@ -40,16 +41,24 @@ export const PairHardwareWalletAgainSheet = () => {
 
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
+  const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
+
   const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(
     HARDWARE_TX_ERROR_KEY,
     ledgerStorage
   );
 
   const onPressTryAgain = useCallback(() => {
+    setTriggerPollerCleanup(true);
     setHardwareTXError(false);
     setReadyForPolling(true);
     setIsReady(false);
-  }, [setHardwareTXError, setReadyForPolling, setIsReady]);
+  }, [
+    setTriggerPollerCleanup,
+    setHardwareTXError,
+    setReadyForPolling,
+    setIsReady,
+  ]);
 
   const indicatorOpacity = useDerivedValue(() =>
     withRepeat(

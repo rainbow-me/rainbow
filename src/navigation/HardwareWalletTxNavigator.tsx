@@ -48,6 +48,11 @@ export const readyForPollingAtom = atom({
   key: 'readyForPolling',
 });
 
+export const triggerPollerCleanupAtom = atom({
+  default: false,
+  key: 'triggerPollerCleanup',
+});
+
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
   const { selectedWallet } = useWallets();
@@ -61,6 +66,9 @@ export const HardwareWalletTxNavigator = () => {
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
   const [readyForPolling, setReadyForPolling] = useRecoilState(
     readyForPollingAtom
+  );
+  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
+    triggerPollerCleanupAtom
   );
 
   const errorCallback = useCallback(
@@ -79,6 +87,7 @@ export const HardwareWalletTxNavigator = () => {
     },
     [deviceId, navigate]
   );
+
   const successCallback = useCallback(() => {
     logger.debug('[LedgerTx] - submitting tx', {}, DebugContext.ledger);
     if (!isReady) {
@@ -103,6 +112,7 @@ export const HardwareWalletTxNavigator = () => {
     setIsReady(false);
     setReadyForPolling(true);
     setHardwareTXError(false);
+    setTriggerPollerCleanup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

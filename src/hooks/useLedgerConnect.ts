@@ -3,6 +3,12 @@ import { DebugContext } from '@/logger/debugContext';
 import { logger } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  LedgerIsReadyAtom,
+  readyForPollingAtom,
+  triggerPollerCleanupAtom,
+} from '@/navigation/HardwareWalletTxNavigator';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -19,13 +25,22 @@ export function useLedgerConnect({
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
   const transport = useRef<TransportBLE | null>();
+  const timer = useRef<NodeJS.Timeout | null>(null);
+  const isReady = useRecoilValue(LedgerIsReadyAtom);
+  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
+    triggerPollerCleanupAtom
+  );
+  const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
    */
   const handleLedgerError = useCallback(
     async (errorType: LEDGER_ERROR_CODES) => {
+      if (isReady) return;
+      console.log('handling error isSucess is FALSE');
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
+        setReadyForPolling(false);
         logger.debug(
           '[LedgerConnect] - Device Disconnected - Attempting Reconnect',
           {},
@@ -34,25 +49,29 @@ export function useLedgerConnect({
         transport.current = null;
         try {
           transport.current = await TransportBLE.open(deviceId);
+          setReadyForPolling(true);
         } catch (e) {
           logger.warn('[LedgerConnect] - Reconnect Error', {
             error: (e as Error).message,
           });
-          errorCallback?.(errorType);
+          // temp removing this to see if it fixes an issue
+          // errorCallback?.(errorType);
         }
       } else {
         errorCallback?.(errorType);
       }
     },
-    [deviceId, errorCallback]
+    [deviceId, errorCallback, isReady, setReadyForPolling]
   );
 
   /**
    * Handles successful ledger connection
    */
   const handleLedgerSuccess = useCallback(() => {
+    if (!readyForPolling) return;
     successCallback?.(deviceId);
-  }, [deviceId, successCallback]);
+    pollerCleanup(timer.current);
+  }, [deviceId, readyForPolling, successCallback]);
 
   /**
    * Cleans up ledger connection polling
@@ -67,20 +86,21 @@ export function useLedgerConnect({
         );
         clearInterval(poller);
         poller?.unref();
+        timer.current = null;
       }
     } catch {
       // swallow
     }
   };
   useEffect(() => {
-    let timer: NodeJS.Timer | null = null;
-    if (readyForPolling) {
+    if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
       logger.debug(
         '[LedgerConnect] - init device polling',
         {},
         DebugContext.ledger
       );
-      timer = setInterval(async () => {
+      setTriggerPollerCleanup(false);
+      timer.current = setInterval(async () => {
         if (transport.current) {
           if (readyForPolling) {
             await checkLedgerConnection({
@@ -94,11 +114,20 @@ export function useLedgerConnect({
           // eslint-disable-next-line require-atomic-updates
           transport.current = await TransportBLE.open(deviceId);
         }
-      }, 2000);
+      }, 3000);
     }
+  }, [
+    deviceId,
+    handleLedgerError,
+    handleLedgerSuccess,
+    readyForPolling,
+    setTriggerPollerCleanup,
+    triggerPollerCleanup,
+  ]);
 
+  useEffect(() => {
     return () => {
-      pollerCleanup(timer);
+      pollerCleanup(timer.current);
     };
-  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling]);
+  }, []);
 }
