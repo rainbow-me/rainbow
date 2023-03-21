@@ -3,10 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
 
+const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: 1000 * 60 * 60 * 24 * 7,
+      cacheTime: SEVEN_DAYS,
     },
   },
 });
