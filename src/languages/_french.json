@@ -153,7 +153,7 @@
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
         "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings. :)",
-        "no_seed_phrase": "We're sorry, we couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly. :)",
+        "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly. :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
         "private_key_title": "Private Key :)",
