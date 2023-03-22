@@ -10,7 +10,6 @@ import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { PolygonAllowlist } from '../types';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -85,7 +84,7 @@ export function getPriceFromLastSale(
  */
 export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
-  polygonAllowlist?: PolygonAllowlist
+  polygonAllowlist?: string[]
 ): SimpleHashNFT[] {
   return nfts.filter(nft => {
     const lowercasedContractAddress = nft.contract_address?.toLowerCase();
@@ -98,7 +97,7 @@ export function filterSimpleHashNFTs(
       return false;
     }
     if (polygonAllowlist && nft.chain === SimpleHashChain.Polygon) {
-      return !!polygonAllowlist[lowercasedContractAddress];
+      return lowercasedContractAddress in polygonAllowlist;
     }
     if (nft.chain === SimpleHashChain.Gnosis) {
       return lowercasedContractAddress === POAP_NFT_ADDRESS;
