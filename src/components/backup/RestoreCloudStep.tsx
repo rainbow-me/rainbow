@@ -4,6 +4,7 @@ import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { isSamsungGalaxy } from '@/helpers/samsung';
 import {
+  BackupUserData,
   fetchBackupPassword,
   restoreCloudBackup,
   RestoreCloudBackupResultStates,
@@ -62,8 +63,8 @@ const MASTHEAD_ICON_GRADIENT_END_POINT = { x: 0, y: 0 };
 const MASTHEAD_ICON_GRADIENT_STEPS = [0, 0.5, 1];
 
 type Props = {
-  userData: any;
-  backupSelected: any;
+  userData: BackupUserData;
+  backupSelected: { name: string | null };
   fromSettings: boolean;
 };
 

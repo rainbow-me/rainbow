@@ -48,7 +48,7 @@ interface BackedUpData {
   [key: string]: string;
 }
 
-interface BackupUserData {
+export interface BackupUserData {
   wallets: AllRainbowWallets;
 }
 
