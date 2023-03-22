@@ -122,11 +122,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     nft.extra_metadata?.image_original_url
   );
 
-  // only support OS for now
-  const marketplace = nft.collection.marketplace_pages?.find(
-    marketplace =>
-      marketplace.marketplace_id === SimpleHashMarketplaceId.OpenSea
-  );
+  const marketplace = nft.collection.marketplace_pages?.[0];
 
   const floorPrice = collection?.floor_prices?.find(
     (floorPrice: SimpleHashFloorPrice) =>
