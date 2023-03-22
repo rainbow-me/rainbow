@@ -15,6 +15,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
+import { logger } from '@/logger';
 
 const NONE = 'None';
 
@@ -77,7 +78,8 @@ export default function NFTBriefTokenInfoRow({
             asset?.urlSuffixForAsset
           );
           setFloorPrice(result);
-        } catch {
+        } catch (error) {
+          logger.warn(`Failed to fetch NFT floor price with error: ${error}`);
           setFloorPrice(NONE);
         }
       }
