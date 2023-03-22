@@ -12,25 +12,25 @@ export default function useCollectible(
   externalAddress?: string
 ) {
   const { accountAddress } = useAccountSettings();
-  const { data: selfNFTs } = useLegacyNFTs({ address: accountAddress });
-  const { data: externalNFTs } = useLegacyNFTs({
+  const { data: selfUniqueTokens } = useLegacyNFTs({ address: accountAddress });
+  const { data: externalUniqueTokens } = useLegacyNFTs({
     address: externalAddress ?? '',
   });
   const isExternal = Boolean(externalAddress);
-  // Use the appropriate nfts based on if the user is viewing the
-  // current account's nfts, or external nfts (e.g. ProfileSheet)
-  const nfts = useMemo(() => (isExternal ? externalNFTs : selfNFTs), [
-    externalNFTs,
-    isExternal,
-    selfNFTs,
-  ]);
+  // Use the appropriate tokens based on if the user is viewing the
+  // current accounts tokens, or external tokens (e.g. ProfileSheet)
+  const uniqueTokens = useMemo(
+    () => (isExternal ? externalUniqueTokens : selfUniqueTokens),
+    [externalUniqueTokens, isExternal, selfUniqueTokens]
+  );
 
   const asset = useMemo(() => {
-    const matched = nfts?.find(
-      (nft: UniqueAsset) => nft.uniqueId === initialAsset?.uniqueId
+    const matched = uniqueTokens?.find(
+      (uniqueToken: UniqueAsset) =>
+        uniqueToken.uniqueId === initialAsset?.uniqueId
     );
     return matched || initialAsset;
-  }, [initialAsset, nfts]);
+  }, [initialAsset, uniqueTokens]);
 
   useRevalidateInBackground({
     contractAddress: asset?.asset_contract?.address,
