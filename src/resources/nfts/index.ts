@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
-import { NFT, PolygonAllowlist } from '@/resources/nfts/types';
+import { NFT } from '@/resources/nfts/types';
 import {
   fetchSimpleHashNFTListing,
   fetchSimpleHashNFTs,
@@ -35,7 +35,7 @@ export const nftListingQueryKey = ({
 }) => createQueryKey('nftListing', { contractAddress, tokenId, network });
 
 function fetchPolygonAllowlist() {
-  return queryClient.fetchQuery<PolygonAllowlist>(
+  return queryClient.fetchQuery<string[]>(
     ['polygon-allowlist'],
     async () =>
       (
