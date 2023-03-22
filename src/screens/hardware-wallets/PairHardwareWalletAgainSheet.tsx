@@ -34,7 +34,7 @@ import {
 import { TryAgainButton } from './components/TryAgainButton';
 import { useMMKVBoolean } from 'react-native-mmkv';
 
-const INDICATOR_SIZE = 7;
+const INDICATOR_SIZE = 9;
 
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
