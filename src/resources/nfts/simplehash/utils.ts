@@ -76,9 +76,8 @@ export function getPriceFromLastSale(
 
 /**
  * This function filters out NFTs that do not have a name, collection name,
- * contract address, or token id, or are not listed on OpenSea. It also filters
- * out Polygon NFTs that are not whitelisted by our allowlist, as well as
- * Gnosis NFTs that are not POAPs.
+ * contract address, or token id. It also filters out Polygon NFTs that are
+ * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
  *
  * @param nfts array of SimpleHashNFTs
  * @param polygonAllowlist array of whitelisted Polygon nft contract addresses
@@ -94,11 +93,7 @@ export function filterSimpleHashNFTs(
       !nft.name ||
       !nft.collection?.name ||
       !nft.contract_address ||
-      !nft.token_id ||
-      !nft.collection?.marketplace_pages.some(
-        marketplace =>
-          marketplace.marketplace_id === SimpleHashMarketplaceId.OpenSea
-      )
+      !nft.token_id
     ) {
       return false;
     }
