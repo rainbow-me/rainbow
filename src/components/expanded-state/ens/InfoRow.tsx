@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
 import { useNavigation } from '../../../navigation/Navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
@@ -8,7 +7,6 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import { useAccountSettings, useOpenENSNFTHandler } from '@/hooks';
-import { AppState } from '@/redux/store';
 import {
   Bleed,
   Box,
@@ -218,9 +216,9 @@ function ImageValue({
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const uniqueTokensAccount = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { data: uniqueTokensAccount } = useLegacyNFTs({
+    address: accountAddress,
+  });
   const { data: uniqueTokensProfile } = useLegacyNFTs({
     address: address ?? '',
   });
