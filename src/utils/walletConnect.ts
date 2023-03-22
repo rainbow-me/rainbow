@@ -284,10 +284,11 @@ export async function pair({ uri }: { uri: string }) {
 
   // set new timeout
   PAIRING_TIMEOUT = setTimeout(() => {
+    logger.warn(`WC v2: pairing timeout`, { uri });
     client.off('session_proposal', handler);
     showErrorSheet();
     analytics.track('New WalletConnect session time out');
-  }, 5_000);
+  }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
   client.on('session_proposal', handler);
