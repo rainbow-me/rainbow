@@ -1,35 +1,37 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { createQueryKey } from '@/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { createQueryKey, queryClient } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { useAccountSettings } from '@/hooks';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 const NFTS_LIMIT = 2000;
-const NFTS_REFETCH_INTERVAL = 240000; // 4 minutes
 const NFTS_STALE_TIME = 300000; // 5 minutes
+const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
+const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
   createQueryKey('nfts', { address }, { persisterVersion: 1 });
 
-function usePolygonAllowlist() {
-  return useQuery<string[]>({
-    queryKey: ['polygon-allowlist'],
-    queryFn: async () =>
+function fetchPolygonAllowlist() {
+  return queryClient.fetchQuery<string[]>(
+    ['polygon-allowlist'],
+    async () =>
       (
         await rainbowFetch(
           'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
           { method: 'get' }
         )
       ).data.data.addresses,
-    staleTime: POLYGON_ALLOWLIST_STALE_TIME,
-  });
+    { staleTime: POLYGON_ALLOWLIST_STALE_TIME }
+  );
 }
 
 export function useNFTs(): NFT[] {
@@ -38,23 +40,34 @@ export function useNFTs(): NFT[] {
 }
 
 export function useLegacyNFTs({ address }: { address: string }) {
-  const { accountAddress } = useAccountSettings();
-  const isOwner = accountAddress === address;
-  const { data: polygonAllowlist } = usePolygonAllowlist();
+  const { wallets } = useSelector((state: AppState) => state.wallets);
+
+  const walletAddresses = useMemo(
+    () =>
+      wallets
+        ? Object.values(wallets).flatMap(wallet =>
+            wallet.addresses.map(account => account.address)
+          )
+        : [],
+    [wallets]
+  );
+  const isImportedWallet = walletAddresses.includes(address);
+
   const {
     data,
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
+    isFetching,
   } = useInfiniteQuery({
     queryKey: nftsQueryKey({ address }),
     queryFn: async ({ pageParam }) => {
-      const { data, nextCursor } = await fetchSimpleHashNFTs(
-        address,
-        pageParam
-      );
+      const [simplehashResponse, polygonAllowlist] = await Promise.all([
+        fetchSimpleHashNFTs(address, pageParam),
+        fetchPolygonAllowlist(),
+      ]);
+      const { data, nextCursor } = simplehashResponse;
       const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(
         simpleHashNFTToUniqueAsset
       );
@@ -65,14 +78,11 @@ export function useLegacyNFTs({ address }: { address: string }) {
     },
     getNextPageParam: lastPage => lastPage.nextCursor,
     keepPreviousData: true,
-    // this query will automatically refresh every 4 minutes
-    // this way we can minimize the amount of time the user sees partial/no data
-    refetchInterval: isOwner ? NFTS_REFETCH_INTERVAL : false,
-    refetchIntervalInBackground: isOwner,
-    // we still need to set a stale time because unlike the refetch interval,
-    // this will persist across app instances
     staleTime: NFTS_STALE_TIME,
-    enabled: !!polygonAllowlist && !!address,
+    cacheTime: isImportedWallet
+      ? NFTS_CACHE_TIME_INTERNAL
+      : NFTS_CACHE_TIME_EXTERNAL,
+    enabled: !!address,
   });
 
   const nfts = data?.pages ? data.pages.flatMap(page => page.data) : [];
@@ -86,6 +96,6 @@ export function useLegacyNFTs({ address }: { address: string }) {
   return {
     data: nfts,
     error,
-    isFetching,
+    isInitialLoading: !nfts.length && isFetching,
   };
 }

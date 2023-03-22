@@ -27,7 +27,7 @@ const BottomSheetRoute = ({
   onDismiss,
   removing = false,
 }: Props) => {
-  //#region extract options
+  // #region extract options
   const {
     enableContentPanningGesture,
     enableHandlePanningGesture,
@@ -38,18 +38,18 @@ const BottomSheetRoute = ({
     height = DEFAULT_HEIGHT,
     offsetY = android ? 20 : 3,
   } = options || {};
-  //#endregion
+  // #endregion
 
-  //#region refs
+  // #region refs
   const ref = useRef<BottomSheet>(null);
 
   const removingRef = useRef(false);
   removingRef.current = removing;
 
   // const
-  //#endregion
+  // #endregion
 
-  //#region styles
+  // #region styles
   const screenContainerStyle: ViewStyle = useMemo(
     () => ({
       bottom: 0,
@@ -66,9 +66,9 @@ const BottomSheetRoute = ({
     }),
     [backdropColor]
   );
-  //#endregion
+  // #endregion
 
-  //#region context methods
+  // #region context methods
   const handleSettingSnapPoints = useCallback(
     (_snapPoints: (string | number)[]) => {
       navigation.setOptions({ snapPoints: _snapPoints });
@@ -105,18 +105,16 @@ const BottomSheetRoute = ({
       handleSettingSnapPoints,
     ]
   );
-  //#endregion
+  // #endregion
 
-  //#region callbacks
-  const handleOnChange = useCallback((index: number) => {
-    if (index === -1) {
-      onDismiss(routeKey, removingRef.current);
-    }
+  // #region callbacks
+  const handleOnClose = useCallback(() => {
+    onDismiss(routeKey, removingRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  //#endregion
+  // #endregion
 
-  //#region effects
+  // #region effects
   useEffect(() => {
     if (removing === true && ref.current) {
       // close keyboard before closing the modal
@@ -129,9 +127,9 @@ const BottomSheetRoute = ({
       }
     }
   }, [removing]);
-  //#endregion
+  // #endregion
 
-  //#region renders
+  // #region renders
   const renderBackdropComponent = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -158,7 +156,7 @@ const BottomSheetRoute = ({
         enablePanDownToClose
         handleComponent={null}
         index={index}
-        onChange={handleOnChange}
+        onClose={handleOnClose}
         ref={ref}
         simultaneousHandlers={[]}
         snapPoints={snapPoints}
