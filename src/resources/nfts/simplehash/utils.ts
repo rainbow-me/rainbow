@@ -10,7 +10,7 @@ import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { PolygonAllowlist } from '..';
+import { PolygonAllowlist } from '../types';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if

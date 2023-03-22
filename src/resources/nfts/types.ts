@@ -2,6 +2,8 @@ import { Network } from '@/helpers/networkTypes';
 import { AssetContract, AssetType } from '@/entities';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
 
+export type PolygonAllowlist = { [key: string]: true };
+
 export enum NFTMarketplaceId {
   OpenSea = 'opensea',
 }
