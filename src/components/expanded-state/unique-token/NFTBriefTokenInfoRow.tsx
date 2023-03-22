@@ -1,9 +1,7 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { apiGetUniqueTokenFloorPrice } from '@/handlers/opensea-api';
-import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -15,18 +13,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { logger } from '@/logger';
 
 const NONE = 'None';
-
-const getIsFloorPriceSupported = (network: Network) => {
-  switch (network) {
-    case Network.mainnet:
-      return true;
-    default:
-      return false;
-  }
-};
 
 const formatPrice = (
   price: number | null | undefined,
@@ -47,10 +35,6 @@ export default function NFTBriefTokenInfoRow({
 
   const { nativeCurrency } = useAccountSettings();
 
-  const [floorPrice, setFloorPrice] = useState<string | null>(
-    asset?.floorPriceEth ? formatPrice(asset?.floorPriceEth, 'ETH') : null
-  );
-
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
     tokenId: asset?.id,
@@ -66,27 +50,6 @@ export default function NFTBriefTokenInfoRow({
     );
 
   const currentPrice = asset?.currentPrice ?? listingValue;
-
-  useEffect(() => {
-    const isFloorPriceSupported = getIsFloorPriceSupported(asset?.network);
-
-    const fetchFloorPrice = async () => {
-      if (isFloorPriceSupported && !floorPrice) {
-        try {
-          const result = await apiGetUniqueTokenFloorPrice(
-            asset?.network,
-            asset?.urlSuffixForAsset
-          );
-          setFloorPrice(result);
-        } catch (error) {
-          logger.warn(`Failed to fetch NFT floor price with error: ${error}`);
-          setFloorPrice(NONE);
-        }
-      }
-    };
-
-    fetchFloorPrice();
-  }, [asset?.network, asset?.urlSuffixForAsset, floorPrice]);
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -106,6 +69,7 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
+  const floorPrice = formatPrice(asset?.floorPriceEth, 'ETH');
   const lastSalePrice = formatPrice(
     asset?.lastPrice,
     asset?.lastSalePaymentToken
