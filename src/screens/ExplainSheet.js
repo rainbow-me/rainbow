@@ -33,6 +33,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import {
+  buildRainbowLearnUrl,
   deviceUtils,
   ethereumUtils,
   gasUtils,
@@ -321,7 +322,10 @@ export const explainers = (params, colors) => ({
     title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
     text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
     extraHeight: IS_ANDROID ? -65 : 10,
-    readMoreLink: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+      campaign: 'explain',
+    }),
   },
   op_rewards_amount_distributed: {
     emoji: '💰',
@@ -612,8 +616,9 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    }),
     text: OPTIMISM_EXPLAINER,
     title: lang.t('explain.optimism.title'),
   },
@@ -628,8 +633,9 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    }),
     text: ARBITRUM_EXPLAINER,
     title: lang.t('explain.arbitrum.title'),
   },
@@ -644,8 +650,9 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    }),
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
   },
@@ -660,8 +667,9 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    }),
     text: BSC_EXPLAINER,
     title: lang.t('explain.bsc.title'),
   },
@@ -746,7 +754,10 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+              })
             )
           }
           size="large"
@@ -877,7 +888,10 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+              })
             )
           }
           size="large"
@@ -913,7 +927,10 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/protecting-transactions-with-flashbots'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+              })
             )
           }
           size="large"
@@ -938,7 +955,10 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+              })
             )
           }
           size="large"
