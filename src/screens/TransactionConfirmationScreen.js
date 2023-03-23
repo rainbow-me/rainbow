@@ -449,7 +449,6 @@ export default function TransactionConfirmationScreen() {
   const onCancel = useCallback(
     async error => {
       try {
-        console.log('onCancel', error);
         closeScreen(true);
         if (callback) {
           callback({ error: error || 'User cancelled the request' });

@@ -38,7 +38,6 @@ export function useLedgerConnect({
   const handleLedgerError = useCallback(
     async (errorType: LEDGER_ERROR_CODES) => {
       if (isReady) return;
-      console.log('handling error isSucess is FALSE');
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
         setReadyForPolling(false);
         logger.debug(
