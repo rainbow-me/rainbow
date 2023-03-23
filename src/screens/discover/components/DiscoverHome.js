@@ -36,9 +36,10 @@ export default function DiscoverHome() {
 
   const { wallets } = useWallets();
 
-  const hasHardwareWallets = Object.keys(wallets).filter(
-    key => wallets[key].type === walletTypes.bluetooth
-  );
+  const hasHardwareWallets =
+    Object.keys(wallets).filter(
+      key => wallets[key].type === walletTypes.bluetooth
+    ).length > 0;
 
   return (
     <Inset top="20px" bottom={{ custom: 150 }}>
