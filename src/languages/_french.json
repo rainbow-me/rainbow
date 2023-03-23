@@ -1703,7 +1703,10 @@
           "title": "We're sorry, you failed authentication",
           "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
         },
-        "support_email_subject": "I need help buying crypto with %{provider} :)",
+        "support_emails": {
+          "help": "I Need Help Buying Crypto With %{provider}",
+          "account_recovery": "Account Recovery for Crypto Purchasing"
+        },
         "sheet_empty_state": {
           "title": "Can't find your preferred provider? :)",
           "description": "Check back soon for more options :)"
