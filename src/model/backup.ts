@@ -265,7 +265,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
   }
 
   try {
-    const results = await kc.getSharedWebCredentials();
+    const { value: results } = await kc.getSharedWebCredentials();
     if (results) {
       return results.password as BackupPassword;
     }

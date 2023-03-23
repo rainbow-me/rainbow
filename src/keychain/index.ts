@@ -100,10 +100,15 @@ export async function get(
     }
   }
 
-  return {
-    value: data as any,
-    error: data ? undefined : ErrorType.Unavailable,
-  };
+  return data
+    ? {
+        value: data,
+        error: undefined,
+      }
+    : {
+        value: undefined,
+        error: ErrorType.Unavailable,
+      };
 }
 
 export async function set(
@@ -192,15 +197,34 @@ export async function getSupportedBiometryType(): Promise<
 }
 
 export async function getSharedWebCredentials(): Promise<
-  SharedWebCredentials | undefined
+  Result<SharedWebCredentials | undefined>
 > {
   logger.debug(
     `keychain: getSharedWebCredentials`,
     {},
     logger.DebugContext.keychain
   );
-  const res = await requestSharedWebCredentials();
-  return res ? res : undefined;
+
+  let data = undefined;
+
+  try {
+    data = await requestSharedWebCredentials();
+  } catch (e: any) {
+    /**
+     * Throws if not supported or credentials not found
+     * @see https://github.com/oblador/react-native-keychain/blob/f3003e8208f6561a77d6fad0544d9a73a6731663/README.md?plain=1#L142
+     */
+  }
+
+  return data
+    ? {
+        value: data,
+        error: undefined,
+      }
+    : {
+        value: undefined,
+        error: ErrorType.Unavailable,
+      };
 }
 
 export async function setSharedWebCredentials(
