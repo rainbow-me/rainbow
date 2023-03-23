@@ -978,31 +978,6 @@ export const explainers = (params, colors) => ({
     text: lang.t('explain.slippage.text'),
     title: lang.t('explain.slippage.title'),
   },
-  wyre_degradation: {
-    logo: <TheMergeIcon />,
-    extraHeight: deviceUtils.isSmallPhone ? 121 : 76,
-    text: lang.t('explain.wyre_degradation.text'),
-    title: lang.t('explain.wyre_degradation.title'),
-    stillCurious: (
-      <Text {...getBodyTextPropsWithColor(colors)}>
-        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
-        <Text
-          color={colors?.appleBlue}
-          onPress={() =>
-            Linking.openURL(
-              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
-            )
-          }
-          size="large"
-          suppressHighlighting
-          weight="semibold"
-        >
-          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
-        </Text>
-        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
-      </Text>
-    ),
-  },
   swap_refuel_add: {
     logo: (
       <DashedWrapper

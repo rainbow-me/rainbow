@@ -50,7 +50,6 @@ export interface RainbowConfig extends Record<string, any> {
   polygon_mainnet_rpc?: string;
   swagg_enabled?: boolean;
   trace_call_block_number_offset?: number;
-  wyre_enabled?: boolean;
   profiles_enabled?: boolean;
 }
 
@@ -80,7 +79,6 @@ const DEFAULT_CONFIG = {
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
-  wyre_enabled: true,
   profiles_enabled: true,
 };
 
@@ -112,7 +110,6 @@ const init = async () => {
         config[key] = JSON.parse(entry.asString());
       } else if (
         key === 'flashbots_enabled' ||
-        key === 'wyre_enabled' ||
         key === 'f2c_enabled' ||
         key === 'f2c_ratio_enabled' ||
         key === 'swagg_enabled' ||
