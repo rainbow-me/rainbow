@@ -22,8 +22,8 @@ export function useLedgerImport({
   successCallback?: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const observer = useRef<Subscription | null>(null);
-  const listener = useRef<Subscription | null>(null);
+  const observer = useRef<Subscription | undefined>(undefined);
+  const listener = useRef<Subscription | undefined>(undefined);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
@@ -105,7 +105,7 @@ export function useLedgerImport({
                 const device = e.descriptor;
                 // prevent duplicate alerts
                 if (currentDeviceId === device.id) {
-                  return null;
+                  return;
                 }
                 // set the current device id to prevent duplicate alerts
                 currentDeviceId = device.id;

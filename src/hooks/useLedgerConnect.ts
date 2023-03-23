@@ -24,8 +24,8 @@ export function useLedgerConnect({
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const transport = useRef<TransportBLE | null>();
-  const timer = useRef<NodeJS.Timeout | null>(null);
+  const transport = useRef<TransportBLE | undefined>();
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const isReady = useRecoilValue(LedgerIsReadyAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
     triggerPollerCleanupAtom
@@ -45,7 +45,7 @@ export function useLedgerConnect({
           {},
           DebugContext.ledger
         );
-        transport.current = null;
+        transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
           setReadyForPolling(true);
@@ -75,7 +75,7 @@ export function useLedgerConnect({
   /**
    * Cleans up ledger connection polling
    */
-  const pollerCleanup = (poller: NodeJS.Timer | null) => {
+  const pollerCleanup = (poller: NodeJS.Timer | undefined) => {
     try {
       if (poller) {
         logger.debug(
@@ -85,7 +85,7 @@ export function useLedgerConnect({
         );
         clearInterval(poller);
         poller?.unref();
-        timer.current = null;
+        timer.current = undefined;
       }
     } catch {
       // swallow
