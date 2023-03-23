@@ -1,5 +1,4 @@
 import { InteractionManager } from 'react-native';
-import SignClient from '@walletconnect/sign-client';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
@@ -8,6 +7,8 @@ import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
+import { Core } from '@walletconnect/core';
+import { Web3Wallet } from '@walletconnect/web3wallet';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -130,12 +131,15 @@ export function maybeGoBackAndClearHasPendingRedirect({
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-export let syncSignClient: SignClient | undefined;
+let syncWeb3WalletClient:
+  | Awaited<ReturnType<typeof Web3Wallet['init']>>
+  | undefined;
 
-export const signClient = Promise.resolve(
-  SignClient.init({
-    projectId: WC_PROJECT_ID,
-    // relayUrl: "<YOUR RELAY URL>",
+const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+
+export const web3WalletClient = Promise.resolve(
+  Web3Wallet.init({
+    core: walletConnectCore,
     metadata: {
       name: '🌈 Rainbow',
       description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
@@ -251,10 +255,10 @@ async function rejectProposal({
     proposal,
   });
 
-  const client = await signClient;
+  const client = await web3WalletClient;
   const { id, proposer } = proposal.params;
 
-  await client.reject({ id, reason: getSdkError(reason) });
+  await client.rejectSession({ id, reason: getSdkError(reason) });
 
   analytics.track('Rejected new WalletConnect session', {
     dappName: proposer.metadata.name,
@@ -271,7 +275,7 @@ export async function pair({ uri }: { uri: string }) {
   if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
 
   const { topic } = parseUri(uri);
-  const client = await signClient;
+  const client = await web3WalletClient;
 
   // listen for THIS topic pairing, and clear timeout if received
   function handler(
@@ -298,12 +302,12 @@ export async function pair({ uri }: { uri: string }) {
 }
 
 export async function initListeners() {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
-  syncSignClient = client;
+  syncWeb3WalletClient = client;
 
   logger.debug(
-    `WC v2: signClient initialized, initListeners`,
+    `WC v2: web3WalletClient initialized, initListeners`,
     {},
     logger.DebugContext.walletconnect
   );
@@ -459,7 +463,7 @@ export async function onSessionProposal(
     },
     timedOut: false,
     callback: async (approved, approvedChainId, accountAddress) => {
-      const client = await signClient;
+      const client = await web3WalletClient;
       const { id, proposer, requiredNamespaces } = proposal.params;
 
       if (approved) {
@@ -474,7 +478,7 @@ export async function onSessionProposal(
         );
 
         const namespaces: Parameters<
-          typeof client.approve
+          typeof client.approveSession
         >[0]['namespaces'] = {};
 
         for (const [key, value] of Object.entries(requiredNamespaces)) {
@@ -508,12 +512,10 @@ export async function onSessionProposal(
            * WC v2 stores existing _pairings_ itself, so we don't need to persist
            * ourselves
            */
-          const { acknowledged } = await client.approve({
+          await client.approveSession({
             id,
             namespaces,
           });
-
-          await acknowledged();
 
           // let the ConnectedDappsSheet know we've got a new one
           events.emit('walletConnectV2SessionCreated');
@@ -570,7 +572,7 @@ export async function onSessionProposal(
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
   logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
 
@@ -598,6 +600,8 @@ export async function onSessionRequest(
     );
 
     if (isSigningMethod) {
+      logger.debug(`WC v2: validating session_request signing method`);
+
       if (!address || !message) {
         logger.error(
           new RainbowError(
@@ -609,7 +613,7 @@ export async function onSessionRequest(
           }
         );
 
-        await client.respond({
+        await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Invalid RPC params`),
         });
@@ -644,7 +648,7 @@ export async function onSessionRequest(
           }
         );
 
-        await client.respond({
+        await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Wallet is read-only`),
         });
@@ -658,10 +662,29 @@ export async function onSessionRequest(
       }
     }
 
-    const session = client.session.get(topic);
+    const session = Object.values(client.getActiveSessions() || {}).find(s => {
+      return s.topic === topic;
+    });
+
+    // mostly a TS guard, pry won't happen
+    if (!session) {
+      logger.error(
+        new RainbowError(`WC v2: session_request topic was not found`)
+      );
+
+      await client.respondSessionRequest({
+        topic,
+        response: formatJsonRpcError(id, `Session not found`),
+      });
+
+      return;
+    }
+
     const { nativeCurrency, network } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
     const isSupportedNetwork = isSupportedChain(chainId);
+
+    logger.debug(`WC v2: getting session for topic`, { session });
 
     if (!isSupportedNetwork) {
       logger.error(
@@ -672,7 +695,7 @@ export async function onSessionRequest(
       );
 
       try {
-        await client.respond({
+        await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Network not supported`),
         });
@@ -694,6 +717,12 @@ export async function onSessionRequest(
 
       return;
     }
+
+    logger.debug(
+      `WC v2: handling request`,
+      {},
+      logger.DebugContext.walletconnect
+    );
 
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(
@@ -722,12 +751,6 @@ export async function onSessionRequest(
         },
       },
     };
-
-    logger.debug(
-      `WC v2: handling request`,
-      {},
-      logger.DebugContext.walletconnect
-    );
 
     const { requests: pendingRequests } = store.getState().requests;
 
@@ -769,7 +792,7 @@ export async function onSessionRequest(
     );
 
     try {
-      await client.respond({
+      await client.respondSessionRequest({
         topic,
         response: formatJsonRpcError(id, `Method ${method} not supported`),
       });
@@ -803,7 +826,7 @@ export async function handleSessionRequestResponse(
     success: Boolean(result),
   });
 
-  const client = await signClient;
+  const client = await web3WalletClient;
   const { topic, id } = sessionRequestEvent;
 
   if (result) {
@@ -816,7 +839,7 @@ export async function handleSessionRequestResponse(
       {},
       logger.DebugContext.walletconnect
     );
-    await client.respond(payload);
+    await client.respondSessionRequest(payload);
   } else {
     const payload = {
       topic,
@@ -827,7 +850,7 @@ export async function handleSessionRequestResponse(
       {},
       logger.DebugContext.walletconnect
     );
-    await client.respond(payload);
+    await client.respondSessionRequest(payload);
   }
 
   store.dispatch(removeRequest(sessionRequestEvent.id));
@@ -837,8 +860,8 @@ export async function handleSessionRequestResponse(
  * Returns all active settings in a type-safe manner.
  */
 export async function getAllActiveSessions() {
-  const client = await signClient;
-  return client?.session?.values || [];
+  const client = await web3WalletClient;
+  return Object.values(client?.getActiveSessions() || {}) || [];
 }
 
 /**
@@ -846,46 +869,130 @@ export async function getAllActiveSessions() {
  * in a type-safe manner.
  */
 export function getAllActiveSessionsSync() {
-  return syncSignClient?.session?.values || [];
+  return Object.values(syncWeb3WalletClient?.getActiveSessions() || {}) || [];
 }
 
 /**
- * Updates an existing session with new values
+ * Adds an account to an existing session
  */
-export async function updateSession(
+export async function addAccountToSession(
   session: SessionTypes.Struct,
   { address }: { address?: string }
 ) {
-  const client = await signClient;
+  try {
+    const client = await web3WalletClient;
 
-  const namespaces: Parameters<typeof client.update>[0]['namespaces'] = {};
+    const namespaces: Parameters<
+      typeof client.updateSession
+    >[0]['namespaces'] = {};
 
-  for (const [key, value] of Object.entries(session.requiredNamespaces)) {
-    namespaces[key] = {
-      accounts: [],
-      methods: value.methods,
-      events: value.events,
-    };
+    for (const [key, value] of Object.entries(session.requiredNamespaces)) {
+      /**
+       * The `namespace` that corresponds to the `requiredNamespace` that was
+       * requested when connecting the session. The `requiredNamespace` does
+       * not have `accounts`, since it merely requests chains and methods, so
+       * we need to referernce the connected `namespace` for existing `account`
+       * values.
+       */
+      const ns = session.namespaces[key];
 
-    if (value.chains) {
-      for (const chain of value.chains) {
-        const chainId = parseInt(chain.split(`${key}:`)[1]);
-        namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
+      namespaces[key] = {
+        accounts: ns.accounts || [],
+        methods: value.methods,
+        events: value.events,
+      };
+
+      if (value.chains) {
+        for (const chain of value.chains) {
+          const chainId = parseInt(chain.split(`${key}:`)[1]);
+          const account = `${key}:${chainId}:${address}`;
+
+          /*
+           * Add latest selected accounts to beginning of array so that our
+           * switch wallet sheet shows that one as selected
+           */
+          if (!namespaces[key].accounts.includes(account)) {
+            namespaces[key].accounts.unshift(account);
+          } else {
+            // remove and re-add to start of array
+            namespaces[key].accounts.splice(
+              namespaces[key].accounts.indexOf(account),
+              1
+            );
+            namespaces[key].accounts.unshift(account);
+          }
+        }
+      } else {
+        logger.error(
+          new RainbowError(
+            `WC v2: namespace is missing chains prop when updating`
+          ),
+          { requiredNamespaces: session.requiredNamespaces }
+        );
       }
-    } else {
-      logger.error(
-        new RainbowError(
-          `WC v2: namespace is missing chains prop when updating`
-        ),
-        { requiredNamespaces: session.requiredNamespaces }
-      );
     }
-  }
 
-  await client.update({
-    topic: session.topic,
-    namespaces,
-  });
+    logger.debug(`WC v2: updating session`, {
+      namespaces,
+    });
+
+    await client.updateSession({
+      topic: session.topic,
+      namespaces,
+    });
+  } catch (e: any) {
+    logger.error(new RainbowError(`WC v2: error adding account to session`), {
+      message: e.message,
+    });
+  }
+}
+
+export async function changeAccount(
+  session: SessionTypes.Struct,
+  { address }: { address?: string }
+) {
+  try {
+    const client = await web3WalletClient;
+
+    /*
+     * Before we can effectively switch accounts, we need to add the account to
+     * the session. Only then can we tell the dapp to use the new account.
+     */
+    await addAccountToSession(session, { address });
+
+    for (const value of Object.values(session.requiredNamespaces)) {
+      if (!value.chains) {
+        logger.debug(`WC v2: changeAccount, no chains found for namespace`);
+        continue;
+      }
+
+      for (const chainId of value.chains) {
+        logger.debug(`WC v2: changeAccount, updating accounts for chainId`, {
+          chainId,
+        });
+
+        // tell the dapp to use the new account
+        await client.emitSessionEvent({
+          topic: session.topic,
+          event: {
+            name: 'accountsChanged',
+            data: [address],
+          },
+          chainId,
+        });
+
+        logger.debug(`WC v2: changeAccount, updated accounts for chainId`, {
+          chainId,
+        });
+      }
+    }
+
+    logger.debug(`WC v2: changeAccount complete`);
+  } catch (e: any) {
+    logger.error(new RainbowError(`WC v2: error changing account`), {
+      message: e.message,
+    });
+  }
 }
 
 /**
@@ -893,9 +1000,9 @@ export async function updateSession(
  * within a dapp is handled internally by WC v2.
  */
 export async function disconnectSession(session: SessionTypes.Struct) {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
-  await client.disconnect({
+  await client.disconnectSession({
     topic: session.topic,
     reason: getSdkError('USER_DISCONNECTED'),
   });
