@@ -194,12 +194,7 @@ export default function TransactionConfirmationScreen() {
   const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
   const [nativeAsset, setNativeAsset] = useState(null);
   const { height: deviceHeight } = useDimensions();
-  const {
-    wallets,
-    walletNames,
-    switchToWalletWithAddress,
-    isHardwareWallet,
-  } = useWallets();
+  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
@@ -943,12 +938,12 @@ export default function TransactionConfirmationScreen() {
   }, [isAuthorizing, onConfirm]);
 
   const submitFn = useCallback(async () => {
-    if (isHardwareWallet) {
+    if (accountInfo.isHardwareWallet) {
       navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
     } else {
       await onPressSend();
     }
-  }, [isHardwareWallet, navigate, onPressSend]);
+  }, [accountInfo.isHardwareWallet, navigate, onPressSend]);
 
   const renderTransactionButtons = useCallback(() => {
     let ready = true;
