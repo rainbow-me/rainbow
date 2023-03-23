@@ -9,6 +9,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
+import upperFirst from 'lodash/upperFirst';
 
 import { IS_IOS } from '@/env';
 import { WrappedAlert } from '@/helpers/alert';
@@ -302,7 +303,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
         emailRainbow({
           subject: lang.t(lang.l.wallet.add_cash_v2.support_emails.help, {
-            provider: FiatProviderName.Ratio,
+            provider: upperFirst(FiatProviderName.Ratio),
           }),
         });
       }}
