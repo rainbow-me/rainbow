@@ -23,7 +23,7 @@ import { delay } from '@/helpers/utilities';
 import { IS_DEV, IS_IOS } from '@/env';
 import { logger } from '@/logger';
 
-enum ErrorType {
+export enum ErrorType {
   Unknown = 0,
   UserCanceled = -1, // legacy
   NotAuthenticated = -2, // legacy
