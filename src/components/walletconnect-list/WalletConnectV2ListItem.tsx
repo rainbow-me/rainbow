@@ -21,7 +21,7 @@ import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import { updateSession, disconnectSession } from '@/utils/walletConnect';
+import { changeAccount, disconnectSession } from '@/utils/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
@@ -144,7 +144,7 @@ export function WalletConnectV2ListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: address,
       onChangeWallet: async (address: string) => {
-        await updateSession(session, { address });
+        await changeAccount(session, { address });
         reload();
         goBack();
       },

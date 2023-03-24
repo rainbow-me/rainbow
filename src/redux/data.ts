@@ -19,7 +19,6 @@ import { ThunkDispatch } from 'redux-thunk';
 import { gretch } from 'gretchen';
 import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
-import { addCashUpdatePurchases } from './addCash';
 import {
   cancelDebouncedUpdateGenericAssets,
   debouncedUpdateGenericAssets,
@@ -698,7 +697,6 @@ export const transactionsReceived = (
   }
 
   const { accountAddress, nativeCurrency } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
@@ -713,7 +711,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     pendingTransactions,
-    purchaseTransactions,
+    undefined,
     currentNetwork,
     appended
   );
@@ -753,7 +751,6 @@ export const transactionsReceived = (
     payload: parsedTransactions,
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
-  dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
   saveLocalPendingTransactions(
     updatedPendingTransactions,
@@ -1342,7 +1339,6 @@ export const dataWatchPendingTransactions = (
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     saveLocalTransactions(updatedTransactions, accountAddress, network);
-    dispatch(updatePurchases(updatedTransactions));
     if (!pendingTransactions?.length) {
       return true;
     }
@@ -1394,24 +1390,6 @@ export const dataUpdateTransaction = (
       )
     );
   }
-};
-
-/**
- * Updates purchases using the `addCash` reducer to reflect new transaction data.
- * Called when new transaction information is loaded.
- *
- * @param updatedTransactions The array of updated transactions.
- */
-const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  const confirmedPurchases = updatedTransactions.filter(txn => {
-    return (
-      txn.type === TransactionTypes.purchase &&
-      txn.status !== TransactionStatus.purchasing
-    );
-  });
-  dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 /**

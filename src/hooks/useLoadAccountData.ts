@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
-import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
@@ -30,10 +29,7 @@ export default function useLoadAccountData() {
       const p3 = dispatch(requestsLoadState());
       const p4 = dispatch(walletConnectLoadState());
 
-      // add cash
-      const p5 = dispatch(addCashLoadState());
-
-      promises.push(p3, p4, p5);
+      promises.push(p3, p4);
 
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);

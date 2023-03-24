@@ -574,10 +574,6 @@
         "for_sale": "For sale",
         "last_sale": "Last sale price"
       },
-      "supported_countries": {
-        "supported_countries": "Supported Countries",
-        "us_except": "United States (except Texas and New York)"
-      },
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
