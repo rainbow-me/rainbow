@@ -340,8 +340,7 @@ async function restoreCurrentBackupIntoKeychain(
           );
           parsedValue.seedphrase = processedSeedPhrase;
           value = JSON.stringify(parsedValue);
-        }
-        if (endsWith(key, privateKeyKey)) {
+        } else if (endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }
         if (typeof value === 'string') {
