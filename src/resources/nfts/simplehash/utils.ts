@@ -1,15 +1,21 @@
-import { AssetType } from '@/entities';
+import { AssetType, AssetTypes } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
   SimpleHashChain,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
+  SimpleHashTrait,
+  SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
-import { POAP_NFT_ADDRESS } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { NFT, NFTMarketplace, NFTTrait } from '../types';
+import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
+import { isNil } from 'lodash';
+import { ERC1155, ERC721 } from '@/handlers/web3';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -60,17 +66,6 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
         `getNetworkFromSimpleHashChain received unknown chain: ${chain}`
       );
   }
-}
-
-export function getPriceFromLastSale(
-  lastSale: SimpleHashNFT['last_sale']
-): number | undefined {
-  return lastSale && lastSale?.total_price
-    ? Math.round(
-        (lastSale.total_price / 1_000_000_000_000_000_000 + Number.EPSILON) *
-          1000
-      ) / 1000
-    : undefined;
 }
 
 /**
@@ -186,5 +181,135 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     type: AssetType.nft,
     uniqueId: `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
+  };
+}
+
+export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
+  const lowercasedContractAddress = nft.contract_address.toLowerCase();
+  const collection = nft.collection;
+  const network = getNetworkFromSimpleHashChain(nft.chain);
+  const floorPriceData = collection?.floor_prices?.find(
+    (floorPrice: SimpleHashFloorPrice) =>
+      floorPrice?.marketplace_id === SimpleHashMarketplaceId.OpenSea &&
+      floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
+  );
+  const openseaFloorPriceEth =
+    getRoundedValueFromRawAmount(
+      floorPriceData?.value,
+      floorPriceData?.payment_token?.decimals
+    ) ?? null;
+  const opensea = nft.collection.marketplace_pages.find(
+    (marketplace: SimpleHashMarketplace) =>
+      marketplace.marketplace_id === simpleHashMarketplaceIds.opensea
+  );
+  const lastEthSale =
+    getRoundedValueFromRawAmount(
+      nft?.last_sale?.unit_price,
+      nft?.last_sale?.payment_token?.decimals
+    ) ?? null;
+  let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
+  if (lowercasedContractAddress === POAP_NFT_ADDRESS) {
+    uniqueTokenType = uniqueTokenTypes.POAP;
+  } else if (lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS) {
+    uniqueTokenType = uniqueTokenTypes.ENS;
+  }
+
+  // slices off url sizing suffix s=1000 - simplehash image previews are stored on google cdn
+  // simplehash preview images will never be svgs, so we don't need to worry about conversion
+  const fullSizeNonSVGUrl =
+    nft.previews.image_large_url?.slice(-6) === GOOGLE_CDN_URL_SIZE_1000_SUFIX
+      ? nft.previews.image_large_url?.slice(0, -6)
+      : nft.previews.image_large_url;
+
+  const originalImageUrl =
+    nft.image_url ?? nft.extra_metadata?.image_original_url;
+
+  // originalImageUrl may be an svg, so we need to handle that
+  const safeNonSvgUrl = fullSizeNonSVGUrl ?? svgToPngIfNeeded(originalImageUrl);
+  const fullResPngUrl = getFullSizePngUrl(safeNonSvgUrl) ?? null;
+  const lowResPngUrl = imageToPng(safeNonSvgUrl, CardSize) ?? null;
+
+  // fullResUrl will either be the original svg or the full res png
+  const fullResUrl =
+    nft.image_properties?.mime_type === SVG_MIME_TYPE
+      ? originalImageUrl
+      : fullResPngUrl;
+
+  const collectionImageUrl = collection?.image_url
+    ? maybeSignUri(collection.image_url) ?? null
+    : null;
+
+  return {
+    backgroundColor: nft.background_color,
+    collection: {
+      description: collection.description,
+      discord: collection.discord_url,
+      externalUrl: collection.external_url,
+      imageUrl: collectionImageUrl,
+      name:
+        uniqueTokenType === uniqueTokenTypes.ENS
+          ? ENS_COLLECTION_NAME
+          : collection.name,
+      simplehashSpamScore: collection?.spam_score,
+      twitter: collection.twitter_username,
+    },
+    contract: {
+      address: nft.contract_address,
+      name: nft.contract.name,
+      standard: nft.contract.type,
+      symbol: nft.contract.symbol,
+    },
+    description: nft.description ?? undefined,
+    externalUrl: nft.external_url ?? undefined,
+    images: {
+      blurhash: nft.previews?.blurhash,
+      fullResPngUrl,
+      fullResUrl,
+      lowResPngUrl,
+      // mimeType only corresponds to fullResUrl
+      mimeType: nft.image_properties?.mime_type ?? null,
+    },
+    isSendable:
+      // can't send poaps because they're on gnosis
+      uniqueTokenType !== uniqueTokenTypes.POAP &&
+      (nft.contract.type === ERC721 || nft.contract.type === ERC1155),
+    // we only show last eth sale right now for whatever reason
+    lastEthSale,
+    marketplaces: nft.collection.marketplace_pages.map(
+      (marketplace: SimpleHashMarketplace) =>
+        ({
+          collectionId: marketplace?.marketplace_collection_id,
+          collectionUrl: marketplace?.collection_url,
+          // we only use eth floor prices right now
+          floorPrice: openseaFloorPriceEth,
+          id: marketplace?.marketplace_id,
+          marketplaceId: marketplace?.marketplace_id,
+          name: marketplace?.marketplace_name,
+          nftUrl: marketplace?.nft_url,
+        } as NFTMarketplace)
+    ),
+    name: nft.name,
+    network,
+    predominantColor: nft.previews?.predominant_color,
+    tokenId: nft.token_id,
+    traits:
+      (nft.extra_metadata?.attributes
+        ?.map((trait: SimpleHashTrait) => {
+          if (!isNil(trait.trait_type) && !isNil(trait.value)) {
+            return {
+              displayType: trait?.display_type,
+              traitType: trait.trait_type,
+              value: trait.value,
+            };
+          }
+        })
+        ?.filter((trait: NFTTrait | undefined) => !!trait) as NFTTrait[]) ?? [],
+    type: AssetTypes.nft as AssetType,
+    uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,
+    uniqueTokenType,
+    videos: {
+      mimeType: nft.video_properties?.mime_type ?? null,
+      url: nft.video_url ?? nft.extra_metadata?.animation_original_url,
+    },
   };
 }

@@ -44,6 +44,9 @@ import { fetchContractABI } from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
+export const ERC1155 = 'ERC1155';
+export const ERC721 = 'ERC721';
+
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
 } = {};

@@ -6,55 +6,55 @@ export enum NFTMarketplaceId {
   OpenSea = 'opensea',
 }
 
-type NFTMarketplace = {
-  collectionId: string | null;
-  collectionUrl: string | null;
-  floorPrice: number | null;
-  id: string | null;
+export type NFTMarketplace = {
+  collectionId: string | undefined;
+  collectionUrl: string | undefined;
+  floorPrice: number | undefined;
+  id: string | undefined;
   marketplaceId: NFTMarketplaceId;
-  name: string | null;
-  nftUrl: string | null;
+  name: string | undefined;
+  nftUrl: string | undefined;
 };
 
 type NFTCollection = {
-  description: string | null;
-  discord: string | null;
-  externalUrl: string | null;
-  imageUrl: string | null;
-  name: string | null;
-  simpleHashSpamScore: number | null;
-  twitter: string | null;
+  description: string | undefined;
+  discord: string | undefined;
+  externalUrl: string | undefined;
+  imageUrl: string | undefined;
+  name: string | undefined;
+  simpleHashSpamScore: number | undefined;
+  twitter: string | undefined;
 };
 
 export type NFTTrait = {
-  displayType: string | null;
+  displayType: string | undefined;
   traitType: string;
   value: string | number;
 };
 
 export type NFT = {
-  backgroundColor: string | null;
+  backgroundColor: string | undefined;
   collection: NFTCollection;
   contract: AssetContract;
-  description: string | null;
-  externalUrl: string | null;
+  description: string | undefined;
+  externalUrl: string | undefined;
   images: {
-    blurhash: string | null;
-    fullResUrl: string | null;
-    fullResPngUrl: string | null;
-    lowResPngUrl: string | null;
-    mimeType: string | null;
+    blurhash: string | undefined;
+    fullResUrl: string | undefined;
+    fullResPngUrl: string | undefined;
+    lowResPngUrl: string | undefined;
+    mimeType: string | undefined;
   };
   isSendable: boolean;
-  lastEthSale: number | null;
+  lastEthSale: number | undefined;
   marketplaces: NFTMarketplace[];
   name: string;
   network: Network;
-  predominantColor: string | null;
+  predominantColor: string | undefined;
   tokenId: string;
   traits: NFTTrait[];
   type: AssetType;
   uniqueId: string;
   uniqueTokenType: UniqueTokenType;
-  videos: { mimeType: string | null; url: string | null };
+  videos: { mimeType: string | undefined; url: string | undefined };
 };
