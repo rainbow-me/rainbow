@@ -24,7 +24,7 @@ import {
   SecretDisplayStatesType,
 } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -94,14 +94,10 @@ export function SecretDisplaySection({
   }, [onSecretLoaded, onWalletTypeIdentified, walletId]);
 
   useEffect(() => {
-    // Android doesn't like to show the faceID prompt
-    // while the view isn't fully visible
-    // so we have to add a timeout to prevent the app from freezing
-    IS_ANDROID
-      ? setTimeout(() => {
-          loadSeed();
-        }, 300)
-      : loadSeed();
+    // We need to run this after interactions since there were issues on Android
+    InteractionManager.runAfterInteractions(() => {
+      loadSeed();
+    });
   }, [loadSeed]);
 
   switch (sectionState) {
