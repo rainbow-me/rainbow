@@ -449,7 +449,6 @@ export default function TransactionConfirmationScreen() {
   const onCancel = useCallback(
     async error => {
       try {
-        closeScreen(true);
         if (callback) {
           callback({ error: error || 'User cancelled the request' });
         }
@@ -471,6 +470,8 @@ export default function TransactionConfirmationScreen() {
           const rejectionType =
             method === SEND_TRANSACTION ? 'transaction' : 'signature';
           analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+
+          closeScreen(true);
         }, 300);
       } catch (error) {
         logger.error(
