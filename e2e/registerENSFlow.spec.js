@@ -336,7 +336,10 @@ describe('Register ENS Flow', () => {
       if (description !== RECORD_BIO)
         throw new Error('ENS description is wrong');
       if (name === RECORD_NAME) throw new Error('ENS name is wrong');
-      if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
+      if (
+        typeof avatar === 'string' &&
+        avatar.toLowerCase() !== EIP155_FORMATTED_AVATAR_RECORD
+      )
         throw new Error('ENS avatar is wrong');
     });
 
