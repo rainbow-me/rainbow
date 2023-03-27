@@ -139,8 +139,10 @@ export default function LearnWebViewScreen() {
           source={{
             uri: buildRainbowLearnUrl({
               url,
-              campaign: LearnUTMCampaign.card,
-              isDarkMode,
+              query: {
+                campaign: LearnUTMCampaign.Card,
+                isDarkMode,
+              },
             }),
           }}
         />

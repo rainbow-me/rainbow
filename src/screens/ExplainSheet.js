@@ -324,7 +324,9 @@ export const explainers = (params, colors) => ({
     extraHeight: IS_ANDROID ? -65 : 10,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
-      campaign: 'explain',
+      query: {
+        campaign: 'explain',
+      },
     }),
   },
   op_rewards_amount_distributed: {
@@ -618,6 +620,9 @@ export const explainers = (params, colors) => ({
     ),
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
     }),
     text: OPTIMISM_EXPLAINER,
     title: lang.t('explain.optimism.title'),
@@ -635,6 +640,9 @@ export const explainers = (params, colors) => ({
     ),
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
     }),
     text: ARBITRUM_EXPLAINER,
     title: lang.t('explain.arbitrum.title'),
@@ -652,6 +660,9 @@ export const explainers = (params, colors) => ({
     ),
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
     }),
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
@@ -669,6 +680,9 @@ export const explainers = (params, colors) => ({
     ),
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
     }),
     text: BSC_EXPLAINER,
     title: lang.t('explain.bsc.title'),
@@ -757,6 +771,9 @@ export const explainers = (params, colors) => ({
               buildRainbowLearnUrl({
                 url:
                   'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                query: {
+                  campaign: 'explain',
+                },
               })
             )
           }
@@ -891,6 +908,9 @@ export const explainers = (params, colors) => ({
               buildRainbowLearnUrl({
                 url:
                   'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                query: {
+                  campaign: 'explain',
+                },
               })
             )
           }
@@ -930,6 +950,9 @@ export const explainers = (params, colors) => ({
               buildRainbowLearnUrl({
                 url:
                   'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+                query: {
+                  campaign: 'explain',
+                },
               })
             )
           }
@@ -958,6 +981,9 @@ export const explainers = (params, colors) => ({
               buildRainbowLearnUrl({
                 url:
                   'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                query: {
+                  campaign: 'explain',
+                },
               })
             )
           }

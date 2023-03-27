@@ -1,5 +1,6 @@
 import { EthereumAddress, UniqueAsset } from '@/entities';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { qs } from 'url-parse';
 
 export function buildRainbowUrl(
   asset: UniqueAsset | null,
@@ -19,31 +20,29 @@ export function buildRainbowUrl(
 }
 
 export enum LearnUTMCampaign {
-  none = 'none',
-  card = 'card',
-  explain = 'explain',
-  settings = 'settings',
+  None = 'none',
+  Card = 'card',
+  Explain = 'explain',
+  Settings = 'settings',
 }
 
 export function buildRainbowLearnUrl({
   url,
-  campaign = LearnUTMCampaign.none,
-  isDarkMode = false,
+  query,
 }: {
   url: string;
-  campaign?: LearnUTMCampaign;
-  isDarkMode?: boolean;
-}): string {
-  const UTM_CONSTANT = 'utm_source=rainbow-app&utm_medium=referral';
+  query: {
+    isDarkMode?: boolean;
+    campaign?: LearnUTMCampaign;
+    [key: string]: string | number | boolean | undefined;
+  };
+}) {
+  const defaultUTM = {
+    utm_medium: 'referral',
+    utm_source: 'rainbow-app',
+  };
 
-  let resultUrl = `${url}?${UTM_CONSTANT}`;
-
-  if (campaign !== LearnUTMCampaign.none) {
-    resultUrl = `${url}?${UTM_CONSTANT}&utm_campaign=${campaign}`;
-  }
-
-  if (isDarkMode) {
-    resultUrl = `${resultUrl}&theme=dark`;
-  }
-  return resultUrl;
+  const q = qs.stringify({ ...defaultUTM, ...query });
+  console.log(url + '?' + q);
+  return url + '?' + q;
 }
