@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
-import { NFT } from '@/resources/nfts/types';
+import { NFT, PolygonAllowlist } from '@/resources/nfts/types';
 import {
   fetchSimpleHashNFTListing,
   fetchSimpleHashNFTs,
@@ -35,15 +35,23 @@ export const nftListingQueryKey = ({
 }) => createQueryKey('nftListing', { contractAddress, tokenId, network });
 
 function fetchPolygonAllowlist() {
-  return queryClient.fetchQuery<string[]>(
+  return queryClient.fetchQuery<PolygonAllowlist>(
     ['polygon-allowlist'],
-    async () =>
-      (
+    async () => {
+      const polygonAllowlistAddresses = (
         await rainbowFetch(
           'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
           { method: 'get' }
         )
-      ).data.data.addresses,
+      ).data.data.addresses;
+
+      const polygonAllowlist: PolygonAllowlist = {};
+      polygonAllowlistAddresses.forEach((address: string) => {
+        polygonAllowlist[address] = true;
+      });
+
+      return polygonAllowlist;
+    },
     { staleTime: POLYGON_ALLOWLIST_STALE_TIME }
   );
 }

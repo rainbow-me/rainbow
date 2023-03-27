@@ -31,7 +31,7 @@ const buildPlayerUrl = options => {
   return `${base_url}?${qs}`;
 };
 
-export default function WyreWebview({ fontColor, imageColor, uri }) {
+export default function AudioPlayer({ fontColor, imageColor, uri }) {
   const webviewRef = useRef();
   const { colors } = useTheme();
   const [ready, setReady] = useState(false);

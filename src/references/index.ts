@@ -27,11 +27,6 @@ export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
-export {
-  getWyreErrorOverride,
-  wyreSupportedCountries,
-  WYRE_SUPPORTED_COUNTRIES_ISO,
-} from './wyre';
 
 export {
   ENSRegistryWithFallbackABI,
