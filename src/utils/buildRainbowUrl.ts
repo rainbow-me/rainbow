@@ -43,6 +43,5 @@ export function buildRainbowLearnUrl({
   };
 
   const q = qs.stringify({ ...defaultUTM, ...query });
-  console.log(url + '?' + q);
   return url + '?' + q;
 }
