@@ -8,7 +8,7 @@ import {
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
-import { POAP_NFT_ADDRESS } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { PolygonAllowlist } from '../types';
 
@@ -139,7 +139,10 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       discord_url: collection.discord_url,
       external_url: collection.external_url,
       image_url: collection.image_url,
-      name: collection.name || '',
+      name:
+        nft.contract_address === ENS_NFT_CONTRACT_ADDRESS
+          ? 'ENS'
+          : collection.name ?? '',
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
