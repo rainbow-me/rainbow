@@ -25,7 +25,6 @@ import {
 } from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
-import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -80,6 +79,8 @@ import { SwapType } from '@rainbow-me/swaps';
 import { FiatProviderName } from '@/entities/f2c';
 import { logger as loggr, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 const storage = new MMKV();
 
@@ -731,7 +732,9 @@ export const transactionsReceived = (
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
+      queryClient.invalidateQueries({
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      });
     }, 60000);
   }
 

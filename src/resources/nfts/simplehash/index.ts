@@ -1,4 +1,4 @@
-import { SIMPLEHASH_API_KEY } from 'react-native-dotenv';
+import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
 import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
@@ -11,8 +11,8 @@ import {
 
 export const START_CURSOR = 'start';
 
-const simpleHashApi = new RainbowFetchClient({
-  baseURL: 'https://api.simplehash.com/api',
+const nftApi = new RainbowFetchClient({
+  baseURL: `https://${NFT_API_URL}/api/v0`,
 });
 
 const createCursorSuffix = (cursor: string) =>
@@ -31,13 +31,13 @@ export async function fetchSimpleHashNFT(
     );
   }
 
-  const response = await simpleHashApi.get(
-    `/v0/nfts/${chain}/${contractAddress}/${tokenId}`,
+  const response = await nftApi.get(
+    `/nfts/${chain}/${contractAddress}/${tokenId}`,
     {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'x-api-key': SIMPLEHASH_API_KEY,
+        'x-api-key': NFT_API_KEY,
       },
     }
   );
@@ -57,13 +57,13 @@ export async function fetchSimpleHashNFTs(
     SimpleHashChain.Gnosis,
   ].join(',');
   const cursorSuffix = createCursorSuffix(cursor);
-  const response = await simpleHashApi.get(
-    `/v0/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
+  const response = await nftApi.get(
+    `/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
     {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'x-api-key': SIMPLEHASH_API_KEY,
+        'x-api-key': NFT_API_KEY,
       },
     }
   );
@@ -74,9 +74,9 @@ export async function fetchSimpleHashNFTs(
 }
 
 export async function fetchSimpleHashNFTListing(
-  network: Network,
   contractAddress: string,
-  tokenId: string
+  tokenId: string,
+  network: Omit<Network, Network.goerli> = Network.mainnet
 ): Promise<SimpleHashListing | undefined> {
   // array of all eth listings on OpenSea for this token
   let listings: SimpleHashListing[] = [];
@@ -86,14 +86,14 @@ export async function fetchSimpleHashNFTListing(
   while (cursor) {
     const cursorSuffix = createCursorSuffix(cursor);
     // eslint-disable-next-line no-await-in-loop
-    const response = await simpleHashApi.get(
+    const response = await nftApi.get(
       // OpenSea ETH offers only for now
-      `/v0/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
+      `/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
       {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'x-api-key': SIMPLEHASH_API_KEY,
+          'x-api-key': NFT_API_KEY,
         },
       }
     );

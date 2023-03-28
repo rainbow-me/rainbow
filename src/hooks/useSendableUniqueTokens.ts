@@ -1,13 +1,11 @@
 import { groupBy } from 'lodash';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { UniqueAsset } from '@/entities';
-import { AppState } from '@/redux/store';
+import { useAccountSettings } from '.';
+import { useLegacyNFTs } from '@/resources/nfts';
 
-const uniqueTokensSelector = (state: AppState) =>
-  state.uniqueTokens.uniqueTokens;
+export default function useSendableUniqueTokens() {
+  const { accountAddress } = useAccountSettings();
+  const { data: uniqueTokens } = useLegacyNFTs({ address: accountAddress });
 
-const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
   const sendableUniqueTokens = uniqueTokens?.filter(
     (uniqueToken: any) => uniqueToken.isSendable
   );
@@ -25,13 +23,4 @@ const sendableUniqueTokens = (uniqueTokens: UniqueAsset[]) => {
     sendableTokens.push(newObject);
   }
   return { sendableUniqueTokens: sendableTokens, uniqueTokens };
-};
-
-const sendableUniqueTokensSelector = createSelector(
-  [uniqueTokensSelector],
-  sendableUniqueTokens
-);
-
-export default function useSendableUniqueTokens() {
-  return useSelector(sendableUniqueTokensSelector);
 }
