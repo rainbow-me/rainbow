@@ -12,7 +12,6 @@ import {
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { isUnknownOpenSeaENS } from '@/handlers/ens';
 import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
@@ -49,9 +48,7 @@ export default function ExpandedAssetSheet(props) {
 
   // We want to revalidate (ie. refresh OpenSea metadata) collectibles
   // to ensure the user can get the latest metadata of their collectible.
-  const selectedAsset = useAsset(params.asset, {
-    revalidateCollectibleInBackground: isUnknownOpenSeaENS(params?.asset),
-  });
+  const selectedAsset = useAsset(params.asset);
 
   return (
     <Container

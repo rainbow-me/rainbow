@@ -11,7 +11,6 @@ import RecordTags, {
   Placeholder as RecordTagsPlaceholder,
 } from './RecordTags/RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import { getLowResUrl } from '@/utils/getLowResUrl';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import {
   Bleed,
@@ -28,12 +27,12 @@ import {
   useENSAvatar,
   useENSCover,
   useENSRecords,
-  useFetchUniqueTokens,
   useOpenENSNFTHandler,
 } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -70,10 +69,8 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const { data: uniqueTokens } = useFetchUniqueTokens({
+  const { data: uniqueTokens } = useLegacyNFTs({
     address: profileAddress ?? '',
-    // Don't want to refetch tokens if we already have them.
-    staleTime: Infinity,
   });
 
   const avatarUrl = avatar?.imageUrl;

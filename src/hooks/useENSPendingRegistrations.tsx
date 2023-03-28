@@ -8,6 +8,7 @@ import { removeExpiredRegistrations } from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import { getENSNFTAvatarUrl } from '@/utils';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useENSPendingRegistrations() {
   const { accountAddress } = useAccountSettings();
@@ -38,9 +39,9 @@ export default function useENSPendingRegistrations() {
     }
   );
 
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens }: AppState) => uniqueTokens.uniqueTokens
-  );
+  const { data: uniqueTokens } = useLegacyNFTs({
+    address: accountAddress,
+  });
   const registrationImages = useMemo(() => {
     const registrationImagesArray = pendingRegistrations?.map(
       ({ name, records }) => {
