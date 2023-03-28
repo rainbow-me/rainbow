@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
-index 8b40788..55d75e3 100644
+index 30259e7..01c5b05 100644
 --- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
 +++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
-@@ -176,6 +176,7 @@ function updateErrorWithErrorData(
+@@ -175,6 +175,7 @@ function updateErrorWithErrorData(
  let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
  if (global.nativeModuleProxy) {
    NativeModules = global.nativeModuleProxy;
@@ -11,10 +11,10 @@ index 8b40788..55d75e3 100644
    const bridgeConfig = global.__fbBatchedBridgeConfig;
    invariant(
 diff --git a/node_modules/react-native/Libraries/Components/TextInput/TextInput.js b/node_modules/react-native/Libraries/Components/TextInput/TextInput.js
-index d5d167d..1de5ae6 100644
+index 8fa1171..27e634f 100644
 --- a/node_modules/react-native/Libraries/Components/TextInput/TextInput.js
 +++ b/node_modules/react-native/Libraries/Components/TextInput/TextInput.js
-@@ -1321,7 +1321,7 @@ const ExportedForwardRef: React.AbstractComponent<
+@@ -1329,7 +1329,7 @@ const ExportedForwardRef: React.AbstractComponent<
    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
  > = React.forwardRef(function TextInput(
    {
@@ -24,10 +24,10 @@ index d5d167d..1de5ae6 100644
      underlineColorAndroid = 'transparent',
      ...restProps
 diff --git a/node_modules/react-native/Libraries/Text/Text.js b/node_modules/react-native/Libraries/Text/Text.js
-index 35db91d..11215a3 100644
+index 57b6a2e..53b3618 100644
 --- a/node_modules/react-native/Libraries/Text/Text.js
 +++ b/node_modules/react-native/Libraries/Text/Text.js
-@@ -29,7 +29,7 @@ const Text: React.AbstractComponent<
+@@ -32,7 +32,7 @@ const Text: React.AbstractComponent<
  > = React.forwardRef((props: TextProps, forwardedRef) => {
    const {
      accessible,
@@ -37,45 +37,43 @@ index 35db91d..11215a3 100644
      onLongPress,
      onPress,
 diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
-index c4a1cde..9cf47a0 100644
+index 7480580..577910f 100644
 --- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
 +++ b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
-@@ -100,9 +100,31 @@ - (void)invalidate
+@@ -114,9 +114,29 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback
      }
    }
  
 -  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
 -                                                                             message:nil
 -                                                                      preferredStyle:UIAlertControllerStyleAlert];
-+
 +  UIViewController *presentingController = RCTPresentedViewController();
 +  if (presentingController == nil) {
 +    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
 +      @"title" : args.title() ?: [NSNull null],
 +      @"message" : args.message() ?: [NSNull null],
 +      @"buttons" : RCTConvertOptionalVecToArray(
-+          args.buttons(),
-+          ^id(id<NSObject> element) {
-+            return element;
-+          })
-+          ?: [NSNull null],
++        args.buttons(),
++        ^id(id<NSObject> element) {
++          return element;
++        })
++        ?: [NSNull null],
 +      @"type" : args.type() ?: [NSNull null],
 +      @"defaultValue" : args.defaultValue() ?: [NSNull null],
 +      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
 +      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
 +      @"keyboardType" : args.keyboardType() ?: [NSNull null],
 +     });
-+    return;
++     return;
 +  }
 +
 +  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
 +                                                                                message:nil
 +                                                                         preferredStyle:UIAlertControllerStyleAlert];
-+   
-   switch (type) {
-     case RCTAlertViewStylePlainTextInput: {
-       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-@@ -151,7 +173,7 @@ - (void)invalidate
+ 
+ #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+@@ -174,7 +194,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback
      } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
        buttonStyle = UIAlertActionStyleDestructive;
      }
@@ -84,31 +82,31 @@ index c4a1cde..9cf47a0 100644
      [alertController
          addAction:[UIAlertAction
                        actionWithTitle:buttonTitle
-@@ -161,7 +183,7 @@ - (void)invalidate
+@@ -184,7 +204,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback
                                    case RCTAlertViewStylePlainTextInput:
                                    case RCTAlertViewStyleSecureTextInput:
                                      callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
 -                                    [weakAlertController hide];
-+                                  //  [weakAlertController hide];
++                                    // [weakAlertController hide];
                                      break;
                                    case RCTAlertViewStyleLoginAndPasswordInput: {
                                      NSDictionary<NSString *, NSString *> *loginCredentials = @{
-@@ -169,12 +191,12 @@ - (void)invalidate
+@@ -192,12 +212,12 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback
                                        @"password" : [weakAlertController.textFields.lastObject text]
                                      };
                                      callback(@[ buttonKey, loginCredentials ]);
 -                                    [weakAlertController hide];
-+                                    //[weakAlertController hide];
++                                    // [weakAlertController hide];
                                      break;
                                    }
                                    case RCTAlertViewStyleDefault:
                                      callback(@[ buttonKey ]);
 -                                    [weakAlertController hide];
-+                                   // [weakAlertController hide];
++                                    // [weakAlertController hide];
                                      break;
                                  }
                                }]];
-@@ -186,7 +208,7 @@ - (void)invalidate
+@@ -209,7 +229,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback
    [_alertControllers addObject:alertController];
  
    dispatch_async(dispatch_get_main_queue(), ^{
@@ -118,10 +116,10 @@ index c4a1cde..9cf47a0 100644
  }
  
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 8ed93cd..5073ffa 100644
+index 03dcc94..3cc495c 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -791,6 +791,11 @@ - (void)displayLayer:(CALayer *)layer
+@@ -808,6 +808,11 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
      layer.backgroundColor = backgroundColor;
      layer.contents = nil;
      layer.needsDisplayOnBoundsChange = NO;
