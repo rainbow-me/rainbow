@@ -5,16 +5,11 @@ import { AssetTypes, ParsedAddressAsset } from '@/entities';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
-export default function useAsset(
-  asset: ParsedAddressAsset,
-  { revalidateCollectibleInBackground = false } = {}
-) {
+export default function useAsset(asset: ParsedAddressAsset) {
   const accountAsset = useAccountAsset(
     asset?.uniqueId || asset?.mainnet_address || asset?.address
   );
-  const uniqueToken = useCollectible(asset, {
-    revalidateInBackground: revalidateCollectibleInBackground,
-  });
+  const uniqueToken = useCollectible(asset);
   return useMemo(() => {
     if (!asset) return null;
 
