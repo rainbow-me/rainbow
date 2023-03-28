@@ -1,4 +1,4 @@
-platform :ios, '11.0'
+platform :ios, '13.0'
 install! 'cocoapods', :deterministic_uuids => false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -30,6 +30,11 @@ target 'Rainbow' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
     :fabric_enabled => flags[:fabric_enabled],
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable the next line.
+    :flipper_configuration => ENV['SKIP_FLIPPER'] != "true" ? FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.187' }) : FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -49,17 +54,20 @@ target 'Rainbow' do
   pod "PanModal", :git => 'https://github.com/rainbow-me/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
   pod 'Shimmer'
   pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
+  pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
   pod 'Plaid', '~> 4.1.0'
 
   use_native_modules!
-  if ENV['SKIP_FLIPPER'] != "true"
-    use_flipper!({'Flipper' => '0.162.0'}) # should match the version of your Flipper client app
-  end
 
   post_install do |installer|
-    react_native_post_install(installer)
+    react_native_post_install(
+      installer,
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
     # This is necessary for Xcode 14, because it signs resource bundles by default when building for devices.
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
