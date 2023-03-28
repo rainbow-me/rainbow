@@ -8,7 +8,7 @@ import {
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
-import { POAP_NFT_ADDRESS } from '@/references';
+import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { PolygonAllowlist } from '../types';
 
@@ -125,6 +125,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
 
+  const isENS = nft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
+
   return {
     animation_url: nft?.video_url,
     asset_contract: {
@@ -139,14 +141,14 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       discord_url: collection.discord_url,
       external_url: collection.external_url,
       image_url: collection.image_url,
-      name: collection.name || '',
+      name: isENS ? 'ENS' : collection.name ?? '',
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
     description: nft.description,
     external_link: nft.external_url,
     familyImage: collection.image_url,
-    familyName: collection.name,
+    familyName: isENS ? 'ENS' : collection.name,
     floorPriceEth:
       floorPrice?.value !== null && floorPrice?.value !== undefined
         ? convertRawAmountToRoundedDecimal(
@@ -185,7 +187,9 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,
-    uniqueId: `${nft.contract_address}_${nft.token_id}`,
+    uniqueId: isENS
+      ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
+      : `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
   };
 }

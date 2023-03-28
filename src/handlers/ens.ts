@@ -28,7 +28,6 @@ import {
 } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
-import { getOpenSeaCollectionUrl } from '@/parsers';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ensIntroMarqueeNames,
@@ -60,7 +59,6 @@ const buildEnsToken = ({
   imageUrl: string;
 }) => {
   const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
-  const slug = 'ens';
   return {
     animation_url: null,
     asset_contract: {
@@ -84,7 +82,7 @@ const buildEnsToken = ({
         'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
       name: 'ENS: Ethereum Name Service',
       short_description: null,
-      slug,
+      slug: 'ens',
       twitter_username: 'ensdomains',
     },
     currentPrice: null,
@@ -105,7 +103,7 @@ const buildEnsToken = ({
     lastSale: undefined,
     lastSalePaymentToken: null,
     lowResUrl,
-    marketplaceCollectionUrl: getOpenSeaCollectionUrl(slug),
+    marketplaceCollectionUrl: `https://opensea.io/collection/ens?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`,
     marketplaceId: 'opensea',
     marketplaceName: 'OpenSea',
     name,
@@ -117,20 +115,6 @@ const buildEnsToken = ({
     uniqueId: name,
     urlSuffixForAsset: `${contractAddress}/${tokenId}`,
   } as UniqueAsset;
-};
-
-export const isUnknownOpenSeaENS = (asset?: UniqueAsset) => {
-  const isENS =
-    asset?.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  return (
-    isENS &&
-    (asset?.description?.includes(
-      'This is an unknown ENS name with the hash'
-    ) ||
-      !asset?.uniqueId?.includes('.eth') ||
-      !asset?.image_url)
-  );
 };
 
 export const fetchMetadata = async ({
