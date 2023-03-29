@@ -73,6 +73,7 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 
 const encryptor = new AesEncryptor();
 
@@ -327,10 +328,15 @@ export const sendTransaction = async ({
   result?: Transaction;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: sending transaction', { transaction });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
@@ -338,11 +344,20 @@ export const sendTransaction = async ({
       return { result };
     } catch (error) {
       logger.error(new RainbowError('Failed to send transaction'), { error });
-      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      }
+
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+    }
     logger.error(new RainbowError('Failed to send transaction due to auth'), {
       error,
     });
@@ -358,21 +373,34 @@ export const signTransaction = async ({
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing transaction');
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     if (!wallet) return null;
     try {
       const result = await wallet.signTransaction(transaction);
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      }
       logger.error(new RainbowError('Failed to sign transaction'), { error });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(new RainbowError('Failed to sign transaction due to auth'), {
       error,
     });
@@ -388,21 +416,34 @@ export const signMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign message'), { error });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(new RainbowError('Failed to sign message due to auth'), {
       error,
     });
@@ -418,10 +459,15 @@ export const signPersonalMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing personal message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(
@@ -431,14 +477,22 @@ export const signPersonalMessage = async (
       );
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign personal message'), {
         error,
       });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(
       new RainbowError('Failed to sign personal message due to auth'),
       { error }
@@ -455,11 +509,16 @@ export const signTypedDataMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing typed data message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       let parsedData = message;
       try {
@@ -482,6 +541,7 @@ export const signTypedDataMessage = async (
       }
 
       // Hardware wallets
+      // have to check inverse or we trigger unwanted BT permissions requests
       if (!(wallet instanceof Wallet)) {
         const result = await (wallet as LedgerSigner).signTypedDataMessage(
           parsedData,
@@ -499,14 +559,22 @@ export const signTypedDataMessage = async (
         };
       }
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign typed data message'), {
         error,
       });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(
       new RainbowError('Failed to sign typed data message due to auth'),
       { error }

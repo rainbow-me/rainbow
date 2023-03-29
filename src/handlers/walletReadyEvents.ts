@@ -46,6 +46,7 @@ export const runWalletBackupStatusChecks = () => {
       !wallet.imported &&
       !!hasVisibleAccount &&
       wallet.type !== WalletTypes.readOnly &&
+      wallet.type !== WalletTypes.bluetooth &&
       !wallet.backedUp
     );
   });

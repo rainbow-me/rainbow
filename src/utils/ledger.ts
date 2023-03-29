@@ -2,7 +2,6 @@ import { logger } from '@/logger';
 import { getHdPath, WalletLibraryType } from '@/model/wallet';
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { forEach } from 'lodash';
 import * as i18n from '@/languages';
 
 /**
@@ -29,13 +28,12 @@ export const ledgerErrorHandler = (error: Error) => {
   ) {
     return LEDGER_ERROR_CODES.OFF_OR_LOCKED;
   }
+  if (error.name.includes('Disconnected')) {
+    return LEDGER_ERROR_CODES.DISCONNECTED;
+  }
 
   // used to logging any new errors so we can handle them properly, will likely remove pre-release
   logger.warn('[LedgerConnect] - Unknown Error', { error });
-  forEach(Object.keys(error), key =>
-    // @ts-ignore
-    logger.debug('key: ', key, ' value: ', error[key])
-  );
 
   return LEDGER_ERROR_CODES.UNKNOWN;
 };
@@ -47,15 +45,16 @@ export const getEthApp = async (deviceId: string) => {
 };
 
 export const checkLedgerConnection = async ({
+  transport,
   deviceId,
   successCallback,
   errorCallback,
 }: {
+  transport: TransportBLE;
   deviceId: string;
   successCallback?: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) => {
-  const transport = await TransportBLE.open(deviceId);
   const ethApp = new AppEth(transport);
   const path = getHdPath({ type: WalletLibraryType.ledger, index: 1 });
   ethApp

@@ -766,7 +766,8 @@ export const transactionsReceived = (
       selected &&
       !selected.backedUp &&
       !selected.imported &&
-      selected.type !== WalletTypes.readOnly
+      selected.type !== WalletTypes.readOnly &&
+      selected.type !== WalletTypes.bluetooth
     ) {
       setTimeout(() => {
         triggerOnSwipeLayout(() =>
