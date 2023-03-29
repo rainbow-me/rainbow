@@ -21,7 +21,7 @@ export const CLOUD_BACKUP_ERRORS = {
   SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
   UKNOWN_ERROR: 'Unknown Error',
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
-  MISSING_PIN: 'There was a problem with processing PIN code',
+  MISSING_PIN: 'The PIN code you entered is invalid',
 };
 
 export function logoutFromGoogleDrive() {
