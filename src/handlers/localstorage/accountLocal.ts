@@ -267,40 +267,6 @@ export const saveLocalENSRegistrations = (
   );
 
 /**
- * @desc get unique tokens
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getUniqueTokens = (accountAddress: any, network: any) =>
-  getAccountLocal(
-    UNIQUE_TOKENS,
-    accountAddress,
-    network,
-    [],
-    uniqueTokensVersion
-  );
-
-/**
- * @desc save unique tokens
- * @param  {String}   [address]
- * @param  {Array}    [uniqueTokens]
- * @param  {String}   [network]
- */
-export const saveUniqueTokens = (
-  uniqueTokens: any,
-  accountAddress: any,
-  network: any
-) =>
-  saveAccountLocal(
-    UNIQUE_TOKENS,
-    uniqueTokens,
-    accountAddress,
-    network,
-    uniqueTokensVersion
-  );
-
-/**
  * @desc get profile info
  * @param  {String}   [address]
  * @param  {String}   [network]

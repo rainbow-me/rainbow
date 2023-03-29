@@ -19,14 +19,12 @@ import { ThunkDispatch } from 'redux-thunk';
 import { gretch } from 'gretchen';
 import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
-import { addCashUpdatePurchases } from './addCash';
 import {
   cancelDebouncedUpdateGenericAssets,
   debouncedUpdateGenericAssets,
 } from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
-import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -81,6 +79,8 @@ import { SwapType } from '@rainbow-me/swaps';
 import { FiatProviderName } from '@/entities/f2c';
 import { logger as loggr, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 const storage = new MMKV();
 
@@ -698,7 +698,6 @@ export const transactionsReceived = (
   }
 
   const { accountAddress, nativeCurrency } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
 
@@ -713,7 +712,7 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     pendingTransactions,
-    purchaseTransactions,
+    undefined,
     currentNetwork,
     appended
   );
@@ -733,7 +732,9 @@ export const transactionsReceived = (
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
+      queryClient.invalidateQueries({
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      });
     }, 60000);
   }
 
@@ -753,7 +754,6 @@ export const transactionsReceived = (
     payload: parsedTransactions,
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
-  dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
   saveLocalPendingTransactions(
     updatedPendingTransactions,
@@ -1343,7 +1343,6 @@ export const dataWatchPendingTransactions = (
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     saveLocalTransactions(updatedTransactions, accountAddress, network);
-    dispatch(updatePurchases(updatedTransactions));
     if (!pendingTransactions?.length) {
       return true;
     }
@@ -1395,24 +1394,6 @@ export const dataUpdateTransaction = (
       )
     );
   }
-};
-
-/**
- * Updates purchases using the `addCash` reducer to reflect new transaction data.
- * Called when new transaction information is loaded.
- *
- * @param updatedTransactions The array of updated transactions.
- */
-const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  const confirmedPurchases = updatedTransactions.filter(txn => {
-    return (
-      txn.type === TransactionTypes.purchase &&
-      txn.status !== TransactionStatus.purchasing
-    );
-  });
-  dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 /**

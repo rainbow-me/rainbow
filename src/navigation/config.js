@@ -483,22 +483,6 @@ const SettingsTitle = ({ children }) => {
   );
 };
 
-export const wyreWebviewOptions = colors => ({
-  ...headerConfigOptions,
-  headerLeft: props => <BackButton {...props} textChevron />,
-  headerStatusBarHeight: 24,
-  headerStyle: {
-    backgroundColor: colors.white,
-    elevation: 24,
-    shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    ...headerConfigOptions.headerTitleStyle,
-    color: colors.dark,
-  },
-  title: 'Add Cash',
-});
-
 export const settingsOptions = colors => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
