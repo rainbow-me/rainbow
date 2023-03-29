@@ -297,7 +297,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
           },
           "backups": {
             "title": "The Importance of Backups",
@@ -573,10 +573,6 @@
       "nft_brief_token_info": {
         "for_sale": "For sale",
         "last_sale": "Last sale price"
-      },
-      "supported_countries": {
-        "supported_countries": "Supported Countries",
-        "us_except": "United States (except Texas and New York)"
       },
       "swap": {
         "swap": "Swap",
@@ -984,7 +980,7 @@
       "no_interactions": "No interactions found for this account",
       "no_transactions": "No transactions found for this account",
       "no_unique_tokens": "No unique tokens found for this account",
-      "opensea_footer": " is a market place for unique (or 'non-fungible') tokens. People trade on the marketspace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
+      "opensea_footer": " is a marketplace for unique (or 'non-fungible') tokens. People trade on the marketplace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
       "opensea_header": "How does this work under the hood?",
       "page_not_found": "404 Page Not Found",
       "please_connect_ledger": "Please connect and unlock Ledger then select Ethereum",
@@ -1706,7 +1702,10 @@
           "title": "We're sorry, you failed authentication",
           "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
         },
-        "support_email_subject": "I need help buying crypto with %{provider}",
+        "support_emails": {
+          "help": "I Need Help Buying Crypto With %{provider}",
+          "account_recovery": "Account Recovery for Crypto Purchasing"
+        },
         "sheet_empty_state": {
           "title": "Can't find your preferred provider?",
           "description": "Check back soon for more options"

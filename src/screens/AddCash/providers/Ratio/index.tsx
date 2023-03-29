@@ -9,6 +9,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
+import upperFirst from 'lodash/upperFirst';
 
 import { IS_IOS } from '@/env';
 import { WrappedAlert } from '@/helpers/alert';
@@ -18,7 +19,7 @@ import { analyticsV2 } from '@/analytics';
 import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network as InternalNetwork } from '@/helpers';
-import useEmailRainbow from '@/hooks/useEmailRainbow';
+import { emailRainbow } from '@/utils/emailRainbow';
 import Routes from '@/navigation/routesNames';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import {
@@ -81,11 +82,6 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
   const [userId, setUserId] = React.useState('');
   const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
-  const emailRainbow = useEmailRainbow({
-    subject: lang.t(lang.l.wallet.add_cash_v2.support_email_subject, {
-      provider: FiatProviderName.Ratio,
-    }),
-  });
   const pendingTransactionSheetExplainerType = React.useRef('');
   const { navigate } = useNavigation();
 
@@ -305,7 +301,11 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
       }}
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
-        emailRainbow();
+        emailRainbow({
+          subject: lang.t(lang.l.wallet.add_cash_v2.support_emails.help, {
+            provider: upperFirst(FiatProviderName.Ratio),
+          }),
+        });
       }}
       onAccountRecovery={() => {
         logger.debug(
@@ -313,7 +313,11 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
           {},
           logger.DebugContext.f2c
         );
-        emailRainbow();
+        emailRainbow({
+          subject: lang.t(
+            lang.l.wallet.add_cash_v2.support_emails.account_recovery
+          ),
+        });
       }}
       onClose={() => {
         logger.debug(

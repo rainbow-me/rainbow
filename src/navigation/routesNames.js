@@ -70,7 +70,6 @@ const Routes = {
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
-  SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
@@ -84,8 +83,6 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
-  WYRE_WEBVIEW: 'WyreWebview',
-  WYRE_WEBVIEW_NAVIGATOR: 'WyreWebviewNavigator',
 };
 
 export const NATIVE_ROUTES = [
