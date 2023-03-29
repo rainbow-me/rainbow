@@ -50,10 +50,10 @@ export type NFT = {
   isSendable: boolean;
   lastEthSale: number | undefined;
   marketplaces: NFTMarketplace[];
-  name: string;
+  name: string | undefined;
   network: Network;
   predominantColor: string | undefined;
-  tokenId: string;
+  tokenId: string | undefined;
   traits: NFTTrait[];
   type: AssetType;
   uniqueId: string;

@@ -5,12 +5,25 @@ import {
   SimpleHashChain,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
+  SimpleHashTrait,
+  SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { PolygonAllowlist } from '../types';
+import { NFT, NFTMarketplace, NFTTrait, PolygonAllowlist } from '../types';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { imageToPng, maybeSignUri } from '@/handlers/imgix';
+import { CardSize } from '@/components/unique-token/CardSize';
+import { isNil } from 'lodash';
+import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
+import { ERC1155, ERC721 } from '@/handlers/web3';
+import { getFullSizePngUrl } from '@/utils/getFullSizePngUrl';
+
+const ENS_COLLECTION_NAME = 'ENS';
+const SVG_MIME_TYPE = 'image/svg+xml';
+const GOOGLE_CDN_URL_SIZE_1000_SUFIX = '=s1000';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -183,6 +196,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   };
 }
 
+const getNonSVGUrl = (url: string) => {};
+
 export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
   const lowercasedContractAddress = nft.contract_address.toLowerCase();
   const collection = nft.collection;
@@ -193,7 +208,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
       floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
   const openseaFloorPriceEth =
-    getRoundedValueFromRawAmount(
+    convertRawAmountToRoundedDecimal(
       floorPriceData?.value,
       floorPriceData?.payment_token?.decimals
     ) ?? null;
@@ -202,7 +217,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
       marketplace.marketplace_id === simpleHashMarketplaceIds.opensea
   );
   const lastEthSale =
-    getRoundedValueFromRawAmount(
+    convertRawAmountToRoundedDecimal(
       nft?.last_sale?.unit_price,
       nft?.last_sale?.payment_token?.decimals
     ) ?? null;
@@ -225,8 +240,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
 
   // originalImageUrl may be an svg, so we need to handle that
   const safeNonSvgUrl = fullSizeNonSVGUrl ?? svgToPngIfNeeded(originalImageUrl);
-  const fullResPngUrl = getFullSizePngUrl(safeNonSvgUrl) ?? null;
-  const lowResPngUrl = imageToPng(safeNonSvgUrl, CardSize) ?? null;
+  const fullResPngUrl = getFullSizePngUrl(safeNonSvgUrl) ?? undefined;
 
   // fullResUrl will either be the original svg or the full res png
   const fullResUrl =
@@ -234,39 +248,37 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
       ? originalImageUrl
       : fullResPngUrl;
 
-  const collectionImageUrl = collection?.image_url
-    ? maybeSignUri(collection.image_url) ?? null
-    : null;
-
   return {
-    backgroundColor: nft.background_color,
+    backgroundColor: nft.background_color ?? undefined,
     collection: {
-      description: collection.description,
-      discord: collection.discord_url,
-      externalUrl: collection.external_url,
-      imageUrl: collectionImageUrl,
+      description: collection.description ?? undefined,
+      discord: collection.discord_url ?? undefined,
+      externalUrl: collection.external_url ?? undefined,
+      imageUrl:
+        (collection.image_url && maybeSignUri(collection.image_url)) ||
+        undefined,
       name:
         uniqueTokenType === uniqueTokenTypes.ENS
           ? ENS_COLLECTION_NAME
-          : collection.name,
-      simplehashSpamScore: collection?.spam_score,
-      twitter: collection.twitter_username,
+          : collection.name ?? undefined,
+      simpleHashSpamScore: collection?.spam_score ?? undefined,
+      twitter: collection.twitter_username ?? undefined,
     },
     contract: {
       address: nft.contract_address,
-      name: nft.contract.name,
-      standard: nft.contract.type,
-      symbol: nft.contract.symbol,
+      name: nft.contract.name ?? undefined,
+      schema_name: nft.contract.type,
+      symbol: nft.contract.symbol ?? undefined,
     },
     description: nft.description ?? undefined,
     externalUrl: nft.external_url ?? undefined,
     images: {
-      blurhash: nft.previews?.blurhash,
+      blurhash: nft.previews?.blurhash ?? undefined,
       fullResPngUrl,
       fullResUrl,
-      lowResPngUrl,
+      lowResPngUrl: imageToPng(safeNonSvgUrl, CardSize) ?? undefined,
       // mimeType only corresponds to fullResUrl
-      mimeType: nft.image_properties?.mime_type ?? null,
+      mimeType: nft.image_properties?.mime_type ?? undefined,
     },
     isSendable:
       // can't send poaps because they're on gnosis
@@ -287,10 +299,10 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
           nftUrl: marketplace?.nft_url,
         } as NFTMarketplace)
     ),
-    name: nft.name,
+    name: nft.name ?? undefined,
     network,
-    predominantColor: nft.previews?.predominant_color,
-    tokenId: nft.token_id,
+    predominantColor: nft.previews?.predominant_color ?? undefined,
+    tokenId: nft.token_id ?? undefined,
     traits:
       (nft.extra_metadata?.attributes
         ?.map((trait: SimpleHashTrait) => {
@@ -299,7 +311,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
               displayType: trait?.display_type,
               traitType: trait.trait_type,
               value: trait.value,
-            };
+            } as NFTTrait;
           }
         })
         ?.filter((trait: NFTTrait | undefined) => !!trait) as NFTTrait[]) ?? [],
@@ -307,8 +319,11 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
     uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
     videos: {
-      mimeType: nft.video_properties?.mime_type ?? null,
-      url: nft.video_url ?? nft.extra_metadata?.animation_original_url,
+      mimeType: nft.video_properties?.mime_type ?? undefined,
+      url:
+        nft.video_url ??
+        nft.extra_metadata?.animation_original_url ??
+        undefined,
     },
   };
 }

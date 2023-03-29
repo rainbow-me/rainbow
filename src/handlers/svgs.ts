@@ -41,7 +41,7 @@ function svgToPng(url: any, big = false) {
   return cloudinaryUrl;
 }
 
-export default function svgToPngIfNeeded(url: any, big: any) {
+export default function svgToPngIfNeeded(url: any, big?: any) {
   const isSVG = isSVGImage(url);
   return isSVG ? svgToPng(url, big) : url;
 }
