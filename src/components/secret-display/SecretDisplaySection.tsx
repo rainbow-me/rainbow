@@ -163,7 +163,7 @@ export function SecretDisplaySection({
     default:
       logger.error(
         new RainbowError(
-          'Secret display section tires to present an unknown state'
+          'Secret display section tries to present an unknown state'
         )
       );
       return null;
