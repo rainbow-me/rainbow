@@ -91,6 +91,12 @@ class SvgImage extends Component {
           const res = await fetch(uri);
           const text = await res.text();
           if (text.toLowerCase().indexOf('<svg') !== -1) {
+            // TODO more thorough investigatation into if/why foreignObject images aren't supported
+            if (text.match(/<foreignObject[\s\S]*?<\/foreignObject>/)) {
+              logger.log('foreignObject tag not supported', { text, uri });
+              // return w/o error so we can fallback to png
+              return;
+            }
             this.mounted &&
               this.setState({ fetchingUrl: uri, svgContent: text });
           } else {
