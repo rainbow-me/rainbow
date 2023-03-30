@@ -148,7 +148,7 @@ export const PairHardwareWalletAgainSheet = () => {
               >
                 <Inline alignVertical="center" space="8px">
                   <Text color="label" weight="semibold" size="17pt">
-                    Nano X 7752
+                    Nano X
                   </Text>
                   <Box>
                     {!isReady && (
