@@ -35,11 +35,6 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }) => {
-  const url = useMemo(() => {
-    if (asset.isPoap) return asset.animation_url;
-    return asset.image_url;
-  }, [asset.animation_url, asset.image_url, asset.isPoap]);
-
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
@@ -70,28 +65,28 @@ const UniqueTokenExpandedStateContent = ({
         {supportsVideo ? (
           <SimpleVideo
             loading={loading}
-            posterUri={url}
+            posterUri={asset.image_url}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
             uri={asset.animation_url || url}
           />
         ) : supports3d ? (
           <ModelView
-            fallbackUri={url}
+            fallbackUri={asset.image_url}
             loading={loading}
             setLoading={setLoading}
-            uri={asset.animation_url || url}
+            uri={asset.animation_url || asset.image_url}
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.animation_url || url}
+            uri={asset.animation_url || asset.image_url}
           />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
-            imageUrl={url}
+            imageUrl={asset.image_url}
             item={asset}
             resizeMode={resizeMode}
             transformSvgs={false}
