@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DebugContext } from '@/logger/debugContext';
+import { listen } from '@ledgerhq/logs';
 import { logger } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
@@ -9,7 +10,14 @@ import {
   readyForPollingAtom,
   triggerPollerCleanupAtom,
 } from '@/navigation/HardwareWalletTxNavigator';
+import { delay } from '@/helpers/utilities';
+import { random } from 'lodash';
 
+let isPolling = false;
+let isMounted = false;
+let transport: TransportBLE | undefined = undefined;
+
+listen(log => console.log(log));
 /**
  * React hook used for checking ledger connections and handling connnection error states
  */
@@ -24,7 +32,6 @@ export function useLedgerConnect({
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const transport = useRef<TransportBLE | undefined>();
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const isReady = useRecoilValue(LedgerIsReadyAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
@@ -45,9 +52,10 @@ export function useLedgerConnect({
           {},
           DebugContext.ledger
         );
-        transport.current = undefined;
+        transport = undefined;
         try {
-          transport.current = await TransportBLE.open(deviceId);
+          const newTransport = await TransportBLE.open(deviceId);
+          transport = newTransport;
           setReadyForPolling(true);
         } catch (e) {
           logger.warn('[LedgerConnect] - Reconnect Error', {
@@ -91,31 +99,98 @@ export function useLedgerConnect({
       // swallow
     }
   };
+
   useEffect(() => {
-    if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
+    isMounted = true;
+    logger.debug(
+      '[LedgerConnect] -  effect',
+      { readyForPolling, isReady, isMounted },
+      DebugContext.ledger
+    );
+    const runPromise = async (
+      currentTransport: TransportBLE | undefined,
+      random: number
+    ) => {
+      isPolling = true;
+      if (!readyForPolling || !isMounted) {
+        logger.debug(
+          '[LedgerConnect] - stopping device polling ',
+          { readyForPolling, isReady, isMounted, random },
+          DebugContext.ledger
+        );
+        return;
+      }
+
+      await delay(1000);
+
+      setTriggerPollerCleanup(false);
       logger.debug(
-        '[LedgerConnect] - init device polling',
-        {},
+        `[LedgerConnect] - device polling ${random}`,
+        { readyForPolling, isReady, isMounted },
         DebugContext.ledger
       );
-      setTriggerPollerCleanup(false);
-      timer.current = setInterval(async () => {
-        if (transport.current) {
-          if (readyForPolling) {
+
+      // if we have transport, we can check the connection
+
+      try {
+        if (currentTransport) {
+          console.log(`transport exists ${random}`);
+          await checkLedgerConnection({
+            transport: currentTransport,
+            deviceId,
+            successCallback: handleLedgerSuccess,
+            errorCallback: handleLedgerError,
+          });
+        } else {
+          console.log('transport does not exist');
+          // eslint-disable-next-line no-param-reassign
+          currentTransport = await TransportBLE.open(deviceId);
+          console.log('after transport open');
+          if (currentTransport) {
             await checkLedgerConnection({
-              transport: transport.current,
+              transport: currentTransport,
               deviceId,
               successCallback: handleLedgerSuccess,
               errorCallback: handleLedgerError,
             });
           }
-        } else {
-          // eslint-disable-next-line require-atomic-updates
-          transport.current = await TransportBLE.open(deviceId);
         }
-      }, 3000);
+
+        console.log('after all async logic');
+
+        // if we are not ready, we need to continue polling
+        if (!isReady && readyForPolling && isMounted) {
+          logger.debug(
+            `[LedgerConnect] - device polling recurve ${random}`,
+            { readyForPolling, isReady, isMounted },
+            DebugContext.ledger
+          );
+          runPromise(currentTransport, random);
+        } else {
+          logger.debug(
+            '[LedgerConnect] - after all logic wtf?',
+            { readyForPolling, isReady, isMounted },
+            DebugContext.ledger
+          );
+        }
+      } catch (error) {
+        console.log('CAUGHT ERROR: ', error);
+        runPromise(currentTransport, random);
+      }
+    };
+
+    if (!isReady && !isPolling && readyForPolling) {
+      const rand = Math.floor(Math.random() * 100);
+      logger.debug(
+        `[LedgerConnect] - init device polling ${rand}`,
+        { readyForPolling, isReady, isMounted },
+        DebugContext.ledger
+      );
+
+      runPromise(transport, rand);
     }
   }, [
+    isReady,
     deviceId,
     handleLedgerError,
     handleLedgerSuccess,
@@ -126,7 +201,9 @@ export function useLedgerConnect({
 
   useEffect(() => {
     return () => {
-      pollerCleanup(timer.current);
+      console.log('CLEANING UP CLEANING UP CLEANING UP CLEANING UP ');
+      isMounted = false;
+      isPolling = false;
     };
   }, []);
 }
