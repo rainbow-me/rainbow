@@ -37,12 +37,12 @@ import networkInfo from '@/helpers/networkInfo';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
+import { showActionSheetWithOptions } from '@/utils';
+import { AppleReviewAddress, REVIEW_DONE_KEY } from '@/utils/reviewAlert';
 import {
   buildRainbowLearnUrl,
   LearnUTMCampaign,
-  showActionSheetWithOptions,
-} from '@/utils';
-import { AppleReviewAddress, REVIEW_DONE_KEY } from '@/utils/reviewAlert';
+} from '@/utils/buildRainbowUrl';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 

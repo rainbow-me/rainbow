@@ -1,7 +1,6 @@
 export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
-export * from './buildRainbowUrl';
 export { default as TokensListenedCache } from './tokensListenedCache';
 export { default as checkTokenIsScam } from './checkTokenIsScam';
 export { default as contenthash } from './contenthash';
