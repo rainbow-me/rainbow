@@ -44,6 +44,9 @@ import { fetchContractABI } from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
+export const ERC721 = 'ERC721';
+export const ERC1155 = 'ERC1155';
+
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
 } = {};
@@ -698,18 +701,19 @@ export const getDataForNftTransfer = async (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): Promise<string> => {
-  const nftVersion = asset.asset_contract?.nft_version;
-  const schema_name = asset.asset_contract?.schema_name;
-  if (nftVersion === '3.0') {
-    const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
+): Promise<string | undefined> => {
+  if (!asset.id) return;
+  const standard = asset.asset_contract?.schema_name;
+  if (standard === ERC721) {
+    const transferMethodHash =
+      smartContractMethods.erc721_safe_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
     return data;
-  } else if (schema_name === 'ERC1155') {
+  } else if (standard === ERC1155) {
     const transferMethodHash =
       smartContractMethods.erc1155_safe_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
@@ -721,31 +725,7 @@ export const getDataForNftTransfer = async (
       convertStringToHex('0'),
     ]);
     return data;
-  } else if (IS_TESTING === 'true') {
-    const transferMethodHash = smartContractMethods.nft_transfer.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
-    ]);
-    return data;
   }
-
-  const address = asset.asset_contract?.address!;
-  const abi = await fetchContractABI(address);
-  const iface = new Interface(abi);
-
-  const isTransferFrom =
-    iface.functions?.[smartContractMethods.nft_transfer_from.method];
-  const transferMethodHash = isTransferFrom
-    ? smartContractMethods.nft_transfer_from.hash
-    : smartContractMethods.nft_transfer.hash;
-
-  const data = ethereumUtils.getDataString(transferMethodHash, [
-    ...(isTransferFrom ? [ethereumUtils.removeHexPrefix(from)] : []),
-    ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(asset.id),
-  ]);
-  return data;
 };
 
 /**

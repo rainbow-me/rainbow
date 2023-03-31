@@ -22,5 +22,9 @@
   "erc1155_safe_transfer_from": {
     "method": "safeTransferFrom(address,address,uint256,uint256,bytes)",
     "hash": "0xf242432a"
+  },
+  "erc721_safe_transfer_from": {
+    "method": "safeTransferFrom(address,address,uint256)",
+    "hash": "0x23b872dd"
   }
 }
