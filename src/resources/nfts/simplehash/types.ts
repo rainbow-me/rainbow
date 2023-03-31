@@ -32,7 +32,7 @@ type SimpleHashRarity = {
   unique_attributes: number | null;
 };
 
-export type SimpleHashPaymentToken = {
+type SimpleHashPaymentToken = {
   payment_token_id: SimpleHashPaymentTokenId;
   name: string | null;
   symbol: string | null;
@@ -51,20 +51,20 @@ export type SimpleHashListing = {
   quantity: number;
   quantity_remaining: number;
   price: number;
-  marketplace_id: string;
+  marketplace_id: SimpleHashMarketplaceId;
   collection_id: string | null;
   nft_id: string;
   payment_token: SimpleHashPaymentToken | null;
 };
 
 export type SimpleHashFloorPrice = {
-  marketplace_id: string;
+  marketplace_id: SimpleHashMarketplaceId;
   value: number;
   payment_token: SimpleHashPaymentToken;
 };
 
 export type SimpleHashMarketplace = {
-  marketplace_id: string;
+  marketplace_id: SimpleHashMarketplaceId;
   marketplace_name: string;
   marketplace_collection_id: string;
   nft_url: string;
@@ -154,7 +154,7 @@ export type SimpleHashNFT = {
     quantity: number | null;
     timestamp: string;
     transaction: string;
-    marketplace_id: string;
+    marketplace_id: SimpleHashMarketplaceId;
     marketplace_name: string;
     is_bundle_sale: boolean;
     payment_token: SimpleHashPaymentToken | null;
