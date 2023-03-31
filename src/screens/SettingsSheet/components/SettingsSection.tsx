@@ -32,7 +32,6 @@ import useExperimentalFlag, {
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
 import { Box } from '@/design-system';
-import { isCustomBuild, setOriginalDeploymentKey } from '@/handlers/fedora';
 import networkInfo from '@/helpers/networkInfo';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
@@ -428,16 +427,6 @@ const SettingsSection = ({
             size={52}
             testID="review-section"
             titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
-          />
-        )}
-        {isCustomBuild.value && (
-          <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="🤯" isEmoji />}
-            onPress={setOriginalDeploymentKey}
-            size={52}
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.restore')} />
-            }
           />
         )}
         <MenuItem
