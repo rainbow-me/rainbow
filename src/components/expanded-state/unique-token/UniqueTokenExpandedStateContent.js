@@ -68,7 +68,7 @@ const UniqueTokenExpandedStateContent = ({
             posterUri={asset.image_url}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset.animation_url || url}
+            uri={asset.animation_url || asset.image_url}
           />
         ) : supports3d ? (
           <ModelView
