@@ -425,6 +425,7 @@ const isEthAddress = (str: string) => {
 
 export const fetchContractABI = async (address: EthereumAddress) => {
   const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`;
+  console.log(url);
   const cachedAbi = await AsyncStorage.getItem(`abi-${address}`);
   if (cachedAbi) {
     return cachedAbi;

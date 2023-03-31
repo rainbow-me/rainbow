@@ -692,15 +692,26 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 
 const getERC721TransferMethod = async (contractAddress: string) => {
   const abi = await fetchContractABI(contractAddress);
+  // console.log('abi', abi);
   const iface = new Interface(abi);
+  // console.log('iface', iface);
   let transferMethod = smartContractMethods.nft_transfer;
   if (
     iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
   ) {
+    // console.log(
+    //   'help1',
+    //   iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
+    // );
     transferMethod = smartContractMethods.erc721_safe_transfer_from;
   } else if (iface.functions?.[smartContractMethods.nft_transfer_from.method]) {
+    // console.log(
+    //   'help2',
+    //   iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
+    // );
     transferMethod = smartContractMethods.nft_transfer_from;
   }
+  // console.log('help3', iface.functions);
   return transferMethod;
 };
 
@@ -722,6 +733,7 @@ export const getDataForNftTransfer = async (
     const transferMethod = await getERC721TransferMethod(
       asset.asset_contract.address
     );
+    // console.log('transferMethod', transferMethod);
     const data = ethereumUtils.getDataString(transferMethod.hash, [
       ...(transferMethod === smartContractMethods.nft_transfer
         ? []
@@ -729,6 +741,7 @@ export const getDataForNftTransfer = async (
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
+    // console.log('data', transferMethod === smartContractMethods.nft_transfer);
     return data;
   } else if (standard === ERC1155) {
     const transferMethodHash =
