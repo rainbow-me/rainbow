@@ -32,7 +32,7 @@ type SimpleHashRarity = {
   unique_attributes: number | null;
 };
 
-type SimpleHashPaymentToken = {
+export type SimpleHashPaymentToken = {
   payment_token_id: SimpleHashPaymentTokenId;
   name: string | null;
   symbol: string | null;

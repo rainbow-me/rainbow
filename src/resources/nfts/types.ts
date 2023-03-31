@@ -1,6 +1,7 @@
 import { Network } from '@/helpers/networkTypes';
 import { AssetContract, AssetType } from '@/entities';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
+import { SimpleHashPaymentToken } from './simplehash/types';
 
 export type PolygonAllowlist = Record<string, boolean>;
 
@@ -11,17 +12,28 @@ export enum NFTMarketplaceId {
 export type NFTMarketplace = {
   collectionId: string | undefined;
   collectionUrl: string | undefined;
-  floorPrice: number | undefined;
   id: string | undefined;
   marketplaceId: NFTMarketplaceId;
   name: string | undefined;
   nftUrl: string | undefined;
 };
 
+export type NFTFloorPrice = {
+  marketplaceId: NFTMarketplaceId;
+  value: number;
+  simpleHashPaymentToken: SimpleHashPaymentToken;
+};
+
+export type NFTLastSale = {
+  value: number;
+  simpleHashPaymentToken: SimpleHashPaymentToken;
+};
+
 type NFTCollection = {
   description: string | undefined;
   discord: string | undefined;
   externalUrl: string | undefined;
+  floorPrices: NFTFloorPrice[];
   imageUrl: string | undefined;
   name: string | undefined;
   simpleHashSpamScore: number | undefined;
@@ -48,7 +60,7 @@ export type NFT = {
     mimeType: string | undefined;
   };
   isSendable: boolean;
-  lastEthSale: number | undefined;
+  lastSale: NFTLastSale | undefined;
   marketplaces: NFTMarketplace[];
   name: string | undefined;
   network: Network;
