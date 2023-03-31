@@ -690,6 +690,20 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
   return data;
 };
 
+const getERC721TransferMethod = async (contractAddress: string) => {
+  const abi = await fetchContractABI(contractAddress);
+  const iface = new Interface(abi);
+  let transferMethod = smartContractMethods.nft_transfer;
+  if (
+    iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
+  ) {
+    transferMethod = smartContractMethods.erc721_safe_transfer_from;
+  } else if (iface.functions?.[smartContractMethods.nft_transfer_from.method]) {
+    transferMethod = smartContractMethods.nft_transfer_from;
+  }
+  return transferMethod;
+};
+
 /**
  * @desc Returns a transaction data string for an NFT transfer.
  * @param from The sender's address.
@@ -702,13 +716,16 @@ export const getDataForNftTransfer = async (
   to: string,
   asset: ParsedAddressAsset
 ): Promise<string | undefined> => {
-  if (!asset.id) return;
+  if (!asset.id || !asset.asset_contract?.address) return;
   const standard = asset.asset_contract?.schema_name;
   if (standard === ERC721) {
-    const transferMethodHash =
-      smartContractMethods.erc721_safe_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(from),
+    const transferMethod = await getERC721TransferMethod(
+      asset.asset_contract.address
+    );
+    const data = ethereumUtils.getDataString(transferMethod.hash, [
+      ...(transferMethod === smartContractMethods.nft_transfer
+        ? []
+        : [ethereumUtils.removeHexPrefix(from)]),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
