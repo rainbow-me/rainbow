@@ -170,7 +170,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
     isSendable:
-      nft.chain === SimpleHashChain.Ethereum &&
+      nft.chain !== SimpleHashChain.Gnosis &&
       (standard === ERC1155 || standard === ERC721),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&

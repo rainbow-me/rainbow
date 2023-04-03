@@ -446,6 +446,7 @@ export const gasPricesStartPolling = (
               const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
               const _gasLimit =
                 gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
+
               const {
                 selectedGasFee: updatedSelectedGasFee,
                 gasFeesBySpeed: updatedGasFeesBySpeed,

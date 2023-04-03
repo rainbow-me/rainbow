@@ -75,6 +75,7 @@ import { borders } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
+  delay,
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
@@ -131,6 +132,7 @@ export default function SendSheet(props) {
     stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
+    l1GasFeeOptimism,
   } = useGas();
   const recipientFieldRef = useRef();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -336,6 +338,10 @@ export default function SendSheet(props) {
       ) {
         let provider = web3Provider;
         switch (selected.type) {
+          case AssetTypes.nft:
+            setCurrentNetwork(selected.network);
+            provider = await getProviderForNetwork(selected.network);
+            break;
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
@@ -521,7 +527,6 @@ export default function SendSheet(props) {
             currentProvider,
             currentNetwork
           );
-
           if (!lessThan(updatedGasLimit, gasLimit)) {
             if (currentNetwork === Network.optimism) {
               updateTxFeeForOptimism(updatedGasLimit);
@@ -694,7 +699,6 @@ export default function SendSheet(props) {
 
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
-
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -702,7 +706,8 @@ export default function SendSheet(props) {
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
-      !toAddress
+      !toAddress ||
+      l1GasFeeOptimism === null
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -730,14 +735,15 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    currentNetwork,
+    l1GasFeeOptimism,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
     selectedGasFee,
+    toAddress,
     isSufficientGas,
     isValidGas,
-    toAddress,
+    currentNetwork,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -882,7 +888,12 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+    const assetNetwork = isNft
+      ? selected.network
+      : isL2Asset(selected?.type)
+      ? selected.type
+      : network;
+
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
@@ -924,6 +935,7 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
+    isNft,
   ]);
 
   const sendContactListDataKey = useMemo(
