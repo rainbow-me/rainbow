@@ -580,7 +580,7 @@ export const getTransferNftTransaction = async (
 
   const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
-  const data = await getDataForNftTransfer(from, recipient, transaction.asset);
+  const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -699,11 +699,11 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param asset The asset to transfer.
  * @return The data string.
  */
-export const getDataForNftTransfer = async (
+export const getDataForNftTransfer = (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): Promise<string | undefined> => {
+): string | undefined => {
   if (!asset.id || !asset.asset_contract?.address) return;
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
@@ -790,7 +790,7 @@ export const buildTransaction = async (
   };
   if (asset.type === AssetType.nft) {
     const contractAddress = asset.asset_contract?.address;
-    const data = await getDataForNftTransfer(address, _recipient, asset);
+    const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,
