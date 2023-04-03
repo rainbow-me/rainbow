@@ -365,6 +365,15 @@ export const basicSheetConfig = {
   }),
 };
 
+export const explainSheetV2Config = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      longFormHeight: params.sheetHeight,
+      ...params,
+    }),
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,
