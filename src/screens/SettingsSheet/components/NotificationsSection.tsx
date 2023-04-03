@@ -124,7 +124,7 @@ const WalletRow = ({
   const walletName = cleanedUpLabel || ens || displayAddress || '';
 
   const navigateToWalletSettings = useCallback(
-    (name, address) => {
+    (name: string, address: string) => {
       const settingsForWallet = getNotificationSettingsForWalletWithAddress(
         address
       );

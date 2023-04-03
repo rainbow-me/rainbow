@@ -69,6 +69,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   );
 
   const handleFocus = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     event => {
       onFocus?.(event);
       if (loading) {
@@ -79,6 +80,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   );
 
   const onChangeText = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     text => {
       setNativeAmount(text);
       setValue(text);

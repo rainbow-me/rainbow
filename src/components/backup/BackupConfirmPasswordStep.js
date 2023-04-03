@@ -82,6 +82,8 @@ export default function BackupConfirmPasswordStep() {
     `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
   );
   const passwordRef = useRef();
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
   const { selectedWallet, setIsWalletLoading } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
 
@@ -97,11 +99,17 @@ export default function BackupConfirmPasswordStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    keyboardShowListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardDidShow
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardDidHide
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      keyboardShowListener.current?.remove();
+      keyboardHideListener.current?.remove();
     };
   }, []);
 

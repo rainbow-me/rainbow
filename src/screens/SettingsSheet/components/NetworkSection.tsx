@@ -15,6 +15,7 @@ import {
 } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import networkInfo from '@/helpers/networkInfo';
+import { Network } from '@/helpers';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
 
@@ -30,7 +31,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
-    async network => {
+    async (network: Network) => {
       await resetAccountState();
       await dispatch(settingsUpdateNetwork(network));
       InteractionManager.runAfterInteractions(async () => {

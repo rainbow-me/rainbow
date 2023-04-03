@@ -233,6 +233,7 @@ const SettingsSection = ({
   }, [setTheme]);
 
   const handleSelectTheme = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       setTheme(actionKey);
     },

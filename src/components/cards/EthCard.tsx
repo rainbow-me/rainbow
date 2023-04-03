@@ -39,6 +39,7 @@ import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
+import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -57,7 +58,7 @@ export const EthCard = () => {
   }, [nativeCurrency]);
 
   const handlePressBuy = useCallback(
-    e => {
+    (e: ButtonPressAnimationTouchEvent) => {
       if (e && 'stopPropagation' in e) {
         e.stopPropagation();
       }

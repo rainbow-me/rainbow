@@ -114,7 +114,7 @@ const AppIconSection = () => {
   const { colors, isDarkMode } = useTheme();
 
   const onSelectIcon = useCallback(
-    icon => {
+    (icon: string) => {
       Logger.log('onSelectIcon', icon);
       analytics.track('Set App Icon', { appIcon: icon });
       settingsChangeAppIcon(icon);

@@ -171,6 +171,7 @@ export default function useSelectImageMenu({
   }, [navigate, onChangeImage]);
 
   const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'library') {
         isRemoved.current = false;
@@ -211,7 +212,7 @@ export default function useSelectImageMenu({
   }, [handleSelectImage, handleSelectNFT, menuItems, onRemoveImage]);
 
   const ContextMenu = useCallback(
-    ({ children }) => (
+    ({ children }: { children?: React.ReactNode }) => (
       <ContextMenuButton
         enableContextMenu
         menuConfig={{

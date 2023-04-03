@@ -27,6 +27,8 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
+import { ListRenderItem } from 'react-native';
+import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 
 export const SelectENSSheetHeight = 400;
 
@@ -48,7 +50,7 @@ export default function SelectENSSheet() {
   const { params } = useRoute<any>();
 
   const handleSelectENS = useCallback(
-    ensName => {
+    (ensName: string) => {
       prefetchENSAvatar(ensName);
       prefetchENSCover(ensName);
       prefetchENSRecords(ensName);
@@ -77,7 +79,7 @@ export default function SelectENSSheet() {
     scrollEnabled = true;
   }
 
-  const renderItem = useCallback(
+  const renderItem: ListRenderItem<{ name: string }> = useCallback(
     ({ item }) => {
       return (
         <ButtonPressAnimation

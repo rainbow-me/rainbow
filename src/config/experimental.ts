@@ -16,14 +16,19 @@ export const L2_TXS = 'L2 Transactions';
 export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
-
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
  */
 export const LOG_PUSH = 'Enable Log Push';
 
-export const defaultConfig = {
+export type ExperimentalValue = {
+  settings: boolean;
+  value: boolean;
+  needsRestart?: boolean;
+};
+
+export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },

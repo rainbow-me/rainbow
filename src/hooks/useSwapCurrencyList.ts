@@ -228,7 +228,7 @@ const useSwapCurrencyList = (
   }, [searchChainId, searchQuery, searching, unfilteredFavorites]);
 
   const getImportedAsset = useCallback(
-    async (searchQuery, chainId): Promise<RT[] | null> => {
+    async (searchQuery: string, chainId: number): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
           const tokenListEntry =

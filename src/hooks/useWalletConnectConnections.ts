@@ -6,6 +6,7 @@ import { sortList } from '../helpers/sortList';
 import {
   walletConnectDisconnectAllByDappUrl as rawWalletConnectDisconnectAllByDappUrl,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
+  WalletconnectRequestCallback,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
 import { AppState } from '@/redux/store';
@@ -49,18 +50,19 @@ export default function useWalletConnectConnections() {
   } = useSelector(walletConnectSelector);
 
   const walletConnectDisconnectAllByDappUrl = useCallback(
-    dappUrl => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
+    (dappUrl: string) =>
+      dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
     [dispatch]
   );
 
   const walletConnectOnSessionRequest = useCallback(
-    (uri, callback) =>
+    (uri: string, callback?: WalletconnectRequestCallback) =>
       dispatch(rawWalletConnectOnSessionRequest(uri, callback)),
     [dispatch]
   );
 
   const walletConnectUpdateSessionConnectorByDappUrl = useCallback(
-    (dappUrl, accountAddress, chainId) =>
+    (dappUrl: string, accountAddress: string, chainId: number) =>
       dispatch(
         rawWalletConnectUpdateSessionConnectorByDappUrl(
           dappUrl,

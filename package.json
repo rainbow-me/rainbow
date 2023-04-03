@@ -259,7 +259,7 @@
     "react-native-splash-screen": "3.2.0",
     "react-native-storage": "1.0.1",
     "react-native-store-review": "0.1.5",
-    "react-native-svg": "rainbow-me/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b8b473",
+    "react-native-svg": "13.9.0",
     "react-native-tab-view": "2.14.2",
     "react-native-tcp": "3.3.2",
     "react-native-text-input-mask": "2.0.0",
@@ -277,7 +277,7 @@
     "react-redux": "7.2.1",
     "react-style-proptype": "3.2.2",
     "readable-stream": "1.1.14",
-    "recoil": "0.5.2",
+    "recoil": "0.7.6",
     "recyclerlistview": "3.0.5",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
@@ -417,6 +417,7 @@
     "**/ua-parser-js": "0.7.33",
     "**/http-cache-semantics": "4.1.1",
     "**/@sideway/formula": "3.0.1",
+    "**/@types/react": "18.0.24",
     "**/socket.io-parser": "4.2.3"
   },
   "react-native": {

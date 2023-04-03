@@ -88,6 +88,8 @@ export default function RestoreCloudStep({
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
 
   const isScaleMoreThanDefault = scale > 3;
 
@@ -99,11 +101,17 @@ export default function RestoreCloudStep({
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    keyboardShowListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardDidShow
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardDidHide
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      keyboardShowListener.current?.remove();
+      keyboardHideListener.current?.remove();
     };
   }, []);
 

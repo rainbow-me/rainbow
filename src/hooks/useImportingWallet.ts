@@ -75,7 +75,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   }, [accountAddress, seedPhrase]);
 
   const handleSetImporting = useCallback(
-    newImportingState => {
+    (newImportingState: boolean) => {
       setImporting(newImportingState);
       setParams({ gesturesEnabled: !newImportingState });
     },
@@ -83,7 +83,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const handleSetSeedPhrase = useCallback(
-    text => {
+    (text: string) => {
       if (isImporting) return null;
       return setSeedPhrase(text);
     },
@@ -91,7 +91,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name, forceColor, address = null, avatarUrl) => {
+    (name: any, forceColor: any, address: any = null, avatarUrl: any) => {
       const importWallet = (color: string, name: string, image: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
@@ -132,12 +132,17 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const handlePressImportButton = useCallback(
-    async (forceColor, forceAddress, forceEmoji = null, avatarUrl) => {
+    async (
+      forceColor: any,
+      forceAddress: any,
+      forceEmoji: any = null,
+      avatarUrl: any
+    ) => {
       setBusy(true);
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
-      let guardedForceColor =
+      const guardedForceColor =
         typeof forceColor === 'string' || typeof forceColor === 'number'
           ? forceColor
           : null;
@@ -290,6 +295,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           const previousWalletCount = keys(wallets).length;
           initializeWallet(
             input,
+            // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
             color,
             name ? name : '',
             false,

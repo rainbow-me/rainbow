@@ -20,7 +20,7 @@ const LanguageSection = () => {
   const { language, settingsChangeLanguage } = useAccountSettings();
 
   const onSelectLanguage = useCallback(
-    language => {
+    (language: string) => {
       settingsChangeLanguage(language);
       analytics.track('Changed language', { language });
     },

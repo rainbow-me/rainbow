@@ -36,6 +36,7 @@ export default React.memo(function WrappedNFT({
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     asset =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,

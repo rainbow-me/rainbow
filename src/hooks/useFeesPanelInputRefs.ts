@@ -6,7 +6,7 @@ export default function useFeesPanelInputRefs() {
   const maxBaseFieldRef = useRef<TextInput>();
   const minerTipFieldRef = useRef<TextInput>();
 
-  const findNextInput = useCallback(currentFocusedInputHandle => {
+  const findNextInput = useCallback((currentFocusedInputHandle: any) => {
     const maxBaseInputRefHandle = maxBaseFieldRef.current;
     const minerTipInputRefHandle = minerTipFieldRef.current;
 

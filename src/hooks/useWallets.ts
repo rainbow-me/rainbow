@@ -13,6 +13,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
+import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 
 const walletSelector = createSelector(
   ({
@@ -49,7 +50,8 @@ export default function useWallets() {
   } = useSelector(walletSelector);
 
   const setIsWalletLoading = useCallback(
-    isLoading => dispatch(rawSetIsWalletLoading(isLoading)),
+    (isLoading: WalletLoadingState | null) =>
+      dispatch(rawSetIsWalletLoading(isLoading)),
     [dispatch]
   );
 

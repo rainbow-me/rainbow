@@ -19,7 +19,7 @@ export type Example = {
   name: string;
   wrapper?: (children: React.ReactNode) => React.ReactNode;
   subTitle?: string;
-  Example?: () => Source<React.ReactChild>;
+  Example?: () => Source<React.ReactElement | string | number>;
   examples?: Example[];
 };
 

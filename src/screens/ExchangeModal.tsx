@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import equal from 'react-fast-compare';
 import {
+  EmitterSubscription,
   InteractionManager,
   Keyboard,
   NativeModules,
@@ -86,7 +87,7 @@ import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
@@ -230,6 +231,8 @@ export default function ExchangeModal({
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
+
+  const keyboardListenerSubscription = useRef<EmitterSubscription>();
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -645,7 +648,7 @@ export default function ExchangeModal({
   });
 
   const submit = useCallback(
-    async amountInUSD => {
+    async (amountInUSD: any) => {
       setIsAuthorizing(true);
       const NotificationManager = ios
         ? NativeModules.NotificationManager
@@ -942,7 +945,7 @@ export default function ExchangeModal({
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
       delayNext();
-      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      IS_ANDROID && keyboardListenerSubscription.current?.remove();
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
@@ -957,9 +960,14 @@ export default function ExchangeModal({
       });
       analytics.track('Opened Swap Settings');
     };
-    ios || !isKeyboardOpen()
-      ? internalNavigate()
-      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+    if (IS_IOS || !isKeyboardOpen()) {
+      internalNavigate();
+    } else {
+      keyboardListenerSubscription.current = Keyboard.addListener(
+        'keyboardDidHide',
+        internalNavigate
+      );
+    }
   }, [
     lastFocusedInputHandle,
     inputFieldRef,
@@ -981,7 +989,7 @@ export default function ExchangeModal({
       outputFieldRef?.current?.blur();
       nativeFieldRef?.current?.blur();
       const internalNavigate = () => {
-        android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+        IS_ANDROID && keyboardListenerSubscription.current?.remove();
         setParams({ focused: false });
         navigate(Routes.SWAP_DETAILS_SHEET, {
           confirmButtonProps,
@@ -1005,9 +1013,14 @@ export default function ExchangeModal({
           type,
         });
       };
-      ios || !isKeyboardOpen()
-        ? internalNavigate()
-        : Keyboard.addListener('keyboardDidHide', internalNavigate);
+      if (IS_IOS || !isKeyboardOpen()) {
+        internalNavigate();
+      } else {
+        keyboardListenerSubscription.current = Keyboard.addListener(
+          'keyboardDidHide',
+          internalNavigate
+        );
+      }
     },
     [
       confirmButtonProps,
