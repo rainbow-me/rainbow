@@ -704,6 +704,11 @@ PODS:
   - RNSentry (3.4.1):
     - React-Core
     - Sentry (= 7.11.0)
+  - RNSound (0.11.2):
+    - React-Core
+    - RNSound/Core (= 0.11.2)
+  - RNSound/Core (0.11.2):
+    - React-Core
   - RNStoreReview (0.1.5):
     - React
   - RNSVG (12.2.1):
@@ -872,6 +877,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
+  - RNSound (from `../node_modules/react-native-sound`)
   - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNTextSize (from `../node_modules/react-native-text-size`)
@@ -1139,6 +1145,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSentry:
     :path: "../node_modules/@sentry/react-native"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   RNStoreReview:
     :path: "../node_modules/react-native-store-review/ios"
   RNSVG:
@@ -1304,6 +1312,7 @@ SPEC CHECKSUMS:
   RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
+  RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29

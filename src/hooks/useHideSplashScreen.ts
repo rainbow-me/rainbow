@@ -8,6 +8,7 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+const Sound = require('react-native-sound');
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
@@ -23,6 +24,21 @@ export default function useHideSplashScreen() {
       } else {
         SplashScreen.hide();
       }
+
+      const sound = new Sound(
+        require('../assets/sounds/RainbowSega.mp3'),
+        (error: any) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
+          }
+          // if loaded successfully
+
+          sound.play((success: any) => {
+            console.log('played 1');
+          });
+        }
+      );
     }
 
     if (android) {
