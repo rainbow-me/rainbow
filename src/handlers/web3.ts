@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -7,7 +6,6 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
-  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -15,7 +13,6 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
 import { RainbowConfig } from '../model/config';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -42,7 +39,6 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { fetchContractABI } from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
