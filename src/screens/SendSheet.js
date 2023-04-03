@@ -75,7 +75,6 @@ import { borders } from '@/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
-  delay,
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
@@ -527,6 +526,7 @@ export default function SendSheet(props) {
             currentProvider,
             currentNetwork
           );
+
           if (!lessThan(updatedGasLimit, gasLimit)) {
             if (currentNetwork === Network.optimism) {
               updateTxFeeForOptimism(updatedGasLimit);
@@ -699,6 +699,7 @@ export default function SendSheet(props) {
 
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
+
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
