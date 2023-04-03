@@ -736,11 +736,7 @@ export const getDataForNftTransfer = (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-  } else {
-    // ERC721s + unsupported NFTs (will most likely fail)
-    if (standard !== ERC721) {
-      logger.warn(`Attempting to send unsupported NFT:\n${asset}`);
-    }
+  } else if (standard === ERC721) {
     const transferMethod = smartContractMethods.erc721_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(from),
