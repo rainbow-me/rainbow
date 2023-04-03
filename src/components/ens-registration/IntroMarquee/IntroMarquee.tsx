@@ -10,6 +10,12 @@ import { queryClient } from '@/react-query';
 import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
 
+type MarqueeItemType = {
+  name: string;
+  onPress: () => void;
+  testID?: string;
+};
+
 export const ensAvatarUrl = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
 
@@ -43,7 +49,17 @@ export default function IntroMarquee({
   );
 
   const renderItem = useCallback(
-    ({ item, onPressStart, onPressCancel, testID }) => (
+    ({
+      item,
+      onPressStart,
+      onPressCancel,
+      testID,
+    }: {
+      item: MarqueeItemType;
+      onPressStart: () => void;
+      onPressCancel: () => void;
+      testID?: string;
+    }) => (
       <ENSAvatarPlaceholder
         name={item.name}
         onPress={item.onPress}

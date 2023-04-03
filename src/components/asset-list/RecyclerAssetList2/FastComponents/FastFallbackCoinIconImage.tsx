@@ -52,6 +52,7 @@ export const FastFallbackCoinIconImage = React.memo(
       forceUpdate();
     }, [key, forceUpdate]);
     const onError = useCallback(
+      // @ts-expect-error passed to an untyped JS component
       err => {
         const newError = err.nativeEvent.message?.includes('404')
           ? ImageState.NOT_FOUND

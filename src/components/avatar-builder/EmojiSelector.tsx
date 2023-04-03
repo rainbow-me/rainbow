@@ -1,5 +1,6 @@
 import React, {
   ComponentType,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -73,7 +74,7 @@ export const EmojiSelector = ({
   const scrollPosition = useSharedValue(0);
   const nextCategoryOffset = useSharedValue(1);
 
-  const recyclerListView = useRef<ComponentType<any>>();
+  const recyclerListView = useRef<ComponentType<any>>(null);
   const currentIndex = useRef(0);
   const blockCategories = useRef(true);
 
@@ -225,12 +226,12 @@ export const EmojiSelector = ({
   );
 
   const renderScrollView = useCallback(
-    ({ children, ...props }) => {
+    ({ children, ...props }: PropsWithChildren) => {
       const emojiRows: string[][] = [];
 
       if (allEmojiList[2]) {
         for (let i = 0; i < columns * 10; i += columns) {
-          let emojis = [];
+          const emojis = [];
           for (let j = 0; j < columns; j++) {
             emojis.push(
               charFromEmojiObject(
@@ -313,6 +314,7 @@ export const EmojiSelector = ({
 
   return (
     <View style={sx.frame} {...other}>
+      {/* @ts-expect-error We use an old version of RNGH, and it doesn't play well with React 18 */}
       <TapGestureHandler onHandlerStateChange={onTapChange}>
         <View style={sx.outerContainer}>
           {!isReady ? <EmojisLoader /> : null}

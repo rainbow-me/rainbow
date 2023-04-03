@@ -322,6 +322,7 @@ function MoreButton() {
   };
 
   const handlePressMenuItem = React.useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     e => {
       if (e.nativeEvent.actionKey === 'copy') {
         handlePressCopy();

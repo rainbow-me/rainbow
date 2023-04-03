@@ -17,7 +17,13 @@ export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 
-export const defaultConfig = {
+export type ExperimentalValue = {
+  settings: boolean;
+  value: boolean;
+  needsRestart?: boolean;
+};
+
+export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },

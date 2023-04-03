@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import networkTypes from '../helpers/networkTypes';
+import networkTypes, { Network } from '../helpers/networkTypes';
 import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
@@ -12,7 +12,7 @@ import logger from '@/utils/logger';
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const loadAccountData = useCallback(
-    async network => {
+    async (network: Network) => {
       logger.sentry('Load wallet account data');
       await dispatch(showcaseTokensLoadState());
       await dispatch(hiddenTokensLoadState());

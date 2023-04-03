@@ -12,7 +12,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys } from '../model/wallet';
+import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -145,7 +145,7 @@ export default function ChangeWalletSheet() {
   }
 
   const onChangeAccount = useCallback(
-    async (walletId, address, fromDeletion = false) => {
+    async (walletId: string, address: string, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
       const wallet = wallets?.[walletId];
       if (!wallet) return;
@@ -192,12 +192,16 @@ export default function ChangeWalletSheet() {
   );
 
   const deleteWallet = useCallback(
-    async (walletId, address) => {
+    async (walletId: string, address: string) => {
+      const currentWallet = wallets?.[walletId];
+      // There's nothing to delete if there's no wallet
+      if (!currentWallet) return;
+
       const newWallets = {
         ...wallets,
         [walletId]: {
-          ...wallets?.[walletId],
-          addresses: wallets?.[walletId].addresses.map(account =>
+          ...currentWallet,
+          addresses: (currentWallet.addresses ?? []).map(account =>
             account.address.toLowerCase() === address.toLowerCase()
               ? { ...account, visible: false }
               : account
@@ -211,7 +215,7 @@ export default function ChangeWalletSheet() {
       );
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete (newWallets as any)[walletId];
+        delete newWallets[walletId];
         await dispatch(walletsUpdate(newWallets));
       } else {
         await dispatch(walletsUpdate(newWallets));
@@ -222,7 +226,7 @@ export default function ChangeWalletSheet() {
   );
 
   const renameWallet = useCallback(
-    (walletId, address) => {
+    (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
       const account = wallet.addresses.find(
@@ -309,7 +313,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressEdit = useCallback(
-    (walletId, address) => {
+    (walletId: string, address: string) => {
       analytics.track('Tapped "Edit Wallet"');
       renameWallet(walletId, address);
     },
@@ -317,7 +321,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressNotifications = useCallback(
-    (walletName, address) => {
+    (walletName: string, address: string) => {
       analytics.track('Tapped "Notification Settings"');
       const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(
         address
@@ -343,7 +347,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressRemove = useCallback(
-    (walletId, address) => {
+    (walletId: string, address: string) => {
       analytics.track('Tapped "Delete Wallet"');
       // If there's more than 1 account
       // it's deletable
@@ -386,7 +390,7 @@ export default function ChangeWalletSheet() {
                     address: address,
                     wallets,
                   }) || {};
-                if (foundWallet) {
+                if (foundWallet && key) {
                   await onChangeAccount(key, foundWallet.address, true);
                 }
               }

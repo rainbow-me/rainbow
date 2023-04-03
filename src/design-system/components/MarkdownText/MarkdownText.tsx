@@ -325,6 +325,7 @@ export const MarkdownText = memo(function MarkdownText({
 
   return (
     <MarkdownStack {...spaceProps}>
+      {/* @ts-expect-error MarkdownDisplay component library is unmaintained and isn't updated to work well with React 18 */}
       <MarkdownDisplay rules={rules}>{children}</MarkdownDisplay>
     </MarkdownStack>
   );

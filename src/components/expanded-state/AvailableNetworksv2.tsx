@@ -89,6 +89,7 @@ const AvailableNetworksv2 = ({
   );
 
   const handlePressContextMenu = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey: network } }) => {
       convertAssetAndNavigate(network);
     },

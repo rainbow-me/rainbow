@@ -89,21 +89,21 @@ export default function useSwapInputHandlers() {
   ]);
 
   const updateInputAmount = useCallback(
-    value => {
+    (value: string | null) => {
       dispatch(updateSwapInputAmount(value));
     },
     [dispatch]
   );
 
   const updateNativeAmount = useCallback(
-    value => {
+    (value: string | null) => {
       dispatch(updateSwapNativeAmount(value));
     },
     [dispatch]
   );
 
   const updateOutputAmount = useCallback(
-    value => {
+    (value: string | null) => {
       dispatch(updateSwapOutputAmount(value));
     },
     [dispatch]

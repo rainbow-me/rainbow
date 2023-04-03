@@ -16,7 +16,6 @@ export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrol
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
-export { default as useAnimatedListener } from './useAnimatedListener';
 export { default as useAppState } from './useAppState';
 export { default as useAppVersion } from './useAppVersion';
 export { default as useAsset } from './useAsset';

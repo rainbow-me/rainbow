@@ -102,10 +102,7 @@ interface Props {
   currentWallet: any;
   editMode: boolean;
   height: number;
-  onChangeAccount: (
-    walletId: string,
-    address: EthereumAddress | undefined
-  ) => void;
+  onChangeAccount: (walletId: string, address: EthereumAddress) => void;
   onPressAddAnotherWallet: () => void;
   onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
@@ -231,7 +228,7 @@ export default function WalletList({
   }));
 
   const renderItem = useCallback(
-    ({ item }) => {
+    ({ item }: any) => {
       switch (item.rowType) {
         case RowTypes.ADDRESS:
           return (

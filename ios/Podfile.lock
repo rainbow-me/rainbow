@@ -699,7 +699,7 @@ PODS:
   - RNSentry (3.4.1):
     - React-Core
     - Sentry (= 7.11.0)
-  - RNSVG (12.2.1):
+  - RNSVG (13.9.0):
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
@@ -1156,7 +1156,7 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: b51b7ac64c07d4eacfc8cc5750a1dd28adbf2528
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: a6454570f573a0f6f1d397e5a95c13e8e45d1700
   FBReactNativeSpec: 09e8dfba44487e5dc4882a9f5318cde67549549c
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
@@ -1178,7 +1178,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: b58664c4f117ae5e709ca1d87109491996539cc4
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   hermes-engine: 566e656aa95456a3f3f739fd76ea9a9656f2633f
@@ -1287,7 +1287,7 @@ SPEC CHECKSUMS:
   RNReanimated: 6668b0587bebd4b15dd849b99e5a9c70fc12ed95
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
-  RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
+  RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815

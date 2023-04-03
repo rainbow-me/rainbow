@@ -1,6 +1,10 @@
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
-import { EmitterSubscription, Keyboard } from 'react-native';
+import {
+  EmitterSubscription,
+  Keyboard,
+  KeyboardEventListener,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
@@ -24,7 +28,7 @@ export default function useKeyboardHeight(options = {}) {
 
   const isFocused = useIsFocused();
 
-  const handleKeyboardDidShow = useCallback(
+  const handleKeyboardDidShow: KeyboardEventListener = useCallback(
     event => {
       const newHeight = Math.floor(event.endCoordinates.height);
 

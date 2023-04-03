@@ -10,7 +10,6 @@ const useExperimentalFlag = (name: any) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(RainbowContext).config[name];
   } else {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return defaultConfig[name].value;
   }
 };
