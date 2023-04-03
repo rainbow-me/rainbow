@@ -29,6 +29,8 @@ import {
   BNB_BSC_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
+  CRYPTO_KITTIES_NFT_ADDRESS,
+  CRYPTO_PUNKS_NFT_ADDRESS,
 } from '@/references';
 import {
   addBuffer,
@@ -690,31 +692,6 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
   return data;
 };
 
-const getERC721TransferMethod = async (contractAddress: string) => {
-  const abi = await fetchContractABI(contractAddress);
-  // console.log('abi', abi);
-  const iface = new Interface(abi);
-  // console.log('iface', iface);
-  let transferMethod = smartContractMethods.nft_transfer;
-  if (
-    iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
-  ) {
-    // console.log(
-    //   'help1',
-    //   iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
-    // );
-    transferMethod = smartContractMethods.erc721_safe_transfer_from;
-  } else if (iface.functions?.[smartContractMethods.nft_transfer_from.method]) {
-    // console.log(
-    //   'help2',
-    //   iface.functions?.[smartContractMethods.erc721_safe_transfer_from.method]
-    // );
-    transferMethod = smartContractMethods.nft_transfer_from;
-  }
-  // console.log('help3', iface.functions);
-  return transferMethod;
-};
-
 /**
  * @desc Returns a transaction data string for an NFT transfer.
  * @param from The sender's address.
@@ -728,25 +705,30 @@ export const getDataForNftTransfer = async (
   asset: ParsedAddressAsset
 ): Promise<string | undefined> => {
   if (!asset.id || !asset.asset_contract?.address) return;
+  const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
-  if (standard === ERC721) {
-    const transferMethod = await getERC721TransferMethod(
-      asset.asset_contract.address
-    );
-    // console.log('transferMethod', transferMethod);
-    const data = ethereumUtils.getDataString(transferMethod.hash, [
-      ...(transferMethod === smartContractMethods.nft_transfer
-        ? []
-        : [ethereumUtils.removeHexPrefix(from)]),
+  let data;
+  if (
+    lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.token_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-    // console.log('data', transferMethod === smartContractMethods.nft_transfer);
-    return data;
+  } else if (
+    lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.punk_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+    ]);
   } else if (standard === ERC1155) {
-    const transferMethodHash =
-      smartContractMethods.erc1155_safe_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
+    const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
+    data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
@@ -754,8 +736,19 @@ export const getDataForNftTransfer = async (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-    return data;
+  } else {
+    // ERC721s + unsupported NFTs (will most likely fail)
+    if (standard !== ERC721) {
+      logger.warn(`Attempting to send unsupported NFT:\n${asset}`);
+    }
+    const transferMethod = smartContractMethods.erc721_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(from),
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+    ]);
   }
+  return data;
 };
 
 /**
