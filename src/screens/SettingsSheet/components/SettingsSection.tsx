@@ -62,18 +62,26 @@ const checkAllWallets = (wallets: any) => {
   let canBeBackedUp = false;
   let allBackedUp = true;
   Object.keys(wallets).forEach(key => {
-    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly) {
+    if (
+      !wallets[key].backedUp &&
+      wallets[key].type !== WalletTypes.readOnly &&
+      wallets[key].type !== WalletTypes.bluetooth
+    ) {
       allBackedUp = false;
     }
 
     if (
       !wallets[key].backedUp &&
       wallets[key].type !== WalletTypes.readOnly &&
+      wallets[key].type !== WalletTypes.bluetooth &&
       !wallets[key].imported
     ) {
       areBackedUp = false;
     }
-    if (wallets[key].type !== WalletTypes.readOnly) {
+    if (
+      wallets[key].type !== WalletTypes.readOnly &&
+      wallets[key].type !== WalletTypes.readOnly
+    ) {
       canBeBackedUp = true;
     }
   });
