@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View, ViewStyle } from 'react-native';
+import { Image, ImageSourcePropType, View, ViewStyle } from 'react-native';
 import ArbitrumBadge from '@/assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '@/assets/badges/arbitrumBadgeDark.png';
 import OptimismBadge from '@/assets/badges/optimismBadge.png';
@@ -17,8 +17,8 @@ interface FastChainBadgeProps {
 
 const AssetIconsByTheme: {
   [key in AssetType]?: {
-    dark: StaticImageData;
-    light: StaticImageData;
+    dark: ImageSourcePropType;
+    light: ImageSourcePropType;
   };
 } = {
   [AssetType.arbitrum]: {
