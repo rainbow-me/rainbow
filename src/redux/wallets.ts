@@ -233,7 +233,6 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     logger.error(new RainbowError('Exception during walletsLoadState'), {
       message: (error as Error)?.message,
     });
-    captureException(error);
   }
 };
 
