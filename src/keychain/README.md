@@ -11,6 +11,12 @@ ever need to swap out the base library in the future, we can more easily do
 that. It will also help in testing because we can mock this module more easily
 than the base library.
 
+#### A note on the API design
+
+Some non-private values are cached in MMKV for faster reads. These values exist
+in keychain so that they may persist between app installs. Loading from keychain
+into MMKV gives us the resilience of keychain, with the speed of MMKV.
+
 ## Usage
 
 The API is essentially the same as our pre-existing keychain wrapper, except
