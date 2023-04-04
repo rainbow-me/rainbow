@@ -128,7 +128,9 @@ export default function NFTBriefTokenInfoRow({
         floorPrice === null
           ? floorPrice
           : convertAmountToNativeDisplay(
-              parseFloat(floorPrice) * priceOfEth,
+              parseFloat(
+                floorPrice?.[0] === '<' ? floorPrice.substring(2) : floorPrice
+              ) * priceOfEth,
               nativeCurrency
             )}
       </TokenInfoItem>

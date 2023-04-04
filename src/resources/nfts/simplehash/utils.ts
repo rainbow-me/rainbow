@@ -11,6 +11,7 @@ import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { PolygonAllowlist } from '../types';
+import { ERC1155, ERC721 } from '@/handlers/web3';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -127,12 +128,14 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
 
   const isENS = nft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
 
+  const standard = nft.contract.type;
+
   return {
     animation_url: nft?.video_url,
     asset_contract: {
       address: nft.contract_address,
       name: nft.contract.name || undefined,
-      schema_name: nft.contract.type,
+      schema_name: standard,
       symbol: nft.contract.symbol || undefined,
     },
     background: nft.background_color,
@@ -166,7 +169,9 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
-    isSendable: nft.chain === SimpleHashChain.Ethereum,
+    isSendable:
+      nft.chain === SimpleHashChain.Ethereum &&
+      (standard === ERC1155 || standard === ERC721),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
       nft?.last_sale?.unit_price !== undefined
