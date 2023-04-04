@@ -170,10 +170,6 @@ export function Explain() {
       backgroundColor="white"
       scrollEnabled={false}
       customHeight={params.sheetHeight || undefined}
-      style={{
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
-      }}
     >
       <Box paddingVertical="44px" paddingHorizontal="32px" height="full">
         {params.children({})}
