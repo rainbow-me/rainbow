@@ -1,0 +1,72 @@
+import { useQuery } from '@tanstack/react-query';
+
+import {
+  createQueryKey,
+  queryClient,
+  QueryConfig,
+  QueryFunctionResult,
+} from '@/react-query';
+
+import { metadataClient } from '@/graphql';
+
+// Set a default stale time of 20 minutes
+const defaultStaleTime = 1_200_000;
+
+// ///////////////////////////////////////////////
+// Query Types
+
+// ///////////////////////////////////////////////
+// Query Key
+
+const ensMarqueeQueryKey = () =>
+  createQueryKey('ensMarquee', {}, { persisterVersion: 1 });
+
+type EnsMarqueeQueryKey = ReturnType<typeof ensMarqueeQueryKey>;
+
+// ///////////////////////////////////////////////
+// Query Function
+
+async function ensMarqueeQueryFunction() {
+  const data = await metadataClient.getEnsMarquee();
+  return data;
+}
+
+type EnsMarqueeResult = QueryFunctionResult<typeof ensMarqueeQueryFunction>;
+
+// ///////////////////////////////////////////////
+// Query Prefetcher (Optional)
+
+export async function prefetchEnsMarquee(
+  config: QueryConfig<EnsMarqueeResult, Error, EnsMarqueeQueryKey> = {}
+) {
+  return await queryClient.prefetchQuery(
+    ensMarqueeQueryKey(),
+    ensMarqueeQueryFunction,
+    config
+  );
+}
+
+// ///////////////////////////////////////////////
+// Query Fetcher (Optional)
+
+export async function fetchEnsMarquee(
+  config: QueryConfig<EnsMarqueeResult, Error, EnsMarqueeQueryKey> = {}
+) {
+  return await queryClient.fetchQuery(
+    ensMarqueeQueryKey(),
+    ensMarqueeQueryFunction,
+    config
+  );
+}
+
+// ///////////////////////////////////////////////
+// Query Hook
+
+export function useEnsMarquee(
+  config: QueryConfig<EnsMarqueeResult, Error, EnsMarqueeQueryKey> = {
+    staleTime: defaultStaleTime,
+    cacheTime: Infinity,
+  }
+) {
+  return useQuery(ensMarqueeQueryKey(), ensMarqueeQueryFunction, config);
+}
