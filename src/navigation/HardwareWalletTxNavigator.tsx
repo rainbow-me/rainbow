@@ -120,7 +120,7 @@ export const HardwareWalletTxNavigator = () => {
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
-          customHeight={HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT}
+          height="auto"
           scrollEnabled={false}
         >
           <Swipe.Navigator

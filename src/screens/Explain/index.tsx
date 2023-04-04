@@ -14,7 +14,6 @@ import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 
 type ExplainSheetRouteProps = {
-  sheetHeight?: number;
   children: React.FC;
 };
 
@@ -166,7 +165,7 @@ export function Explain() {
   }
 
   return (
-    <SimpleSheet backgroundColor="white" scrollEnabled={false}>
+    <SimpleSheet backgroundColor="white" height="full" scrollEnabled={false}>
       <Box paddingVertical="44px" paddingHorizontal="32px">
         {params.children({})}
       </Box>
@@ -187,18 +186,11 @@ export function Explain() {
 export function useExplainSheet() {
   const { navigate } = useNavigation();
 
-  const open = React.useCallback(
-    (
-      children: React.FC,
-      options: Omit<ExplainSheetRouteProps, 'children'> = {}
-    ) => {
-      navigate(Routes.EXPLAIN, {
-        children,
-        sheetHeight: options.sheetHeight,
-      });
-    },
-    []
-  );
+  const open = React.useCallback((children: React.FC) => {
+    navigate(Routes.EXPLAIN, {
+      children,
+    });
+  }, []);
 
   return {
     open,

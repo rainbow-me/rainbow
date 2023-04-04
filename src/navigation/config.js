@@ -369,7 +369,7 @@ export const explainSheetV2Config = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: params.sheetHeight,
+      longFormHeight: params.sheetHeight ?? -safeAreaInsetValues.bottom,
     }),
   }),
 };

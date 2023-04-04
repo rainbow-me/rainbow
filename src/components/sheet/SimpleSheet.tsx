@@ -1,14 +1,15 @@
 import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
-import React from 'react';
-import { ScrollView, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StatusBar, View } from 'react-native';
 import SlackSheet from './SlackSheet';
 
 type SimpleSheetProps = {
   children: React.ReactNode;
   backgroundColor: string;
-  customHeight?: number;
+  height: 'full' | 'auto';
   onDismiss?: () => void;
   scrollEnabled?: boolean;
 };
@@ -16,20 +17,32 @@ type SimpleSheetProps = {
 export const SimpleSheet = ({
   children,
   backgroundColor,
-  customHeight,
+  height,
   onDismiss,
   scrollEnabled = true,
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
+  const { setParams } = useNavigation();
+  const [autoHeight, setAutoHeight] = useState<number>();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
+
+  console.log(fullSheetHeight);
+
+  useEffect(
+    () =>
+      setParams({
+        sheetHeight: height === 'full' ? fullSheetHeight : autoHeight,
+      }),
+    [autoHeight, deviceHeight, fullSheetHeight, height, setParams]
+  );
 
   return (
     // @ts-expect-error JavaScript component
     <SlackSheet
       additionalTopPadding={
-        IS_ANDROID && !customHeight ? StatusBar.currentHeight : false
+        IS_ANDROID && height === 'full' ? StatusBar.currentHeight : false
       }
-      contentHeight={customHeight ?? deviceHeight}
+      contentHeight={height === 'full' ? deviceHeight : autoHeight}
       height="100%"
       removeTopPadding
       scrollEnabled={scrollEnabled}
@@ -43,10 +56,12 @@ export const SimpleSheet = ({
           backgroundColor: backgroundColor,
         }}
         contentContainerStyle={{
-          minHeight: customHeight ?? fullSheetHeight,
+          minHeight: height === 'full' ? fullSheetHeight : autoHeight,
         }}
       >
-        {children}
+        <View onLayout={e => setAutoHeight(e.nativeEvent.layout.height)}>
+          {children}
+        </View>
       </ScrollView>
     </SlackSheet>
   );

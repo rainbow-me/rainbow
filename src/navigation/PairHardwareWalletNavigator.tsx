@@ -65,6 +65,7 @@ export function PairHardwareWalletNavigator() {
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
+          height="full"
           onDismiss={onDismiss}
           scrollEnabled={false}
         >
