@@ -320,7 +320,13 @@ function BSNavigator() {
       <BSStack.Screen
         component={Explain}
         name={Routes.EXPLAIN}
-        options={bottomSheetPreset}
+        options={({ route }) => {
+          const hasSheetHeight = route.params && route.params.sheetHeight;
+          return {
+            ...bottomSheetPreset,
+            height: hasSheetHeight ? route.params.sheetHeight : undefined,
+          };
+        }}
       />
       <BSStack.Screen
         component={ExternalLinkWarningSheet}
