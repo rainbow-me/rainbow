@@ -368,8 +368,8 @@ export const basicSheetConfig = {
 export const explainSheetV2Config = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
-      longFormHeight: params.sheetHeight,
       ...params,
+      longFormHeight: params.sheetHeight,
     }),
   }),
 };

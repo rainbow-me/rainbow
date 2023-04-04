@@ -320,11 +320,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={Explain}
         name={Routes.EXPLAIN}
-        options={({ route }) => {
-          const hasSheetHeight = route.params && route.params.sheetHeight;
+        options={({ route: { params = {} } }) => {
           return {
             ...bottomSheetPreset,
-            height: hasSheetHeight ? route.params.sheetHeight : undefined,
+            height: params.sheetHeight,
           };
         }}
       />

@@ -166,12 +166,8 @@ export function Explain() {
   }
 
   return (
-    <SimpleSheet
-      backgroundColor="white"
-      scrollEnabled={false}
-      customHeight={params.sheetHeight || undefined}
-    >
-      <Box paddingVertical="44px" paddingHorizontal="32px" height="full">
+    <SimpleSheet backgroundColor="white" scrollEnabled={false}>
+      <Box paddingVertical="44px" paddingHorizontal="32px">
         {params.children({})}
       </Box>
     </SimpleSheet>
