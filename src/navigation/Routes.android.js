@@ -323,7 +323,7 @@ function BSNavigator() {
         options={({ route: { params = {} } }) => {
           return {
             ...bottomSheetPreset,
-            height: params.sheetHeight,
+            height: params.sheetHeight ?? 0,
           };
         }}
       />

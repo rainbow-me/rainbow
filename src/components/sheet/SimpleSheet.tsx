@@ -26,12 +26,14 @@ export const SimpleSheet = ({
   const [autoHeight, setAutoHeight] = useState<number>();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
 
+  const sheetHeight = height === 'full' ? fullSheetHeight : autoHeight;
+
   useEffect(
     () =>
       setParams({
-        sheetHeight: height === 'full' ? fullSheetHeight : autoHeight,
+        sheetHeight,
       }),
-    [autoHeight, deviceHeight, fullSheetHeight, height, setParams]
+    [setParams, sheetHeight]
   );
 
   return (
@@ -40,7 +42,7 @@ export const SimpleSheet = ({
       additionalTopPadding={
         IS_ANDROID && height === 'full' ? StatusBar.currentHeight : false
       }
-      contentHeight={height === 'full' ? fullSheetHeight : autoHeight}
+      contentHeight={sheetHeight}
       height="100%"
       removeTopPadding
       scrollEnabled={scrollEnabled}
@@ -54,7 +56,7 @@ export const SimpleSheet = ({
           backgroundColor: backgroundColor,
         }}
         contentContainerStyle={{
-          minHeight: height === 'full' ? fullSheetHeight : autoHeight,
+          minHeight: sheetHeight,
         }}
       >
         <View onLayout={e => setAutoHeight(e.nativeEvent.layout.height)}>
