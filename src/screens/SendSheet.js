@@ -27,7 +27,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes } from '@/entities';
-import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
@@ -328,7 +328,9 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -364,7 +366,15 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
-  }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
+  }, [
+    currentNetwork,
+    isNft,
+    network,
+    prevNetwork,
+    selected.network,
+    selected.type,
+    sendUpdateSelected,
+  ]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
@@ -373,7 +383,9 @@ export default function SendSheet(props) {
         Number(currentProvider._network.chainId)
       );
 
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
 
       if (
         assetNetwork === currentNetwork &&
@@ -707,8 +719,8 @@ export default function SendSheet(props) {
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
-      !toAddress ||
-      (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
+      !toAddress
+      // (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -736,7 +748,6 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    l1GasFeeOptimism,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
@@ -891,9 +902,7 @@ export default function SendSheet(props) {
     );
     const assetNetwork = isNft
       ? selected.network
-      : isL2Asset(selected?.type)
-      ? selected.type
-      : network;
+      : ethereumUtils.getNetworkFromType(selected.type);
 
     if (
       assetNetwork === currentNetwork &&
