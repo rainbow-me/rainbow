@@ -45,7 +45,11 @@ const BackupSection = () => {
 
   const backups = wallets
     ? Object.keys(wallets)
-        .filter(key => wallets[key].type !== WalletTypes.readOnly)
+        .filter(
+          key =>
+            wallets[key].type !== WalletTypes.readOnly &&
+            wallets[key].type !== WalletTypes.bluetooth
+        )
         .map(key => {
           const wallet = wallets[key];
           const visibleAccounts = wallet.addresses.filter(

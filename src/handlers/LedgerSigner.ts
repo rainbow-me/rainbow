@@ -11,6 +11,8 @@ import { toUtf8Bytes } from '@ethersproject/strings';
 import { UnsignedTransaction, serialize } from '@ethersproject/transactions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { logger, RainbowError } from '@/logger';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { getAddress } from '@ethersproject/address';
 
 function waiter(duration: number): Promise<void> {
@@ -84,6 +86,15 @@ export class LedgerSigner extends Signer {
           return resolve(result);
         } catch (error: any) {
           logger.error(new RainbowError('Ledger: Transport error'), error);
+
+          // blind signing isnt enabled
+          if (error.name === 'EthAppPleaseEnableContractData')
+            Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+              screen: Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET,
+              params: {
+                shouldGoBack: true,
+              },
+            });
           if (error.id !== 'TransportLocked') {
             return reject(error);
           }
@@ -156,14 +167,16 @@ export class LedgerSigner extends Signer {
       data: tx.data || undefined,
       gasLimit: tx.gasLimit || undefined,
       gasPrice: tx.gasPrice || undefined,
-      maxFeePerGas: tx.maxFeePerGas || undefined,
-      maxPriorityFeePerGas: tx.maxPriorityFeePerGas || undefined,
+      // only add these fields if they are defined ( network supports EIP-1559)
+      ...(tx.maxFeePerGas && { maxFeePerGas: tx.maxFeePerGas }),
+      ...(!!tx.maxPriorityFeePerGas && {
+        maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+      }),
       nonce: tx.nonce ? BigNumber.from(tx.nonce).toNumber() : undefined,
       to: tx.to || undefined,
       type: tx.type || undefined,
       value: tx.value || undefined,
     };
-
     const unsignedTx = serialize(baseTx).substring(2);
 
     const resolution = await this._retry(eth =>

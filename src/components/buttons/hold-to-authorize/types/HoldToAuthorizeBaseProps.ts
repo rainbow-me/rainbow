@@ -12,6 +12,8 @@ export interface HoldToAuthorizeBaseProps {
   enableLongPress?: boolean;
   hideInnerBorder: boolean;
   isAuthorizing: boolean;
+  // we use this to handle when we would do something other than sign a tx, like show an explain sheet
+  ignoreHardwareWallet?: boolean;
   isHardwareWallet?: boolean;
   label: string;
   onLongPress: () => void;

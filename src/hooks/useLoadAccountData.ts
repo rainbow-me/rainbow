@@ -1,12 +1,10 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import networkTypes from '../helpers/networkTypes';
-import { addCashLoadState } from '../redux/addCash';
 import { dataLoadState } from '../redux/data';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
 import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
-import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import logger from '@/utils/logger';
@@ -23,17 +21,13 @@ export default function useLoadAccountData() {
       // tokens + nfts
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
-        const p2 = dispatch(uniqueTokensLoadState());
-        promises.push(p1, p2);
+        promises.push(p1);
       }
       // WC requests + connections
-      const p3 = dispatch(requestsLoadState());
-      const p4 = dispatch(walletConnectLoadState());
+      const p2 = dispatch(requestsLoadState());
+      const p3 = dispatch(walletConnectLoadState());
 
-      // add cash
-      const p5 = dispatch(addCashLoadState());
-
-      promises.push(p3, p4, p5);
+      promises.push(p2, p3);
 
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
       return promiseUtils.PromiseAllWithFails(promises);

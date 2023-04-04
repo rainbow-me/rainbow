@@ -3,11 +3,8 @@ import { Contract } from '@ethersproject/contracts';
 import { BaseProvider } from '@ethersproject/providers';
 import { AvatarRequestOpts } from '..';
 import { resolveURI } from '../utils';
-import { UniqueAsset } from '@/entities';
-import { apiGetAccountUniqueToken } from '@/handlers/opensea-api';
-import { getNFTByTokenId } from '@/handlers/simplehash';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { NetworkTypes } from '@/helpers';
+import { fetchSimpleHashNFT } from '@/resources/nfts/simplehash';
 
 const abi = [
   'function tokenURI(uint256 tokenId) external view returns (string memory)',
@@ -51,16 +48,10 @@ export default class ERC721 {
     }
 
     try {
-      const data: UniqueAsset = await apiGetAccountUniqueToken(
-        NetworkTypes.mainnet,
-        contractAddress,
-        tokenID
-      );
-      image = svgToPngIfNeeded(data?.image_url, false) || data?.lowResUrl;
-    } catch (error) {
-      const data = await getNFTByTokenId({ contractAddress, tokenId: tokenID });
+      const data = await fetchSimpleHashNFT(contractAddress, tokenID);
       image = svgToPngIfNeeded(data?.previews?.image_medium_url, false);
-      if (!image) throw new Error('no image found');
+    } catch (error) {
+      throw new Error('no image found');
     }
     return { image };
   }

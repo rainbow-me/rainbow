@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
-import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '@/redux/usersPositions';
 import logger from '@/utils/logger';
 
@@ -15,11 +14,6 @@ export default function useInitializeAccountData() {
       InteractionManager.runAfterInteractions(() => {
         logger.sentry('Initialize account data');
         dispatch(explorerInit());
-      });
-
-      InteractionManager.runAfterInteractions(async () => {
-        logger.sentry('Initialize uniqueTokens');
-        await dispatch(uniqueTokensRefreshState());
       });
 
       InteractionManager.runAfterInteractions(async () => {

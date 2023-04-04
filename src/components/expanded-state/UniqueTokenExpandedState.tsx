@@ -260,18 +260,14 @@ const UniqueTokenExpandedState = ({
       external_url: familyLink,
       slug,
     },
-    currentPrice,
     description,
     familyImage,
     familyName,
     isSendable,
-    lastPrice,
-    lastSalePaymentToken,
     marketplaceName,
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);
@@ -597,15 +593,7 @@ const UniqueTokenExpandedState = ({
                           bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}
                         >
-                          {isNFT && (
-                            <NFTBriefTokenInfoRow
-                              currentPrice={currentPrice}
-                              lastPrice={lastPrice}
-                              lastSalePaymentToken={lastSalePaymentToken}
-                              network={asset.network}
-                              urlSuffixForAsset={urlSuffixForAsset}
-                            />
-                          )}
+                          {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}

@@ -298,7 +298,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow :)",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
           },
           "backups": {
             "title": "The Importance of Backups :)",
@@ -574,10 +574,6 @@
       "nft_brief_token_info": {
         "for_sale": "For sale",
         "last_sale": "Last sale price"
-      },
-      "supported_countries": {
-        "supported_countries": "Supported Countries :)",
-        "us_except": "United States (except Texas and New York) :)"
       },
       "swap": {
         "swap": "Swap",
@@ -1617,9 +1613,14 @@
       "pair_a_new_ledger": "Pair a new Ledger :)",
       "looking_for_devices": "Looking for devices :)",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
-      "device_connected": "Device connected",
+      "device_connected": "Device connected :)",
+      "confirm_on_device": "Confirm on device :)",
+      "transaction_rejected": "Transaction rejected :)",
+      "please_try_again": "Please try again if you'd like to continue :)",
+      "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device. :)",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",
+      "blind_signing_enabled": "Blind signing enabled :)",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
       "learn_more": "Learn More :)",
       "finish_importing": "Finish importing :)",
@@ -1707,7 +1708,10 @@
           "title": "We're sorry, you failed authentication",
           "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
         },
-        "support_email_subject": "I need help buying crypto with %{provider} :)",
+        "support_emails": {
+          "help": "I Need Help Buying Crypto With %{provider}",
+          "account_recovery": "Account Recovery for Crypto Purchasing"
+        },
         "sheet_empty_state": {
           "title": "Can't find your preferred provider? :)",
           "description": "Check back soon for more options :)"

@@ -13,7 +13,7 @@ import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
 import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
@@ -301,9 +301,14 @@ const GasSpeedButton = ({
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     // override time estimate for cross chain swaps
     if (crossChainServiceTime) {
+      const network = currentNetwork ?? networkTypes.mainnet;
       const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
         serviceTime: crossChainServiceTime,
-        gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
+        // mainnet gas time is in seconds, other networks are in milliseconds
+        gasTimeInSeconds:
+          network !== Network.mainnet
+            ? selectedGasFee?.estimatedTime?.amount / 1000
+            : selectedGasFee?.estimatedTime?.amount,
       });
       setIsLongWait(isLongWait);
       return timeEstimateDisplay;
@@ -322,6 +327,7 @@ const GasSpeedButton = ({
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     crossChainServiceTime,
+    currentNetwork,
     gasPriceReady,
     selectedGasFee?.estimatedTime?.amount,
     selectedGasFee?.estimatedTime?.display,

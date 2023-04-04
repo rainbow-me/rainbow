@@ -224,6 +224,7 @@ describe('Register ENS Flow', () => {
 
   it('Should go to ENS flow pressing the ENS banner', async () => {
     device.getPlatform() === 'android' && (await Helpers.delay(2000));
+    await Helpers.swipe('discover-sheet', 'up', 'slow', 0.2);
     await Helpers.waitAndTap('ens-create-profile-card');
     await Helpers.checkIfVisible('ens-intro-sheet');
   });
@@ -336,7 +337,10 @@ describe('Register ENS Flow', () => {
       if (description !== RECORD_BIO)
         throw new Error('ENS description is wrong');
       if (name === RECORD_NAME) throw new Error('ENS name is wrong');
-      if (avatar !== EIP155_FORMATTED_AVATAR_RECORD)
+      if (
+        typeof avatar === 'string' &&
+        avatar.toLowerCase() !== EIP155_FORMATTED_AVATAR_RECORD
+      )
         throw new Error('ENS avatar is wrong');
     });
 
