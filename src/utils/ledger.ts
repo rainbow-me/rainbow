@@ -1,4 +1,4 @@
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { getHdPath, WalletLibraryType } from '@/model/wallet';
 import AppEth from '@ledgerhq/hw-app-eth';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
@@ -29,11 +29,17 @@ export const ledgerErrorHandler = (error: Error) => {
     return LEDGER_ERROR_CODES.OFF_OR_LOCKED;
   }
   if (error.name.includes('Disconnected')) {
+    logger.error(new RainbowError('[Ledger] - Disconnected Error'), {
+      name: error.name,
+      message: error.message,
+    });
     return LEDGER_ERROR_CODES.DISCONNECTED;
   }
 
-  // used to logging any new errors so we can handle them properly, will likely remove pre-release
-  logger.warn('[LedgerConnect] - Unknown Error', { error });
+  logger.error(new RainbowError('[LedgerConnect] - Unknown Error'), {
+    name: error.name,
+    message: error.message,
+  });
 
   return LEDGER_ERROR_CODES.UNKNOWN;
 };

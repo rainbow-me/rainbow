@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { DebugContext } from '@/logger/debugContext';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -50,7 +50,7 @@ export function useLedgerConnect({
           transport.current = await TransportBLE.open(deviceId);
           setReadyForPolling(true);
         } catch (e) {
-          logger.warn('[LedgerConnect] - Reconnect Error', {
+          logger.error(new RainbowError('[LedgerConnect] - Reconnect Error'), {
             error: (e as Error).message,
           });
           // temp removing this to see if it fixes an issue
