@@ -74,6 +74,7 @@ import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
+import { Explain } from '@/screens/Explain';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -315,6 +316,16 @@ function BSNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         options={bottomSheetPreset}
+      />
+      <BSStack.Screen
+        component={Explain}
+        name={Routes.EXPLAIN}
+        options={({ route: { params = {} } }) => {
+          return {
+            ...bottomSheetPreset,
+            height: params.sheetHeight,
+          };
+        }}
       />
       <BSStack.Screen
         component={ExternalLinkWarningSheet}
