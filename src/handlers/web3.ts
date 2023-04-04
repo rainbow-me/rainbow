@@ -697,7 +697,7 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param from The sender's address.
  * @param to The recipient's address.
  * @param asset The asset to transfer.
- * @return The data string.
+ * @return The data string if the transfer can be attempted, otherwise undefined.
  */
 export const getDataForNftTransfer = (
   from: string,
@@ -707,7 +707,7 @@ export const getDataForNftTransfer = (
   if (!asset.id || !asset.asset_contract?.address) return;
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
-  let data;
+  let data: string | undefined;
   if (
     lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS &&
     asset.network === Network.mainnet
