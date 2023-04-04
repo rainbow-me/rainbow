@@ -7,11 +7,9 @@ import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
-import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
-
-export const ensAvatarUrl = (ensName: string) =>
-  `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
+import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
+import { EthereumAddress } from '@/entities';
 
 const lineHeight = 30;
 const estimateDescriptionProfilePreviewHeight = (description?: string) => {
@@ -24,6 +22,8 @@ export default function IntroMarquee({
   isSmallPhone: boolean;
 }) {
   const { navigate } = useNavigation();
+
+  const { data, isLoading } = useEnsMarquee({});
 
   const handlePressENS = useCallback(
     (ensName: string) => {
@@ -45,7 +45,7 @@ export default function IntroMarquee({
   const renderItem = useCallback(
     ({ item, onPressStart, onPressCancel, testID }) => (
       <ENSAvatarPlaceholder
-        name={item.name}
+        account={item.account}
         onPress={item.onPress}
         onPressCancel={onPressCancel}
         onPressStart={onPressStart}
@@ -55,15 +55,15 @@ export default function IntroMarquee({
     []
   );
 
-  const items = useMemo(
-    () =>
-      ensIntroMarqueeNames.map((name, index) => ({
-        name,
-        onPress: () => handlePressENS(name),
-        testID: `ens-names-marquee-item-${index}`,
-      })),
-    [handlePressENS]
-  );
+  const items = useMemo(() => {
+    return isLoading
+      ? []
+      : data?.ensMarquee?.accounts?.map((account, index) => ({
+          account,
+          onPress: () => handlePressENS(account.name),
+          testID: `ens-names-marquee-item-${index}`,
+        }));
+  }, [data, handlePressENS, isLoading]);
 
   return (
     <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
@@ -79,13 +79,17 @@ export default function IntroMarquee({
 }
 
 function ENSAvatarPlaceholder({
-  name,
+  account,
   onPress,
   onPressCancel,
   onPressStart,
   testID,
 }: {
-  name: string;
+  account: {
+    name: string;
+    address: EthereumAddress;
+    avatar: string;
+  };
   onPress: () => void;
   onPressCancel: () => void;
   onPressStart: () => void;
@@ -115,7 +119,7 @@ function ENSAvatarPlaceholder({
             borderRadius={80}
             height={{ custom: 80 }}
             shadow="15px light (Deprecated)"
-            source={{ uri: ensAvatarUrl(name) }}
+            source={{ uri: account?.avatar }}
             width={{ custom: 80 }}
             size={100}
           />
@@ -125,7 +129,7 @@ function ENSAvatarPlaceholder({
             size="12px / 14px (Deprecated)"
             weight="semibold"
           >
-            {name}
+            {account?.name}
           </Text>
         </Stack>
       </Box>

@@ -13,13 +13,13 @@ import { metadataClient } from '@/graphql';
 const defaultStaleTime = 1_200_000;
 
 // ///////////////////////////////////////////////
-// Query Types
-
-// ///////////////////////////////////////////////
 // Query Key
 
-const ensMarqueeQueryKey = () =>
-  createQueryKey('ensMarquee', {}, { persisterVersion: 1 });
+// Key used for loading the cache with data from storage
+export const ENS_MARQUEE_QUERY_KEY = 'ensMarquee';
+
+export const ensMarqueeQueryKey = () =>
+  createQueryKey(ENS_MARQUEE_QUERY_KEY, {}, { persisterVersion: 1 });
 
 type EnsMarqueeQueryKey = ReturnType<typeof ensMarqueeQueryKey>;
 
