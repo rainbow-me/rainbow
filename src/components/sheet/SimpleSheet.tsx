@@ -26,8 +26,6 @@ export const SimpleSheet = ({
   const [autoHeight, setAutoHeight] = useState<number>();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
 
-  console.log(fullSheetHeight);
-
   useEffect(
     () =>
       setParams({
@@ -42,7 +40,7 @@ export const SimpleSheet = ({
       additionalTopPadding={
         IS_ANDROID && height === 'full' ? StatusBar.currentHeight : false
       }
-      contentHeight={height === 'full' ? deviceHeight : autoHeight}
+      contentHeight={height === 'full' ? fullSheetHeight : autoHeight}
       height="100%"
       removeTopPadding
       scrollEnabled={scrollEnabled}

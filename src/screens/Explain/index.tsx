@@ -165,7 +165,7 @@ export function Explain() {
   }
 
   return (
-    <SimpleSheet backgroundColor="white" height="full" scrollEnabled={false}>
+    <SimpleSheet backgroundColor="white" height="auto" scrollEnabled={false}>
       <Box paddingVertical="44px" paddingHorizontal="32px">
         {params.children({})}
       </Box>
