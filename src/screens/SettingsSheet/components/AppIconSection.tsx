@@ -28,12 +28,13 @@ import {
   ZoraIcon,
 } from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
+import { ImageSourcePropType } from 'react-native';
 
 type AppIcon = {
   accentColor?: string;
   key: string;
   name: string;
-  source: StaticImageData;
+  source: ImageSourcePropType;
 };
 
 const supportedAppIcons: { [key: string]: AppIcon } = {
