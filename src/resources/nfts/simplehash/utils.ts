@@ -126,6 +126,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
 
+  const contractAddress = nft.contract_address.toLowerCase();
+
   const isENS = nft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
 
   const standard = nft.contract.type;
@@ -161,14 +163,14 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
             4
           )
         : undefined,
-    fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
+    fullUniqueId: `${nft.chain}_${contractAddress}_${nft.token_id}`,
     // @ts-ignore TODO
     id: nft.token_id,
     image_original_url: nft.extra_metadata?.image_original_url,
     image_preview_url: lowResUrl,
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
-    isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+    isPoap: contractAddress === POAP_NFT_ADDRESS,
     isSendable:
       nft.chain === SimpleHashChain.Ethereum &&
       (standard === ERC1155 || standard === ERC721),
@@ -193,8 +195,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,
     uniqueId: isENS
-      ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
-      : `${nft.contract_address}_${nft.token_id}`,
-    urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
+      ? nft.name ?? `${contractAddress}_${nft.token_id}`
+      : `${contractAddress}_${nft.token_id}`,
+    urlSuffixForAsset: `${contractAddress}/${nft.token_id}`,
   };
 }
