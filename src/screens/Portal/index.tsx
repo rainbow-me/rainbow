@@ -187,10 +187,10 @@ export function Portal() {
  *
  *    `import * as p from '@/screens/Portal';`
  *
- *    `const { open } = p.usePortalSheet()`
+ *    `const { open } = p.useOpen()`
  *    `open(() => <p.Title>...</p.Title>, { ...options })`
  */
-export function usePortalSheet() {
+export function useOpen() {
   const { navigate } = useNavigation();
 
   const open = React.useCallback(
@@ -209,10 +209,10 @@ export function usePortalSheet() {
 }
 
 /**
- * Use `usePortalSheet` where possible. This util exists for limited use
+ * Use `useOpen` where possible. This util exists for limited use
  * outside a React component.
  */
-export function openPortalSheet(
+export function open(
   children: React.FC,
   options: Omit<PortalSheetProps, 'children'> = {}
 ) {
