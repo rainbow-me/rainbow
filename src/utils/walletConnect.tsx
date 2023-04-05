@@ -37,7 +37,10 @@ import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV } from '@/env';
 import { loadWallet } from '@/model/wallet';
-import { useExplainSheet } from '@/screens/Explain';
+
+import React from 'react';
+import * as portal from '@/screens/Portal';
+import { Box, Text } from '@/design-system';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -899,6 +902,19 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
       iss
     );
   }
+
+  portal.open(
+    () => (
+      <>
+        <Box>
+          <Text size="17pt" color="label" weight="bold">
+            Hello
+          </Text>
+        </Box>
+      </>
+    ),
+    { sheetHeight: 400 }
+  );
 }
 
 /**
