@@ -11,7 +11,7 @@ import { WalletConnectV2ListItem } from '@/components/walletconnect-list/WalletC
 import { useWalletConnectConnections } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
-import { signClient, getAllActiveSessionsSync } from '@/utils/walletConnect';
+import { signClient, getAllActiveSessionsSync } from '@/walletConnect';
 import { logger } from '@/logger';
 import { events } from '@/handlers/appEvents';
 

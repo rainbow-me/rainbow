@@ -37,10 +37,9 @@ import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV } from '@/env';
 import { loadWallet } from '@/model/wallet';
-
-import React from 'react';
 import * as portal from '@/screens/Portal';
-import { Box, Text } from '@/design-system';
+
+import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -877,7 +876,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     logger.DebugContext.walletconnect
   );
 
-  async function callback({ address }: { address: string }) {
+  async function authenticate({ address }: { address: string }) {
     const wallet = await loadWallet(address);
 
     if (!wallet) {
@@ -891,7 +890,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     // prompt the user to sign the message
     const signature = await wallet.signMessage(message);
     // respond
-    await client.respondAuthRequest(
+    const res = await client.respondAuthRequest(
       {
         id: event.id,
         signature: {
@@ -903,18 +902,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     );
   }
 
-  portal.open(
-    () => (
-      <>
-        <Box>
-          <Text size="17pt" color="label" weight="bold">
-            Hello
-          </Text>
-        </Box>
-      </>
-    ),
-    { sheetHeight: 400 }
-  );
+  portal.open(() => AuthRequest({ authenticate }), { sheetHeight: 400 });
 }
 
 /**
