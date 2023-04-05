@@ -429,7 +429,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
     type: AssetTypes.nft as AssetType,
     uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
-    videos: {
+    video: {
       mimeType: nft.video_properties?.mime_type ?? undefined,
       url: nft.video_url ?? undefined,
     },

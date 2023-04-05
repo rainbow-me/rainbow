@@ -75,5 +75,5 @@ export type NFT = {
   type: AssetType;
   uniqueId: string;
   uniqueTokenType: UniqueTokenType;
-  videos: { mimeType: string | undefined; url: string | undefined };
+  video: { mimeType: string | undefined; url: string | undefined };
 };
