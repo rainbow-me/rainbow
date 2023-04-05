@@ -2,8 +2,15 @@ import Clipboard from '@react-native-community/clipboard';
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import React, { Fragment, useCallback, useEffect } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { TextInput, View } from 'react-native';
+// @ts-expect-error untyped JS library
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Divider from '../components/Divider';
@@ -31,16 +38,17 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { haptics } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { UserCredentials } from 'react-native-keychain';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 const encryptor = new AesEncryptor();
 
-const SecretInput = ({ value, color }) => {
+const SecretInput = ({ value, color }: { value: string; color: string }) => {
   const { colors } = useTheme();
   const handleCopy = useCallback(() => {
     Alert.alert(
@@ -55,7 +63,7 @@ const SecretInput = ({ value, color }) => {
           text: lang.t('wallet.diagnostics.secret.okay_i_understand'),
         },
         {
-          onPress: null,
+          onPress: undefined,
           style: 'cancel',
           text: lang.t('button.cancel'),
         },
@@ -65,12 +73,12 @@ const SecretInput = ({ value, color }) => {
   return (
     <Row justify="space-between" width="100%">
       <TextInput
-        color={color}
+        // @ts-expect-error probably a valid prop but not typed properly
         disabled
         editable={false}
         secureTextEntry
         selectTextOnFocus
-        style={{ width: '65%' }}
+        style={{ width: '65%', color }}
         value={value}
       />
       <ButtonPressAnimation onPress={handleCopy}>
@@ -89,7 +97,7 @@ const SecretInput = ({ value, color }) => {
   );
 };
 
-const ItemRow = ({ data }) => {
+const ItemRow = ({ data }: any) => {
   const { colors } = useTheme();
   const {
     busy,
@@ -107,17 +115,21 @@ const ItemRow = ({ data }) => {
           onPress: async () => {
             try {
               handleSetSeedPhrase(data.secret);
+              // @ts-expect-error poorly typed function
               await handlePressImportButton(null, data.secret);
-            } catch (e) {
-              logger.sentry('Error restoring from wallet diagnostics', e);
-              const customError = new Error('WalletDiagnostics restore failed');
-              captureException(customError);
+            } catch (error) {
+              logger.error(
+                new RainbowError('Error restoring from wallet diagnostics'),
+                {
+                  message: (error as Error).message,
+                  context: 'restore',
+                }
+              );
             }
           },
           text: lang.t('wallet.diagnostics.restore.yes_i_understand'),
         },
         {
-          onPress: null,
           style: 'cancel',
           text: lang.t('button.cancel'),
         },
@@ -183,15 +195,19 @@ const ItemRow = ({ data }) => {
       </RowWithMargins>
       <ButtonPressAnimation onPress={handlePressRestore}>
         <View
-          backgroundColor={colors.dpiMid}
-          borderRadius={15}
-          style={{ paddingHorizontal: 15, paddingVertical: 10 }}
+          style={{
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            backgroundColor: colors.dpiMid,
+            borderRadius: 15,
+          }}
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
             {lang.t('wallet.diagnostics.restore.restore')}
           </Text>
         </View>
       </ButtonPressAnimation>
+      {/* @ts-expect-error JS component */}
       <Divider />
     </ColumnWithMargins>
   );
@@ -201,97 +217,100 @@ const WalletDiagnosticsSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const [keys, setKeys] = useState();
-  const { params } = useRoute();
+  const [keys, setKeys] = useState<UserCredentials[] | undefined>();
+  const { params } = useRoute<any>();
   const [userPin, setUserPin] = useState(params?.userPin);
   const [pinRequired, setPinRequired] = useState(false);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const [uuid, setUuid] = useState(null);
+  const [uuid, setUuid] = useState<string | undefined>();
 
   useEffect(() => {
     const init = async () => {
       try {
         // get and set uuid
-        const userIdentifier = await getDeviceId();
+        const userIdentifier = getDeviceId();
         setUuid(userIdentifier);
 
         // get wallet and set wallet data
         const allKeys = await loadAllKeys();
-        const processedKeys = await Promise.all(
-          allKeys
-            .filter(key => {
-              return (
-                key?.username?.indexOf(seedPhraseKey) !== -1 ||
-                key?.username?.indexOf(privateKeyKey) !== -1
-              );
-            })
-            .map(async key => {
-              const secretObj = JSON.parse(key.password);
-              let secret = secretObj.seedphrase || secretObj.privateKey;
-              if (
-                (secret.indexOf('cipher') === -1 &&
-                  secret.indexOf('salt') === -1) ||
-                userPin
-              ) {
-                if (userPin) {
-                  secret = await encryptor.decrypt(userPin, secret);
-                }
-                const { address, type } = await deriveAccountFromWalletInput(
-                  secret
+        if (allKeys) {
+          const processedKeys = await Promise.all(
+            allKeys
+              .filter(key => {
+                return (
+                  key?.username?.indexOf(seedPhraseKey) !== -1 ||
+                  key?.username?.indexOf(privateKeyKey) !== -1
                 );
-                let createdAt = null;
-                let label = null;
-                Object.keys(walletsWithBalancesAndNames).some(k => {
-                  const found = walletsWithBalancesAndNames[k].addresses.some(
-                    account => {
-                      if (
-                        account?.address?.toLowerCase() ===
-                        address.toLowerCase()
-                      ) {
-                        label = account.label || account.ens;
-                        return true;
-                      }
-                      return false;
-                    }
+              })
+              .map(async key => {
+                const secretObj = JSON.parse(key.password);
+                let secret = secretObj.seedphrase || secretObj.privateKey;
+                if (
+                  (secret.indexOf('cipher') === -1 &&
+                    secret.indexOf('salt') === -1) ||
+                  userPin
+                ) {
+                  if (userPin) {
+                    secret = await encryptor.decrypt(userPin, secret);
+                  }
+                  const { address, type } = await deriveAccountFromWalletInput(
+                    secret
                   );
-                  return found;
-                });
+                  let createdAt = null;
+                  let label = null;
+                  Object.keys(walletsWithBalancesAndNames).some(k => {
+                    const found = walletsWithBalancesAndNames[k].addresses.some(
+                      account => {
+                        if (
+                          account?.address?.toLowerCase() ===
+                          address?.toLowerCase()
+                        ) {
+                          label = account.label || account.ens;
+                          return true;
+                        }
+                        return false;
+                      }
+                    );
+                    return found;
+                  });
 
-                if (key?.username?.indexOf(`_${seedPhraseKey}`) !== -1) {
-                  const tsString = key.username
-                    .replace('wallet_', '')
-                    .replace(`_${seedPhraseKey}`, '');
-                  const ts = new Date(Number(tsString));
-                  createdAt = ts.toString();
-                }
+                  if (key?.username?.indexOf(`_${seedPhraseKey}`) !== -1) {
+                    const tsString = key.username
+                      .replace('wallet_', '')
+                      .replace(`_${seedPhraseKey}`, '');
+                    const ts = new Date(Number(tsString));
+                    createdAt = ts.toString();
+                  }
 
-                return {
-                  ...key,
-                  address,
-                  createdAt,
-                  label,
-                  secret,
-                  type,
-                };
-              } else {
-                if (!pinRequired) {
-                  setPinRequired(true);
+                  return {
+                    ...key,
+                    address,
+                    createdAt,
+                    label,
+                    secret,
+                    type,
+                  };
+                } else {
+                  if (!pinRequired) {
+                    setPinRequired(true);
+                  }
+                  return {
+                    ...key,
+                    address: '-',
+                    createdAt: '-',
+                    pinRequired: true,
+                    secret: '',
+                  };
                 }
-                return {
-                  ...key,
-                  address: '-',
-                  createdAt: '-',
-                  pinRequired: true,
-                  secret: '',
-                };
-              }
-            })
+              })
+          );
+          setKeys(processedKeys);
+        }
+      } catch (error) {
+        logger.error(
+          new RainbowError('Error processing keys for wallet diagnostics'),
+          { message: (error as Error).message, context: 'init' }
         );
-        setKeys(processedKeys);
-      } catch (e) {
-        logger.sentry('Error processing keys for wallet diagnostics', e);
-        const customError = new Error('WalletDiagnostics init failed');
-        captureException(customError);
       }
     };
     setTimeout(() => {
@@ -336,6 +355,7 @@ const WalletDiagnosticsSheet = () => {
   }, [navigate]);
 
   return (
+    // @ts-expect-error JS component
     <SlackSheet
       additionalTopPadding={IS_ANDROID}
       {...(IS_IOS
@@ -352,12 +372,14 @@ const WalletDiagnosticsSheet = () => {
           width: '100%',
         }}
       >
+        {/* @ts-expect-error JS component */}
         <SheetTitle align="center" size="big" weight="heavy">
           {lang.t('wallet.diagnostics.wallet_diagnostics_title')}
         </SheetTitle>
 
         {!keys && (
           <Centered flex={1} height={300}>
+            {/* @ts-expect-error JS component */}
             <LoadingSpinner />
           </Centered>
         )}
@@ -392,11 +414,12 @@ const WalletDiagnosticsSheet = () => {
                 </Text>
               </RowWithMargins>
             </ColumnWithMargins>
+            {/* @ts-expect-error JS component */}
             <Divider />
           </Fragment>
         )}
 
-        {seeds?.length > 0 && (
+        {seeds?.length !== undefined && seeds.length > 0 && (
           <Fragment>
             <Column>
               {seeds.map(key => (
@@ -406,7 +429,7 @@ const WalletDiagnosticsSheet = () => {
           </Fragment>
         )}
 
-        {pkeys?.length > 0 && (
+        {pkeys?.length !== undefined && pkeys.length > 0 && (
           <Fragment>
             <Column>
               {pkeys?.map(key => (
@@ -416,7 +439,7 @@ const WalletDiagnosticsSheet = () => {
           </Fragment>
         )}
 
-        {keys?.length > 0 && (
+        {keys?.length !== undefined && keys.length > 0 && (
           <Fragment>
             <Column>
               {oldSeed?.map(key => (
