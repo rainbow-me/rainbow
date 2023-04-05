@@ -18,9 +18,9 @@ import {
 } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Bold, Text } from '../components/text';
-import { loadAllKeys } from '../model/keychain';
-import { useNavigation } from '../navigation/Navigation';
-import { privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
+import { loadAllKeys } from '@/model/keychain';
+import { useNavigation } from '@/navigation';
+import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
@@ -34,9 +34,10 @@ import { haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
+import { useTheme } from '@/theme';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
-export const WalletDiagnosticsSheetHeight = '100%';
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
+const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 const encryptor = new AesEncryptor();
 
 const SecretInput = ({ value, color }) => {
@@ -336,8 +337,8 @@ const WalletDiagnosticsSheet = () => {
 
   return (
     <SlackSheet
-      additionalTopPadding={android}
-      {...(ios
+      additionalTopPadding={IS_ANDROID}
+      {...(IS_IOS
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
       scrollEnabled
@@ -345,7 +346,7 @@ const WalletDiagnosticsSheet = () => {
       <ColumnWithMargins
         margin={15}
         style={{
-          paddingBottom: ios ? 60 : 40 + getSoftMenuBarHeight(),
+          paddingBottom: IS_IOS ? 60 : 40 + getSoftMenuBarHeight(),
           paddingHorizontal: 19,
           paddingTop: 19,
           width: '100%',
@@ -361,7 +362,7 @@ const WalletDiagnosticsSheet = () => {
           </Centered>
         )}
 
-        {android && keys && pinRequired && !userPin && (
+        {IS_ANDROID && keys && pinRequired && !userPin && (
           <ColumnWithMargins>
             <Text align="center">
               {lang.t(
