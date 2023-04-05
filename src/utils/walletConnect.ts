@@ -8,7 +8,7 @@ import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
 import { Core } from '@walletconnect/core';
-import { Web3Wallet } from '@walletconnect/web3wallet';
+import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -36,6 +36,8 @@ import { chains as supportedChainConfigs } from '@/references';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV } from '@/env';
+import { loadWallet } from '@/model/wallet';
+import { useExplainSheet } from '@/screens/Explain';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -247,7 +249,7 @@ async function rejectProposal({
   proposal,
   reason,
 }: {
-  proposal: SignClientTypes.EventArguments['session_proposal'];
+  proposal: Web3WalletTypes.SessionProposal;
   reason: Parameters<typeof getSdkError>[0];
 }) {
   logger.warn(`WC v2: session approval denied`, {
@@ -274,14 +276,19 @@ export async function pair({ uri }: { uri: string }) {
    */
   if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
 
-  const { topic } = parseUri(uri);
+  const { topic, ...rest } = parseUri(uri);
   const client = await web3WalletClient;
+
+  logger.debug(`WC v2: pair: parsed uri`, { topic, rest });
 
   // listen for THIS topic pairing, and clear timeout if received
   function handler(
-    proposal: SignClientTypes.EventArguments['session_proposal']
+    proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest
   ) {
-    if (proposal.params.pairingTopic === topic) {
+    logger.debug(`WC v2: pair: handler`, { proposal });
+
+    // @ts-expect-error We can't differentiate between these two unless we have separate handlers
+    if (proposal.topic === topic || proposal.params.pairingTopic === topic) {
       if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
     }
   }
@@ -290,12 +297,14 @@ export async function pair({ uri }: { uri: string }) {
   PAIRING_TIMEOUT = setTimeout(() => {
     logger.warn(`WC v2: pairing timeout`, { uri });
     client.off('session_proposal', handler);
+    client.off('auth_request', handler);
     showErrorSheet();
     analytics.track('New WalletConnect session time out');
   }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
   client.on('session_proposal', handler);
+  client.on('auth_request', handler);
 
   // init pairing
   await client.core.pairing.pair({ uri });
@@ -314,6 +323,7 @@ export async function initListeners() {
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
+  client.on('auth_request', onAuthRequest);
 
   try {
     const token = await getFCMToken();
@@ -368,7 +378,7 @@ async function subscribeToEchoServer({
 }
 
 export async function onSessionProposal(
-  proposal: SignClientTypes.EventArguments['session_proposal']
+  proposal: Web3WalletTypes.SessionProposal
 ) {
   logger.debug(
     `WC v2: session_proposal`,
@@ -853,6 +863,42 @@ export async function handleSessionRequestResponse(
   }
 
   store.dispatch(removeRequest(sessionRequestEvent.id));
+}
+
+export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
+  const client = await web3WalletClient;
+
+  logger.debug(
+    `WC v2: auth_request`,
+    { event },
+    logger.DebugContext.walletconnect
+  );
+
+  async function callback({ address }: { address: string }) {
+    const wallet = await loadWallet(address);
+
+    if (!wallet) {
+      // TODO
+      return;
+    }
+
+    const iss = `did:pkh:eip155:1:${address}`;
+    const message = client.formatMessage(event.params.cacaoPayload, iss);
+
+    // prompt the user to sign the message
+    const signature = await wallet.signMessage(message);
+    // respond
+    await client.respondAuthRequest(
+      {
+        id: event.id,
+        signature: {
+          s: signature,
+          t: 'eip191',
+        },
+      },
+      iss
+    );
+  }
 }
 
 /**
