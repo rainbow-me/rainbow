@@ -12,20 +12,19 @@ export function Comp() {
   const { open } = portal.useOpen();
 
   const handlePress = () => {
-    open(() => (
-      <>
-        <Box>
-          <Text>Hello world</Text>
-        </Box>
-      </>
-    ), { sheetHeight: 400 });
-  }
+    open(
+      () => (
+        <>
+          <Box>
+            <Text>Hello world</Text>
+          </Box>
+        </>
+      ),
+      { sheetHeight: 400 }
+    );
+  };
 
-  return (
-    <Button onPress={handlePress}>
-      Show some sheet
-    </Button>
-  )
+  return <Button onPress={handlePress}>Show some sheet</Button>;
 }
 ```
 
@@ -45,15 +44,18 @@ There, we re-export `useOpen` and `open`, as well as provide some pre-built
 components that can be used to make consistent explainer sheets.
 
 ```tsx
-import * as explain from '@/screens/Explain'
+import * as explain from '@/screens/Explain';
 
-explain.open(() => (
-  <>
-    <explain.Emoji>💰</explain.Emoji>
-    <explain.Title>This is a title</explain.Title>
-    <explain.Body>And this is body text</explain.Body>
-  </>
-), { sheetHeight: 640 });
+explain.open(
+  () => (
+    <>
+      <explain.Emoji>💰</explain.Emoji>
+      <explain.Title>This is a title</explain.Title>
+      <explain.Body>And this is body text</explain.Body>
+    </>
+  ),
+  { sheetHeight: 640 }
+);
 ```
 
 ## Creating navigable routes

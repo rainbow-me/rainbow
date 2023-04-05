@@ -6,9 +6,12 @@ components for consistent explainer sheets.
 ```tsx
 import * as explain from '@/screens/Explain';
 
-explain.open(() => (
-  <>
-    <explain.Title>Pre-built title comonent</explain.Title>
-  </>
-), { sheetHeight: 400 });
+explain.open(
+  () => (
+    <>
+      <explain.Title>Pre-built title comonent</explain.Title>
+    </>
+  ),
+  { sheetHeight: 400 }
+);
 ```
