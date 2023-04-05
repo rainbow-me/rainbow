@@ -168,7 +168,12 @@ export function Explain() {
 
   return (
     <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box paddingVertical="44px" paddingHorizontal="32px">
+      <Box
+        paddingVertical="44px"
+        paddingHorizontal="32px"
+        height="full"
+        background="surfaceSecondary"
+      >
         {params.children({})}
       </Box>
     </SimpleSheet>
@@ -195,7 +200,7 @@ export function useExplainSheet() {
     ) => {
       navigate(Routes.EXPLAIN, {
         children,
-        sheetHeight: options.sheetHeight,
+        ...options,
       });
     },
     []
@@ -216,6 +221,6 @@ export function openExplainSheet(
 ) {
   Navigation.handleAction(Routes.EXPLAIN, {
     children,
-    sheetHeight: options.sheetHeight,
+    ...options,
   });
 }
