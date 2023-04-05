@@ -1645,6 +1645,10 @@
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
         "unknown": "Unknown Error, close and reopen this sheet"
+      },
+      "pairing_error_alert": {
+        "title": "Error Connecting", 
+        "body": "Please try again, if issues persist close the app and try again"
       }
     },
     "wallet": {
