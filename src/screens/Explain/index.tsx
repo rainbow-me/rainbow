@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import {
   Box,
@@ -203,4 +204,18 @@ export function useExplainSheet() {
   return {
     open,
   };
+}
+
+/**
+ * Use `useExplainSheet` where possible. This util exists for limited use
+ * outside a React component.
+ */
+export function openExplainSheet(
+  children: React.FC,
+  options: Omit<ExplainSheetRouteProps, 'children'> = {}
+) {
+  Navigation.handleAction(Routes.EXPLAIN, {
+    children,
+    sheetHeight: options.sheetHeight,
+  });
 }
