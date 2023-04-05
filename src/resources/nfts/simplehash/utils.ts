@@ -132,7 +132,7 @@ export function filterSimpleHashNFTs(
  */
 export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const collection = nft.collection;
-
+  const lowercasedContractAddress = nft.contract_address?.toLowerCase();
   const { imageUrl, lowResUrl } = handleAndSignImages(
     // @ts-ignore
     nft.image_url,
@@ -148,12 +148,12 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
 
-  const isENS = nft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
+  const isENS = lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS;
 
   return {
     animation_url: nft?.video_url,
     asset_contract: {
-      address: nft.contract_address,
+      address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
       schema_name: nft.contract.type,
       symbol: nft.contract.symbol || undefined,
@@ -261,16 +261,14 @@ function handleImages(
  * @returns `UniqueTokenType`
  */
 function getUniqueTokenType(contractAddress: string): UniqueTokenType {
-  const lowercasedContractAddress = contractAddress.toLowerCase();
-
-  let uniqueTokenType: UniqueTokenType = uniqueTokenTypes.NFT;
-  if (lowercasedContractAddress === POAP_NFT_ADDRESS) {
-    uniqueTokenType = uniqueTokenTypes.POAP;
-  } else if (lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS) {
-    uniqueTokenType = uniqueTokenTypes.ENS;
+  switch (contractAddress) {
+    case POAP_NFT_ADDRESS:
+      return uniqueTokenTypes.POAP;
+    case ENS_NFT_CONTRACT_ADDRESS:
+      return uniqueTokenTypes.ENS;
+    default:
+      return uniqueTokenTypes.NFT;
   }
-
-  return uniqueTokenType;
 }
 
 /**
@@ -296,9 +294,10 @@ function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
  */
 export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
   const collection = nft.collection;
+  const lowercasedContractAddress = nft.contract_address.toLowerCase();
   const network = getNetworkFromSimpleHashChain(nft.chain);
 
-  const uniqueTokenType = getUniqueTokenType(nft.contract_address);
+  const uniqueTokenType = getUniqueTokenType(lowercasedContractAddress);
 
   const { fullResPngUrl, lowResPngUrl, fullResUrl } = handleImages(
     nft.image_url ?? nft.extra_metadata?.image_original_url,
@@ -306,37 +305,76 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
     nft.image_properties?.mime_type === SVG_MIME_TYPE
   );
 
+  const marketplaces = nft.collection.marketplace_pages
+    .filter(
+      (marketplace: SimpleHashMarketplace) =>
+        // filter out unsupported marketplaces
+        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          marketplace.marketplace_id
+        )
+    )
+    .map(
+      (marketplace: SimpleHashMarketplace) =>
+        ({
+          collectionId: marketplace?.marketplace_collection_id,
+          collectionUrl: marketplace?.collection_url,
+          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+            marketplace.marketplace_id
+          ),
+          name: marketplace?.marketplace_name,
+          nftUrl: marketplace?.nft_url,
+        } as NFTMarketplace)
+    );
+
+  const traits =
+    nft.extra_metadata?.attributes
+      // filter out traits that are missing key attributes
+      ?.filter(
+        (trait: SimpleHashTrait) =>
+          !isNil(trait.trait_type) && !isNil(trait.value)
+      )
+      ?.map(
+        (trait: SimpleHashTrait) =>
+          ({
+            displayType: trait?.display_type,
+            traitType: trait.trait_type,
+            value: trait.value,
+          } as NFTTrait)
+      ) ?? [];
+
+  const floorPrices = collection.floor_prices
+    // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
+    .filter(
+      (floorPrice: SimpleHashFloorPrice) =>
+        getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          floorPrice.marketplace_id
+        ) &&
+        floorPrice.payment_token?.name &&
+        floorPrice.payment_token?.symbol
+    )
+    .map(
+      (floorPrice: SimpleHashFloorPrice) =>
+        ({
+          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+            floorPrice.marketplace_id
+          ),
+          paymentToken: {
+            address: floorPrice.payment_token.address,
+            decimals: floorPrice.payment_token.decimals,
+            name: floorPrice.payment_token.name,
+            symbol: floorPrice.payment_token.symbol,
+          },
+          value: floorPrice.value,
+        } as NFTFloorPrice)
+    );
+
   return {
     backgroundColor: nft.background_color ?? undefined,
     collection: {
       description: collection.description ?? undefined,
       discord: collection.discord_url ?? undefined,
       externalUrl: collection.external_url ?? undefined,
-      floorPrices: collection.floor_prices
-        // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
-        .filter(
-          (floorPrice: SimpleHashFloorPrice) =>
-            getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-              floorPrice.marketplace_id
-            ) &&
-            floorPrice.payment_token?.name &&
-            floorPrice.payment_token?.symbol
-        )
-        .map(
-          (floorPrice: SimpleHashFloorPrice) =>
-            ({
-              marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-                floorPrice.marketplace_id
-              ),
-              paymentToken: {
-                address: floorPrice.payment_token.address,
-                decimals: floorPrice.payment_token.decimals,
-                name: floorPrice.payment_token.name,
-                symbol: floorPrice.payment_token.symbol,
-              },
-              value: floorPrice.value,
-            } as NFTFloorPrice)
-        ),
+      floorPrices,
       imageUrl: collection.image_url
         ? maybeSignUri(collection.image_url)
         : undefined,
@@ -348,7 +386,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
       twitter: collection.twitter_username ?? undefined,
     },
     contract: {
-      address: nft.contract_address,
+      address: lowercasedContractAddress,
       name: nft.contract.name ?? undefined,
       schema_name: nft.contract.type,
       symbol: nft.contract.symbol ?? undefined,
@@ -382,45 +420,12 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
             value: nft.last_sale?.unit_price,
           }
         : undefined,
-    marketplaces: nft.collection.marketplace_pages
-      .filter(
-        (marketplace: SimpleHashMarketplace) =>
-          // filter out unsupported marketplaces
-          !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-            marketplace.marketplace_id
-          )
-      )
-      .map(
-        (marketplace: SimpleHashMarketplace) =>
-          ({
-            collectionId: marketplace?.marketplace_collection_id,
-            collectionUrl: marketplace?.collection_url,
-            marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-              marketplace.marketplace_id
-            ),
-            name: marketplace?.marketplace_name,
-            nftUrl: marketplace?.nft_url,
-          } as NFTMarketplace)
-      ),
+    marketplaces,
     name: nft.name ?? undefined,
     network,
     predominantColor: nft.previews?.predominant_color ?? undefined,
     tokenId: nft.token_id ?? undefined,
-    traits:
-      nft.extra_metadata?.attributes
-        // filter out traits that are missing key attributes
-        ?.filter(
-          (trait: SimpleHashTrait) =>
-            !isNil(trait.trait_type) && !isNil(trait.value)
-        )
-        ?.map(
-          (trait: SimpleHashTrait) =>
-            ({
-              displayType: trait?.display_type,
-              traitType: trait.trait_type,
-              value: trait.value,
-            } as NFTTrait)
-        ) ?? [],
+    traits,
     type: AssetTypes.nft as AssetType,
     uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
