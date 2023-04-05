@@ -1,6 +1,4 @@
-import Clipboard from '@react-native-community/clipboard';
 import { useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, {
   Fragment,
@@ -9,211 +7,42 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { TextInput, View } from 'react-native';
 // @ts-expect-error untyped JS library
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import ActivityIndicator from '../components/ActivityIndicator';
-import Divider from '../components/Divider';
-import Spinner from '../components/Spinner';
-import { ButtonPressAnimation } from '../components/animations';
+import ActivityIndicator from '../../components/ActivityIndicator';
+import Divider from '../../components/Divider';
+import Spinner from '../../components/Spinner';
 import {
   Centered,
   Column,
   ColumnWithMargins,
-  Row,
   RowWithMargins,
-} from '../components/layout';
-import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
-import { Bold, Text } from '../components/text';
+} from '../../components/layout';
+import {
+  SheetActionButton,
+  SheetTitle,
+  SlackSheet,
+} from '../../components/sheet';
+import { Bold, Text } from '../../components/text';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import {
-  useDimensions,
-  useImportingWallet,
-  useWalletsWithBalancesAndNames,
-} from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { haptics } from '@/utils';
+import { useDimensions, useWalletsWithBalancesAndNames } from '@/hooks';
+import Routes from '@rainbow-me/routes';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { UserCredentials } from 'react-native-keychain';
+import { WalletDiagnosticsItemRow } from '@/screens/WalletDiagnostics/WalletDiagnosticsItemRow';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 const encryptor = new AesEncryptor();
 
-const SecretInput = ({ value, color }: { value: string; color: string }) => {
-  const { colors } = useTheme();
-  const handleCopy = useCallback(() => {
-    Alert.alert(
-      lang.t('wallet.diagnostics.secret.reminder_title'),
-      lang.t('wallet.diagnostics.secret.these_words_are_for_your_eyes_only'),
-      [
-        {
-          onPress: () => {
-            Clipboard.setString(value);
-            haptics.notificationSuccess();
-          },
-          text: lang.t('wallet.diagnostics.secret.okay_i_understand'),
-        },
-        {
-          onPress: undefined,
-          style: 'cancel',
-          text: lang.t('button.cancel'),
-        },
-      ]
-    );
-  }, [value]);
-  return (
-    <Row justify="space-between" width="100%">
-      <TextInput
-        // @ts-expect-error probably a valid prop but not typed properly
-        disabled
-        editable={false}
-        secureTextEntry
-        selectTextOnFocus
-        style={{ width: '65%', color }}
-        value={value}
-      />
-      <ButtonPressAnimation onPress={handleCopy}>
-        <Row
-          backgroundColor={colors.appleBlue}
-          borderRadius={15}
-          style={{ paddingHorizontal: android ? 10 : 15, paddingVertical: 10 }}
-          width="100%"
-        >
-          <Text align="center" color={colors.whiteLabel} weight="bold">
-            {lang.t('wallet.diagnostics.secret.copy_secret')}
-          </Text>
-        </Row>
-      </ButtonPressAnimation>
-    </Row>
-  );
-};
-
-const ItemRow = ({ data }: any) => {
-  const { colors } = useTheme();
-  const {
-    busy,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet();
-
-  const handlePressRestore = useCallback(async () => {
-    if (busy) return;
-    Alert.alert(
-      lang.t('wallet.diagnostics.restore.heads_up_title'),
-      lang.t('wallet.diagnostics.restore.this_action_will_completely_replace'),
-      [
-        {
-          onPress: async () => {
-            try {
-              handleSetSeedPhrase(data.secret);
-              // @ts-expect-error poorly typed function
-              await handlePressImportButton(null, data.secret);
-            } catch (error) {
-              logger.error(
-                new RainbowError('Error restoring from wallet diagnostics'),
-                {
-                  message: (error as Error).message,
-                  context: 'restore',
-                }
-              );
-            }
-          },
-          text: lang.t('wallet.diagnostics.restore.yes_i_understand'),
-        },
-        {
-          style: 'cancel',
-          text: lang.t('button.cancel'),
-        },
-      ]
-    );
-  }, [busy, data.secret, handlePressImportButton, handleSetSeedPhrase]);
-
-  if (data.pinRequired) {
-    return (
-      <ColumnWithMargins key={`key_${data.username}`}>
-        <RowWithMargins>
-          <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
-            <Text color={colors.blueGreyDark50}>{data.username}</Text>
-          </Text>
-        </RowWithMargins>
-      </ColumnWithMargins>
-    );
-  }
-
-  return (
-    <ColumnWithMargins key={`key_${data.username}`}>
-      <RowWithMargins>
-        <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.type')}:</Bold> {` `}
-          <Text color={colors.blueGreyDark50}>{data.type}</Text>
-        </Text>
-      </RowWithMargins>
-      <RowWithMargins>
-        <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
-          <Text color={colors.blueGreyDark50}>{data.username}</Text>
-        </Text>
-      </RowWithMargins>
-      {data.createdAt && (
-        <RowWithMargins>
-          <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.created_at')}:</Bold>{' '}
-            {` `}
-            <Text color={colors.blueGreyDark50}>{data.createdAt}</Text>
-          </Text>
-        </RowWithMargins>
-      )}
-      {data.label && (
-        <RowWithMargins>
-          <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.label')}:</Bold> {` `}
-            <Text color={colors.blueGreyDark50}>{data.label}</Text>
-          </Text>
-        </RowWithMargins>
-      )}
-      <RowWithMargins>
-        <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.address')}:</Bold> {` `}
-          <Text color={colors.blueGreyDark50}>{data.address}</Text>
-        </Text>
-      </RowWithMargins>
-      <Text size="lmedium">
-        <Bold>{lang.t('wallet.diagnostics.restore.secret')}:</Bold> {` `}
-      </Text>
-      <RowWithMargins>
-        <SecretInput color={colors.blueGreyDark} value={data.secret} />
-      </RowWithMargins>
-      <ButtonPressAnimation onPress={handlePressRestore}>
-        <View
-          style={{
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            backgroundColor: colors.dpiMid,
-            borderRadius: 15,
-          }}
-        >
-          <Text align="center" color={colors.whiteLabel} weight="bold">
-            {lang.t('wallet.diagnostics.restore.restore')}
-          </Text>
-        </View>
-      </ButtonPressAnimation>
-      {/* @ts-expect-error JS component */}
-      <Divider />
-    </ColumnWithMargins>
-  );
-};
-
-const WalletDiagnosticsSheet = () => {
+export const WalletDiagnosticsSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -423,7 +252,10 @@ const WalletDiagnosticsSheet = () => {
           <Fragment>
             <Column>
               {seeds.map(key => (
-                <ItemRow data={key} key={`row_${key.username}`} />
+                <WalletDiagnosticsItemRow
+                  data={key}
+                  key={`row_${key.username}`}
+                />
               ))}
             </Column>
           </Fragment>
@@ -433,7 +265,10 @@ const WalletDiagnosticsSheet = () => {
           <Fragment>
             <Column>
               {pkeys?.map(key => (
-                <ItemRow data={key} key={`row_${key.username}`} />
+                <WalletDiagnosticsItemRow
+                  data={key}
+                  key={`row_${key.username}`}
+                />
               ))}
             </Column>
           </Fragment>
@@ -443,7 +278,10 @@ const WalletDiagnosticsSheet = () => {
           <Fragment>
             <Column>
               {oldSeed?.map(key => (
-                <ItemRow data={key} key={`row_${key.username}`} />
+                <WalletDiagnosticsItemRow
+                  data={key}
+                  key={`row_${key.username}`}
+                />
               ))}
             </Column>
           </Fragment>
@@ -465,5 +303,3 @@ const WalletDiagnosticsSheet = () => {
     </SlackSheet>
   );
 };
-
-export default WalletDiagnosticsSheet;

@@ -31,7 +31,7 @@ import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
-import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
+import { WalletDiagnosticsSheet } from '../screens/WalletDiagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import RegisterENSNavigator from './RegisterENSNavigator';
