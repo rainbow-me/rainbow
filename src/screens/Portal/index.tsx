@@ -14,13 +14,13 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 
-type ExplainSheetRouteProps = {
+type PortalSheetProps = {
   sheetHeight?: number;
   children: React.FC;
 };
 
 type NavigationRouteParams = {
-  Explain: ExplainSheetRouteProps;
+  Portal: PortalSheetProps;
 };
 
 /**
@@ -31,11 +31,11 @@ type NavigationRouteParams = {
 export const Button = SheetActionButton;
 
 /**
- * Image icon component for use within the Explain sheet.
+ * Image icon component for use within the Portal sheet.
  *
- *   `import * as ex from '@/screens/Explain';`
+ *   `import * as p from '@/screens/Portal';`
  *
- *   `<ex.Logo accentColor={...} source={require('...')} />`
+ *   `<p.Logo accentColor={...} source={require('...')} />`
  */
 export function Logo({
   accentColor,
@@ -69,7 +69,7 @@ export function Logo({
 }
 
 /**
- * Emoji "logo" for use within the Explain sheet.
+ * Emoji "logo" for use within the Portal sheet.
  */
 export function Emoji({ children }: { children: string }) {
   return (
@@ -88,7 +88,7 @@ export function Emoji({ children }: { children: string }) {
 }
 
 /**
- * Title text for use within the Explain sheet.
+ * Title text for use within the Portal sheet.
  */
 export function Title({
   children,
@@ -113,7 +113,7 @@ export function Title({
 }
 
 /**
- * Body text for use within the Explain sheet.
+ * Body text for use within the Portal sheet.
  */
 export function Body({
   children,
@@ -136,7 +136,7 @@ export function Body({
 }
 
 /**
- * A wrapper for any buttons you might want to add to the Explain sheet.
+ * A wrapper for any buttons you might want to add to the Portal sheet.
  * Multiple buttons are automatically spaced apart.
  *
  * TODO eventually this should be sticky to the bottom of the sheet to match
@@ -155,11 +155,11 @@ export function Footer({
 }
 
 /**
- * The core Explain sheet
+ * The core Portal sheet
  */
-export function Explain() {
+export function Portal() {
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Explain'>>();
+  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Portal'>>();
 
   if (!params) {
     goBack();
@@ -181,24 +181,21 @@ export function Explain() {
 }
 
 /**
- * Returns a util used to navigate to and render components within the Explain
+ * Returns a util used to navigate to and render components within the Portal
  * sheet. This file also exports components that should be used for the sheet's
  * children.
  *
- *    `import * as ex from '@/screens/Explain'`
+ *    `import * as p from '@/screens/Portal';`
  *
- *    `const { open } = ex.useExplainSheet()`
- *    `open(() => <ex.Title>...</ex.Title>, { ...options })`
+ *    `const { open } = p.usePortalSheet()`
+ *    `open(() => <p.Title>...</p.Title>, { ...options })`
  */
-export function useExplainSheet() {
+export function usePortalSheet() {
   const { navigate } = useNavigation();
 
   const open = React.useCallback(
-    (
-      children: React.FC,
-      options: Omit<ExplainSheetRouteProps, 'children'> = {}
-    ) => {
-      navigate(Routes.EXPLAIN, {
+    (children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) => {
+      navigate(Routes.PORTAL, {
         children,
         ...options,
       });
@@ -212,14 +209,14 @@ export function useExplainSheet() {
 }
 
 /**
- * Use `useExplainSheet` where possible. This util exists for limited use
+ * Use `usePortalSheet` where possible. This util exists for limited use
  * outside a React component.
  */
-export function openExplainSheet(
+export function openPortalSheet(
   children: React.FC,
-  options: Omit<ExplainSheetRouteProps, 'children'> = {}
+  options: Omit<PortalSheetProps, 'children'> = {}
 ) {
-  Navigation.handleAction(Routes.EXPLAIN, {
+  Navigation.handleAction(Routes.PORTAL, {
     children,
     ...options,
   });
