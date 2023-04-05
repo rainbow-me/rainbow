@@ -41,6 +41,8 @@ const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
  * a `Network` has no counterpart in SimpleHash.
+ * @param network `Network`
+ * @returns `SimpleHashChain` or `undefined`
  */
 export function getSimpleHashChainFromNetwork(
   network: Omit<Network, Network.goerli>
@@ -64,6 +66,8 @@ export function getSimpleHashChainFromNetwork(
 /**
  * Returns a `Network` from a `SimpleHashChain`. If an invalid value is
  * forcably passed in, it will throw.
+ * @param chain `SimpleHashChain`
+ * @returns `Network`
  */
 export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
   switch (chain) {
@@ -89,10 +93,13 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
   }
 }
 
-/*
- * This function filters out NFTs that do not have a name, collection name,
- * contract address, or token id. It also filters out Polygon NFTs that are
- * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
+/**
+ * Filters out NFTs that do not have a name, collection name,
+ * contract address, or token id, Gnosis NFTs that are not POAPs,
+ * as well as Polygon NFTs that are not present in the provided allowlist.
+ * @param nfts array of `SimpleHashNFT`s
+ * @param polygonAllowlist array of Polygon nft contract addresses to allowlist
+ * @returns filtered array of `SimpleHashNFT`s
  */
 export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
@@ -118,6 +125,11 @@ export function filterSimpleHashNFTs(
   });
 }
 
+/**
+ * Maps a `SimpleHashNFT` to a `UniqueAsset`.
+ * @param nft `SimpleHashNFT`
+ * @returns `UniqueAsset`
+ */
 export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const collection = nft.collection;
 
@@ -205,8 +217,12 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   };
 }
 
-/*
-  Reformat, resize and sign images provided by simplehash
+/**
+ * Reformats, resizes and signs images provided by simplehash.
+ * @param original original image url
+ * @param preview preview image url
+ * @param isSVG whether the original image is an svg
+ * @returns fullResPngUrl, lowResPngUrl, fullResUrl
  */
 function handleImages(
   original: string | null | undefined,
@@ -239,9 +255,11 @@ function handleImages(
   return { fullResPngUrl, lowResPngUrl, fullResUrl };
 }
 
-/*
-  Returns an NFT's UniqueTokenType
-*/
+/**
+ * Returns an NFT's `UniqueTokenType`.
+ * @param contractAddress NFT contract address
+ * @returns `UniqueTokenType`
+ */
 function getUniqueTokenType(contractAddress: string): UniqueTokenType {
   const lowercasedContractAddress = contractAddress.toLowerCase();
 
@@ -255,9 +273,11 @@ function getUniqueTokenType(contractAddress: string): UniqueTokenType {
   return uniqueTokenType;
 }
 
-/*
-  Converts a SimpleHashMarketplaceId to a NFTMarketplaceId, or returns undefined
-*/
+/**
+ * Converts a `SimpleHashMarketplaceId` to a `NFTMarketplaceId`, or returns undefined
+ * @param marketplaceId `SimpleHashMarketplaceId`
+ * @returns `NFTMarketplaceId` or `undefined`
+ */
 function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
   marketplaceId: SimpleHashMarketplaceId
 ): NFTMarketplaceId | undefined {
@@ -269,9 +289,11 @@ function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
   }
 }
 
-/*
-  Maps SimpleHashNFTs to internal NFTs
-*/
+/**
+ * Maps a `SimpleHashNFT` to a `NFT`.
+ * @param nft `SimpleHashNFT`
+ * @returns `NFT`
+ */
 export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
   const collection = nft.collection;
   const network = getNetworkFromSimpleHashChain(nft.chain);
