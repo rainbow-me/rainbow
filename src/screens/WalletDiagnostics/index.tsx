@@ -1,29 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-// @ts-expect-error untyped JS library
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import ActivityIndicator from '../../components/ActivityIndicator';
-import Divider from '../../components/Divider';
-import Spinner from '../../components/Spinner';
-import {
-  Centered,
-  Column,
-  ColumnWithMargins,
-  RowWithMargins,
-} from '../../components/layout';
-import {
-  SheetActionButton,
-  SheetTitle,
-  SlackSheet,
-} from '../../components/sheet';
-import { Bold, Text } from '../../components/text';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SlackSheet } from '../../components/sheet';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
@@ -34,27 +11,28 @@ import Routes from '@rainbow-me/routes';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
-import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { UserCredentials } from 'react-native-keychain';
-import { WalletDiagnosticsItemRow } from '@/screens/WalletDiagnostics/WalletDiagnosticsItemRow';
+import { WalletDiagnosticsContent } from '@/screens/WalletDiagnostics/WalletDiagnosticsContent';
 
-const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 const encryptor = new AesEncryptor();
 
 export const WalletDiagnosticsSheet = () => {
   const { height: deviceHeight } = useDimensions();
-  const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const [keys, setKeys] = useState<UserCredentials[] | undefined>();
   const { params } = useRoute<any>();
+
+  const [keys, setKeys] = useState<UserCredentials[] | undefined>();
   const [userPin, setUserPin] = useState(params?.userPin);
   const [pinRequired, setPinRequired] = useState(false);
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const [uuid, setUuid] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
+
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   useEffect(() => {
     const init = async () => {
+      setLoading(true);
       try {
         // get and set uuid
         const userIdentifier = getDeviceId();
@@ -140,6 +118,8 @@ export const WalletDiagnosticsSheet = () => {
           new RainbowError('Error processing keys for wallet diagnostics'),
           { message: (error as Error).message, context: 'init' }
         );
+      } finally {
+        setLoading(false);
       }
     };
     setTimeout(() => {
@@ -192,114 +172,17 @@ export const WalletDiagnosticsSheet = () => {
         : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
       scrollEnabled
     >
-      <ColumnWithMargins
-        margin={15}
-        style={{
-          paddingBottom: IS_IOS ? 60 : 40 + getSoftMenuBarHeight(),
-          paddingHorizontal: 19,
-          paddingTop: 19,
-          width: '100%',
-        }}
-      >
-        {/* @ts-expect-error JS component */}
-        <SheetTitle align="center" size="big" weight="heavy">
-          {lang.t('wallet.diagnostics.wallet_diagnostics_title')}
-        </SheetTitle>
-
-        {!keys && (
-          <Centered flex={1} height={300}>
-            {/* @ts-expect-error JS component */}
-            <LoadingSpinner />
-          </Centered>
-        )}
-
-        {IS_ANDROID && keys && pinRequired && !userPin && (
-          <ColumnWithMargins>
-            <Text align="center">
-              {lang.t(
-                'wallet.diagnostics.you_need_to_authenticate_with_your_pin'
-              )}
-            </Text>
-            <SheetActionButton
-              color={colors.alpha(colors.green, 0.06)}
-              isTransparent
-              label={lang.t('wallet.diagnostics.authenticate_with_pin')}
-              onPress={handleAuthenticateWithPIN}
-              size="big"
-              style={{ margin: 0, padding: 0 }}
-              textColor={colors.green}
-              weight="heavy"
-            />
-          </ColumnWithMargins>
-        )}
-
-        {uuid && (
-          <Fragment>
-            <ColumnWithMargins>
-              <RowWithMargins>
-                <Text size="lmedium">
-                  <Bold>{lang.t('wallet.diagnostics.uuid')}:</Bold> {` `}
-                  <Text color={colors.blueGreyDark50}>{uuid}</Text>
-                </Text>
-              </RowWithMargins>
-            </ColumnWithMargins>
-            {/* @ts-expect-error JS component */}
-            <Divider />
-          </Fragment>
-        )}
-
-        {seeds?.length !== undefined && seeds.length > 0 && (
-          <Fragment>
-            <Column>
-              {seeds.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {pkeys?.length !== undefined && pkeys.length > 0 && (
-          <Fragment>
-            <Column>
-              {pkeys?.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {keys?.length !== undefined && keys.length > 0 && (
-          <Fragment>
-            <Column>
-              {oldSeed?.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {keys && (
-          <SheetActionButton
-            color={colors.alpha(colors.appleBlue, 0.06)}
-            isTransparent
-            label={lang.t('button.got_it')}
-            onPress={handleClose}
-            size="big"
-            style={{ margin: 0, padding: 0 }}
-            textColor={colors.appleBlue}
-            weight="heavy"
-          />
-        )}
-      </ColumnWithMargins>
+      <WalletDiagnosticsContent
+        keys={keys}
+        oldSeed={oldSeed}
+        pinRequired={pinRequired}
+        pkeys={pkeys}
+        seeds={seeds}
+        userPin={userPin}
+        uuid={uuid}
+        onPinAuth={handleAuthenticateWithPIN}
+        onClose={handleClose}
+      />
     </SlackSheet>
   );
 };
