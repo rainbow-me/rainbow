@@ -15,7 +15,11 @@ import {
   getNameFromLabelhash,
   saveENSData,
 } from './localstorage/ens';
-import { estimateGasWithPadding, getProviderForNetwork } from './web3';
+import {
+  estimateGasWithPadding,
+  getProviderForNetwork,
+  TokenStandard,
+} from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import {
@@ -65,7 +69,7 @@ const buildEnsToken = ({
       address: contractAddress,
       name: 'ENS',
       nft_version: '3.0',
-      schema_name: 'ERC721',
+      schema_name: TokenStandard.ERC721,
       symbol: 'ENS',
       total_supply: null,
     },

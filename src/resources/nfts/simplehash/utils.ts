@@ -25,9 +25,9 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { isNil } from 'lodash';
 import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
-import { ERC1155, ERC721 } from '@/handlers/web3';
 import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
+import { TokenStandard } from '@/handlers/web3';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -344,7 +344,8 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
     isSendable:
       // can't send poaps because they're on gnosis
       uniqueTokenType !== uniqueTokenTypes.POAP &&
-      (nft.contract.type === ERC721 || nft.contract.type === ERC1155),
+      (nft.contract.type === TokenStandard.ERC721 ||
+        nft.contract.type === TokenStandard.ERC1155),
     lastSale:
       nft.last_sale?.payment_token?.name &&
       nft.last_sale?.payment_token?.symbol &&
