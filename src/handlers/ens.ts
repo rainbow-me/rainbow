@@ -38,6 +38,7 @@ import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
 import { queryClient } from '@/react-query';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
+import { getEnsMarqueeFallback } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -492,9 +493,10 @@ export function prefetchENSIntroData() {
     ensMarquee: EnsMarqueeAccount[];
   }>([ENS_MARQUEE_QUERY_KEY]);
 
-  const ensMarqueeAccounts = ensMarqueeQueryData?.ensMarquee.map(
-    (account: EnsMarqueeAccount) => account.name
-  );
+  const ensMarqueeAccounts = (
+    ensMarqueeQueryData?.ensMarquee || getEnsMarqueeFallback()
+  ).map((account: EnsMarqueeAccount) => account.name);
+
   if (ensMarqueeAccounts) {
     for (const name of ensMarqueeAccounts) {
       prefetchENSAddress({ name }, { staleTime: Infinity });

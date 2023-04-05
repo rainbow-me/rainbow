@@ -9,7 +9,19 @@ import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
 import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
-import { EthereumAddress } from '@/entities';
+import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
+import { ensIntroMarqueeNames } from '@/references';
+
+export const ensAvatarUrl = (ensName: string) =>
+  `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
+
+export const getEnsMarqueeFallback = (): EnsMarqueeAccount[] => {
+  return ensIntroMarqueeNames.map(name => ({
+    name,
+    avatar: ensAvatarUrl(name),
+    address: '',
+  }));
+};
 
 const lineHeight = 30;
 const estimateDescriptionProfilePreviewHeight = (description?: string) => {
@@ -56,13 +68,16 @@ export default function IntroMarquee({
   );
 
   const items = useMemo(() => {
-    return isLoading
-      ? []
-      : data?.ensMarquee?.accounts?.map((account, index) => ({
-          account,
-          onPress: () => handlePressENS(account.name),
-          testID: `ens-names-marquee-item-${index}`,
-        }));
+    if (isLoading) {
+      return [];
+    } else {
+      const accounts = data?.ensMarquee?.accounts || getEnsMarqueeFallback();
+      return accounts?.map((account, index) => ({
+        account,
+        onPress: () => handlePressENS(account.name),
+        testID: `ens-names-marquee-item-${index}`,
+      }));
+    }
   }, [data, handlePressENS, isLoading]);
 
   return (
@@ -85,11 +100,7 @@ function ENSAvatarPlaceholder({
   onPressStart,
   testID,
 }: {
-  account: {
-    name: string;
-    address: EthereumAddress;
-    avatar: string;
-  };
+  account: EnsMarqueeAccount;
   onPress: () => void;
   onPressCancel: () => void;
   onPressStart: () => void;
@@ -119,7 +130,7 @@ function ENSAvatarPlaceholder({
             borderRadius={80}
             height={{ custom: 80 }}
             shadow="15px light (Deprecated)"
-            source={{ uri: account?.avatar }}
+            source={{ uri: account.avatar }}
             width={{ custom: 80 }}
             size={100}
           />
@@ -129,7 +140,7 @@ function ENSAvatarPlaceholder({
             size="12px / 14px (Deprecated)"
             weight="semibold"
           >
-            {account?.name}
+            {account.name}
           </Text>
         </Stack>
       </Box>
