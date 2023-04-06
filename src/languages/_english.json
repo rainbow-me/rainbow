@@ -1647,7 +1647,7 @@
         "unknown": "Unknown Error, close and reopen this sheet"
       },
       "pairing_error_alert": {
-        "title": "Error Connecting", 
+        "title": "Error Connecting",
         "body": "Please try again, if issues persist close the app and try again"
       }
     },
