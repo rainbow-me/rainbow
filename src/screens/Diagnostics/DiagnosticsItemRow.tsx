@@ -9,9 +9,9 @@ import { Bold, Text } from '@/components/text';
 import { ButtonPressAnimation } from '@/components/animations';
 import { View } from 'react-native';
 import Divider from '@/components/Divider';
-import { WalletDiagnosticsSecretInput } from '@/screens/WalletDiagnostics/WalletDiagnosticsSecretInput';
+import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretInput';
 
-export const WalletDiagnosticsItemRow = ({ data }: any) => {
+export const DiagnosticsItemRow = ({ data }: any) => {
   const { colors } = useTheme();
   const {
     busy,
@@ -105,7 +105,7 @@ export const WalletDiagnosticsItemRow = ({ data }: any) => {
         <Bold>{lang.t('wallet.diagnostics.restore.secret')}:</Bold> {` `}
       </Text>
       <RowWithMargins>
-        <WalletDiagnosticsSecretInput
+        <DiagnosticsSecretInput
           color={colors.blueGreyDark}
           value={data.secret}
         />

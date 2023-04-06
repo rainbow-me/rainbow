@@ -9,7 +9,7 @@ import { TextInput } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Text } from '@/components/text';
 
-export const WalletDiagnosticsSecretInput = ({
+export const DiagnosticsSecretInput = ({
   value,
   color,
 }: {

@@ -2,7 +2,7 @@ import React, { Fragment, PropsWithChildren } from 'react';
 import { SheetActionButton } from '@/components/sheet';
 import { IS_ANDROID } from '@/env';
 import { Column } from '@/components/layout';
-import { WalletDiagnosticsItemRow } from '@/screens/WalletDiagnostics/WalletDiagnosticsItemRow';
+import { DiagnosticsItemRow } from '@/screens/Diagnostics/DiagnosticsItemRow';
 import { UserCredentials } from 'react-native-keychain';
 import { useTheme } from '@/theme';
 import Spinner from '@/components/Spinner';
@@ -28,7 +28,7 @@ type Props = PropsWithChildren<{
   shareAppState: () => void;
 }>;
 
-export function WalletDiagnosticsContent({
+export function DiagnosticsContent({
   keys,
   oldSeed,
   onClose,
@@ -150,10 +150,7 @@ export function WalletDiagnosticsContent({
         <Fragment>
           <Column>
             {seeds.map(key => (
-              <WalletDiagnosticsItemRow
-                data={key}
-                key={`row_${key.username}`}
-              />
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
             ))}
           </Column>
         </Fragment>
@@ -162,10 +159,7 @@ export function WalletDiagnosticsContent({
         <Fragment>
           <Column>
             {pkeys?.map(key => (
-              <WalletDiagnosticsItemRow
-                data={key}
-                key={`row_${key.username}`}
-              />
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
             ))}
           </Column>
         </Fragment>
@@ -174,10 +168,7 @@ export function WalletDiagnosticsContent({
         <Fragment>
           <Column>
             {oldSeed?.map(key => (
-              <WalletDiagnosticsItemRow
-                data={key}
-                key={`row_${key.username}`}
-              />
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
             ))}
           </Column>
         </Fragment>

@@ -30,7 +30,7 @@ import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
-import { WalletDiagnosticsSheet } from '../screens/WalletDiagnostics';
+import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { useTheme } from '../theme/ThemeContext';
@@ -265,7 +265,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen
         component={WalletDiagnosticsSheet}
-        name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        name={Routes.DIAGNOSTICS_SHEET}
         {...walletDiagnosticsSheetConfig}
       />
       <NativeStack.Screen

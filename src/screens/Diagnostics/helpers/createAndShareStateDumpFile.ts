@@ -1,7 +1,7 @@
 import store from '@/redux/store';
-import { getCircularReferenceReplacer } from '@/screens/WalletDiagnostics/helpers/getCircularReferenceReplacer';
+import { getCircularReferenceReplacer } from '@/screens/Diagnostics/helpers/getCircularReferenceReplacer';
 import RNFS from 'react-native-fs';
-import { APP_STATE_DUMP_FILE_NAME } from '@/screens/WalletDiagnostics/constants';
+import { APP_STATE_DUMP_FILE_NAME } from '@/screens/Diagnostics/constants';
 import RNShare from 'react-native-share';
 import { IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';

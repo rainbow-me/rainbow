@@ -17,7 +17,7 @@ import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
 import { UserCredentials } from 'react-native-keychain';
-import { WalletDiagnosticsContent } from '@/screens/WalletDiagnostics/WalletDiagnosticsContent';
+import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider, Box, globalColors } from '@/design-system';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -162,7 +162,7 @@ export const WalletDiagnosticsSheet = () => {
       // This is a hack because we currently don't
       // support showing the PIN screen on top of certain sheets
       setTimeout(() => {
-        navigate(Routes.WALLET_DIAGNOSTICS_SHEET, {
+        navigate(Routes.DIAGNOSTICS_SHEET, {
           userPin: pin,
         });
       }, 300);
@@ -197,7 +197,7 @@ export const WalletDiagnosticsSheet = () => {
         {({ backgroundColor }) => (
           <SimpleSheet backgroundColor={(backgroundColor as string) ?? 'white'}>
             <Box padding="20px">
-              <WalletDiagnosticsContent
+              <DiagnosticsContent
                 keys={keys}
                 oldSeed={oldSeed}
                 pinRequired={pinRequired}

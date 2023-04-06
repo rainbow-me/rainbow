@@ -28,7 +28,7 @@ export default function AppVersionStamp() {
     // Only show the WALLET_DIAGNOSTICS_SHEET if the
     // user has tapped this AppVersionStamp the secret amount of times
     if (tapCount === DEBUG_TAP_COUNT) {
-      navigate(Routes.WALLET_DIAGNOSTICS_SHEET);
+      navigate(Routes.DIAGNOSTICS_SHEET);
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
