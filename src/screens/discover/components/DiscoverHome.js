@@ -7,7 +7,7 @@ import useExperimentalFlag, {
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
@@ -21,6 +21,7 @@ import {
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
+import walletTypes from '@/helpers/walletTypes';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
@@ -32,6 +33,13 @@ export default function DiscoverHome() {
   const testNetwork = isTestnetNetwork(network);
   const isProfilesEnabled =
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
+
+  const { wallets } = useWallets();
+
+  const hasHardwareWallets =
+    Object.keys(wallets || {}).filter(
+      key => wallets[key].type === walletTypes.bluetooth
+    ).length > 0;
 
   return (
     <Inset top="20px" bottom={{ custom: 150 }}>
@@ -45,7 +53,7 @@ export default function DiscoverHome() {
               </Inline>
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
-              {hardwareWalletsEnabled && <LedgerCard />}
+              {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
               {isProfilesEnabled && <ENSCreateProfileCard />}
               <Inline space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />

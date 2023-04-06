@@ -503,7 +503,6 @@ export default async function runMigrations() {
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
-            // @ts-expect-error
             return `${asset.address}_${asset.network}`;
           } else {
             return address;

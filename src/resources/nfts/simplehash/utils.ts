@@ -153,12 +153,14 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
 
   const isENS = lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS;
 
+  const standard = nft.contract.type;
+
   return {
     animation_url: nft?.video_url,
     asset_contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
-      schema_name: nft.contract.type,
+      schema_name: standard,
       symbol: nft.contract.symbol || undefined,
     },
     background: nft.background_color,
@@ -192,7 +194,9 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
-    isSendable: nft.chain === SimpleHashChain.Ethereum,
+    isSendable:
+      nft.chain === SimpleHashChain.Ethereum &&
+      (standard === TokenStandard.ERC1155 || standard === TokenStandard.ERC721),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
       nft?.last_sale?.unit_price !== undefined
@@ -405,8 +409,7 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
       mimeType: nft.image_properties?.mime_type ?? undefined,
     },
     isSendable:
-      // can't send poaps because they're on gnosis
-      uniqueTokenType !== uniqueTokenTypes.POAP &&
+      nft.chain === SimpleHashChain.Ethereum &&
       (nft.contract.type === TokenStandard.ERC721 ||
         nft.contract.type === TokenStandard.ERC1155),
     lastSale:

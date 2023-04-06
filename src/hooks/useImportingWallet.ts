@@ -18,7 +18,11 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { resolveUnstoppableDomain, web3Provider } from '@/handlers/web3';
+import {
+  isValidBluetoothDeviceId,
+  resolveUnstoppableDomain,
+  web3Provider,
+} from '@/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
@@ -317,12 +321,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   }
 
                   setTimeout(() => {
-                    // If it's not read only, show the backup sheet
+                    // If it's not read only or hardware, show the backup sheet
                     if (
                       !(
                         isENSAddressFormat(input) ||
                         isUnstoppableAddressFormat(input) ||
-                        isValidAddress(input)
+                        isValidAddress(input) ||
+                        isValidBluetoothDeviceId(input)
                       )
                     ) {
                       IS_TESTING !== 'true' &&
