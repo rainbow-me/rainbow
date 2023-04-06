@@ -96,7 +96,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
 /**
  * Filters out NFTs that do not have a name, collection name,
  * contract address, or token id, Gnosis NFTs that are not POAPs,
- * as well as Polygon NFTs that are not present in the provided allowlist.
+ * NFTs that are not on a supported `Network`, and Polygon NFTs
+ * that are not present in the provided allowlist.
  * @param nfts array of `SimpleHashNFT`s
  * @param polygonAllowlist array of Polygon nft contract addresses to allowlist
  * @returns filtered array of `SimpleHashNFT`s
@@ -107,11 +108,13 @@ export function filterSimpleHashNFTs(
 ): SimpleHashNFT[] {
   return nfts.filter(nft => {
     const lowercasedContractAddress = nft.contract_address?.toLowerCase();
+    const network = getNetworkFromSimpleHashChain(nft.chain);
     if (
       !nft.name ||
       !nft.collection?.name ||
       !nft.contract_address ||
-      !nft.token_id
+      !nft.token_id ||
+      !network
     ) {
       return false;
     }
