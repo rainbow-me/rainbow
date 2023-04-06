@@ -1790,9 +1790,19 @@
           "reminder_title": "Reminder",
           "these_words_are_for_your_eyes_only": "These words are for your eyes only. Your secret phrase gives access to your entire wallet. \n\n       Be very careful with it."
         },
-        "uuid": "UUID",
-        "wallet_diagnostics_title": "Wallet Diagnostics",
-        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets"
+        "uuid": "Your UUID",
+        "uuid_copied": "\uDBC0\uDC63 UUID copied",
+        "uuid_description": "This identifier allows us to find your application errors and crashes.",
+        "loading": "Loading...",
+        "app_state_diagnostics_title": "App State",
+        "app_state_diagnostics_description": "Allows you to take a snapshot of the application state so that you can share it with out support team.",
+        "wallet_diagnostics_title": "Wallet",
+        "sheet_title": "Diagnostics",
+        "pin_auth_title": "PIN Authentication",
+        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets",
+        "share_application_state": "Share application state dump",
+        "wallet_details_title": "Wallet details",
+        "wallet_details_description": "Below are the details of all wallets added to Rainbow."
       },
       "error_displaying_address": "Error displaying address",
       "feedback": {

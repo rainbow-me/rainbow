@@ -1,18 +1,15 @@
 import React, { Fragment, PropsWithChildren } from 'react';
-import { SheetActionButton, SheetTitle } from '@/components/sheet';
-import lang from 'i18n-js';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { Column, ColumnWithMargins, RowWithMargins } from '@/components/layout';
-import { Bold, Text } from '@/components/text';
-import Divider from '@/components/Divider';
+import { SheetActionButton } from '@/components/sheet';
+import { IS_ANDROID } from '@/env';
+import { Column } from '@/components/layout';
 import { WalletDiagnosticsItemRow } from '@/screens/WalletDiagnostics/WalletDiagnosticsItemRow';
 import { UserCredentials } from 'react-native-keychain';
 import { useTheme } from '@/theme';
-// @ts-expect-error untyped JS library
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { Box, Stack, Text as RDSText } from '@/design-system';
+import { Box, Stack, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -26,6 +23,9 @@ type Props = PropsWithChildren<{
   oldSeed: UserCredentials[] | undefined;
   onPinAuth: () => void;
   onClose: () => void;
+  copyUUID: () => void;
+  presentToast: () => void;
+  shareAppState: () => void;
 }>;
 
 export function WalletDiagnosticsContent({
@@ -38,129 +38,162 @@ export function WalletDiagnosticsContent({
   seeds,
   userPin,
   uuid,
+  copyUUID,
+  shareAppState,
 }: Props) {
   const { colors } = useTheme();
 
-  if (!keys) {
-    return (
-      <Box
-        alignItems="center"
-        justifyContent="center"
-        width="full"
-        height={{ custom: 300 }}
-      >
-        <Stack space="16px" alignHorizontal="center">
-          {/* @ts-expect-error color not needed really */}
-          <LoadingSpinner />
-          <RDSText size="17pt" color="label" weight="semibold">
-            Loading...
-          </RDSText>
+  return (
+    <>
+      <Box paddingBottom="24px" paddingTop="24px">
+        <Text color="label" size="30pt" weight="heavy">
+          {i18n.t(i18n.l.wallet.diagnostics.sheet_title)}
+        </Text>
+      </Box>
+
+      {/* UUID access */}
+
+      <Box paddingBottom="16px">
+        <Stack space="10px">
+          <Text size="20pt" weight="heavy" color="label">
+            {i18n.t(i18n.l.wallet.diagnostics.uuid)}
+          </Text>
+          <Text size="13pt" weight="semibold" color="labelQuaternary">
+            {i18n.t(i18n.l.wallet.diagnostics.uuid_description)}
+          </Text>
         </Stack>
       </Box>
-    );
-  } else {
-    return (
-      <ColumnWithMargins
-        margin={15}
-        style={{
-          paddingBottom: IS_IOS ? 60 : 40 + getSoftMenuBarHeight(),
-          paddingHorizontal: 19,
-          paddingTop: 19,
-          width: '100%',
-        }}
-      >
-        {/* @ts-expect-error JS component */}
-        <SheetTitle align="center" size="big" weight="heavy">
-          {lang.t('wallet.diagnostics.wallet_diagnostics_title')}
-        </SheetTitle>
 
-        {IS_ANDROID && keys && pinRequired && !userPin && (
-          <ColumnWithMargins>
-            <Text align="center">
-              {lang.t(
-                'wallet.diagnostics.you_need_to_authenticate_with_your_pin'
-              )}
-            </Text>
+      <Box paddingBottom="36px" justifyContent="center" alignItems="center">
+        <ButtonPressAnimation onPress={copyUUID} overflowMargin={20}>
+          <Text color="label" size="20pt" weight="semibold">
+            {uuid ?? i18n.t(i18n.l.wallet.diagnostics.loading)}
+          </Text>
+        </ButtonPressAnimation>
+      </Box>
+
+      {/* App State Diagnostics */}
+
+      <Box paddingBottom="16px">
+        <Stack space="10px">
+          <Text size="20pt" weight="heavy" color="label">
+            {i18n.t(i18n.l.wallet.diagnostics.app_state_diagnostics_title)}
+          </Text>
+          <Text size="13pt" weight="semibold" color="labelQuaternary">
+            {i18n.t(
+              i18n.l.wallet.diagnostics.app_state_diagnostics_description
+            )}
+          </Text>
+        </Stack>
+      </Box>
+      <Box paddingBottom="36px">
+        <SheetActionButton
+          color={colors.appleBlue}
+          label={i18n.t(i18n.l.wallet.diagnostics.share_application_state)}
+          nftShadows
+          onPress={shareAppState}
+          weight="heavy"
+        />
+      </Box>
+
+      {/* PIN Auth to reveal secrets on Android */}
+      {IS_ANDROID && keys && pinRequired && !userPin && (
+        <>
+          <Box paddingBottom="16px">
+            <Stack space="10px">
+              <Text size="20pt" weight="heavy" color="label">
+                {i18n.t(i18n.l.wallet.diagnostics.pin_auth_title)}
+              </Text>
+              <Text size="13pt" weight="semibold" color="labelQuaternary">
+                {i18n.t(
+                  i18n.l.wallet.diagnostics
+                    .you_need_to_authenticate_with_your_pin
+                )}
+              </Text>
+            </Stack>
+          </Box>
+          <Box paddingBottom="36px">
             <SheetActionButton
-              color={colors.alpha(colors.green, 0.06)}
-              isTransparent
-              label={lang.t('wallet.diagnostics.authenticate_with_pin')}
+              color={colors.appleBlue}
+              label={i18n.t(i18n.l.wallet.diagnostics.authenticate_with_pin)}
+              nftShadows
               onPress={onPinAuth}
-              size="big"
-              style={{ margin: 0, padding: 0 }}
-              textColor={colors.green}
               weight="heavy"
             />
-          </ColumnWithMargins>
-        )}
+          </Box>
+        </>
+      )}
 
-        {uuid && (
-          <Fragment>
-            <ColumnWithMargins>
-              <RowWithMargins>
-                <Text size="lmedium">
-                  <Bold>{lang.t('wallet.diagnostics.uuid')}:</Bold> {` `}
-                  <Text color={colors.blueGreyDark50}>{uuid}</Text>
-                </Text>
-              </RowWithMargins>
-            </ColumnWithMargins>
-            {/* @ts-expect-error JS component */}
-            <Divider />
-          </Fragment>
-        )}
+      {/* Details of all wallets stored in the app */}
 
-        {seeds?.length !== undefined && seeds.length > 0 && (
-          <Fragment>
-            <Column>
-              {seeds.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {pkeys?.length !== undefined && pkeys.length > 0 && (
-          <Fragment>
-            <Column>
-              {pkeys?.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {keys?.length !== undefined && keys.length > 0 && (
-          <Fragment>
-            <Column>
-              {oldSeed?.map(key => (
-                <WalletDiagnosticsItemRow
-                  data={key}
-                  key={`row_${key.username}`}
-                />
-              ))}
-            </Column>
-          </Fragment>
-        )}
-
-        {keys && (
-          <SheetActionButton
-            color={colors.alpha(colors.appleBlue, 0.06)}
-            isTransparent
-            label={lang.t('button.got_it')}
-            onPress={onClose}
-            size="big"
-            style={{ margin: 0, padding: 0 }}
-            textColor={colors.appleBlue}
-            weight="heavy"
-          />
-        )}
-      </ColumnWithMargins>
-    );
-  }
+      <Box paddingBottom="16px">
+        <Text size="20pt" weight="heavy" color="label">
+          {i18n.t(i18n.l.wallet.diagnostics.wallet_details_title)}
+        </Text>
+      </Box>
+      {!keys && (
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          width="full"
+          height={{ custom: 300 }}
+        >
+          <Stack space="16px" alignHorizontal="center">
+            <LoadingSpinner color="black" />
+            <Text size="17pt" color="label" weight="semibold">
+              Loading...
+            </Text>
+          </Stack>
+        </Box>
+      )}
+      {seeds?.length !== undefined && seeds.length > 0 && (
+        <Fragment>
+          <Column>
+            {seeds.map(key => (
+              <WalletDiagnosticsItemRow
+                data={key}
+                key={`row_${key.username}`}
+              />
+            ))}
+          </Column>
+        </Fragment>
+      )}
+      {pkeys?.length !== undefined && pkeys.length > 0 && (
+        <Fragment>
+          <Column>
+            {pkeys?.map(key => (
+              <WalletDiagnosticsItemRow
+                data={key}
+                key={`row_${key.username}`}
+              />
+            ))}
+          </Column>
+        </Fragment>
+      )}
+      {keys?.length !== undefined && keys.length > 0 && (
+        <Fragment>
+          <Column>
+            {oldSeed?.map(key => (
+              <WalletDiagnosticsItemRow
+                data={key}
+                key={`row_${key.username}`}
+              />
+            ))}
+          </Column>
+        </Fragment>
+      )}
+      {keys && (
+        <SheetActionButton
+          color={colors.alpha(colors.appleBlue, 0.06)}
+          isTransparent
+          label={i18n.t(i18n.l.button.got_it)}
+          onPress={onClose}
+          size="big"
+          style={{ margin: 0, padding: 0 }}
+          textColor={colors.appleBlue}
+          weight="heavy"
+        />
+      )}
+    </>
+  );
 }

@@ -347,6 +347,7 @@ function BSNavigator() {
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        options={{ ...bottomSheetPreset }}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen

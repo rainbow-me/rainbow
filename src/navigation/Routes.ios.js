@@ -66,6 +66,7 @@ import {
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
   portalSheetConfig,
+  walletDiagnosticsSheetConfig,
 } from './config';
 import {
   addCashSheet,
@@ -265,6 +266,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={WalletDiagnosticsSheet}
         name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        {...walletDiagnosticsSheetConfig}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}

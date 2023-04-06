@@ -1,24 +1,34 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SlackSheet } from '../../components/sheet';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { useDimensions, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import Routes from '@rainbow-me/routes';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { UserCredentials } from 'react-native-keychain';
 import { WalletDiagnosticsContent } from '@/screens/WalletDiagnostics/WalletDiagnosticsContent';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { BackgroundProvider, Box, globalColors } from '@/design-system';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import * as i18n from '@/languages';
+import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
+import { haptics } from '@/utils';
+import Clipboard from '@react-native-community/clipboard';
 
 const encryptor = new AesEncryptor();
 
 export const WalletDiagnosticsSheet = () => {
-  const { height: deviceHeight } = useDimensions();
   const { navigate, goBack } = useNavigation();
   const { params } = useRoute<any>();
 
@@ -26,13 +36,13 @@ export const WalletDiagnosticsSheet = () => {
   const [userPin, setUserPin] = useState(params?.userPin);
   const [pinRequired, setPinRequired] = useState(false);
   const [uuid, setUuid] = useState<string | undefined>();
-  const [loading, setLoading] = useState(true);
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimeout = useRef<NodeJS.Timeout>();
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
       try {
         // get and set uuid
         const userIdentifier = getDeviceId();
@@ -118,8 +128,6 @@ export const WalletDiagnosticsSheet = () => {
           new RainbowError('Error processing keys for wallet diagnostics'),
           { message: (error as Error).message, context: 'init' }
         );
-      } finally {
-        setLoading(false);
       }
     };
     setTimeout(() => {
@@ -163,26 +171,57 @@ export const WalletDiagnosticsSheet = () => {
     }
   }, [navigate]);
 
+  const copyUUID = () => {
+    haptics.notificationSuccess();
+    Clipboard.setString(uuid);
+    presentToast();
+  };
+
+  const presentToast = () => {
+    setToastVisible(true);
+    if (toastTimeout.current) {
+      clearTimeout(toastTimeout.current);
+    }
+    toastTimeout.current = setTimeout(() => {
+      setToastVisible(false);
+    }, 2000);
+  };
+
+  const shareApplicationStateDump = () => {
+    createAndShareStateDumpFile();
+  };
+
   return (
-    // @ts-expect-error JS component
-    <SlackSheet
-      additionalTopPadding={IS_ANDROID}
-      {...(IS_IOS
-        ? { height: '100%' }
-        : { additionalTopPadding: true, contentHeight: deviceHeight - 40 })}
-      scrollEnabled
-    >
-      <WalletDiagnosticsContent
-        keys={keys}
-        oldSeed={oldSeed}
-        pinRequired={pinRequired}
-        pkeys={pkeys}
-        seeds={seeds}
-        userPin={userPin}
-        uuid={uuid}
-        onPinAuth={handleAuthenticateWithPIN}
-        onClose={handleClose}
-      />
-    </SlackSheet>
+    <>
+      <BackgroundProvider color="surfacePrimaryElevated">
+        {({ backgroundColor }) => (
+          <SimpleSheet backgroundColor={(backgroundColor as string) ?? 'white'}>
+            <Box padding="20px">
+              <WalletDiagnosticsContent
+                keys={keys}
+                oldSeed={oldSeed}
+                pinRequired={pinRequired}
+                pkeys={pkeys}
+                seeds={seeds}
+                userPin={userPin}
+                uuid={uuid}
+                onPinAuth={handleAuthenticateWithPIN}
+                onClose={handleClose}
+                copyUUID={copyUUID}
+                presentToast={presentToast}
+                shareAppState={shareApplicationStateDump}
+              />
+            </Box>
+          </SimpleSheet>
+        )}
+      </BackgroundProvider>
+      <ToastPositionContainer>
+        <Toast
+          isVisible={toastVisible}
+          text={i18n.t(i18n.l.wallet.diagnostics.uuid_copied)}
+          testID="uuid-copied-toast"
+        />
+      </ToastPositionContainer>
+    </>
   );
 };
