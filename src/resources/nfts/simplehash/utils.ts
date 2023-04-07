@@ -240,6 +240,13 @@ function handleImages(
   lowResPngUrl: string | undefined;
   fullResUrl: string | undefined;
 } {
+  if (!original && !preview) {
+    return {
+      fullResPngUrl: undefined,
+      lowResPngUrl: undefined,
+      fullResUrl: undefined,
+    };
+  }
   const nonSVGUrl =
     // simplehash previews are (supposedly) never svgs
     // they are (supposed to be) google cdn urls that are suffixed with an image size parameter
@@ -295,7 +302,8 @@ function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
 }
 
 /**
- * Maps a `SimpleHashNFT` to a `NFT`.
+ * Maps a `SimpleHashNFT` to a `NFT`. May result in an invalid NFT if
+ * `filterSimpleHashNFTs` is not called first.
  * @param nft `SimpleHashNFT`
  * @returns `NFT`
  */
