@@ -82,9 +82,10 @@ export function AuthRequest({
                 source={{
                   uri: icons[0],
                 }}
-                size={200}
-                height={{ custom: 36 }}
-                width={{ custom: 36 }}
+                size={100}
+                height={{ custom: 54 }}
+                width={{ custom: 54 }}
+                borderRadius={14}
               />
             ) : (
               <Text align="center" color="label" size="20pt" weight="semibold">
