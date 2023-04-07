@@ -66,11 +66,7 @@ export const checkLedgerConnection = async ({
   ethApp
     .getAddress(path)
     .then(res => {
-      logger.debug(
-        '[checkLedgerConnection] - ledger is ready',
-        {},
-        logger.DebugContext.ledger
-      );
+      logger.info('[checkLedgerConnection] - ledger is ready', {});
       successCallback?.(deviceId);
     })
     .catch(e => {
