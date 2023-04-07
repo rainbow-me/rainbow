@@ -14,6 +14,9 @@ import { ImgixImage } from '@/components/images';
 import { initials } from '@/utils/formatters';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
+import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
+import { Alert } from '@/components/alerts';
+import * as lang from '@/languages';
 
 export function AuthRequest({
   requesterMeta,
@@ -25,7 +28,7 @@ export function AuthRequest({
     url: string;
     icons: string[];
   };
-  authenticate({ address }: { address: string }): Promise<void>;
+  authenticate: AuthRequestAuthenticateSignature;
 }) {
   const { navigate, goBack } = useNavigation();
   const {
@@ -38,19 +41,27 @@ export function AuthRequest({
   const [loadError, setLoadError] = React.useState(false);
   const { colors } = useTheme();
 
-  const { icons, name, url } = requesterMeta;
-
   const auth = React.useCallback(async () => {
-    await authenticate({ address: accountAddress });
-    goBack();
+    const { success } = await authenticate({ address: accountAddress });
+
+    if (!success) {
+      Alert({
+        title: lang.t(lang.l.walletconnect.auth.error_alert_title),
+        message: lang.t(lang.l.walletconnect.auth.error_alert_description),
+      });
+    } else {
+      goBack(); // close
+    }
   }, [accountAddress, authenticate, goBack]);
+
+  const { icons, name, url } = requesterMeta;
 
   return (
     <>
       <Box alignItems="center">
         <Box paddingBottom="36px">
           <Text color={'label'} weight={'heavy'} size={'20pt'} align="center">
-            Sign In
+            {lang.t(lang.l.walletconnect.auth.signin_title)}
           </Text>
         </Box>
 
@@ -90,7 +101,7 @@ export function AuthRequest({
             size={'17pt'}
             align="center"
           >
-            Do you want to sign into {name} with your wallet?
+            {lang.t(lang.l.walletconnect.auth.signin_prompt, { name })}
           </Text>
         </Box>
 
@@ -153,7 +164,7 @@ export function AuthRequest({
               <Box paddingLeft="10px" paddingRight="16px">
                 <Box paddingBottom="6px">
                   <Text color="labelSecondary" size="13pt" weight="semibold">
-                    Sign in with
+                    {lang.t(lang.l.walletconnect.auth.signin_with)}
                   </Text>
                 </Box>
 
@@ -176,15 +187,15 @@ export function AuthRequest({
           <AccentColorProvider color="blue">
             <BackgroundProvider color="accent">
               {({ backgroundColor }) => (
-                /* @ts-ignore */
                 <Box
+                  /* @ts-ignore */
                   background={backgroundColor}
                   paddingVertical="16px"
                   paddingHorizontal="32px"
                   borderRadius={50}
                 >
                   <Text color="label" size="17pt" weight="heavy">
-                    􀎽 Continue
+                    􀎽 {lang.t(lang.l.walletconnect.auth.signin_button)}
                   </Text>
                 </Box>
               )}
@@ -199,8 +210,7 @@ export function AuthRequest({
             size={'13pt'}
             align="center"
           >
-            By continuing, you’ll sign a free message proving you own this
-            wallet
+            {lang.t(lang.l.walletconnect.auth.signin_notice)}
           </Text>
         </Box>
       </Box>

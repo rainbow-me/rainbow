@@ -38,6 +38,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
+import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
 
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 
@@ -876,31 +877,49 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     logger.DebugContext.walletconnect
   );
 
-  async function authenticate({ address }: { address: string }) {
-    const wallet = await loadWallet(address);
+  const authenticate: AuthRequestAuthenticateSignature = async ({
+    address,
+  }) => {
+    try {
+      const wallet = await loadWallet(address);
 
-    if (!wallet) {
-      // TODO
-      return;
-    }
+      if (!wallet) {
+        logger.error(
+          new RainbowError(`WC v2: could not loadWallet to sign auth_request`)
+        );
+        return { success: true };
+      }
 
-    const iss = `did:pkh:eip155:1:${address}`;
-    const message = client.formatMessage(event.params.cacaoPayload, iss);
+      const iss = `did:pkh:eip155:1:${address}`;
+      const message = client.formatMessage(event.params.cacaoPayload, iss);
 
-    // prompt the user to sign the message
-    const signature = await wallet.signMessage(message);
-    // respond
-    const res = await client.respondAuthRequest(
-      {
-        id: event.id,
-        signature: {
-          s: signature,
-          t: 'eip191',
+      // prompt the user to sign the message
+      const signature = await wallet.signMessage(message);
+      // respond
+      await client.respondAuthRequest(
+        {
+          id: event.id,
+          signature: {
+            s: signature,
+            t: 'eip191',
+          },
         },
-      },
-      iss
-    );
-  }
+        iss
+      );
+
+      return { success: true };
+    } catch (e: any) {
+      logger.error(
+        new RainbowError(
+          `WC v2: an unknown error occurred when signing auth_request`
+        ),
+        {
+          message: e.message,
+        }
+      );
+      return { success: false };
+    }
+  };
 
   portal.open(
     () =>
