@@ -44,7 +44,6 @@
     "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
-    "preview": "git reset && git commit -m \"/preview\" --allow-empty",
     "start": "react-native start",
     "start:clean": "yarn clean:packager && react-native start -- --reset-cache",
     "test": "jest",
