@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import {
   Box,
@@ -22,12 +23,7 @@ export function AuthRequest({
   requesterMeta,
   authenticate,
 }: {
-  requesterMeta: {
-    name: string;
-    description: string;
-    url: string;
-    icons: string[];
-  };
+  requesterMeta: Web3WalletTypes.AuthRequest['params']['requester']['metadata'];
   authenticate: AuthRequestAuthenticateSignature;
 }) {
   const { navigate, goBack } = useNavigation();
