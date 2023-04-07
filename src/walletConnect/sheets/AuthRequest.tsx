@@ -134,6 +134,7 @@ export function AuthRequest({
                   height={{ custom: 36 }}
                   alignItems="center"
                   justifyContent="center"
+                  shadow="18px"
                 >
                   {accountImage ? (
                     <Box
