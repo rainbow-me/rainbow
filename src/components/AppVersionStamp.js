@@ -14,9 +14,6 @@ const StyledButton = styled(Pressable)({
   paddingHorizontal: 40,
 });
 
-// On CI this will be modified if the app is in Fedora mode
-const FEDORA_BRANCH = '';
-
 export default function AppVersionStamp() {
   const [appVersion, codePushVersion] = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
@@ -48,11 +45,7 @@ export default function AppVersionStamp() {
         size="14px / 19px (Deprecated)"
         weight="bold"
       >
-        {FEDORA_BRANCH
-          ? FEDORA_BRANCH
-          : showCodePushVersion
-          ? `Update: ${codePushVersion}`
-          : appVersion}
+        {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
       </Text>
     </StyledButton>
   );
