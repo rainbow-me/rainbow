@@ -35,7 +35,7 @@ import { getFCMToken } from '@/notifications/tokens';
 import { chains as supportedChainConfigs } from '@/references';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
-import { IS_DEV } from '@/env';
+import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
@@ -927,7 +927,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
         authenticate,
         requesterMeta: event.params.requester.metadata,
       }),
-    { sheetHeight: 520 }
+    { sheetHeight: IS_ANDROID ? 560 : 520 }
   );
 }
 
