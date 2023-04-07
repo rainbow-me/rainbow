@@ -902,7 +902,14 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     );
   }
 
-  portal.open(() => AuthRequest({ authenticate }), { sheetHeight: 400 });
+  portal.open(
+    () =>
+      AuthRequest({
+        authenticate,
+        requesterMeta: event.params.requester.metadata,
+      }),
+    { sheetHeight: 520 }
+  );
 }
 
 /**

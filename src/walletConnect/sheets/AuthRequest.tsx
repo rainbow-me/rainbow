@@ -1,17 +1,44 @@
 import React from 'react';
-
 import { useNavigation } from '@react-navigation/native';
-import { Box, Text } from '@/design-system';
-import Button from '@/components/buttons/Button';
+
+import {
+  Box,
+  Text,
+  Separator,
+  BackgroundProvider,
+  AccentColorProvider,
+} from '@/design-system';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import useAccountProfile from '@/hooks/useAccountProfile';
+import { ImgixImage } from '@/components/images';
+import { initials } from '@/utils/formatters';
+import { useTheme } from '@/theme';
+import Routes from '@/navigation/routesNames';
 
 export function AuthRequest({
+  requesterMeta,
   authenticate,
 }: {
+  requesterMeta: {
+    name: string;
+    description: string;
+    url: string;
+    icons: string[];
+  };
   authenticate({ address }: { address: string }): Promise<void>;
 }) {
-  const { goBack } = useNavigation();
-  const { accountAddress } = useAccountProfile();
+  const { navigate, goBack } = useNavigation();
+  const {
+    accountAddress,
+    accountSymbol,
+    accountColor,
+    accountImage,
+    accountName,
+  } = useAccountProfile();
+  const [loadError, setLoadError] = React.useState(false);
+  const { colors } = useTheme();
+
+  const { icons, name, url } = requesterMeta;
 
   const auth = React.useCallback(async () => {
     await authenticate({ address: accountAddress });
@@ -20,12 +47,162 @@ export function AuthRequest({
 
   return (
     <>
-      <Box>
-        <Text size="17pt" color="label" weight="bold">
-          Hello
-        </Text>
+      <Box alignItems="center">
+        <Box paddingBottom="36px">
+          <Text color={'label'} weight={'heavy'} size={'20pt'} align="center">
+            Sign In
+          </Text>
+        </Box>
 
-        <Button onPress={auth}>Continue</Button>
+        <Box paddingBottom="24px" alignItems="center">
+          <Box
+            width={{ custom: 54 }}
+            height={{ custom: 54 }}
+            borderRadius={14}
+            overflow="hidden"
+            justifyContent="center"
+            alignItems="center"
+            background="accent"
+          >
+            {icons[0] && !loadError ? (
+              <Box
+                as={ImgixImage}
+                onError={() => setLoadError(true)}
+                source={{
+                  uri: icons[0],
+                }}
+                size={200}
+                height={{ custom: 36 }}
+                width={{ custom: 36 }}
+              />
+            ) : (
+              <Text align="center" color="label" size="20pt" weight="semibold">
+                {initials(name)}
+              </Text>
+            )}
+          </Box>
+        </Box>
+
+        <Box paddingBottom="16px" width={{ custom: 281 }}>
+          <Text
+            color={'label'}
+            weight={'semibold'}
+            size={'17pt'}
+            align="center"
+          >
+            Do you want to sign into {name} with your wallet?
+          </Text>
+        </Box>
+
+        <Box paddingBottom="36px">
+          <Text color={'accent'} weight={'bold'} size={'17pt'} align="center">
+            {url}
+          </Text>
+        </Box>
+
+        <Box paddingBottom="36px">
+          <ButtonPressAnimation
+            onPress={() => {
+              navigate(Routes.CHANGE_WALLET_SHEET, {
+                currentAccountAddress: accountAddress,
+              });
+            }}
+          >
+            <Box
+              padding="10px"
+              paddingRight="16px"
+              background="fillSecondary"
+              borderRadius={18}
+              flexDirection="row"
+              alignItems="center"
+            >
+              <AccentColorProvider
+                color={colors.avatarBackgrounds[accountColor] || 'fill'}
+              >
+                <Box
+                  background="accent"
+                  borderRadius={100}
+                  width={{ custom: 36 }}
+                  height={{ custom: 36 }}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {accountImage ? (
+                    <Box
+                      as={ImgixImage}
+                      source={{ uri: accountImage }}
+                      size={100}
+                      borderRadius={36}
+                      height={{ custom: 36 }}
+                      width={{ custom: 36 }}
+                    />
+                  ) : (
+                    <Text
+                      color="label"
+                      size="20pt"
+                      weight="semibold"
+                      align="center"
+                      containsEmoji={true}
+                    >
+                      {accountSymbol as string}
+                    </Text>
+                  )}
+                </Box>
+              </AccentColorProvider>
+
+              <Box paddingLeft="10px" paddingRight="16px">
+                <Box paddingBottom="6px">
+                  <Text color="labelSecondary" size="13pt" weight="semibold">
+                    Sign in with
+                  </Text>
+                </Box>
+
+                <Text color="label" size="15pt" weight="bold">
+                  {accountName}
+                </Text>
+              </Box>
+              <Text color="label" size="15pt" weight="bold">
+                􀆏
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        </Box>
+
+        <Box paddingBottom="36px" width={{ custom: 166 }}>
+          <Separator color="separatorTertiary" />
+        </Box>
+
+        <ButtonPressAnimation onPress={auth}>
+          <AccentColorProvider color="blue">
+            <BackgroundProvider color="accent">
+              {({ backgroundColor }) => (
+                /* @ts-ignore */
+                <Box
+                  background={backgroundColor}
+                  paddingVertical="16px"
+                  paddingHorizontal="32px"
+                  borderRadius={50}
+                >
+                  <Text color="label" size="17pt" weight="heavy">
+                    􀎽 Continue
+                  </Text>
+                </Box>
+              )}
+            </BackgroundProvider>
+          </AccentColorProvider>
+        </ButtonPressAnimation>
+
+        <Box paddingTop="24px" width={{ custom: 245 }}>
+          <Text
+            color={'labelQuaternary'}
+            weight={'semibold'}
+            size={'13pt'}
+            align="center"
+          >
+            By continuing, you’ll sign a free message proving you own this
+            wallet
+          </Text>
+        </Box>
       </Box>
     </>
   );
