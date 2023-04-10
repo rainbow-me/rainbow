@@ -13,6 +13,8 @@ import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { PolygonAllowlist } from '../types';
 import { ERC1155, ERC721 } from '@/handlers/web3';
 
+const SPAM_SCORE_THRESHOLD = 85;
+
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
  * a `Network` has no counterpart in SimpleHash.
@@ -77,7 +79,8 @@ export function getPriceFromLastSale(
 
 /**
  * This function filters out NFTs that do not have a name, collection name,
- * contract address, or token id. It also filters out Polygon NFTs that are
+ * contract address, or token id. It also filters out non-Polygon NFTs with
+ * a spam score greater than or equal to 85, Polygon NFTs that are
  * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
  *
  * @param nfts array of SimpleHashNFTs
@@ -95,6 +98,14 @@ export function filterSimpleHashNFTs(
       !nft.collection?.name ||
       !nft.contract_address ||
       !nft.token_id
+    ) {
+      return false;
+    }
+    if (
+      // fallback to spam score if polygon allowlist is not provided
+      (nft.chain !== SimpleHashChain.Polygon || !polygonAllowlist) &&
+      nft.collection?.spam_score &&
+      nft.collection.spam_score >= SPAM_SCORE_THRESHOLD
     ) {
       return false;
     }
