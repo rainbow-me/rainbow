@@ -39,7 +39,6 @@ import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
-
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 
 enum RPCMethod {
