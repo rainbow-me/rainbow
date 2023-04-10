@@ -1,6 +1,6 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
@@ -21,7 +21,7 @@ import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { FedoraToast, OfflineToast } from './components/toasts';
+import { OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
@@ -63,7 +63,6 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { addressKey } from './utils/keychainConstants';
-import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
@@ -82,34 +81,10 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 
-const FedoraToastRef = createRef();
-
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
-} else {
-  // eslint-disable-next-line no-inner-declarations
-  async function checkForFedoraMode() {
-    try {
-      const config = await codePush.getCurrentPackage();
-      if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
-        codePush.sync({
-          deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
-          installMode: codePush.InstallMode.ON_NEXT_RESTART,
-        });
-      } else {
-        isCustomBuild.value = true;
-        setTimeout(() => FedoraToastRef?.current?.show(), 300);
-      }
-    } catch (e) {
-      logger.error(new RainbowError('error initiating codepush settings'), {
-        message: e.message,
-      });
-    }
-  }
-
-  checkForFedoraMode();
 }
 
 enableScreens();
@@ -269,7 +244,6 @@ class OldApp extends Component {
             </InitialRouteContext.Provider>
           )}
           <OfflineToast />
-          <FedoraToast ref={FedoraToastRef} />
         </View>
         <NotificationsHandler walletReady={this.props.walletReady} />
       </Portal>
@@ -396,9 +370,7 @@ function Root() {
 }
 
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush({
-  checkFrequency: codePush.CheckFrequency.MANUAL,
-})(RootWithSentry);
+const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>

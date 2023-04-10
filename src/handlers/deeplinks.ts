@@ -13,7 +13,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
-import { setDeploymentKey } from '@/handlers/fedora';
 import { delay } from '@/helpers/utilities';
 import {
   checkIsValidAddressOrDomain,
@@ -130,40 +129,6 @@ export default async function handleDeeplink(
             }
           }, 50);
         }
-        break;
-      }
-
-      /**
-       * Top Hat stuff
-       */
-      case 'update-ios': {
-        logger.info(`handleDeeplink: update-ios`);
-
-        const code = pathname.split('/')[2];
-
-        if (android) {
-          Alert.alert(lang.t('deeplinks.tried_to_use_ios'));
-        } else {
-          setDeploymentKey(code);
-        }
-
-        break;
-      }
-
-      /**
-       * Top Hat stuff
-       */
-      case 'update-android': {
-        logger.info(`handleDeeplink: update-android`);
-
-        const code = pathname.split('/')[2];
-
-        if (ios) {
-          Alert.alert(lang.t('deeplinks.tried_to_use_android'));
-        } else {
-          setDeploymentKey(code);
-        }
-
         break;
       }
 
