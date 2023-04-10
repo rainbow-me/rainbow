@@ -108,13 +108,7 @@ function MainNavigator() {
       <Stack.Screen
         component={Portal}
         name={Routes.PORTAL}
-        options={({ route: { params = {} } }) => {
-          return {
-            ...expandedPreset,
-            // TODO not working
-            height: params.sheetHeight,
-          };
-        }}
+        options={expandedPreset}
       />
       <Stack.Screen
         component={TransactionConfirmationScreen}
