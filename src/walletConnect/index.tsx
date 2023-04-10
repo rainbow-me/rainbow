@@ -944,6 +944,9 @@ export async function getAllActiveSessions() {
  * in a type-safe manner.
  */
 export function getAllActiveSessionsSync() {
+  logger.warn(`WC v2: getAllActiveSessionsSync is deprecated`, {
+    syncWeb3WalletClient: syncWeb3WalletClient?.getActiveSessions(),
+  });
   return Object.values(syncWeb3WalletClient?.getActiveSessions() || {}) || [];
 }
 

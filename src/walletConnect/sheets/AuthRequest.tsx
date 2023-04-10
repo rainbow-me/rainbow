@@ -35,6 +35,7 @@ export function AuthRequest({
     accountName,
   } = useAccountProfile();
   const [loadError, setLoadError] = React.useState(false);
+  const [address, setAddress] = React.useState(accountAddress);
   const { colors } = useTheme();
 
   const auth = React.useCallback(async () => {
@@ -49,6 +50,12 @@ export function AuthRequest({
       goBack(); // close
     }
   }, [accountAddress, authenticate, goBack]);
+
+  React.useEffect(() => {
+    if (accountAddress !== address) {
+      setAddress(accountAddress);
+    }
+  }, [address, accountAddress, setAddress]);
 
   const { icons, name, url } = requesterMeta;
 
@@ -112,7 +119,12 @@ export function AuthRequest({
           <ButtonPressAnimation
             onPress={() => {
               navigate(Routes.CHANGE_WALLET_SHEET, {
-                currentAccountAddress: accountAddress,
+                currentAccountAddress: address,
+                onChangeWallet(address: string) {
+                  setAddress(address);
+                  goBack();
+                },
+                watchOnly: true,
               });
             }}
           >
