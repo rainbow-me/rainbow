@@ -61,7 +61,7 @@ const providerConfig = {
     },
     {
       type: CalloutType.Rate,
-      value: `3%`,
+      value: `0-3%`,
     },
     {
       type: CalloutType.PaymentMethods,

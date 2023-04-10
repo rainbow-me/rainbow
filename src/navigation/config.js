@@ -365,7 +365,7 @@ export const basicSheetConfig = {
   }),
 };
 
-export const explainSheetV2Config = {
+export const portalSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
