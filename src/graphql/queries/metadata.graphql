@@ -115,3 +115,9 @@ query reverseResolveENSProfile(
     }
   }
 }
+
+query getNFTAllowlist($chainID: Int!) {
+  nftAllowlist(chainID: $chainID) {
+    addresses
+  }
+}

@@ -10,11 +10,12 @@ import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
-import { rainbowFetch } from '@/rainbow-fetch';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { Network } from '@/helpers';
+import { metadataClient } from '@/graphql';
 
+const POLYGON_CHAIN_ID = 137;
 const NFTS_LIMIT = 2000;
 const NFTS_STALE_TIME = 300000; // 5 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
@@ -39,14 +40,13 @@ function fetchPolygonAllowlist() {
     ['polygon-allowlist'],
     async () => {
       const polygonAllowlistAddresses = (
-        await rainbowFetch(
-          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-          { method: 'get' }
-        )
-      ).data.data.addresses;
+        await metadataClient.getNFTAllowlist({
+          chainID: POLYGON_CHAIN_ID,
+        })
+      )?.nftAllowlist?.addresses;
 
       const polygonAllowlist: PolygonAllowlist = {};
-      polygonAllowlistAddresses.forEach((address: string) => {
+      polygonAllowlistAddresses?.forEach((address: string) => {
         polygonAllowlist[address] = true;
       });
 
