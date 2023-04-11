@@ -10,7 +10,7 @@ import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
   getDataFromCloud,
-} from '../handlers/cloudBackup';
+} from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import {
@@ -19,7 +19,7 @@ import {
   privateKeyKey,
   seedPhraseKey,
   selectedWalletKey,
-} from '../utils/keychainConstants';
+} from '@/utils/keychainConstants';
 import * as keychain from './keychain';
 import {
   AllRainbowWallets,
@@ -160,8 +160,10 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
     await Promise.all(
       Object.keys(processedSecrets).map(async key => {
         const secret = processedSecrets[key];
+        const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
+        const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
 
-        if (key.endsWith(seedPhraseKey)) {
+        if (theKeyIsASeedPhrase) {
           const parsedSecret = JSON.parse(secret);
           const seedphrase = parsedSecret.seedphrase;
 
@@ -170,10 +172,23 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
               userPIN,
               seedphrase
             );
-
             processedSecrets[key] = JSON.stringify({
               ...parsedSecret,
               seedphrase: decryptedSeedPhrase,
+            });
+          }
+        } else if (theKeyIsAPrivateKey) {
+          const parsedSecret = JSON.parse(secret);
+          const privateKey = parsedSecret.privateKey;
+
+          if (userPIN && privateKey && privateKey.includes('cipher')) {
+            const decryptedPrivateKey = await encryptor.decrypt(
+              userPIN,
+              privateKey
+            );
+            processedSecrets[key] = JSON.stringify({
+              ...parsedSecret,
+              privateKey: decryptedPrivateKey,
             });
           }
         }
@@ -296,9 +311,9 @@ async function restoreSpecificBackupIntoKeychain(
         let processedSeedPhrase = parsedValue.seedphrase;
         if (processedSeedPhrase && processedSeedPhrase.includes('cipher')) {
           const backupPIN = await decryptPIN(encryptedBackupPinData);
-          processedSeedPhrase = await decryptSeedFromBackupPinAndEncryptWithNewPin(
+          processedSeedPhrase = await decryptSecretFromBackupPinAndEncryptWithNewPin(
             {
-              seedPhrase: parsedValue.seedphrase,
+              secret: parsedValue.seedphrase,
               backupPIN,
             }
           );
@@ -327,22 +342,51 @@ async function restoreCurrentBackupIntoKeychain(
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
         let value = backedUpData[key];
-        let accessControl: Options = keychain.publicAccessControlOptions;
-        if (endsWith(key, seedPhraseKey)) {
-          accessControl = privateAccessControlOptions;
+        const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
+        const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
+        const accessControl: Options =
+          theKeyIsASeedPhrase || theKeyIsAPrivateKey
+            ? privateAccessControlOptions
+            : keychain.publicAccessControlOptions;
+
+        /*
+         * Backups that were saved encrypted with PIN to the cloud need to be
+         * decrypted with the backup PIN first, and then if we still need
+         * to store them as encrypted,
+         * we need to re-encrypt them with a new PIN
+         */
+        if (theKeyIsASeedPhrase) {
           const parsedValue = JSON.parse(value);
-          const processedSeedPhrase = await decryptSeedFromBackupPinAndEncryptWithNewPin(
+          parsedValue.seedphrase = await decryptSecretFromBackupPinAndEncryptWithNewPin(
             {
-              seedPhrase: parsedValue.seedphrase,
+              secret: parsedValue.seedphrase,
               newPIN,
               backupPIN,
             }
           );
-          parsedValue.seedphrase = processedSeedPhrase;
           value = JSON.stringify(parsedValue);
-        } else if (endsWith(key, privateKeyKey)) {
-          accessControl = privateAccessControlOptions;
+        } else if (theKeyIsAPrivateKey) {
+          const parsedValue = JSON.parse(value);
+          parsedValue.privateKey = await decryptSecretFromBackupPinAndEncryptWithNewPin(
+            {
+              secret: parsedValue.privateKey,
+              newPIN,
+              backupPIN,
+            }
+          );
+          value = JSON.stringify(parsedValue);
         }
+
+        /*
+         * Since we're decrypting the data that was saved as PIN code encrypted,
+         * we will allow the user to create a new PIN code.
+         * We store the old PIN code in the backup, but we don't want to restore it,
+         * since it will override the new PIN code that we just saved to keychain.
+         */
+        if (key === pinKey) {
+          return;
+        }
+
         if (typeof value === 'string') {
           return keychain.saveString(key, value, accessControl);
         } else {
@@ -359,58 +403,55 @@ async function restoreCurrentBackupIntoKeychain(
   }
 }
 
-async function decryptSeedFromBackupPinAndEncryptWithNewPin({
-  seedPhrase,
+async function decryptSecretFromBackupPinAndEncryptWithNewPin({
+  secret,
   newPIN,
   backupPIN,
 }: {
-  seedPhrase?: string;
+  secret?: string;
   newPIN?: string;
   backupPIN?: string;
 }) {
-  let processedSeedPhrase = seedPhrase;
+  let processedSecret = secret;
 
-  if (!processedSeedPhrase) {
-    return processedSeedPhrase;
+  if (!processedSecret) {
+    return processedSecret;
   }
 
   /*
-   * We need to decrypt the seed with the PIN stored in the backup
+   * We need to decrypt the secret with the PIN stored in the backup
    * It is required for old backups created before we started storing
-   * seeds in backups without PIN encryption
+   * secrets in backups without PIN encryption
    */
   if (
     backupPIN &&
-    processedSeedPhrase.includes('cipher') &&
+    processedSecret.includes('cipher') &&
     PIN_REGEX.test(backupPIN)
   ) {
-    const decryptedSeedPhrase = await encryptor.decrypt(
-      backupPIN,
-      processedSeedPhrase
-    );
+    const decryptedSecret = await encryptor.decrypt(backupPIN, processedSecret);
 
-    if (decryptedSeedPhrase) {
-      processedSeedPhrase = decryptedSeedPhrase;
+    if (decryptedSecret) {
+      processedSecret = decryptedSecret;
     } else {
       logger.error(
         new RainbowError(
           'Failed to decrypt backed up seed phrase using backup PIN.'
         )
       );
-      return processedSeedPhrase;
+      return processedSecret;
     }
   }
 
   /*
    * For devices that don't support biometrics or for users without
-   * biometrics enabled, we need to encrypt the seed with the PIN
+   * biometrics enabled, we need to encrypt the secret with a PIN code
    * for storage in Android device keychain
    */
   if (newPIN && PIN_REGEX.test(newPIN)) {
-    const encryptedSeedPhrase = await encryptor.encrypt(newPIN, seedPhrase);
+    const encryptedSecret = await encryptor.encrypt(newPIN, secret);
 
-    if (encryptedSeedPhrase) {
-      processedSeedPhrase = encryptedSeedPhrase;
+    if (encryptedSecret) {
+      processedSecret = encryptedSecret;
     } else {
       logger.error(
         new RainbowError('Failed to encrypt seed phrase with new PIN.')
@@ -418,7 +459,7 @@ async function decryptSeedFromBackupPinAndEncryptWithNewPin({
     }
   }
 
-  return processedSeedPhrase;
+  return processedSecret;
 }
 
 // Attempts to save the password to decrypt the backup from the iCloud keychain
