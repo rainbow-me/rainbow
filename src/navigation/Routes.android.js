@@ -74,7 +74,7 @@ import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
-import { Explain } from '@/screens/Explain';
+import { Portal } from '@/screens/Portal';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -318,8 +318,8 @@ function BSNavigator() {
         options={bottomSheetPreset}
       />
       <BSStack.Screen
-        component={Explain}
-        name={Routes.EXPLAIN}
+        component={Portal}
+        name={Routes.PORTAL}
         options={({ route: { params = {} } }) => {
           return {
             ...bottomSheetPreset,

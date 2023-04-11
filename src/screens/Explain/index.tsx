@@ -1,7 +1,5 @@
 import React from 'react';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 
-import Routes from '@/navigation/routesNames';
 import {
   Box,
   Text,
@@ -9,18 +7,10 @@ import {
   AccentColorProvider,
   Stack,
 } from '@/design-system';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 
-type ExplainSheetRouteProps = {
-  sheetHeight?: number;
-  children: React.FC;
-};
-
-type NavigationRouteParams = {
-  Explain: ExplainSheetRouteProps;
-};
+export { open, useOpen } from '@/screens/Portal';
 
 /**
  * Proxy for `SheetActionButton` with no changes to API.
@@ -30,11 +20,11 @@ type NavigationRouteParams = {
 export const Button = SheetActionButton;
 
 /**
- * Image icon component for use within the Explain sheet.
+ * Image icon component for use within the Portal sheet.
  *
- *   `import * as ex from '@/screens/Explain';`
+ *   `import * as p from '@/screens/Portal';`
  *
- *   `<ex.Logo accentColor={...} source={require('...')} />`
+ *   `<p.Logo accentColor={...} source={require('...')} />`
  */
 export function Logo({
   accentColor,
@@ -68,7 +58,7 @@ export function Logo({
 }
 
 /**
- * Emoji "logo" for use within the Explain sheet.
+ * Emoji "logo" for use within the Portal sheet.
  */
 export function Emoji({ children }: { children: string }) {
   return (
@@ -87,7 +77,7 @@ export function Emoji({ children }: { children: string }) {
 }
 
 /**
- * Title text for use within the Explain sheet.
+ * Title text for use within the Portal sheet.
  */
 export function Title({
   children,
@@ -112,7 +102,7 @@ export function Title({
 }
 
 /**
- * Body text for use within the Explain sheet.
+ * Body text for use within the Portal sheet.
  */
 export function Body({
   children,
@@ -135,7 +125,7 @@ export function Body({
 }
 
 /**
- * A wrapper for any buttons you might want to add to the Explain sheet.
+ * A wrapper for any buttons you might want to add to the Portal sheet.
  * Multiple buttons are automatically spaced apart.
  *
  * TODO eventually this should be sticky to the bottom of the sheet to match
@@ -151,56 +141,4 @@ export function Footer({
       <Stack space="16px">{children}</Stack>
     </Box>
   );
-}
-
-/**
- * The core Explain sheet
- */
-export function Explain() {
-  const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Explain'>>();
-
-  if (!params) {
-    goBack();
-    return null;
-  }
-
-  return (
-    <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box paddingVertical="44px" paddingHorizontal="32px">
-        {params.children({})}
-      </Box>
-    </SimpleSheet>
-  );
-}
-
-/**
- * Returns a util used to navigate to and render components within the Explain
- * sheet. This file also exports components that should be used for the sheet's
- * children.
- *
- *    `import * as ex from '@/screens/Explain'`
- *
- *    `const { open } = ex.useExplainSheet()`
- *    `open(() => <ex.Title>...</ex.Title>, { ...options })`
- */
-export function useExplainSheet() {
-  const { navigate } = useNavigation();
-
-  const open = React.useCallback(
-    (
-      children: React.FC,
-      options: Omit<ExplainSheetRouteProps, 'children'> = {}
-    ) => {
-      navigate(Routes.EXPLAIN, {
-        children,
-        sheetHeight: options.sheetHeight,
-      });
-    },
-    []
-  );
-
-  return {
-    open,
-  };
 }
