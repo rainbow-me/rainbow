@@ -439,6 +439,7 @@ export default function TransactionConfirmationScreen() {
       goBack,
       isMessageRequest,
       pendingRedirect,
+      walletConnectV2RequestValues,
       stopPollingGasFees,
       method,
       dispatch,
@@ -469,7 +470,9 @@ export default function TransactionConfirmationScreen() {
           }
           const rejectionType =
             method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+            isHardwareWallet: accountInfo.isHardwareWallet,
+          });
 
           closeScreen(true);
         }, 300);
@@ -482,6 +485,7 @@ export default function TransactionConfirmationScreen() {
       }
     },
     [
+      accountInfo.isHardwareWallet,
       callback,
       closeScreen,
       dispatch,
@@ -780,6 +784,7 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
@@ -847,6 +852,8 @@ export default function TransactionConfirmationScreen() {
     peerId,
     switchToWalletWithAddress,
     formattedDappUrl,
+    dappScheme,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -876,6 +883,7 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {

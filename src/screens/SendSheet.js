@@ -64,6 +64,7 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
+  useWallets,
 } from '@/hooks';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
@@ -139,6 +140,7 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: 'TRANSFER',
@@ -668,6 +670,7 @@ export default function SendSheet(props) {
         assetName: selected?.name || '',
         assetType: selected?.type || '',
         isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+        isHardwareWallet,
       });
 
       if (submitSuccessful) {
@@ -681,6 +684,7 @@ export default function SendSheet(props) {
     [
       amountDetails.assetAmount,
       goBack,
+      isHardwareWallet,
       navigate,
       onSubmit,
       recipient,
