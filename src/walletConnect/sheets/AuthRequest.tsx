@@ -15,7 +15,10 @@ import { ImgixImage } from '@/components/images';
 import { initials } from '@/utils/formatters';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
-import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
+import {
+  AuthRequestAuthenticateSignature,
+  AuthRequestResponseErrorReason,
+} from '@/walletConnect/types';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
 
@@ -38,13 +41,22 @@ export function AuthRequest({
   const { colors } = useTheme();
 
   const auth = React.useCallback(async () => {
-    const { success } = await authenticate({ address: accountAddress });
+    const { success, reason } = await authenticate({ address: accountAddress });
 
     if (!success) {
-      Alert({
-        title: lang.t(lang.l.walletconnect.auth.error_alert_title),
-        message: lang.t(lang.l.walletconnect.auth.error_alert_description),
-      });
+      switch (reason) {
+        case AuthRequestResponseErrorReason.ReadOnly:
+          Alert({
+            message: `Please switch to a different wallet to sign this request`,
+            title: `Cannot sign with this wallet`,
+          });
+          break;
+        default:
+          Alert({
+            title: lang.t(lang.l.walletconnect.auth.error_alert_title),
+            message: lang.t(lang.l.walletconnect.auth.error_alert_description),
+          });
+      }
     } else {
       goBack(); // close
     }

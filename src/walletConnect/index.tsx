@@ -38,7 +38,10 @@ import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
-import { AuthRequestAuthenticateSignature } from '@/walletConnect/types';
+import {
+  AuthRequestAuthenticateSignature,
+  AuthRequestResponseErrorReason,
+} from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 
 enum RPCMethod {
@@ -880,18 +883,42 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     address,
   }) => {
     try {
+      const { wallets } = store.getState().wallets;
+      const selectedWallet = findWalletWithAccount(wallets!, address);
+      const iss = `did:pkh:eip155:1:${address}`;
+
+      if (selectedWallet?.type === WalletTypes.readOnly) {
+        await client.respondAuthRequest(
+          {
+            id: event.id,
+            error: {
+              code: 0,
+              message: `Wallet is read-only`,
+            },
+          },
+          iss
+        );
+
+        return {
+          success: false,
+          reason: AuthRequestResponseErrorReason.ReadOnly,
+        };
+      }
+
       const wallet = await loadWallet(address);
 
       if (!wallet) {
         logger.error(
           new RainbowError(`WC v2: could not loadWallet to sign auth_request`)
         );
-        return { success: true };
+
+        return {
+          success: false,
+          reason: AuthRequestResponseErrorReason.Unknown,
+        };
       }
 
-      const iss = `did:pkh:eip155:1:${address}`;
       const message = client.formatMessage(event.params.cacaoPayload, iss);
-
       // prompt the user to sign the message
       const signature = await wallet.signMessage(message);
       // respond
@@ -906,6 +933,8 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
         iss
       );
 
+      maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
+
       return { success: true };
     } catch (e: any) {
       logger.error(
@@ -916,7 +945,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
           message: e.message,
         }
       );
-      return { success: false };
+      return { success: false, reason: AuthRequestResponseErrorReason.Unknown };
     }
   };
 
