@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import URL from 'url-parse';
 
 import { parseUri } from '@walletconnect/utils';
@@ -9,7 +8,6 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '@/redux/walletconnect';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
@@ -60,9 +58,7 @@ export default async function handleDeeplink(
 
   if (protocol === 'ethereum:') {
     /**
-     * Handling EIP deep links
-     *
-     * TODO apparently not working on sim, needs more research
+     * Handling send deep links
      */
     logger.info(`handleDeeplink: ethereum:// protocol`);
     ethereumUtils.parseEthereumUrl(url);

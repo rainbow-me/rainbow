@@ -1248,7 +1248,12 @@ const ExplainSheet = () => {
   ]);
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container
+      deviceHeight={deviceHeight}
+      height={sheetHeight}
+      insets={insets}
+      textID="explain-sheet-outer"
+    >
       <SlackSheet
         additionalTopPadding={android}
         contentHeight={sheetHeight}
