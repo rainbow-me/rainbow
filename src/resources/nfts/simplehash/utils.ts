@@ -249,18 +249,19 @@ function handleImages(
   lowResPngUrl: string | undefined;
   fullResUrl: string | undefined;
 } {
-  if (!original && !preview) {
+  if (typeof original !== 'string' || typeof preview !== 'string') {
     return {
       fullResPngUrl: undefined,
       lowResPngUrl: undefined,
       fullResUrl: undefined,
     };
   }
+
   const nonSVGUrl =
     // simplehash previews are (supposedly) never svgs
     // they are (supposed to be) google cdn urls that are suffixed with an image size parameter
     // we need to trim off the size suffix to get the full size image
-    preview?.startsWith?.(GOOGLE_USER_CONTENT_URL)
+    preview.startsWith(GOOGLE_USER_CONTENT_URL)
       ? preview.replace(/=s\d+$/, '')
       : // fallback to the original image url if we don't have a preview url of the expected format
         svgToPngIfNeeded(original);
