@@ -65,7 +65,7 @@ import {
   transactionDetailsConfig,
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
-  explainSheetV2Config,
+  portalSheetConfig,
 } from './config';
 import {
   addCashSheet,
@@ -88,7 +88,7 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { Explain } from '@/screens/Explain';
+import { Portal } from '@/screens/Portal';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -371,9 +371,9 @@ function NativeStackNavigator() {
         {...addWalletNavigatorConfig}
       />
       <NativeStack.Screen
-        component={Explain}
-        name={Routes.EXPLAIN}
-        {...explainSheetV2Config}
+        component={Portal}
+        name={Routes.PORTAL}
+        {...portalSheetConfig}
       />
       {profilesEnabled && (
         <>

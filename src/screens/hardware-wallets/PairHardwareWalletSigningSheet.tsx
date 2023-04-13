@@ -16,7 +16,7 @@ import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
@@ -155,7 +155,7 @@ export function PairHardwareWalletSigningSheet() {
   );
 
   const errorCallback = useCallback(
-    (errorType: LEDGER_ERROR_CODES) => {
+    async (errorType: LEDGER_ERROR_CODES) => {
       if (
         errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
         errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
@@ -168,13 +168,28 @@ export function PairHardwareWalletSigningSheet() {
           },
         });
       } else {
-        Alert.alert(
-          'Error',
-          'Something went wrong. Please restart the app and try again.'
+        logger.error(
+          new RainbowError(
+            '[importHardwareWallet] - Disconnected or Unkown Error'
+          ),
+          { errorType }
         );
+        logger.info('[importHardwareWallet] - issue connecting, trying again ');
+        const transport = await TransportBLE.open(deviceId);
+        await checkLedgerConnection({
+          transport,
+          deviceId,
+          successCallback,
+          errorCallback: () => {
+            Alert.alert(
+              i18n.t(TRANSLATIONS.pairing_error_alert.title),
+              i18n.t(TRANSLATIONS.pairing_error_alert.body)
+            );
+          },
+        });
       }
     },
-    [deviceId, navigate]
+    [deviceId, navigate, successCallback]
   );
 
   const handleButtonPress = useCallback(async (): Promise<void> => {
