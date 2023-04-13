@@ -339,68 +339,61 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
   // filter out unsupported marketplaces
   const marketplaces = nft.collection.marketplace_pages
     .filter(
-      marketplace =>
-        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          marketplace.marketplace_id
-        )
+      m =>
+        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(m.marketplace_id)
     )
-    .map((marketplace: SimpleHashMarketplace) => {
-      const validatedMarketplace: NFTMarketplace = {
-        collectionId: marketplace?.marketplace_collection_id,
-        collectionUrl: marketplace?.collection_url,
+    .map((m: SimpleHashMarketplace) => {
+      const marketplace: NFTMarketplace = {
+        collectionId: m?.marketplace_collection_id,
+        collectionUrl: m?.collection_url,
         marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          marketplace.marketplace_id
+          m.marketplace_id
         )!,
-        name: marketplace?.marketplace_name,
-        nftUrl: marketplace?.nft_url,
+        name: m?.marketplace_name,
+        nftUrl: m?.nft_url,
       };
 
-      return validatedMarketplace;
+      return marketplace;
     });
 
   // filter out traits that are missing key attributes
   const traits = nft.extra_metadata?.attributes
     ? nft.extra_metadata.attributes
-        .filter(
-          (trait: SimpleHashTrait) =>
-            !isNil(trait.trait_type) && !isNil(trait.value)
-        )
-        .map((trait: SimpleHashTrait) => {
-          const t: NFTTrait = {
-            displayType: trait.display_type!,
-            traitType: trait.trait_type,
-            value: trait.value,
+        .filter((t: SimpleHashTrait) => !isNil(t.trait_type) && !isNil(t.value))
+        .map((t: SimpleHashTrait) => {
+          const trait: NFTTrait = {
+            displayType: t.display_type!,
+            traitType: t.trait_type,
+            value: t.value,
           };
 
-          return t;
+          return trait;
         })
     : [];
 
   // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
   const floorPrices = collection.floor_prices
     .filter(
-      (floorPrice: SimpleHashFloorPrice) =>
-        getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          floorPrice.marketplace_id
-        ) &&
-        floorPrice.payment_token?.name &&
-        floorPrice.payment_token?.symbol
+      (f: SimpleHashFloorPrice) =>
+        getInternalMarketplaceIdFromSimpleHashMarketplaceId(f.marketplace_id) &&
+        f.payment_token?.name &&
+        f.payment_token?.symbol
     )
-    .map((floorPrice: SimpleHashFloorPrice) => {
-      const f: NFTFloorPrice = {
+    .map((f: SimpleHashFloorPrice) => {
+      const floorPrice: NFTFloorPrice = {
         marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          floorPrice.marketplace_id
+          f.marketplace_id
         )!,
         paymentToken: {
-          address: floorPrice.payment_token.address,
-          decimals: floorPrice.payment_token.decimals,
-          name: floorPrice.payment_token.name!,
-          symbol: floorPrice.payment_token.symbol!,
+          address: f.payment_token.address,
+          decimals: f.payment_token.decimals,
+          name: f.payment_token.name!,
+          symbol: f.payment_token.symbol!,
         },
-        value: floorPrice.value,
+        value: f.value,
       };
 
-      return f;
+      return floorPrice;
     });
 
   return {
