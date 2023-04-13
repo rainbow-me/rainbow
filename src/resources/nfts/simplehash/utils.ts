@@ -330,45 +330,47 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     nft.image_properties?.mime_type === SVG_MIME_TYPE
   );
 
+  // filter out unsupported marketplaces
   const marketplaces = nft.collection.marketplace_pages
     .filter(
-      (marketplace: SimpleHashMarketplace) =>
-        // filter out unsupported marketplaces
+      marketplace =>
         !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(
           marketplace.marketplace_id
         )
     )
-    .map(
-      (marketplace: SimpleHashMarketplace) =>
-        ({
-          collectionId: marketplace?.marketplace_collection_id,
-          collectionUrl: marketplace?.collection_url,
-          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-            marketplace.marketplace_id
-          ),
-          name: marketplace?.marketplace_name,
-          nftUrl: marketplace?.nft_url,
-        } as NFTMarketplace)
-    );
+    .map((marketplace: SimpleHashMarketplace) => {
+      const validatedMarketplace: NFTMarketplace = {
+        collectionId: marketplace?.marketplace_collection_id,
+        collectionUrl: marketplace?.collection_url,
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          marketplace.marketplace_id
+        )!,
+        name: marketplace?.marketplace_name,
+        nftUrl: marketplace?.nft_url,
+      };
 
+      return validatedMarketplace;
+    });
+
+  // filter out traits that are missing key attributes
   const traits =
     nft.extra_metadata?.attributes
-      // filter out traits that are missing key attributes
       ?.filter(
         (trait: SimpleHashTrait) =>
           !isNil(trait.trait_type) && !isNil(trait.value)
       )
-      ?.map(
-        (trait: SimpleHashTrait) =>
-          ({
-            displayType: trait?.display_type,
-            traitType: trait.trait_type,
-            value: trait.value,
-          } as NFTTrait)
-      ) ?? [];
+      ?.map((trait: SimpleHashTrait) => {
+        const t: NFTTrait = {
+          displayType: trait.display_type!,
+          traitType: trait.trait_type,
+          value: trait.value,
+        };
 
+        return t;
+      }) ?? [];
+
+  // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
   const floorPrices = collection.floor_prices
-    // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
     .filter(
       (floorPrice: SimpleHashFloorPrice) =>
         getInternalMarketplaceIdFromSimpleHashMarketplaceId(
@@ -377,21 +379,22 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
         floorPrice.payment_token?.name &&
         floorPrice.payment_token?.symbol
     )
-    .map(
-      (floorPrice: SimpleHashFloorPrice) =>
-        ({
-          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-            floorPrice.marketplace_id
-          ),
-          paymentToken: {
-            address: floorPrice.payment_token.address,
-            decimals: floorPrice.payment_token.decimals,
-            name: floorPrice.payment_token.name,
-            symbol: floorPrice.payment_token.symbol,
-          },
-          value: floorPrice.value,
-        } as NFTFloorPrice)
-    );
+    .map((floorPrice: SimpleHashFloorPrice) => {
+      const f: NFTFloorPrice = {
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          floorPrice.marketplace_id
+        )!,
+        paymentToken: {
+          address: floorPrice.payment_token.address,
+          decimals: floorPrice.payment_token.decimals,
+          name: floorPrice.payment_token.name!,
+          symbol: floorPrice.payment_token.symbol!,
+        },
+        value: floorPrice.value,
+      };
+
+      return f;
+    });
 
   return {
     backgroundColor: nft.background_color ?? undefined,
