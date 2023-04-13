@@ -359,21 +359,22 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     });
 
   // filter out traits that are missing key attributes
-  const traits =
-    nft.extra_metadata?.attributes
-      ?.filter(
-        (trait: SimpleHashTrait) =>
-          !isNil(trait.trait_type) && !isNil(trait.value)
-      )
-      ?.map((trait: SimpleHashTrait) => {
-        const t: NFTTrait = {
-          displayType: trait.display_type!,
-          traitType: trait.trait_type,
-          value: trait.value,
-        };
+  const traits = nft.extra_metadata?.attributes
+    ? nft.extra_metadata.attributes
+        .filter(
+          (trait: SimpleHashTrait) =>
+            !isNil(trait.trait_type) && !isNil(trait.value)
+        )
+        .map((trait: SimpleHashTrait) => {
+          const t: NFTTrait = {
+            displayType: trait.display_type!,
+            traitType: trait.trait_type,
+            value: trait.value,
+          };
 
-        return t;
-      }) ?? [];
+          return t;
+        })
+    : [];
 
   // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
   const floorPrices = collection.floor_prices
