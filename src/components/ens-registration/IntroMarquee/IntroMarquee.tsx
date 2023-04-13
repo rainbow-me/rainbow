@@ -71,7 +71,7 @@ export default function IntroMarquee({
     if (isLoading) {
       return [];
     } else {
-      const accounts = data?.ensMarquee?.accounts || getEnsMarqueeFallback();
+      const accounts = data?.ensMarquee?.accounts;
       return accounts?.map((account, index) => ({
         account,
         onPress: () => handlePressENS(account.name),

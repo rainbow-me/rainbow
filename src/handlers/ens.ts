@@ -493,11 +493,11 @@ export function prefetchENSIntroData() {
     ensMarquee: EnsMarqueeAccount[];
   }>([ENS_MARQUEE_QUERY_KEY]);
 
-  const ensMarqueeAccounts = (
-    ensMarqueeQueryData?.ensMarquee || getEnsMarqueeFallback()
-  ).map((account: EnsMarqueeAccount) => account.name);
+  if (ensMarqueeQueryData?.ensMarquee) {
+    const ensMarqueeAccounts = ensMarqueeQueryData.ensMarquee.map(
+      (account: EnsMarqueeAccount) => account.name
+    );
 
-  if (ensMarqueeAccounts) {
     for (const name of ensMarqueeAccounts) {
       prefetchENSAddress({ name }, { staleTime: Infinity });
       prefetchENSAvatar(name, { cacheFirst: true });

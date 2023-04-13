@@ -9,6 +9,25 @@ import {
 
 import { metadataClient } from '@/graphql';
 
+import { ensIntroMarqueeNames } from '@/references';
+
+export const ensAvatarUrl = (ensName: string) =>
+  `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
+
+export const getEnsMarqueeFallback = (): EnsMarqueeResult => {
+  const accounts = ensIntroMarqueeNames.map(name => ({
+    name,
+    avatar: ensAvatarUrl(name),
+    address: '',
+  }));
+
+  return {
+    ensMarquee: {
+      accounts,
+    },
+  };
+};
+
 // Set a default stale time of 20 minutes
 const defaultStaleTime = 1_200_000;
 
@@ -63,9 +82,10 @@ export async function fetchEnsMarquee(
 // Query Hook
 
 export function useEnsMarquee(
-  config: QueryConfig<EnsMarqueeResult, Error, EnsMarqueeQueryKey> = {
+  config = {
     staleTime: defaultStaleTime,
     cacheTime: Infinity,
+    initialData: getEnsMarqueeFallback,
   }
 ) {
   return useQuery(ensMarqueeQueryKey(), ensMarqueeQueryFunction, config);
