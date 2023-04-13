@@ -2,6 +2,7 @@ import { AssetType, AssetTypes } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
+  ValidatedSimpleHashNFT,
   SimpleHashChain,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
@@ -100,32 +101,40 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
  * that are not present in the provided allowlist.
  * @param nfts array of `SimpleHashNFT`s
  * @param polygonAllowlist array of Polygon nft contract addresses to allowlist
- * @returns filtered array of `SimpleHashNFT`s
+ * @returns filtered array of `ValidatedSimpleHashNFT`s
  */
 export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
-): SimpleHashNFT[] {
+): ValidatedSimpleHashNFT[] {
   return nfts.filter(nft => {
     const lowercasedContractAddress = nft.contract_address?.toLowerCase();
     const network = getNetworkFromSimpleHashChain(nft.chain);
-    if (
+
+    const isMissingRequiredFields =
       !nft.name ||
       !nft.collection?.name ||
       !nft.contract_address ||
       !nft.token_id ||
-      !network
+      !network;
+    const isPolygonAndNotAllowed =
+      polygonAllowlist &&
+      nft.chain === SimpleHashChain.Polygon &&
+      !polygonAllowlist[lowercasedContractAddress];
+    const isGnosisAndNotPOAP =
+      nft.chain === SimpleHashChain.Gnosis &&
+      lowercasedContractAddress !== POAP_NFT_ADDRESS;
+
+    if (
+      isMissingRequiredFields ||
+      isPolygonAndNotAllowed ||
+      isGnosisAndNotPOAP
     ) {
       return false;
     }
-    if (polygonAllowlist && nft.chain === SimpleHashChain.Polygon) {
-      return !!polygonAllowlist[lowercasedContractAddress];
-    }
-    if (nft.chain === SimpleHashChain.Gnosis) {
-      return lowercasedContractAddress === POAP_NFT_ADDRESS;
-    }
+
     return true;
-  });
+  }) as ValidatedSimpleHashNFT[];
 }
 
 /**
@@ -302,12 +311,12 @@ function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
 }
 
 /**
- * Maps a `SimpleHashNFT` to a `NFT`. May result in an invalid NFT if
- * `filterSimpleHashNFTs` is not called first.
- * @param nft `SimpleHashNFT`
+ * Maps a `ValidatedSimpleHashNFT` to a `NFT`. Use `filterSimpleHashNFTs` to
+ * generate an array of `ValidatedSimpleHashNFT`s.
+ * @param nft `ValidatedSimpleHashNFT`
  * @returns `NFT`
  */
-export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
+export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address.toLowerCase();
   const network = getNetworkFromSimpleHashChain(nft.chain);
@@ -435,10 +444,10 @@ export function simpleHashNFTToInternalNFT(nft: SimpleHashNFT): NFT {
           }
         : undefined,
     marketplaces,
-    name: nft.name ?? undefined,
+    name: nft.name,
     network,
     predominantColor: nft.previews?.predominant_color ?? undefined,
-    tokenId: nft.token_id ?? undefined,
+    tokenId: nft.token_id,
     traits,
     type: AssetTypes.nft as AssetType,
     uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,

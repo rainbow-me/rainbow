@@ -184,3 +184,12 @@ export type SimpleHashNFT = {
     attributes: SimpleHashTrait[] | null | undefined;
   };
 };
+
+export type ValidatedSimpleHashNFT = Omit<
+  SimpleHashNFT,
+  'name' | 'contract_address' | 'token_id'
+> & {
+  name: string;
+  contract_address: string;
+  token_id: string;
+};
