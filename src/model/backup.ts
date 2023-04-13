@@ -448,7 +448,7 @@ async function decryptSecretFromBackupPinAndEncryptWithNewPin({
    * for storage in Android device keychain
    */
   if (newPIN && PIN_REGEX.test(newPIN)) {
-    const encryptedSecret = await encryptor.encrypt(newPIN, secret);
+    const encryptedSecret = await encryptor.encrypt(newPIN, processedSecret);
 
     if (encryptedSecret) {
       processedSecret = encryptedSecret;
