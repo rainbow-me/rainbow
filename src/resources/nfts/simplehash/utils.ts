@@ -107,34 +107,40 @@ export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
 ): ValidatedSimpleHashNFT[] {
-  return nfts.filter(nft => {
-    const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-    const network = getNetworkFromSimpleHashChain(nft.chain);
+  return nfts
+    .filter(nft => {
+      const lowercasedContractAddress = nft.contract_address?.toLowerCase();
+      const network = getNetworkFromSimpleHashChain(nft.chain);
 
-    const isMissingRequiredFields =
-      !nft.name ||
-      !nft.collection?.name ||
-      !nft.contract_address ||
-      !nft.token_id ||
-      !network;
-    const isPolygonAndNotAllowed =
-      polygonAllowlist &&
-      nft.chain === SimpleHashChain.Polygon &&
-      !polygonAllowlist[lowercasedContractAddress];
-    const isGnosisAndNotPOAP =
-      nft.chain === SimpleHashChain.Gnosis &&
-      lowercasedContractAddress !== POAP_NFT_ADDRESS;
+      const isMissingRequiredFields =
+        !nft.name ||
+        !nft.collection?.name ||
+        !nft.contract_address ||
+        !nft.token_id ||
+        !network;
+      const isPolygonAndNotAllowed =
+        polygonAllowlist &&
+        nft.chain === SimpleHashChain.Polygon &&
+        !polygonAllowlist[lowercasedContractAddress];
+      const isGnosisAndNotPOAP =
+        nft.chain === SimpleHashChain.Gnosis &&
+        lowercasedContractAddress !== POAP_NFT_ADDRESS;
 
-    if (
-      isMissingRequiredFields ||
-      isPolygonAndNotAllowed ||
-      isGnosisAndNotPOAP
-    ) {
-      return false;
-    }
+      if (
+        isMissingRequiredFields ||
+        isPolygonAndNotAllowed ||
+        isGnosisAndNotPOAP
+      ) {
+        return false;
+      }
 
-    return true;
-  }) as ValidatedSimpleHashNFT[];
+      return true;
+    })
+    .map(nft => ({
+      ...nft,
+      name: nft.name!,
+      token_id: nft.token_id!,
+    }));
 }
 
 /**
