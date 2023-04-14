@@ -99,7 +99,7 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     unlock_key: PoolyIcon.unlockKey,
   },
   finiliar: {
-    accentColor: 'tbd',
+    accentColor: 'finiliarPink',
     key: FiniliarIcon.key,
     name: 'Rainbow Finiliar',
     source: AppIconFiniliar,
