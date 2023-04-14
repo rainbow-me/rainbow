@@ -131,7 +131,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const standard = nft.contract.type;
 
   return {
-    animation_url: nft?.video_url,
+    animation_url: nft?.video_url ?? nft.extra_metadata?.animation_original_url,
     asset_contract: {
       address: nft.contract_address,
       name: nft.contract.name || undefined,
