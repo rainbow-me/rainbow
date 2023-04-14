@@ -57,12 +57,6 @@ export default function SimpleVideo({
   setLoading,
 }: SimpleVideoProps): JSX.Element {
   const ref = useRef<Video>();
-  const source = useMemo(
-    () => ({
-      uri: convertToProxyURL(uri),
-    }),
-    [uri]
-  );
   const [controlsEnabled, setControlsEnabled] = useState(false);
   const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
@@ -100,7 +94,7 @@ export default function SimpleVideo({
           ref={ref}
           repeat
           resizeMode="cover"
-          source={source}
+          source={{ uri }}
         />
         <StyledPosterContainer
           pointerEvents={loading ? 'auto' : 'none'}
