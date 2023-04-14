@@ -52,7 +52,7 @@ jobs:
         run: yarn test
 
       - name: Install Pods
-        run: cd ios && pod install && cd ..
+        run: cd ios && pod install --repo-update && cd ..
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
