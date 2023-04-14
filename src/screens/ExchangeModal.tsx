@@ -738,6 +738,7 @@ export default function ExchangeModal({
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
+          isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice:
             ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
@@ -840,6 +841,7 @@ export default function ExchangeModal({
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
+        isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice:
           ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
