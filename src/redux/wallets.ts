@@ -1,4 +1,4 @@
-import { captureException, captureMessage } from '@sentry/react-native';
+import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { Dispatch } from 'redux';
@@ -188,7 +188,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
       logger.info(
-        'addressFromKeychain wasnt set on settings so it is being loaded from loadAddress'
+        "addressFromKeychain wasn't set on settings so it is being loaded from loadAddress"
       );
     }
 
@@ -325,7 +325,6 @@ export const setWalletBackedUp = (
       logger.error(new RainbowError('SAVING WALLET USERDATA FAILED'), {
         message: (e as Error)?.message,
       });
-      captureException(e);
       throw e;
     }
   }
@@ -677,15 +676,12 @@ export const checkKeychainIntegrity = () => async (
 
     const { wallets, selected } = getState().wallets;
     if (!wallets) {
-      logger.info('[KeychainIntegrityCheck]: wallets are missing from redux', {
-        wallets,
-      });
+      logger.warn('[KeychainIntegrityCheck]: wallets are missing from redux');
     }
 
     if (!selected) {
-      logger.info(
-        '[KeychainIntegrityCheck]: selectedwallet is missing from redux',
-        { selectedWallet: selected }
+      logger.warn(
+        '[KeychainIntegrityCheck]: selectedWallet is missing from redux'
       );
     }
 
@@ -695,13 +691,11 @@ export const checkKeychainIntegrity = () => async (
 
     for (const key of nonReadOnlyWalletKeys) {
       let healthyWallet = true;
-      logger.info(`[KeychainIntegrityCheck]: checking wallet ${key}`);
       const wallet = wallets![key];
-      logger.info(`[KeychainIntegrityCheck]: Wallet data`, { wallet });
       const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
-        logger.info('[KeychainIntegrityCheck]: seed key is missing');
+        logger.warn('[KeychainIntegrityCheck]: seed key is missing');
       } else {
         logger.info('[KeychainIntegrityCheck]: seed key is present');
       }
@@ -710,13 +704,9 @@ export const checkKeychainIntegrity = () => async (
         const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
-          logger.info(
-            `[KeychainIntegrityCheck]: pkey is missing for address: ${account.address}`
-          );
+          logger.warn(`[KeychainIntegrityCheck]: pkey is missing`);
         } else {
-          logger.info(
-            `[KeychainIntegrityCheck]: pkey is present for address: ${account.address}`
-          );
+          logger.info(`[KeychainIntegrityCheck]: pkey is present`);
         }
       }
 
@@ -734,13 +724,13 @@ export const checkKeychainIntegrity = () => async (
       }
 
       if (!healthyWallet) {
-        logger.info('[KeychainIntegrityCheck]: declaring wallet unhealthy...');
+        logger.warn('[KeychainIntegrityCheck]: declaring wallet unhealthy...');
         healthyKeychain = false;
         wallet.damaged = true;
         await dispatch(walletsUpdate(wallets!));
         // Update selected wallet if needed
         if (wallet.id === selected!.id) {
-          logger.info(
+          logger.warn(
             '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
           );
           await dispatch(walletsSetSelected(wallets![wallet.id]));
