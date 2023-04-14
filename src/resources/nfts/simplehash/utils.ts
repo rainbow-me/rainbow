@@ -107,34 +107,40 @@ export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
 ): ValidatedSimpleHashNFT[] {
-  return nfts.filter(nft => {
-    const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-    const network = getNetworkFromSimpleHashChain(nft.chain);
+  return nfts
+    .filter(nft => {
+      const lowercasedContractAddress = nft.contract_address?.toLowerCase();
+      const network = getNetworkFromSimpleHashChain(nft.chain);
 
-    const isMissingRequiredFields =
-      !nft.name ||
-      !nft.collection?.name ||
-      !nft.contract_address ||
-      !nft.token_id ||
-      !network;
-    const isPolygonAndNotAllowed =
-      polygonAllowlist &&
-      nft.chain === SimpleHashChain.Polygon &&
-      !polygonAllowlist[lowercasedContractAddress];
-    const isGnosisAndNotPOAP =
-      nft.chain === SimpleHashChain.Gnosis &&
-      lowercasedContractAddress !== POAP_NFT_ADDRESS;
+      const isMissingRequiredFields =
+        !nft.name ||
+        !nft.collection?.name ||
+        !nft.contract_address ||
+        !nft.token_id ||
+        !network;
+      const isPolygonAndNotAllowed =
+        polygonAllowlist &&
+        nft.chain === SimpleHashChain.Polygon &&
+        !polygonAllowlist[lowercasedContractAddress];
+      const isGnosisAndNotPOAP =
+        nft.chain === SimpleHashChain.Gnosis &&
+        lowercasedContractAddress !== POAP_NFT_ADDRESS;
 
-    if (
-      isMissingRequiredFields ||
-      isPolygonAndNotAllowed ||
-      isGnosisAndNotPOAP
-    ) {
-      return false;
-    }
+      if (
+        isMissingRequiredFields ||
+        isPolygonAndNotAllowed ||
+        isGnosisAndNotPOAP
+      ) {
+        return false;
+      }
 
-    return true;
-  }) as ValidatedSimpleHashNFT[];
+      return true;
+    })
+    .map(nft => ({
+      ...nft,
+      name: nft.name!,
+      token_id: nft.token_id!,
+    }));
 }
 
 /**
@@ -256,6 +262,7 @@ function handleImages(
       fullResUrl: undefined,
     };
   }
+
   const nonSVGUrl =
     // simplehash previews are (supposedly) never svgs
     // they are (supposed to be) google cdn urls that are suffixed with an image size parameter
@@ -329,68 +336,65 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     nft.image_properties?.mime_type === SVG_MIME_TYPE
   );
 
+  // filter out unsupported marketplaces
   const marketplaces = nft.collection.marketplace_pages
     .filter(
-      (marketplace: SimpleHashMarketplace) =>
-        // filter out unsupported marketplaces
-        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          marketplace.marketplace_id
-        )
+      m =>
+        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(m.marketplace_id)
     )
-    .map(
-      (marketplace: SimpleHashMarketplace) =>
-        ({
-          collectionId: marketplace?.marketplace_collection_id,
-          collectionUrl: marketplace?.collection_url,
-          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-            marketplace.marketplace_id
-          ),
-          name: marketplace?.marketplace_name,
-          nftUrl: marketplace?.nft_url,
-        } as NFTMarketplace)
-    );
+    .map((m: SimpleHashMarketplace) => {
+      const marketplace: NFTMarketplace = {
+        collectionId: m?.marketplace_collection_id,
+        collectionUrl: m?.collection_url,
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          m.marketplace_id
+        )!,
+        name: m?.marketplace_name,
+        nftUrl: m?.nft_url,
+      };
 
-  const traits =
-    nft.extra_metadata?.attributes
-      // filter out traits that are missing key attributes
-      ?.filter(
-        (trait: SimpleHashTrait) =>
-          !isNil(trait.trait_type) && !isNil(trait.value)
-      )
-      ?.map(
-        (trait: SimpleHashTrait) =>
-          ({
-            displayType: trait?.display_type,
-            traitType: trait.trait_type,
-            value: trait.value,
-          } as NFTTrait)
-      ) ?? [];
+      return marketplace;
+    });
 
+  // filter out traits that are missing key attributes
+  const traits = nft.extra_metadata?.attributes
+    ? nft.extra_metadata.attributes
+        .filter((t: SimpleHashTrait) => !isNil(t.trait_type) && !isNil(t.value))
+        .map((t: SimpleHashTrait) => {
+          const trait: NFTTrait = {
+            displayType: t.display_type!,
+            traitType: t.trait_type,
+            value: t.value,
+          };
+
+          return trait;
+        })
+    : [];
+
+  // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
   const floorPrices = collection.floor_prices
-    // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
     .filter(
-      (floorPrice: SimpleHashFloorPrice) =>
-        getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-          floorPrice.marketplace_id
-        ) &&
-        floorPrice.payment_token?.name &&
-        floorPrice.payment_token?.symbol
+      (f: SimpleHashFloorPrice) =>
+        getInternalMarketplaceIdFromSimpleHashMarketplaceId(f.marketplace_id) &&
+        f.payment_token?.name &&
+        f.payment_token?.symbol
     )
-    .map(
-      (floorPrice: SimpleHashFloorPrice) =>
-        ({
-          marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
-            floorPrice.marketplace_id
-          ),
-          paymentToken: {
-            address: floorPrice.payment_token.address,
-            decimals: floorPrice.payment_token.decimals,
-            name: floorPrice.payment_token.name,
-            symbol: floorPrice.payment_token.symbol,
-          },
-          value: floorPrice.value,
-        } as NFTFloorPrice)
-    );
+    .map((f: SimpleHashFloorPrice) => {
+      const floorPrice: NFTFloorPrice = {
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          f.marketplace_id
+        )!,
+        paymentToken: {
+          address: f.payment_token.address,
+          decimals: f.payment_token.decimals,
+          name: f.payment_token.name!,
+          symbol: f.payment_token.symbol!,
+        },
+        value: f.value,
+      };
+
+      return floorPrice;
+    });
 
   return {
     backgroundColor: nft.background_color ?? undefined,
