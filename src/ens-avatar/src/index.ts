@@ -46,10 +46,9 @@ export class AvatarResolver implements IAvatarResolver {
 
   async getMetadata(ens: string, opts?: AvatarRequestOpts) {
     // retrieve registrar address and resolver object from ens name
-    const [resolvedAddress, resolver] = await Promise.all([
-      this.provider.resolveName(ens),
-      this.provider.getResolver(ens),
-    ]);
+    const resolver = await this.provider.getResolver(ens);
+    const resolvedAddress = await resolver?.getAddress();
+
     if (!resolvedAddress || !resolver) return null;
 
     // retrieve 'avatar' text recored from resolver
