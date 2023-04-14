@@ -35,7 +35,7 @@ export default function IntroMarquee({
 }) {
   const { navigate } = useNavigation();
 
-  const { data, isLoading } = useEnsMarquee({});
+  const { data, isLoading } = useEnsMarquee();
 
   const handlePressENS = useCallback(
     (ensName: string) => {
