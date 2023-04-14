@@ -4,6 +4,7 @@ import { MMKV } from 'react-native-mmkv';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOg from '@/assets/appIconOg.png';
@@ -18,6 +19,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import {
+  FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
   PoolyIcon,
@@ -95,6 +97,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Rainbow Pooly',
     source: AppIconPooly,
     unlock_key: PoolyIcon.unlockKey,
+  },
+  finiliar: {
+    accentColor: 'tbd',
+    key: FiniliarIcon.key,
+    name: 'Rainbow Finiliar',
+    source: AppIconFiniliar,
+    unlock_key: FiniliarIcon.unlockKey,
   },
 };
 
