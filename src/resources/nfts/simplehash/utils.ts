@@ -151,7 +151,9 @@ export function filterSimpleHashNFTs(
  * @param nft `SimpleHashNFT`
  * @returns `UniqueAsset`
  */
-export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
+export function simpleHashNFTToUniqueAsset(
+  nft: ValidatedSimpleHashNFT
+): UniqueAsset {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address?.toLowerCase();
   const { imageUrl, lowResUrl } = handleAndSignImages(
@@ -187,7 +189,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       discord_url: collection.discord_url,
       external_url: collection.external_url,
       image_url: collection.image_url,
-      name: isENS ? 'ENS' : collection.name ?? '',
+      name: isENS ? 'ENS' : collection.name,
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
@@ -205,7 +207,6 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
           )
         : undefined,
     fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
-    // @ts-ignore TODO
     id: nft.token_id,
     image_original_url: nft.extra_metadata?.image_original_url,
     image_preview_url: lowResUrl,
@@ -213,7 +214,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     image_url: imageUrl,
     isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
     isSendable:
-      nft.chain === SimpleHashChain.Ethereum &&
+      nft.chain === Network.mainnet &&
       (standard === TokenStandard.ERC1155 || standard === TokenStandard.ERC721),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
@@ -229,8 +230,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     marketplaceCollectionUrl: marketplace?.collection_url,
     marketplaceId: marketplace?.marketplace_id ?? null,
     marketplaceName: marketplace?.marketplace_name ?? null,
-    name: nft.name || '',
-    network: getNetworkFromSimpleHashChain(nft.chain),
+    name: nft.name,
+    network: nft.chain,
     permalink: marketplace?.nft_url ?? '',
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],

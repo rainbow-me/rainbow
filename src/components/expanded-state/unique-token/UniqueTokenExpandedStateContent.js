@@ -46,6 +46,7 @@ const UniqueTokenExpandedStateContent = ({
   // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
+  console.log(supportsVideo);
   return (
     <ZoomableWrapper
       animationProgress={animationProgress}
