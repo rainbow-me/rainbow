@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -14,7 +8,6 @@ import {
 } from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
-import convertToProxyURL from 'react-native-video-cache';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
