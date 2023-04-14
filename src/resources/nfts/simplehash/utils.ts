@@ -460,7 +460,12 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     uniqueTokenType,
     video: {
       mimeType: nft.video_properties?.mime_type ?? undefined,
-      url: nft.video_url ?? undefined,
+      url: maybeSignUri(
+        nft.video_url ??
+          nft.extra_metadata?.animation_original_url ??
+          undefined,
+        { fm: 'mp4' }
+      ),
     },
   };
 }
