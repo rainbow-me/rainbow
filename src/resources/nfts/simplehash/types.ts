@@ -1,3 +1,5 @@
+import { Network } from '@/helpers';
+
 export enum SimpleHashChain {
   Arbitrum = 'arbitrum',
   Bsc = 'bsc',
@@ -187,9 +189,11 @@ export type SimpleHashNFT = {
 
 export type ValidatedSimpleHashNFT = Omit<
   SimpleHashNFT,
-  'name' | 'contract_address' | 'token_id'
+  'name' | 'chain' | 'collection' | 'contract_address' | 'token_id'
 > & {
   name: string;
+  chain: Network;
+  collection: Omit<SimpleHashCollection, 'name'> & { name: string };
   contract_address: string;
   token_id: string;
 };

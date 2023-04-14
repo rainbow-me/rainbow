@@ -139,6 +139,9 @@ export function filterSimpleHashNFTs(
     .map(nft => ({
       ...nft,
       name: nft.name!,
+      contract_address: nft.contract_address,
+      chain: getNetworkFromSimpleHashChain(nft.chain),
+      collection: { ...nft.collection, name: nft.collection.name! },
       token_id: nft.token_id!,
     }));
 }
@@ -326,7 +329,6 @@ function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
 export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address.toLowerCase();
-  const network = getNetworkFromSimpleHashChain(nft.chain);
 
   const uniqueTokenType = getUniqueTokenType(lowercasedContractAddress);
 
@@ -409,7 +411,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       name:
         uniqueTokenType === uniqueTokenTypes.ENS
           ? ENS_COLLECTION_NAME
-          : collection.name ?? undefined,
+          : collection.name,
       simpleHashSpamScore: collection?.spam_score ?? undefined,
       twitter: collection.twitter_username ?? undefined,
     },
@@ -430,7 +432,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       mimeType: nft.image_properties?.mime_type ?? undefined,
     },
     isSendable:
-      nft.chain === SimpleHashChain.Ethereum &&
+      nft.chain === Network.mainnet &&
       (nft.contract.type === TokenStandard.ERC721 ||
         nft.contract.type === TokenStandard.ERC1155),
     lastSale:
@@ -449,12 +451,12 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
         : undefined,
     marketplaces,
     name: nft.name,
-    network,
+    network: nft.chain,
     predominantColor: nft.previews?.predominant_color ?? undefined,
     tokenId: nft.token_id,
     traits,
     type: AssetTypes.nft as AssetType,
-    uniqueId: `${network}_${nft.contract_address}_${nft.token_id}`,
+    uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
     video: {
       mimeType: nft.video_properties?.mime_type ?? undefined,
