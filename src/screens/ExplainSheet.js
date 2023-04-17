@@ -21,6 +21,7 @@ import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
 import AppIconPooly from '@/assets/appIconPooly.png';
+import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -101,6 +102,22 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const FiniliarAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.finiliarPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconFiniliar}
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
@@ -308,6 +325,10 @@ const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
 
 const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
 
+const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+
+const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -357,6 +378,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
+    },
+  },
+  finiliar_app_icon: {
+    logo: <FiniliarAppIcon />,
+    extraHeight: -90,
+    text: FINILIAR_APP_ICON_EXPLAINER,
+    title: FINILIAR_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.finiliarPink,
+      bgColor: colors?.finiliarPink06,
     },
   },
   golddoge_app_icon: {
