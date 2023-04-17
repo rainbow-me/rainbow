@@ -12,6 +12,7 @@ import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { PolygonAllowlist } from '../types';
 import { ERC1155, ERC721 } from '@/handlers/web3';
+import { maybeSignUri } from '@/handlers/imgix';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
@@ -131,7 +132,10 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
   const standard = nft.contract.type;
 
   return {
-    animation_url: nft?.video_url,
+    animation_url: maybeSignUri(
+      nft?.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      { fm: 'mp4' }
+    ),
     asset_contract: {
       address: nft.contract_address,
       name: nft.contract.name || undefined,
