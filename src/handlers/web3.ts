@@ -42,8 +42,10 @@ import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 
-export const ERC721 = 'ERC721';
-export const ERC1155 = 'ERC1155';
+export enum TokenStandard {
+  ERC1155 = 'ERC1155',
+  ERC721 = 'ERC721',
+}
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -722,7 +724,7 @@ export const getDataForNftTransfer = (
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-  } else if (standard === ERC1155) {
+  } else if (standard === TokenStandard.ERC1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
     data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
@@ -732,7 +734,7 @@ export const getDataForNftTransfer = (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-  } else if (standard === ERC721) {
+  } else if (standard === TokenStandard.ERC721) {
     const transferMethod = smartContractMethods.erc721_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(from),
