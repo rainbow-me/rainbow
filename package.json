@@ -202,7 +202,7 @@
     "react": "18.1.0",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
-    "react-native": "0.70.7",
+    "react-native": "0.70.8",
     "react-native-action-sheet": "2.2.0",
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
