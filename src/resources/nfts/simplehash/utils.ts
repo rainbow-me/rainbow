@@ -175,8 +175,13 @@ export function simpleHashNFTToUniqueAsset(
 
   const standard = nft.contract.type;
 
+  const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+
   return {
-    animation_url: nft?.video_url,
+    animation_url: maybeSignUri(
+      nft?.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      { fm: 'mp4' }
+    ),
     asset_contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
@@ -212,10 +217,11 @@ export function simpleHashNFTToUniqueAsset(
     image_preview_url: lowResUrl,
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
-    isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+    isPoap,
     isSendable:
-      nft.chain === Network.mainnet &&
-      (standard === TokenStandard.ERC1155 || standard === TokenStandard.ERC721),
+      !isPoap &&
+      (nft.contract.type === TokenStandard.ERC721 ||
+        nft.contract.type === TokenStandard.ERC1155),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
       nft?.last_sale?.unit_price !== undefined
@@ -433,7 +439,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       mimeType: nft.image_properties?.mime_type ?? undefined,
     },
     isSendable:
-      nft.chain === Network.mainnet &&
+      uniqueTokenType !== uniqueTokenTypes.POAP &&
       (nft.contract.type === TokenStandard.ERC721 ||
         nft.contract.type === TokenStandard.ERC1155),
     lastSale:
@@ -459,14 +465,9 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     type: AssetTypes.nft as AssetType,
     uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
-    video: {
-      mimeType: nft.video_properties?.mime_type ?? undefined,
-      url: maybeSignUri(
-        nft.video_url ??
-          nft.extra_metadata?.animation_original_url ??
-          undefined,
-        { fm: 'mp4' }
-      ),
-    },
+    video_url: maybeSignUri(
+      nft.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      { fm: 'mp4' }
+    ),
   };
 }

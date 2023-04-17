@@ -38,7 +38,6 @@ import {
 } from '../utils/profileUtils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text } from '@/design-system';
-import { AssetTypes } from '@/entities';
 import {
   estimateENSReclaimGasLimit,
   estimateENSSetAddressGasLimit,
@@ -413,9 +412,9 @@ export default function SendConfirmationSheet() {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: asset.type,
+      type: isNft ? asset.network : asset.type,
     });
-  }, [asset.type, navigate]);
+  }, [asset.network, asset.type, isNft, navigate]);
 
   const nativeDisplayAmount = useMemo(
     () =>
@@ -687,7 +686,7 @@ export default function SendConfirmationSheet() {
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
-                      assetType={asset.type}
+                      assetType={isNft ? asset.network : asset.type}
                       colors={colors}
                       hideDivider
                       marginBottom={0}
