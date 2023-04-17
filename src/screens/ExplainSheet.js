@@ -325,9 +325,9 @@ const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
 
 const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
 
-const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.finiliar_text');
 
-const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.finiliar_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
