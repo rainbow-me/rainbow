@@ -12,7 +12,7 @@ import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNFTs } from '@/resources/nfts';
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
@@ -72,7 +72,7 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const { data: uniqueTokens, isInitialLoading } = useLegacyNFTs({
+  const { data: uniqueTokens, isInitialLoading } = useNFTs({
     address: accountAddress ?? '',
   });
 
