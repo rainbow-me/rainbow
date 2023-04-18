@@ -7,12 +7,9 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, showActionSheetWithOptions } from '@/utils';
-
-const HairlineSpace = '\u200a';
 
 const PropertyActionsEnum = {
   openURL: 'openURL',
@@ -104,13 +101,11 @@ const Tag = ({
   title,
   marketplaceId,
   marketplaceName,
-  maxValue,
   originalValue,
   lowercase,
   hideNftMarketplaceAction,
   ...props
 }) => {
-  const { colors } = useTheme();
   const isURL =
     typeof originalValue === 'string' &&
     originalValue.toLowerCase().startsWith('https://');
@@ -225,17 +220,7 @@ const Tag = ({
       <OuterBorder {...props} color={color}>
         <Container>
           <Title color={color}>{upperCase(title)}</Title>
-          <Inline wrap={false}>
-            <Text>{textWithUpdatedCase}</Text>
-            {maxValue && (
-              <Text>
-                <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
-                  {HairlineSpace}/{HairlineSpace}
-                </Text>
-                {maxValue}
-              </Text>
-            )}
-          </Inline>
+          <Text>{textWithUpdatedCase}</Text>
         </Container>
       </OuterBorder>
     </ButtonWrapper>
@@ -256,7 +241,6 @@ export default magicMemo(Tag, [
   'title',
   'marketplaceId',
   'marketplaceName',
-  'maxValue',
   'originalValue',
   'hideNftMarketplaceAction',
 ]);

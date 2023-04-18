@@ -12,7 +12,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
-import { UniqueAsset } from '@/entities';
+import { NFT, NFTMarketplaceId } from '@/resources/nfts/types';
 
 const NONE = 'None';
 
@@ -24,11 +24,7 @@ const formatPrice = (
   return `${price === 0 ? '< 0.001' : price} ${tokenSymbol}`;
 };
 
-export default function NFTBriefTokenInfoRow({
-  asset,
-}: {
-  asset: UniqueAsset;
-}) {
+export default function NFTBriefTokenInfoRow({ asset }: { asset: NFT }) {
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
@@ -37,19 +33,17 @@ export default function NFTBriefTokenInfoRow({
 
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
-    tokenId: asset?.id,
+    tokenId: asset?.tokenId,
     network: asset?.network,
   });
 
-  const listingValue =
+  const currentPrice =
     listing &&
     convertRawAmountToRoundedDecimal(
       listing?.price,
       listing?.payment_token?.decimals,
       3
     );
-
-  const currentPrice = asset?.currentPrice ?? listingValue;
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -69,10 +63,28 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const floorPrice = formatPrice(asset?.floorPriceEth, 'ETH');
+  const floorPriceData = asset?.collection?.floorPrices.filter(
+    floorPrice => floorPrice.marketplaceId === NFTMarketplaceId.OpenSea
+  )?.[0];
+
+  const floorPrice = formatPrice(
+    convertRawAmountToRoundedDecimal(
+      listing?.price,
+      listing?.payment_token?.decimals,
+      3
+    ),
+    floorPriceData?.paymentToken?.symbol
+  );
+
+  const canConvertFloorPrice = floorPriceData?.paymentToken?.symbol === 'ETH';
+
   const lastSalePrice = formatPrice(
-    asset?.lastPrice,
-    asset?.lastSalePaymentToken
+    convertRawAmountToRoundedDecimal(
+      asset?.lastSale?.value,
+      asset?.lastSale?.paymentToken?.decimals,
+      3
+    ),
+    asset?.lastSale?.paymentToken?.symbol
   );
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
@@ -112,7 +124,7 @@ export default function NFTBriefTokenInfoRow({
             ? colors.alpha(colors.whiteLabel, 0.5)
             : colors.whiteLabel
         }
-        enableHapticFeedback={floorPrice !== NONE}
+        enableHapticFeedback={floorPrice !== NONE && canConvertFloorPrice}
         isNft
         loading={!floorPrice}
         onInfoPress={handlePressCollectionFloor}
@@ -125,7 +137,8 @@ export default function NFTBriefTokenInfoRow({
         {showFloorInEth ||
         nativeCurrency === 'ETH' ||
         floorPrice === NONE ||
-        floorPrice === null
+        floorPrice === null ||
+        !canConvertFloorPrice
           ? floorPrice
           : convertAmountToNativeDisplay(
               parseFloat(

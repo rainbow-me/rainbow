@@ -422,7 +422,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       simpleHashSpamScore: collection?.spam_score ?? undefined,
       twitter: collection.twitter_username ?? undefined,
     },
-    contract: {
+    asset_contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name ?? undefined,
       schema_name: nft.contract.type,

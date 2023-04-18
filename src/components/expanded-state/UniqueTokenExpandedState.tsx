@@ -52,7 +52,6 @@ import {
   Text,
   TextProps,
 } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
@@ -70,13 +69,9 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import {
-  buildRainbowUrl,
-  getUniqueTokenType,
-  magicMemo,
-  safeAreaInsetValues,
-} from '@/utils';
+import { buildRainbowUrl, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { NFT } from '@/resources/nfts/types';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -223,7 +218,7 @@ const Markdown = ({
 };
 
 interface UniqueTokenExpandedStateProps {
-  asset: UniqueAsset;
+  asset: NFT;
   external: boolean;
 }
 
@@ -261,21 +256,21 @@ const UniqueTokenExpandedState = ({
   const {
     collection: {
       description: familyDescription,
-      external_url: familyLink,
+      externalUrl: familyLink,
+      imageUrl: familyImage,
+      name: familyName,
       slug,
     },
     description,
-    familyImage,
-    familyName,
     isSendable,
-    marketplaceName,
+    marketplaces,
     traits,
     uniqueId,
-    fullUniqueId,
+    uniqueTokenType,
   } = asset;
 
-  const uniqueTokenType = getUniqueTokenType(asset);
-
+  const marketplace = marketplaces?.[0];
+  const marketplaceName = marketplace?.name;
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
   const isPoap = uniqueTokenType === 'POAP';
   const isENS = uniqueTokenType === 'ENS';
@@ -343,8 +338,8 @@ const UniqueTokenExpandedState = ({
   }, [asset.network, navigate]);
 
   const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(fullUniqueId) as boolean,
-    [hiddenTokens, fullUniqueId]
+    () => hiddenTokens.includes(uniqueId) as boolean,
+    [hiddenTokens, uniqueId]
   );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
@@ -353,8 +348,13 @@ const UniqueTokenExpandedState = ({
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
+  const shareUrl = isSupportedOnRainbowWeb
+    ? rainbowWebUrl
+    : marketplace?.nftUrl;
+
   const imageColor =
-    usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
+    usePersistentDominantColorFromImage(asset.images?.lowResPngUrl) ??
+    colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -366,10 +366,11 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(
-    () => Linking.openURL(asset.permalink),
-    [asset.permalink]
-  );
+  const handlePressMarketplaceName = useCallback(() => {
+    if (marketplace?.nftUrl) {
+      Linking.openURL(marketplace.nftUrl);
+    }
+  }, [marketplace]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -391,14 +392,14 @@ const UniqueTokenExpandedState = ({
   ]);
 
   const handlePressShare = useCallback(() => {
-    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
-
-    Share.share({
-      message: android ? shareUrl : undefined,
-      title: `Share ${buildUniqueTokenName(asset)} Info`,
-      url: shareUrl,
-    });
-  }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
+    if (shareUrl) {
+      Share.share({
+        message: android ? shareUrl : undefined,
+        title: `Share ${buildUniqueTokenName(asset)} Info`,
+        url: shareUrl,
+      });
+    }
+  }, [asset, shareUrl]);
 
   const { startRegistration } = useENSRegistration();
   const handlePressEdit = useCallback(() => {
@@ -407,12 +408,18 @@ const UniqueTokenExpandedState = ({
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
-          externalAvatarUrl: asset?.lowResUrl,
+          externalAvatarUrl: asset?.images?.lowResPngUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
+  }, [
+    isENS,
+    navigate,
+    startRegistration,
+    uniqueId,
+    asset?.images?.lowResPngUrl,
+  ]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -440,8 +447,8 @@ const UniqueTokenExpandedState = ({
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              backgroundColor={asset.background || imageColor}
-              imageUrl={asset.lowResUrl}
+              backgroundColor={asset.backgroundColor || imageColor}
+              imageUrl={asset?.images?.lowResPngUrl}
               item={asset}
               resizeMode="cover"
               size={CardSize}
@@ -517,7 +524,7 @@ const UniqueTokenExpandedState = ({
                         ) : (
                           <View />
                         )}
-                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                        {shareUrl ? (
                           <TextButton align="right" onPress={handlePressShare}>
                             􀈂 {lang.t('button.share')}
                           </TextButton>
@@ -603,7 +610,7 @@ const UniqueTokenExpandedState = ({
                               color={imageColor}
                               ensName={uniqueId}
                               expiryDate={ensData?.registration?.expiryDate}
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset?.images?.lowResPngUrl}
                               registrationDate={
                                 ensData?.registration?.registrationDate
                               }
@@ -685,7 +692,7 @@ const UniqueTokenExpandedState = ({
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset?.images?.lowResPngUrl}
                               isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}

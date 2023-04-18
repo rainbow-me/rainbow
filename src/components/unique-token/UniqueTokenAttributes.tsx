@@ -3,10 +3,10 @@ import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import Tag from './Tag';
 import { Inline } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import transformUniqueAssetTraitsForPresentation from '@/helpers/transformUniqueAssetTraitsForPresentation';
 import uniqueAssetTraitDisplayTypeCompareFunction from '@/helpers/uniqueAssetTraitDisplayTypeCompareFunction';
+import { NFTTrait } from '@/resources/nfts/types';
 
 interface UniqueTokenAttributesProps {
   color: string;
@@ -14,7 +14,7 @@ interface UniqueTokenAttributesProps {
   marketplaceId?: string | null;
   marketplaceName?: string | null;
   slug: string;
-  traits: UniqueAsset['traits'];
+  traits: NFTTrait[];
 }
 
 const UniqueTokenAttributes = ({
@@ -27,15 +27,8 @@ const UniqueTokenAttributes = ({
 }: UniqueTokenAttributesProps) => {
   const sortedTraits = useMemo(
     () =>
-      (sortList(traits, 'trait_type', 'asc') as typeof traits)
-        .filter(
-          trait =>
-            trait.value !== undefined &&
-            trait.value !== null &&
-            trait.value !== '' &&
-            trait.trait_type &&
-            !isHttpUrl(trait.value)
-        )
+      sortList(traits, 'traitType', 'asc')
+        .filter(trait => trait.value !== '' && !isHttpUrl(trait.value))
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
         .map(trait => {
           return transformUniqueAssetTraitsForPresentation(trait, {
@@ -55,8 +48,7 @@ const UniqueTokenAttributes = ({
           lowercase,
           value,
           originalValue,
-          trait_type: type,
-          max_value: maxValue,
+          traitType: type,
         }) => (
           <Tag
             color={color}
@@ -66,7 +58,6 @@ const UniqueTokenAttributes = ({
             lowercase={lowercase}
             marketplaceId={marketplaceId}
             marketplaceName={marketplaceName}
-            maxValue={maxValue}
             originalValue={originalValue}
             slug={slug}
             text={value}

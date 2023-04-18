@@ -54,7 +54,7 @@ export type NFTTrait = {
 export type NFT = {
   backgroundColor: string | undefined;
   collection: NFTCollection;
-  contract: AssetContract;
+  asset_contract: AssetContract;
   description: string | undefined;
   externalUrl: string | undefined;
   images: {
