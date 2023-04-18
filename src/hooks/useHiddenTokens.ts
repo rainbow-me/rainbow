@@ -8,7 +8,7 @@ import {
 import useWallets from './useWallets';
 import useWebData from './useWebData';
 import { analytics } from '@/analytics';
-import { UniqueAsset } from '@/entities';
+import { NFT } from '@/resources/nfts/types';
 
 export default function useHiddenTokens() {
   const dispatch = useDispatch();
@@ -21,10 +21,9 @@ export default function useHiddenTokens() {
   );
 
   const addHiddenToken = useCallback(
-    async (asset: UniqueAsset) => {
-      dispatch(rawAddHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet &&
-        updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
+    async (asset: NFT) => {
+      dispatch(rawAddHiddenToken(asset.uniqueId));
+      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.uniqueId]);
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,
@@ -36,10 +35,10 @@ export default function useHiddenTokens() {
   );
 
   const removeHiddenToken = useCallback(
-    async (asset: UniqueAsset) => {
-      dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
+    async (asset: NFT) => {
+      dispatch(rawRemoveHiddenToken(asset.uniqueId));
       !isReadOnlyWallet &&
-        updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
+        updateWebHidden(hiddenTokens.filter(id => id !== asset.uniqueId));
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,
