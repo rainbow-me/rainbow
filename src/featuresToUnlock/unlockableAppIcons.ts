@@ -103,5 +103,5 @@ export const FiniliarIcon: UnlockableAppIcon = {
   explainSheetType: 'finiliar_app_icon',
   network: Network.mainnet,
   unlockingNfts: [FINILIAR_NFT_ADDRESS],
-  unlockKey: 'finiliar_nft_app_icon',
+  unlockKey: 'pooly_nft_app_icon',
 };
