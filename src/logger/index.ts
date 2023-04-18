@@ -6,7 +6,7 @@ import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
 import { device } from '@/storage';
 import { push } from '@/logger/logDump';
-import { getExperimetalFlag, LOG_PUSH } from '@/config';
+import { getExperimetalFlag, LOG_PUSH } from '@/config/experimental';
 
 export enum LogLevel {
   Debug = 'debug',
