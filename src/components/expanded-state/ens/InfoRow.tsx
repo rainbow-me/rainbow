@@ -19,7 +19,7 @@ import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNFTs } from '@/resources/nfts';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();
@@ -216,16 +216,16 @@ function ImageValue({
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const { data: uniqueTokensAccount } = useLegacyNFTs({
+  const { data: nftsAccount } = useNFTs({
     address: accountAddress,
   });
-  const { data: uniqueTokensProfile } = useLegacyNFTs({
+  const { data: nftsProfile } = useNFTs({
     address: address ?? '',
   });
   const isSelf = address === accountAddress;
-  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
+  const nfts = isSelf ? nftsAccount : nftsProfile;
 
-  const { onPress } = useOpenENSNFTHandler({ uniqueTokens, value });
+  const { onPress } = useOpenENSNFTHandler({ nfts, value });
   const enableZoomOnPress = !onPress;
 
   if (!url) return null;

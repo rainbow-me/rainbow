@@ -338,7 +338,7 @@ const UniqueTokenExpandedStateHeader = ({
         Linking.openURL(marketplace?.collectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
-        Linking.openURL(asset.external_link || asset.collection.external_url);
+        Linking.openURL(asset.externalUrl || asset.collection.externalUrl);
       } else if (actionKey === FamilyActionsEnum.twitter) {
         Linking.openURL('https://twitter.com/' + asset.collection.twitter);
       } else if (
@@ -350,9 +350,9 @@ const UniqueTokenExpandedStateHeader = ({
     },
     [
       asset.collection.discord,
-      asset.collection.external_url,
+      asset.collection.externalUrl,
       asset.collection.twitter,
-      asset.external_link,
+      asset.externalUrl,
       marketplace?.collectionUrl,
     ]
   );
@@ -370,11 +370,11 @@ const UniqueTokenExpandedStateHeader = ({
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
         Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
+          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.looksrare) {
         Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
+          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.tokenId}`
         );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.tokenId);
@@ -441,7 +441,7 @@ const UniqueTokenExpandedStateHeader = ({
         } else if (idx === websiteIndex) {
           Linking.openURL(
             // @ts-expect-error external_link and external_url could be null or undefined?
-            asset.external_link || asset.collection.external_url
+            asset.externalUrl || asset.collection.externalUrl
           );
         } else if (idx === twitterIndex) {
           Linking.openURL('https://twitter.com/' + asset.collection.twitter);
@@ -453,10 +453,8 @@ const UniqueTokenExpandedStateHeader = ({
   }, [
     asset.collection.discord,
     asset.collection.externalUrl,
-    asset.collection.external_url,
     asset.collection.twitter,
     asset.externalUrl,
-    asset.external_link,
     marketplace?.collectionUrl,
   ]);
 

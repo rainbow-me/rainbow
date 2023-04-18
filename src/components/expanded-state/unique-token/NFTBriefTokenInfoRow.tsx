@@ -68,22 +68,24 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: NFT }) {
   )?.[0];
 
   const floorPrice = formatPrice(
-    convertRawAmountToRoundedDecimal(
-      listing?.price,
-      listing?.payment_token?.decimals,
-      3
-    ),
+    listing?.price &&
+      convertRawAmountToRoundedDecimal(
+        listing?.price,
+        listing?.payment_token?.decimals,
+        3
+      ),
     floorPriceData?.paymentToken?.symbol
   );
 
   const canConvertFloorPrice = floorPriceData?.paymentToken?.symbol === 'ETH';
 
   const lastSalePrice = formatPrice(
-    convertRawAmountToRoundedDecimal(
-      asset?.lastSale?.value,
-      asset?.lastSale?.paymentToken?.decimals,
-      3
-    ),
+    asset?.lastSale?.value &&
+      convertRawAmountToRoundedDecimal(
+        asset?.lastSale?.value,
+        asset?.lastSale?.paymentToken?.decimals,
+        3
+      ),
     asset?.lastSale?.paymentToken?.symbol
   );
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;

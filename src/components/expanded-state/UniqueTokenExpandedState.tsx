@@ -71,7 +71,7 @@ import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { buildRainbowUrl, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { NFT } from '@/resources/nfts/types';
+import { NFT, NFTMarketplaceId } from '@/resources/nfts/types';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -259,7 +259,6 @@ const UniqueTokenExpandedState = ({
       externalUrl: familyLink,
       imageUrl: familyImage,
       name: familyName,
-      slug,
     },
     description,
     isSendable,
@@ -271,6 +270,10 @@ const UniqueTokenExpandedState = ({
 
   const marketplace = marketplaces?.[0];
   const marketplaceName = marketplace?.name;
+  const slug =
+    marketplaces?.filter(
+      marketplace => marketplace.marketplaceId === NFTMarketplaceId.OpenSea
+    )?.[0]?.collectionId ?? '';
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
   const isPoap = uniqueTokenType === 'POAP';
   const isENS = uniqueTokenType === 'ENS';
@@ -552,7 +555,7 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
-                        ) : asset.permalink ? (
+                        ) : marketplace?.nftUrl ? (
                           <SheetActionButton
                             color={imageColor}
                             label={
