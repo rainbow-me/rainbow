@@ -13,4 +13,3 @@ index 613c5ec..c3fa169 100644
 +
  const isIPhoneX = (() => {
    if (Platform.OS === 'web') return false;
- 
