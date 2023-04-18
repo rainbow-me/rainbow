@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
+import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -92,7 +92,9 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
-const statusBarHeight = safeAreaInsetValues.top;
+const statusBarHeight = IS_IOS
+  ? safeAreaInsetValues.top
+  : StatusBar.currentHeight;
 
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

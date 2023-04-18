@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, StatusBar, View } from 'react-native';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import Routes from '@/navigation/routesNames';
@@ -11,8 +11,11 @@ import {
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
+import { IS_IOS } from '@/env';
 
-const statusBarHeight = safeAreaInsetValues.top;
+const statusBarHeight = IS_IOS
+  ? safeAreaInsetValues.top
+  : StatusBar.currentHeight;
 export const sheetVerticalOffset = statusBarHeight;
 
 export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
