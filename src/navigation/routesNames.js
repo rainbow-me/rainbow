@@ -23,12 +23,12 @@ const Routes = {
   ENS_CONFIRM_REGISTER_SHEET: 'ENSConfirmRegisterSheet',
   ENS_INTRO_SHEET: 'ENSIntroSheet',
   ENS_SEARCH_SHEET: 'ENSSearchSheet',
-  EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   EXPLAIN_SHEET: 'ExplainSheet',
+  PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
@@ -71,7 +71,6 @@ const Routes = {
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',
-  SUPPORTED_COUNTRIES_MODAL_SCREEN: 'SupportedCountriesModalScreen',
   SWAPS_PROMO_SHEET: 'SwapsPromoSheet',
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
@@ -85,8 +84,6 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
-  WYRE_WEBVIEW: 'WyreWebview',
-  WYRE_WEBVIEW_NAVIGATOR: 'WyreWebviewNavigator',
 };
 
 export const NATIVE_ROUTES = [
@@ -107,9 +104,6 @@ export const NATIVE_ROUTES = [
 
 const RoutesWithPlatformDifferences = {
   ...Routes,
-  ADD_CASH_FLOW: IS_IOS
-    ? Routes.ADD_CASH_SCREEN_NAVIGATOR
-    : Routes.ADD_CASH_SHEET,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 

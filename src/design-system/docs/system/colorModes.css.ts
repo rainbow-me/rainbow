@@ -12,9 +12,12 @@ export const dark = createTheme(colorModeVars, {
   foregroundColors: pickColorModeValues(foregroundColors, 'dark'),
 });
 
-////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////
 
-function pickColorModeValues<T>(tokens: T, colorMode: 'light' | 'dark') {
+function pickColorModeValues<T extends object>(
+  tokens: T,
+  colorMode: 'light' | 'dark'
+) {
   return Object.entries(tokens).reduce((newTokens, [key, value]) => {
     return {
       ...newTokens,

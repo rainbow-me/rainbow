@@ -93,3 +93,25 @@ query getRewardsDataForWallet($address: String!) {
     }
   }
 }
+
+query reverseResolveENSProfile(
+  $chainID: Int!
+  $address: String!
+  $fields: [String!]
+) {
+  reverseResolveENSProfile(
+    chainID: $chainID
+    address: $address
+    fields: $fields
+  ) {
+    name
+    address
+    resolverAddress
+    reverseResolverAddress
+    chainID
+    fields {
+      key
+      value
+    }
+  }
+}

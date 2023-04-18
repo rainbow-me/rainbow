@@ -55,7 +55,7 @@ export default class AnimatedPager extends Component {
     ]);
   };
 
-  render = () => {
+  render() {
     const { children, ...props } = this.props;
     const pages = Children.toArray(children).slice(0, 2);
 
@@ -69,5 +69,5 @@ export default class AnimatedPager extends Component {
         </AnimatedPagerItem>
       </Container>
     );
-  };
+  }
 }

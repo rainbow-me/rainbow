@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
-  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
@@ -61,7 +60,6 @@ import {
 } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { isDappAuthenticated } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkTypes from '@/helpers/networkTypes';
 import {
@@ -91,6 +89,7 @@ import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
+  delay,
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
@@ -250,6 +249,7 @@ export default function TransactionConfirmationScreen() {
     return {
       ...profileInfo,
       address,
+      isHardwareWallet: !!selectedWallet?.deviceId,
     };
   }, [
     walletConnector?._accounts,
@@ -262,8 +262,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const disableFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const disableFlashbotsPostMerge = !config.flashbots_enabled;
   const flashbotsEnabled =
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
@@ -350,10 +349,6 @@ export default function TransactionConfirmationScreen() {
     return hostname;
   }, [dappUrl]);
 
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
-  }, [dappUrl]);
-
   const handleL2DisclaimerPress = useCallback(() => {
     if (isTestnet) return;
     navigate(Routes.EXPLAIN_SHEET, {
@@ -413,6 +408,11 @@ export default function TransactionConfirmationScreen() {
 
   const closeScreen = useCallback(
     canceled => {
+      // we need to close the hw navigator too
+      if (accountInfo.isHardwareWallet) {
+        delay(300);
+        goBack();
+      }
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
@@ -427,22 +427,29 @@ export default function TransactionConfirmationScreen() {
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
+
+      if (walletConnectV2RequestValues?.onComplete) {
+        InteractionManager.runAfterInteractions(() => {
+          walletConnectV2RequestValues.onComplete();
+        });
+      }
     },
     [
+      accountInfo.isHardwareWallet,
       goBack,
       isMessageRequest,
       pendingRedirect,
+      walletConnectV2RequestValues,
       stopPollingGasFees,
       method,
-      dappScheme,
       dispatch,
+      dappScheme,
     ]
   );
 
   const onCancel = useCallback(
     async error => {
       try {
-        closeScreen(true);
         if (callback) {
           callback({ error: error || 'User cancelled the request' });
         }
@@ -463,7 +470,11 @@ export default function TransactionConfirmationScreen() {
           }
           const rejectionType =
             method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+            isHardwareWallet: accountInfo.isHardwareWallet,
+          });
+
+          closeScreen(true);
         }, 300);
       } catch (error) {
         logger.error(
@@ -474,6 +485,7 @@ export default function TransactionConfirmationScreen() {
       }
     },
     [
+      accountInfo.isHardwareWallet,
       callback,
       closeScreen,
       dispatch,
@@ -709,6 +721,8 @@ export default function TransactionConfirmationScreen() {
       'chainId',
     ]);
 
+    logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
+
     let response = null;
 
     try {
@@ -770,6 +784,7 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
@@ -798,11 +813,14 @@ export default function TransactionConfirmationScreen() {
         dappScheme,
         dappUrl,
         formattedDappUrl,
-        isAuthenticated,
         rpcMethod: method,
+        network: currentNetwork,
       });
 
-      await onCancel(error);
+      // If the user is using a hardware wallet, we don't want to close the sheet on an error
+      if (!accountInfo.isHardwareWallet) {
+        await onCancel(error);
+      }
     }
   }, [
     method,
@@ -813,7 +831,10 @@ export default function TransactionConfirmationScreen() {
     currentNetwork,
     provider,
     accountInfo.address,
+    accountInfo.isHardwareWallet,
     callback,
+    dappName,
+    dappUrl,
     isFocused,
     requestId,
     closeScreen,
@@ -822,20 +843,17 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.from,
     displayDetails?.request?.to,
     nativeAsset,
-    dappName,
     accountAddress,
     dispatch,
     dataAddNewTransaction,
+    walletConnectV2RequestValues,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     switchToWalletWithAddress,
-    onCancel,
-    dappScheme,
-    dappUrl,
     formattedDappUrl,
-    isAuthenticated,
+    dappScheme,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -865,6 +883,7 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {
@@ -926,6 +945,14 @@ export default function TransactionConfirmationScreen() {
     }
   }, [isAuthorizing, onConfirm]);
 
+  const submitFn = useCallback(async () => {
+    if (accountInfo.isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+    } else {
+      await onPressSend();
+    }
+  }, [accountInfo.isHardwareWallet, navigate, onPressSend]);
+
   const renderTransactionButtons = useCallback(() => {
     let ready = true;
     const isMessage = isMessageRequest;
@@ -967,7 +994,7 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.appleBlue}
           label={`􀎽 ${lang.t('button.confirm')}`}
-          onPress={ready ? onPressSend : NOOP}
+          onPress={ready ? submitFn : NOOP}
           size="big"
           testID="wc-confirm"
           weight="heavy"
@@ -983,7 +1010,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressCancel,
-    onPressSend,
+    submitFn,
   ]);
 
   const renderTransactionSection = useCallback(() => {
@@ -997,7 +1024,8 @@ export default function TransactionConfirmationScreen() {
 
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
-      const nativeAssetPrice = genericNativeAsset?.price?.value;
+      const nativeAssetPrice =
+        genericNativeAsset?.price?.value || nativeAsset?.price?.value;
       const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
@@ -1031,6 +1059,7 @@ export default function TransactionConfirmationScreen() {
     request?.data,
     request?.value,
     request.message,
+    nativeAsset,
     genericNativeAsset?.price?.value,
     nativeCurrency,
   ]);
@@ -1167,7 +1196,7 @@ export default function TransactionConfirmationScreen() {
                       size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
-                      {isAuthenticated ? dappName : formattedDappUrl}
+                      {formattedDappUrl}
                     </Text>
                   </Row>
                 </Row>

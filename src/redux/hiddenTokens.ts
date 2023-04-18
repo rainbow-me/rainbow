@@ -10,6 +10,8 @@ import {
 import WalletTypes from '@/helpers/walletTypes';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
+const HIDDEN_TOKENS_FETCH_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_FETCH_SUCCESS';
+const HIDDEN_TOKENS_FETCH_FAILURE = 'hiddenTokens/HIDDEN_TOKENS_FETCH_FAILURE';
 const HIDDEN_TOKENS_LOAD_FAILURE = 'hiddenTokens/HIDDEN_TOKENS_LOAD_FAILURE';
 const HIDDEN_TOKENS_UPDATE = 'hiddenTokens/UPDATE_HIDDEN_TOKENS';
 
@@ -28,6 +30,8 @@ interface HiddenTokensState {
  */
 type HiddenTokensAction =
   | HiddenTokensLoadSuccessAction
+  | HiddenTokensFetchSuccessAction
+  | HiddenTokensFetchFailureAction
   | HiddenTokensLoadFailureAction
   | HiddenTokensUpdateAction;
 
@@ -43,6 +47,24 @@ interface HiddenTokensLoadSuccessAction {
 }
 
 /**
+ * The action used when information about hidden tokens has been loaded from firebase
+ * successfully.
+ */
+interface HiddenTokensFetchSuccessAction {
+  type: typeof HIDDEN_TOKENS_FETCH_SUCCESS;
+  payload: {
+    hiddenTokens: string[];
+  };
+}
+
+/**
+ * The action used when loading information about hidden tokens from firebase fails.
+ */
+interface HiddenTokensFetchFailureAction {
+  type: typeof HIDDEN_TOKENS_FETCH_FAILURE;
+}
+
+/**
  * The action used when loading information about hidden tokens fails.
  */
 interface HiddenTokensLoadFailureAction {
@@ -54,7 +76,9 @@ interface HiddenTokensLoadFailureAction {
  */
 interface HiddenTokensUpdateAction {
   type: typeof HIDDEN_TOKENS_UPDATE;
-  payload: string[];
+  payload: {
+    hiddenTokens: string[];
+  };
 }
 
 /**
@@ -68,11 +92,35 @@ export const hiddenTokensLoadState = () => async (
   getState: AppGetState
 ) => {
   try {
-    const account = getState().wallets?.selected;
-    const isReadOnlyWallet = account?.type === WalletTypes.readOnly;
     const { accountAddress, network } = getState().settings;
 
-    let hiddenTokens = await getHiddenTokens(accountAddress, network);
+    const hiddenTokens = await getHiddenTokens(accountAddress, network);
+
+    dispatch({
+      payload: {
+        hiddenTokens,
+      },
+      type: HIDDEN_TOKENS_LOAD_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({ type: HIDDEN_TOKENS_LOAD_FAILURE });
+  }
+};
+
+/**
+ * Loads hidden token IDs and web-data settings from firebase and
+ * updates state.
+ */
+export const hiddenTokensUpdateStateFromWeb = () => async (
+  dispatch: Dispatch<
+    HiddenTokensFetchSuccessAction | HiddenTokensFetchFailureAction
+  >,
+  getState: AppGetState
+) => {
+  try {
+    const isReadOnlyWallet =
+      getState().wallets.selected?.type === WalletTypes.readOnly;
+    const { accountAddress, network } = getState().settings;
 
     // if web data is enabled, fetch values from cloud
     const pref = await getWebDataEnabled(accountAddress, network);
@@ -86,18 +134,16 @@ export const hiddenTokensLoadState = () => async (
         hiddenTokensFromCloud?.hidden?.ids &&
         hiddenTokensFromCloud?.hidden?.ids.length > 0
       ) {
-        hiddenTokens = hiddenTokensFromCloud.hidden.ids;
+        dispatch({
+          payload: {
+            hiddenTokens: hiddenTokensFromCloud?.hidden?.ids,
+          },
+          type: HIDDEN_TOKENS_FETCH_SUCCESS,
+        });
       }
     }
-
-    dispatch({
-      payload: {
-        hiddenTokens,
-      },
-      type: HIDDEN_TOKENS_LOAD_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: HIDDEN_TOKENS_LOAD_FAILURE });
+  } catch (e) {
+    dispatch({ type: HIDDEN_TOKENS_FETCH_FAILURE });
   }
 };
 
@@ -118,7 +164,9 @@ export const addHiddenToken = (tokenId: string) => (
   const { hiddenTokens } = getState().hiddenTokens;
   const updatedHiddenTokens = concat(hiddenTokens, tokenId);
   dispatch({
-    payload: updatedHiddenTokens,
+    payload: {
+      hiddenTokens: updatedHiddenTokens,
+    },
     type: HIDDEN_TOKENS_UPDATE,
   });
   saveHiddenTokens(updatedHiddenTokens, accountAddress, network);
@@ -143,7 +191,7 @@ export const removeHiddenToken = (tokenId: string) => (
   const updatedHiddenTokens = without(hiddenTokens, tokenId);
 
   dispatch({
-    payload: updatedHiddenTokens,
+    payload: { hiddenTokens: updatedHiddenTokens },
     type: HIDDEN_TOKENS_UPDATE,
   });
 
@@ -160,10 +208,16 @@ export default (
 ): HiddenTokensState => {
   switch (action.type) {
     case HIDDEN_TOKENS_LOAD_SUCCESS:
-      return action.payload;
+      return {
+        hiddenTokens: action.payload.hiddenTokens,
+      };
+    case HIDDEN_TOKENS_FETCH_SUCCESS:
+      return {
+        hiddenTokens: action.payload.hiddenTokens,
+      };
     case HIDDEN_TOKENS_UPDATE:
       return {
-        hiddenTokens: action.payload,
+        hiddenTokens: action.payload.hiddenTokens,
       };
     default:
       return state;

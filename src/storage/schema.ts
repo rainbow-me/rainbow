@@ -11,4 +11,22 @@ export type Device = {
    * already opened the app at least once.
    */
   isReturningUser: boolean;
+
+  /**
+   * Undefined when branch referring params have not been attempted to be set in
+   * the past. We set this to `true` immediately after checking.
+   */
+  branchFirstReferringParamsSet: boolean;
+};
+
+/**
+ * This schema is used for legacy data that was previously stored in
+ * AsyncStorage. Since none of it is typed, we need to be overly permissive
+ * here. WHEN we get around to typing that data, we can add more specific
+ * properties here.
+ */
+export type Legacy = {
+  // example of more specific typing
+  // foo: boolean;
+  [key: string]: any;
 };

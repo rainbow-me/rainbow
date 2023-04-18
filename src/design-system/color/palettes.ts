@@ -206,7 +206,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.grey100,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -216,7 +216,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -226,7 +226,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: deprecatedColors.darker,
       mode: 'dark',
     },
   },
@@ -236,7 +236,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.blueGrey100,
+      color: deprecatedColors.dark,
       mode: 'dark',
     },
   },
@@ -619,7 +619,7 @@ export function getValueForColorMode<Value>(
   value: Value | ContextualColorValue<Value>,
   colorMode: ColorMode
 ): Value {
-  if (typeof value === 'object' && 'light' in value) {
+  if (typeof value === 'object' && value !== null && 'light' in value) {
     if (colorMode === 'darkTinted') {
       return value.darkTinted ?? value.dark;
     }

@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';

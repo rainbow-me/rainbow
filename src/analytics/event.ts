@@ -1,5 +1,6 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
+import { FiatProviderName } from '@/entities/f2c';
 
 /**
  * All events, used by `analytics.track()`
@@ -34,6 +35,35 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
+  /**
+   * Called either on click or during an open event callback. We want this as
+   * early in the flow as possible.
+   */
+  f2cProviderFlowStarted: 'f2c.provider.flow_opened',
+  /**
+   * Called when the provider flow is completed and the user can close the
+   * modal. This event DOES NOT mean we have transaction data.
+   */
+  f2cProviderFlowCompleted: 'f2c.provider.flow_completed',
+  /**
+   * Called if a provider flow throws an error.
+   */
+  f2cProviderFlowErrored: 'f2c.provider.flow_errored',
+  /**
+   * Called when we have transaction data. This is fired a while after a
+   * provider flow completes because we need to wait for the transaction to hit
+   * the blockchain.
+   */
+  f2cTransactionReceived: 'f2c.transaction_received',
+  pairHwWalletNavEntered: 'pair_hw_wallet_nav.entered',
+  pairHwWalletNavExited: 'pair_hw_wallet_nav.exited',
+  rewardsViewedSheet: 'rewards.viewed_sheet',
+  rewardsPressedPendingEarningsCard: 'rewards.pressed_pending_earnings_card',
+  rewardsPressedAvailableCard: 'rewards.pressed_available_card',
+  rewardsPressedPositionCard: 'rewards.pressed_position_card',
+  rewardsPressedSwappedCard: 'rewards.pressed_swapped_card',
+  rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
+  rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 } as const;
 
 /**
@@ -95,4 +125,82 @@ export type EventProperties = {
     isFirstWallet: boolean;
     type: 'backup' | 'seed' | 'watch' | 'ledger_nano_x' | 'new';
   };
+  [event.f2cProviderFlowStarted]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     */
+    sessionId?: string;
+  };
+  [event.f2cProviderFlowCompleted]: {
+    /**
+     * Name of the provider that was selected. This should be saved along with
+     * the pending transaction.
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     * This should be saved along with the pending transaction so that when we
+     * get transaction data we can emit an event with this sessionId.
+     */
+    sessionId?: string;
+    /**
+     * Whether or not we were able to determine if the onramp was successful. A
+     * `true` value indicates YES, and `undefined` or `false` indicates NO, or
+     * that this provider doesn't give us enough info to determine this.
+     */
+    success?: boolean;
+    /**
+     * The following properties are only available on some providers e.g. Ratio
+     */
+    fiat_amount?: string;
+    fiat_currency?: string;
+    fiat_source?: 'bank' | 'card';
+    crypto_network?: string;
+    crypto_amount?: string;
+    crypto_price?: string;
+    crypto_currency?: string;
+    crypto_fee?: string;
+  };
+  [event.f2cProviderFlowErrored]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     */
+    sessionId?: string;
+  };
+  [event.f2cTransactionReceived]: {
+    /**
+     * Name of the provider that was selected
+     */
+    provider: FiatProviderName;
+    /**
+     * Locally-generated string ID used to associate start/complete events.
+     * This should have been saved along with the pending transaction so that
+     * when we get transaction data we can emit an event with this sessionId.
+     */
+    sessionId?: string;
+  };
+  [event.pairHwWalletNavEntered]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
+  };
+  [event.pairHwWalletNavExited]: {
+    entryPoint: string;
+    isFirstWallet: boolean;
+    step: string;
+  };
+  [event.rewardsViewedSheet]: undefined;
+  [event.rewardsPressedPendingEarningsCard]: undefined;
+  [event.rewardsPressedAvailableCard]: undefined;
+  [event.rewardsPressedPositionCard]: { position: number };
+  [event.rewardsPressedSwappedCard]: undefined;
+  [event.rewardsPressedBridgedCard]: undefined;
+  [event.rewardsPressedLeaderboardItem]: { ens?: string };
 };

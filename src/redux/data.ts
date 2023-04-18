@@ -3,19 +3,28 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import { find, isEmpty, isNil, keys, mapValues, partition } from 'lodash';
+import {
+  find,
+  isEmpty,
+  isNil,
+  keys,
+  mapValues,
+  partition,
+  update,
+  cloneDeep,
+} from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import { gretch } from 'gretchen';
+import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
-import { addCashUpdatePurchases } from './addCash';
 import {
   cancelDebouncedUpdateGenericAssets,
   debouncedUpdateGenericAssets,
 } from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
-import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -67,6 +76,11 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
+import { FiatProviderName } from '@/entities/f2c';
+import { logger as loggr, RainbowError } from '@/logger';
+import { analyticsV2 } from '@/analytics';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 const storage = new MMKV();
 
@@ -384,16 +398,6 @@ export interface TransactionsReceivedMessage {
 }
 
 /**
- * A message from the Zerion API indicating that transactions were removed.
- */
-export interface TransactionsRemovedMessage {
-  payload?: {
-    transactions?: ZerionTransaction[];
-  };
-  meta?: MessageMeta;
-}
-
-/**
  * A message from the Zerion API indicating that asset data was received. Note,
  * an actual message directly from Zerion would only include `ZerionAsset`
  * as the value type in the `prices` map, but this message type is also used
@@ -423,6 +427,7 @@ export interface AssetPricesChangedMessage {
  */
 export interface MessageMeta {
   address?: string;
+  addresses?: string[];
   currency?: string;
   status?: string;
   chain_id?: Network; // L2
@@ -435,7 +440,6 @@ type DataMessage =
   | AddressAssetsReceivedMessage
   | PortfolioReceivedMessage
   | TransactionsReceivedMessage
-  | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
 
@@ -546,29 +550,6 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
 };
 
 /**
- * Replaces the account asset data in state and saves to account local storage.
- *
- * @param assetsData The new asset data.
- */
-export const dataUpdateAssets = (assetsData: {
-  [uniqueId: string]: ParsedAddressAsset;
-}) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  if (!isEmpty(assetsData)) {
-    saveAccountAssetsData(assetsData, accountAddress, network);
-    // Change the state since the account isn't empty anymore
-    saveAccountEmptyState(false, accountAddress, network);
-    dispatch({
-      payload: assetsData,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
-  }
-};
-
-/**
  * Checks whether or not metadata received from Zerion is valid.
  *
  * @param message The message received from Zerion.
@@ -578,7 +559,7 @@ const checkMeta = (message: DataMessage | undefined) => (
   getState: AppGetState
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const address = message?.meta?.address;
+  const address = message?.meta?.address || message?.meta?.addresses?.[0];
   const currency = message?.meta?.currency;
   return (
     isLowerCaseMatch(address!, accountAddress) &&
@@ -638,28 +619,6 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
 };
 
 /**
- * Checks to see if a network's nonce should be decremented for an account
- * based on incoming transaction data, and if so, updates state.
- *
- * @param removedTransactions Removed transaction data.
- */
-const checkForRemovedNonce = (removedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  if (removedTransactions.length) {
-    const { accountAddress, network } = getState().settings;
-    const txSortedByAscendingNonce = removedTransactions
-      .filter(({ from }) => from === accountAddress)
-      .sort(({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0));
-    const [lowestNonceTx] = txSortedByAscendingNonce;
-    const { nonce } = lowestNonceTx;
-    // @ts-ignore-next-line
-    dispatch(decrementNonce(accountAddress, nonce!, network));
-  }
-};
-
-/**
  * Handles an incoming portfolio data message from Zerion and updates state
  * accordidngly.
  *
@@ -703,10 +662,28 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
+  loggr.debug('transactionsReceived', {
+    message: {
+      ...message,
+      payload: {
+        transactions: message?.payload?.transactions?.length,
+      },
+    },
+    appended,
+  });
+
   const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
+
+  if (!isValidMeta) {
+    loggr.debug('transactionsReceived: !isValidMeta', { message });
+    return;
+  }
+
   const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
+    loggr.debug(
+      'transactionsReceived: dispatching checkForConfirmedSavingsActions'
+    );
     dispatch(checkForConfirmedSavingsActions(transactionData));
   }
 
@@ -716,13 +693,15 @@ export const transactionsReceived = (
     currentNetwork = message?.meta?.chain_id;
   }
   if (transactionData.length && currentNetwork === Network.mainnet) {
+    loggr.debug('transactionsReceived: dispatching checkForUpdatedNonce');
     dispatch(checkForUpdatedNonce(transactionData));
   }
 
   const { accountAddress, nativeCurrency } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
   const { pendingTransactions, transactions } = getState().data;
   const { selected } = getState().wallets;
+
+  loggr.debug('transactionsReceived: attempting to parse transactions');
 
   const {
     parsedTransactions,
@@ -733,22 +712,37 @@ export const transactionsReceived = (
     nativeCurrency,
     transactions,
     pendingTransactions,
-    purchaseTransactions,
+    undefined,
     currentNetwork,
     appended
   );
 
   const isCurrentAccountAddress =
     accountAddress === getState().settings.accountAddress;
-  if (!isCurrentAccountAddress) return;
+  if (!isCurrentAccountAddress) {
+    loggr.debug(
+      'transactionsReceived: transaction accountAddress does not match current accountAddress',
+      {
+        transactionAccountAddress: accountAddress,
+        currentAccountAddress: getState().settings.accountAddress,
+      }
+    );
+    return;
+  }
 
   if (appended && potentialNftTransaction) {
     setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
+      queryClient.invalidateQueries({
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      });
     }, 60000);
   }
+
+  const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
+    cloneDeep(pendingTransactions)
+  );
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = pendingTransactions.filter(
+  const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -760,7 +754,6 @@ export const transactionsReceived = (
     payload: parsedTransactions,
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
-  dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
   saveLocalPendingTransactions(
     updatedPendingTransactions,
@@ -773,7 +766,8 @@ export const transactionsReceived = (
       selected &&
       !selected.backedUp &&
       !selected.imported &&
-      selected.type !== WalletTypes.readOnly
+      selected.type !== WalletTypes.readOnly &&
+      selected.type !== WalletTypes.bluetooth
     ) {
       setTimeout(() => {
         triggerOnSwipeLayout(() =>
@@ -785,40 +779,100 @@ export const transactionsReceived = (
 };
 
 /**
- * Handles a `TransactionsRemovedMessage` from Zerion and updates state and
- * account local storage.
+ * Maps over every pendingTransaction, and if it's a F2C transaction, fetches
+ * the transaction has and updates the pendingTransaction with its hash.
  *
- * @param message The incoming `TransactionsRemovedMessage` or undefined.
+ * This method returns all pendingTransactions that were passed in, so 5 go in,
+ * 5 come out, but they might have a tx hash added.
  */
-export const transactionsRemoved = (
-  message: TransactionsRemovedMessage | undefined
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
-  getState: AppGetState
+export const maybeFetchF2CHashForPendingTransactions = async (
+  pendingTransactions: RainbowTransaction[]
 ) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
-  const transactionData = message?.payload?.transactions ?? [];
-  if (!transactionData.length) {
-    return;
-  }
-  const { accountAddress, network } = getState().settings;
-  const { transactions } = getState().data;
-  const removeHashes = transactionData.map(txn => txn.hash);
-  logger.log('[data] - remove txn hashes', removeHashes);
-  const [updatedTransactions, removedTransactions] = partition(
-    transactions,
-    txn => !removeHashes.includes(ethereumUtils.getHash(txn) || '')
+  loggr.debug(
+    `maybeFetchF2CHashForPendingTransactions`,
+    {},
+    loggr.DebugContext.f2c
   );
 
-  dispatch({
-    payload: updatedTransactions,
-    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-  });
+  return Promise.all(
+    pendingTransactions.map(async tx => {
+      // If not from a F2C provider, return the original tx
+      if (!tx.fiatProvider) return tx;
+      if (tx.hash) {
+        /**
+         * Sometimes `transactionsReceived` gets called more than once in quick
+         * succession, which can result it fetching order data more than once.
+         *
+         * So if we already have a tx hash, then we don't need to fetch
+         * anything else.
+         */
+        return tx;
+      }
 
-  dispatch(checkForRemovedNonce(removedTransactions));
-  saveLocalTransactions(updatedTransactions, accountAddress, network);
+      // If it is from an F2C provider, see if we can add the tx hash to it
+      switch (tx.fiatProvider?.name) {
+        // handle Ratio case
+        case FiatProviderName.Ratio: {
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions`,
+            { provider: tx.fiatProvider?.name },
+            loggr.DebugContext.f2c
+          );
+
+          const { userId, orderId } = tx.fiatProvider;
+
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions: fetching order`
+          );
+
+          const { data, error } = await gretch<ActivityItem>(
+            `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
+          ).json();
+
+          loggr.debug(
+            `maybeFetchF2CHashForPendingTransactions: fetched order`,
+            {
+              hasData: Boolean(data),
+              hasError: Boolean(error),
+              hasHash: Boolean(data?.crypto?.transactionHash),
+            }
+          );
+
+          if (!data || error) {
+            loggr.error(
+              new RainbowError(
+                `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
+              ),
+              {
+                error,
+                provider: tx.fiatProvider.name,
+              }
+            );
+          } else if (data.crypto.transactionHash) {
+            tx.hash = data.crypto.transactionHash;
+
+            analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
+              provider: FiatProviderName.Ratio,
+              sessionId: tx.fiatProvider.analyticsSessionId,
+            });
+
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
+            );
+          } else {
+            loggr.info(
+              `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
+            );
+          }
+          break;
+        }
+
+        // handle other cases here once we have more providers
+      }
+
+      return tx;
+    })
+  );
 };
 
 /**
@@ -826,16 +880,10 @@ export const transactionsRemoved = (
  * account local storage.
  *
  * @param message The message.
- * @param append Whether or not the asset data is being appended.
- * @param change Whether or not an existing asset is being changed.
- * @param removed Whether or not an asset is being removed.
  * @param assetsNetwork The asset's network.
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  append = false,
-  change = false,
-  removed = false,
   assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
@@ -853,7 +901,6 @@ export const addressAssetsReceived = (
     accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
-  const { uniqueTokens } = getState().uniqueTokens;
   const newAssets = message?.payload?.assets ?? {};
   let updatedAssets = pickBy(
     newAssets,
@@ -863,16 +910,7 @@ export const addressAssetsReceived = (
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
 
-  if (removed) {
-    updatedAssets = mapValues(newAssets, asset => {
-      return {
-        ...asset,
-        quantity: 0,
-      };
-    });
-  }
-
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
+  let parsedAssets = parseAccountAssets(updatedAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 
@@ -888,17 +926,28 @@ export const addressAssetsReceived = (
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
-    dispatch(
-      // @ts-ignore
-      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
-    );
+    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
-  parsedAssets = {
-    ...existingAccountAssetsData,
-    ...parsedAssets,
-  };
+
+  if (!assetsNetwork) {
+    const existingL2DataOnly = pickBy(
+      existingAccountAssetsData,
+      (value: ParsedAddressAsset, index: string) => {
+        return index.includes('_');
+      }
+    );
+    parsedAssets = {
+      ...existingL2DataOnly,
+      ...parsedAssets,
+    };
+  } else {
+    parsedAssets = {
+      ...existingAccountAssetsData,
+      ...parsedAssets,
+    };
+  }
 
   parsedAssets = pickBy(
     parsedAssets,
@@ -1075,13 +1124,23 @@ export const dataAddNewTransaction = (
   >,
   getState: AppGetState
 ) => {
+  loggr.debug('dataAddNewTransaction', {}, loggr.DebugContext.f2c);
+
   const { pendingTransactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
+
   if (
     accountAddressToUpdate &&
     accountAddressToUpdate.toLowerCase() !== accountAddress.toLowerCase()
-  )
+  ) {
+    loggr.debug(
+      'dataAddNewTransaction: accountAddressToUpdate does not match accountAddress',
+      {},
+      loggr.DebugContext.f2c
+    );
     return;
+  }
+
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
@@ -1093,6 +1152,13 @@ export const dataAddNewTransaction = (
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
     });
     saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
+
+    loggr.debug(
+      'dataAddNewTransaction: adding pending transactions',
+      {},
+      loggr.DebugContext.f2c
+    );
+
     if (parsedTransaction.from && parsedTransaction.nonce) {
       dispatch(
         // @ts-ignore-next-line
@@ -1108,6 +1174,11 @@ export const dataAddNewTransaction = (
       network !== Network.mainnet ||
       parsedTransaction?.network
     ) {
+      loggr.debug(
+        'dataAddNewTransaction: watching new pending transactions',
+        {},
+        loggr.DebugContext.f2c
+      );
       dispatch(
         watchPendingTransactions(
           accountAddress,
@@ -1120,9 +1191,13 @@ export const dataAddNewTransaction = (
         )
       );
     }
+
+    loggr.debug('dataAddNewTransaction: complete', {}, loggr.DebugContext.f2c);
+
     return parsedTransaction;
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    loggr.error(new Error('dataAddNewTransaction: failed'), { error });
+  }
 };
 
 /**
@@ -1268,7 +1343,6 @@ export const dataWatchPendingTransactions = (
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     saveLocalTransactions(updatedTransactions, accountAddress, network);
-    dispatch(updatePurchases(updatedTransactions));
     if (!pendingTransactions?.length) {
       return true;
     }
@@ -1320,24 +1394,6 @@ export const dataUpdateTransaction = (
       )
     );
   }
-};
-
-/**
- * Updates purchases using the `addCash` reducer to reflect new transaction data.
- * Called when new transaction information is loaded.
- *
- * @param updatedTransactions The array of updated transactions.
- */
-const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  const confirmedPurchases = updatedTransactions.filter(txn => {
-    return (
-      txn.type === TransactionTypes.purchase &&
-      txn.status !== TransactionStatus.purchasing
-    );
-  });
-  dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 /**

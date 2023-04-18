@@ -5,7 +5,7 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Monospace } from '../text';
+import { Text as LegacyText } from '../text';
 import { Text } from '@/design-system';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
@@ -14,6 +14,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import isSVGImage from '@/utils/isSVG';
+import { CardSize } from './CardSize';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -96,18 +97,19 @@ const UniqueTokenImage = ({
               resizeMode={ImgixImage.resizeMode[resizeMode]}
               source={{ uri: item.lowResUrl }}
               style={position.coverAsObject}
+              size={CardSize}
             />
           )}
         </Fragment>
       ) : (
-        <Monospace
+        <LegacyText
           align="center"
           color={getFallbackTextColor(backgroundColor, isDarkMode, colors)}
           lineHeight="looser"
           size="smedium"
         >
           {buildUniqueTokenName(item)}
-        </Monospace>
+        </LegacyText>
       )}
 
       {isHiddenToken && isCard && (

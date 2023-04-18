@@ -1,11 +1,11 @@
 import { ChainId, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { compact, isEmpty, orderBy, sumBy } from 'lodash';
 import { createSelector } from 'reselect';
-import { Asset, ParsedAddressAsset } from '@/entities';
+import { Asset, NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { parseAssetNative } from '@/parsers';
 import { AppState } from '@/redux/store';
 import { PositionsState, UniswapPosition } from '@/redux/usersPositions';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertAmountToNativeDisplay,
   divide,
@@ -68,7 +68,7 @@ const switchWethToEth = (token: Token, chainId: ChainId): Token => {
 const transformPool = (
   liquidityToken: ParsedAddressAsset | undefined,
   position: UniswapPosition,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): UniswapPool | null => {
   if (isEmpty(position)) {
@@ -135,7 +135,7 @@ const transformPool = (
 const buildUniswapCards = (
   accountAddress: string,
   chainId: number,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   uniswapLiquidityTokens: ParsedAddressAsset[],
   allUniswapLiquidityPositions: PositionsState
 ): UniswapCard => {

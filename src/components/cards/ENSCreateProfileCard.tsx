@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
@@ -24,7 +24,7 @@ import {
 import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
-import { GenericCard } from './GenericCard';
+import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
@@ -33,6 +33,11 @@ import { useRoute } from '@react-navigation/native';
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
 const TRANSLATIONS = i18n.l.cards.ens_create_profile;
+const GRADIENT: Gradient = {
+  colors: ['#DADEE5', '#E6E9F0'],
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+};
 
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
@@ -44,7 +49,7 @@ export const ENSCreateProfileCard = () => {
   // 40 represents the horizontal padding outside the card
   const imageWidth = deviceWidth - 40;
 
-  const handlePress = useCallback(() => {
+  const handlePress = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSCreateProfileCard',
@@ -57,7 +62,7 @@ export const ENSCreateProfileCard = () => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, routeName]);
+  };
 
   const { uniqueDomain } = useAccountENSDomains();
 
@@ -68,17 +73,10 @@ export const ENSCreateProfileCard = () => {
     }
   }, [uniqueDomain]);
 
-  useEffect(() => {
-    // Preload intro screen preview marquee ENS images
-    ImgixImage.preload(
-      ensIntroMarqueeNames.map(name => ({ uri: ensAvatarUrl(name) }))
-    );
-  }, []);
-
   return (
     <ColorModeProvider value="lightTinted">
       <GenericCard
-        gradient={['#DADEE5', '#E6E9F0']}
+        gradient={GRADIENT}
         onPress={handlePress}
         testID="ens-create-profile-card"
         type={cardType}

@@ -5,7 +5,7 @@ import { TestnetToast } from '../components/toasts';
 import { web3Provider } from '@/handlers/web3';
 import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import WalletScreen from '../screens/WalletScreen';
+import { WalletScreen } from '@/screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';

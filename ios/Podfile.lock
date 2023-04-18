@@ -175,10 +175,6 @@ PODS:
   - libwebp/mux (1.2.1):
     - libwebp/demux
   - libwebp/webp (1.2.1)
-  - lottie-ios (3.2.3)
-  - lottie-react-native (4.1.3):
-    - lottie-ios (~> 3.2.3)
-    - React-Core
   - MMKV (1.2.13):
     - MMKVCore (~> 1.2.13)
   - MMKVCore (1.2.13)
@@ -190,12 +186,13 @@ PODS:
   - nanopb/encode (2.30908.0)
   - OpenSSL-Universal (1.1.1100)
   - PanModal (1.2.7)
-  - Permission-Camera (3.0.5):
+  - Permission-Camera (3.6.1):
     - RNPermissions
-  - Permission-FaceID (3.0.5):
+  - Permission-FaceID (3.6.1):
     - RNPermissions
-  - Permission-Notifications (3.0.5):
+  - Permission-Notifications (3.6.1):
     - RNPermissions
+  - Plaid (4.1.0)
   - PromisesObjC (2.0.0)
   - Rainbow-Internals (0.1.0):
     - React-Core
@@ -445,7 +442,7 @@ PODS:
     - React-Core
   - react-native-change-icon (4.0.0):
     - React-Core
-  - react-native-cloud-fs (2.5.0):
+  - react-native-cloud-fs (2.6.0):
     - React
   - react-native-flipper (0.162.0):
     - React-Core
@@ -474,6 +471,9 @@ PODS:
   - react-native-palette-full (1.2.0):
     - React
     - SDWebImage (~> 5)
+  - react-native-plaid-link-sdk (9.0.1):
+    - Plaid (~> 4.1.0)
+    - React-Core
   - react-native-quick-md5 (3.0.3):
     - React-Core
   - react-native-randombytes (3.5.3):
@@ -486,6 +486,8 @@ PODS:
     - RCTTypeSafety
     - React
     - ReactCommon/turbomodule/core
+  - react-native-screen-corner-radius (0.1.1):
+    - React
   - react-native-skia (0.1.152):
     - React
     - React-callinvoker
@@ -666,7 +668,7 @@ PODS:
     - React-Core
   - RNOS (1.2.8):
     - React
-  - RNPermissions (3.0.5):
+  - RNPermissions (3.6.1):
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
@@ -773,13 +775,12 @@ DEPENDENCIES:
   - hermes-engine (~> 0.11.0)
   - libevent (~> 2.1.12)
   - libwebp
-  - lottie-ios (from `../node_modules/lottie-ios`)
-  - lottie-react-native (from `../node_modules/lottie-react-native`)
   - OpenSSL-Universal (= 1.1.1100)
   - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
+  - Plaid (~> 4.1.0)
   - Rainbow-Internals (from `./Internals`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -816,10 +817,12 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-palette-full (from `../node_modules/react-native-palette-full`)
+  - react-native-plaid-link-sdk (from `../node_modules/react-native-plaid-link-sdk`)
   - react-native-quick-md5 (from `../node_modules/react-native-quick-md5`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-screen-corner-radius (from `../node_modules/react-native-screen-corner-radius`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
@@ -920,6 +923,7 @@ SPEC REPOS:
     - MultiplatformBleAdapter
     - nanopb
     - OpenSSL-Universal
+    - Plaid
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
@@ -948,10 +952,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
-  lottie-ios:
-    :path: "../node_modules/lottie-ios"
-  lottie-react-native:
-    :path: "../node_modules/lottie-react-native"
   PanModal:
     :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
     :git: https://github.com/rainbow-me/PanModal
@@ -1029,6 +1029,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pager-view"
   react-native-palette-full:
     :path: "../node_modules/react-native-palette-full"
+  react-native-plaid-link-sdk:
+    :path: "../node_modules/react-native-plaid-link-sdk"
   react-native-quick-md5:
     :path: "../node_modules/react-native-quick-md5"
   react-native-randombytes:
@@ -1037,6 +1039,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-screen-corner-radius:
+    :path: "../node_modules/react-native-screen-corner-radius"
   react-native-skia:
     :path: "../node_modules/@shopify/react-native-skia"
   react-native-splash-screen:
@@ -1165,7 +1169,7 @@ SPEC CHECKSUMS:
   AppCenterReactNativeShared: ac6961204492735ce2507df0a14ce59b13e9c1c5
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  Branch: c1b244bf1170b0ea5c5eefa897648de8d14ff0d2
+  Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: b51b7ac64c07d4eacfc8cc5750a1dd28adbf2528
@@ -1200,17 +1204,16 @@ SPEC CHECKSUMS:
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
-  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: b561920bba7ec727ec94a473b683cffba00faece
   MMKV: aac95d817a100479445633f2b3ed8961b4ac5043
   MMKVCore: 3388952ded307e41b3ed8a05892736a236ed1b8e
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-  Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
-  Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
-  Permission-Notifications: 16ccd862111103378a7bab9fb1c5c71addffc348
+  Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
+  Permission-FaceID: e70223280292a1a5e4b8ad943b70cd9229a7d2c3
+  Permission-Notifications: 150484ae586eb9be4e32217582a78350a9bb31c3
+  Plaid: 7d340abeadb46c7aa1a91f896c5b22395a31fcf2
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
@@ -1234,7 +1237,7 @@ SPEC CHECKSUMS:
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
-  react-native-cloud-fs: a43ab9d1f2b57fd400035f10bbbbe1f2bdf13bc3
+  react-native-cloud-fs: cd21282c5cecaf285225e447dd7f3cf2f9015496
   react-native-flipper: 7eeb9b59b667dd0619372c7349cf7c78032d1de2
   react-native-flipper-performance-plugin: 2b873b68da3e368afeaf29c9c7a8c2b0ff908c4f
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
@@ -1246,10 +1249,12 @@ SPEC CHECKSUMS:
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
+  react-native-plaid-link-sdk: 825c6526bf4e038f6d0ee6c7e5412b4d319ea580
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
+  react-native-screen-corner-radius: 57b6dea3c024035bff8377618df6e5056e6c6f27
   react-native-skia: 1afb1ede8750b9e3534545b18a9a5086e6705f9f
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
@@ -1294,7 +1299,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
+  RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
@@ -1318,6 +1323,6 @@ SPEC CHECKSUMS:
   Yoga: c4d61225a466f250c35c1ee78d2d0b3d41fe661c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 04f98d755bb6e3ef0671386e4fdb5ccc08264127
+PODFILE CHECKSUM: 577ad1389ea1fff89e6cc5d3e2e02f9037049e88
 
 COCOAPODS: 1.11.2

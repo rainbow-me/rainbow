@@ -8,6 +8,7 @@ import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';
+import { FiatProviderName } from '@/entities/f2c';
 
 export interface RainbowTransaction {
   address?: string;
@@ -54,6 +55,16 @@ export interface RainbowTransaction {
   type?: TransactionType;
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
+  fiatProvider?: {
+    name: FiatProviderName.Ratio;
+    orderId: string;
+    userId: string;
+    /**
+     * Required for all providers, used to associate requests with transaction
+     * data once we receive it.
+     */
+    analyticsSessionId: string;
+  }; // etc { name: FiatProviderName.Ramp, orderId: string }
 }
 
 export interface RainbowTransactionFee {
@@ -99,6 +110,7 @@ export interface NewTransaction {
     isBridge: boolean;
   };
   meta?: SwapMetadata;
+  fiatProvider?: RainbowTransaction['fiatProvider'];
 }
 
 export interface NewTransactionOrAddCashTransaction

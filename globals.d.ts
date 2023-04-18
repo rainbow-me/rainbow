@@ -79,6 +79,7 @@ declare module 'react-native-dotenv' {
   export const DEV_PKEY: string;
   export const RAINBOW_TOKEN_LIST_URL: string;
   export const WC_PROJECT_ID: string;
+  export const RAMP_HOST_API_KEY: string;
   export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
   export const LOG_DEBUG: string;
   export const QUIET_OLD_LOGGER: string;

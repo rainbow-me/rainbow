@@ -162,6 +162,20 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
       }
     },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off",
+        "message": "Please turn on Bluetooth to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature",
+        "open_settings": "Open Settings",
+        "cancel": "Cancel"
+      }
+    },
     "button": {
       "add": "Add",
       "add_cash": "Add Cash",
@@ -283,7 +297,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey."
           },
           "backups": {
             "title": "The Importance of Backups",
@@ -331,6 +345,10 @@
           "apps_and_connections": "Apps and Connections",
           "navigating_your_wallet": "Navigating your Wallet"
         }
+      },
+      "ledger": {
+        "title": "Pair a Hardware Wallet",
+        "body": "Connect your Ledger Nano X to Rainbow through Bluetooth."
       },
       "receive": {
         "receive_assets": "Receive assets",
@@ -556,10 +574,6 @@
         "for_sale": "For sale",
         "last_sale": "Last sale price"
       },
-      "supported_countries": {
-        "supported_countries": "Supported Countries",
-        "us_except": "United States (except Texas and New York)"
-      },
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
@@ -659,11 +673,15 @@
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
         "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that’s made for magical pondering.",
+        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering.",
+        "finiliar_text": "A special edition Rainbow Finiliar icon that keeps you up to date on the price of gas, rain or shine.",
+        "finiliar_title": "You’ve unlocked a\nRainbow Finiliar",
         "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu’s 17th birthday.",
+        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
+        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom.",
+        "pooly_title": "You've unlocked a\nRainbow Pooly",
         "title": "You've unlocked\nRainbow 􀆄 %{partner}",
         "button": "Snag the icon"
       },
@@ -703,6 +721,14 @@
         "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow.",
         "title": "Connection failed"
       },
+      "failed_wc_invalid_chains": {
+        "text": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "title": "Connection failed"
+      },
+      "failed_wc_invalid_chain": {
+        "text": "The network specified in this request is not supported by Rainbow.",
+        "title": "Handling failed"
+      },
       "floor_price": {
         "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
         "title": "Collection floor price"
@@ -728,7 +754,7 @@
         "title": "What's Polygon?"
       },
       "bsc": {
-        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum.",
+        "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Binance Smart Chain?"
       },
       "read_more": "Read More",
@@ -956,7 +982,7 @@
       "no_interactions": "No interactions found for this account",
       "no_transactions": "No transactions found for this account",
       "no_unique_tokens": "No unique tokens found for this account",
-      "opensea_footer": " is a market place for unique (or 'non-fungible') tokens. People trade on the marketspace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
+      "opensea_footer": " is a marketplace for unique (or 'non-fungible') tokens. People trade on the marketplace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
       "opensea_header": "How does this work under the hood?",
       "page_not_found": "404 Page Not Found",
       "please_connect_ledger": "Please connect and unlock Ledger then select Ethereum",
@@ -1295,18 +1321,51 @@
       "next_airdrop": "Next Airdrop",
       "last_airdrop": "Last Airdrop",
       "my_stats": "My Stats",
+      "swapped": "Swapped",
+      "bridged": "Bridged",
       "position": "Position",
       "leaderboard": "Leaderboard",
+      "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected.",
+      "program_paused": "\uDBC0\uDE97 Paused",
+      "program_paused_description": "The contest is currently paused and will resume again soon. Check back later for updates.",
+      "program_finished": "\uDBC1\uDF2A Ended",
+      "program_finished_description": "The first contest has ended. The final leaderboard and bonus rewards are shown below.",
       "days_left": "%{days} days left",
       "data_powered_by": "Data powered by",
       "current_value": "Current Value",
-      "total_available_rewards": "Total Available Rewards",
-      "left_this_week": "~%{percent}% left this week",
+      "rewards_claimed": "Weekly Rewards Claimed",
       "refreshes_next_week": "Refreshes next week",
       "all_rewards_claimed": "All rewards have been claimed this week",
       "rainbow_users_claimed": "Rainbow users claimed %{amount}",
       "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours",
-      "refreshes_in_without_days": "Refreshes in %{hours} hours"
+      "refreshes_in_without_days": "Refreshes in %{hours} hours",
+      "percent": "%{percent}% reward",
+      "error_title": "Something went wrong",
+      "error_text": "Please check your internet connection and check back later.",
+      "ended_title": "Program ended",
+      "ended_text": "Stay tuned for what we have in store for you next!",
+      "op": {
+        "airdrop_timing": {
+          "title": "Airdrops Every Week",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet."
+        },
+        "amount_distributed": {
+          "title": "67,850 OP Every Week",
+          "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
+        },
+        "bridge": {
+          "title": "Earn 0.125% on Bridging",
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately 0.125% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
+        },
+        "swap": {
+          "title": "Earn 0.425% on Swaps",
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately 0.425% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
+        },
+        "position": {
+          "title": "Leaderboard Position",
+          "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP."
+        }
+      }
     },
     "savings": {
       "deposit": "Deposit",
@@ -1343,6 +1402,12 @@
     },
     "settings": {
       "backup": "Backup",
+      "google_account_used": "Google account used for backups",
+      "backup_switch_google_account": "Switch Google Account",
+      "backup_sign_out": "Sign out",
+      "backup_sign_in": "Sign in",
+      "backup_loading": "Loading...",
+      "backup_google_account": "Google Account",
       "currency": "Currency",
       "app_icon": "App Icon",
       "dev": "Dev",
@@ -1548,13 +1613,18 @@
       "learn_more_about_ledger": "Learn more about Ledger",
       "pair_a_new_ledger": "Pair a new Ledger",
       "looking_for_devices": "Looking for devices",
+      "confirm_on_device": "Confirm on device",
+      "transaction_rejected": "Transaction rejected",
+      "please_try_again": "Please try again if you'd like to continue",
+      "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device.",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked.",
-      "pair_successful": "Pair successful",
+      "device_connected": "Device connected",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device.",
       "enable_blind_signing": "Enable blind signing",
+      "blind_signing_enabled": "Blind signing enabled",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions.",
       "learn_more": "Learn More",
-      "blind_signing_enabled": "Blind signing is enabled",
+      "finish_importing": "Finish importing",
       "blind_signing_instructions": {
         "step_1": {
           "title": "On Ledger, open the ETH app",
@@ -1577,6 +1647,10 @@
         "off_or_locked": "Make sure your device is unlocked",
         "no_eth_app": "Open the Eth App on your device",
         "unknown": "Unknown Error, close and reopen this sheet"
+      },
+      "pairing_error_alert": {
+        "title": "Error Connecting",
+        "body": "Please try again, if issues persist close the app and try again"
       }
     },
     "wallet": {
@@ -1629,6 +1703,31 @@
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
         "watching_mode_confirm_title": "You’re in Watching Mode"
       },
+      "add_cash_v2": {
+        "generic_error": {
+          "title": "Something went wrong",
+          "message": "Our team has been notified and will look into it ASAP.",
+          "button": "OK"
+        },
+        "unauthenticated_ratio_error": {
+          "title": "We're sorry, you failed authentication",
+          "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
+        },
+        "support_emails": {
+          "help": "I Need Help Buying Crypto With %{provider}",
+          "account_recovery": "Account Recovery for Crypto Purchasing"
+        },
+        "sheet_empty_state": {
+          "title": "Can't find your preferred provider?",
+          "description": "Check back soon for more options"
+        },
+        "explain_sheet": {
+          "semi_supported": {
+            "title": "Purchase successful!",
+            "text": "We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon."
+          }
+        }
+      },
       "alert": {
         "finish_importing": "Finish Importing",
         "looks_like_imported_public_address": "\nIt looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first.",
@@ -1663,7 +1762,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH",
-        "watching": "Watching"
+        "watching": "Watching",
+        "ledger": "Ledger"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",
@@ -1901,7 +2001,9 @@
       "requesting_network": "Requesting %{num} network",
       "requesting_networks": "Requesting %{num} networks",
       "unknown_dapp": "Unknown Dapp",
-      "unknown_url": "Unknown URL"
+      "unknown_url": "Unknown URL",
+      "approval_sheet_network": "Network",
+      "approval_sheet_networks": "%{length} Networks"
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",

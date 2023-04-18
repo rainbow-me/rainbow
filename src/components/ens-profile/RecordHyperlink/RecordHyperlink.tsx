@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';

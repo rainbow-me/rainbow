@@ -7,7 +7,12 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
-import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
+import {
+  useColorForAsset,
+  useGas,
+  useSwapCurrencies,
+  useWallets,
+} from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -38,6 +43,7 @@ export default function ConfirmExchangeButton({
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
   const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
+  const { isHardwareWallet } = useWallets();
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -188,6 +194,12 @@ export default function ConfirmExchangeButton({
             isAuthorizing={isSwapSubmitting}
             label={label}
             loading={loading || isSwapSubmitting}
+            ignoreHardwareWallet={
+              loading ||
+              isSwapSubmitting ||
+              shouldOpenSwapDetails ||
+              !!explainerType
+            }
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
@@ -208,6 +220,7 @@ export default function ConfirmExchangeButton({
             testID={testID}
             {...props}
             parentHorizontalPadding={19}
+            isHardwareWallet={isHardwareWallet}
           />
         </Row>
       </Rows>

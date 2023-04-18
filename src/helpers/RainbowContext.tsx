@@ -12,6 +12,7 @@ import Emoji from '../components/text/Emoji';
 import {
   showReloadButton,
   showSwitchModeButton,
+  // @ts-ignore
   showConnectToHardhatButton,
 } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
@@ -28,7 +29,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
-import logger from 'logger';
+import { logger, RainbowError } from '@/logger';
 import networkTypes, { Network } from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { ethereumUtils } from '@/utils';
@@ -96,10 +97,12 @@ export default function RainbowContextWrapper({ children }: any) {
           (android && HARDHAT_URL_ANDROID) ||
           'http://127.0.0.1:8545'
       );
-      logger.log('connected to hardhat', ready);
-    } catch (e) {
+      logger.debug('connected to hardhat', { ready });
+    } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat', e);
+      logger.error(new RainbowError('error connecting to hardhat'), {
+        message: e.message,
+      });
     }
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});

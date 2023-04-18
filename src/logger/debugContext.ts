@@ -13,4 +13,6 @@ export const DebugContext = {
   notifications: 'notifications',
   walletconnect: 'walletconnect',
   wallet: 'wallet',
+  f2c: 'f2c',
+  keychain: 'keychain',
 } as const;

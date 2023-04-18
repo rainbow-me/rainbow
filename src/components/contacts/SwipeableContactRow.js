@@ -35,7 +35,11 @@ const RightAction = ({ onPress, progress, text, x }) => {
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-        <ImgixImage source={isEdit ? EditIcon : DeleteIcon} style={styles} />
+        <ImgixImage
+          source={isEdit ? EditIcon : DeleteIcon}
+          style={styles}
+          size={30}
+        />
         <Text
           align="center"
           color={colors.alpha(colors.blueGreyDark, 0.4)}

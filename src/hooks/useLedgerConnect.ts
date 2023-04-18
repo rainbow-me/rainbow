@@ -1,228 +1,122 @@
-import AppEth from '@ledgerhq/hw-app-eth';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { forEach } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import useWallets from './useWallets';
-import { getHardwareKey, getHdPath, WalletLibraryType } from '@/model/wallet';
-import { DebugContext } from '@/logger/debugContext';
+import { useCallback, useEffect, useRef } from 'react';
 import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
-
-enum LEDGER_ERROR_CODES {
-  OFF_OR_LOCKED = 'off_or_locked',
-  NO_ETH_APP = 'no_eth_app',
-  UNKNOWN = 'unknown',
-  DISCONNECTED = 'disconnected',
-}
-
-export const getLedgerErrorText = (errorCode: LEDGER_ERROR_CODES) => {
-  switch (errorCode) {
-    case LEDGER_ERROR_CODES.OFF_OR_LOCKED:
-      return i18n.t(i18n.l.hardware_wallets.errors.off_or_locked);
-    case LEDGER_ERROR_CODES.NO_ETH_APP:
-      return i18n.t(i18n.l.hardware_wallets.errors.no_eth_app);
-    default:
-      return i18n.t(i18n.l.hardware_wallets.errors.unknown);
-  }
-};
-
-export enum LEDGER_CONNECTION_STATUS {
-  LOADING = 'loading',
-  READY = 'ready',
-  ERROR = 'error',
-}
-
-/**
- * Parses ledger errors based on common issues
- */
-const ledgerErrorStateHandler = (error: Error) => {
-  if (error.message.includes('0x6511')) {
-    return LEDGER_ERROR_CODES.NO_ETH_APP;
-  }
-  if (
-    error.name.includes('BleError') ||
-    error.message.includes('0x6b0c') ||
-    error.message.includes('busy')
-  ) {
-    return LEDGER_ERROR_CODES.OFF_OR_LOCKED;
-  }
-
-  // used to logging any new errors so we can handle them properly, will likely remove pre-release
-  logger.warn('[LedgerConnect] - Unknown Error', { error });
-  forEach(Object.keys(error), key =>
-    // @ts-ignore
-    logger.debug('key: ', key, ' value: ', error[key])
-  );
-
-  return LEDGER_ERROR_CODES.UNKNOWN;
-};
+import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  LedgerIsReadyAtom,
+  readyForPollingAtom,
+  triggerPollerCleanupAtom,
+} from '@/navigation/HardwareWalletTxNavigator';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
  */
-export function useLedgerStatusCheck({
-  address,
+export function useLedgerConnect({
+  readyForPolling = true,
+  deviceId,
   errorCallback,
   successCallback,
 }: {
-  address: string;
-  successCallback: () => void;
-  errorCallback?: () => void;
+  readyForPolling?: boolean;
+  deviceId: string;
+  successCallback: (deviceId: string) => void;
+  errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const { selectedWallet } = useWallets();
-
-  const [
-    connectionStatus,
-    setConnectionStatus,
-  ] = useState<LEDGER_CONNECTION_STATUS>(LEDGER_CONNECTION_STATUS.LOADING);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [transport, setTransport] = useState<TransportBLE | null>(null);
-  const [ethApp, setEthApp] = useState<AppEth | null>(null);
+  const transport = useRef<TransportBLE | undefined>();
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
+  const isReady = useRecoilValue(LedgerIsReadyAtom);
+  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
+    triggerPollerCleanupAtom
+  );
+  const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
    */
   const handleLedgerError = useCallback(
-    (error: Error) => {
-      if (error.message.toLowerCase().includes('disconnected')) {
-        setEthApp(null);
-        setTransport(null);
-        setConnectionStatus(LEDGER_CONNECTION_STATUS.LOADING);
-        //setErrorMessage(LEDGER_ERROR_CODES.DISCONNECTED);
-        return;
+    async (errorType: LEDGER_ERROR_CODES) => {
+      if (isReady) return;
+      if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
+        setReadyForPolling(false);
+        logger.info(
+          '[LedgerConnect] - Device Disconnected - Attempting Reconnect',
+          {}
+        );
+        transport.current = undefined;
+        try {
+          transport.current = await TransportBLE.open(deviceId);
+          setReadyForPolling(true);
+        } catch (e) {
+          logger.error(new RainbowError('[LedgerConnect] - Reconnect Error'), {
+            error: (e as Error).message,
+          });
+          // temp removing this to see if it fixes an issue
+          // errorCallback?.(errorType);
+        }
+      } else {
+        errorCallback?.(errorType);
       }
-      /*
-      if (error.message.includes('Ledger Device is busy (lock')) {
-      } */
-
-      setConnectionStatus(LEDGER_CONNECTION_STATUS.ERROR);
-      setErrorMessage(getLedgerErrorText(ledgerErrorStateHandler(error)));
-      errorCallback?.();
     },
-    [errorCallback]
+    [deviceId, errorCallback, isReady, setReadyForPolling]
   );
 
   /**
    * Handles successful ledger connection
    */
   const handleLedgerSuccess = useCallback(() => {
-    setConnectionStatus(LEDGER_CONNECTION_STATUS.READY);
-    setErrorMessage(null);
-    successCallback?.();
-  }, [successCallback]);
+    if (!readyForPolling) return;
+    successCallback?.(deviceId);
+    pollerCleanup(timer.current);
+  }, [deviceId, readyForPolling, successCallback]);
 
   /**
    * Cleans up ledger connection polling
    */
-  const pollerCleanup = (poller: NodeJS.Timer) => {
-    if (poller) {
-      logger.debug(
-        '[LedgerConnect] - polling tear down',
-        {},
-        DebugContext.ledger
-      );
-      clearInterval(poller);
-      poller?.unref();
+  const pollerCleanup = (poller: NodeJS.Timer | undefined) => {
+    try {
+      if (poller) {
+        logger.debug('[LedgerConnect] - polling tear down', {});
+        clearInterval(poller);
+        poller?.unref();
+        timer.current = undefined;
+      }
+    } catch {
+      // swallow
     }
   };
-  /**
-   * Gets device id from keychain as a fallback if deviceId is not available
-   */
-  const getDeviceId = useCallback(async (): Promise<string | undefined> => {
-    logger.debug(
-      '[LedgerConnect] - no device id, getting device id',
-      {},
-      DebugContext.ledger
-    );
-    const privateKey = await getHardwareKey(address);
-    const deviceId = privateKey?.privateKey?.split('/')[0];
-    return deviceId;
-  }, [address]);
-
-  /**
-   * Checks ledger connection status and sets errorState
-   */
-  const ledgerStatusCheck = useCallback(async () => {
-    try {
-      if (!transport) {
-        logger.debug(
-          '[LedgerConnect] - no transport, opening transport',
-          {},
-          DebugContext.ledger
-        );
-        let deviceId = selectedWallet?.deviceId;
-        if (!deviceId) {
-          deviceId = await getDeviceId();
+  useEffect(() => {
+    if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
+      logger.debug('[LedgerConnect] - init device polling', {});
+      setTriggerPollerCleanup(false);
+      timer.current = setInterval(async () => {
+        if (transport.current) {
+          if (readyForPolling) {
+            await checkLedgerConnection({
+              transport: transport.current,
+              deviceId,
+              successCallback: handleLedgerSuccess,
+              errorCallback: handleLedgerError,
+            });
+          }
+        } else {
+          // eslint-disable-next-line require-atomic-updates
+          transport.current = await TransportBLE.open(deviceId);
         }
-        const newTransport = TransportBLE.open(deviceId);
-        newTransport.then(newTransport => {
-          setTransport(newTransport);
-
-          logger.debug(
-            '[LedgerConnect] - init ledger app',
-            {},
-            DebugContext.ledger
-          );
-          const newEthApp = new AppEth(newTransport);
-          setEthApp(newEthApp);
-        });
-
-        newTransport.catch(e => {
-          logger.error(new RainbowError('[LedgerConnect] - transport error'), {
-            error: e,
-          });
-          handleLedgerError(e);
-        });
-      }
-      if (ethApp) {
-        handleLedgerSuccess();
-        const path = getHdPath({ type: WalletLibraryType.ledger, index: 1 });
-        const addressResult = ethApp.getAddress(path);
-        addressResult.then(res => {
-          logger.debug(
-            '[LedgerConnect] - connection success',
-            {},
-            DebugContext.ledger
-          );
-          handleLedgerSuccess();
-        });
-        addressResult.catch(e => {
-          logger.warn('[LedgerConnect] - address check error');
-          handleLedgerError(e);
-        });
-      }
-    } catch (e: unknown) {
-      logger.error(
-        new RainbowError('[LedgerConnect] - ledger status check error'),
-        { error: e }
-      );
-      handleLedgerError(e as Error);
+      }, 3000);
     }
   }, [
-    transport,
-    ethApp,
-    selectedWallet?.deviceId,
-    getDeviceId,
+    deviceId,
     handleLedgerError,
     handleLedgerSuccess,
+    readyForPolling,
+    setTriggerPollerCleanup,
+    triggerPollerCleanup,
   ]);
 
   useEffect(() => {
-    logger.debug(
-      '[LedgerConnect] - init device polling',
-      {},
-      DebugContext.ledger
-    );
-    ledgerStatusCheck();
-    const timer = setInterval(async () => {
-      await ledgerStatusCheck();
-    }, 3000);
-
     return () => {
-      pollerCleanup(timer);
+      pollerCleanup(timer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transport, ethApp]);
-
-  return { connectionStatus, errorMessage };
+  }, []);
 }

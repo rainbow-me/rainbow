@@ -1,13 +1,14 @@
-import SignClient from '@walletconnect/sign-client';
+import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
-import { NavigationContainerRef } from '@react-navigation/native';
 import Minimizer from 'react-native-minimizer';
-import { utils as ethersUtils } from 'ethers';
+import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
+import { Core } from '@walletconnect/core';
+import { Web3Wallet } from '@walletconnect/web3wallet';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
@@ -16,13 +17,8 @@ import { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
-import {
-  isSigningMethod,
-  isTransactionDisplayType,
-} from '@/utils/signingMethods';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
@@ -36,6 +32,64 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
+import { chains as supportedChainConfigs } from '@/references';
+import { isHexString } from '@ethersproject/bytes';
+import { toUtf8String } from '@ethersproject/strings';
+import { IS_DEV } from '@/env';
+
+enum RPCMethod {
+  Sign = 'eth_sign',
+  PersonalSign = 'personal_sign',
+  SignTypedData = 'eth_signTypedData',
+  SignTypedDataV1 = 'eth_signTypedData_v1',
+  SignTypedDataV3 = 'eth_signTypedData_v3',
+  SignTypedDataV4 = 'eth_signTypedData_v4',
+  SendTransaction = 'eth_sendTransaction',
+  /**
+   * @deprecated DO NOT USE, or ask Bruno
+   */
+  SignTransaction = 'eth_signTransaction',
+  /**
+   * @deprecated DO NOT USE, or ask Bruno
+   */
+  SendRawTransaction = 'eth_sendRawTransaction',
+}
+
+type RPCPayload =
+  | {
+      method: RPCMethod.Sign | RPCMethod.PersonalSign;
+      params: [string, string];
+    }
+  | {
+      method:
+        | RPCMethod.SignTypedData
+        | RPCMethod.SignTypedDataV1
+        | RPCMethod.SignTypedDataV3
+        | RPCMethod.SignTypedDataV4;
+      params: [
+        string, // address
+        string // stringify typed object
+      ];
+    }
+  | {
+      method: RPCMethod.SendTransaction;
+      params: [
+        {
+          from: string;
+          to: string;
+          data: string;
+          gasPrice: string;
+          gasLimit: string;
+          value: string;
+        }
+      ];
+    }
+  | {
+      method: RPCMethod; // for TS safety, but others are not supported
+      params: any[];
+    };
+
+let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -59,14 +113,33 @@ export function setHasPendingDeeplinkPendingRedirect(value: boolean) {
 }
 
 /**
+ * Called in case we're on mobile and have a pending redirect
+ */
+export function maybeGoBackAndClearHasPendingRedirect({
+  delay = 0,
+}: { delay?: number } = {}) {
+  if (hasDeeplinkPendingRedirect) {
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        setHasPendingDeeplinkPendingRedirect(false);
+        Minimizer.goBack();
+      }, delay);
+    });
+  }
+}
+
+/**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-export let syncSignClient: SignClient | undefined;
+let syncWeb3WalletClient:
+  | Awaited<ReturnType<typeof Web3Wallet['init']>>
+  | undefined;
 
-export const signClient = Promise.resolve(
-  SignClient.init({
-    projectId: WC_PROJECT_ID,
-    // relayUrl: "<YOUR RELAY URL>",
+const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+
+export const web3WalletClient = Promise.resolve(
+  Web3Wallet.init({
+    core: walletConnectCore,
     metadata: {
       name: '🌈 Rainbow',
       description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
@@ -84,38 +157,74 @@ export const signClient = Promise.resolve(
 function parseRPCParams({
   method,
   params,
-}: {
-  method: string;
-  params: string[];
-}) {
-  if (method === 'eth_sign' || method === 'personal_sign') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
-    const isHexString = ethersUtils.isHexString(message);
+}: RPCPayload): {
+  address?: string;
+  message?: string;
+} {
+  switch (method) {
+    case 'eth_sign':
+    case 'personal_sign': {
+      const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
+      const isHex = isHexString(message);
 
-    const decodedMessage = isHexString
-      ? ethersUtils.toUtf8String(message)
-      : message;
+      const decodedMessage = isHex ? toUtf8String(message) : message;
 
-    return {
-      address,
-      message: decodedMessage,
-    };
+      return {
+        address: getAddress(address),
+        message: decodedMessage,
+      };
+    }
+    /**
+     * @see https://eips.ethereum.org/EIPS/eip-712#specification-of-the-eth_signtypeddata-json-rpc
+     * @see https://docs.metamask.io/guide/signing-data.html#a-brief-history
+     */
+    case 'eth_signTypedData':
+    case 'eth_signTypedData_v1':
+    case 'eth_signTypedData_v3':
+    case 'eth_signTypedData_v4': {
+      const [address, message] = params;
+
+      return {
+        address: getAddress(address),
+        message: JSON.parse(message),
+      };
+    }
+    case 'eth_sendTransaction': {
+      const [tx] = params;
+      return {
+        address: getAddress(tx.from),
+      };
+    }
+    default:
+      return {};
   }
+}
 
-  if (method === 'eth_signTypedData' || method === 'eth_signTypedData_v4') {
-    const [address, message] = params.sort(a =>
-      ethersUtils.isAddress(a) ? -1 : 1
-    );
+export function isSupportedSigningMethod(method: RPCMethod) {
+  return [
+    RPCMethod.Sign,
+    RPCMethod.PersonalSign,
+    RPCMethod.SignTypedData,
+    RPCMethod.SignTypedDataV1,
+    RPCMethod.SignTypedDataV3,
+    RPCMethod.SignTypedDataV4,
+  ].includes(method);
+}
 
-    return {
-      address,
-      message: JSON.parse(message),
-    };
+export function isSupportedTransactionMethod(method: RPCMethod) {
+  return [RPCMethod.SendTransaction].includes(method);
+}
+
+export function isSupportedMethod(method: RPCMethod) {
+  return (
+    isSupportedSigningMethod(method) || isSupportedTransactionMethod(method)
+  );
+}
+
+export function isSupportedChain(chainId: number) {
+  for (const config of supportedChainConfigs) {
+    if (config.chain_id === chainId) return true;
   }
-
-  return {};
 }
 
 /**
@@ -123,25 +232,15 @@ function parseRPCParams({
  * shows the text configured by the `reason` string, which is a key of the
  * `explainers` object in `ExplainSheet`
  */
-function showErrorSheet({ reason }: { reason?: string } = {}) {
-  const route: ReturnType<
-    NavigationContainerRef['getCurrentRoute']
-  > = getActiveRoute();
-
-  const routeParams: WalletconnectApprovalSheetRouteParams = {
-    receivedTimestamp: Date.now(),
-    timedOut: true,
-    failureExplainSheetVariant: reason || 'failed_wc_connection',
-    // empty, the sheet will show the error state
-    async callback() {},
-  };
-
-  // end load state with `timedOut` and provide failure callback
-  Navigation.handleAction(
-    Routes.WALLET_CONNECT_APPROVAL_SHEET,
-    routeParams,
-    route?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-  );
+function showErrorSheet({
+  reason,
+  onClose,
+}: { reason?: string; onClose?: () => void } = {}) {
+  logger.debug(`showErrorSheet`, { reason });
+  Navigation.handleAction(Routes.EXPLAIN_SHEET, {
+    type: reason || 'failed_wc_connection',
+    onClose,
+  });
 }
 
 async function rejectProposal({
@@ -151,17 +250,15 @@ async function rejectProposal({
   proposal: SignClientTypes.EventArguments['session_proposal'];
   reason: Parameters<typeof getSdkError>[0];
 }) {
-  logger.error(new RainbowError(`WC v2: session approval denied`), {
+  logger.warn(`WC v2: session approval denied`, {
     reason,
     proposal,
   });
 
-  const client = await signClient;
+  const client = await web3WalletClient;
   const { id, proposer } = proposal.params;
 
-  await client.reject({ id, reason: getSdkError(reason) });
-
-  setHasPendingDeeplinkPendingRedirect(false);
+  await client.rejectSession({ id, reason: getSdkError(reason) });
 
   analytics.track('Rejected new WalletConnect session', {
     dappName: proposer.metadata.name,
@@ -172,44 +269,45 @@ async function rejectProposal({
 export async function pair({ uri }: { uri: string }) {
   logger.debug(`WC v2: pair`, { uri }, logger.DebugContext.walletconnect);
 
-  try {
-    // show loading state as feedback for user
-    Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {});
+  /**
+   * Make sure this is cleared if we get multiple pairings in rapid succession
+   */
+  if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
 
-    const { topic } = parseUri(uri);
-    const client = await signClient;
+  const { topic } = parseUri(uri);
+  const client = await web3WalletClient;
 
-    await client.core.pairing.pair({ uri });
-
-    const timeout = setTimeout(() => {
-      showErrorSheet();
-      analytics.track('New WalletConnect session time out');
-    }, 10_000);
-
-    const handler = (
-      proposal: SignClientTypes.EventArguments['session_proposal']
-    ) => {
-      // listen for THIS topic pairing, and clear timeout if received
-      if (proposal.params.pairingTopic === topic) {
-        client.off('session_proposal', handler);
-        clearTimeout(timeout);
-      }
-    };
-
-    client.on('session_proposal', handler);
-  } catch (e) {
-    logger.error(new RainbowError(`WC v2: pairing failed`), { error: e });
-    showErrorSheet();
+  // listen for THIS topic pairing, and clear timeout if received
+  function handler(
+    proposal: SignClientTypes.EventArguments['session_proposal']
+  ) {
+    if (proposal.params.pairingTopic === topic) {
+      if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
+    }
   }
+
+  // set new timeout
+  PAIRING_TIMEOUT = setTimeout(() => {
+    logger.warn(`WC v2: pairing timeout`, { uri });
+    client.off('session_proposal', handler);
+    showErrorSheet();
+    analytics.track('New WalletConnect session time out');
+  }, 10_000);
+
+  // CAN get fired on subsequent pairs, so need to make sure we clean up
+  client.on('session_proposal', handler);
+
+  // init pairing
+  await client.core.pairing.pair({ uri });
 }
 
 export async function initListeners() {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
-  syncSignClient = client;
+  syncWeb3WalletClient = client;
 
   logger.debug(
-    `WC v2: signClient initialized, initListeners`,
+    `WC v2: web3WalletClient initialized, initListeners`,
     {},
     logger.DebugContext.walletconnect
   );
@@ -218,23 +316,31 @@ export async function initListeners() {
   client.on('session_request', onSessionRequest);
 
   try {
-    const token = await getFCMToken(); // will throw
-    const client_id = await client.core.crypto.getClientId();
+    const token = await getFCMToken();
 
-    // initial subscription
-    await subscribeToEchoServer({ token, client_id });
+    if (token) {
+      const client_id = await client.core.crypto.getClientId();
 
-    /**
-     * Ensure that if the FCM token changes we update the echo server
-     */
-    messaging().onTokenRefresh(async token => {
+      // initial subscription
       await subscribeToEchoServer({ token, client_id });
-    });
+
+      /**
+       * Ensure that if the FCM token changes we update the echo server
+       */
+      messaging().onTokenRefresh(async token => {
+        await subscribeToEchoServer({ token, client_id });
+      });
+    } else {
+      if (!IS_DEV) {
+        logger.error(
+          new RainbowError(
+            `WC v2: FCM token not found, push notifications will not be received`
+          )
+        );
+      }
+    }
   } catch (e) {
-    logger.error(
-      new RainbowError(`WC v2: echo server FCM token retrieval failed`),
-      { error: e }
-    );
+    logger.error(new RainbowError(`WC v2: initListeners failed`), { error: e });
   }
 }
 
@@ -254,8 +360,7 @@ async function subscribeToEchoServer({
     },
   }).json();
 
-  // https://github.com/WalletConnect/echo-server/blob/a0afc940e1fc3ea8efb765fff5f4daeedec46d2a/spec/spec.md?plain=1#L14
-  if (res.error || res.data?.status !== 'OK') {
+  if (res.error) {
     logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
       error: res.error,
     });
@@ -274,47 +379,90 @@ export async function onSessionProposal(
   const receivedTimestamp = Date.now();
   const { proposer, requiredNamespaces } = proposal.params;
 
-  /**
-   * Trying to be defensive here, but I'm not sure we support this anyway so
-   * probably not a big deal right now.
-   */
-  if (!requiredNamespaces.eip155) {
-    logger.error(new RainbowError(`WC v2: missing required namespace eip155`));
+  const requiredNamespaceKeys = Object.keys(requiredNamespaces);
+  const supportedNamespaces = requiredNamespaceKeys.filter(
+    key => key === 'eip155'
+  );
+  const unsupportedNamespaces = requiredNamespaceKeys.filter(
+    key => key !== 'eip155'
+  );
+
+  if (unsupportedNamespaces.length || !supportedNamespaces.length) {
+    logger.warn(`WC v2: session proposal requested unsupported namespaces`, {
+      unsupportedNamespaces,
+    });
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
+    showErrorSheet({
+      reason: 'failed_wc_invalid_chains',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
     return;
   }
 
   const { chains, methods } = requiredNamespaces.eip155;
-  const chainIds = chains.map(chain => parseInt(chain.split('eip155:')[1]));
-  const peerMeta = proposer.metadata;
-  const dappName =
-    dappNameOverride(peerMeta.url) ||
-    peerMeta.name ||
-    lang.t(lang.l.walletconnect.unknown_dapp);
+  // we already checked for eip155 namespace above
+  const chainIds = chains!.map(chain => parseInt(chain.split('eip155:')[1]));
+  const supportedChainIds = chainIds.filter(isSupportedChain);
+  const unsupportedChainIds = chainIds.filter(id => !isSupportedChain(id));
 
-  for (const method of methods) {
-    if (!isSigningMethod(method)) {
-      await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
-      showErrorSheet({ reason: 'failed_wc_invalid_methods' });
-      return;
-    }
+  if (
+    (unsupportedChainIds.length && !supportedChainIds.length) ||
+    unsupportedNamespaces.length
+  ) {
+    logger.warn(
+      `WC v2: session proposal requested unsupported networks or namespaces`,
+      {
+        unsupportedChainIds,
+        unsupportedNamespaces,
+      }
+    );
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
+    showErrorSheet({
+      reason: 'failed_wc_invalid_chains',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
+    return;
+  } else if (unsupportedChainIds.length) {
+    logger.info(`WC v2: session proposal requested unsupported networks`, {
+      unsupportedChainIds,
+    });
+  }
+
+  const peerMeta = proposer.metadata;
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
+
+  /**
+   * Log these, but it's OK if they list them now, we'll just ignore requests
+   * to use them later.
+   */
+  const unsupportedMethods = methods.filter(
+    method => !isSupportedMethod(method as RPCMethod)
+  );
+
+  if (unsupportedMethods.length) {
+    logger.info(`WC v2: dapp requested unsupported RPC methods`, {
+      methods: unsupportedMethods,
+    });
   }
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
     meta: {
-      chainIds,
+      chainIds: supportedChainIds,
       dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
-      imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0]
-      ),
+      imageUrl: maybeSignUri(peerMeta?.icons?.[0], { w: 200 }),
       peerId: proposer.publicKey,
       isWalletConnectV2: true,
     },
     timedOut: false,
     callback: async (approved, approvedChainId, accountAddress) => {
-      const client = await signClient;
+      const client = await web3WalletClient;
       const { id, proposer, requiredNamespaces } = proposal.params;
 
       if (approved) {
@@ -329,7 +477,7 @@ export async function onSessionProposal(
         );
 
         const namespaces: Parameters<
-          typeof client.approve
+          typeof client.approveSession
         >[0]['namespaces'] = {};
 
         for (const [key, value] of Object.entries(requiredNamespaces)) {
@@ -339,6 +487,7 @@ export async function onSessionProposal(
             events: value.events,
           };
 
+          // @ts-expect-error We checked the namespace for chains prop above
           for (const chain of value.chains) {
             const chainId = parseInt(chain.split(`${key}:`)[1]);
             namespaces[key].accounts.push(
@@ -362,20 +511,15 @@ export async function onSessionProposal(
            * WC v2 stores existing _pairings_ itself, so we don't need to persist
            * ourselves
            */
-          const { acknowledged } = await client.approve({
+          await client.approveSession({
             id,
             namespaces,
           });
 
-          await acknowledged();
-
           // let the ConnectedDappsSheet know we've got a new one
           events.emit('walletConnectV2SessionCreated');
 
-          if (hasDeeplinkPendingRedirect) {
-            setHasPendingDeeplinkPendingRedirect(false);
-            Minimizer.goBack();
-          }
+          maybeGoBackAndClearHasPendingRedirect();
 
           logger.debug(
             `WC v2: session created`,
@@ -427,24 +571,40 @@ export async function onSessionProposal(
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
   logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
 
   const { id, topic } = event;
   const { method, params } = event.params.request;
 
-  if (isSigningMethod(method)) {
-    // transactions aren't a `[address, message]` tuple
-    const isTransactionMethod = isTransactionDisplayType(method);
-    let { address, message } = parseRPCParams({ method, params });
+  logger.debug(
+    `WC v2: session_request method`,
+    { method, params },
+    logger.DebugContext.walletconnect
+  );
+
+  if (isSupportedMethod(method as RPCMethod)) {
+    const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
+    const { address, message } = parseRPCParams({
+      method: method as RPCMethod,
+      params,
+    });
     const allWallets = store.getState().wallets.wallets;
 
-    if (!isTransactionMethod) {
+    logger.debug(
+      `WC v2: session_request method is supported`,
+      { method, params, address, message },
+      logger.DebugContext.walletconnect
+    );
+
+    if (isSigningMethod) {
+      logger.debug(`WC v2: validating session_request signing method`);
+
       if (!address || !message) {
         logger.error(
           new RainbowError(
-            `WC v2: session_request exited, no address or messsage`
+            `WC v2: session_request exited, signing request had no address and/or messsage`
           ),
           {
             address,
@@ -452,43 +612,117 @@ export async function onSessionRequest(
           }
         );
 
-        await client.respond({
+        await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Invalid RPC params`),
         });
 
+        showErrorSheet({
+          onClose() {
+            maybeGoBackAndClearHasPendingRedirect();
+          },
+        });
         return;
       }
 
       // for TS only, should never happen
       if (!allWallets) {
-        logger.error(new RainbowError(`WC v2: allWallets is null`));
+        logger.error(
+          new RainbowError(
+            `WC v2: allWallets is null, this should never happen`
+          )
+        );
         return;
       }
 
       const selectedWallet = findWalletWithAccount(allWallets, address);
 
       if (!selectedWallet || selectedWallet?.type === WalletTypes.readOnly) {
-        logger.debug(
-          `WC v2: session_request exited, selectedWallet was falsy or read only`,
-          {},
-          logger.DebugContext.walletconnect
+        logger.error(
+          new RainbowError(
+            `WC v2: session_request exited, selectedWallet was falsy or read only`
+          ),
+          {
+            selectedWalletType: selectedWallet?.type,
+          }
         );
 
-        await client.respond({
+        await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Wallet is read-only`),
         });
 
+        showErrorSheet({
+          onClose() {
+            maybeGoBackAndClearHasPendingRedirect();
+          },
+        });
         return;
       }
-    } else {
-      address = params[0].from;
     }
 
-    const session = client.session.get(topic);
+    const session = Object.values(client.getActiveSessions() || {}).find(s => {
+      return s.topic === topic;
+    });
+
+    // mostly a TS guard, pry won't happen
+    if (!session) {
+      logger.error(
+        new RainbowError(`WC v2: session_request topic was not found`)
+      );
+
+      await client.respondSessionRequest({
+        topic,
+        response: formatJsonRpcError(id, `Session not found`),
+      });
+
+      return;
+    }
+
     const { nativeCurrency, network } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
+    const isSupportedNetwork = isSupportedChain(chainId);
+
+    logger.debug(`WC v2: getting session for topic`, { session });
+
+    if (!isSupportedNetwork) {
+      logger.error(
+        new RainbowError(`WC v2: session_request was for unsupported network`),
+        {
+          chainId,
+        }
+      );
+
+      try {
+        await client.respondSessionRequest({
+          topic,
+          response: formatJsonRpcError(id, `Network not supported`),
+        });
+      } catch (e) {
+        logger.error(
+          new RainbowError(`WC v2: error rejecting session_request`),
+          {
+            error: (e as Error).message,
+          }
+        );
+      }
+
+      showErrorSheet({
+        reason: 'failed_wc_invalid_chain',
+        onClose() {
+          maybeGoBackAndClearHasPendingRedirect();
+        },
+      });
+
+      return;
+    }
+
+    logger.debug(
+      `WC v2: handling request`,
+      {},
+      logger.DebugContext.walletconnect
+    );
+
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(
       event.params.request,
@@ -500,28 +734,22 @@ export async function onSessionRequest(
       clientId: session.topic, // I don't think this is used
       peerId: session.topic, // I don't think this is used
       requestId: event.id,
-      dappName:
-        dappNameOverride(peerMeta.name) || peerMeta.name || 'Unknown Dapp',
+      dappName: peerMeta.name || 'Unknown Dapp',
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
-      imageUrl: maybeSignUri(
-        dappLogoOverride(peerMeta.url) || peerMeta.icons[0]
-      ),
+      imageUrl: maybeSignUri(peerMeta.icons[0], { w: 200 }),
       payload: event.params.request,
       walletConnectV2RequestValues: {
         sessionRequestEvent: event,
         // @ts-ignore we assign address above
         address, // required by screen
         chainId, // required by screen
+        onComplete() {
+          maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
+        },
       },
     };
-
-    logger.debug(
-      `WC v2: handling request`,
-      {},
-      logger.DebugContext.walletconnect
-    );
 
     const { requests: pendingRequests } = store.getState().requests;
 
@@ -562,9 +790,22 @@ export async function onSessionRequest(
       }
     );
 
-    await client.respond({
-      topic,
-      response: formatJsonRpcError(id, getSdkError('UNSUPPORTED_METHODS')),
+    try {
+      await client.respondSessionRequest({
+        topic,
+        response: formatJsonRpcError(id, `Method ${method} not supported`),
+      });
+    } catch (e) {
+      logger.error(new RainbowError(`WC v2: error rejecting session_request`), {
+        error: (e as Error).message,
+      });
+    }
+
+    showErrorSheet({
+      reason: 'failed_wc_invalid_methods',
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
     });
   }
 }
@@ -584,7 +825,7 @@ export async function handleSessionRequestResponse(
     success: Boolean(result),
   });
 
-  const client = await signClient;
+  const client = await web3WalletClient;
   const { topic, id } = sessionRequestEvent;
 
   if (result) {
@@ -597,7 +838,7 @@ export async function handleSessionRequestResponse(
       {},
       logger.DebugContext.walletconnect
     );
-    await client.respond(payload);
+    await client.respondSessionRequest(payload);
   } else {
     const payload = {
       topic,
@@ -608,7 +849,7 @@ export async function handleSessionRequestResponse(
       {},
       logger.DebugContext.walletconnect
     );
-    await client.respond(payload);
+    await client.respondSessionRequest(payload);
   }
 
   store.dispatch(removeRequest(sessionRequestEvent.id));
@@ -618,8 +859,8 @@ export async function handleSessionRequestResponse(
  * Returns all active settings in a type-safe manner.
  */
 export async function getAllActiveSessions() {
-  const client = await signClient;
-  return client?.session?.values || [];
+  const client = await web3WalletClient;
+  return Object.values(client?.getActiveSessions() || {}) || [];
 }
 
 /**
@@ -627,37 +868,130 @@ export async function getAllActiveSessions() {
  * in a type-safe manner.
  */
 export function getAllActiveSessionsSync() {
-  return syncSignClient?.session?.values || [];
+  return Object.values(syncWeb3WalletClient?.getActiveSessions() || {}) || [];
 }
 
 /**
- * Updates an existing session with new values
+ * Adds an account to an existing session
  */
-export async function updateSession(
+export async function addAccountToSession(
   session: SessionTypes.Struct,
   { address }: { address?: string }
 ) {
-  const client = await signClient;
+  try {
+    const client = await web3WalletClient;
 
-  const namespaces: Parameters<typeof client.update>[0]['namespaces'] = {};
+    const namespaces: Parameters<
+      typeof client.updateSession
+    >[0]['namespaces'] = {};
 
-  for (const [key, value] of Object.entries(session.requiredNamespaces)) {
-    namespaces[key] = {
-      accounts: [],
-      methods: value.methods,
-      events: value.events,
-    };
+    for (const [key, value] of Object.entries(session.requiredNamespaces)) {
+      /**
+       * The `namespace` that corresponds to the `requiredNamespace` that was
+       * requested when connecting the session. The `requiredNamespace` does
+       * not have `accounts`, since it merely requests chains and methods, so
+       * we need to referernce the connected `namespace` for existing `account`
+       * values.
+       */
+      const ns = session.namespaces[key];
 
-    for (const chain of value.chains) {
-      const chainId = parseInt(chain.split(`${key}:`)[1]);
-      namespaces[key].accounts.push(`${key}:${chainId}:${address}`);
+      namespaces[key] = {
+        accounts: ns.accounts || [],
+        methods: value.methods,
+        events: value.events,
+      };
+
+      if (value.chains) {
+        for (const chain of value.chains) {
+          const chainId = parseInt(chain.split(`${key}:`)[1]);
+          const account = `${key}:${chainId}:${address}`;
+
+          /*
+           * Add latest selected accounts to beginning of array so that our
+           * switch wallet sheet shows that one as selected
+           */
+          if (!namespaces[key].accounts.includes(account)) {
+            namespaces[key].accounts.unshift(account);
+          } else {
+            // remove and re-add to start of array
+            namespaces[key].accounts.splice(
+              namespaces[key].accounts.indexOf(account),
+              1
+            );
+            namespaces[key].accounts.unshift(account);
+          }
+        }
+      } else {
+        logger.error(
+          new RainbowError(
+            `WC v2: namespace is missing chains prop when updating`
+          ),
+          { requiredNamespaces: session.requiredNamespaces }
+        );
+      }
     }
-  }
 
-  await client.update({
-    topic: session.topic,
-    namespaces,
-  });
+    logger.debug(`WC v2: updating session`, {
+      namespaces,
+    });
+
+    await client.updateSession({
+      topic: session.topic,
+      namespaces,
+    });
+  } catch (e: any) {
+    logger.error(new RainbowError(`WC v2: error adding account to session`), {
+      message: e.message,
+    });
+  }
+}
+
+export async function changeAccount(
+  session: SessionTypes.Struct,
+  { address }: { address?: string }
+) {
+  try {
+    const client = await web3WalletClient;
+
+    /*
+     * Before we can effectively switch accounts, we need to add the account to
+     * the session. Only then can we tell the dapp to use the new account.
+     */
+    await addAccountToSession(session, { address });
+
+    for (const value of Object.values(session.requiredNamespaces)) {
+      if (!value.chains) {
+        logger.debug(`WC v2: changeAccount, no chains found for namespace`);
+        continue;
+      }
+
+      for (const chainId of value.chains) {
+        logger.debug(`WC v2: changeAccount, updating accounts for chainId`, {
+          chainId,
+        });
+
+        // tell the dapp to use the new account
+        await client.emitSessionEvent({
+          topic: session.topic,
+          event: {
+            name: 'accountsChanged',
+            data: [address],
+          },
+          chainId,
+        });
+
+        logger.debug(`WC v2: changeAccount, updated accounts for chainId`, {
+          chainId,
+        });
+      }
+    }
+
+    logger.debug(`WC v2: changeAccount complete`);
+  } catch (e: any) {
+    logger.error(new RainbowError(`WC v2: error changing account`), {
+      message: e.message,
+    });
+  }
 }
 
 /**
@@ -665,9 +999,9 @@ export async function updateSession(
  * within a dapp is handled internally by WC v2.
  */
 export async function disconnectSession(session: SessionTypes.Struct) {
-  const client = await signClient;
+  const client = await web3WalletClient;
 
-  await client.disconnect({
+  await client.disconnectSession({
     topic: session.topic,
     reason: getSdkError('USER_DISCONNECTED'),
   });

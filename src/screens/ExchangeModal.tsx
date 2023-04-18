@@ -50,20 +50,11 @@ import {
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import {
-  getProviderForNetwork,
-  getHasMerged,
-  getFlashbotsProvider,
-} from '@/handlers/web3';
-import {
-  divide,
-  fromWei,
-  greaterThan,
-  multiply,
-  subtract,
-} from '@/helpers/utilities';
+import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
+import { delay, divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
+  useColorForAsset,
   useCurrentNonce,
   useGas,
   usePrevious,
@@ -75,6 +66,7 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
+  useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -105,7 +97,11 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
-import { Wallet } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { useTheme } from '@/theme';
+import { logger as loggr } from '@/logger';
+import { goBack } from 'react-native-minimizer';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -171,6 +167,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }: ExchangeModalProps) {
+  const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const {
     slippageInBips,
@@ -203,6 +200,7 @@ export default function ExchangeModal({
     { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
   const {
+    goBack,
     navigate,
     setParams,
     dangerouslyGetParent,
@@ -239,6 +237,13 @@ export default function ExchangeModal({
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const { colors } = useTheme();
+  const inputCurrencyColor = useColorForAsset(inputCurrency, colors.appleBlue);
+  const outputCurrencyColor = useColorForAsset(
+    outputCurrency,
+    colors.appleBlue
+  );
 
   const {
     handleFocus,
@@ -437,8 +442,7 @@ export default function ExchangeModal({
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const hideFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const hideFlashbotsPostMerge = !config.flashbots_enabled;
   const swapSupportsFlashbots =
     currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
@@ -668,16 +672,22 @@ export default function ExchangeModal({
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
+        let isSucessful = false;
         const callback = (
           success = false,
           errorMessage: string | null = null
         ) => {
+          isSucessful = success;
           setIsAuthorizing(false);
           if (success) {
             setParams({ focused: false });
             navigate(Routes.PROFILE_SCREEN);
           } else if (errorMessage) {
-            Alert.alert(errorMessage);
+            if (wallet instanceof Wallet) {
+              Alert.alert(errorMessage);
+            } else {
+              setHardwareTXError(true);
+            }
           }
         };
         logger.log('[exchange - handle submit] rap');
@@ -712,6 +722,13 @@ export default function ExchangeModal({
 
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
+
+        // if the transaction was not successful, we need to bubble that up to the caller
+        if (!isSucessful) {
+          loggr.debug('[ExchangeModal] transaction was not successful');
+          return false;
+        }
+
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
@@ -721,6 +738,7 @@ export default function ExchangeModal({
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
+          isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice:
             ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
@@ -744,19 +762,27 @@ export default function ExchangeModal({
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         setParams({ focused: false });
+        // close the hardware wallet modal before navigating
+        if (isHardwareWallet) {
+          goBack();
+          await delay(100);
+        }
         navigate(Routes.WALLET_SCREEN);
         return false;
       }
     },
     [
+      accountAddress,
       chainId,
       currentNetwork,
       debouncedIsHighPriceImpact,
       flashbots,
       getNextNonce,
+      goBack,
       inputAmount,
       inputCurrency,
       isCrosschainSwap,
+      isHardwareWallet,
       navigate,
       outputAmount,
       outputCurrency,
@@ -815,6 +841,7 @@ export default function ExchangeModal({
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
+        isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice:
           ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
@@ -884,6 +911,7 @@ export default function ExchangeModal({
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      isHardwareWallet,
       quoteError,
       tradeDetails,
       type,
@@ -1060,6 +1088,7 @@ export default function ExchangeModal({
               {showOutputField && <ExchangeNotch testID={testID} />}
               <ExchangeHeader testID={testID} title={title} />
               <ExchangeInputField
+                color={inputCurrencyColor}
                 disableInputCurrencySelection={isWithdrawal}
                 editable={!!inputCurrency}
                 inputAmount={inputAmountDisplay}
@@ -1087,6 +1116,7 @@ export default function ExchangeModal({
               />
               {showOutputField && (
                 <ExchangeOutputField
+                  color={outputCurrencyColor}
                   editable={
                     !!outputCurrency &&
                     currentNetwork !== Network.arbitrum &&

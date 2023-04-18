@@ -156,6 +156,7 @@ export default function WalletList({
           id: account.address,
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
+          isLedger: wallet.type === WalletTypes.bluetooth,
           isSelected:
             accountAddress === account.address &&
             (watchOnly || wallet?.id === currentWallet?.id),
@@ -170,6 +171,7 @@ export default function WalletList({
         switch (wallet.type) {
           case WalletTypes.mnemonic:
           case WalletTypes.seed:
+          case WalletTypes.bluetooth:
             seedRows.push(row);
             break;
           case WalletTypes.privateKey:
@@ -264,26 +266,27 @@ export default function WalletList({
           showDividers={showDividers}
         />
         {showDividers && <WalletListDivider />}
-        {!watchOnly && (
-          <Inset space="20px">
-            <Stack space="24px">
+
+        <Inset space="20px">
+          <Stack space="24px">
+            {!watchOnly && (
               <WalletOption
                 editMode={editMode}
                 label={`􀁍 ${lang.t('wallet.action.add_another')}`}
                 onPress={onPressAddAnotherWallet}
                 testID="add-another-wallet-button"
               />
-              {hardwareWalletsEnabled && (
-                <WalletOption
-                  editMode={editMode}
-                  label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
-                  onPress={onPressPairHardwareWallet}
-                  testID="pair-hardware-wallet-button"
-                />
-              )}
-            </Stack>
-          </Inset>
-        )}
+            )}
+            {hardwareWalletsEnabled && (
+              <WalletOption
+                editMode={editMode}
+                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                onPress={onPressPairHardwareWallet}
+                testID="pair-hardware-wallet-button"
+              />
+            )}
+          </Stack>
+        </Inset>
       </WalletsContainer>
     </Container>
   );

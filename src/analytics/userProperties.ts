@@ -28,6 +28,11 @@ export interface UserProperties {
   screenWidth?: number;
   screenScale?: number;
 
+  // branch
+  branchCampaign?: string;
+  branchReferrer?: string;
+  branchReferringLink?: string;
+
   // to be deprecated
   assets_value?: number;
   borrowed_value?: number;

@@ -1,5 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
@@ -63,7 +63,6 @@ import {
   useENSProfile,
   useENSRegistration,
   useHiddenTokens,
-  usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -77,6 +76,7 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@/utils';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -173,6 +173,7 @@ const Section = ({
                 height={{ custom: 24 }}
                 source={{ uri: titleImageUrl }}
                 width={{ custom: 24 }}
+                size={30}
               />
             </Bleed>
           )}
@@ -263,18 +264,14 @@ const UniqueTokenExpandedState = ({
       external_url: familyLink,
       slug,
     },
-    currentPrice,
     description,
     familyImage,
     familyName,
     isSendable,
-    lastPrice,
-    lastSalePaymentToken,
     marketplaceName,
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);
@@ -357,9 +354,7 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
-    colors.paleBlue;
+    usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -602,15 +597,7 @@ const UniqueTokenExpandedState = ({
                           bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}
                         >
-                          {isNFT && (
-                            <NFTBriefTokenInfoRow
-                              currentPrice={currentPrice}
-                              lastPrice={lastPrice}
-                              lastSalePaymentToken={lastSalePaymentToken}
-                              network={asset.network}
-                              urlSuffixForAsset={urlSuffixForAsset}
-                            />
-                          )}
+                          {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}

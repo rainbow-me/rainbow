@@ -58,6 +58,7 @@
   "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
   "exclude": [
     "ios",
+    "android",
     "patches/reanimated",
     "node_modules",
     "babel.config.js",

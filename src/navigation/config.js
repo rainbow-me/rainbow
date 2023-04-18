@@ -365,6 +365,15 @@ export const basicSheetConfig = {
   }),
 };
 
+export const portalSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: params.sheetHeight,
+    }),
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,
@@ -482,22 +491,6 @@ const SettingsTitle = ({ children }) => {
     </Text>
   );
 };
-
-export const wyreWebviewOptions = colors => ({
-  ...headerConfigOptions,
-  headerLeft: props => <BackButton {...props} textChevron />,
-  headerStatusBarHeight: 24,
-  headerStyle: {
-    backgroundColor: colors.white,
-    elevation: 24,
-    shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    ...headerConfigOptions.headerTitleStyle,
-    color: colors.dark,
-  },
-  title: 'Add Cash',
-});
 
 export const settingsOptions = colors => ({
   ...headerConfigOptions,

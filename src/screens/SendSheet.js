@@ -26,7 +26,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes } from '@/entities';
-import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
@@ -63,11 +63,12 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
+  useWallets,
 } from '@/hooks';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { chainAssets, rainbowTokenList } from '@/references';
+import { rainbowTokenList } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -87,6 +88,8 @@ import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Wallet } from '@ethersproject/wallet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = safeAreaInsetValues.top;
@@ -108,6 +111,14 @@ const SheetContainer = styled(Column).attrs({
   width: '100%',
 });
 
+const validateRecipient = toAddress => {
+  // Don't allow send to known ERC20 contracts on mainnet
+  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
+    return false;
+  }
+  return true;
+};
+
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
@@ -125,6 +136,7 @@ export default function SendSheet(props) {
     stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
+    l1GasFeeOptimism,
   } = useGas();
   const recipientFieldRef = useRef();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -133,6 +145,7 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: 'TRANSFER',
@@ -183,17 +196,7 @@ export default function SendSheet(props) {
 
   const isNft = selected?.type === AssetTypes.nft;
 
-  const address = selected?.mainnet_address || selected?.address;
-  const type = selected?.mainnet_address ? AssetTypes.token : selected?.type;
-  let colorForAsset = useColorForAsset(
-    {
-      address,
-      type,
-    },
-    null,
-    false,
-    true
-  );
+  let colorForAsset = useColorForAsset(selected, null, false, true);
   if (isNft) {
     colorForAsset = colors.appleBlue;
   }
@@ -331,15 +334,21 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
       if (
-        selected?.type &&
+        assetNetwork &&
         (assetNetwork !== currentNetwork ||
           !currentNetwork ||
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
         switch (selected.type) {
+          case AssetTypes.nft:
+            setCurrentNetwork(selected.network);
+            provider = await getProviderForNetwork(selected.network);
+            break;
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
@@ -363,7 +372,15 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
-  }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
+  }, [
+    currentNetwork,
+    isNft,
+    network,
+    prevNetwork,
+    selected.network,
+    selected.type,
+    sendUpdateSelected,
+  ]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
@@ -372,7 +389,9 @@ export default function SendSheet(props) {
         Number(currentProvider._network.chainId)
       );
 
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
 
       if (
         assetNetwork === currentNetwork &&
@@ -621,6 +640,12 @@ export default function SendSheet(props) {
         logger.sentry('SendSheet onSubmit error');
         logger.sentry(error);
         captureException(error);
+
+        // if hardware wallet, we need to tell hardware flow there was error
+        // have to check inverse or we trigger unwanted BT permissions requests
+        if (!(wallet instanceof Wallet)) {
+          setHardwareTXError(true);
+        }
       }
       return submitSuccess;
     },
@@ -666,6 +691,7 @@ export default function SendSheet(props) {
         assetName: selected?.name || '',
         assetType: selected?.type || '',
         isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+        isHardwareWallet,
       });
 
       if (submitSuccessful) {
@@ -679,37 +705,13 @@ export default function SendSheet(props) {
     [
       amountDetails.assetAmount,
       goBack,
+      isHardwareWallet,
       navigate,
       onSubmit,
       recipient,
       selected?.name,
       selected?.type,
     ]
-  );
-
-  const validateRecipient = useCallback(
-    async toAddress => {
-      // Don't allow send to known ERC20 contracts on mainnet
-      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
-        return false;
-      }
-
-      // Don't allow sending funds directly to known ERC20 contracts on L2
-      if (isL2) {
-        const currentChainAssets = chainAssets[currentNetwork];
-        const found =
-          currentChainAssets &&
-          currentChainAssets.find(
-            item =>
-              item.asset?.asset_code?.toLowerCase() === toAddress.toLowerCase()
-          );
-        if (found) {
-          return false;
-        }
-      }
-      return true;
-    },
-    [currentNetwork, isL2]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -725,7 +727,8 @@ export default function SendSheet(props) {
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
-      !toAddress
+      !toAddress ||
+      (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -753,14 +756,14 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    currentNetwork,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
     selectedGasFee,
+    toAddress,
     isSufficientGas,
     isValidGas,
-    toAddress,
+    currentNetwork,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -770,7 +773,7 @@ export default function SendSheet(props) {
     if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = await validateRecipient(toAddress);
+    const validRecipient = validateRecipient(toAddress);
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
@@ -824,7 +827,6 @@ export default function SendSheet(props) {
     recipient,
     selected,
     submitTransaction,
-    validateRecipient,
   ]);
 
   const onResetAssetSelection = useCallback(() => {
@@ -906,7 +908,10 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+    const assetNetwork = isNft
+      ? selected.network
+      : ethereumUtils.getNetworkFromType(selected.type);
+
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
@@ -948,6 +953,7 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
+    isNft,
   ]);
 
   const sendContactListDataKey = useMemo(
@@ -961,6 +967,7 @@ export default function SendSheet(props) {
     <Container testID="send-sheet">
       <SheetContainer>
         <SendHeader
+          colorForAsset={colorForAsset}
           contacts={contacts}
           fromProfile={params?.fromProfile}
           hideDivider={showAssetForm}
@@ -1041,6 +1048,7 @@ export default function SendSheet(props) {
                 weight="heavy"
               />
             }
+            colorForAsset={colorForAsset}
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
             nativeCurrencyInputRef={nativeCurrencyInputRef}

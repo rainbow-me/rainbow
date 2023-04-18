@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import addCash from './addCash';
 import additionalAssetsData from './additionalAssetsData';
 import appState from './appState';
 import charts from './charts';
@@ -19,7 +18,6 @@ import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import swap from './swap';
 import transactionSignatures from './transactionSignatures';
-import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import uniswapLiquidity from './uniswapLiquidity';
 import userLists from './userLists';
@@ -28,7 +26,6 @@ import walletconnect from './walletconnect';
 import wallets from './wallets';
 
 export default combineReducers({
-  addCash,
   additionalAssetsData,
   appState,
   charts,
@@ -47,7 +44,6 @@ export default combineReducers({
   showcaseTokens,
   swap,
   transactionSignatures,
-  uniqueTokens,
   uniswap,
   uniswapLiquidity,
   userLists,

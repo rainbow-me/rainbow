@@ -16,7 +16,7 @@ import { colors } from '@/styles';
 import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/core';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 import { StatusBar } from 'react-native';

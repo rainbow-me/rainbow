@@ -20,6 +20,8 @@ import { AccentColorProvider, Box } from '@/design-system';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
+import AppIconPooly from '@/assets/appIconPooly.png';
+import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -41,6 +43,7 @@ import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
 
 const { GAS_TRENDS } = gasUtils;
 const APP_ICON_SIZE = 64;
@@ -99,6 +102,23 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const FiniliarAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.finiliarPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconFiniliar}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -114,6 +134,7 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -129,6 +150,23 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const PoolyAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.poolyPurple}>
+      <Box
+        as={ImgixImage}
+        source={AppIconPooly}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -144,6 +182,7 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -159,6 +198,7 @@ const ZoraAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconZora}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -175,6 +215,7 @@ const TheMergeIcon = () => {
       }}
     >
       <ImgixImage
+        size={50}
         source={TheMergePng}
         style={{
           width: 53,
@@ -280,6 +321,14 @@ const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 
+const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+
+const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+
+const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+
+const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -288,6 +337,37 @@ const navigateToAppIconSettings = async (navigate, goBack) => {
 };
 
 export const explainers = (params, colors) => ({
+  op_rewards_airdrop_timing: {
+    emoji: '📦',
+    title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
+    text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+    readMoreLink: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+  },
+  op_rewards_amount_distributed: {
+    emoji: '💰',
+    title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
+    text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
+    extraHeight: IS_ANDROID ? -110 : -65,
+  },
+  op_rewards_bridge: {
+    emoji: '🌉',
+    title: i18n.t(i18n.l.rewards.op.bridge.title),
+    text: i18n.t(i18n.l.rewards.op.bridge.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+  },
+  op_rewards_swap: {
+    emoji: '🔀',
+    title: i18n.t(i18n.l.rewards.op.swap.title),
+    text: i18n.t(i18n.l.rewards.op.swap.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+  },
+  op_rewards_position: {
+    emoji: '🏆',
+    title: i18n.t(i18n.l.rewards.op.position.title),
+    text: i18n.t(i18n.l.rewards.op.position.text),
+    extraHeight: IS_ANDROID ? -110 : -65,
+  },
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -35,
@@ -298,6 +378,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
+    },
+  },
+  finiliar_app_icon: {
+    logo: <FiniliarAppIcon />,
+    extraHeight: -90,
+    text: FINILIAR_APP_ICON_EXPLAINER,
+    title: FINILIAR_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.finiliarPink,
+      bgColor: colors?.finiliarPink06,
     },
   },
   golddoge_app_icon: {
@@ -322,6 +414,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.dogeGold,
       bgColor: colors?.dogeGold06,
+    },
+  },
+  pooly_app_icon: {
+    logo: <PoolyAppIcon />,
+    extraHeight: -90,
+    text: POOLY_APP_ICON_EXPLAINER,
+    title: POOLY_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.poolyPurple,
+      bgColor: colors?.poolyPurple06,
     },
   },
   smol_app_icon: {
@@ -602,9 +706,21 @@ export const explainers = (params, colors) => ({
   },
   failed_wc_invalid_methods: {
     emoji: '😵',
-    extraHeight: -50,
+    extraHeight: -100,
     text: lang.t('explain.failed_wc_invalid_methods.text'),
     title: lang.t('explain.failed_wc_invalid_methods.title'),
+  },
+  failed_wc_invalid_chains: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chains.text'),
+    title: lang.t('explain.failed_wc_invalid_chains.title'),
+  },
+  failed_wc_invalid_chain: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chain.text'),
+    title: lang.t('explain.failed_wc_invalid_chain.title'),
   },
   backup: {
     emoji: '🔐',
@@ -645,6 +761,12 @@ export const explainers = (params, colors) => ({
       ) : (
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
+  },
+  f2cSemiSupportedAssetPurchased: {
+    emoji: '🎉',
+    title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    extraHeight: -80,
   },
   insufficientLiquidity: {
     extraHeight: -20,
@@ -888,31 +1010,6 @@ export const explainers = (params, colors) => ({
     ),
     text: lang.t('explain.slippage.text'),
     title: lang.t('explain.slippage.title'),
-  },
-  wyre_degradation: {
-    logo: <TheMergeIcon />,
-    extraHeight: deviceUtils.isSmallPhone ? 121 : 76,
-    text: lang.t('explain.wyre_degradation.text'),
-    title: lang.t('explain.wyre_degradation.title'),
-    stillCurious: (
-      <Text {...getBodyTextPropsWithColor(colors)}>
-        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
-        <Text
-          color={colors?.appleBlue}
-          onPress={() =>
-            Linking.openURL(
-              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
-            )
-          }
-          size="large"
-          suppressHighlighting
-          weight="semibold"
-        >
-          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
-        </Text>
-        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
-      </Text>
-    ),
   },
   swap_refuel_add: {
     logo: (

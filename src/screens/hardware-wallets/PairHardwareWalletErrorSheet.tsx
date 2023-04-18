@@ -1,21 +1,25 @@
 import * as i18n from '@/languages';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
-import { CancelButton } from '@/screens/hardware-wallets/components/CancelButton';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
 import { ImgixImage } from '@/components/images';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { useLedgerConnect } from '@/hooks/useLedgerConnect';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
 export type PairHardwareWalletErrorSheetParams = {
-  errorType: 'off_or_locked' | 'no_eth_app';
+  errorType: LEDGER_ERROR_CODES.OFF_OR_LOCKED | LEDGER_ERROR_CODES.NO_ETH_APP;
+  deviceId?: string;
 };
 
 type RouteParams = {
@@ -27,11 +31,38 @@ export const PairHardwareWalletErrorSheet = () => {
     RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
   >();
   const { width: deviceWidth } = useDimensions();
+  const { goBack, navigate } = useNavigation();
 
   const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
 
   const errorType = route?.params?.errorType;
+
+  const errorCallback = useCallback(
+    (errorType: LEDGER_ERROR_CODES) => {
+      if (
+        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
+        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
+      ) {
+        navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
+          errorType,
+          deviceId: route?.params?.deviceId,
+        });
+      } else {
+        // silent for now
+      }
+    },
+    [navigate, route?.params?.deviceId]
+  );
+
+  useLedgerConnect({
+    readyForPolling: !!route?.params?.deviceId,
+    deviceId: route?.params?.deviceId || '',
+    successCallback: () => {
+      goBack();
+    },
+    errorCallback,
+  });
 
   return (
     <Layout>
@@ -56,10 +87,10 @@ export const PairHardwareWalletErrorSheet = () => {
           </Stack>
         </Stack>
       </Inset>
-      <Box marginTop="-44px">
+      <Box position="absolute" top={{ custom: 148 }}>
         <ImgixImage
           source={
-            (errorType === 'no_eth_app'
+            (errorType === LEDGER_ERROR_CODES.NO_ETH_APP
               ? ledgerNanoEthApp
               : ledgerNanoUnlock) as Source
           }
@@ -81,7 +112,6 @@ export const PairHardwareWalletErrorSheet = () => {
           </Text>
         </Box>
       </Box>
-      <CancelButton />
     </Layout>
   );
 };

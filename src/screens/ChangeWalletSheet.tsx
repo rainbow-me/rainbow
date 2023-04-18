@@ -1,5 +1,5 @@
 import { IS_TESTING } from 'react-native-dotenv';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
@@ -405,7 +405,10 @@ export default function ChangeWalletSheet() {
     });
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+        entryPoint: Routes.CHANGE_WALLET_SHEET,
+        isFirstWallet: false,
+      });
     });
   }, [goBack, navigate]);
 
@@ -417,7 +420,7 @@ export default function ChangeWalletSheet() {
     goBack();
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
-        screen: Routes.ADD_WALLET_SHEET,
+        isFirstWallet: false,
       });
     });
   }, [goBack, navigate]);

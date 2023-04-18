@@ -1,5 +1,5 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';
 import { LearnCardDetails } from './utils/types';
@@ -30,7 +30,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
     secondaryTextColor,
   } = getLearnCardColorway(category, isDarkMode);
 
-  const onPress = useCallback(() => {
+  const onPress = () => {
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'LearnCard',
       routeName,
@@ -44,14 +44,18 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
       key,
     });
     rotate?.();
-  }, [category, key, navigate, rotate, routeName, type, url]);
+  };
 
   const translations = i18n.l.cards.learn;
 
   return (
     <GenericCard
       type={type}
-      gradient={gradient}
+      gradient={{
+        colors: gradient,
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 0 },
+      }}
       onPress={onPress}
       color={shadowColor}
     >

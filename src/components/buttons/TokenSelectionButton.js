@@ -29,6 +29,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: CaretImageSource,
   tintColor: colors.whiteLabel,
+  size: 30,
 }))({
   height: 18,
   top: 0.5,
@@ -36,38 +37,27 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 });
 
 export default function TokenSelectionButton({
-  address,
-  mainnetAddress,
+  color,
   borderRadius = 30,
   onPress,
   symbol,
   testID,
-  type,
 }) {
   const { isDarkMode, colors } = useTheme();
-
-  const colorForAsset = useColorForAsset(
-    {
-      address,
-      mainnet_address: mainnetAddress,
-      type: mainnetAddress ? AssetType.token : type,
-    },
-    address ? undefined : colors.appleBlue
-  );
 
   const shadowsForAsset = useMemo(
     () => [
       [0, 10, 30, colors.shadow, 0.2],
-      [0, 5, 15, colorForAsset, isDarkMode ? 0 : 0.4],
+      [0, 5, 15, color, isDarkMode ? 0 : 0.4],
     ],
-    [colorForAsset, colors.shadow, isDarkMode]
+    [color, colors.shadow, isDarkMode]
   );
 
   return (
     <ButtonPressAnimation
       borderRadius={borderRadius}
       contentContainerStyle={{
-        backgroundColor: colorForAsset,
+        backgroundColor: color,
         borderRadius,
       }}
       {...(symbol && { maxWidth: TokenSelectionButtonMaxWidth })}
@@ -77,7 +67,7 @@ export default function TokenSelectionButton({
     >
       <ShadowStack
         {...position.coverAsObject}
-        backgroundColor={colorForAsset}
+        backgroundColor={color}
         borderRadius={borderRadius}
         elevation={TokenSelectionButtonElevation}
         shadows={shadowsForAsset}

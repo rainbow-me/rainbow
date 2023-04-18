@@ -69,16 +69,18 @@ const dataFromLastTxHash = (
 export const parseTransactions = async (
   transactionData: ZerionTransaction[],
   accountAddress: EthereumAddress,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   existingTransactions: RainbowTransaction[],
   pendingTransactions: RainbowTransaction[],
-  purchaseTransactions: RainbowTransaction[],
+  purchaseTransactions: any,
   network: Network,
   appended = false
 ) => {
-  const purchaseTransactionHashes = purchaseTransactions.map(txn =>
-    ethereumUtils.getHash(txn)
-  );
+  /**
+   * This is empty because it previously pulled in data from our `addCash`
+   * reducer, which was deprecated and removed.
+   */
+  const purchaseTransactionHashes: RainbowTransaction[] = [];
 
   // pending crosschain swaps transactions now depends on bridge status API
   // so we need to persist pending txs until bridge is done even tho the tx
@@ -311,7 +313,7 @@ const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
 
 const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   network: Network
 ) => {
   const methodName = await getTransactionMethodName(txn);
@@ -361,7 +363,7 @@ const parseTransactionWithEmptyChanges = async (
 
 const parseTransaction = async (
   transaction: ZerionTransaction,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   purchaseTransactionsHashes: string[],
   network: Network
 ): Promise<RainbowTransaction[]> => {

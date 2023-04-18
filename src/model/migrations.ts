@@ -5,7 +5,7 @@ import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import { removeLocal } from '../handlers/localstorage/common';
+import { deprecatedRemoveLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
@@ -315,7 +315,7 @@ export default async function runMigrations() {
 
   const v8 = async () => {
     logger.log('wiping old metadata');
-    await removeLocal(IMAGE_METADATA);
+    await deprecatedRemoveLocal(IMAGE_METADATA);
   };
 
   migrations.push(v8);
@@ -503,7 +503,6 @@ export default async function runMigrations() {
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
-            // @ts-expect-error
             return `${asset.address}_${asset.network}`;
           } else {
             return address;

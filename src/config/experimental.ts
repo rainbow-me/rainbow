@@ -15,20 +15,18 @@ export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
 export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
-export const WC_V2 = 'Wallet Connect v2';
 export const OP_REWARDS = '$OP Rewards';
 
 export const defaultConfig = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
-  [HARDWARE_WALLETS]: { settings: true, value: false },
-  [L2_TXS]: { needsRestart: true, settings: true, value: false },
+  [HARDWARE_WALLETS]: { settings: true, value: true },
+  [L2_TXS]: { needsRestart: true, settings: true, value: true },
   [LANGUAGE_SETTINGS]: { settings: false, value: false },
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: true },
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
-  [WC_V2]: { settings: true, value: false },
   [OP_REWARDS]: { settings: true, value: false },
 };
 

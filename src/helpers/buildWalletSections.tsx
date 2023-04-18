@@ -209,8 +209,9 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(hasTokens
-      ? [
+    ...(!hasTokens && !isLoadingAssets
+      ? []
+      : [
           {
             type: 'PROFILE_BALANCE_ROW',
             uid: 'profile-balance',
@@ -220,8 +221,7 @@ const withBriefBalanceSection = (
             type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
             uid: 'profile-balance-space-after',
           },
-        ]
-      : []),
+        ]),
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
@@ -238,10 +238,10 @@ const withBriefBalanceSection = (
 
   let content = CONTENT_PLACEHOLDER;
 
-  if (isLoadingAssets) {
-    content = CONTENT_PLACEHOLDER;
-  } else if (hasTokens) {
+  if (hasTokens) {
     content = briefAssets;
+  } else if (isLoadingAssets) {
+    content = CONTENT_PLACEHOLDER;
   } else if (hasNFTsOnly) {
     content = ONLY_NFTS_CONTENT;
   } else if (isEmpty) {

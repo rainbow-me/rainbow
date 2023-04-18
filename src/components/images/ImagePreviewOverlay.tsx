@@ -45,6 +45,7 @@ import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/getFullSizeUrl';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -332,6 +333,7 @@ function ImagePreview({
                       height="full"
                       source={{ uri: imageUrl }}
                       width="full"
+                      size={FULL_NFT_IMAGE_SIZE}
                     />
                     <Box
                       as={BlurView}

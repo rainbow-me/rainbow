@@ -15,10 +15,10 @@ import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
-import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { haptics } from '@/utils';
 import { Space } from '@/design-system/docs/system/tokens.css';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 
 export const ProfileNameRowHeight = 16;
 

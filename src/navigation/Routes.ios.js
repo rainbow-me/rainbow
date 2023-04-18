@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import AddCashSheet from '../screens/AddCashSheet';
+import { AddCashSheet } from '../screens/AddCash';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -22,7 +22,7 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsSheet from '../screens/SettingsSheet';
+import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
@@ -65,8 +65,10 @@ import {
   transactionDetailsConfig,
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
+  portalSheetConfig,
 } from './config';
 import {
+  addCashSheet,
   emojiPreset,
   emojiPresetWallet,
   overlayExpandedPreset,
@@ -86,6 +88,7 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
+import { Portal } from '@/screens/Portal';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -105,25 +108,6 @@ function SendFlowNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function AddCashFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.ADD_CASH_SCREEN_NAVIGATOR}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.SUPPORTED_COUNTRIES_MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
     </Stack.Navigator>
   );
@@ -153,6 +137,11 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER_WALLET}
         options={emojiPresetWallet}
+      />
+      <Stack.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
+        options={addCashSheet}
       />
     </Stack.Navigator>
   );
@@ -381,6 +370,11 @@ function NativeStackNavigator() {
         name={Routes.ADD_WALLET_NAVIGATOR}
         {...addWalletNavigatorConfig}
       />
+      <NativeStack.Screen
+        component={Portal}
+        name={Routes.PORTAL}
+        {...portalSheetConfig}
+      />
       {profilesEnabled && (
         <>
           <NativeStack.Screen
@@ -424,10 +418,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
-        component={AddCashFlowNavigator}
-        name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
       />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}

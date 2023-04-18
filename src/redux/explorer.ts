@@ -32,14 +32,11 @@ import {
   PortfolioReceivedMessage,
   transactionsReceived,
   TransactionsReceivedMessage,
-  transactionsRemoved,
-  TransactionsRemovedMessage,
 } from './data';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
 import { ZerionAsset } from '@/entities';
 import {
-  checkForTheMerge,
   getProviderForNetwork,
   isHardHat,
   web3Provider,
@@ -55,6 +52,7 @@ import {
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  OP_ADDRESS,
 } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
@@ -63,46 +61,34 @@ import logger from '@/utils/logger';
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
-let assetInfoHandle: ReturnType<typeof setTimeout> | null = null;
 let hardhatAndTestnetHandle: ReturnType<typeof setTimeout> | null = null;
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
 const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
-const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
 const messages = {
   ADDRESS_ASSETS: {
-    APPENDED: 'appended address assets',
-    CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
     RECEIVED_ARBITRUM: 'received address arbitrum-assets',
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
     RECEIVED_BSC: 'received address bsc-assets',
-    REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
   },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
-    CHANGED: 'changed address transactions',
     RECEIVED: 'received address transactions',
     RECEIVED_ARBITRUM: 'received address arbitrum-transactions',
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     RECEIVED_BSC: 'received address bsc-transactions',
-    REMOVED: 'removed address transactions',
   },
   ASSET_CHARTS: {
-    APPENDED: 'appended chart points',
-    CHANGED: 'changed chart points',
     RECEIVED: 'received assets charts',
-  },
-  ASSET_INFO: {
-    RECEIVED: 'received assets info',
   },
   ASSETS: {
     CHANGED: 'changed assets prices',
@@ -326,7 +312,8 @@ const assetPricesSubscription = (
     ETH_ADDRESS,
     DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS,
-    BNB_MAINNET_ADDRESS
+    BNB_MAINNET_ADDRESS,
+    OP_ADDRESS
   );
   return [
     action,
@@ -351,32 +338,6 @@ const ethUSDSubscription: SocketEmitArguments = [
       currency: currencyTypes.usd,
     },
     scope: ['prices'],
-  },
-];
-
-/**
- * Configures an asset information request.
- *
- * @param currency The currency to use.
- * @param order The sort order.
- * @returns The arguments for an `emit` function call.
- */
-const assetInfoRequest = (
-  currency: string,
-  order: OrderType = 'desc'
-): SocketEmitArguments => [
-  'get',
-  {
-    payload: {
-      currency: toLower(currency),
-      limit: 12,
-      offset: 0,
-      order_by: {
-        'relative_changes.1d': order,
-      },
-      search_query: '#Token is:verified',
-    },
-    scope: ['info'],
   },
 ];
 
@@ -458,20 +419,24 @@ const chartsRetrieval = (
  * Emits an asset price request. The result is handled by a listener in
  * `listenOnAssetMessages`.
  *
- * @param assetAddress The address to fetch.
+ * @param assetAddress The address or addresses to fetch.
  */
-export const fetchAssetPrices = (assetAddress: string) => (
+export const fetchAssetPrices = (assetAddress: string | string[]) => (
   _: Dispatch,
   getState: AppGetState
 ) => {
   const { assetsSocket } = getState().explorer;
   const { nativeCurrency } = getState().settings;
 
+  const assetCodes = Array.isArray(assetAddress)
+    ? assetAddress
+    : [assetAddress];
+
   const payload: SocketEmitArguments = [
     'get',
     {
       payload: {
-        asset_codes: [assetAddress],
+        asset_codes: assetCodes,
         currency: toLower(nativeCurrency),
       },
       scope: ['prices'],
@@ -641,7 +606,7 @@ const fetchTestnetOrHardhatBalances = (
     payload: newPayload,
   };
 
-  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+  dispatch(addressAssetsReceived(updatedMessage, network));
   hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
   hardhatAndTestnetHandle = setTimeout(
     () =>
@@ -670,7 +635,6 @@ export const explorerInit = () => async (
 
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
-  checkForTheMerge(provider, network);
   if (isHardHat(providerUrl) || network !== Network.mainnet) {
     dispatch(
       fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
@@ -712,7 +676,6 @@ export const explorerInit = () => async (
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
 
-    dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
@@ -780,26 +743,6 @@ export const emitAssetRequest = (assetAddress: string | string[]) => (
     setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
-};
-
-/**
- * Emits an asset information request. The result is handled by a listener
- * in `listenOnAssetMessages`.
- */
-export const emitAssetInfoRequest = () => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  assetInfoHandle && clearTimeout(assetInfoHandle);
-
-  const { nativeCurrency } = getState().settings;
-  const { assetsSocket } = getState().explorer;
-  assetsSocket?.emit(...assetInfoRequest(nativeCurrency));
-  assetsSocket?.emit(...assetInfoRequest(nativeCurrency, 'asc'));
-
-  assetInfoHandle = setTimeout(() => {
-    dispatch(emitAssetInfoRequest());
-  }, ASSET_INFO_TIMEOUT);
 };
 
 /**
@@ -878,7 +821,9 @@ export const fetchAssetsFromRefraction = () => (
 ) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
-  addressSocket!.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  if (addressSocket) {
+    addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+  }
 };
 
 /**
@@ -901,13 +846,10 @@ const l2AddressAssetsReceived = (
     | { asset: ZerionAsseWithL2Fields }[]
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
-    const uniqueId = `${asset?.asset?.asset_code}_${asset?.asset?.network}`;
     const fallbackAsset =
-      (mainnetAddress &&
-        (ethereumUtils.getAccountAsset(mainnetAddress) ||
-          genericAssets[mainnetAddress])) ||
-      ethereumUtils.getAccountAsset(uniqueId) ||
-      genericAssets[asset?.asset?.asset_code];
+      mainnetAddress &&
+      (ethereumUtils.getAccountAsset(mainnetAddress) ||
+        genericAssets[mainnetAddress]);
 
     if (fallbackAsset) {
       return {
@@ -937,7 +879,7 @@ const l2AddressAssetsReceived = (
     },
   };
 
-  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+  dispatch(addressAssetsReceived(updatedMessage, network));
 };
 
 /**
@@ -1008,22 +950,6 @@ const listenOnAddressMessages = (socket: Socket) => (
   );
 
   socket.on(
-    messages.ADDRESS_TRANSACTIONS.CHANGED,
-    (message: TransactionsReceivedMessage) => {
-      logger.log('txns changed', message?.payload?.transactions);
-      dispatch(transactionsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.REMOVED,
-    (message: TransactionsRemovedMessage) => {
-      logger.log('txns removed', message?.payload?.transactions);
-      dispatch(transactionsRemoved(message));
-    }
-  );
-
-  socket.on(
     messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.arbitrum));
@@ -1059,27 +985,6 @@ const listenOnAddressMessages = (socket: Socket) => (
           '😬 Cancelling fallback data provider listener. Zerion is good!'
         );
       }
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.APPENDED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.CHANGED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, false, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.REMOVED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, false, false, true));
     }
   );
 };

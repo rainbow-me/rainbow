@@ -1,4 +1,5 @@
 import { TokenMetadata } from '@/entities/tokens';
+import { omitFlatten } from '@/helpers/utilities';
 import { rainbowTokenList } from '@/references';
 
 export default function getTokenMetadata(
@@ -8,9 +9,6 @@ export default function getTokenMetadata(
   const metadata: TokenMetadata =
     rainbowTokenList.RAINBOW_TOKEN_LIST[tokenAddress.toLowerCase()];
 
-  // delete chain specific metadata
-  delete metadata?.decimals;
-  delete metadata?.chainId;
-
-  return metadata;
+  // delete chain  metadata
+  return omitFlatten(metadata, ['chainId', 'decimals']);
 }

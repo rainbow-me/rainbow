@@ -1,6 +1,5 @@
 import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
-import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
@@ -15,15 +14,13 @@ import { memoFn } from '@/utils/memoFn';
 
 /**
  * @desc parse account assets
- * @param  {Object} [data]
+ * @param {Object} [data]
  * @return The array of parsed account assets.
  */
-export const parseAccountAssets = (data, uniqueTokens) => {
-  const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-
+export const parseAccountAssets = data => {
   const accountAssets = {};
-  for (const assetKey in dedupedAssets) {
-    const assetData = dedupedAssets[assetKey];
+  for (const assetKey in data) {
+    const assetData = data[assetKey];
 
     const asset = parseAsset(assetData.asset);
 
