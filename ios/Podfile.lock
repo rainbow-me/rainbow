@@ -650,7 +650,7 @@ PODS:
     - React-RCTImage
     - TOCropViewController
   - RNInputMask (4.1.0)
-  - RNKeyboard (1.0.5):
+  - RNKeyboard (1.0.6):
     - React
   - RNKeychain (8.0.0):
     - React-Core
@@ -1277,7 +1277,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
-  RNKeyboard: ceec456427493b286539f40442620881b5840dff
+  RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
