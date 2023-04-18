@@ -1,6 +1,7 @@
 import { Network } from '@/helpers/networkTypes';
-import { AssetContract, AssetType } from '@/entities';
+import { AssetType } from '@/entities';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
+import { Contract } from '@/entities/tokens';
 
 export type PolygonAllowlist = Record<string, boolean>;
 
@@ -54,7 +55,7 @@ export type NFTTrait = {
 export type NFT = {
   backgroundColor: string | undefined;
   collection: NFTCollection;
-  contract: AssetContract;
+  contract: Contract;
   description: string | undefined;
   externalUrl: string | undefined;
   images: {

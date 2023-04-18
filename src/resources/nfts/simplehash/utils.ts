@@ -425,7 +425,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name ?? undefined,
-      schema_name: nft.contract.type,
+      standard: nft.contract.type ?? undefined,
       symbol: nft.contract.symbol ?? undefined,
     },
     description: nft.description ?? undefined,

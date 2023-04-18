@@ -43,6 +43,14 @@ export interface AssetContract {
   total_supply?: number | null;
 }
 
+// v2 of AssetContract
+export interface Contract {
+  address: string;
+  name: string | undefined;
+  standard: string | undefined;
+  symbol: string | undefined;
+}
+
 // Represents fields in `RainbowToken` that are not present in `Asset`. These
 // fields can be included in `ParsedAddressAsset`.
 type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
@@ -71,6 +79,7 @@ export interface ParsedAddressAsset
     value?: number;
   };
   asset_contract?: AssetContract;
+  contract?: Contract;
   type: string;
   id: string;
   uniqueId: string;
