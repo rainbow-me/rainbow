@@ -13906,9 +13906,10 @@ react-native-iphone-x-helper@^1.2.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
 
-react-native-keyboard-area@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-keyboard-area/-/react-native-keyboard-area-1.0.5.tgz#50e89d9b5a14c535090ea2aac89db6f7dc0bba33"
+react-native-keyboard-area@1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-keyboard-area/-/react-native-keyboard-area-1.0.6.tgz#474c333c60477182c8160b8a719282cd26c78262"
+  integrity sha512-soRpHc0dG+mvtWoL0sUzo0R6XQ12Ug5FSOfqlyqoTO4odtECL+/8tXrs+FpT0mvaf0hNMK7dh2OhCDqLq3w9SQ==
   dependencies:
     "@types/react-native" "0.62.16"
 
