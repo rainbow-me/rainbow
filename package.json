@@ -251,7 +251,7 @@
     "react-native-reanimated": "2.8.0",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
-    "react-native-safe-area-context": "4.5.0",
+    "react-native-safe-area-context": "4.3.1",
     "react-native-safe-area-view": "rainbow-me/react-native-safe-area-view",
     "react-native-screen-corner-radius": "0.1.1",
     "react-native-screens": "2.9.0",
