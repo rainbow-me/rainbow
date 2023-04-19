@@ -438,7 +438,7 @@ PODS:
     - React-Core
   - react-native-change-icon (4.0.0):
     - React-Core
-  - react-native-cloud-fs (2.6.0):
+  - react-native-cloud-fs (2.6.1):
     - React
   - react-native-flipper (0.187.1):
     - React-Core
@@ -1226,7 +1226,7 @@ SPEC CHECKSUMS:
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
-  react-native-cloud-fs: cd21282c5cecaf285225e447dd7f3cf2f9015496
+  react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
   react-native-flipper: 9645ebaaae25790d3a46725497ef35e2b4afaf3a
   react-native-flipper-performance-plugin: 42ec5017abd26e7c5a1f527f2db92c14a90cabdb
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
