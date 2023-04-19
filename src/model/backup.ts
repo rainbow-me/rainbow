@@ -339,10 +339,10 @@ async function restoreCurrentBackupIntoKeychain(
         let value = backedUpData[key];
         const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
         const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
-        const accessControl: Options =
+        const accessControl: typeof kc.publicAccessControlOptions =
           theKeyIsASeedPhrase || theKeyIsAPrivateKey
             ? privateAccessControlOptions
-            : keychain.publicAccessControlOptions;
+            : kc.publicAccessControlOptions;
 
         /*
          * Backups that were saved encrypted with PIN to the cloud need to be
