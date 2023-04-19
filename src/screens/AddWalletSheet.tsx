@@ -165,16 +165,11 @@ export const AddWalletSheet = () => {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(
-                      null,
+                    await createWallet({
                       color,
                       name,
-                      false,
-                      null,
-                      null,
-                      false,
-                      true
-                    );
+                      clearCallbackOnStartCreation: true,
+                    });
                     await dispatch(walletsLoadState(profilesEnabled));
                     // @ts-ignore
                     await initializeWallet();

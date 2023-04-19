@@ -79,6 +79,7 @@
       }
     },
     "back_up": {
+      "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code.",
       "already_backed_up": {
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",

@@ -55,8 +55,9 @@ import {
 import { IS_DEV } from '@/env';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { defaultConfig } from '@/config';
+import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
+import { serialize } from '@/logger/logDump';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -452,6 +453,18 @@ const DevSection = () => {
                 <MenuItem.Title text={'Copy signing wallet address'} />
               }
             />
+            {getExperimetalFlag(LOG_PUSH) && (
+              <MenuItem
+                leftComponent={<MenuItem.TextIcon icon="📋" isEmoji />}
+                onPress={async () => {
+                  const logs = serialize();
+                  Clipboard.setString(logs);
+                  Alert.alert(`Copied`);
+                }}
+                size={52}
+                titleComponent={<MenuItem.Title text={'Copy log lines'} />}
+              />
+            )}
           </Menu>
           <Menu header="Feature Flags">
             {Object.keys(config)
