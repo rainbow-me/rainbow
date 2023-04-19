@@ -121,14 +121,6 @@ class OldApp extends Component {
       logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
       branch.openURL(initialUrl);
     }
-
-    // Walletconnect uses direct deeplinks
-    if (android) {
-      Linking.addEventListener('url', ({ url }) => {
-        logger.debug(`App: received linking URL, opening with Branch`, { url });
-        branch.openURL(url);
-      });
-    }
   }
 
   async componentDidMount() {
