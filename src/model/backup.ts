@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
-import { getSupportedBiometryType, Options } from 'react-native-keychain';
 import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
@@ -140,7 +139,7 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
 ) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
-  const hasBiometricsEnabled = await getSupportedBiometryType();
+  const hasBiometricsEnabled = await kc.getSupportedBiometryType();
   if (IS_ANDROID && !hasBiometricsEnabled) {
     /*
      * The PIN code is passed as an argument.

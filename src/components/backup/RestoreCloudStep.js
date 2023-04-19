@@ -43,7 +43,7 @@ import logger from '@/utils/logger';
 import { Box } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
-import { getSupportedBiometryType } from 'react-native-keychain';
+import { getSupportedBiometryType } from '@/keychain';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
