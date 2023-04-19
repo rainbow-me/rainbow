@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -7,7 +6,6 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
-  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -15,7 +13,6 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
 import { RainbowConfig } from '../model/config';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -29,6 +26,8 @@ import {
   BNB_BSC_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
+  CRYPTO_KITTIES_NFT_ADDRESS,
+  CRYPTO_PUNKS_NFT_ADDRESS,
 } from '@/references';
 import {
   addBuffer,
@@ -40,9 +39,13 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { fetchContractABI } from '@/utils/ethereumUtils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
+
+export enum TokenStandard {
+  ERC1155 = 'ERC1155',
+  ERC721 = 'ERC721',
+}
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -575,7 +578,7 @@ export const getTransferNftTransaction = async (
 
   const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
-  const data = await getDataForNftTransfer(from, recipient, transaction.asset);
+  const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -692,27 +695,38 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param from The sender's address.
  * @param to The recipient's address.
  * @param asset The asset to transfer.
- * @return The data string.
+ * @return The data string if the transfer can be attempted, otherwise undefined.
  */
-export const getDataForNftTransfer = async (
+export const getDataForNftTransfer = (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): Promise<string> => {
-  const nftVersion = asset.asset_contract?.nft_version;
-  const schema_name = asset.asset_contract?.schema_name;
-  if (nftVersion === '3.0') {
-    const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(from),
+): string | undefined => {
+  if (!asset.id || !asset.asset_contract?.address) return;
+  const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
+  const standard = asset.asset_contract?.schema_name;
+  let data: string | undefined;
+  if (
+    lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.token_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-    return data;
-  } else if (schema_name === 'ERC1155') {
-    const transferMethodHash =
-      smartContractMethods.erc1155_safe_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
+  } else if (
+    lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.punk_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+    ]);
+  } else if (standard === TokenStandard.ERC1155) {
+    const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
+    data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
@@ -720,31 +734,14 @@ export const getDataForNftTransfer = async (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-    return data;
-  } else if (IS_TESTING === 'true') {
-    const transferMethodHash = smartContractMethods.nft_transfer.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
+  } else if (standard === TokenStandard.ERC721) {
+    const transferMethod = smartContractMethods.erc721_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-    return data;
   }
-
-  const address = asset.asset_contract?.address!;
-  const abi = await fetchContractABI(address);
-  const iface = new Interface(abi);
-
-  const isTransferFrom =
-    iface.functions?.[smartContractMethods.nft_transfer_from.method];
-  const transferMethodHash = isTransferFrom
-    ? smartContractMethods.nft_transfer_from.hash
-    : smartContractMethods.nft_transfer.hash;
-
-  const data = ethereumUtils.getDataString(transferMethodHash, [
-    ...(isTransferFrom ? [ethereumUtils.removeHexPrefix(from)] : []),
-    ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(asset.id),
-  ]);
   return data;
 };
 
@@ -787,7 +784,7 @@ export const buildTransaction = async (
   };
   if (asset.type === AssetType.nft) {
     const contractAddress = asset.asset_contract?.address;
-    const data = await getDataForNftTransfer(address, _recipient, asset);
+    const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,

@@ -28,6 +28,7 @@ const Routes = {
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   EXPLAIN_SHEET: 'ExplainSheet',
+  PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   IMPORT_SCREEN: 'ImportScreen',
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',

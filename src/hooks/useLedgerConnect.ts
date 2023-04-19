@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { DebugContext } from '@/logger/debugContext';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -40,17 +39,16 @@ export function useLedgerConnect({
       if (isReady) return;
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
         setReadyForPolling(false);
-        logger.debug(
+        logger.info(
           '[LedgerConnect] - Device Disconnected - Attempting Reconnect',
-          {},
-          DebugContext.ledger
+          {}
         );
         transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
           setReadyForPolling(true);
         } catch (e) {
-          logger.warn('[LedgerConnect] - Reconnect Error', {
+          logger.error(new RainbowError('[LedgerConnect] - Reconnect Error'), {
             error: (e as Error).message,
           });
           // temp removing this to see if it fixes an issue
@@ -78,11 +76,7 @@ export function useLedgerConnect({
   const pollerCleanup = (poller: NodeJS.Timer | undefined) => {
     try {
       if (poller) {
-        logger.debug(
-          '[LedgerConnect] - polling tear down',
-          {},
-          DebugContext.ledger
-        );
+        logger.debug('[LedgerConnect] - polling tear down', {});
         clearInterval(poller);
         poller?.unref();
         timer.current = undefined;
@@ -93,11 +87,7 @@ export function useLedgerConnect({
   };
   useEffect(() => {
     if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
-      logger.debug(
-        '[LedgerConnect] - init device polling',
-        {},
-        DebugContext.ledger
-      );
+      logger.debug('[LedgerConnect] - init device polling', {});
       setTriggerPollerCleanup(false);
       timer.current = setInterval(async () => {
         if (transport.current) {

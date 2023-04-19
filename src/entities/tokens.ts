@@ -1,6 +1,7 @@
 import { ChainId } from '@rainbow-me/swaps';
 import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
+import { Network } from '@/helpers';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -75,6 +76,7 @@ export interface ParsedAddressAsset
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
+  network?: Network;
 }
 
 export interface SwappableAsset extends ParsedAddressAsset {
@@ -86,7 +88,7 @@ export interface SwappableAsset extends ParsedAddressAsset {
   implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network?: string;
+  network?: Network;
 }
 
 export interface RainbowToken extends Asset {
