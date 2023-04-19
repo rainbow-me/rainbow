@@ -17,6 +17,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
+  normalizeAndroidBackupFilename,
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -199,12 +200,24 @@ export default function RestoreCloudStep({
               Object.keys(wallets).map(walletId => {
                 logger.log('updating backup state of wallet', walletId);
                 logger.log('backupSelected?.name', backupSelected?.name);
+
+                let filename = backupSelected?.name;
+
+                if (IS_ANDROID && filename) {
+                  /**
+                   * We need to normalize the filename on Android, because sometimes
+                   * the filename is returned with the path used for Google Drive storage.
+                   * That is with REMOTE_BACKUP_WALLET_DIR included.
+                   */
+                  filename = normalizeAndroidBackupFilename(filename);
+                }
+
                 // Mark the wallet as backed up
                 return dispatch(
                   setWalletBackedUp(
                     walletId,
                     walletBackupTypes.cloud,
-                    backupSelected?.name,
+                    filename,
                     false
                   )
                 );
