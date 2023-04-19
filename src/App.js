@@ -94,6 +94,43 @@ const containerStyle = { flex: 1 };
 class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
+  /**
+   * There's a race condition in Branch's RN SDK. From a cold start, Branch
+   * doesn't always handle an initial URL, so we need to check for it here and
+   * then pass it to Branch to do its thing.
+   *
+   * @see https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution/issues/673#issuecomment-1220974483
+   */
+  async setupDeeplinking() {
+    const initialUrl = await Linking.getInitialURL();
+
+    // main Branch handler
+    this.branchListener = await branchListener(url => {
+      try {
+        handleDeeplink(url, this.state.initialRoute);
+      } catch (e) {
+        logger.error(new RainbowError('Error opening deeplink'), {
+          message: e.message,
+          url,
+        });
+      }
+    });
+
+    // if we have an initial URL, pass it to Branch
+    if (initialUrl) {
+      logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
+      branch.openURL(initialUrl);
+    }
+
+    // Walletconnect uses direct deeplinks
+    if (android) {
+      Linking.addEventListener('url', ({ url }) => {
+        logger.debug(`App: received linking URL, opening with Branch`, { url });
+        branch.openURL(url);
+      });
+    }
+  }
+
   async componentDidMount() {
     if (!__DEV__ && isTestFlight) {
       logger.info(`Test flight usage - ${isTestFlight}`);
@@ -105,17 +142,8 @@ class OldApp extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
-    this.branchListener = await branchListener(this.handleOpenLinkingURL);
-    // Walletconnect uses direct deeplinks
-    if (android) {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) {
-        this.handleOpenLinkingURL(initialUrl);
-      }
-      Linking.addEventListener('url', ({ url }) => {
-        this.handleOpenLinkingURL(url);
-      });
-    }
+
+    await this.setupDeeplinking();
 
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
@@ -166,17 +194,6 @@ class OldApp extends Component {
   async handleTokenListUpdate() {
     store.dispatch(uniswapPairsInit());
   }
-
-  handleOpenLinkingURL = url => {
-    try {
-      handleDeeplink(url, this.state.initialRoute);
-    } catch (e) {
-      logger.error(new RainbowError('Error opening deeplink'), {
-        message: e.message,
-        url,
-      });
-    }
-  };
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
