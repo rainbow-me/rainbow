@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -39,7 +39,7 @@ const UniqueTokenExpandedStateContent = ({
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
+  const aspectRatio = usePersistentAspectRatio(asset.images?.lowResPngUrl);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
@@ -65,28 +65,28 @@ const UniqueTokenExpandedStateContent = ({
         {supportsVideo ? (
           <SimpleVideo
             loading={loading}
-            posterUri={asset.image_url}
+            posterUri={asset.images?.fullResPngUrl}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset.animation_url || asset.image_url}
+            uri={asset?.videoUrl || asset.images?.fullResUrl}
           />
         ) : supports3d ? (
           <ModelView
-            fallbackUri={asset.image_url}
+            fallbackUri={asset.images?.fullResPngUrl}
             loading={loading}
             setLoading={setLoading}
-            uri={asset.animation_url || asset.image_url}
+            uri={asset.videoUrl || asset.images?.fullResUrl}
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.animation_url || asset.image_url}
+            uri={asset.videoUrl || asset.images?.fullResUrl}
           />
         ) : (
           <UniqueTokenImage
-            backgroundColor={asset.background}
-            imageUrl={asset.image_url}
+            backgroundColor={asset.backgroundColor}
+            imageUrl={asset.images?.fullResUrl}
             item={asset}
             resizeMode={resizeMode}
             transformSvgs={false}

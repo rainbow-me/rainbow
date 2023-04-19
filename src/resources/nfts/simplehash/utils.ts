@@ -31,7 +31,7 @@ import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 
 const ENS_COLLECTION_NAME = 'ENS';
-const SVG_MIME_TYPE = 'image/svg+xml';
+export const SVG_MIME_TYPE = 'image/svg+xml';
 const pixelRatio = PixelRatio.get();
 const deviceWidth = deviceUtils.dimensions.width;
 const size = deviceWidth * pixelRatio;
@@ -453,7 +453,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
               name: nft.last_sale?.payment_token.name,
               symbol: nft.last_sale?.payment_token.symbol,
             },
-            value: nft.last_sale?.unit_price,
+            value: nft.last_sale?.unit_price as number,
           }
         : undefined,
     marketplaces,
@@ -465,7 +465,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     type: AssetTypes.nft as AssetType,
     uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
-    video_url: maybeSignUri(
+    videoUrl: maybeSignUri(
       nft.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
       { fm: 'mp4' }
     ),

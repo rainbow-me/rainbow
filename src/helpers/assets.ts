@@ -385,11 +385,11 @@ export const buildBriefUniqueTokenList = (
 
 export const buildUniqueTokenName = ({
   collection,
-  id,
+  tokenId,
   name,
   uniqueId,
 }: any) => {
   if (name) return name;
-  if (id) return `${collection?.name} #${id}`;
+  if (tokenId) return `${collection?.name} #${tokenId}`;
   return uniqueId;
 };

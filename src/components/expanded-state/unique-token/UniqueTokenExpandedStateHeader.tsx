@@ -31,8 +31,8 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
-import isSVGImage from '@/utils/isSVG';
 import { NFT } from '@/resources/nfts/types';
+import { SVG_MIME_TYPE } from '@/resources/nfts/simplehash/utils';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -256,8 +256,7 @@ const UniqueTokenExpandedStateHeader = ({
     marketplace?.name,
   ]);
 
-  // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSVGImage(asset.image_url);
+  const isSVG = asset?.images?.mimeType === SVG_MIME_TYPE;
   const isENS =
     asset.asset_contract?.address?.toLowerCase() ===
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();

@@ -6,8 +6,8 @@ import UniqueTokenImage from './UniqueTokenImage';
 import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { SVG_MIME_TYPE } from '@/resources/nfts/simplehash/utils';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -37,10 +37,10 @@ const UniqueTokenCard = ({
   style = undefined,
   ...props
 }) => {
-  usePersistentAspectRatio(item.lowResUrl);
-  usePersistentDominantColorFromImage(item.lowResUrl);
+  usePersistentAspectRatio(item.images?.lowResPngUrl);
+  usePersistentDominantColorFromImage(item.images?.lowResPngUrl);
 
-  const isSVG = isSVGImage(item.image_url);
+  const isSVG = item?.images?.mimeType === SVG_MIME_TYPE;
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -65,8 +65,10 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
-          backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={isSVG ? item.lowResUrl : item.image_url}
+          backgroundColor={item.backgroundColor || colors.lightestGrey}
+          imageUrl={
+            isSVG ? item.images?.fullResPngUrl : item.images?.fullResUrl
+          }
           isCard
           item={item}
           resizeMode={resizeMode}

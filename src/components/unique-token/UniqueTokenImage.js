@@ -13,8 +13,8 @@ import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
 import { CardSize } from './CardSize';
+import { SVG_MIME_TYPE } from '@/resources/nfts/simplehash/utils';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
@@ -51,10 +51,8 @@ const UniqueTokenImage = ({
   size,
   transformSvgs = true,
 }) => {
-  const isENS =
-    item.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
-  const isSVG = isSVGImage(imageUrl);
+  const isENS = item.asset_contract?.address === ENS_NFT_CONTRACT_ADDRESS;
+  const isSVG = item?.images?.mimeType === SVG_MIME_TYPE;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -63,7 +61,7 @@ const UniqueTokenImage = ({
   const backgroundColor = givenBackgroundColor;
   const { hiddenTokens } = useHiddenTokens();
   const isHiddenToken = React.useMemo(() => {
-    return hiddenTokens.find(token => token === item.fullUniqueId);
+    return hiddenTokens.find(token => token === item.uniqueId);
   }, [hiddenTokens, item]);
 
   return (
@@ -72,11 +70,11 @@ const UniqueTokenImage = ({
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
           fallbackUri={svgToPngIfNeeded(imageUrl, true)}
-          lowResFallbackUri={item.lowResUrl}
+          lowResFallbackUri={item.images?.lowResPngUrl}
           onError={handleError}
           resizeMode={resizeMode}
           style={position.coverAsObject}
-          uri={item.image_url}
+          uri={item.images?.fullResUrl}
         />
       ) : imageUrl && !error ? (
         <Fragment>
@@ -95,7 +93,7 @@ const UniqueTokenImage = ({
               fm="png"
               playing={false}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              source={{ uri: item.lowResUrl }}
+              source={{ uri: item.images?.lowResPngUrl }}
               style={position.coverAsObject}
               size={CardSize}
             />
@@ -123,7 +121,7 @@ const UniqueTokenImage = ({
               size="14px / 19px (Deprecated)"
               weight="semibold"
             >
-              {`${item.familyName} #${item.id}`}
+              {`${item.collection?.name} #${item.tokenId}`}
             </Text>
           </View>
         </>
