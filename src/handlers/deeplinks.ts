@@ -31,6 +31,12 @@ import {
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 
+/*
+ * You can test these deeplinks with the following command:
+ *
+ *    `xcrun simctl openurl booted "https://link.rainbow.me/0x123"`
+ */
+
 export default async function handleDeeplink(
   url: string,
   initialRoute: any = null

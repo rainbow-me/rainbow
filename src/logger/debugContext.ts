@@ -15,4 +15,5 @@ export const DebugContext = {
   wallet: 'wallet',
   f2c: 'f2c',
   keychain: 'keychain',
+  deeplinks: 'deeplinks',
 } as const;
