@@ -48,69 +48,84 @@ export const publicAccessControlOptions: Options = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
+/**
+ * Retrieve a value from the keychain.
+ */
 export async function get(
   key: string,
-  options: Options = {},
-  attempts = 0
+  options: Options = {}
 ): Promise<Result<string>> {
   logger.debug(`keychain: get`, { key }, logger.DebugContext.keychain);
 
-  let data = cache.getString(key);
+  async function _get(attempts = 0): Promise<Result<string>> {
+    logger.debug(
+      `keychain: get attempt ${attempts}`,
+      { key },
+      logger.DebugContext.keychain
+    );
 
-  if (!data) {
-    try {
-      const result = await getInternetCredentials(key, options);
+    let data = cache.getString(key);
 
-      if (result) {
-        data = result.password;
-      }
-    } catch (e: any) {
-      switch (e.toString()) {
-        case 'Error: User canceled the operation.': {
-          return {
-            value: undefined,
-            error: ErrorType.UserCanceled,
-          };
+    if (!data) {
+      try {
+        const result = await getInternetCredentials(key, options);
+
+        if (result) {
+          data = result.password;
         }
-        case 'Error: Wrapped error: User not authenticated': {
-          return {
-            value: undefined,
-            error: ErrorType.NotAuthenticated,
-          };
-        }
-        case 'Error: The user name or passphrase you entered is not correct.': {
-          if (attempts > 2) {
+      } catch (e: any) {
+        switch (e.toString()) {
+          case 'Error: User canceled the operation.': {
+            return {
+              value: undefined,
+              error: ErrorType.UserCanceled,
+            };
+          }
+          case 'Error: Wrapped error: User not authenticated': {
             return {
               value: undefined,
               error: ErrorType.NotAuthenticated,
             };
           }
+          case 'Error: The user name or passphrase you entered is not correct.': {
+            if (attempts > 2) {
+              return {
+                value: undefined,
+                error: ErrorType.NotAuthenticated,
+              };
+            }
 
-          // try again
-          await delay(1000);
-          return get(key, options, attempts + 1);
-        }
-        default: {
-          return {
-            value: undefined,
-            error: ErrorType.Unknown,
-          };
+            // try again
+            await delay(1000);
+            return _get(attempts + 1);
+          }
+          default: {
+            return {
+              value: undefined,
+              error: ErrorType.Unknown,
+            };
+          }
         }
       }
     }
+
+    return data
+      ? {
+          value: data,
+          error: undefined,
+        }
+      : {
+          value: undefined,
+          error: ErrorType.Unavailable,
+        };
   }
 
-  return data
-    ? {
-        value: data,
-        error: undefined,
-      }
-    : {
-        value: undefined,
-        error: ErrorType.Unavailable,
-      };
+  return _get();
 }
 
+/**
+ * Set a value on the keychain
+ */
 export async function set(
   key: string,
   value: string,
@@ -127,6 +142,10 @@ export async function set(
   await setInternetCredentials(key, key, String(value), options);
 }
 
+/**
+ * A convenience method for getting a value from the keychain and parsing it as
+ * JSON.
+ */
 export async function getObject(
   key: string,
   options: Options = {}
@@ -145,6 +164,10 @@ export async function getObject(
   };
 }
 
+/**
+ * A convenience method for stringifying an object and storing it on the
+ * keychain.
+ */
 export async function setObject(
   key: string,
   value: Record<string, any>,
@@ -155,11 +178,17 @@ export async function setObject(
   await set(key, JSON.stringify(value), options);
 }
 
+/**
+ * Check if a value exists on the keychain.
+ */
 export async function has(key: string): Promise<boolean> {
   logger.debug(`keychain: has`, { key }, logger.DebugContext.keychain);
   return Boolean(await hasInternetCredentials(key));
 }
 
+/**
+ * Remove a value from the keychain.
+ */
 export async function remove(key: string) {
   logger.debug(`keychain: remove`, { key }, logger.DebugContext.keychain);
 
@@ -167,24 +196,39 @@ export async function remove(key: string) {
   await resetInternetCredentials(key);
 }
 
-export async function getAllCredentials(): Promise<UserCredentials[]> {
-  logger.debug(`keychain: getAllCredentials`, {}, logger.DebugContext.keychain);
+/**
+ * Return all the keys stored on the keychain.
+ *
+ * This method originates in a patch that we applied manually to the underlying
+ * keychain library. Check out our patches directory for more info.
+ */
+export async function getAllKeys(): Promise<UserCredentials[]> {
+  logger.debug(`keychain: getAllKeys`, {}, logger.DebugContext.keychain);
   const res = await getAllInternetCredentials();
   return res ? res.results : [];
 }
 
+/**
+ * Clear all key/value pairs stored on the keychain.
+ *
+ * This is only possible because of the patch we made to add
+ * `getAllKeys`.
+ */
 export async function clear() {
   logger.debug(`keychain: clear`, {}, logger.DebugContext.keychain);
 
   cache.clearAll();
 
-  const credentials = await getAllCredentials();
+  const credentials = await getAllKeys();
 
   await Promise.all(
     credentials?.map(c => resetInternetCredentials(c.username))
   );
 }
 
+/**
+ * Wrapper around the underlying library's method by the same name.
+ */
 export async function getSupportedBiometryType(): Promise<
   BIOMETRY_TYPE | undefined
 > {
@@ -196,6 +240,10 @@ export async function getSupportedBiometryType(): Promise<
   return (await originalGetSupportedBiometryType()) || undefined;
 }
 
+/**
+ * Wrapper around the underlying library's method by a similar name, with our
+ * more robust `Result` return type.
+ */
 export async function getSharedWebCredentials(): Promise<
   Result<SharedWebCredentials | undefined>
 > {
@@ -227,6 +275,10 @@ export async function getSharedWebCredentials(): Promise<
       };
 }
 
+/**
+ * Wrapper around the underlying library's method by the same name, with our
+ * more robust `Result` return type.
+ */
 export async function setSharedWebCredentials(
   username: string,
   password: string
@@ -239,6 +291,10 @@ export async function setSharedWebCredentials(
   await originalSetSharedWebCredentials('rainbow.me', username, password);
 }
 
+/**
+ * Returns our standard private access control options, based on certain
+ * environment variables.
+ */
 export async function getPrivateAccessControlOptions(): Promise<Options> {
   logger.debug(
     `keychain: getPrivateAccessControlOptions`,
