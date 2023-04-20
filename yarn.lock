@@ -14163,10 +14163,10 @@ react-native-widgetkit@1.0.9:
   resolved "https://registry.yarnpkg.com/react-native-widgetkit/-/react-native-widgetkit-1.0.9.tgz#aded1c12f7c7cfd18912b947228aac433c05ddc2"
   integrity sha512-WBwdUbcOzyL0LiqhRyd7gS9A1D0X5A/m2h0fAKTbxUAbp3r2D2pdjyPnVW/6q0otpq7RIyZFo6Ln1EDJ9gfhEg==
 
-react-native@0.70.8:
-  version "0.70.8"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.70.8.tgz#aa9aae8e6291589908db74fe69e0ec1d9a9c5490"
-  integrity sha512-O3ONJed9W/VEEVWsbZcwyMDhnEvw7v9l9enqWqgbSGLzHfh6HeIGMCNmjz+kRsHnC7AiF47fupWfgYX7hNnhoQ==
+react-native@0.70.9:
+  version "0.70.9"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.70.9.tgz#08a962b72cf2a922e4cd471049eb0b624079dba6"
+  integrity sha512-Z8K7BayzswIVdmDzF/VS6RG1mCkNJSCgA3NjrXl8YmadCDDuDbEIM5BE+Qiiz8UK5XzNsF9NxH/FVojty/1I4A==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "9.3.2"

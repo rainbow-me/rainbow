@@ -133,7 +133,7 @@ export default function useWalletCloudBackup() {
         try {
           userPIN = (await authenticateWithPIN()) ?? undefined;
         } catch (e) {
-          onError(i18n.t(i18n.l.back_up.wrong_pin));
+          onError?.(i18n.t(i18n.l.back_up.wrong_pin));
           return;
         }
       }
