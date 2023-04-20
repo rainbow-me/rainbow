@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.16)
+
+### Added
+
+- Ledger support
+- Finiliar NFT app icon
+- Ratio fees fix
+
 ## [1.8.15] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.15)
 
 ### Added

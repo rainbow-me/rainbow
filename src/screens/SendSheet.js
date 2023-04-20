@@ -9,8 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
@@ -27,7 +26,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes } from '@/entities';
-import { isL2Asset, isNativeAsset } from '@/handlers/assets';
+import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
   buildTransaction,
@@ -79,7 +78,12 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import {
+  deviceUtils,
+  ethereumUtils,
+  getUniqueTokenType,
+  safeAreaInsetValues,
+} from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
@@ -88,7 +92,9 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = IS_IOS
+  ? safeAreaInsetValues.top
+  : StatusBar.currentHeight;
 
 const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -132,6 +138,7 @@ export default function SendSheet(props) {
     stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
+    l1GasFeeOptimism,
   } = useGas();
   const recipientFieldRef = useRef();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -329,15 +336,21 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = ethereumUtils.getNetworkFromType(selected.type);
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
       if (
-        selected?.type &&
+        assetNetwork &&
         (assetNetwork !== currentNetwork ||
           !currentNetwork ||
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
         switch (selected.type) {
+          case AssetTypes.nft:
+            setCurrentNetwork(selected.network);
+            provider = await getProviderForNetwork(selected.network);
+            break;
           case AssetTypes.polygon:
             setCurrentNetwork(Network.polygon);
             provider = await getProviderForNetwork(Network.polygon);
@@ -361,7 +374,15 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
-  }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
+  }, [
+    currentNetwork,
+    isNft,
+    network,
+    prevNetwork,
+    selected.network,
+    selected.type,
+    sendUpdateSelected,
+  ]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
@@ -370,7 +391,9 @@ export default function SendSheet(props) {
         Number(currentProvider._network.chainId)
       );
 
-      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+      const assetNetwork = isNft
+        ? selected.network
+        : ethereumUtils.getNetworkFromType(selected.type);
 
       if (
         assetNetwork === currentNetwork &&
@@ -706,7 +729,8 @@ export default function SendSheet(props) {
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
-      !toAddress
+      !toAddress ||
+      (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -734,14 +758,14 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    currentNetwork,
     isENS,
     ensProfile.isSuccess,
     gasFeeParamsBySpeed,
     selectedGasFee,
+    toAddress,
     isSufficientGas,
     isValidGas,
-    toAddress,
+    currentNetwork,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -886,7 +910,10 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+    const assetNetwork = isNft
+      ? selected.network
+      : ethereumUtils.getNetworkFromType(selected.type);
+
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
@@ -928,6 +955,7 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
+    isNft,
   ]);
 
   const sendContactListDataKey = useMemo(
