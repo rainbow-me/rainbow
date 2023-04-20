@@ -25,7 +25,7 @@ const supportedSizeTransformations = {
 
 // NOTE: currently, we assume that width and height are always equal and provided.
 // We use this storage only for assets.
-export const signUrl = memoFn(
+export const signCloudinaryIconUrl = memoFn(
   (url: string, config: Partial<CloudinaryConfig>) => {
     const { format, ...widthAndHeight } = config;
     let internalAddress = url.split('/upload/')[1];
@@ -56,6 +56,6 @@ export const signUrl = memoFn(
     `${url}-${options.width}-${options.height}-${options.format}`
 );
 
-export function isCloudinaryStorageLink(url: string): boolean {
-  return url.startsWith('https://rainbowme-res.cloudinary.com/');
+export function isCloudinaryStorageIconLink(url: string): boolean {
+  return url.startsWith('https://rainbowme-res.cloudinary.com/upload/');
 }
