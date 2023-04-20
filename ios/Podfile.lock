@@ -152,7 +152,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
-  - hermes-engine (0.70.8)
+  - hermes-engine (0.70.9)
   - JWT (3.0.0-beta.14):
     - Base64 (~> 1.1.2)
   - KTVCocoaHTTPServer (1.0.0):
@@ -1186,7 +1186,7 @@ SPEC CHECKSUMS:
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
-  hermes-engine: 0b19f33a9c2ec1dbdede3232606eeb1101db4cec
+  hermes-engine: 918ec5addfbc430c9f443376d739f088b6dc96c3
   JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
