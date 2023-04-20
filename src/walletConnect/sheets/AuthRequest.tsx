@@ -176,9 +176,17 @@ export function AuthRequest({
                   </Text>
                 </Box>
 
-                <Text color="label" size="15pt" weight="bold">
-                  {accountName}
-                </Text>
+                <Box style={{ maxWidth: 200 }}>
+                  <Text
+                    color="label"
+                    size="15pt"
+                    weight="bold"
+                    ellipsizeMode="middle"
+                    numberOfLines={1}
+                  >
+                    {accountName}
+                  </Text>
+                </Box>
               </Box>
               <Text color="label" size="15pt" weight="bold">
                 􀆏
