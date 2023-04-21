@@ -79,6 +79,7 @@
       }
     },
     "back_up": {
+      "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code. :)",
       "already_backed_up": {
         "backed_up": "Backed up :)",
         "backed_up_manually": "Backed up manually :)",
@@ -152,6 +153,7 @@
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
         "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings. :)",
+        "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly. :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
         "private_key_title": "Private Key :)",
@@ -678,7 +680,7 @@
         "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
         "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering. :)",
         "finiliar_text": "A special edition Rainbow Finiliar icon that keeps you up to date on the price of gas, rain or shine. :)",
-        "finiliar_title": "You’ve unlocked a\nRainbow Finiliar :)",
+        "finiliar_title": "You've unlocked a\nRainbow Finiliar :)",
         "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
         "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
         "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
