@@ -68,7 +68,7 @@ const UniqueTokenImage = ({
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
-          fallbackUri={asset?.images?.fullResPngUrl}
+          fallbackUri={item?.images?.fullResPngUrl}
           lowResFallbackUri={item.images?.lowResPngUrl}
           onError={handleError}
           resizeMode={resizeMode}

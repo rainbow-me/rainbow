@@ -3,7 +3,7 @@ import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNFTs } from '@/resources/nfts';
 
 export default function useExternalWalletSectionsData({
   address,
@@ -12,16 +12,11 @@ export default function useExternalWalletSectionsData({
   address?: string;
   type?: AssetListType;
 }) {
-  const { data: uniqueTokens, isInitialLoading } = useLegacyNFTs({
+  const { data: uniqueTokens, isInitialLoading } = useNFTs({
     address: address ?? '',
   });
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
-
-  const sellingTokens = useMemo(
-    () => uniqueTokens?.filter(token => token.currentPrice) || [],
-    [uniqueTokens]
-  );
 
   const briefSectionsData = useMemo(
     () =>
@@ -29,12 +24,13 @@ export default function useExternalWalletSectionsData({
         ? buildBriefUniqueTokenList(
             uniqueTokens,
             showcaseTokens,
-            sellingTokens,
+            // TODO: add selling tokens, when we have the data. not provided by simplehash, maybe reservoir?
+            [],
             hiddenTokens,
             type
           )
         : [],
-    [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
+    [uniqueTokens, showcaseTokens, hiddenTokens, type]
   );
 
   return {

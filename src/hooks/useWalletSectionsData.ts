@@ -12,7 +12,7 @@ import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
   type,
@@ -29,7 +29,7 @@ export default function useWalletSectionsData({
     nativeCurrency,
   } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { data: allUniqueTokens } = useLegacyNFTs({
+  const { data: allUniqueTokens } = useNFTs({
     address: accountAddress,
   });
   const uniswap = useSelector(readableUniswapSelector);

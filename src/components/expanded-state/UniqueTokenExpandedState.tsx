@@ -281,9 +281,9 @@ const UniqueTokenExpandedState = ({
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS
-    ? uniqueId
-      ? uniqueId?.split(' ')?.[0]
-      : uniqueId
+    ? asset?.name
+      ? asset?.name?.split(' ')?.[0]
+      : asset?.name
     : '';
   const ensProfile = useENSProfile(cleanENSName, {
     enabled: isENS,
@@ -408,9 +408,9 @@ const UniqueTokenExpandedState = ({
   const handlePressEdit = useCallback(() => {
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
-        startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
+        startRegistration(asset?.name, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-          ensName: uniqueId,
+          ensName: asset?.name,
           externalAvatarUrl: asset?.images?.lowResPngUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
@@ -420,7 +420,7 @@ const UniqueTokenExpandedState = ({
     isENS,
     navigate,
     startRegistration,
-    uniqueId,
+    asset?.name,
     asset?.images?.lowResPngUrl,
   ]);
 
@@ -611,7 +611,7 @@ const UniqueTokenExpandedState = ({
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}
-                              ensName={uniqueId}
+                              ensName={asset?.name}
                               expiryDate={ensData?.registration?.expiryDate}
                               externalAvatarUrl={asset?.images?.lowResPngUrl}
                               registrationDate={
@@ -680,7 +680,7 @@ const UniqueTokenExpandedState = ({
                               <ProfileInfoSection
                                 allowEdit={hasEditButton}
                                 coinAddresses={ensData?.coinAddresses}
-                                ensName={uniqueId}
+                                ensName={asset?.name}
                                 images={ensData?.images}
                                 isLoading={ensProfile.isLoading}
                                 records={ensData?.records}

@@ -12,6 +12,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { padding } from '@/styles';
 import { NFT } from '@/resources/nfts/types';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 const dividerHeight = 22;
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
@@ -78,7 +79,7 @@ const UniqueTokenCoinIcon = magicMemo(
   asset => {
     const {
       collection: { name },
-      background,
+      backgroundColor,
       images: { lowResPngUrl },
       selected,
       shouldPrioritizeImageLoading,
@@ -88,7 +89,7 @@ const UniqueTokenCoinIcon = magicMemo(
     return (
       <Centered>
         <RequestVendorLogoIcon
-          backgroundColor={background || colors.lightestGrey}
+          backgroundColor={backgroundColor || colors.lightestGrey}
           borderRadius={10}
           dappName={name}
           imageUrl={lowResPngUrl}
@@ -99,7 +100,7 @@ const UniqueTokenCoinIcon = magicMemo(
       </Centered>
     );
   },
-  ['background', 'image_thumbnail_url']
+  ['backgroundColor', 'lowResPngUrl']
 );
 
 const CollectiblesSendRow = React.memo(
@@ -120,9 +121,7 @@ const CollectiblesSendRow = React.memo(
     testID: string;
   }) => {
     const { colors } = useTheme();
-
-    const uniqueTokenType = item?.uniqueTokenType;
-    const isENS = uniqueTokenType === 'ENS';
+    const isENS = item?.uniqueTokenType === uniqueTokenTypes.ENS;
 
     const subtitle = useMemo(
       () =>

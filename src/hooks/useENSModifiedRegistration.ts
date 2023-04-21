@@ -13,7 +13,7 @@ import { Records } from '@/entities';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNFTs } from '@/resources/nfts';
 import { NFT } from '@/resources/nfts/types';
 
 const getImageUrl = (
@@ -68,7 +68,7 @@ export default function useENSModifiedRegistration({
   const { records, initialRecords, name, mode } = useENSRegistration();
   const { accountAddress } = useAccountSettings();
 
-  const { data: uniqueTokens } = useLegacyNFTs({
+  const { data: uniqueTokens } = useNFTs({
     address: accountAddress,
   });
 

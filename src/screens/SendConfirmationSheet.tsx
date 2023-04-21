@@ -570,7 +570,9 @@ export default function SendConfirmationSheet() {
                   {isNft ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || colors.lightestGrey}
+                      backgroundColor={
+                        asset.backgroundColor || colors.lightestGrey
+                      }
                       badgeXPosition={-7}
                       badgeYPosition={0}
                       borderRadius={10}

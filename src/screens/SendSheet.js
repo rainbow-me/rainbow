@@ -200,9 +200,9 @@ export default function SendSheet(props) {
   const uniqueTokenType = isNft ? selected?.uniqueTokenType : undefined;
   const isENS = uniqueTokenType === 'ENS';
 
-  const ensName = selected.uniqueId
-    ? selected.uniqueId?.split(' ')?.[0]
-    : selected.uniqueId;
+  const ensName = selected.name
+    ? selected.name?.split(' ')?.[0]
+    : selected.name;
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
     supportedRecordsOnly: false,

@@ -256,7 +256,7 @@ export function simpleHashNFTToUniqueAsset(
  * @param isSVG whether the original image is an svg
  * @returns fullResPngUrl, lowResPngUrl, fullResUrl
  */
-function handleImages(
+export function handleImages(
   original: string | null | undefined,
   preview: string | null | undefined,
   isSVG: boolean
