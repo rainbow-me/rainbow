@@ -7,7 +7,6 @@ import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Text as LegacyText } from '../text';
 import { Text } from '@/design-system';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -69,7 +68,7 @@ const UniqueTokenImage = ({
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
-          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
+          fallbackUri={asset?.images?.fullResPngUrl}
           lowResFallbackUri={item.images?.lowResPngUrl}
           onError={handleError}
           resizeMode={resizeMode}
@@ -121,7 +120,7 @@ const UniqueTokenImage = ({
               size="14px / 19px (Deprecated)"
               weight="semibold"
             >
-              {`${item.collection?.name} #${item.tokenId}`}
+              {`${item.collection?.name} #${item.id}`}
             </Text>
           </View>
         </>

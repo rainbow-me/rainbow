@@ -79,7 +79,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType } from '@/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
@@ -197,7 +197,7 @@ export default function SendSheet(props) {
     colorForAsset = colors.appleBlue;
   }
 
-  const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
+  const uniqueTokenType = isNft ? selected?.uniqueTokenType : undefined;
   const isENS = uniqueTokenType === 'ENS';
 
   const ensName = selected.uniqueId
@@ -786,7 +786,7 @@ export default function SendSheet(props) {
       });
       return;
     }
-    const uniqueTokenType = getUniqueTokenType(selected);
+    const uniqueTokenType = selected?.uniqueTokenType;
     const isENS = uniqueTokenType === 'ENS';
     const checkboxes = getDefaultCheckboxes({
       ensProfile,

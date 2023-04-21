@@ -44,7 +44,6 @@ import {
   estimateENSSetRecordsGasLimit,
   formatRecordsForTransaction,
 } from '@/handlers/ens';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { estimateGasLimit } from '@/handlers/web3';
 import {
   removeFirstEmojiFromString,
@@ -68,7 +67,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 
 const Container = styled(Centered).attrs({
@@ -302,7 +301,7 @@ export default function SendConfirmationSheet() {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset);
+  const uniqueTokenType = asset?.uniqueTokenType;
   const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
@@ -514,10 +513,7 @@ export default function SendConfirmationSheet() {
     ? avatar?.imageUrl || existingAccount?.image
     : existingAccount?.image;
 
-  const imageUrl = svgToPngIfNeeded(
-    asset.image_thumbnail_url || asset.image_url,
-    true
-  );
+  const imageUrl = asset?.images?.lowResPngUrl;
 
   const contentHeight = getSheetHeight({
     checkboxes,

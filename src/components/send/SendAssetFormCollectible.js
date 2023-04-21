@@ -64,7 +64,7 @@ export default function SendAssetFormCollectible({
   const [isGradientVisible, setIsGradientVisible] = useState(false);
 
   const { dimensions: cachedImageDimensions } = useImageMetadata(
-    asset.image_preview_url
+    asset.images?.lowResPngUrl
   );
 
   const { height: imageHeight, width: imageWidth } = useMemo(() => {

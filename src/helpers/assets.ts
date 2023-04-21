@@ -8,11 +8,7 @@ import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@/references';
-import {
-  ethereumUtils,
-  getUniqueTokenFormat,
-  getUniqueTokenType,
-} from '@/utils';
+import { ethereumUtils, getUniqueTokenFormat } from '@/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -182,7 +178,7 @@ export const buildUniqueTokenList = (
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
+  const grouped = groupBy(uniqueTokens, token => token.collection?.name);
   const families = Object.keys(grouped);
 
   for (let family of families) {
@@ -209,7 +205,7 @@ export const buildUniqueTokenList = (
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
-        familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
+        familyImage: tokensRow?.[0]?.[0]?.collection?.imageUrl ?? null,
         familyName: family,
         isHeader: index === 0,
         stableId: id,
@@ -269,10 +265,10 @@ export const buildBriefUniqueTokenList = (
   isReadOnlyWallet = false
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
-    .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
+    .filter(({ uniqueId }: any) => hiddenTokens.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
   const nonHiddenUniqueTokens = uniqueTokens.filter(
-    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
+    ({ uniqueId }: any) => !hiddenTokens.includes(uniqueId)
   );
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
@@ -281,12 +277,15 @@ export const buildBriefUniqueTokenList = (
   const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
+      const type = token?.uniqueTokenType;
       return format === 'image' && type === 'NFT';
     }
     return true;
   });
-  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
+  const grouped2 = groupBy(
+    filteredUniqueTokens,
+    token => token.collection?.name
+  );
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
@@ -339,7 +338,7 @@ export const buildBriefUniqueTokenList = (
   for (let family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      image: grouped2[family][0].familyImage,
+      image: grouped2[family][0].collection?.imageUrl,
       name: family,
       total: grouped2[family].length,
       type: 'FAMILY_HEADER',

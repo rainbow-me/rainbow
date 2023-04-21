@@ -70,7 +70,7 @@ export type NFT = {
   name: string;
   network: Network;
   predominantColor: string | undefined;
-  tokenId: string;
+  id: string;
   traits: NFTTrait[];
   type: AssetType;
   uniqueId: string;

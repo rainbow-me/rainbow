@@ -33,7 +33,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: NFT }) {
 
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
-    tokenId: asset?.tokenId,
+    tokenId: asset?.id,
     network: asset?.network,
   });
 

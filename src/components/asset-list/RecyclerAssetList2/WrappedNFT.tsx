@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { NFT } from '@/resources/nfts/types';
 
 export default React.memo(function WrappedNFT({
   onPress,
@@ -12,7 +12,7 @@ export default React.memo(function WrappedNFT({
   placement,
   externalAddress,
 }: {
-  onPress?: (asset: UniqueAsset) => void;
+  onPress?: (asset: NFT) => void;
   uniqueId: string;
   placement: 'left' | 'right';
   externalAddress?: string;

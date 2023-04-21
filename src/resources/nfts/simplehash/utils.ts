@@ -460,7 +460,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     name: nft.name,
     network: nft.chain,
     predominantColor: nft.previews?.predominant_color ?? undefined,
-    tokenId: nft.token_id,
+    id: nft.token_id,
     traits,
     type: AssetTypes.nft as AssetType,
     uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,

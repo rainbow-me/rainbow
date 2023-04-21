@@ -14,7 +14,7 @@ export default function useENSUniqueToken({
   const nft = nfts?.find(token => {
     return (
       token.asset_contract.address === contractAddress?.toLowerCase() &&
-      token.tokenId === tokenId
+      token.id === tokenId
     );
   });
   return nft;

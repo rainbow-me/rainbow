@@ -68,25 +68,37 @@ const UniqueTokenExpandedStateContent = ({
             posterUri={asset.images?.fullResPngUrl}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset?.videoUrl || asset.images?.fullResUrl}
+            uri={
+              asset?.videoUrl ||
+              asset.images?.fullResUrl ||
+              asset?.images?.fullResPngUrl
+            }
           />
         ) : supports3d ? (
           <ModelView
             fallbackUri={asset.images?.fullResPngUrl}
             loading={loading}
             setLoading={setLoading}
-            uri={asset.videoUrl || asset.images?.fullResUrl}
+            uri={
+              asset.videoUrl ||
+              asset.images?.fullResUrl ||
+              asset?.images?.fullResPngUrl
+            }
           />
         ) : supportsAudio ? (
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
-            uri={asset.videoUrl || asset.images?.fullResUrl}
+            uri={
+              asset.videoUrl ||
+              asset.images?.fullResUrl ||
+              asset?.images?.fullResPngUrl
+            }
           />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.backgroundColor}
-            imageUrl={asset.images?.fullResUrl}
+            imageUrl={asset.images?.fullResUrl || asset?.images?.fullResPngUrl}
             item={asset}
             resizeMode={resizeMode}
             transformSvgs={false}

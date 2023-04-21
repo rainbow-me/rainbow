@@ -8,7 +8,6 @@ import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
@@ -18,6 +17,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import { NFT } from '@/resources/nfts/types';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -66,15 +66,15 @@ const RegistrationCover = ({
       asset,
       image,
     }: {
-      asset?: UniqueAsset;
+      asset?: NFT;
       image?: Image & { tmpPath?: string };
     }) => {
       setCoverMetadata(image);
       setCoverUrl(
         image?.tmpPath ||
-          asset?.image_url ||
-          asset?.lowResUrl ||
-          asset?.image_thumbnail_url ||
+          asset?.images?.fullResUrl ||
+          asset?.images?.fullResPngUrl ||
+          asset?.images?.lowResPngUrl ||
           ''
       );
 

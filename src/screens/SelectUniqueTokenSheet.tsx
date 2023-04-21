@@ -4,8 +4,8 @@ import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { useWalletSectionsData } from '@/hooks';
+import { NFT } from '@/resources/nfts/types';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<any>();
@@ -17,7 +17,7 @@ export default function SelectUniqueTokenSheet() {
   }, [layout]);
 
   const handlePressUniqueToken = useCallback(
-    (asset: UniqueAsset) => {
+    (asset: NFT) => {
       params.onSelect?.(asset);
       goBack();
     },

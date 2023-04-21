@@ -9,18 +9,18 @@ import {
   useENSRegistration,
   usePrevious,
 } from '.';
-import { Records, UniqueAsset } from '@/entities';
-import svgToPngIfNeeded from '@/handlers/svgs';
+import { Records } from '@/entities';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { NFT } from '@/resources/nfts/types';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
   records: Records,
   changedRecords: Records,
-  uniqueTokens: UniqueAsset[],
+  uniqueTokens: NFT[],
   defaultValue?: string | null,
   mode?: keyof typeof REGISTRATION_MODES
 ) => {
@@ -42,13 +42,8 @@ const getImageUrl = (
           token.asset_contract.address === contractAddress &&
           token.id === tokenId
       );
-      if (uniqueToken?.image_url) {
-        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
-      } else if (uniqueToken?.lowResUrl) {
-        imageUrl = uniqueToken?.lowResUrl;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        imageUrl = uniqueToken?.image_thumbnail_url;
-      }
+      imageUrl =
+        uniqueToken?.images?.fullResPngUrl || uniqueToken?.images?.lowResPngUrl;
     } else if (
       recordValue?.startsWith('http') ||
       recordValue?.startsWith('file') ||

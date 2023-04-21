@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
+import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -10,9 +10,8 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { UniqueAsset } from '@/entities';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
+import { NFT } from '@/resources/nfts/types';
 
 const dividerHeight = 22;
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
@@ -80,21 +79,19 @@ const UniqueTokenCoinIcon = magicMemo(
     const {
       collection: { name },
       background,
-      image_thumbnail_url,
-      image_url,
+      images: { lowResPngUrl },
       selected,
       shouldPrioritizeImageLoading,
       ...props
     } = asset;
     const { colors } = useTheme();
-    const imageUrl = svgToPngIfNeeded(image_thumbnail_url || image_url, true);
     return (
       <Centered>
         <RequestVendorLogoIcon
           backgroundColor={background || colors.lightestGrey}
           borderRadius={10}
           dappName={name}
-          imageUrl={imageUrl}
+          imageUrl={lowResPngUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
           {...props}
@@ -116,7 +113,7 @@ const CollectiblesSendRow = React.memo(
     ...props
   }: {
     disablePressAnimation?: boolean;
-    item: UniqueAsset;
+    item: NFT;
     isFirstRow?: boolean;
     onPress: PressableProps['onPress'];
     selected?: boolean;
@@ -124,7 +121,7 @@ const CollectiblesSendRow = React.memo(
   }) => {
     const { colors } = useTheme();
 
-    const uniqueTokenType = getUniqueTokenType(item);
+    const uniqueTokenType = item?.uniqueTokenType;
     const isENS = uniqueTokenType === 'ENS';
 
     const subtitle = useMemo(

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
-import { UniqueAsset } from '@/entities';
+import { NFT } from '@/resources/nfts/types';
 
 const supportedTLDs = ['eth'];
 
@@ -16,10 +16,7 @@ const ERROR_CODES = {
 /**
  * @description Gets the ENS NFT `avatarUrl` from the record `avatar`
  */
-export function getENSNFTAvatarUrl(
-  uniqueTokens: UniqueAsset[],
-  avatar?: string
-) {
+export function getENSNFTAvatarUrl(uniqueTokens: NFT[], avatar?: string) {
   let avatarUrl;
   if (avatar) {
     const isNFTAvatar = isENSNFTRecord(avatar);
@@ -27,14 +24,13 @@ export function getENSNFTAvatarUrl(
       const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
         token =>
-          token.asset_contract.address?.toLowerCase() ===
-            contractAddress.toLowerCase() && token.id === tokenId
+          token.asset_contract.address === contractAddress.toLowerCase() &&
+          token.id === tokenId
       );
-      if (uniqueToken?.image_url) {
-        avatarUrl = uniqueToken?.image_url;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        avatarUrl = uniqueToken?.image_thumbnail_url;
-      }
+      avatarUrl =
+        uniqueToken?.images?.fullResUrl ||
+        uniqueToken?.images?.fullResPngUrl ||
+        uniqueToken?.images?.lowResPngUrl;
     } else if (
       avatar.startsWith('http') ||
       (avatar.startsWith('/') && !avatar.match(/^\/(ipfs|ipns)/))

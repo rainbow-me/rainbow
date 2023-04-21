@@ -6,9 +6,9 @@ import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
-import { UniqueAsset } from '@/entities';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
+import { NFT } from '@/resources/nfts/types';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -22,7 +22,7 @@ function RecyclerAssetList({
   disablePullDownToRefresh?: boolean;
   /** An "external address" is an address that is not the current account address. */
   externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
+  onPressUniqueToken?: (asset: NFT) => void;
   type?: AssetListType;
   walletBriefSectionsData: any[];
 }) {

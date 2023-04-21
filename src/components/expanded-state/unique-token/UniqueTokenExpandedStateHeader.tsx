@@ -291,9 +291,7 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.copyTokenID],
           discoverabilityTitle:
-            asset.tokenId.length > 15
-              ? `${asset.tokenId.slice(0, 15)}...`
-              : asset.tokenId,
+            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
         ...(isSupportedOnRainbowWeb
           ? [
@@ -320,7 +318,7 @@ const UniqueTokenExpandedStateHeader = ({
       menuTitle: '',
     };
   }, [
-    asset.tokenId,
+    asset.id,
     asset?.network,
     isPhotoDownloadAvailable,
     isHiddenAsset,
@@ -362,21 +360,21 @@ const UniqueTokenExpandedStateHeader = ({
         ethereumUtils.openNftInBlockExplorer(
           // @ts-expect-error address could be undefined?
           asset.asset_contract.address,
-          asset.tokenId,
+          asset.id,
           asset.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
         Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.tokenId}`
+          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
         );
       } else if (actionKey === AssetActionsEnum.looksrare) {
         Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.tokenId}`
+          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
         );
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
-        setClipboard(asset.tokenId);
+        setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
         saveToCameraRoll(asset?.images?.fullResPngUrl);
       } else if (actionKey === AssetActionsEnum.hide) {
@@ -506,13 +504,13 @@ const UniqueTokenExpandedStateHeader = ({
           ethereumUtils.openNftInBlockExplorer(
             // @ts-expect-error address could be undefined?
             asset.asset_contract.address,
-            asset.tokenId,
+            asset.id,
             asset.network
           );
         } else if (idx === photoDownloadIndex) {
           saveToCameraRoll(asset?.images?.fullResPngUrl);
         } else if (idx === copyTokenIndex) {
-          setClipboard(asset.tokenId);
+          setClipboard(asset.id);
         } else if (idx === hideTokenIndex) {
           if (isHiddenAsset) {
             removeHiddenToken(asset);

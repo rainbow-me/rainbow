@@ -5,11 +5,11 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { Image, Options } from 'react-native-image-crop-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { useImagePicker } from '.';
-import { UniqueAsset } from '@/entities';
 import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
+import { NFT } from '@/resources/nfts/types';
 
 type Action = 'library' | 'nft';
 
@@ -66,7 +66,7 @@ export default function useSelectImageMenu({
     asset,
     image,
   }: {
-    asset?: UniqueAsset;
+    asset?: NFT;
     image?: Image & { tmpPath?: string };
   }) => void;
   onRemoveImage?: () => void;
@@ -164,7 +164,7 @@ export default function useSelectImageMenu({
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: UniqueAsset) => onChangeImage?.({ asset }),
+      onSelect: (asset: NFT) => onChangeImage?.({ asset }),
       springDamping: 1,
       topOffset: 0,
     });

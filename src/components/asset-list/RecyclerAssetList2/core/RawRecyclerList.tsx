@@ -22,7 +22,6 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { UniqueAsset } from '@/entities';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -30,6 +29,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
+import { NFT } from '@/resources/nfts/types';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -47,7 +47,7 @@ export type ExtendedState = {
   setIsCoinListEdited: SetterOrUpdater<boolean>;
   additionalData: Record<string, CellTypes>;
   externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
+  onPressUniqueToken?: (asset: NFT) => void;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({

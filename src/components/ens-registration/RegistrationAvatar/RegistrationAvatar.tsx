@@ -17,7 +17,6 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
 import {
   useENSModifiedRegistration,
@@ -27,6 +26,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import { NFT } from '@/resources/nfts/types';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -86,16 +86,12 @@ const RegistrationAvatar = ({
       asset,
       image,
     }: {
-      asset?: UniqueAsset;
+      asset?: NFT;
       image?: Image & { tmpPath?: string };
     }) => {
       setAvatarMetadata(image);
-      setAvatarUrl(
-        image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || ''
-      );
-      onChangeAvatarUrl(
-        image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || ''
-      );
+      setAvatarUrl(image?.tmpPath || asset?.images?.lowResPngUrl || '');
+      onChangeAvatarUrl(image?.path || asset?.images?.lowResPngUrl || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
