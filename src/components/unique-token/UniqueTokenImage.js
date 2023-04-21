@@ -14,6 +14,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { CardSize } from './CardSize';
 import { SVG_MIME_TYPE } from '@/resources/nfts/simplehash/utils';
+import svgToPngIfNeeded from '@/handlers/svgs';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode
