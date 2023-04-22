@@ -123,7 +123,7 @@ export function AuthRequest({
         <Box paddingBottom="36px">
           <ButtonPressAnimation
             onPress={() => {
-              navigate(Routes.CHANGE_WALLET_SHEET);
+              navigate(Routes.CHANGE_WALLET_SHEET, { watchOnly: true });
             }}
           >
             <Box
