@@ -17,6 +17,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
+  normalizeAndroidBackupFilename,
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -31,7 +32,7 @@ import {
 import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
-  setWalletBackedUp,
+  setAllWalletsWithIdsAsBackedUp,
   walletsLoadState,
   walletsSetSelected,
 } from '@/redux/wallets';
@@ -42,6 +43,8 @@ import logger from '@/utils/logger';
 import { Box } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
+import { getSupportedBiometryType } from 'react-native-keychain';
+import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -158,13 +161,24 @@ export default function RestoreCloudStep({
   );
 
   const onSubmit = useCallback(async () => {
+    let userPIN;
+    const hasBiometricsEnabled = await getSupportedBiometryType();
+    if (IS_ANDROID && !hasBiometricsEnabled) {
+      try {
+        userPIN = await authenticateWithPINAndCreateIfNeeded();
+      } catch (e) {
+        Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+        return;
+      }
+    }
     try {
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup(
+      const success = await restoreCloudBackup({
         password,
         userData,
-        backupSelected?.name
-      );
+        backupSelected: backupSelected?.name,
+        userPIN,
+      });
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
@@ -182,20 +196,28 @@ export default function RestoreCloudStep({
           if (!userData && backupSelected?.name) {
             goBack();
             logger.log('updating backup state of wallets');
-            await Promise.all(
-              Object.keys(wallets).map(walletId => {
-                logger.log('updating backup state of wallet', walletId);
-                logger.log('backupSelected?.name', backupSelected?.name);
-                // Mark the wallet as backed up
-                return dispatch(
-                  setWalletBackedUp(
-                    walletId,
-                    walletBackupTypes.cloud,
-                    backupSelected?.name,
-                    false
-                  )
-                );
-              })
+            let filename = backupSelected?.name;
+            if (IS_ANDROID && filename) {
+              /**
+               * We need to normalize the filename on Android, because sometimes
+               * the filename is returned with the path used for Google Drive storage.
+               * That is with REMOTE_BACKUP_WALLET_DIR included.
+               */
+              filename = normalizeAndroidBackupFilename(filename);
+            }
+            const walletIdsToUpdate = Object.keys(wallets);
+            logger.log(
+              'updating backup state of wallets with ids',
+              JSON.stringify(walletIdsToUpdate)
+            );
+            logger.log('backupSelected?.name', backupSelected?.name);
+            await dispatch(
+              setAllWalletsWithIdsAsBackedUp(
+                walletIdsToUpdate,
+                walletBackupTypes.cloud,
+                filename,
+                false
+              )
             );
             logger.log('done updating backup state');
           }

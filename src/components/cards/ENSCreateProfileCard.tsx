@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
-import { ensAvatarUrl } from '../ens-registration/IntroMarquee/IntroMarquee';
 import ImgixImage from '../images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
@@ -21,7 +20,6 @@ import {
   useDimensions,
   useWallets,
 } from '@/hooks';
-import { ensIntroMarqueeNames } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { GenericCard, Gradient } from './GenericCard';
