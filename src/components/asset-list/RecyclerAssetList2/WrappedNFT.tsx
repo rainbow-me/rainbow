@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { useCollectible } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { NFT } from '@/resources/nfts/types';
+import { IS_TEST } from '@/env';
 
 export default React.memo(function WrappedNFT({
   onPress,
@@ -17,7 +18,24 @@ export default React.memo(function WrappedNFT({
   placement: 'left' | 'right';
   externalAddress?: string;
 }) {
-  const asset = useCollectible({ uniqueId }, externalAddress);
+  const assetCollectible = useCollectible({ uniqueId }, externalAddress);
+
+  const asset = useMemo(
+    () => ({
+      ...assetCollectible,
+      ...(IS_TEST
+        ? {
+            images: {
+              ...assetCollectible.images,
+              fullResUrl: undefined,
+              fullResPngUrl: undefined,
+              lowResPngUrl: undefined,
+            },
+          }
+        : {}),
+    }),
+    [assetCollectible]
+  );
 
   const { navigate } = useNavigation();
 
@@ -27,13 +45,13 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: asset?.isExternal || false,
+        external: assetCollectible?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [navigate]
+    [assetCollectible?.isExternal, navigate]
   );
 
   const placementProps: BoxProps =
