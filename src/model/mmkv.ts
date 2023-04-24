@@ -16,11 +16,21 @@ export const STORAGE_IDS = {
   LEDGER: 'ledgerStorage',
 };
 
-export function clearAllStoragesApartFromNotificationsStorage() {
-  const allStoragesWithoutNotificationsStorage = Object.values(
-    STORAGE_IDS
-  ).filter(id => id !== STORAGE_IDS.NOTIFICATIONS);
-  allStoragesWithoutNotificationsStorage.forEach(id => {
+const STORAGES_THAT_CANT_BE_CLEARED = [
+  STORAGE_IDS.NOTIFICATIONS,
+  STORAGE_IDS.KEYCHAIN,
+];
+
+/**
+ * Clears all MMKV storages to the initial empty state
+ * except for notifications' storage and keychain cache storage
+ */
+export function clearAllStoragesThatCanBeCleared() {
+  const filteredStorages = Object.values(STORAGE_IDS).filter(
+    id => !STORAGES_THAT_CANT_BE_CLEARED.includes(id)
+  );
+
+  filteredStorages.forEach(id => {
     const storage = new MMKV({ id });
     storage.clearAll();
   });
@@ -29,6 +39,9 @@ export function clearAllStoragesApartFromNotificationsStorage() {
   defaultStorage.clearAll();
 }
 
+/**
+ * Clears notifications' MMKV storage
+ */
 export function clearNotificationsStorage() {
   const storage = new MMKV({ id: STORAGE_IDS.NOTIFICATIONS });
   storage.clearAll();
