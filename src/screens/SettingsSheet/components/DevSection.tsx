@@ -58,6 +58,7 @@ import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/Set
 import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
+import { isAuthenticated } from '@/utils/authentication';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -251,6 +252,45 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
+  const wipeKeychainWithAlert = async () => {
+    const confirmKeychainAlert = () =>
+      new Promise<boolean>(resolve => {
+        Alert.alert(
+          lang.t('developer_settings.keychain.alert_title'),
+          lang.t('developer_settings.keychain.alert_body'),
+          [
+            {
+              onPress: () => {
+                resolve(true);
+              },
+              text: lang.t('developer_settings.keychain.delete_wallets'),
+            },
+            {
+              onPress: () => {
+                resolve(false);
+              },
+              style: 'cancel',
+              text: lang.t('button.cancel'),
+            },
+          ]
+        );
+      });
+
+    const isAuth = await isAuthenticated();
+
+    // we should require auth before wiping the keychain
+    if (isAuth) {
+      const shouldWipeKeychain = await confirmKeychainAlert();
+      if (shouldWipeKeychain) {
+        await wipeKeychain();
+        await clearMMKVStorage();
+
+        // we need to navigate back to the welcome screen
+        navigate(Routes.WELCOME_SCREEN);
+      }
+    }
+  };
+
   const onPressNavigationEntryPoint = () =>
     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
@@ -291,12 +331,23 @@ const DevSection = () => {
             loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
           }
         />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
+          onPress={wipeKeychainWithAlert}
+          size={52}
+          testID="reset-keychain-section"
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t('developer_settings.keychain.menu_title')}
+            />
+          }
+        />
       </Menu>
       {(IS_DEV || isTestFlight) && (
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
+              leftComponent={<MenuItem.TextIcon icon="" isEmoji />}
               onPress={clearAsyncStorage}
               size={52}
               titleComponent={
@@ -338,17 +389,6 @@ const DevSection = () => {
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_cache')}
-                />
-              }
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💣" isEmoji />}
-              onPress={wipeKeychain}
-              size={52}
-              testID="reset-keychain-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.reset_keychain')}
                 />
               }
             />
