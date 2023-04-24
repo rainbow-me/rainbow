@@ -396,6 +396,7 @@
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_local_storage": "Clear local storage :)",
+      "clear_notifications_state_and_storage": "Clear notifications state :)",
       "clear_mmkv_storage": "Clear MMKV storage :)",
       "connect_to_hardhat": "Connect to hardhat :)",
       "crash_app_render_error": "Crash app (render error) :)",

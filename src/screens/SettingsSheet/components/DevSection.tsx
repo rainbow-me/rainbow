@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
 import { InteractionManager, Switch } from 'react-native';
 import codePush from 'react-native-code-push';
@@ -36,7 +35,10 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
-import { clearAllStorages } from '@/model/mmkv';
+import {
+  clearAllStoragesApartFromNotificationsStorage,
+  clearNotificationsStorage,
+} from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
 import { explorerInit } from '@/redux/explorer';
@@ -62,6 +64,7 @@ import { isAuthenticated } from '@/utils/authentication';
 import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
+import * as i18n from '@/languages';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -80,6 +83,7 @@ const DevSection = () => {
   const initializeAccountData = useInitializeAccountData();
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
+    clearNotificationsStorage: false,
     clearAsyncStorage: false,
     clearMmkvStorage: false,
   });
@@ -126,11 +130,11 @@ const DevSection = () => {
   const syncCodepush = useCallback(async () => {
     const isUpdate = !!(await codePush.checkForUpdate());
     if (!isUpdate) {
-      Alert.alert(lang.t('developer_settings.no_update'));
+      Alert.alert(i18n.t(i18n.l.developer_settings.no_update));
     } else {
       // dismissing not to fuck up native nav structure
       navigate(Routes.PROFILE_SCREEN);
-      Alert.alert(lang.t('developer_settings.installing_update'));
+      Alert.alert(i18n.t(i18n.l.developer_settings.installing_update));
 
       const result = await codePush.sync({
         installMode: codePush.InstallMode.IMMEDIATE,
@@ -151,13 +155,13 @@ const DevSection = () => {
       if (android && request.status === 500) throw new Error('failed');
       await request.json();
       Alert.alert(
-        lang.t('developer_settings.status'),
-        lang.t('developer_settings.not_applied')
+        i18n.t(i18n.l.developer_settings.status),
+        i18n.t(i18n.l.developer_settings.not_applied)
       );
     } catch (e) {
       Alert.alert(
-        lang.t('developer_settings.status'),
-        lang.t('developer_settings.applied')
+        i18n.t(i18n.l.developer_settings.status),
+        i18n.t(i18n.l.developer_settings.applied)
       );
     }
   }, []);
@@ -176,7 +180,7 @@ const DevSection = () => {
     // Delete all backups (debugging)
     await deleteAllBackups();
 
-    Alert.alert(lang.t('developer_settings.backups_deleted_successfully'));
+    Alert.alert(i18n.t(i18n.l.developer_settings.backups_deleted_successfully));
     Restart();
   };
 
@@ -214,18 +218,23 @@ const DevSection = () => {
     testnetsEnabled,
   ]);
 
-  const clearAllNotificationSettings = useCallback(async () => {
-    // loop through notification settings and unsubscribe all wallets
-    // from firebase first or we’re gonna keep getting them even after
-    // clearing storage and before changing settings
+  const clearNotificationsStorageAndSettings = useCallback(async () => {
+    setLoadingStates(prev => ({ ...prev, clearNotificationsStorage: true }));
+    /*
+     * loop through notification settings and unsubscribe all wallets
+     * from firebase first, or we’re going to keep getting them even after
+     * clearing storage and before changing settings
+     */
     if (notificationSettings.length > 0) {
-      return Promise.all(
+      await Promise.all(
         notificationSettings.map(wallet =>
           removeNotificationSettingsForWallet(wallet.address)
         )
       );
     }
-    return Promise.resolve();
+    clearNotificationsStorage();
+    addDefaultNotificationGroupSettings(true);
+    setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   }, [notificationSettings]);
 
   const clearPendingTransactions = async () => {
@@ -242,10 +251,8 @@ const DevSection = () => {
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
 
-    await clearAllNotificationSettings();
     await AsyncStorage.clear();
-    clearAllStorages();
-    addDefaultNotificationGroupSettings(true);
+    clearAllStoragesApartFromNotificationsStorage();
 
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   };
@@ -258,11 +265,7 @@ const DevSection = () => {
 
   const clearMMKVStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: true }));
-
-    await clearAllNotificationSettings();
-    clearAllStorages();
-    addDefaultNotificationGroupSettings(true);
-
+    clearAllStoragesApartFromNotificationsStorage();
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
@@ -270,21 +273,21 @@ const DevSection = () => {
     const confirmKeychainAlert = () =>
       new Promise<boolean>(resolve => {
         Alert.alert(
-          lang.t('developer_settings.keychain.alert_title'),
-          lang.t('developer_settings.keychain.alert_body'),
+          i18n.t(i18n.l.developer_settings.keychain.alert_title),
+        i18n.t(i18n.l.developer_settings.keychain.alert_body),
           [
             {
               onPress: () => {
                 resolve(true);
               },
-              text: lang.t('developer_settings.keychain.delete_wallets'),
+              text: i18n.t(i18n.l.developer_settings.keychain.delete_wallets),
             },
             {
               onPress: () => {
                 resolve(false);
               },
               style: 'cancel',
-              text: lang.t('button.cancel'),
+              text: i18n.t(i18n.l.button.cancel),
             },
           ]
         );
@@ -327,7 +330,7 @@ const DevSection = () => {
           testID="testnet-switch"
           titleComponent={
             <MenuItem.Title
-              text={lang.t('developer_settings.enable_testnets')}
+              text={i18n.t(i18n.l.developer_settings.enable_testnets)}
             />
           }
         />
@@ -338,11 +341,28 @@ const DevSection = () => {
           size={52}
           titleComponent={
             <MenuItem.Title
-              text={lang.t('developer_settings.clear_local_storage')}
+              text={i18n.t(i18n.l.developer_settings.clear_local_storage)}
             />
           }
           rightComponent={
             loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
+          }
+        />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
+          onPress={clearNotificationsStorageAndSettings}
+          size={52}
+          titleComponent={
+            <MenuItem.Title
+              text={i18n.t(
+                i18n.l.developer_settings.clear_notifications_state_and_storage
+              )}
+            />
+          }
+          rightComponent={
+            loadingStates.clearNotificationsStorage && (
+              <SettingsLoadingIndicator />
+            )
           }
         />
         <MenuItem
@@ -352,7 +372,7 @@ const DevSection = () => {
           testID="clear-pending-transactions-section"
           titleComponent={
             <MenuItem.Title
-              text={lang.t('developer_settings.clear_pending_txs')}
+              text={i18n.t(i18n.l.developer_settings.clear_pending_txs)}
             />
           }
         />
@@ -363,7 +383,7 @@ const DevSection = () => {
           testID="reset-keychain-section"
           titleComponent={
             <MenuItem.Title
-              text={lang.t('developer_settings.keychain.menu_title')}
+              text={i18n.t(i18n.l.developer_settings.keychain.menu_title)}
             />
           }
         />
@@ -377,7 +397,7 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.clear_async_storage')}
+                  text={i18n.t(i18n.l.developer_settings.clear_async_storage)}
                 />
               }
               rightComponent={
@@ -390,7 +410,7 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.clear_mmkv_storage')}
+                  text={i18n.t(i18n.l.developer_settings.clear_mmkv_storage)}
                 />
               }
               rightComponent={
@@ -403,7 +423,9 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.clear_image_metadata_cache')}
+                  text={i18n.t(
+                    i18n.l.developer_settings.clear_image_metadata_cache
+                  )}
                 />
               }
             />
@@ -413,7 +435,18 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.clear_image_cache')}
+                  text={i18n.t(i18n.l.developer_settings.clear_image_cache)}
+                />
+              }
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💣" isEmoji />}
+              onPress={wipeKeychain}
+              size={52}
+              testID="reset-keychain-section"
+              titleComponent={
+                <MenuItem.Title
+                  text={i18n.t(i18n.l.developer_settings.reset_keychain)}
                 />
               }
             />
@@ -423,7 +456,7 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.restart_app')}
+                  text={i18n.t(i18n.l.developer_settings.restart_app)}
                 />
               }
             />
@@ -434,7 +467,9 @@ const DevSection = () => {
               testID="crash-app-section"
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.crash_app_render_error')}
+                  text={i18n.t(
+                    i18n.l.developer_settings.crash_app_render_error
+                  )}
                 />
               }
             />
@@ -445,7 +480,7 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.remove_all_backups')}
+                  text={i18n.t(i18n.l.developer_settings.remove_all_backups)}
                 />
               }
             />
@@ -455,7 +490,9 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.reset_experimental_config')}
+                  text={i18n.t(
+                    i18n.l.developer_settings.reset_experimental_config
+                  )}
                 />
               }
             />
@@ -466,7 +503,7 @@ const DevSection = () => {
               testID="hardhat-section"
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.connect_to_hardhat')}
+                  text={i18n.t(i18n.l.developer_settings.connect_to_hardhat)}
                 />
               }
             />
@@ -476,7 +513,9 @@ const DevSection = () => {
               size={52}
               testID="alert-section"
               titleComponent={
-                <MenuItem.Title text={lang.t('developer_settings.alert')} />
+                <MenuItem.Title
+                  text={i18n.t(i18n.l.developer_settings.alert)}
+                />
               }
             />
             <MenuItem
@@ -488,7 +527,7 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.sync_codepush')}
+                  text={i18n.t(i18n.l.developer_settings.sync_codepush)}
                 />
               }
             />
@@ -498,7 +537,9 @@ const DevSection = () => {
               size={52}
               titleComponent={
                 <MenuItem.Title
-                  text={lang.t('developer_settings.navigation_entry_point')}
+                  text={i18n.t(
+                    i18n.l.developer_settings.navigation_entry_point
+                  )}
                 />
               }
             />

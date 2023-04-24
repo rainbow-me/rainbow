@@ -13,12 +13,20 @@ export const STORAGE_IDS = {
   SHOWN_SWAP_RESET_WARNING: 'SHOWN_SWAP_RESET_WARNING',
 };
 
-export const clearAllStorages = () => {
-  Object.keys(STORAGE_IDS).forEach(id => {
+export function clearAllStoragesApartFromNotificationsStorage() {
+  const allStoragesWithoutNotificationsStorage = Object.keys(
+    STORAGE_IDS
+  ).filter(id => id !== STORAGE_IDS.NOTIFICATIONS);
+  allStoragesWithoutNotificationsStorage.forEach(id => {
     const storage = new MMKV({ id });
     storage.clearAll();
   });
 
   const defaultStorage = new MMKV();
   defaultStorage.clearAll();
-};
+}
+
+export function clearNotificationsStorage() {
+  const storage = new MMKV({ id: STORAGE_IDS.NOTIFICATIONS });
+  storage.clearAll();
+}
