@@ -6,6 +6,7 @@ import {
 
 import { Legacy } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * Storage for legacy data that was previously stored in AsyncStorage. Only
@@ -57,4 +58,4 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<
  * the future we can simply move to using our other global `device` storage
  * instance instead of this one.
  */
-export const legacy = new LegacyStorage<[], Legacy>({ id: 'global' });
+export const legacy = new LegacyStorage<[], Legacy>({ id: STORAGE_IDS.GLOBAL });

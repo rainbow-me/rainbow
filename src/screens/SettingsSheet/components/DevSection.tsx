@@ -218,7 +218,7 @@ const DevSection = () => {
     testnetsEnabled,
   ]);
 
-  const clearNotificationsStorageAndSettings = useCallback(async () => {
+  const clearNotificationsStorageAndSettings = async () => {
     setLoadingStates(prev => ({ ...prev, clearNotificationsStorage: true }));
     /*
      * loop through notification settings and unsubscribe all wallets
@@ -235,7 +235,7 @@ const DevSection = () => {
     clearNotificationsStorage();
     addDefaultNotificationGroupSettings(true);
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
-  }, [notificationSettings]);
+  };
 
   const clearPendingTransactions = async () => {
     // clear local storage
@@ -250,10 +250,11 @@ const DevSection = () => {
 
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
-
     await AsyncStorage.clear();
+    AsyncStorage.getAllKeys()
+      .then(keys => AsyncStorage.multiGet(keys))
+      .then(console.log);
     clearAllStoragesApartFromNotificationsStorage();
-
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: false }));
   };
 

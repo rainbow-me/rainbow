@@ -1,6 +1,7 @@
 import { MMKV } from 'react-native-mmkv';
 
 import { Device } from '@/storage/schema';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported
@@ -69,4 +70,4 @@ export class Storage<Scopes extends unknown[], Schema> {
  *
  *   `global.set(['doNotTrack'], true)`
  */
-export const device = new Storage<[], Device>({ id: 'global' });
+export const device = new Storage<[], Device>({ id: STORAGE_IDS.GLOBAL });

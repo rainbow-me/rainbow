@@ -11,10 +11,13 @@ export const STORAGE_IDS = {
   NOTIFICATIONS: 'NOTIFICATIONS',
   RAINBOW_TOKEN_LIST: 'LEAN_RAINBOW_TOKEN_LIST',
   SHOWN_SWAP_RESET_WARNING: 'SHOWN_SWAP_RESET_WARNING',
+  GLOBAL: 'global',
+  KEYCHAIN: 'rainbowKeychainLocalStorage',
+  LEDGER: 'ledgerStorage',
 };
 
 export function clearAllStoragesApartFromNotificationsStorage() {
-  const allStoragesWithoutNotificationsStorage = Object.keys(
+  const allStoragesWithoutNotificationsStorage = Object.values(
     STORAGE_IDS
   ).filter(id => id !== STORAGE_IDS.NOTIFICATIONS);
   allStoragesWithoutNotificationsStorage.forEach(id => {

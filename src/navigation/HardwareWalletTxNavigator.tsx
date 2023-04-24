@@ -15,9 +15,10 @@ import { DebugContext } from '@/logger/debugContext';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 export const ledgerStorage = new MMKV({
-  id: 'ledgerStorage',
+  id: STORAGE_IDS.LEDGER,
 });
 
 export const HARDWARE_TX_ERROR_KEY = 'hardwareTXError';
