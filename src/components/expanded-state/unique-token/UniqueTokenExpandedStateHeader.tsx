@@ -188,8 +188,8 @@ const UniqueTokenExpandedStateHeader = ({
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
   const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(asset.uniqueId) as boolean,
-    [hiddenTokens, asset.uniqueId]
+    () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
+    [hiddenTokens, asset.fullUniqueId]
   );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(asset.uniqueId) as boolean,

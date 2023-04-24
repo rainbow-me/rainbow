@@ -118,7 +118,8 @@ const buildEnsToken = ({
     id: tokenId,
     traits: undefined,
     type: AssetTypes.nft,
-    uniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
+    uniqueId: name,
+    fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
     uniqueTokenType: uniqueTokenTypes.ENS,
     videoUrl: undefined,
   };

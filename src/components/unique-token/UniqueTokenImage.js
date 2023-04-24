@@ -61,7 +61,7 @@ const UniqueTokenImage = ({
   const backgroundColor = givenBackgroundColor;
   const { hiddenTokens } = useHiddenTokens();
   const isHiddenToken = React.useMemo(() => {
-    return hiddenTokens.find(token => token === item.uniqueId);
+    return hiddenTokens.find(token => token === item.fullUniqueId);
   }, [hiddenTokens, item]);
 
   return (

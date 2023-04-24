@@ -261,6 +261,7 @@ const UniqueTokenExpandedState = ({
       name: familyName,
     },
     description,
+    fullUniqueId,
     isSendable,
     marketplaces,
     traits,
@@ -341,8 +342,8 @@ const UniqueTokenExpandedState = ({
   }, [asset.network, navigate]);
 
   const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(uniqueId) as boolean,
-    [hiddenTokens, uniqueId]
+    () => hiddenTokens.includes(fullUniqueId) as boolean,
+    [hiddenTokens, fullUniqueId]
   );
   const isShowcaseAsset = useMemo(
     () => showcaseTokens.includes(uniqueId) as boolean,
