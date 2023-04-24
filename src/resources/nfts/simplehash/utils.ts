@@ -463,7 +463,11 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     id: nft.token_id,
     traits,
     type: AssetTypes.nft as AssetType,
-    uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
+    fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
+    uniqueId:
+      uniqueTokenType === uniqueTokenTypes.ENS
+        ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
+        : `${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
     videoUrl: maybeSignUri(
       nft.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,

@@ -57,6 +57,7 @@ export type NFT = {
   asset_contract: AssetContract;
   description: string | undefined;
   externalUrl: string | undefined;
+  fullUniqueId: string;
   images: {
     blurhash: string | undefined;
     fullResUrl: string | undefined;
