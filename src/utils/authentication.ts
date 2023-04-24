@@ -3,7 +3,7 @@ import {
   hasInternetCredentials,
 } from 'react-native-keychain';
 
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import * as keychain from '@/model/keychain';
 import {
   authenticateWithPINAndCreateIfNeeded,
@@ -26,7 +26,7 @@ async function maybeSaveFakeAuthKey() {
 
 export async function isAuthenticated() {
   const hasBiometricsEnabled = await getSupportedBiometryType();
-  if (hasBiometricsEnabled) {
+  if (hasBiometricsEnabled || IS_DEV) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
     const value = await keychain.loadString(FAKE_LOCAL_AUTH_KEY, options);
