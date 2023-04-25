@@ -21,7 +21,7 @@ import { MMKV } from 'react-native-mmkv';
 
 import { delay } from '@/helpers/utilities';
 import { IS_DEV, IS_IOS } from '@/env';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 export enum ErrorType {
   Unknown = 0,
@@ -100,6 +100,13 @@ export async function get(
             return _get(attempts + 1);
           }
           default: {
+            logger.error(
+              new RainbowError(`keychain: _get() handled unknown error`),
+              {
+                message: e.toString(),
+              }
+            );
+
             return {
               value: undefined,
               error: ErrorType.Unknown,
