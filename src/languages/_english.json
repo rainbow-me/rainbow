@@ -147,6 +147,7 @@
         "enter_backup_password": "Enter backup password",
         "enter_backup_password_description": "To restore your wallet, enter the backup password you created",
         "error_while_restoring": "Error while restoring backup",
+        "incorrect_pin_code": "Incorrect PIN code",
         "incorrect_password": "Incorrect Password",
         "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
       },
