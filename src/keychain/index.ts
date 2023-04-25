@@ -146,10 +146,9 @@ export async function set(
  * A convenience method for getting a value from the keychain and parsing it as
  * JSON.
  */
-export async function getObject(
-  key: string,
-  options: Options = {}
-): Promise<Result<Record<string, unknown>>> {
+export async function getObject<
+  T extends Record<string, any> = Record<string, unknown>
+>(key: string, options: Options = {}): Promise<Result<T>> {
   logger.debug(`keychain: getObject`, { key }, logger.DebugContext.keychain);
 
   const { value, error } = await get(key, options);
