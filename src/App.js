@@ -102,7 +102,7 @@ class OldApp extends Component {
    * @see https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution/issues/673#issuecomment-1220974483
    */
   async setupDeeplinking() {
-    const initialUrl = await Linking.getInitialURL();
+    // const initialUrl = await Linking.getInitialURL();
 
     // main Branch handler
     this.branchListener = await branchListener(url => {
@@ -123,10 +123,10 @@ class OldApp extends Component {
     });
 
     // if we have an initial URL, pass it to Branch
-    if (initialUrl) {
-      logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
-      branch.openURL(initialUrl);
-    }
+    // if (initialUrl) {
+    //   logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
+    //   branch.openURL(initialUrl);
+    // }
   }
 
   async componentDidMount() {
