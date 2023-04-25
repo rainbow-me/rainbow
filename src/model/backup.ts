@@ -32,7 +32,12 @@ import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
-import { decryptPIN } from '@/handlers/authentication';
+import {
+  authenticateWithPINAndCreateIfNeeded,
+  decryptPIN,
+} from '@/handlers/authentication';
+import { setIsWalletLoading } from '@/redux/wallets';
+import store from '@/redux/store';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -43,7 +48,7 @@ interface BackedUpData {
   [key: string]: string;
 }
 
-interface BackupUserData {
+export interface BackupUserData {
   wallets: AllRainbowWallets;
 }
 
@@ -227,22 +232,27 @@ export function findLatestBackUp(
   return filename;
 }
 
+export const RestoreCloudBackupResultStates = {
+  success: 'success',
+  failedWhenRestoring: 'failedWhenRestoring',
+  incorrectPassword: 'incorrectPassword',
+  incorrectPinCode: 'incorrectPinCode',
+} as const;
+
+type RestoreCloudBackupResultStatesType = typeof RestoreCloudBackupResultStates[keyof typeof RestoreCloudBackupResultStates];
+
 /**
  * Restores a cloud backup.
- * When userPIN is provided in arguments, the seed phrase will be encrypted
- * with that PIN code.
  */
 export async function restoreCloudBackup({
   password,
   userData,
   backupSelected,
-  userPIN,
 }: {
   password: BackupPassword;
   userData: BackupUserData | null;
   backupSelected: string | null;
-  userPIN?: string;
-}): Promise<boolean> {
+}): Promise<RestoreCloudBackupResultStatesType> {
   // We support two flows
   // Restoring from the welcome screen, which uses the userData to rebuild the wallet
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
@@ -251,19 +261,36 @@ export async function restoreCloudBackup({
     const filename =
       backupSelected || (userData && findLatestBackUp(userData?.wallets));
     if (!filename) {
-      return false;
+      return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
     // 2- download that backup
     // @ts-ignore
     const data = await getDataFromCloud(password, filename);
     if (!data) {
-      throw new Error('Invalid password');
+      return RestoreCloudBackupResultStates.incorrectPassword;
+    }
+
+    let userPIN: string | undefined;
+    const hasBiometricsEnabled = await getSupportedBiometryType();
+    if (IS_ANDROID && !hasBiometricsEnabled) {
+      const currentLoadingState = store.getState().wallets.isWalletLoading;
+      try {
+        // we need to hide the top level loading indicator for a while
+        // to not cover the PIN screen
+        store.dispatch(setIsWalletLoading(null));
+        userPIN = await authenticateWithPINAndCreateIfNeeded();
+        store.dispatch(setIsWalletLoading(currentLoadingState));
+      } catch (e) {
+        store.dispatch(setIsWalletLoading(currentLoadingState));
+        return RestoreCloudBackupResultStates.incorrectPinCode;
+      }
     }
 
     const dataToRestore = {
       ...data.secrets,
     };
 
+    let restoredSuccessfully = false;
     if (userData) {
       // Restore only wallets that were backed up in cloud
       // or wallets that are read-only
@@ -285,14 +312,28 @@ export async function restoreCloudBackup({
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      return restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
+      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(
+        dataToRestore,
+        userPIN
+      );
     } else {
-      return restoreSpecificBackupIntoKeychain(dataToRestore);
+      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(
+        dataToRestore
+      );
     }
-  } catch (e) {
-    oldLogger.sentry('Error while restoring back up');
-    captureException(e);
-    return false;
+
+    return restoredSuccessfully
+      ? RestoreCloudBackupResultStates.success
+      : RestoreCloudBackupResultStates.failedWhenRestoring;
+  } catch (error) {
+    const message = (error as Error).message;
+    if (message === CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA) {
+      return RestoreCloudBackupResultStates.incorrectPassword;
+    }
+    logger.error(new RainbowError('Error while restoring back up'), {
+      message,
+    });
+    return RestoreCloudBackupResultStates.failedWhenRestoring;
   }
 }
 
