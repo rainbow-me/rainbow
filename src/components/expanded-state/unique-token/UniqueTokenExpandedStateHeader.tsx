@@ -33,6 +33,7 @@ import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { NFT } from '@/resources/nfts/types';
 import { SVG_MIME_TYPE } from '@/resources/nfts/simplehash/utils';
+import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -42,6 +43,7 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
   opensea: 'opensea',
   looksrare: 'looksrare',
+  refresh: 'refresh',
 } as const;
 
 const getAssetActions = (network: Network) =>
@@ -89,6 +91,14 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'eye',
+      },
+    },
+    [AssetActionsEnum.refresh]: {
+      actionKey: AssetActionsEnum.refresh,
+      actionTitle: lang.t('expanded_state.unique_expanded.refresh'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'arrow.clockwise',
       },
     },
     [AssetActionsEnum.opensea]: {
@@ -267,6 +277,9 @@ const UniqueTokenExpandedStateHeader = ({
 
     return {
       menuItems: [
+        {
+          ...AssetActions[AssetActionsEnum.refresh],
+        },
         ...(isModificationActionsEnabled
           ? [
               {
@@ -355,7 +368,7 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const handlePressAssetMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer(
           // @ts-expect-error address could be undefined?
@@ -389,6 +402,8 @@ const UniqueTokenExpandedStateHeader = ({
         }
 
         goBack();
+      } else if (actionKey === AssetActionsEnum.refresh) {
+        await refreshNFTContractMetadata(asset);
       }
     },
     [
@@ -481,6 +496,7 @@ const UniqueTokenExpandedStateHeader = ({
               : lang.t('expanded_state.unique_expanded.hide'),
           ]
         : []),
+      lang.t('expanded_state.unique_expanded.refresh'),
     ] as const;
 
     const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
@@ -490,6 +506,7 @@ const UniqueTokenExpandedStateHeader = ({
       : blockExplorerIndex;
     const copyTokenIndex = photoDownloadIndex + 1;
     const hideTokenIndex = copyTokenIndex + 1;
+    const refreshIndex = hideTokenIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -497,7 +514,7 @@ const UniqueTokenExpandedStateHeader = ({
         showSeparators: true,
         title: '',
       },
-      (idx: number) => {
+      async (idx: number) => {
         if (idx === rainbowWebIndex) {
           Linking.openURL(rainbowWebUrl);
         } else if (idx === blockExplorerIndex) {
@@ -523,6 +540,8 @@ const UniqueTokenExpandedStateHeader = ({
           }
 
           goBack();
+        } else if (idx === refreshIndex) {
+          await refreshNFTContractMetadata(asset);
         }
       }
     );

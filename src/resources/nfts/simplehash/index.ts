@@ -1,4 +1,8 @@
-import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
+import {
+  NFT_API_KEY,
+  NFT_API_URL,
+  SIMPLEHASH_API_KEY,
+} from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
 import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
@@ -8,11 +12,17 @@ import {
   SimpleHashNFT,
   SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
+import { NFT } from '../types';
+import { uniqueTokenTypes } from '@/utils/uniqueTokens';
 
 export const START_CURSOR = 'start';
 
 const nftApi = new RainbowFetchClient({
   baseURL: `https://${NFT_API_URL}/api/v0`,
+});
+
+const nftApi2 = new RainbowFetchClient({
+  baseURL: 'https://api.simplehash.com/api/v0',
 });
 
 const createCursorSuffix = (cursor: string) =>
@@ -112,4 +122,37 @@ export async function fetchSimpleHashNFTListing(
     curr.price < prev.price ? curr : prev
   );
   return cheapestListing;
+}
+
+export async function refreshNFTContractMetadata(nft: NFT) {
+  const chain =
+    nft.uniqueTokenType === uniqueTokenTypes.POAP
+      ? SimpleHashChain.Gnosis
+      : getSimpleHashChainFromNetwork(nft.network);
+
+  if (!chain) {
+    throw new Error(
+      `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
+    );
+  }
+  console.log('HELLO');
+  console.log(chain, nft.asset_contract.address);
+
+  try {
+    const x = await nftApi2.post(
+      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+      {},
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': SIMPLEHASH_API_KEY,
+        },
+      }
+    );
+    console.log('RESONSE', x);
+  } catch (e) {
+    console.log('ERROR', e);
+  }
+  console.log('TESTINGTEST ');
 }
