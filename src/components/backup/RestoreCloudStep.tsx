@@ -183,11 +183,12 @@ export default function RestoreCloudStep({
               filename = normalizeAndroidBackupFilename(filename);
             }
             const walletIdsToUpdate = Object.keys(wallets);
-            logger.log(
-              'updating backup state of wallets with ids',
-              { walletIds: JSON.stringify(walletIdsToUpdate) },
-            );
-            logger.log('backupSelected?.name', backupSelected?.name);
+            logger.log('updating backup state of wallets with ids', {
+              walletIds: JSON.stringify(walletIdsToUpdate),
+            });
+            logger.log('backupSelected?.name', {
+              fileName: backupSelected?.name,
+            });
             await dispatch(
               setAllWalletsWithIdsAsBackedUp(
                 walletIdsToUpdate,
