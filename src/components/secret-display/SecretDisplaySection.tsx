@@ -1,203 +1,178 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { upperFirst } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
   createdWithBiometricError,
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
-} from '../../model/wallet';
+} from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
-import { BiometricButtonContent, Button } from '../buttons';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
-import styled from '@/styled-thing';
-import { margin, position, shadow } from '@/styles';
+import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
+import { IS_ANDROID } from '@/env';
+import {
+  SecretDisplayStates,
+  SecretDisplayStatesType,
+} from '@/components/secret-display/states';
+import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
+import { InteractionManager, StyleSheet } from 'react-native';
 
-const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }: any) => ({
-  color: colors.appleBlue,
-  name: 'copy',
-}))({
-  ...position.sizeAsObject(16),
-  marginTop: 0.5,
-});
+const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
-const ToggleSecretButton = styled(Button)(({ theme: { colors } }: any) => ({
-  ...margin.object(0, 20),
-  ...shadow.buildAsObject(0, 5, 15, colors.purple, 0.3),
-  backgroundColor: colors.appleBlue,
-}));
+type WrapperProps = {
+  children?: ReactNode;
+};
 
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
-
-interface SecretDisplaySectionProps {
-  onSecretLoaded?: (seedExists: boolean) => void;
-  onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
+function Wrapper({ children }: WrapperProps) {
+  return (
+    <Box
+      alignItems="center"
+      justifyContent="center"
+      paddingBottom="30px (Deprecated)"
+      paddingHorizontal={{ custom: 46 }}
+    >
+      {children}
+    </Box>
+  );
 }
 
-export default function SecretDisplaySection({
+type Props = {
+  onSecretLoaded?: (seedExists: boolean) => void;
+  onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
+};
+
+export function SecretDisplaySection({
   onSecretLoaded,
   onWalletTypeIdentified,
-}: SecretDisplaySectionProps) {
+}: Props) {
+  const { colors } = useTheme();
   const { params } = useRoute();
   const { selectedWallet, wallets } = useWallets();
   const walletId = (params as any)?.walletId || selectedWallet.id;
   const currentWallet = wallets?.[walletId];
-  const [visible, setVisible] = useState(true);
-  const [isRecoveryPhraseVisible, setIsRecoveryPhraseVisible] = useState(false);
+  const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(
+    SecretDisplayStates.loading
+  );
   const [seed, setSeed] = useState<string | null>(null);
-  const [type, setType] = useState(currentWallet?.type);
+  const [walletType, setWalletType] = useState(currentWallet?.type);
 
   const loadSeed = useCallback(async () => {
     try {
-      const s = await loadSeedPhraseAndMigrateIfNeeded(walletId);
-      if (s) {
-        const walletType = identifyWalletType(s);
-        setType(walletType);
+      const seedPhrase = await loadSeedPhraseAndMigrateIfNeeded(walletId);
+      if (seedPhrase) {
+        const walletType = identifyWalletType(seedPhrase);
+        setWalletType(walletType);
         onWalletTypeIdentified?.(walletType);
-        setSeed(s);
+        setSeed(seedPhrase);
+        setSectionState(SecretDisplayStates.revealed);
+      } else {
+        setSectionState(SecretDisplayStates.noSeed);
       }
-      setVisible(!!s);
-      onSecretLoaded?.(!!s);
-      setIsRecoveryPhraseVisible(!!s);
-    } catch (e: any) {
-      logger.sentry('Error while trying to reveal secret', e);
-      if (e?.message === createdWithBiometricError) {
-        setIsRecoveryPhraseVisible(false);
-      }
-      captureException(e);
-      setVisible(false);
+      onSecretLoaded?.(!!seedPhrase);
+    } catch (error) {
+      const message = (error as Error)?.message;
+      logger.error(new RainbowError('Error while trying to reveal secret'), {
+        error: message,
+      });
+      setSectionState(
+        message === createdWithBiometricError
+          ? SecretDisplayStates.securedWithBiometrics
+          : SecretDisplayStates.noSeed
+      );
+      captureException(error);
       onSecretLoaded?.(false);
     }
   }, [onSecretLoaded, onWalletTypeIdentified, walletId]);
 
   useEffect(() => {
-    // Android doesn't like to show the faceID prompt
-    // while the view isn't fully visible
-    // so we have to add a timeout to prevent the app from freezing
-    android
-      ? setTimeout(() => {
-          loadSeed();
-        }, 300)
-      : loadSeed();
+    // We need to run this after interactions since there were issues on Android
+    InteractionManager.runAfterInteractions(() => {
+      loadSeed();
+    });
   }, [loadSeed]);
 
-  const typeLabel = type === WalletTypes.privateKey ? 'key' : 'phrase';
-
-  const { colors } = useTheme();
-
-  const renderStepNoSeeds = useCallback(() => {
-    if (isRecoveryPhraseVisible) {
+  switch (sectionState) {
+    case SecretDisplayStates.loading:
       return (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="60px"
-        >
-          <Stack space="10px">
-            <Text
-              align="center"
-              color="secondary (Deprecated)"
-              size="18px / 27px (Deprecated)"
-              weight="regular"
-            >
-              {lang.t('back_up.secret.you_need_to_authenticate', {
-                typeName: typeLabel,
-              })}
-            </Text>
-            <ToggleSecretButton onPress={loadSeed}>
-              {/* @ts-ignore */}
-              <BiometricButtonContent
-                color={colors.white}
-                label={lang.t('back_up.secret.show_recovery', {
-                  typeName: upperFirst(typeLabel),
-                })}
-                showIcon={!seed}
-              />
-            </ToggleSecretButton>
-          </Stack>
-        </Box>
+        <Wrapper>
+          <LoadingSpinner color={colors.blueGreyDark50} />
+        </Wrapper>
       );
-    } else {
+    case SecretDisplayStates.noSeed:
       return (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="60px"
-        >
-          <Text
-            align="center"
-            color="secondary60 (Deprecated)"
-            size="16px / 22px (Deprecated)"
-          >
-            {lang.t('back_up.secret.biometrically_secured')}
-          </Text>
-        </Box>
+        <SecretDisplayError message={lang.t('back_up.secret.no_seed_phrase')} />
       );
-    }
-  }, [isRecoveryPhraseVisible, typeLabel, loadSeed, colors.white, seed]);
-  return (
-    <>
-      {visible ? (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          paddingBottom="30px (Deprecated)"
-          paddingHorizontal={{ custom: 46 }}
-        >
-          {seed ? (
-            <>
-              <Box paddingBottom="19px (Deprecated)">
-                {/* @ts-ignore */}
-                <CopyFloatingEmojis textToCopy={seed}>
-                  <Inline alignVertical="center" space="6px">
-                    <CopyButtonIcon />
-                    <Text
-                      color="action (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                    >
-                      {lang.t('back_up.secret.copy_to_clipboard')}
-                    </Text>
-                  </Inline>
-                </CopyFloatingEmojis>
-              </Box>
-              <Stack alignHorizontal="center" space="19px (Deprecated)">
-                {/* @ts-ignore */}
-                <SecretDisplayCard seed={seed} type={type} />
+    case SecretDisplayStates.securedWithBiometrics:
+      return (
+        <SecretDisplayError
+          message={lang.t('back_up.secret.biometrically_secured')}
+        />
+      );
+    case SecretDisplayStates.revealed:
+      return (
+        <Wrapper>
+          <Box paddingBottom="19px (Deprecated)">
+            {/* @ts-expect-error JS component*/}
+            <CopyFloatingEmojis textToCopy={seed}>
+              <Inline alignVertical="center" space="6px">
+                <Icon
+                  name="copy"
+                  color={colors.appleBlue}
+                  style={styles.copyIcon}
+                />
                 <Text
-                  containsEmoji
-                  color="primary (Deprecated)"
+                  color="action (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
                 >
-                  👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
+                  {lang.t('back_up.secret.copy_to_clipboard')}
                 </Text>
-                <Text
-                  align="center"
-                  color="secondary60 (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="semibold"
-                >
-                  {lang.t('back_up.secret.anyone_who_has_these')}
-                </Text>
-              </Stack>
-            </>
-          ) : (
-            <LoadingSpinner color={colors.blueGreyDark50} />
-          )}
-        </Box>
-      ) : (
-        renderStepNoSeeds()
-      )}
-    </>
-  );
+              </Inline>
+            </CopyFloatingEmojis>
+          </Box>
+          <Stack alignHorizontal="center" space="19px (Deprecated)">
+            <SecretDisplayCard seed={seed ?? ''} type={walletType} />
+            <Text
+              containsEmoji
+              color="primary (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="bold"
+            >
+              👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
+            </Text>
+            <Text
+              align="center"
+              color="secondary60 (Deprecated)"
+              size="16px / 22px (Deprecated)"
+              weight="semibold"
+            >
+              {lang.t('back_up.secret.anyone_who_has_these')}
+            </Text>
+          </Stack>
+        </Wrapper>
+      );
+    default:
+      logger.error(
+        new RainbowError(
+          'Secret display section tries to present an unknown state'
+        )
+      );
+      return null;
+  }
 }
+
+const styles = StyleSheet.create({
+  copyIcon: {
+    ...position.sizeAsObject(16),
+    marginTop: 0.5,
+  },
+});

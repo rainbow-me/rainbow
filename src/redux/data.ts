@@ -81,6 +81,7 @@ import { logger as loggr, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
 import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
+import { QueryClient } from '@tanstack/react-query';
 
 const storage = new MMKV();
 
@@ -794,6 +795,12 @@ export const maybeFetchF2CHashForPendingTransactions = async (
     loggr.DebugContext.f2c
   );
 
+  /**
+   * A CUSTOM query client used for this query only. We don't need to store tx
+   * data on this device.
+   */
+  const queryClient = new QueryClient();
+
   return Promise.all(
     pendingTransactions.map(async tx => {
       // If not from a F2C provider, return the original tx
@@ -825,45 +832,65 @@ export const maybeFetchF2CHashForPendingTransactions = async (
             `maybeFetchF2CHashForPendingTransactions: fetching order`
           );
 
-          const { data, error } = await gretch<ActivityItem>(
-            `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
-          ).json();
+          try {
+            const data = await queryClient.fetchQuery({
+              queryKey: ['f2c', 'ratio', 'pending_tx_check'],
+              staleTime: 10_000, // only fetch AT MOST once every 10 seconds
+              async queryFn() {
+                const { data, error } = await gretch<ActivityItem>(
+                  `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
+                ).json();
 
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions: fetched order`,
-            {
-              hasData: Boolean(data),
-              hasError: Boolean(error),
-              hasHash: Boolean(data?.crypto?.transactionHash),
+                if (!data || error) {
+                  if (error) {
+                    throw error;
+                  } else {
+                    throw new Error(
+                      'Ratio API returned no data for this transaction'
+                    );
+                  }
+                }
+
+                return data;
+              },
+            });
+
+            loggr.debug(
+              `maybeFetchF2CHashForPendingTransactions: fetched order`,
+              {
+                hasData: Boolean(data),
+                hasHash: Boolean(data?.crypto?.transactionHash),
+              }
+            );
+
+            if (data.crypto.transactionHash) {
+              tx.hash = data.crypto.transactionHash;
+
+              analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
+                provider: FiatProviderName.Ratio,
+                sessionId: tx.fiatProvider.analyticsSessionId,
+              });
+
+              loggr.debug(
+                `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
+              );
+            } else {
+              loggr.info(
+                `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
+              );
             }
-          );
-
-          if (!data || error) {
+          } catch (e: any) {
             loggr.error(
               new RainbowError(
                 `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
               ),
               {
-                error,
+                message: e.message,
                 provider: tx.fiatProvider.name,
               }
             );
-          } else if (data.crypto.transactionHash) {
-            tx.hash = data.crypto.transactionHash;
-
-            analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
-              provider: FiatProviderName.Ratio,
-              sessionId: tx.fiatProvider.analyticsSessionId,
-            });
-
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
-            );
-          } else {
-            loggr.info(
-              `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
-            );
           }
+
           break;
         }
 

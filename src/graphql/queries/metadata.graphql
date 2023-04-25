@@ -6,6 +6,16 @@ query getContractFunction($chainID: Int!, $hex: String!) {
   }
 }
 
+query getEnsMarquee {
+  ensMarquee {
+    accounts {
+      name
+      address
+      avatar
+    }
+  }
+}
+
 fragment amount on RewardsAmount {
   usd
   token

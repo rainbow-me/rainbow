@@ -797,7 +797,7 @@ export const createWallet = async ({
     logger.debug('[createWallet] - wallet ID', { id }, DebugContext.wallet);
 
     // Android users without biometrics need to secure their keys with a PIN
-    let userPIN = null;
+    let userPIN: string | undefined;
     if (IS_ANDROID && !isReadOnlyType && !isHardwareWallet) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
@@ -805,18 +805,20 @@ export const createWallet = async ({
         try {
           userPIN = await getExistingPIN();
           if (!userPIN) {
-            // We gotta dismiss the modal before showing the PIN screen
+            // We have to dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
             userPIN = await authenticateWithPINAndCreateIfNeeded();
-            dispatch(
-              setIsWalletLoading(
-                seed
-                  ? silent
+            if (seed) {
+              dispatch(
+                setIsWalletLoading(
+                  silent
                     ? WalletLoadingStates.IMPORTING_WALLET_SILENTLY
                     : WalletLoadingStates.IMPORTING_WALLET
-                  : WalletLoadingStates.CREATING_WALLET
-              )
-            );
+                )
+              );
+            } else {
+              dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+            }
           }
         } catch (e) {
           return null;
