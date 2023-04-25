@@ -106,6 +106,12 @@ class OldApp extends Component {
 
     // main Branch handler
     this.branchListener = await branchListener(url => {
+      logger.debug(
+        `Branch: listener called`,
+        {},
+        logger.DebugContext.deeplinks
+      );
+
       try {
         handleDeeplink(url, this.state.initialRoute);
       } catch (e) {
