@@ -4,7 +4,6 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Column, Row } from '../layout';
-import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
 import { analytics } from '@/analytics';
@@ -13,6 +12,7 @@ import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { SecretDisplaySection } from '@/components/secret-display/SecretDisplaySection';
 
 const Content = styled(Column).attrs({
   align: 'center',
