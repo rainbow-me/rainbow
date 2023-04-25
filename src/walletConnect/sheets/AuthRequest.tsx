@@ -21,6 +21,10 @@ import {
 } from '@/walletConnect/types';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 
 export function AuthRequest({
   requesterMeta,
@@ -29,19 +33,39 @@ export function AuthRequest({
   requesterMeta: Web3WalletTypes.AuthRequest['params']['requester']['metadata'];
   authenticate: AuthRequestAuthenticateSignature;
 }) {
+  const { accountAddress } = useSelector((state: AppState) => ({
+    accountAddress: state.settings.accountAddress,
+  }));
+  const { wallets, walletNames } = useSelector((state: AppState) => ({
+    wallets: state.wallets.wallets,
+    walletNames: state.wallets.walletNames,
+  }));
+
   const { navigate, goBack } = useNavigation();
+  const { colors } = useTheme();
+  const [loadError, setLoadError] = React.useState(false);
+  const [address, setAddress] = React.useState(accountAddress);
+
   const {
-    accountAddress,
     accountSymbol,
     accountColor,
     accountImage,
     accountName,
-  } = useAccountProfile();
-  const [loadError, setLoadError] = React.useState(false);
-  const { colors } = useTheme();
+  } = React.useMemo(() => {
+    const selectedWallet = findWalletWithAccount(wallets!, address);
+    const profileInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      address
+    );
+    return {
+      ...profileInfo,
+      isHardwareWallet: !!selectedWallet?.deviceId,
+    };
+  }, [walletNames, wallets, address]);
 
   const auth = React.useCallback(async () => {
-    const { success, reason } = await authenticate({ address: accountAddress });
+    const { success, reason } = await authenticate({ address });
 
     if (!success) {
       switch (reason) {
@@ -60,7 +84,7 @@ export function AuthRequest({
     } else {
       goBack(); // close
     }
-  }, [accountAddress, authenticate, goBack]);
+  }, [address, authenticate, goBack]);
 
   const { icons, name, url } = requesterMeta;
 
@@ -123,7 +147,14 @@ export function AuthRequest({
         <Box paddingBottom="36px">
           <ButtonPressAnimation
             onPress={() => {
-              navigate(Routes.CHANGE_WALLET_SHEET, { watchOnly: true });
+              navigate(Routes.CHANGE_WALLET_SHEET, {
+                watchOnly: true,
+                currentAccountAddress: address,
+                onChangeWallet(address: string) {
+                  setAddress(address);
+                  goBack();
+                },
+              });
             }}
           >
             <Box
