@@ -470,8 +470,8 @@ PODS:
     - React-Core
   - react-native-palette-full (1.2.0):
     - React
-    - SDWebImage (~> 5.15.6)
-    - SDWebImageWebPCoder (~> 0.8.5)
+    - SDWebImage
+    - SDWebImageWebPCoder
   - react-native-plaid-link-sdk (9.0.1):
     - Plaid (~> 4.1.0)
     - React-Core
@@ -625,8 +625,8 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.15.6)
-    - SDWebImageWebPCoder (~> 0.8.5)
+    - SDWebImage
+    - SDWebImageWebPCoder
   - RNFBApp (14.7.0):
     - Firebase/CoreOnly (= 8.14.0)
     - React-Core
@@ -714,9 +714,9 @@ PODS:
   - SDWebImage (5.15.6):
     - SDWebImage/Core (= 5.15.6)
   - SDWebImage/Core (5.15.6)
-  - SDWebImageWebPCoder (0.8.5):
+  - SDWebImageWebPCoder (0.11.0):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.10)
+    - SDWebImage/Core (~> 5.15)
   - segment-analytics-react-native (2.7.0):
     - React-Core
     - sovran-react-native
@@ -1249,7 +1249,7 @@ SPEC CHECKSUMS:
   react-native-mmkv: 30297e5e2a65341b36a727c1c79b0aff0132b396
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
-  react-native-palette-full: 7a783f9d64766c10d31a6030b8325d52e8244443
+  react-native-palette-full: 3078d264bf13a06b5cd1969af5fac73e06fa75f6
   react-native-plaid-link-sdk: 825c6526bf4e038f6d0ee6c7e5412b4d319ea580
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -1286,7 +1286,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 50752bfe360d412b351687d6d24e89fcd9e5e7db
+  RNFastImage: 750edfa885e169e87b7e086276b2b9b6c5269479
   RNFBApp: 097a31d372b3db15b41c7a1a5c429433b0609e12
   RNFBCrashlytics: 4ec9aae1a1dbb6572d095417392483bec82b07bb
   RNFBMessaging: 06a7a73883f3f43da61507dbfcf4db2245c22869
@@ -1309,7 +1309,7 @@ SPEC CHECKSUMS:
   RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   SDWebImage: d47d81bea8a77187896b620dc79c3c528e8906b9
-  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
+  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
   segment-analytics-react-native: e4be824133efd888616f6e6654a2cd4b1b8a3102
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86

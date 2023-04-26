@@ -215,7 +215,7 @@ index d408dc4..9d478e3 100644
  const TAG = "[Palette]";
  export default class Palette {
 diff --git a/node_modules/react-native-palette-full/react-native-palette-full.podspec b/node_modules/react-native-palette-full/react-native-palette-full.podspec
-index 492fac1..9cbd604 100644
+index 492fac1..c83579e 100644
 --- a/node_modules/react-native-palette-full/react-native-palette-full.podspec
 +++ b/node_modules/react-native-palette-full/react-native-palette-full.podspec
 @@ -17,6 +17,7 @@ Pod::Spec.new do |s|
@@ -223,7 +223,7 @@ index 492fac1..9cbd604 100644
  
    s.dependency "React"
 -  s.dependency "SDWebImage", "~>5"
-+  s.dependency 'SDWebImage', '~> 5.15.6'
-+  s.dependency 'SDWebImageWebPCoder', '~> 0.8.5'
++  s.dependency 'SDWebImage'
++  s.dependency 'SDWebImageWebPCoder'
    
  end

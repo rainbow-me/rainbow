@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-fast-image/RNFastImage.podspec b/node_modules/react-native-fast-image/RNFastImage.podspec
-index db0fada..59b0fc8 100644
+index db0fada..470e04a 100644
 --- a/node_modules/react-native-fast-image/RNFastImage.podspec
 +++ b/node_modules/react-native-fast-image/RNFastImage.podspec
 @@ -16,6 +16,6 @@ Pod::Spec.new do |s|
@@ -8,8 +8,8 @@ index db0fada..59b0fc8 100644
    s.dependency 'React-Core'
 -  s.dependency 'SDWebImage', '~> 5.11.1'
 -  s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
-+  s.dependency 'SDWebImage', '~> 5.15.6'
-+  s.dependency 'SDWebImageWebPCoder', '~> 0.8.5'
++  s.dependency 'SDWebImage'
++  s.dependency 'SDWebImageWebPCoder'
  end
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
 index 361417b..f167e91 100644
