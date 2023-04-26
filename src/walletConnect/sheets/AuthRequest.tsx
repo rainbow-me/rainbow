@@ -51,6 +51,7 @@ export function AuthRequest({
     accountColor,
     accountImage,
     accountName,
+    isHardwareWallet,
   } = React.useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets!, address);
     const profileInfo = getAccountProfileInfo(
@@ -83,8 +84,13 @@ export function AuthRequest({
       }
     } else {
       goBack(); // close
+
+      if (isHardwareWallet) {
+        // Ledger flow sheets close, then we close AuthRequest sheet
+        goBack();
+      }
     }
-  }, [address, authenticate, goBack]);
+  }, [address, authenticate, goBack, isHardwareWallet]);
 
   const { icons, name, url } = requesterMeta;
 

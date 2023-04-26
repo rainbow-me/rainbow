@@ -41,8 +41,10 @@ import * as portal from '@/screens/Portal';
 import {
   AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
+  AuthRequestAuthenticateResult,
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
+import { getProviderForNetwork } from '@/handlers/web3';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -885,8 +887,10 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     try {
       const { wallets } = store.getState().wallets;
       const selectedWallet = findWalletWithAccount(wallets!, address);
+      const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 
+      // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
         await client.respondAuthRequest(
           {
@@ -905,23 +909,52 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
         };
       }
 
-      const wallet = await loadWallet(address);
+      /**
+       * Locally scoped to this `authenticate` function. Simply here to
+       * encapsulate reused code.
+       */
+      const loadWalletAndSignMessage = async () => {
+        const provider = await getProviderForNetwork();
+        const wallet = await loadWallet(address, false, provider);
 
-      if (!wallet) {
-        logger.error(
-          new RainbowError(`WC v2: could not loadWallet to sign auth_request`)
-        );
+        if (!wallet) {
+          logger.error(
+            new RainbowError(`WC v2: could not loadWallet to sign auth_request`)
+          );
 
+          return undefined;
+        }
+
+        const message = client.formatMessage(event.params.cacaoPayload, iss);
+        // prompt the user to sign the message
+        return wallet.signMessage(message);
+      };
+
+      // Get signature either directly, or via hardware wallet flow
+      const signature = await (isHardwareWallet
+        ? new Promise<Awaited<ReturnType<typeof loadWalletAndSignMessage>>>(
+            (y, n) => {
+              Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+                async submit() {
+                  try {
+                    y(loadWalletAndSignMessage());
+                  } catch (e) {
+                    n(e);
+                  }
+                },
+              });
+            }
+          )
+        : loadWalletAndSignMessage());
+
+      if (!signature) {
         return {
           success: false,
           reason: AuthRequestResponseErrorReason.Unknown,
         };
       }
 
-      const message = client.formatMessage(event.params.cacaoPayload, iss);
-      // prompt the user to sign the message
-      const signature = await wallet.signMessage(message);
-      // respond
+      // respond to WC
       await client.respondAuthRequest(
         {
           id: event.id,
@@ -933,6 +966,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
         iss
       );
 
+      // only handled on success
       maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
 
       return { success: true };
