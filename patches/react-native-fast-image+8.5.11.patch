@@ -7,7 +7,7 @@ index db0fada..54d8d5b 100644
  
    s.dependency 'React-Core'
 -  s.dependency 'SDWebImage', '~> 5.11.1'
-+  s.dependency 'SDWebImage', '~> 5.12.5'
++  s.dependency 'SDWebImage', '~> 5.15'
    s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
  end
 diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
