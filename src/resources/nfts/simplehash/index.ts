@@ -8,6 +8,7 @@ import {
   SimpleHashNFT,
   SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
+import { UniqueAsset } from '@/entities';
 
 export const START_CURSOR = 'start';
 
@@ -112,4 +113,28 @@ export async function fetchSimpleHashNFTListing(
     curr.price < prev.price ? curr : prev
   );
   return cheapestListing;
+}
+
+export async function refreshNFTContractMetadata(nft: UniqueAsset) {
+  const chain = nft.isPoap
+    ? SimpleHashChain.Gnosis
+    : getSimpleHashChainFromNetwork(nft.network);
+
+  if (!chain) {
+    throw new Error(
+      `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
+    );
+  }
+
+  await nftApi.post(
+    `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+    {},
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'x-api-key': NFT_API_KEY,
+      },
+    }
+  );
 }

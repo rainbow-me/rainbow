@@ -671,6 +671,7 @@
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
         "view_on_web": "View on Web :)",
+        "refresh": "Refresh Metadata :)",
         "hide": "Hide",
         "unhide": "Unhide"
       }

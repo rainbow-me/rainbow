@@ -34,6 +34,7 @@ import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
+import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -43,6 +44,7 @@ const AssetActionsEnum = {
   rainbowWeb: 'rainbowWeb',
   opensea: 'opensea',
   looksrare: 'looksrare',
+  refresh: 'refresh',
 } as const;
 
 const getAssetActions = (network: Network) =>
@@ -98,6 +100,14 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'ASSET',
         iconValue: 'opensea',
+      },
+    },
+    [AssetActionsEnum.refresh]: {
+      actionKey: AssetActionsEnum.refresh,
+      actionTitle: lang.t('expanded_state.unique_expanded.refresh'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'arrow.clockwise',
       },
     },
     [AssetActionsEnum.looksrare]: {
@@ -267,6 +277,9 @@ const UniqueTokenExpandedStateHeader = ({
 
     return {
       menuItems: [
+        {
+          ...AssetActions[AssetActionsEnum.refresh],
+        },
         ...(isModificationActionsEnabled
           ? [
               {
@@ -385,6 +398,8 @@ const UniqueTokenExpandedStateHeader = ({
         }
 
         goBack();
+      } else if (actionKey === AssetActionsEnum.refresh) {
+        refreshNFTContractMetadata(asset);
       }
     },
     [
@@ -479,6 +494,7 @@ const UniqueTokenExpandedStateHeader = ({
               : lang.t('expanded_state.unique_expanded.hide'),
           ]
         : []),
+      lang.t('expanded_state.unique_expanded.refresh'),
     ] as const;
 
     const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
@@ -488,6 +504,7 @@ const UniqueTokenExpandedStateHeader = ({
       : blockExplorerIndex;
     const copyTokenIndex = photoDownloadIndex + 1;
     const hideTokenIndex = copyTokenIndex + 1;
+    const refreshIndex = hideTokenIndex + 1;
 
     showActionSheetWithOptions(
       {
@@ -521,6 +538,8 @@ const UniqueTokenExpandedStateHeader = ({
           }
 
           goBack();
+        } else if (idx === refreshIndex) {
+          refreshNFTContractMetadata(asset);
         }
       }
     );
