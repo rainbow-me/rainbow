@@ -4,7 +4,6 @@ import {
   RatioOrderStatus,
   OrderStatus,
 } from '@ratio.me/ratio-react-native-library';
-import { gretch } from 'gretchen';
 import { nanoid } from 'nanoid/non-secure';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -32,12 +31,12 @@ import {
   getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded,
   signWithSigningWallet,
 } from '@/helpers/signingWallet';
-
 import {
   ratioOrderToNewTransaction,
   parseRatioNetworkToInternalNetwork,
 } from './utils';
 import { isAuthenticated } from '@/utils/authentication';
+import { ratioGetClientSession } from '@/resources/f2c';
 
 const ERROR_USER_FAILED_AUTH = 'user_failed_auth';
 
@@ -236,20 +235,14 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
 
         const signingAddress = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
-        const { data, error } = await gretch<{ id: string }>(
-          'https://f2c.rainbow.me/v1/providers/ratio/client-session',
-          {
-            method: 'POST',
-            json: {
-              signingAddress,
-              depositAddress: accountAddress,
-              signingNetwork: 'ETHEREUM',
-            },
-          }
-        ).json();
+        const { data, error } = await ratioGetClientSession({
+          signingAddress,
+          depositAddress: accountAddress,
+        });
 
         if (!data || error) {
-          throw new Error(error);
+          const [{ message }] = error.errors;
+          throw new Error(message);
         }
 
         return data?.id;
