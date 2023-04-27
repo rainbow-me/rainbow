@@ -21,10 +21,6 @@ const nftApi = new RainbowFetchClient({
   baseURL: `https://${NFT_API_URL}/api/v0`,
 });
 
-const nftApi2 = new RainbowFetchClient({
-  baseURL: 'https://api.simplehash.com/api/v0',
-});
-
 const createCursorSuffix = (cursor: string) =>
   cursor === START_CURSOR ? '' : `&cursor=${cursor}`;
 
@@ -135,24 +131,16 @@ export async function refreshNFTContractMetadata(nft: NFT) {
       `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
     );
   }
-  console.log('HELLO');
-  console.log(chain, nft.asset_contract.address);
 
-  try {
-    const x = await nftApi2.post(
-      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
-      {},
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'x-api-key': SIMPLEHASH_API_KEY,
-        },
-      }
-    );
-    console.log('RESONSE', x);
-  } catch (e) {
-    console.log('ERROR', e);
-  }
-  console.log('TESTINGTEST ');
+  await nftApi.post(
+    `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+    {},
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'x-api-key': NFT_API_KEY,
+      },
+    }
+  );
 }
