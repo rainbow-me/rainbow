@@ -401,7 +401,7 @@ const UniqueTokenExpandedStateHeader = ({
 
         goBack();
       } else if (actionKey === AssetActionsEnum.refresh) {
-        refreshNFTContractMetadata(asset).then(() => onRefresh());
+        refreshNFTContractMetadata(asset).then(onRefresh);
       }
     },
     [
@@ -542,7 +542,7 @@ const UniqueTokenExpandedStateHeader = ({
 
           goBack();
         } else if (idx === refreshIndex) {
-          refreshNFTContractMetadata(asset).then(() => onRefresh());
+          refreshNFTContractMetadata(asset).then(onRefresh);
         }
       }
     );
