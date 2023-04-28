@@ -26,7 +26,8 @@ export default React.memo(function WrappedNFT({
       ...(IS_TEST
         ? {
             images: {
-              ...assetCollectible.images,
+              blurhash: undefined,
+              mimeType: undefined,
               fullResUrl: undefined,
               fullResPngUrl: undefined,
               lowResPngUrl: undefined,
