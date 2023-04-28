@@ -2,7 +2,13 @@ import { BlurView } from '@react-native-community/blur';
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -77,7 +83,6 @@ import {
   safeAreaInsetValues,
 } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { useState } from 'react';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
