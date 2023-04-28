@@ -22,7 +22,7 @@ import {
   SheetHandle,
   SlackSheet,
 } from '../sheet';
-import { ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
@@ -77,6 +77,7 @@ import {
   safeAreaInsetValues,
 } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useState } from 'react';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -257,6 +258,20 @@ const UniqueTokenExpandedState = ({
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+
+  const [
+    isRefreshMetadataToastActive,
+    setIsRefreshMetadataToastActive,
+  ] = useState(false);
+
+  const activateRefreshMetadataToast = useCallback(() => {
+    if (!isRefreshMetadataToastActive) {
+      setIsRefreshMetadataToastActive(true);
+      setTimeout(() => {
+        setIsRefreshMetadataToastActive(false);
+      }, 3000);
+    }
+  }, [isRefreshMetadataToastActive]);
 
   const {
     collection: {
@@ -529,6 +544,7 @@ const UniqueTokenExpandedState = ({
                         isModificationActionsEnabled={isActionsEnabled}
                         isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
                         rainbowWebUrl={rainbowWebUrl}
+                        onRefresh={activateRefreshMetadataToast}
                       />
                     </Stack>
                     {isNFT || isENS ? (
@@ -748,6 +764,10 @@ const UniqueTokenExpandedState = ({
           removeCopy={lang.t(
             'expanded_state.unique_expanded.toast_removed_from_showcase'
           )}
+        />
+        <Toast
+          isVisible={isRefreshMetadataToastActive}
+          text="Requesting metadata..."
         />
       </ToastPositionContainer>
     </>

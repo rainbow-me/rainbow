@@ -115,6 +115,11 @@ export async function fetchSimpleHashNFTListing(
   return cheapestListing;
 }
 
+/**
+ * Given an NFT, refresh its contract metadata on SimpleHash. If we can't,
+ * refresh metadata for this NFT only.
+ * @param nft
+ */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
   const chain = nft.isPoap
     ? SimpleHashChain.Gnosis
@@ -126,15 +131,31 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     );
   }
 
-  await nftApi.post(
-    `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
-    {},
-    {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'x-api-key': NFT_API_KEY,
-      },
-    }
-  );
+  try {
+    await nftApi.post(
+      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+      {},
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': NFT_API_KEY,
+        },
+      }
+    );
+  } catch {
+    // If the collection has > 20k NFTs, the above request will fail.
+    // In that case, we need to refresh the given NFT individually.
+    await nftApi.post(
+      `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
+      {},
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': NFT_API_KEY,
+        },
+      }
+    );
+  }
 }

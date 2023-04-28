@@ -185,6 +185,7 @@ interface UniqueTokenExpandedStateHeaderProps {
   isSupportedOnRainbowWeb: boolean;
   rainbowWebUrl: string;
   isModificationActionsEnabled?: boolean;
+  onRefresh: () => void;
 }
 
 const UniqueTokenExpandedStateHeader = ({
@@ -193,6 +194,7 @@ const UniqueTokenExpandedStateHeader = ({
   isSupportedOnRainbowWeb,
   rainbowWebUrl,
   isModificationActionsEnabled = true,
+  onRefresh,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
@@ -399,7 +401,7 @@ const UniqueTokenExpandedStateHeader = ({
 
         goBack();
       } else if (actionKey === AssetActionsEnum.refresh) {
-        refreshNFTContractMetadata(asset);
+        refreshNFTContractMetadata(asset).then(() => onRefresh());
       }
     },
     [
@@ -412,6 +414,7 @@ const UniqueTokenExpandedStateHeader = ({
       addHiddenToken,
       isShowcaseAsset,
       removeShowcaseToken,
+      onRefresh,
     ]
   );
 
@@ -539,23 +542,24 @@ const UniqueTokenExpandedStateHeader = ({
 
           goBack();
         } else if (idx === refreshIndex) {
-          refreshNFTContractMetadata(asset);
+          refreshNFTContractMetadata(asset).then(() => onRefresh());
         }
       }
     );
   }, [
     asset,
-    isPhotoDownloadAvailable,
     isSupportedOnRainbowWeb,
+    isPhotoDownloadAvailable,
+    isModificationActionsEnabled,
+    isHiddenAsset,
     rainbowWebUrl,
     setClipboard,
-    isHiddenAsset,
-    isModificationActionsEnabled,
-    isShowcaseAsset,
-    addHiddenToken,
-    removeHiddenToken,
-    removeShowcaseToken,
     goBack,
+    removeHiddenToken,
+    addHiddenToken,
+    isShowcaseAsset,
+    removeShowcaseToken,
+    onRefresh,
   ]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
