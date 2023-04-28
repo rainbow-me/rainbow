@@ -60,6 +60,8 @@ import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
+import { queryClient } from '@/react-query';
+import { nftsQueryKey } from '@/resources/nfts';
 
 export default async function runMigrations() {
   // get current version
@@ -675,38 +677,16 @@ export default async function runMigrations() {
 
   /*
   *************** Migration v18 ******************
-  Showcase NFT id:  ${contractAddress}_${tokenId} -> ${network}_${contractAddress}_${tokenId}
+  Clear React Query `nfts` cache since we now store NFTs instead of UniqueAssets there
   */
   const v18 = async () => {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (let wallet of Object.values(wallets)) {
       for (let account of (wallet as RainbowWallet).addresses) {
-        const pinnedCoins = JSON.parse(
-          mmkv.getString('pinned-coins-' + account.address) ?? '[]'
-        );
-        const hiddenCoins = JSON.parse(
-          mmkv.getString('hidden-coins-' + account.address) ?? '[]'
-        );
-        mmkv.set(
-          'hidden-coins-obj-' + account.address,
-          JSON.stringify(
-            hiddenCoins.reduce((acc: BooleanMap, curr: string) => {
-              acc[curr] = true;
-              return acc;
-            }, {} as BooleanMap)
-          )
-        );
-
-        mmkv.set(
-          'pinned-coins-obj-' + account.address,
-          JSON.stringify(
-            pinnedCoins.reduce((acc: BooleanMap, curr: string) => {
-              acc[curr] = true;
-              return acc;
-            }, {} as BooleanMap)
-          )
-        );
+        queryClient.invalidateQueries({
+          queryKey: nftsQueryKey({ address: account.address }),
+        });
       }
     }
   };
