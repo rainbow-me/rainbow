@@ -22,7 +22,7 @@ import {
   SheetHandle,
   SlackSheet,
 } from '../sheet';
-import { ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
@@ -77,6 +77,10 @@ import {
   safeAreaInsetValues,
 } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import RefreshMetadataToast, {
+  refreshMetadataToastAtom,
+} from '../toasts/RefreshMetadataToast';
+import { useRecoilValue } from 'recoil';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -258,6 +262,8 @@ const UniqueTokenExpandedState = ({
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
+  const refreshMetadataToastActive = useRecoilValue(refreshMetadataToastAtom);
+  console.log(refreshMetadataToastActive, 'STATE');
   const {
     collection: {
       description: familyDescription,
@@ -740,7 +746,7 @@ const UniqueTokenExpandedState = ({
         </ColorModeProvider>
       </SlackSheet>
       <ToastPositionContainer>
-        <ToggleStateToast
+        {/* <ToggleStateToast
           addCopy={lang.t(
             'expanded_state.unique_expanded.toast_added_to_showcase'
           )}
@@ -748,10 +754,12 @@ const UniqueTokenExpandedState = ({
           removeCopy={lang.t(
             'expanded_state.unique_expanded.toast_removed_from_showcase'
           )}
-        />
+        /> */}
+        <Toast isVisible={refreshMetadataToastActive} text="HELLO" />
       </ToastPositionContainer>
     </>
   );
 };
 
-export default magicMemo(UniqueTokenExpandedState, 'asset');
+// export default magicMemo(UniqueTokenExpandedState, 'asset');
+export default UniqueTokenExpandedState;

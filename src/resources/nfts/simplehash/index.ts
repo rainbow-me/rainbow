@@ -116,6 +116,7 @@ export async function fetchSimpleHashNFTListing(
 }
 
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
+  return true;
   const chain = nft.isPoap
     ? SimpleHashChain.Gnosis
     : getSimpleHashChainFromNetwork(nft.network);

@@ -35,6 +35,8 @@ import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { refreshMetadataToastAtom } from '@/components/toasts/RefreshMetadataToast';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -206,7 +208,19 @@ const UniqueTokenExpandedStateHeader = ({
     () => showcaseTokens.includes(asset.uniqueId) as boolean,
     [showcaseTokens, asset.uniqueId]
   );
+  const [refreshMetadataToast, setRefreshMetadataToast] = useRecoilState(
+    refreshMetadataToastAtom
+  );
+  console.log(refreshMetadataToast, 'TOAST');
   const { goBack } = useNavigation();
+
+  const refreshMetadata = useCallback(() => {
+    refreshNFTContractMetadata(asset)
+      .then(() => setRefreshMetadataToast(true))
+      .catch(e => console.log('OH NO', e));
+    console.log('HELLO');
+    console.log('GOODBYE');
+  }, [asset, setRefreshMetadataToast]);
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -399,19 +413,22 @@ const UniqueTokenExpandedStateHeader = ({
 
         goBack();
       } else if (actionKey === AssetActionsEnum.refresh) {
-        refreshNFTContractMetadata(asset);
+        // refreshMetadata();
+        console.log('REFRESH');
+        setRefreshMetadataToast(true);
       }
     },
     [
-      asset,
-      rainbowWebUrl,
-      setClipboard,
-      isHiddenAsset,
-      goBack,
-      removeHiddenToken,
       addHiddenToken,
+      asset,
+      goBack,
+      isHiddenAsset,
       isShowcaseAsset,
+      rainbowWebUrl,
+      removeHiddenToken,
       removeShowcaseToken,
+      setClipboard,
+      setRefreshMetadataToast,
     ]
   );
 
@@ -539,23 +556,25 @@ const UniqueTokenExpandedStateHeader = ({
 
           goBack();
         } else if (idx === refreshIndex) {
-          refreshNFTContractMetadata(asset);
+          // refreshMetadata;
+          setRefreshMetadataToast(true);
         }
       }
     );
   }, [
     asset,
-    isPhotoDownloadAvailable,
     isSupportedOnRainbowWeb,
+    isPhotoDownloadAvailable,
+    isModificationActionsEnabled,
+    isHiddenAsset,
     rainbowWebUrl,
     setClipboard,
-    isHiddenAsset,
-    isModificationActionsEnabled,
-    isShowcaseAsset,
-    addHiddenToken,
-    removeHiddenToken,
-    removeShowcaseToken,
     goBack,
+    removeHiddenToken,
+    addHiddenToken,
+    isShowcaseAsset,
+    removeShowcaseToken,
+    setRefreshMetadataToast,
   ]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
