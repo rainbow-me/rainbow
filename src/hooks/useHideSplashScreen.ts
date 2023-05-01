@@ -24,21 +24,6 @@ export default function useHideSplashScreen() {
       } else {
         SplashScreen.hide();
       }
-
-      const sound = new Sound(
-        require('../assets/sounds/RainbowSega.mp3'),
-        (error: any) => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
-          }
-          // if loaded successfully
-
-          sound.play((success: any) => {
-            console.log('played 1');
-          });
-        }
-      );
     }
 
     if (android) {
@@ -68,6 +53,23 @@ export default function useHideSplashScreen() {
       );
       analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
+
+      // play sound if wanted
+      const sound = new Sound(
+        require('../assets/sounds/RainbowSega.mp3'),
+        (error: any) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
+          }
+
+          // if loaded successfully
+
+          sound.play((success: any) => {
+            console.log('played 1');
+          });
+        }
+      );
     }
   }, []);
 }
