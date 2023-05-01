@@ -7,7 +7,10 @@ import {
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
-import { isCloudinaryStorageLink, signUrl } from '@/handlers/cloudinary';
+import {
+  isCloudinaryStorageIconLink,
+  signCloudinaryIconUrl,
+} from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
@@ -70,8 +73,8 @@ const shouldSignUri = (
 
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
-    if (isCloudinaryStorageLink(externalImageUri)) {
-      const signedExternalImageUri = signUrl(externalImageUri, {
+    if (isCloudinaryStorageIconLink(externalImageUri)) {
+      const signedExternalImageUri = signCloudinaryIconUrl(externalImageUri, {
         format: updatedOptions.fm,
         height: updatedOptions.h,
         width: updatedOptions.w,

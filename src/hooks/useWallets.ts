@@ -30,7 +30,7 @@ const walletSelector = createSelector(
   }),
   ({ isWalletLoading, selectedWallet, walletNames, wallets }) => ({
     isWalletLoading,
-    latestBackup: findLatestBackUp(wallets) || false,
+    latestBackup: findLatestBackUp(wallets),
     selectedWallet,
     walletNames,
     wallets,
