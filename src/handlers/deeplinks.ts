@@ -31,6 +31,12 @@ import {
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 
+/*
+ * You can test these deeplinks with the following command:
+ *
+ *    `xcrun simctl openurl booted "https://link.rainbow.me/0x123"`
+ */
+
 export default async function handleDeeplink(
   url: string,
   initialRoute: any = null
@@ -240,11 +246,40 @@ export default async function handleDeeplink(
   }
 }
 
+/**
+ * A reference to which WC URIs we've already handled.
+ *
+ * Branch (our deeplinking handler) runs its `subscribe()` handler every time
+ * the app is opened or re-focused from background. On Android, it caches the
+ * last deeplink (it shouldn't), and so tries to handle a deeplink we've
+ * already handled.
+ *
+ * In the case of WC, we don't want this to happen because we'll try to connect
+ * to a session that's either already active or expired. In WC v1, we handled
+ * this using `walletConnectUris` state in Redux. We now handle this here,
+ * before we even reach application code.
+ */
+const walletConnectURICache = new Set();
+
 function handleWalletConnect(uri: string) {
+  const cacheKey = JSON.stringify({ uri });
+
+  if (walletConnectURICache.has(cacheKey)) {
+    logger.debug(`handleWalletConnect: skipping duplicate event`, {});
+    return;
+  }
+
+  // make sure we don't handle this again
+  walletConnectURICache.add(cacheKey);
+
   const { query } = new URL(uri);
   const parsedUri = uri ? parseUri(uri) : null;
 
-  logger.debug(`handleWalletConnect`, { uri, query, parsedUri });
+  logger.debug(`handleWalletConnect: handling event`, {
+    uri,
+    query,
+    parsedUri,
+  });
 
   if (uri && query && parsedUri && parsedUri.version === 1) {
     store.dispatch(walletConnectSetPendingRedirect());
