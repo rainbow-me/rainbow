@@ -2006,7 +2006,16 @@
       "unknown_dapp": "Unknown Dapp",
       "unknown_url": "Unknown URL",
       "approval_sheet_network": "Network",
-      "approval_sheet_networks": "%{length} Networks"
+      "approval_sheet_networks": "%{length} Networks",
+      "auth": {
+        "signin_title": "Sign In",
+        "signin_prompt": "Do you want to sign into %{name} with your wallet?",
+        "signin_with": "Sign in with",
+        "signin_button": "Continue",
+        "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet",
+        "error_alert_title": "Authentication failed",
+        "error_alert_description": "Something went wrong. Please try again, or reach out to our support team."
+      }
     },
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",
