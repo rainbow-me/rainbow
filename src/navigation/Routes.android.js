@@ -106,6 +106,11 @@ function MainNavigator() {
         options={expandedPreset}
       />
       <Stack.Screen
+        component={Portal}
+        name={Routes.PORTAL}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
@@ -316,16 +321,6 @@ function BSNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={Portal}
-        name={Routes.PORTAL}
-        options={({ route: { params = {} } }) => {
-          return {
-            ...bottomSheetPreset,
-            height: params.sheetHeight,
-          };
-        }}
       />
       <BSStack.Screen
         component={ExternalLinkWarningSheet}

@@ -27,7 +27,7 @@ import { logger } from '@/logger';
 import {
   pair as pairWalletConnect,
   setHasPendingDeeplinkPendingRedirect,
-} from '@/utils/walletConnect';
+} from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 
@@ -241,6 +241,7 @@ export default async function handleDeeplink(
     // Android uses normal deeplinks
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
+    setHasPendingDeeplinkPendingRedirect(true);
     handleWalletConnect(url);
   }
 }
