@@ -331,6 +331,17 @@ export async function initListeners() {
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
   client.on('auth_request', onAuthRequest);
+  client.on('session_delete', () => {
+    logger.debug(
+      `WC v2: session_delete`,
+      {},
+      logger.DebugContext.walletconnect
+    );
+
+    setTimeout(() => {
+      events.emit('walletConnectV2SessionDeleted');
+    }, 500);
+  });
 
   try {
     const token = await getFCMToken();
