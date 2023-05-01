@@ -8,13 +8,16 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+import { isAuthenticated } from '@/utils/authentication';
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
 
-  return useCallback(() => {
+  return useCallback(async () => {
+    const auth = await isAuthenticated();
+    if (!auth) return;
     if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else {

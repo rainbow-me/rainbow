@@ -80,6 +80,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
+import { isAuthenticated } from './utils/authentication';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -185,6 +186,9 @@ class OldApp extends Component {
       InteractionManager.runAfterInteractions(() => {
         rainbowTokenList.update();
       });
+
+      const auth = await isAuthenticated();
+      console.log('AUTH: ', { auth });
     }
     this.setState({ appState: nextAppState });
 

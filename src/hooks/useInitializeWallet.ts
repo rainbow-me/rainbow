@@ -137,7 +137,7 @@ export default function useInitializeWallet() {
           logger.sentry('loaded account data', network);
         }
 
-        hideSplashScreen();
+        await hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
 
