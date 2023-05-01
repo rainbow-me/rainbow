@@ -138,8 +138,8 @@ export const PairHardwareWalletAgainSheet = () => {
             >
               <Box
                 height={{ custom: 36 }}
-                width={{ custom: 149 }}
                 top={{ custom: LEDGER_NANO_HEIGHT / 2 + 80 }}
+                paddingHorizontal="12px"
                 borderRadius={18}
                 background="surfaceSecondaryElevated"
                 shadow="12px"
@@ -148,7 +148,7 @@ export const PairHardwareWalletAgainSheet = () => {
               >
                 <Inline alignVertical="center" space="8px">
                   <Text color="label" weight="semibold" size="17pt">
-                    Nano X 7752
+                    Nano X
                   </Text>
                   <Box>
                     {!isReady && (

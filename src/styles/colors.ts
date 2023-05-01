@@ -110,6 +110,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
     exchangeFallback: '#F4F4F5', // '244, 244, 245'
+    finiliarPink: '#F89C9C', // '248, 156, 156'
+    finiliarPink06: 'rgba(248, 156, 156, 0.06)',
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'

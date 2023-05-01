@@ -73,6 +73,7 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
+import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 
 const encryptor = new AesEncryptor();
@@ -254,15 +255,15 @@ export const walletInit = async (
 
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet(
-      seedPhrase,
+    const wallet = await createWallet({
+      seed: seedPhrase,
       color,
       name,
       overwrite,
       checkedWallet,
       image,
-      silent
-    );
+      silent,
+    });
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -270,7 +271,7 @@ export const walletInit = async (
   walletAddress = await loadAddress();
 
   if (!walletAddress) {
-    const wallet = await createWallet();
+    const wallet = await createWallet({});
     walletAddress = wallet?.address;
     isNew = true;
   }
@@ -618,7 +619,7 @@ export const loadPrivateKey = async (
       privateKey = privateKeyData?.privateKey ?? null;
 
       let userPIN = null;
-      if (android) {
+      if (IS_ANDROID) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         // Fallback to custom PIN
         if (!hasBiometricsEnabled) {
@@ -673,16 +674,27 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
-export const createWallet = async (
-  seed: null | EthereumSeed = null,
-  color: null | number = null,
-  name: null | string = null,
-  overwrite: boolean = false,
-  checkedWallet: null | EthereumWalletFromSeed = null,
-  image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation = false
-): Promise<null | EthereumWallet> => {
+type CreateWalletParams = {
+  seed?: null | EthereumSeed;
+  color?: null | number;
+  name?: null | string;
+  overwrite?: boolean;
+  checkedWallet?: null | EthereumWalletFromSeed;
+  image?: null | string;
+  silent?: boolean;
+  clearCallbackOnStartCreation?: boolean;
+};
+
+export const createWallet = async ({
+  seed = null,
+  color = null,
+  name = null,
+  overwrite = false,
+  checkedWallet = null,
+  image = null,
+  silent = false,
+  clearCallbackOnStartCreation = false,
+}: CreateWalletParams): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -693,7 +705,7 @@ export const createWallet = async (
     logger.info('Creating new wallet');
   }
   const walletSeed = seed || generateMnemonic();
-  let addresses: RainbowAccount[] = [];
+  const addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
 
@@ -785,26 +797,28 @@ export const createWallet = async (
     logger.debug('[createWallet] - wallet ID', { id }, DebugContext.wallet);
 
     // Android users without biometrics need to secure their keys with a PIN
-    let userPIN = null;
-    if (android && !isReadOnlyType && !isHardwareWallet) {
+    let userPIN: string | undefined;
+    if (IS_ANDROID && !isReadOnlyType && !isHardwareWallet) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
         try {
           userPIN = await getExistingPIN();
           if (!userPIN) {
-            // We gotta dismiss the modal before showing the PIN screen
+            // We have to dismiss the modal before showing the PIN screen
             dispatch(setIsWalletLoading(null));
             userPIN = await authenticateWithPINAndCreateIfNeeded();
-            dispatch(
-              setIsWalletLoading(
-                seed
-                  ? silent
+            if (seed) {
+              dispatch(
+                setIsWalletLoading(
+                  silent
                     ? WalletLoadingStates.IMPORTING_WALLET_SILENTLY
                     : WalletLoadingStates.IMPORTING_WALLET
-                  : WalletLoadingStates.CREATING_WALLET
-              )
-            );
+                )
+              );
+            } else {
+              dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+            }
           }
         } catch (e) {
           return null;
@@ -858,7 +872,7 @@ export const createWallet = async (
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
-    let label = name || '';
+    const label = name || '';
 
     addresses.push({
       address: walletAddress,
@@ -1392,7 +1406,7 @@ export const generateAccount = async (
     }
 
     let userPIN = null;
-    if (android) {
+    if (IS_ANDROID) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
       if (!hasBiometricsEnabled) {
@@ -1709,7 +1723,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase ?? null;
       let userPIN = null;
-      if (android) {
+      if (IS_ANDROID) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
           logger.debug(
@@ -1725,7 +1739,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
           try {
             userPIN = await authenticateWithPIN();
             if (userPIN) {
-              // Dencrypt with the PIN
+              // Decrypt with the PIN
               seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
             } else {
               return null;

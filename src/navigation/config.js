@@ -365,6 +365,15 @@ export const basicSheetConfig = {
   }),
 };
 
+export const portalSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: params.sheetHeight,
+    }),
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,

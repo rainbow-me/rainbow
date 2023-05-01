@@ -1,21 +1,49 @@
-import { AssetType } from '@/entities';
+import { AssetType, AssetTypes } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
+  ValidatedSimpleHashNFT,
   SimpleHashChain,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
+  SimpleHashTrait,
+  SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { PolygonAllowlist } from '../types';
-import { ERC1155, ERC721 } from '@/handlers/web3';
+import {
+  NFT,
+  NFTFloorPrice,
+  NFTMarketplace,
+  NFTMarketplaceId,
+  NFTTrait,
+  PolygonAllowlist,
+} from '../types';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { maybeSignUri } from '@/handlers/imgix';
+import { CardSize } from '@/components/unique-token/CardSize';
+import { isNil } from 'lodash';
+import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
+import { PixelRatio } from 'react-native';
+import { deviceUtils } from '@/utils';
+import { TokenStandard } from '@/handlers/web3';
+
+const ENS_COLLECTION_NAME = 'ENS';
+const SVG_MIME_TYPE = 'image/svg+xml';
+const pixelRatio = PixelRatio.get();
+const deviceWidth = deviceUtils.dimensions.width;
+const size = deviceWidth * pixelRatio;
+const MAX_IMAGE_SCALE = 3;
+const FULL_NFT_IMAGE_SIZE = size * MAX_IMAGE_SCALE;
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
  * a `Network` has no counterpart in SimpleHash.
+ * @param network `Network`
+ * @returns `SimpleHashChain` or `undefined`
  */
 export function getSimpleHashChainFromNetwork(
   network: Omit<Network, Network.goerli>
@@ -39,6 +67,8 @@ export function getSimpleHashChainFromNetwork(
 /**
  * Returns a `Network` from a `SimpleHashChain`. If an invalid value is
  * forcably passed in, it will throw.
+ * @param chain `SimpleHashChain`
+ * @returns `Network`
  */
 export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
   switch (chain) {
@@ -64,53 +94,68 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
   }
 }
 
-export function getPriceFromLastSale(
-  lastSale: SimpleHashNFT['last_sale']
-): number | undefined {
-  return lastSale && lastSale?.total_price
-    ? Math.round(
-        (lastSale.total_price / 1_000_000_000_000_000_000 + Number.EPSILON) *
-          1000
-      ) / 1000
-    : undefined;
-}
-
 /**
- * This function filters out NFTs that do not have a name, collection name,
- * contract address, or token id. It also filters out Polygon NFTs that are
- * not whitelisted by our allowlist, as well as Gnosis NFTs that are not POAPs.
- *
- * @param nfts array of SimpleHashNFTs
- * @param polygonAllowlist array of whitelisted Polygon nft contract addresses
- * @returns array of filtered NFTs
+ * Filters out NFTs that do not have a name, collection name,
+ * contract address, or token id, Gnosis NFTs that are not POAPs,
+ * NFTs that are not on a supported `Network`, and Polygon NFTs
+ * that are not present in the provided allowlist.
+ * @param nfts array of `SimpleHashNFT`s
+ * @param polygonAllowlist array of Polygon nft contract addresses to allowlist
+ * @returns filtered array of `ValidatedSimpleHashNFT`s
  */
 export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
-): SimpleHashNFT[] {
-  return nfts.filter(nft => {
-    const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-    if (
-      !nft.name ||
-      !nft.collection?.name ||
-      !nft.contract_address ||
-      !nft.token_id
-    ) {
-      return false;
-    }
-    if (polygonAllowlist && nft.chain === SimpleHashChain.Polygon) {
-      return !!polygonAllowlist[lowercasedContractAddress];
-    }
-    if (nft.chain === SimpleHashChain.Gnosis) {
-      return lowercasedContractAddress === POAP_NFT_ADDRESS;
-    }
-    return true;
-  });
+): ValidatedSimpleHashNFT[] {
+  return nfts
+    .filter(nft => {
+      const lowercasedContractAddress = nft.contract_address?.toLowerCase();
+      const network = getNetworkFromSimpleHashChain(nft.chain);
+
+      const isMissingRequiredFields =
+        !nft.name ||
+        !nft.collection?.name ||
+        !nft.contract_address ||
+        !nft.token_id ||
+        !network;
+      const isPolygonAndNotAllowed =
+        polygonAllowlist &&
+        nft.chain === SimpleHashChain.Polygon &&
+        !polygonAllowlist[lowercasedContractAddress];
+      const isGnosisAndNotPOAP =
+        nft.chain === SimpleHashChain.Gnosis &&
+        lowercasedContractAddress !== POAP_NFT_ADDRESS;
+
+      if (
+        isMissingRequiredFields ||
+        isPolygonAndNotAllowed ||
+        isGnosisAndNotPOAP
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .map(nft => ({
+      ...nft,
+      name: nft.name!,
+      contract_address: nft.contract_address,
+      chain: getNetworkFromSimpleHashChain(nft.chain),
+      collection: { ...nft.collection, name: nft.collection.name! },
+      token_id: nft.token_id!,
+    }));
 }
 
-export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
+/**
+ * Maps a `SimpleHashNFT` to a `UniqueAsset`.
+ * @param nft `SimpleHashNFT`
+ * @returns `UniqueAsset`
+ */
+export function simpleHashNFTToUniqueAsset(
+  nft: ValidatedSimpleHashNFT
+): UniqueAsset {
   const collection = nft.collection;
-
+  const lowercasedContractAddress = nft.contract_address?.toLowerCase();
   const { imageUrl, lowResUrl } = handleAndSignImages(
     // @ts-ignore
     nft.image_url,
@@ -126,14 +171,19 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       floorPrice?.payment_token?.payment_token_id === 'ethereum.native'
   );
 
-  const isENS = nft.contract_address.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
+  const isENS = lowercasedContractAddress === ENS_NFT_CONTRACT_ADDRESS;
 
   const standard = nft.contract.type;
 
+  const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+
   return {
-    animation_url: nft?.video_url,
+    animation_url: maybeSignUri(
+      nft?.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      { fm: 'mp4' }
+    ),
     asset_contract: {
-      address: nft.contract_address,
+      address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
       schema_name: standard,
       symbol: nft.contract.symbol || undefined,
@@ -144,7 +194,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       discord_url: collection.discord_url,
       external_url: collection.external_url,
       image_url: collection.image_url,
-      name: isENS ? 'ENS' : collection.name ?? '',
+      name: isENS ? 'ENS' : collection.name,
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
@@ -162,16 +212,16 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
           )
         : undefined,
     fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
-    // @ts-ignore TODO
     id: nft.token_id,
     image_original_url: nft.extra_metadata?.image_original_url,
     image_preview_url: lowResUrl,
     image_thumbnail_url: lowResUrl,
     image_url: imageUrl,
-    isPoap: nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS,
+    isPoap,
     isSendable:
-      nft.chain === SimpleHashChain.Ethereum &&
-      (standard === ERC1155 || standard === ERC721),
+      !isPoap &&
+      (nft.contract.type === TokenStandard.ERC721 ||
+        nft.contract.type === TokenStandard.ERC1155),
     lastPrice:
       nft?.last_sale?.unit_price !== null &&
       nft?.last_sale?.unit_price !== undefined
@@ -186,8 +236,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
     marketplaceCollectionUrl: marketplace?.collection_url,
     marketplaceId: marketplace?.marketplace_id ?? null,
     marketplaceName: marketplace?.marketplace_name ?? null,
-    name: nft.name || '',
-    network: getNetworkFromSimpleHashChain(nft.chain),
+    name: nft.name,
+    network: nft.chain,
     permalink: marketplace?.nft_url ?? '',
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
@@ -196,5 +246,228 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNFT): UniqueAsset {
       ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
       : `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
+  };
+}
+
+/**
+ * Reformats, resizes and signs images provided by simplehash.
+ * @param original original image url
+ * @param preview preview image url
+ * @param isSVG whether the original image is an svg
+ * @returns fullResPngUrl, lowResPngUrl, fullResUrl
+ */
+function handleImages(
+  original: string | null | undefined,
+  preview: string | null | undefined,
+  isSVG: boolean
+): {
+  fullResPngUrl: string | undefined;
+  lowResPngUrl: string | undefined;
+  fullResUrl: string | undefined;
+} {
+  if (!original && !preview) {
+    return {
+      fullResPngUrl: undefined,
+      lowResPngUrl: undefined,
+      fullResUrl: undefined,
+    };
+  }
+
+  const nonSVGUrl =
+    // simplehash previews are (supposedly) never svgs
+    // they are (supposed to be) google cdn urls that are suffixed with an image size parameter
+    // we need to trim off the size suffix to get the full size image
+    preview?.startsWith?.(GOOGLE_USER_CONTENT_URL)
+      ? preview.replace(/=s\d+$/, '')
+      : // fallback to the original image url if we don't have a preview url of the expected format
+        svgToPngIfNeeded(original);
+
+  const fullResPngUrl = maybeSignUri(nonSVGUrl, {
+    fm: 'png',
+    w: FULL_NFT_IMAGE_SIZE,
+  });
+  const lowResPngUrl = maybeSignUri(nonSVGUrl, {
+    fm: 'png',
+    w: CardSize,
+  });
+  const fullResUrl = isSVG && original ? original : fullResPngUrl;
+
+  return { fullResPngUrl, lowResPngUrl, fullResUrl };
+}
+
+/**
+ * Returns an NFT's `UniqueTokenType`.
+ * @param contractAddress NFT contract address
+ * @returns `UniqueTokenType`
+ */
+function getUniqueTokenType(contractAddress: string): UniqueTokenType {
+  switch (contractAddress) {
+    case POAP_NFT_ADDRESS:
+      return uniqueTokenTypes.POAP;
+    case ENS_NFT_CONTRACT_ADDRESS:
+      return uniqueTokenTypes.ENS;
+    default:
+      return uniqueTokenTypes.NFT;
+  }
+}
+
+/**
+ * Converts a `SimpleHashMarketplaceId` to a `NFTMarketplaceId`, or returns undefined
+ * @param marketplaceId `SimpleHashMarketplaceId`
+ * @returns `NFTMarketplaceId` or `undefined`
+ */
+function getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+  marketplaceId: SimpleHashMarketplaceId
+): NFTMarketplaceId | undefined {
+  switch (marketplaceId) {
+    case SimpleHashMarketplaceId.OpenSea:
+      return NFTMarketplaceId.OpenSea;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Maps a `ValidatedSimpleHashNFT` to a `NFT`. Use `filterSimpleHashNFTs` to
+ * generate an array of `ValidatedSimpleHashNFT`s.
+ * @param nft `ValidatedSimpleHashNFT`
+ * @returns `NFT`
+ */
+export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
+  const collection = nft.collection;
+  const lowercasedContractAddress = nft.contract_address.toLowerCase();
+
+  const uniqueTokenType = getUniqueTokenType(lowercasedContractAddress);
+
+  const { fullResPngUrl, lowResPngUrl, fullResUrl } = handleImages(
+    nft.image_url ?? nft.extra_metadata?.image_original_url,
+    nft.previews?.image_large_url,
+    nft.image_properties?.mime_type === SVG_MIME_TYPE
+  );
+
+  // filter out unsupported marketplaces
+  const marketplaces = nft.collection.marketplace_pages
+    .filter(
+      m =>
+        !!getInternalMarketplaceIdFromSimpleHashMarketplaceId(m.marketplace_id)
+    )
+    .map((m: SimpleHashMarketplace) => {
+      const marketplace: NFTMarketplace = {
+        collectionId: m?.marketplace_collection_id,
+        collectionUrl: m?.collection_url,
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          m.marketplace_id
+        )!,
+        name: m?.marketplace_name,
+        nftUrl: m?.nft_url,
+      };
+
+      return marketplace;
+    });
+
+  // filter out traits that are missing key attributes
+  const traits = nft.extra_metadata?.attributes
+    ? nft.extra_metadata.attributes
+        .filter((t: SimpleHashTrait) => !isNil(t.trait_type) && !isNil(t.value))
+        .map((t: SimpleHashTrait) => {
+          const trait: NFTTrait = {
+            displayType: t.display_type!,
+            traitType: t.trait_type,
+            value: t.value,
+          };
+
+          return trait;
+        })
+    : [];
+
+  // filter out floor prices that are from unsupported marketplaces or have invalid payment tokens
+  const floorPrices = collection.floor_prices
+    .filter(
+      (f: SimpleHashFloorPrice) =>
+        getInternalMarketplaceIdFromSimpleHashMarketplaceId(f.marketplace_id) &&
+        f.payment_token?.name &&
+        f.payment_token?.symbol
+    )
+    .map((f: SimpleHashFloorPrice) => {
+      const floorPrice: NFTFloorPrice = {
+        marketplaceId: getInternalMarketplaceIdFromSimpleHashMarketplaceId(
+          f.marketplace_id
+        )!,
+        paymentToken: {
+          address: f.payment_token.address,
+          decimals: f.payment_token.decimals,
+          name: f.payment_token.name!,
+          symbol: f.payment_token.symbol!,
+        },
+        value: f.value,
+      };
+
+      return floorPrice;
+    });
+
+  return {
+    backgroundColor: nft.background_color ?? undefined,
+    collection: {
+      description: collection.description ?? undefined,
+      discord: collection.discord_url ?? undefined,
+      externalUrl: collection.external_url ?? undefined,
+      floorPrices,
+      imageUrl: collection.image_url
+        ? maybeSignUri(collection.image_url)
+        : undefined,
+      name:
+        uniqueTokenType === uniqueTokenTypes.ENS
+          ? ENS_COLLECTION_NAME
+          : collection.name,
+      simpleHashSpamScore: collection?.spam_score ?? undefined,
+      twitter: collection.twitter_username ?? undefined,
+    },
+    contract: {
+      address: lowercasedContractAddress,
+      name: nft.contract.name ?? undefined,
+      schema_name: nft.contract.type,
+      symbol: nft.contract.symbol ?? undefined,
+    },
+    description: nft.description ?? undefined,
+    externalUrl: nft.external_url ?? undefined,
+    images: {
+      blurhash: nft.previews?.blurhash ?? undefined,
+      fullResPngUrl,
+      fullResUrl,
+      lowResPngUrl,
+      // mimeType only corresponds to fullResUrl
+      mimeType: nft.image_properties?.mime_type ?? undefined,
+    },
+    isSendable:
+      uniqueTokenType !== uniqueTokenTypes.POAP &&
+      (nft.contract.type === TokenStandard.ERC721 ||
+        nft.contract.type === TokenStandard.ERC1155),
+    lastSale:
+      nft.last_sale?.payment_token?.name &&
+      nft.last_sale?.payment_token?.symbol &&
+      !isNil(nft.last_sale?.unit_price)
+        ? {
+            paymentToken: {
+              address: nft.last_sale?.payment_token.address,
+              decimals: nft.last_sale?.payment_token.decimals,
+              name: nft.last_sale?.payment_token.name,
+              symbol: nft.last_sale?.payment_token.symbol,
+            },
+            value: nft.last_sale?.unit_price,
+          }
+        : undefined,
+    marketplaces,
+    name: nft.name,
+    network: nft.chain,
+    predominantColor: nft.previews?.predominant_color ?? undefined,
+    tokenId: nft.token_id,
+    traits,
+    type: AssetTypes.nft as AssetType,
+    uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
+    uniqueTokenType,
+    video_url: maybeSignUri(
+      nft.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      { fm: 'mp4' }
+    ),
   };
 }

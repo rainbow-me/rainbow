@@ -23,9 +23,8 @@ export default function useAdditionalAssetData(
   links: Record<string, string[]>;
   networks: Record<string, implementation>;
 } {
-  const address = rawAddress === ETH_ADDRESS ? WETH_ADDRESS : rawAddress;
-  const { data } = useQuery(['additionalAssetData', address], () =>
-    getAdditionalAssetData(address, chainId)
+  const { data } = useQuery(['additionalAssetData', rawAddress], () =>
+    getAdditionalAssetData(rawAddress, chainId)
   );
   const { nativeCurrency } = useAccountSettings();
   const format = useCallback(
