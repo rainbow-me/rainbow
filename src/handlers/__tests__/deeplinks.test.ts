@@ -1,16 +1,16 @@
 import { jest, test, expect, beforeEach, afterEach } from '@jest/globals';
+import { nanoid } from 'nanoid/non-secure';
+
 import { mocked } from '@/testing/utils';
 
 import store from '@/redux/store';
 import { delay } from '@/utils/delay';
 import ethereumUtils from '@/utils/ethereumUtils';
-import {
-  setHasPendingDeeplinkPendingRedirect,
-  pair,
-} from '@/utils/walletConnect';
+import { setHasPendingDeeplinkPendingRedirect, pair } from '@/walletConnect';
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
+import { walletConnectSetPendingRedirect } from '@/redux/walletconnect';
 import { analyticsV2 } from '@/analytics';
 import {
   checkIsValidAddressOrDomain,
@@ -50,7 +50,7 @@ jest.mock('@/utils/ethereumUtils', () => ({
   parseEthereumUrl: jest.fn(),
   getAssetFromAllAssets: jest.fn(),
 }));
-jest.mock('@/utils/walletConnect', () => ({
+jest.mock('@/walletConnect', () => ({
   pair: jest.fn(),
   setHasPendingDeeplinkPendingRedirect: jest.fn(),
 }));
@@ -58,6 +58,16 @@ jest.mock('@/utils/delay');
 jest.mock('@/analytics');
 
 import handleDeepLink from '../deeplinks';
+
+/**
+ * Generates a unique WC URI for each test
+ *
+ * `urlKey` is our param, just to differentiate between tests and avoid cache
+ * hits on `walletConnectURICache`
+ */
+function generateWCUri({ version }: { version: number }) {
+  return `wc:topic@${version}?relay-protocol=protocol&symKey=symKey&urlKey=${nanoid()}`;
+}
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -110,23 +120,34 @@ test(`handles ethereum:// protocol`, async () => {
 });
 
 test(`handles wc:// protocol`, async () => {
-  await handleDeepLink(`wc:topic@2?relay-protocol=protocol&symKey=symKey`);
+  const uri = generateWCUri({ version: 2 });
+
+  await handleDeepLink(uri);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+
+  // call again with same URI, still only called once
+  await handleDeepLink(uri);
   expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
   expect(pair).toHaveBeenCalledTimes(1);
 });
 
 test(`handles https:// protocol for WalletConnect`, async () => {
-  await handleDeepLink(
-    `https://rnbwapp.com/wc?uri=wc:topic@2?relay-protocol=protocol&symKey=symKey`
-  );
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(`https://rnbwapp.com/wc?uri=${uri}`);
   expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
   expect(pair).toHaveBeenCalledTimes(1);
 });
 
 test(`handles rainbow:// protocol for WalletConnect`, async () => {
-  await handleDeepLink(
-    `rainbow://wc?uri=wc:topic@2?relay-protocol=protocol&symKey=symKey`
-  );
+  const uri = encodeURIComponent(generateWCUri({ version: 1 }));
+  await handleDeepLink(`rainbow://wc?uri=${uri}`);
+  expect(walletConnectSetPendingRedirect).toHaveBeenCalledTimes(1);
+});
+
+test(`handles rainbow:// protocol for WalletConnect v2`, async () => {
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(`rainbow://wc?uri=${uri}`);
   expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
   expect(pair).toHaveBeenCalledTimes(1);
 });
