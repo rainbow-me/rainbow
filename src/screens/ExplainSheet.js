@@ -33,13 +33,8 @@ import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import {
-  buildRainbowLearnUrl,
-  deviceUtils,
-  ethereumUtils,
-  gasUtils,
-  getTokenMetadata,
-} from '@/utils';
+import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
