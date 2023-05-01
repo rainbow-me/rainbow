@@ -21,7 +21,7 @@ import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
-import { pair as pairWalletConnect } from '@/utils/walletConnect';
+import { pair as pairWalletConnect } from '@/walletConnect';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
