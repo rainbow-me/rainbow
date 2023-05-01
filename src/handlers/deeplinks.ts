@@ -1,28 +1,25 @@
-import lang from 'i18n-js';
 import URL from 'url-parse';
-
 import { parseUri } from '@walletconnect/utils';
-import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
+
 import store from '@/redux/store';
 import {
   walletConnectOnSessionRequest,
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '@/redux/walletconnect';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { scheduleActionOnAssetReceived } from '@/redux/data';
+import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/delay';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
-import { scheduleActionOnAssetReceived } from '@/redux/data';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import {
   pair as pairWalletConnect,
@@ -66,9 +63,7 @@ export default async function handleDeeplink(
 
   if (protocol === 'ethereum:') {
     /**
-     * Handling EIP deep links
-     *
-     * TODO apparently not working on sim, needs more research
+     * Handling send deep links
      */
     logger.info(`handleDeeplink: ethereum:// protocol`);
     ethereumUtils.parseEthereumUrl(url);
@@ -121,7 +116,6 @@ export default async function handleDeeplink(
               Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
                 asset,
                 fromDiscover: true,
-                longFormHeight: initialChartExpandedStateSheetHeight,
                 type: 'token',
               });
             };
@@ -152,6 +146,8 @@ export default async function handleDeeplink(
             url,
             query,
           });
+
+          break;
         }
 
         /**
@@ -241,7 +237,6 @@ export default async function handleDeeplink(
     // Android uses normal deeplinks
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
-    setHasPendingDeeplinkPendingRedirect(true);
     handleWalletConnect(url);
   }
 }
