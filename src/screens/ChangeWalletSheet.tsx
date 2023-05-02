@@ -149,7 +149,7 @@ export default function ChangeWalletSheet() {
       if (editMode && !fromDeletion) return;
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      if (watchOnly) {
+      if (watchOnly && onChangeWallet) {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
         onChangeWallet(address, wallet);

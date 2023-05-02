@@ -4,7 +4,6 @@ import { CoinIconIndicator } from '../../../../components/coin-icon';
 import { Icon } from '../../../../components/icons';
 import { ButtonPressAnimation } from '../../../animations';
 
-import { initialChartExpandedStateSheetHeight } from '../../../expanded-state/asset/ChartExpandedState';
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
 import { Text } from '@/design-system';
@@ -110,7 +109,6 @@ const MemoizedBalanceCoinRow = React.memo(
           asset: item,
           fromDiscover: true,
           isFromWalletScreen: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
       }
