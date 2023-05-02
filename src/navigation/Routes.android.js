@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -38,7 +38,6 @@ import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
-  addTokenSheetConfig,
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   restoreSheetConfig,
@@ -57,7 +56,6 @@ import {
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
-  addCashSheet,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -143,11 +141,6 @@ function MainNavigator() {
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         options={wcPromptPreset}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={addCashSheet}
       />
       <Stack.Screen
         component={AddTokenSheet}
@@ -368,6 +361,11 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
+        options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
         options={{ ...bottomSheetPreset }}
       />
     </BSStack.Navigator>

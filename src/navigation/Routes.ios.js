@@ -65,10 +65,10 @@ import {
   transactionDetailsConfig,
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
+  addCashSheetConfig,
   portalSheetConfig,
 } from './config';
 import {
-  addCashSheet,
   emojiPreset,
   emojiPresetWallet,
   overlayExpandedPreset,
@@ -137,11 +137,6 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER_WALLET}
         options={emojiPresetWallet}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={addCashSheet}
       />
     </Stack.Navigator>
   );
@@ -438,6 +433,11 @@ function NativeStackNavigator() {
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
         {...opRewardsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
+        {...addCashSheetConfig}
       />
     </NativeStack.Navigator>
   );

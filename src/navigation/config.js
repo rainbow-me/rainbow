@@ -129,6 +129,8 @@ export const opRewardsSheetConfig = {
   },
 };
 
+export const addCashSheetConfig = { ...opRewardsSheetConfig };
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -136,15 +138,6 @@ export const customGasSheetConfig = {
       backgroundOpacity: 1,
       springDamping: 1,
       transitionDuration: 0.25,
-    }),
-  }),
-};
-
-export const addTokenSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: 394,
     }),
   }),
 };
