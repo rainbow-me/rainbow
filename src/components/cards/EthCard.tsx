@@ -7,7 +7,6 @@ import {
   Bleed,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
@@ -89,7 +88,6 @@ export const EthCard = () => {
   const handleAssetPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: assetWithPrice,
-      longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {

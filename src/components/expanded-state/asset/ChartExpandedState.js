@@ -63,8 +63,6 @@ const baseHeight =
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
 
-export const initialChartExpandedStateSheetHeight = undefined;
-
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
     paddingBottom: 11,

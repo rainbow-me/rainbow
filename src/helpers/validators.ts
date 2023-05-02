@@ -1,14 +1,13 @@
 import { isValidAddress } from 'ethereumjs-util';
-import { parseDomain, ParseResultType } from 'parse-domain';
 import { memoFn } from '../utils/memoFn';
-import { Network } from '.';
+import { Network } from './networkTypes';
 import {
   getProviderForNetwork,
   isHexStringIgnorePrefix,
   isValidMnemonic,
   resolveUnstoppableDomain,
 } from '@/handlers/web3';
-import { sanitizeSeedPhrase } from '@/utils';
+import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [

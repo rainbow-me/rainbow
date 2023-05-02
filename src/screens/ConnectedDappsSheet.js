@@ -11,9 +11,7 @@ import { WalletConnectV2ListItem } from '@/components/walletconnect-list/WalletC
 import { useWalletConnectConnections } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
-import { signClient, getAllActiveSessionsSync } from '@/utils/walletConnect';
-import { logger } from '@/logger';
-import { events } from '@/handlers/appEvents';
+import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 
 const MAX_VISIBLE_DAPPS = 7;
 
@@ -32,53 +30,9 @@ export default function ConnectedDappsSheet() {
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const [loadSessions, setLoadSessions] = React.useState(true);
-  const [sessions, setSessions] = React.useState(
-    getAllActiveSessionsSync() || []
-  );
+  const { sessions, reload } = useWalletConnectV2Sessions();
 
   const numOfRows = mostRecentWalletConnectors.length + sessions.length;
-
-  /**
-   * Load and reload functionality
-   */
-  React.useEffect(() => {
-    function load() {
-      const sessions = getAllActiveSessionsSync();
-      setSessions(sessions);
-      setLoadSessions(false);
-    }
-
-    if (loadSessions) load();
-  }, [loadSessions, setLoadSessions, setSessions]);
-
-  /**
-   * Listen for new or disconnected sessions to add or remove from list.
-   *
-   * Really only needed if the list is already opened, since we otherwise
-   * lazily check for sessions when the user clicks on the overflow menu
-   * button.
-   */
-  React.useEffect(() => {
-    (async function listenForDeletedSessions() {
-      const client = await signClient;
-
-      // client handles disconnected sessions
-      client.on('session_delete', () => {
-        const sessions = client.session.values;
-        setSessions(sessions);
-        logger.debug(
-          `ConnectedDappsSheet: handling session_delete`,
-          {},
-          logger.DebugContext.walletconnect
-        );
-      });
-    })();
-
-    events.on('walletConnectV2SessionCreated', () => {
-      setLoadSessions(true); // force reload
-    });
-  }, []);
 
   useEffect(() => {
     if (numOfRows === 0) {
@@ -105,7 +59,7 @@ export default function ConnectedDappsSheet() {
           <WalletConnectV2ListItem
             key={session.topic}
             session={session}
-            reload={() => setLoadSessions(true)}
+            reload={reload}
           />
         ))}
         {mostRecentWalletConnectors.map(
