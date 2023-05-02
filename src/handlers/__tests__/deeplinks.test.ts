@@ -19,6 +19,7 @@ import {
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 
 jest.mock('@/redux/store');
+// TODO
 jest.mock('@/redux/walletconnect', () => ({
   walletConnectOnSessionRequest: jest.fn(),
   walletConnectRemovePendingRedirect: jest.fn(),
@@ -46,6 +47,7 @@ jest.mock('@/navigation', () => ({
     handleAction: jest.fn(),
   },
 }));
+// TODO
 jest.mock('@/utils/ethereumUtils', () => ({
   parseEthereumUrl: jest.fn(),
   getAssetFromAllAssets: jest.fn(),
