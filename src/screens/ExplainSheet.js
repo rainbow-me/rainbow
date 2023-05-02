@@ -33,12 +33,8 @@ import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import {
-  deviceUtils,
-  ethereumUtils,
-  gasUtils,
-  getTokenMetadata,
-} from '@/utils';
+import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
@@ -342,7 +338,12 @@ export const explainers = (params, colors) => ({
     title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
     text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
     extraHeight: IS_ANDROID ? -65 : 10,
-    readMoreLink: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+      query: {
+        campaign: 'explain',
+      },
+    }),
   },
   op_rewards_amount_distributed: {
     emoji: '💰',
@@ -645,8 +646,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: OPTIMISM_EXPLAINER,
     title: lang.t('explain.optimism.title'),
   },
@@ -661,8 +666,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: ARBITRUM_EXPLAINER,
     title: lang.t('explain.arbitrum.title'),
   },
@@ -677,8 +686,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
   },
@@ -693,8 +706,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: BSC_EXPLAINER,
     title: lang.t('explain.bsc.title'),
   },
@@ -779,7 +796,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -910,7 +933,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -946,7 +975,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/protecting-transactions-with-flashbots'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -971,7 +1006,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
