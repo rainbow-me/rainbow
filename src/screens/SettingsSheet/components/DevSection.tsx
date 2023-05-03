@@ -59,6 +59,8 @@ import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
+import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
+import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -225,6 +227,17 @@ const DevSection = () => {
     return Promise.resolve();
   }, [notificationSettings]);
 
+  const clearPendingTransactions = async () => {
+    // clear local storage
+    saveLocalPendingTransactions([], accountAddress, Network.mainnet);
+
+    // clear redux
+    dispatch({
+      payload: [],
+      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+    });
+  };
+
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
 
@@ -329,6 +342,15 @@ const DevSection = () => {
           }
           rightComponent={
             loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
+          }
+        />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
+          onPress={clearPendingTransactions}
+          size={52}
+          testID="clear-pending-transactions-section"
+          titleComponent={
+            <MenuItem.Title text={lang.t('Clear Pending Transactions')} />
           }
         />
         <MenuItem
