@@ -55,7 +55,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [dispatch, network, profilesEnabled, refetchSavings]);
+  }, [accountAddress, dispatch, network, profilesEnabled, refetchSavings]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
