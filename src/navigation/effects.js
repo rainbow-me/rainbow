@@ -494,6 +494,19 @@ export const sheetPreset = ({ route }) => {
   };
 };
 
+export const addCashSheet = () => {
+  return {
+    cardOverlayEnabled: true,
+    cardShadowEnabled: true,
+    cardStyle: { backgroundColor: 'transparent' },
+    cardStyleInterpolator: sheetStyleInterpolator(1),
+    cardTransparent: true,
+    gestureDirection: 'vertical',
+    gestureResponseDistance: gestureResponseDistance,
+    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  };
+};
+
 export const selectUniquePreset = () => {
   return {
     cardOverlayEnabled: true,
