@@ -1,29 +1,29 @@
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
-import { mainnet } from '@wagmi/chains';
+import { arbitrum } from '@wagmi/chains';
 
-export const MainnetNetworkObject: NetworkProperties = {
+export const ArbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
-  ...mainnet,
+  ...arbitrum,
 
   // network related data
   enabled: true,
-  name: 'Ethereum',
-  longName: 'Ethereum',
-  value: Network.mainnet,
-  networkType: 'layer1',
-  blockTimeInMs: 15_000,
+  name: 'Arbitrum',
+  longName: 'Arbitrum',
+  value: Network.arbitrum,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
   // this should be refactored to have less deps
-  getProvider: getProviderForNetwork(Network.mainnet),
+  getProvider: getProviderForNetwork(Network.arbitrum),
 
   // features
   features: {
     txHistory: true,
 
     // not sure if flashbots is being used app wide vs just swaps
-    flashbots: true,
+    flashbots: false,
     walletconnect: true,
     swaps: true,
     nfts: true,
@@ -31,11 +31,13 @@ export const MainnetNetworkObject: NetworkProperties = {
 
   gas: {
     gasToken: 'ETH',
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
+    speeds: [gasUtils.NORMAL],
+
+    // ?
     gasType: 'eip1559',
 
     // this prob can just be blockTime
-    pollingIntervalInMs: 5_000,
+    pollingIntervalInMs: 3_000,
 
     // needs more research
     getGasPrices: () => 'tmp',
@@ -43,13 +45,13 @@ export const MainnetNetworkObject: NetworkProperties = {
 
   swaps: {
     outputBasedQuotes: true,
-    defaultSlippage: 100,
+    defaultSlippage: 200,
   },
 
   // design tings
   colors: {
-    light: '#25292E',
-    dark: '#25292E',
+    light: '#2D374B',
+    dark: '#ADBFE3',
   },
 
   assets: {

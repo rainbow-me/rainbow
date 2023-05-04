@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-
+import { Chain } from '@wagmi/chains';
 // network.ts
 export enum Network {
   arbitrum = 'arbitrum',
@@ -10,22 +10,25 @@ export enum Network {
   bsc = 'bsc',
 }
 
-export interface NetworkProperties {
+export interface NetworkProperties extends Chain {
   // network related data
   enabled: boolean;
   name: string;
   longName: string;
   value: Network;
-  networkType: 'mainnet' | 'layer2' | 'testnet';
+  networkType: 'layer1' | 'layer2' | 'testnet';
   blockTimeInMs: number;
-  blockExplorerUrl: string;
 
   getProvider: Promise<StaticJsonRpcProvider>;
 
-  // features
-  txHistoryEnabled: boolean;
-  flashbotsEnabled: boolean;
-  walletconnectEnabled: boolean;
+  // feature flags
+  features: {
+    txHistory: boolean;
+    flashbots: boolean;
+    walletconnect: boolean;
+    swaps: boolean;
+    nfts: boolean;
+  };
 
   gas: {
     gasToken: string;
@@ -39,24 +42,18 @@ export interface NetworkProperties {
     getGasPrices: () => any;
   };
 
-  nfts: {
-    enabled: boolean;
-  };
-
   swaps: {
-    enabled: boolean;
     outputBasedQuotes: boolean;
     defaultSlippage: number;
   };
 
   // design tings
-
   colors: {
     light: string;
     dark: string;
   };
 
-  // could be component or path to asset
+  // TODO: reafactor badges to simplify code
   assets: {
     badgeSmall: string;
   };

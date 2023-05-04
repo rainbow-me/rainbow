@@ -1,41 +1,41 @@
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
-import { mainnet } from '@wagmi/chains';
+import { polygon } from '@wagmi/chains';
 
-export const MainnetNetworkObject: NetworkProperties = {
+export const PolygonNetworkObject: NetworkProperties = {
   // wagmi chain data
-  ...mainnet,
+  ...polygon,
 
   // network related data
   enabled: true,
-  name: 'Ethereum',
-  longName: 'Ethereum',
-  value: Network.mainnet,
-  networkType: 'layer1',
-  blockTimeInMs: 15_000,
+  name: 'Polygon',
+  longName: 'Polygon',
+  value: Network.polygon,
+  networkType: 'layer2',
+  blockTimeInMs: 2_000,
 
   // this should be refactored to have less deps
-  getProvider: getProviderForNetwork(Network.mainnet),
+  getProvider: getProviderForNetwork(Network.polygon),
 
   // features
   features: {
     txHistory: true,
-
-    // not sure if flashbots is being used app wide vs just swaps
-    flashbots: true,
+    flashbots: false,
     walletconnect: true,
     swaps: true,
     nfts: true,
   },
 
   gas: {
-    gasToken: 'ETH',
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
+    gasToken: 'MATIC',
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
+
+    // ?
     gasType: 'eip1559',
 
     // this prob can just be blockTime
-    pollingIntervalInMs: 5_000,
+    pollingIntervalInMs: 2_000,
 
     // needs more research
     getGasPrices: () => 'tmp',
@@ -43,13 +43,13 @@ export const MainnetNetworkObject: NetworkProperties = {
 
   swaps: {
     outputBasedQuotes: true,
-    defaultSlippage: 100,
+    defaultSlippage: 200,
   },
 
   // design tings
   colors: {
-    light: '#25292E',
-    dark: '#25292E',
+    light: '#8247E5',
+    dark: '#A275EE',
   },
 
   assets: {
