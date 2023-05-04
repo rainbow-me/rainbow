@@ -1127,8 +1127,7 @@ export default function ExchangeModal({
                   onPressSelectOutputCurrency={() => {
                     navigateToSelectOutputCurrency(chainId);
                   }}
-                  {...((currentNetwork === Network.arbitrum ||
-                    isCrosschainSwap) &&
+                  {...(isCrosschainSwap &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
                     })}
