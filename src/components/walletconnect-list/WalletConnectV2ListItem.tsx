@@ -25,7 +25,7 @@ import {
   changeAccount,
   disconnectSession,
   isSupportedChain,
-} from '@/utils/walletConnect';
+} from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
