@@ -33,6 +33,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const {
   GAS_EMOJIS,
@@ -376,16 +377,7 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    switch (currentNetwork) {
-      case networkTypes.polygon:
-      case networkTypes.bsc:
-        return [NORMAL, FAST, URGENT];
-      case networkTypes.optimism:
-      case networkTypes.arbitrum:
-        return [NORMAL];
-      default:
-        return GasSpeedOrder;
-    }
+    return getNetworkObj(currentNetwork).gas.speeds;
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
@@ -398,18 +390,18 @@ const GasSpeedButton = ({
         currentBlockParams?.baseFeePerGas?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
-      const gweiDisplay =
-        currentNetwork === networkTypes.polygon ||
-        currentNetwork === networkTypes.bsc
-          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-          ? ''
-          : greaterThan(estimatedGwei, totalGwei)
-          ? `${toFixedDecimals(totalGwei, 0)} Gwei`
-          : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
-              totalGwei,
-              0
-            )} Gwei`;
+
+      const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
+      const gweiDisplay = !shouldRoundGwei
+        ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+        : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
+        ? ''
+        : greaterThan(estimatedGwei, totalGwei)
+        ? `${toFixedDecimals(totalGwei, 0)} Gwei`
+        : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
+            totalGwei,
+            0
+          )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle:

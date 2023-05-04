@@ -2,6 +2,8 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
+import { BSC_MAINNET_RPC } from 'react-native-dotenv';
+import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 
 export const BSCNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -15,6 +17,12 @@ export const BSCNetworkObject: NetworkProperties = {
   networkType: 'layer2',
   blockTimeInMs: 3_000,
 
+  nativeCurrency: {
+    ...bsc.nativeCurrency,
+    address: BNB_BSC_ADDRESS,
+    mainnetAddress: BNB_MAINNET_ADDRESS,
+  },
+
   // this should be refactored to have less deps
   getProvider: getProviderForNetwork(Network.bsc),
 
@@ -25,14 +33,16 @@ export const BSCNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
+    savings: false,
+    pools: false,
   },
 
   gas: {
-    gasToken: 'BNB',
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
     // ?
     gasType: 'eip1559',
+    roundGasDisplay: false,
 
     // this prob can just be blockTime
     pollingIntervalInMs: 3_000,
@@ -42,7 +52,6 @@ export const BSCNetworkObject: NetworkProperties = {
   },
 
   swaps: {
-    outputBasedQuotes: true,
     defaultSlippage: 200,
   },
 

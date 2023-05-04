@@ -2,6 +2,7 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
+import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 
 export const PolygonNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -15,6 +16,12 @@ export const PolygonNetworkObject: NetworkProperties = {
   networkType: 'layer2',
   blockTimeInMs: 2_000,
 
+  nativeCurrency: {
+    ...polygon.nativeCurrency,
+    address: MATIC_POLYGON_ADDRESS,
+    mainnetAddress: MATIC_MAINNET_ADDRESS,
+  },
+
   // this should be refactored to have less deps
   getProvider: getProviderForNetwork(Network.polygon),
 
@@ -25,14 +32,16 @@ export const PolygonNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
+    savings: false,
+    pools: false,
   },
 
   gas: {
-    gasToken: 'MATIC',
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
     // ?
     gasType: 'eip1559',
+    roundGasDisplay: false,
 
     // this prob can just be blockTime
     pollingIntervalInMs: 2_000,
@@ -42,8 +51,8 @@ export const PolygonNetworkObject: NetworkProperties = {
   },
 
   swaps: {
-    outputBasedQuotes: true,
     defaultSlippage: 200,
+    defaultToFastGas: true,
   },
 
   // design tings

@@ -2,11 +2,11 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
+import { ARBITRUM_ETH_ADDRESS } from '@/references';
 
 export const ArbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
   ...arbitrum,
-
   // network related data
   enabled: true,
   name: 'Arbitrum',
@@ -14,6 +14,11 @@ export const ArbitrumNetworkObject: NetworkProperties = {
   value: Network.arbitrum,
   networkType: 'layer2',
   blockTimeInMs: 5_000,
+
+  nativeCurrency: {
+    ...arbitrum.nativeCurrency,
+    address: ARBITRUM_ETH_ADDRESS,
+  },
 
   // this should be refactored to have less deps
   getProvider: getProviderForNetwork(Network.arbitrum),
@@ -27,14 +32,16 @@ export const ArbitrumNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
+    savings: false,
+    pools: false,
   },
 
   gas: {
-    gasToken: 'ETH',
     speeds: [gasUtils.NORMAL],
 
     // ?
     gasType: 'eip1559',
+    roundGasDisplay: true,
 
     // this prob can just be blockTime
     pollingIntervalInMs: 3_000,
@@ -44,7 +51,6 @@ export const ArbitrumNetworkObject: NetworkProperties = {
   },
 
   swaps: {
-    outputBasedQuotes: true,
     defaultSlippage: 200,
   },
 

@@ -10,6 +10,8 @@ export enum Network {
   bsc = 'bsc',
 }
 
+export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
+
 export interface NetworkProperties extends Chain {
   // network related data
   enabled: boolean;
@@ -18,6 +20,14 @@ export interface NetworkProperties extends Chain {
   value: Network;
   networkType: 'layer1' | 'layer2' | 'testnet';
   blockTimeInMs: number;
+
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    address: string;
+    mainnetAddress?: string;
+  };
 
   getProvider: Promise<StaticJsonRpcProvider>;
 
@@ -28,12 +38,16 @@ export interface NetworkProperties extends Chain {
     walletconnect: boolean;
     swaps: boolean;
     nfts: boolean;
+    savings: boolean;
+    pools: boolean;
   };
 
   gas: {
-    gasToken: string;
     speeds: string[];
     gasType: 'eip1559' | 'legacy';
+
+    // for some networks gas is so cheap we dont want to round the gwei #
+    roundGasDisplay: boolean;
 
     // this prob can just be blockTime
     pollingIntervalInMs: number;
@@ -43,8 +57,8 @@ export interface NetworkProperties extends Chain {
   };
 
   swaps: {
-    outputBasedQuotes: boolean;
     defaultSlippage: number;
+    defaultToFastGas?: boolean;
   };
 
   // design tings

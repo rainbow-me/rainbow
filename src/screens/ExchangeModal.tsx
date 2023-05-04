@@ -102,6 +102,8 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
 import { logger as loggr } from '@/logger';
 import { goBack } from 'react-native-minimizer';
+import { getNetworkObj } from '@/networks';
+import { current } from 'immer';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -367,7 +369,7 @@ export default function ExchangeModal({
     if (
       !speedUrgentSelected.current &&
       !isEmpty(gasFeeParamsBySpeed) &&
-      (currentNetwork === Network.mainnet || currentNetwork === Network.polygon)
+      getNetworkObj(currentNetwork).swaps?.defaultToFastGas
     ) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
@@ -442,9 +444,8 @@ export default function ExchangeModal({
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const hideFlashbotsPostMerge = !config.flashbots_enabled;
-  const swapSupportsFlashbots =
-    currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
+  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
+    .flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -664,7 +665,7 @@ export default function ExchangeModal({
         // TODO(skylarbarrera): need to check if ledger and handle differently here
         if (
           flashbots &&
-          currentNetwork === Network.mainnet &&
+          getNetworkObj(currentNetwork).features?.flashbots &&
           wallet instanceof Wallet
         ) {
           logger.debug('flashbots provider being set on mainnet');

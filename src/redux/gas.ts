@@ -44,6 +44,7 @@ import {
 import { ethUnits, supportedNativeCurrencies } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -53,15 +54,7 @@ const withRunExclusive = async (callback: (...args: any[]) => void) =>
   await mutex.runExclusive(callback);
 
 const getGasPricePollingInterval = (network: Network): number => {
-  switch (network) {
-    case Network.polygon:
-      return 2000;
-    case Network.arbitrum:
-    case Network.bsc:
-      return 3000;
-    default:
-      return 5000;
-  }
+  return getNetworkObj(network).gas.pollingIntervalInMs;
 };
 
 const getDefaultGasLimit = (
@@ -402,6 +395,7 @@ export const gasPricesStartPolling = (
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   dispatch(gasPricesStopPolling());
 
+  // this should be chain agnostic
   const getGasPrices = (network: Network) =>
     withRunExclusive(
       () =>

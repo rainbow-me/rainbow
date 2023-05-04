@@ -52,6 +52,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -347,7 +348,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (tx.network === Network.mainnet && tx.flashbots) {
+        if (getNetworkObj(tx.network).features.flashbots && tx.flashbots) {
           logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();
         } else {
