@@ -30,7 +30,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 }) => {
   const { minedAt, status, pending, from } = transaction;
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const accountAddress = useSelector(
     (state: AppState) => state.settings.accountAddress
   );
@@ -113,17 +113,20 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           return;
         case 'remove':
           if (transaction.hash && transaction.network) {
+            // remove tx
             dispatch(
               dataRemovePendingTransaction(
                 transaction.hash,
                 transaction.network
               )
             );
+            // close tx details sheet
+            goBack();
           }
           return;
       }
     },
-    [dispatch, navigate, transaction]
+    [dispatch, goBack, navigate, transaction]
   );
 
   return (
