@@ -1117,11 +1117,7 @@ export default function ExchangeModal({
               {showOutputField && (
                 <ExchangeOutputField
                   color={outputCurrencyColor}
-                  editable={
-                    !!outputCurrency &&
-                    currentNetwork !== Network.arbitrum &&
-                    !isCrosschainSwap
-                  }
+                  editable={!!outputCurrency && !isCrosschainSwap}
                   network={outputNetwork}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
