@@ -11,10 +11,11 @@ import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { haptics } from '@/utils';
 import Routes from '@rainbow-me/routes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
+import { dataRemovePendingTransaction } from '@/redux/data';
 
 const SIZE = 40;
 
@@ -28,6 +29,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   hideIcon,
 }) => {
   const { minedAt, status, pending, from } = transaction;
+  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const accountAddress = useSelector(
     (state: AppState) => state.settings.accountAddress
@@ -78,29 +80,51 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               },
             ]
           : []),
+        {
+          actionKey: 'remove',
+          actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.remove),
+          menuAttributes: ['destructive'],
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'trash',
+          },
+        },
       ],
     }),
     [canBeCancelled, canBeResubmitted]
   );
 
-  const onMenuItemPress = useCallback(e => {
-    const { actionKey } = e.nativeEvent;
-    haptics.selection();
-    switch (actionKey) {
-      case 'speedUp':
-        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-          tx: transaction,
-          type: 'speed_up',
-        });
-        return;
-      case 'cancel':
-        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-          tx: transaction,
-          type: 'cancel',
-        });
-        return;
-    }
-  }, []);
+  const onMenuItemPress = useCallback(
+    e => {
+      const { actionKey } = e.nativeEvent;
+      haptics.selection();
+      switch (actionKey) {
+        case 'speedUp':
+          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+            tx: transaction,
+            type: 'speed_up',
+          });
+          return;
+        case 'cancel':
+          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+            tx: transaction,
+            type: 'cancel',
+          });
+          return;
+        case 'remove':
+          if (transaction.hash && transaction.network) {
+            dispatch(
+              dataRemovePendingTransaction(
+                transaction.hash,
+                transaction.network
+              )
+            );
+          }
+          return;
+      }
+    },
+    [dispatch, navigate, transaction]
+  );
 
   return (
     <Stack>

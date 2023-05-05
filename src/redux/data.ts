@@ -1227,6 +1227,39 @@ export const dataAddNewTransaction = (
   }
 };
 
+export const dataRemovePendingTransaction = (
+  txHash: string,
+  network: Network
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdatePendingTransactionSuccessAction
+  >,
+  getState: AppGetState
+) => {
+  loggr.debug('dataRemovePendingTransaction', { txHash });
+
+  const { pendingTransactions } = getState().data;
+  const { accountAddress } = getState().settings;
+
+  const _pendingTransactions = pendingTransactions.filter(tx => {
+    // if we find the pending tx, filter it out
+    if (tx.hash === txHash && tx.network === network) {
+      loggr.debug('dataRemovePendingTransaction: removed tx', { txHash });
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+  dispatch({
+    payload: _pendingTransactions,
+    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+  });
+  saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
+};
+
 /**
  * Watches pending transactions and updates state and account local storage
  * when new data is available.

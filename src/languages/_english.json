@@ -1551,7 +1551,8 @@
       },
       "actions_menu": {
         "speed_up": "Speed Up",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "remove": "Remove"
       }
     },
     "time": {
