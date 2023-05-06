@@ -1,0 +1,45 @@
+fragment token on NFTPaymentToken {
+  contractAddress
+  symbol
+  decimals
+  name
+}
+
+fragment amount on NFTPaymentAmount {
+  raw
+  decimal
+  usd
+}
+
+query getNFTOffers(
+  $walletAddress: String!
+  $sortBy: SortCriteria = TOP_BID_VALUE
+) {
+  getNFTOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
+    contractAddress
+    tokenId
+    floorDifferencePercentage
+    validUntil
+    marketplace
+    grossAmount {
+      ...amount
+    }
+    netAmount {
+      ...amount
+    }
+    offerPaymentToken {
+      ...token
+    }
+    royaltiesPercentage
+    feesPercentage
+    name
+    collectionName
+    floorPriceAmount {
+      ...amount
+    }
+    floorPricePaymentToken {
+      ...token
+    }
+    imageUrl
+  }
+}
