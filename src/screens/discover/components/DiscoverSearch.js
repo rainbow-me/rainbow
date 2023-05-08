@@ -16,7 +16,6 @@ import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 import { emitAssetRequest } from '@/redux/explorer';
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
-import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
 import { Row } from '@/components/layout';
 import DiscoverSheetContext from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
@@ -157,7 +156,6 @@ export default function DiscoverSearch() {
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
           fromDiscover: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
       }

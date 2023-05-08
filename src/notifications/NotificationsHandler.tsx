@@ -55,7 +55,7 @@ import {
 } from '@/notifications/settings';
 import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
-import { setHasPendingDeeplinkPendingRedirect } from '@/utils/walletConnect';
+import { setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 
 type Callback = () => void;
 

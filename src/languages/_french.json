@@ -680,8 +680,8 @@
         "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon! :)",
         "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
         "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering. :)",
-        "finiliar_text": "A special edition Rainbow Finiliar icon that keeps you up to date on the price of gas, rain or shine. :)",
-        "finiliar_title": "You've unlocked a\nRainbow Finiliar :)",
+        "finiliar_text": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine. :)",
+        "finiliar_title": "You've unlocked a\nRainbow Fini :)",
         "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
         "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
         "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
@@ -2007,7 +2007,16 @@
       "unknown_dapp": "Unknown Dapp :)",
       "unknown_url": "Unknown URL :)",
       "approval_sheet_network": "Network :)",
-      "approval_sheet_networks": "%{length} Networks :)"
+      "approval_sheet_networks": "%{length} Networks :)",
+      "auth": {
+        "signin_title": "Sign In :)",
+        "signin_prompt": "Do you want to sign into %{name} with your wallet? :)",
+        "signin_with": "Sign in with :)",
+        "signin_button": "Continue :)",
+        "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet :)",
+        "error_alert_title": "Authentication failed :)",
+        "error_alert_description": "Something went wrong. Please try again, or reach out to our support team. :)"
+      }
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",
