@@ -9,21 +9,22 @@ import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
 import { Core } from '@walletconnect/core';
 import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { isHexString } from '@ethersproject/bytes';
+import { toUtf8String } from '@ethersproject/strings';
 
 import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
-import { Navigation } from '@/navigation';
-import { getActiveRoute } from '@/navigation/Navigation';
+import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Alert } from '@/components/alerts';
+import Alert from '@/components/alerts/Alert';
 import * as lang from '@/languages';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
-import { ethereumUtils } from '@/utils';
-import { getRequestDisplayDetails } from '@/parsers';
+import ethereumUtils from '@/utils/ethereumUtils';
+import { getRequestDisplayDetails } from '@/parsers/requests';
 import {
   RequestData,
   REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
@@ -32,71 +33,18 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { chains as supportedChainConfigs } from '@/references';
-import { isHexString } from '@ethersproject/bytes';
-import { toUtf8String } from '@ethersproject/strings';
+import supportedChainConfigs from '@/references/chains.json';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import {
   AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
-  AuthRequestAuthenticateResult,
+  RPCMethod,
+  RPCPayload,
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
-
-enum RPCMethod {
-  Sign = 'eth_sign',
-  PersonalSign = 'personal_sign',
-  SignTypedData = 'eth_signTypedData',
-  SignTypedDataV1 = 'eth_signTypedData_v1',
-  SignTypedDataV3 = 'eth_signTypedData_v3',
-  SignTypedDataV4 = 'eth_signTypedData_v4',
-  SendTransaction = 'eth_sendTransaction',
-  /**
-   * @deprecated DO NOT USE, or ask Bruno
-   */
-  SignTransaction = 'eth_signTransaction',
-  /**
-   * @deprecated DO NOT USE, or ask Bruno
-   */
-  SendRawTransaction = 'eth_sendRawTransaction',
-}
-
-type RPCPayload =
-  | {
-      method: RPCMethod.Sign | RPCMethod.PersonalSign;
-      params: [string, string];
-    }
-  | {
-      method:
-        | RPCMethod.SignTypedData
-        | RPCMethod.SignTypedDataV1
-        | RPCMethod.SignTypedDataV3
-        | RPCMethod.SignTypedDataV4;
-      params: [
-        string, // address
-        string // stringify typed object
-      ];
-    }
-  | {
-      method: RPCMethod.SendTransaction;
-      params: [
-        {
-          from: string;
-          to: string;
-          data: string;
-          gasPrice: string;
-          gasLimit: string;
-          value: string;
-        }
-      ];
-    }
-  | {
-      method: RPCMethod; // for TS safety, but others are not supported
-      params: any[];
-    };
 
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
@@ -163,7 +111,7 @@ export const web3WalletClient = Promise.resolve(
  * return { address, message } and JSON.parse the value if it's from a typed
  * data request
  */
-function parseRPCParams({
+export function parseRPCParams({
   method,
   params,
 }: RPCPayload): {
