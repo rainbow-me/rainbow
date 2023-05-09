@@ -1,7 +1,14 @@
 import { jest, test } from '@jest/globals';
 import { isAddress } from '@ethersproject/address';
+import Minimizer from 'react-native-minimizer';
 
 jest.mock('@walletconnect/core');
+jest.mock('react-native', () => ({
+  InteractionManager: {
+    runAfterInteractions: jest.fn((cb: any) => cb()),
+  },
+}));
+jest.mock('@react-native-firebase/messaging', () => ({}));
 
 jest.mock('@/redux/store');
 jest.mock('@/redux/walletconnect');
@@ -20,7 +27,11 @@ jest.mock('@/walletConnect/sheets/AuthRequest', () => ({
   AuthRequest: jest.fn(),
 }));
 
-import { parseRPCParams } from '@/walletConnect';
+import {
+  parseRPCParams,
+  maybeGoBackAndClearHasPendingRedirect,
+  setHasPendingDeeplinkPendingRedirect,
+} from '@/walletConnect';
 import { RPCMethod } from '@/walletConnect/types';
 
 test(`parseRPCParams`, () => {
@@ -111,4 +122,17 @@ test(`parseRPCParams`, () => {
   const ethSignTypedDataResult = parseRPCParams(eth_signTypedData);
   expect(ethSignTypedDataResult).toMatchSnapshot();
   expect(isAddress(ethSignTypedDataResult.address!)).toBeTruthy();
+});
+
+test(`maybeGoBackAndClearHasPendingRedirect`, () => {
+  jest.useFakeTimers();
+
+  setHasPendingDeeplinkPendingRedirect(true);
+  maybeGoBackAndClearHasPendingRedirect();
+
+  jest.advanceTimersByTime(1);
+
+  expect(Minimizer.goBack).toHaveBeenCalled();
+
+  jest.useRealTimers();
 });
