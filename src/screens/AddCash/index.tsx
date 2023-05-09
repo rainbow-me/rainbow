@@ -62,12 +62,13 @@ export function AddCashSheet() {
 
       <ScrollView
         style={{
+          width: '100%',
           ...borders.buildRadiusAsObject('top', ScreenCornerRadius || 30),
         }}
       >
         <Box
           width="full"
-          paddingTop="44px"
+          paddingTop="52px"
           paddingHorizontal="20px"
           paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
         >

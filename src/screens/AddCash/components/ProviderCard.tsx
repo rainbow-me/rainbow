@@ -37,10 +37,10 @@ const providerNames = {
 };
 
 const providerDescriptions = {
-  [FiatProviderName.Ramp]: `Cards, banks, and international options`,
+  [FiatProviderName.Ramp]: `Cards, banks, & international options`,
   [FiatProviderName.Ratio]: `Any US bank account`,
-  [FiatProviderName.Coinbase]: `Cards, banks, and international options`,
-  [FiatProviderName.Moonpay]: `Cards, banks, and international options`,
+  [FiatProviderName.Coinbase]: `Transfer from Coinbase & other options`,
+  [FiatProviderName.Moonpay]: `Cards, banks, & international options`,
 };
 
 const providerLogos = {
