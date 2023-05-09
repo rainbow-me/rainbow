@@ -1,8 +1,34 @@
 import { jest, test } from '@jest/globals';
 import { isAddress } from '@ethersproject/address';
 import Minimizer from 'react-native-minimizer';
+import { Web3Wallet } from '@walletconnect/web3wallet';
+import { smitter } from 'smitter';
+import { nanoid } from 'nanoid/non-secure';
+
+import Navigation from '@/navigation/Navigation';
+import { mocked } from '@/testing/utils';
+import {
+  parseRPCParams,
+  maybeGoBackAndClearHasPendingRedirect,
+  setHasPendingDeeplinkPendingRedirect,
+  pair,
+} from '@/walletConnect';
+import { RPCMethod } from '@/walletConnect/types';
 
 jest.mock('@walletconnect/core');
+jest.mock('@walletconnect/web3wallet', () => ({
+  Web3Wallet: {
+    init: jest.fn(async () => ({
+      on: jest.fn(),
+      off: jest.fn(),
+      core: {
+        pairing: {
+          pair: jest.fn(),
+        },
+      },
+    })),
+  },
+}));
 jest.mock('react-native', () => ({
   InteractionManager: {
     runAfterInteractions: jest.fn((cb: any) => cb()),
@@ -13,7 +39,9 @@ jest.mock('@react-native-firebase/messaging', () => ({}));
 jest.mock('@/redux/store');
 jest.mock('@/redux/walletconnect');
 jest.mock('@/redux/requests');
-jest.mock('@/navigation/Navigation');
+jest.mock('@/navigation/Navigation', () => ({
+  handleAction: jest.fn(),
+}));
 jest.mock('@/handlers/imgix');
 jest.mock('@/utils/ethereumUtils');
 jest.mock('@/parsers/requests');
@@ -26,13 +54,17 @@ jest.mock('@/screens/Portal');
 jest.mock('@/walletConnect/sheets/AuthRequest', () => ({
   AuthRequest: jest.fn(),
 }));
+jest.mock('@/analytics');
 
-import {
-  parseRPCParams,
-  maybeGoBackAndClearHasPendingRedirect,
-  setHasPendingDeeplinkPendingRedirect,
-} from '@/walletConnect';
-import { RPCMethod } from '@/walletConnect/types';
+/**
+ * Generates a unique WC URI for each test
+ *
+ * `urlKey` is our param, just to differentiate between tests and avoid cache
+ * hits on `walletConnectURICache`
+ */
+function generateWCUri({ version }: { version: number }) {
+  return `wc:topic@${version}?relay-protocol=protocol&symKey=symKey&urlKey=${nanoid()}`;
+}
 
 test(`parseRPCParams`, () => {
   const send_transaction = {
@@ -135,4 +167,16 @@ test(`maybeGoBackAndClearHasPendingRedirect`, () => {
   expect(Minimizer.goBack).toHaveBeenCalled();
 
   jest.useRealTimers();
+});
+
+test(`pair: timeout`, async () => {
+  jest.useFakeTimers();
+
+  const uri = generateWCUri({ version: 2 });
+
+  await pair({ uri });
+
+  jest.advanceTimersByTime(10_000);
+
+  expect(Navigation.handleAction).toHaveBeenCalled();
 });
