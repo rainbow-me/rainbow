@@ -16,7 +16,7 @@ import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
+import { analyticsV2 as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import Alert from '@/components/alerts/Alert';
 import * as lang from '@/languages';
@@ -94,17 +94,15 @@ let syncWeb3WalletClient:
 
 const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
 
-export const web3WalletClient = Promise.resolve(
-  Web3Wallet.init({
-    core: walletConnectCore,
-    metadata: {
-      name: '🌈 Rainbow',
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      url: 'https://rainbow.me',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    },
-  })
-);
+export const web3WalletClient = Web3Wallet.init({
+  core: walletConnectCore,
+  metadata: {
+    name: '🌈 Rainbow',
+    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+    url: 'https://rainbow.me',
+    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+  },
+});
 
 /**
  * For RPC requests that have [address, message] tuples (order may change),
@@ -217,7 +215,7 @@ async function rejectProposal({
 
   await client.rejectSession({ id, reason: getSdkError(reason) });
 
-  analytics.track('Rejected new WalletConnect session', {
+  analytics.track(analytics.event.wcNewSessionRejected, {
     dappName: proposer.metadata.name,
     dappUrl: proposer.metadata.url,
   });
@@ -254,7 +252,7 @@ export async function pair({ uri }: { uri: string }) {
     client.off('session_proposal', handler);
     client.off('auth_request', handler);
     showErrorSheet();
-    analytics.track('New WalletConnect session time out');
+    analytics.track(analytics.event.wcNewSessionTimeout);
   }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
@@ -503,7 +501,7 @@ export async function onSessionProposal(
             logger.DebugContext.walletconnect
           );
 
-          analytics.track('Approved new WalletConnect session', {
+          analytics.track(analytics.event.wcNewSessionApproved, {
             dappName: proposer.metadata.name,
             dappUrl: proposer.metadata.url,
           });
@@ -553,8 +551,6 @@ export async function onSessionRequest(
 
   const { id, topic } = event;
   const { method, params } = event.params.request;
-
-  console.log('request', event.params.request);
 
   logger.debug(
     `WC v2: session_request method`,
@@ -753,7 +749,7 @@ export async function onSessionRequest(
         transactionDetails: request,
       });
 
-      analytics.track('Showing Walletconnect signing request', {
+      analytics.track(analytics.event.wcShowingSigningRequest, {
         dappName: request.dappName,
         dappUrl: request.dappUrl,
       });

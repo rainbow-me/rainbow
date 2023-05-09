@@ -169,7 +169,7 @@ test(`handles https:// protocol for tokens, found asset`, async () => {
 });
 
 test(`handles https:// protocol for tokens, no asset found`, async () => {
-  // @ts-ignore just need a truthy value
+  // @ts-ignore just need a falsy value
   mocked(ethereumUtils.getAssetFromAllAssets).mockReturnValueOnce(undefined);
 
   await handleDeepLink(
