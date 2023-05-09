@@ -554,6 +554,8 @@ export async function onSessionRequest(
   const { id, topic } = event;
   const { method, params } = event.params.request;
 
+  console.log('request', event.params.request);
+
   logger.debug(
     `WC v2: session_request method`,
     { method, params },
