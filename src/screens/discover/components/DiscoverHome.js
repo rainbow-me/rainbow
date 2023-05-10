@@ -6,13 +6,14 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Stack } from '@/design-system';
+import { Inline, Inset, Separator, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
+import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import {
   avoidScamsCard,
   backupsCard,
@@ -52,6 +53,9 @@ export default function DiscoverHome() {
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
+              <Separator color="separator" thickness={1} />
+              <NFTOffersCard />
+              <Separator color="separator" thickness={1} />
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
               {isProfilesEnabled && <ENSCreateProfileCard />}
