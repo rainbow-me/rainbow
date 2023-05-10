@@ -9,6 +9,7 @@ import {
   SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
 import { UniqueAsset } from '@/entities';
+import { RainbowError, logger } from '@/logger';
 
 export const START_CURSOR = 'start';
 
@@ -126,8 +127,10 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     : getSimpleHashChainFromNetwork(nft.network);
 
   if (!chain) {
-    throw new Error(
-      `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
+    logger.error(
+      new RainbowError(
+        `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
+      )
     );
   }
 
@@ -144,18 +147,29 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
       }
     );
   } catch {
-    // If the collection has > 20k NFTs, the above request will fail.
-    // In that case, we need to refresh the given NFT individually.
-    await nftApi.post(
-      `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
-      {},
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'x-api-key': NFT_API_KEY,
-        },
-      }
+    logger.warn(
+      `refreshNFTContractMetadata: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
     );
+    try {
+      // If the collection has > 20k NFTs, the above request will fail.
+      // In that case, we need to refresh the given NFT individually.
+      await nftApi.post(
+        `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
+        {},
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': NFT_API_KEY,
+          },
+        }
+      );
+    } catch {
+      logger.error(
+        new RainbowError(
+          `refreshNFTContractMetadata: failed to refresh metadata for NFT #${nft.id} after failing to refresh metadata for NFT contract ${nft.asset_contract.address}`
+        )
+      );
+    }
   }
 }
