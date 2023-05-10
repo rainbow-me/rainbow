@@ -33,7 +33,7 @@ const providerNames = {
   [FiatProviderName.Ramp]: 'Ramp',
   [FiatProviderName.Ratio]: 'Ratio',
   [FiatProviderName.Coinbase]: 'Coinbase',
-  [FiatProviderName.Moonpay]: 'Moonpay',
+  [FiatProviderName.Moonpay]: 'MoonPay',
 };
 
 const providerDescriptions = {
