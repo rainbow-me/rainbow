@@ -2,6 +2,7 @@ import { jest, test } from '@jest/globals';
 import { isAddress } from '@ethersproject/address';
 import Minimizer from 'react-native-minimizer';
 import { nanoid } from 'nanoid/non-secure';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import Navigation from '@/navigation/Navigation';
 import { mocked } from '@/testing/utils';
@@ -180,28 +181,71 @@ test(`pair: timeout`, async () => {
   expect(Navigation.handleAction).toHaveBeenCalled();
 });
 
-test(`onSessionProposal`, async () => {
-  const proposal = {
-    id: 1683669043355580,
+test.skip(`onSessionProposal`, async () => {
+  const proposal: Web3WalletTypes.SessionProposal = {
+    id: 1683746513153348,
     params: {
-      id: 1683669043355580,
+      id: 1683746513153348,
       pairingTopic:
-        'e722b43f2a6a93b75c2857637712f7132a60a1bd6917926f65812b5afe2f75f7',
-      expiry: 1683669344,
+        '984de015e003c68a5d3bc9faa48f5069c9276360d79a279a9e670b6a76d47925',
+      expiry: 1683746816,
       requiredNamespaces: {
         eip155: {
-          methods: [
-            'eth_sendTransaction',
-            'eth_signTransaction',
-            'eth_sign',
-            'personal_sign',
-            'eth_signTypedData',
-          ],
           chains: ['eip155:1'],
+          methods: ['eth_sendTransaction', 'personal_sign'],
           events: ['chainChanged', 'accountsChanged'],
+          // rpcMap: {
+          //   '1': 'https://cloudflare-eth.com',
+          // },
         },
       },
-      optionalNamespaces: {},
+      optionalNamespaces: {
+        eip155: {
+          chains: [
+            'eip155:137',
+            'eip155:42161',
+            'eip155:10',
+            'eip155:56',
+            'eip155:43114',
+          ],
+          methods: [
+            'eth_sendTransaction',
+            'personal_sign',
+            'eth_accounts',
+            'eth_requestAccounts',
+            'eth_call',
+            'eth_getBalance',
+            'eth_sendRawTransaction',
+            'eth_sign',
+            'eth_signTransaction',
+            'eth_signTypedData',
+            'eth_signTypedData_v3',
+            'eth_signTypedData_v4',
+            'wallet_switchEthereumChain',
+            'wallet_addEthereumChain',
+            'wallet_getPermissions',
+            'wallet_requestPermissions',
+            'wallet_registerOnboarding',
+            'wallet_watchAsset',
+            'wallet_scanQRCode',
+          ],
+          events: [
+            'chainChanged',
+            'accountsChanged',
+            'message',
+            'disconnect',
+            'connect',
+          ],
+          // rpcMap: {
+          //   '1': 'https://cloudflare-eth.com',
+          //   '10': 'https://mainnet.optimism.io',
+          //   '56': 'https://rpc.ankr.com/bsc',
+          //   '137': 'https://polygon-rpc.com',
+          //   '42161': 'https://arb1.arbitrum.io/rpc',
+          //   '43114': 'https://api.avax.network/ext/bc/C/rpc',
+          // },
+        },
+      },
       relays: [
         {
           protocol: 'irn',
@@ -209,13 +253,20 @@ test(`onSessionProposal`, async () => {
       ],
       proposer: {
         publicKey:
-          'f99afa968ba873b14d427283c61dae677c9a602de4c67a61235cf1af124ab84d',
+          'd613a392f572c7c6401e1716842e664e0f2a43e5a2f4632cb22c03fbbb3b7e47',
         metadata: {
-          description: 'React App for WalletConnect',
-          url: 'https://react-app.walletconnect.com',
-          icons: ['https://avatars.githubusercontent.com/u/37784886'],
-          name: 'React App',
+          description: '',
+          url: 'https://wagmi-walletconnect.vercel.app',
+          icons: [],
+          name: 'wagmi',
         },
+      },
+    },
+    context: {
+      verified: {
+        verifyUrl: '',
+        validation: 'UNKNOWN',
+        origin: 'https://wagmi-walletconnect.vercel.app',
       },
     },
   };

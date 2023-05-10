@@ -1,6 +1,10 @@
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import { getSdkError, parseUri } from '@walletconnect/utils';
+import {
+  getSdkError,
+  parseUri,
+  buildApprovedNamespaces,
+} from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { isAddress, getAddress } from '@ethersproject/address';
