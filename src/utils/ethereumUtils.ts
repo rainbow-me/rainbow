@@ -477,14 +477,14 @@ function openNftInBlockExplorer(
   network: Network
 ) {
   const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
-  Linking.openURL(`https://${explorer}/token/${contractAddress}?a=${tokenId}`);
+  Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
 function openTransactionInBlockExplorer(hash: string, network: Network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
   const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
-  Linking.openURL(`https://${explorer}/tx/${normalizedHash}`);
+  Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 
 async function parseEthereumUrl(data: string) {
