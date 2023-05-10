@@ -143,12 +143,10 @@ export default function SwapSettingsState({ asset }) {
             >
               {lang.t('exchange.settings')}
             </Text>
-            {network !== Network.arbitrum && (
-              <SourcePicker
-                currentSource={currentSource}
-                onSelect={updateSource}
-              />
-            )}
+            <SourcePicker
+              currentSource={currentSource}
+              onSelect={updateSource}
+            />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Column width="content">
