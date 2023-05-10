@@ -3,6 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
+import { getArbitrumGasPrices } from '@/redux/gas';
 
 export const ArbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -47,7 +48,7 @@ export const ArbitrumNetworkObject: NetworkProperties = {
     pollingIntervalInMs: 3_000,
 
     // needs more research
-    getGasPrices: () => 'tmp',
+    getGasPrices: getArbitrumGasPrices,
   },
 
   swaps: {

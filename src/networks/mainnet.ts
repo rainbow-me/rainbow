@@ -46,7 +46,7 @@ export const MainnetNetworkObject: NetworkProperties = {
     pollingIntervalInMs: 5_000,
 
     // needs more research
-    getGasPrices: () => 'tmp',
+    getGasPrices: async () => null,
   },
 
   swaps: {

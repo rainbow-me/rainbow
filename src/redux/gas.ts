@@ -262,7 +262,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   });
 };
 
-const getPolygonGasPrices = async () => {
+export const getPolygonGasPrices = async () => {
   try {
     const {
       data: {
@@ -298,7 +298,7 @@ const getPolygonGasPrices = async () => {
   }
 };
 
-const getBscGasPrices = async () => {
+export const getBscGasPrices = async () => {
   try {
     const {
       data: {
@@ -334,7 +334,7 @@ const getBscGasPrices = async () => {
     return null;
   }
 };
-const getArbitrumGasPrices = async () => {
+export const getArbitrumGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
@@ -352,7 +352,7 @@ const getArbitrumGasPrices = async () => {
   return priceData;
 };
 
-const getOptimismGasPrices = async () => {
+export const getOptimismGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.optimism);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
@@ -418,20 +418,18 @@ export const gasPricesStartPolling = (
               l1GasFeeOptimism,
             } = getState().gas;
             const { nativeCurrency } = getState().settings;
-            const isL2 = isL2Network(network);
+
+            const networkObj = getNetworkObj(network);
             let dataIsReady = true;
-            if (isL2) {
-              let adjustedGasFees;
-              if (network === Network.polygon) {
-                adjustedGasFees = await getPolygonGasPrices();
-              } else if (network === Network.arbitrum) {
-                adjustedGasFees = await getArbitrumGasPrices();
-              } else if (network === Network.optimism) {
-                adjustedGasFees = await getOptimismGasPrices();
+
+            if (networkObj.networkType === 'layer2') {
+              // OP chains have an additional fee we need to load
+              if (network === Network.optimism) {
                 dataIsReady = l1GasFeeOptimism !== null;
-              } else if (network === Network.bsc) {
-                adjustedGasFees = await getBscGasPrices();
               }
+
+              const adjustedGasFees = await networkObj.gas.getGasPrices();
+
               if (!adjustedGasFees) return;
 
               const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);

@@ -1,3 +1,8 @@
+import {
+  GasFeesBySpeed,
+  GasPricesAPIData,
+  LegacyGasFeesBySpeed,
+} from '@/entities/gas';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Chain } from '@wagmi/chains';
 // network.ts
@@ -52,8 +57,7 @@ export interface NetworkProperties extends Chain {
     // this prob can just be blockTime
     pollingIntervalInMs: number;
 
-    // needs types
-    getGasPrices: () => any;
+    getGasPrices: () => Promise<GasPricesAPIData | null>;
   };
 
   swaps: {

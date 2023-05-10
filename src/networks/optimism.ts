@@ -3,6 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
+import { getOptimismGasPrices } from '@/redux/gas';
 
 export const OptimismNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -45,8 +46,7 @@ export const OptimismNetworkObject: NetworkProperties = {
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
 
-    // needs more research
-    getGasPrices: () => 'tmp',
+    getGasPrices: getOptimismGasPrices,
   },
 
   swaps: {

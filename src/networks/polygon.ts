@@ -3,6 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
+import { getPolygonGasPrices } from '@/redux/gas';
 
 export const PolygonNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -46,8 +47,7 @@ export const PolygonNetworkObject: NetworkProperties = {
     // this prob can just be blockTime
     pollingIntervalInMs: 2_000,
 
-    // needs more research
-    getGasPrices: () => 'tmp',
+    getGasPrices: getPolygonGasPrices,
   },
 
   swaps: {
