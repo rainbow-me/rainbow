@@ -346,7 +346,7 @@ export async function onSessionProposal(
 ) {
   logger.debug(
     `WC v2: session_proposal`,
-    {},
+    { proposal },
     logger.DebugContext.walletconnect
   );
 

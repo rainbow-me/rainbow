@@ -1,8 +1,6 @@
 import { jest, test } from '@jest/globals';
 import { isAddress } from '@ethersproject/address';
 import Minimizer from 'react-native-minimizer';
-import { Web3Wallet } from '@walletconnect/web3wallet';
-import { smitter } from 'smitter';
 import { nanoid } from 'nanoid/non-secure';
 
 import Navigation from '@/navigation/Navigation';
@@ -12,6 +10,7 @@ import {
   maybeGoBackAndClearHasPendingRedirect,
   setHasPendingDeeplinkPendingRedirect,
   pair,
+  onSessionProposal,
 } from '@/walletConnect';
 import { RPCMethod } from '@/walletConnect/types';
 
@@ -179,4 +178,47 @@ test(`pair: timeout`, async () => {
   jest.advanceTimersByTime(10_000);
 
   expect(Navigation.handleAction).toHaveBeenCalled();
+});
+
+test(`onSessionProposal`, async () => {
+  const proposal = {
+    id: 1683669043355580,
+    params: {
+      id: 1683669043355580,
+      pairingTopic:
+        'e722b43f2a6a93b75c2857637712f7132a60a1bd6917926f65812b5afe2f75f7',
+      expiry: 1683669344,
+      requiredNamespaces: {
+        eip155: {
+          methods: [
+            'eth_sendTransaction',
+            'eth_signTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+          ],
+          chains: ['eip155:1'],
+          events: ['chainChanged', 'accountsChanged'],
+        },
+      },
+      optionalNamespaces: {},
+      relays: [
+        {
+          protocol: 'irn',
+        },
+      ],
+      proposer: {
+        publicKey:
+          'f99afa968ba873b14d427283c61dae677c9a602de4c67a61235cf1af124ab84d',
+        metadata: {
+          description: 'React App for WalletConnect',
+          url: 'https://react-app.walletconnect.com',
+          icons: ['https://avatars.githubusercontent.com/u/37784886'],
+          name: 'React App',
+        },
+      },
+    },
+  };
+
+  await onSessionProposal(proposal);
 });
