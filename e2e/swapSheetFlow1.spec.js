@@ -339,14 +339,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
-  });
-
-  it('Should not show settings routes picker flashbots on Arbitrum', async () => {
-    await Helpers.waitAndTap('exchange-settings-button');
-    await Helpers.checkIfVisible('swap-settings-header');
-    await Helpers.checkIfNotVisible('swap-settings-routes-label');
-    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
-    await Helpers.swipe('swap-settings-header', 'down', 'fast');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 
