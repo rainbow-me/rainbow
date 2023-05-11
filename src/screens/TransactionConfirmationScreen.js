@@ -790,7 +790,7 @@ export default function TransactionConfirmationScreen() {
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
           await handleSessionRequestResponse(walletConnectV2RequestValues, {
-            result,
+            result: result.hash,
           });
         } else {
           await dispatch(
