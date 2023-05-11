@@ -92,11 +92,11 @@ export function AddCashSheet() {
             </Box>
 
             <Box paddingTop="20px">
-              <Coinbase accountAddress={accountAddress} />
+              <Moonpay accountAddress={accountAddress} />
             </Box>
 
             <Box paddingTop="20px">
-              <Moonpay accountAddress={accountAddress} />
+              <Coinbase accountAddress={accountAddress} />
             </Box>
 
             <Box paddingTop="20px">

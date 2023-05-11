@@ -52,10 +52,10 @@ const providerConfig = {
     {
       type: CalloutType.InstantAvailable,
     },
-    // {
-    //   type: CalloutType.Rate,
-    //   value: 'N/A',
-    // },
+    {
+      type: CalloutType.Rate,
+      value: '0.5-2.5%',
+    },
     {
       type: CalloutType.PaymentMethods,
       methods: [
