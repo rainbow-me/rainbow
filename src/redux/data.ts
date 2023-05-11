@@ -140,7 +140,7 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-const DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS =
+export const DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS =
   'data/DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS';
 
 const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
@@ -1228,6 +1228,39 @@ export const dataAddNewTransaction = (
   } catch (error) {
     loggr.error(new Error('dataAddNewTransaction: failed'), { error });
   }
+};
+
+export const dataRemovePendingTransaction = (
+  txHash: string,
+  network: Network
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdatePendingTransactionSuccessAction
+  >,
+  getState: AppGetState
+) => {
+  loggr.debug('dataRemovePendingTransaction', { txHash });
+
+  const { pendingTransactions } = getState().data;
+  const { accountAddress } = getState().settings;
+
+  const _pendingTransactions = pendingTransactions.filter(tx => {
+    // if we find the pending tx, filter it out
+    if (tx.hash === txHash && tx.network === network) {
+      loggr.debug('dataRemovePendingTransaction: removed tx', { txHash });
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+  dispatch({
+    payload: _pendingTransactions,
+    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+  });
+  saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
 };
 
 /**
