@@ -365,7 +365,7 @@ const getChainIdFromType = (type: string) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkFromChainId = (chainId: number): Network => {
+export const getNetworkFromChainId = (chainId: number): Network => {
   const networkData = chains.find(chain => chain.chain_id === chainId);
   return (networkData?.network as Network) ?? Network.mainnet;
 };

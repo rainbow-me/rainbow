@@ -111,7 +111,7 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
-import { handleSessionRequestResponse } from '@/utils/walletConnect';
+import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 
@@ -785,6 +785,7 @@ export default function TransactionConfirmationScreen() {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
@@ -884,6 +885,7 @@ export default function TransactionConfirmationScreen() {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {
@@ -903,19 +905,21 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
-    method,
-    accountInfo.address,
-    provider,
     params,
+    accountInfo.address,
+    accountInfo.isHardwareWallet,
+    provider,
+    method,
     dappName,
     dappUrl,
+    currentNetwork,
     requestId,
     callback,
     closeScreen,
+    walletConnectV2RequestValues,
     dispatch,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     onCancel,
   ]);

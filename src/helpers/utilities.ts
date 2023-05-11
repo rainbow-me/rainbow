@@ -448,6 +448,8 @@ export const fromWei = (number: BigNumberish): string =>
 
 /**
  * @desc Promise that will resolve after the ms interval
+ *
+ * @deprecated use `@/utils/delay`
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));

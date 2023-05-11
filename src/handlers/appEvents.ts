@@ -18,6 +18,7 @@ export default appEvents;
  */
 type Schema = {
   walletConnectV2SessionCreated: undefined;
+  walletConnectV2SessionDeleted: undefined;
 };
 
 /**

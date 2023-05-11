@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.18)
+
+### Added
+
+- Deeplinks fix (WC Connections)
+- WC v2 auth handling
+
+## [1.8.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.17)
+
+### Added
+
+- Android Backup Improvements
+- iPhone 14 Safe area fixes on sheets
+
 ## [1.8.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.16)
 
 ### Added

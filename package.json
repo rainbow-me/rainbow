@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.17-1",
+  "version": "1.8.19-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
