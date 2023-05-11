@@ -43,7 +43,6 @@ import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 import { lightModeThemeColors } from '@/styles';
 import { RainbowError, logger } from '@/logger';
 
@@ -56,7 +55,7 @@ interface WalletsState {
   /**
    * The current loading state of the wallet.
    */
-  isWalletLoading: WalletLoadingState | null;
+  isWalletLoading: any;
 
   /**
    * The currently selected wallet.
@@ -267,20 +266,6 @@ export const walletsSetSelected = (wallet: RainbowWallet) => async (
 };
 
 /**
- * Updates the wallet loading state.
- *
- * @param val The new loading state.
- */
-export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (
-  dispatch: Dispatch<WalletsSetIsLoadingAction>
-) => {
-  dispatch({
-    payload: val,
-    type: WALLETS_SET_IS_LOADING,
-  });
-};
-
-/**
  * Marks all wallets with passed ids as backed-up
  * using a specified method and file in storage
  * and updates state accordingly.
@@ -317,11 +302,6 @@ export const setAllWalletsWithIdsAsBackedUp = (
   if (selected?.id && walletIds.includes(selected?.id)) {
     await dispatch(walletsSetSelected(newWallets[selected.id]));
   }
-
-  // Reset the loading state 1 second later
-  setTimeout(() => {
-    dispatch(setIsWalletLoading(null));
-  }, 1000);
 
   if (method === WalletBackupTypes.cloud && updateUserMetadata) {
     try {
@@ -371,11 +351,6 @@ export const setWalletBackedUp = (
   if (selected!.id === walletId) {
     await dispatch(walletsSetSelected(newWallets[walletId]));
   }
-
-  // Reset the loading state 1 second later
-  setTimeout(() => {
-    dispatch(setIsWalletLoading(null));
-  }, 1000);
 
   if (method === WalletBackupTypes.cloud && updateUserMetadata) {
     try {

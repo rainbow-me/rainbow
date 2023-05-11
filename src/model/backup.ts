@@ -31,8 +31,6 @@ import {
   authenticateWithPINAndCreateIfNeeded,
   decryptPIN,
 } from '@/handlers/authentication';
-import { setIsWalletLoading } from '@/redux/wallets';
-import store from '@/redux/store';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -268,15 +266,11 @@ export async function restoreCloudBackup({
     let userPIN: string | undefined;
     const hasBiometricsEnabled = await kc.getSupportedBiometryType();
     if (IS_ANDROID && !hasBiometricsEnabled) {
-      const currentLoadingState = store.getState().wallets.isWalletLoading;
       try {
         // we need to hide the top level loading indicator for a while
         // to not cover the PIN screen
-        store.dispatch(setIsWalletLoading(null));
         userPIN = await authenticateWithPINAndCreateIfNeeded();
-        store.dispatch(setIsWalletLoading(currentLoadingState));
       } catch (e) {
-        store.dispatch(setIsWalletLoading(currentLoadingState));
         return RestoreCloudBackupResultStates.incorrectPinCode;
       }
     }

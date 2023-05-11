@@ -2,8 +2,6 @@ import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  canImplyAuthentication,
   getAllInternetCredentials,
   getInternetCredentials,
   getSupportedBiometryType as originalGetSupportedBiometryType,
@@ -19,9 +17,16 @@ import {
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
+import AesEncryptor from '@/handlers/aesEncryption';
 import { delay } from '@/helpers/utilities';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV, IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import {
+  authenticateWithPINAndCreateIfNeeded,
+  authenticateWithPIN,
+} from '@/handlers/authentication';
+
+export const encryptor = new AesEncryptor();
 
 export enum ErrorType {
   Unknown = 0,
@@ -68,10 +73,38 @@ export async function get(
 
     if (!data) {
       try {
+        logger.debug(`before`);
         const result = await getInternetCredentials(key, options);
+        logger.debug(`after`, { result });
 
         if (result) {
-          data = result.password;
+          if (
+            IS_ANDROID &&
+            !(await getSupportedBiometryType()) &&
+            result.password.includes('cipher')
+          ) {
+            logger.debug(`keychain: decrypting private data on Android`, {
+              key,
+            });
+
+            const pin = await authenticateWithPIN();
+            const decryptedValue = await encryptor.decrypt(
+              pin,
+              result.password
+            );
+
+            if (decryptedValue) {
+              data = decryptedValue;
+            } else {
+              logger.error(
+                new RainbowError(
+                  `keychain: failed to decrypt private data on Android`
+                )
+              );
+            }
+          } else {
+            data = result.password;
+          }
         }
       } catch (e: any) {
         switch (e.toString()) {
@@ -142,8 +175,23 @@ export async function set(
 
   // only save public data to mmkv
   // private data has accessControl
-  if (!options?.accessControl) {
+  if (!options.accessControl) {
     cache.set(key, value);
+  } else if (
+    options.accessControl &&
+    IS_ANDROID &&
+    !(await getSupportedBiometryType())
+  ) {
+    logger.debug(`setting private data on android`, { key, options });
+
+    const pin = await authenticateWithPINAndCreateIfNeeded();
+    const encryptedValue = await encryptor.encrypt(pin, value);
+
+    if (encryptedValue) {
+      value = encryptedValue;
+    } else {
+      throw new Error(`keychain: failed to encrypt value`);
+    }
   }
 
   await setInternetCredentials(key, key, String(value), options);
@@ -317,26 +365,14 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
     logger.DebugContext.keychain
   );
 
-  let canAuthenticate = false;
-
-  if (IS_IOS) {
-    canAuthenticate = await canImplyAuthentication({
-      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-    });
-  } else {
-    canAuthenticate = Boolean(await getSupportedBiometryType());
-  }
-
   const isSimulator = IS_DEV && (await DeviceInfo.isEmulator());
 
-  if (canAuthenticate && !isSimulator) {
-    return {
-      accessControl: ios
-        ? ACCESS_CONTROL.USER_PRESENCE
-        : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
+  if (isSimulator) return {};
 
-  return {};
+  return {
+    accessControl: ios
+      ? ACCESS_CONTROL.USER_PRESENCE
+      : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+    accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  };
 }
