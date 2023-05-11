@@ -12,12 +12,48 @@ import { useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
+import { MarqueeList } from '../list';
+import { ScrollView } from 'react-native';
+import { AssetTypes } from '@/entities';
+import { CoinIcon } from '../coin-icon';
 
 const SortBy = {
   Highest: { name: 'Highest', icon: '􀑁', key: 'highest' },
   FromFloor: { name: 'From Floor', icon: '􀅺', key: 'fromFloor' },
   Recent: { name: 'Recent', icon: '􀐫', key: 'recent' },
 } as const;
+
+const Offer = () => {
+  return (
+    <Stack space="12px">
+      <Box
+        width={{ custom: 77.75 }}
+        height={{ custom: 77.75 }}
+        background="blue"
+        borderRadius={12}
+      />
+      <Stack space={{ custom: 7 }}>
+        <Inline space="4px" alignVertical="center">
+          <CoinIcon
+            // mainnet_address={'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
+            // address="0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
+            address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+            size={12}
+            // badgeSize="tiny"
+            symbol="WETH"
+            // type={AssetTypes.polygon}
+          />
+          <Text size="13pt" weight="heavy">
+            10.5
+          </Text>
+        </Inline>
+        <Text color="green" size="13pt" weight="semibold">
+          +29.4%
+        </Text>
+      </Stack>
+    </Stack>
+  );
+};
 
 export const NFTOffersCard = () => {
   const [sortBy, setSortBy] = useState<keyof typeof SortBy>(SortBy.Highest);
@@ -128,7 +164,13 @@ export const NFTOffersCard = () => {
           </ContextMenuButton>
         </Inline>
         <Bleed horizontal="20px">
-          <Box background="blue" height={{ custom: 117.75 }} width="full" />
+          <ScrollView horizontal style={{ paddingLeft: 20 }}>
+            <Inline space={{ custom: 14 }}>
+              <Offer />
+              <Offer />
+              <Offer />
+            </Inline>
+          </ScrollView>
         </Bleed>
         <Box
           as={ButtonPressAnimation}
