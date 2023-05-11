@@ -6,16 +6,80 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { useDimensions } from '@/hooks';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { haptics } from '@/utils';
+import { RainbowError, logger } from '@/logger';
+
+const SortBy = {
+  Highest: { name: 'Highest', icon: '􀑁', key: 'highest' },
+  FromFloor: { name: 'From Floor', icon: '􀅺', key: 'fromFloor' },
+  Recent: { name: 'Recent', icon: '􀐫', key: 'recent' },
+} as const;
 
 export const NFTOffersCard = () => {
+  const [sortBy, setSortBy] = useState<keyof typeof SortBy>(SortBy.Highest);
   const NUM_OFFERS = 65;
   const TOTAL_VALUE_USD = '$42.4k';
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
+
+  const menuConfig = {
+    menuTitle: '',
+    menuItems: [
+      {
+        actionKey: SortBy.Highest.key,
+        actionTitle: SortBy.Highest.name,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'chart.line.uptrend.xyaxis',
+        },
+        menuState: sortBy.key === SortBy.Highest.key ? 'on' : 'off',
+      },
+      {
+        actionKey: SortBy.FromFloor.key,
+        actionTitle: SortBy.FromFloor.name,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'plus.forwardslash.minus',
+        },
+        menuState: sortBy.key === SortBy.FromFloor.key ? 'on' : 'off',
+      },
+      {
+        actionKey: SortBy.Recent.key,
+        actionTitle: SortBy.Recent.name,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'clock',
+        },
+        menuState: sortBy.key === SortBy.Recent.key ? 'on' : 'off',
+      },
+    ],
+  };
+
+  const onPressMenuItem = ({ nativeEvent: { actionKey } }) => {
+    haptics.selection();
+    switch (actionKey) {
+      case SortBy.Highest.key:
+        setSortBy(SortBy.Highest);
+        break;
+      case SortBy.FromFloor.key:
+        setSortBy(SortBy.FromFloor);
+        break;
+      case SortBy.Recent.key:
+        setSortBy(SortBy.Recent);
+        break;
+      default:
+        logger.error(
+          new RainbowError('NFTOffersCard: invalid context menu key')
+        );
+        break;
+    }
+  };
+
   return (
     <Box width="full">
       <Stack space="20px">
@@ -42,19 +106,26 @@ export const NFTOffersCard = () => {
               </Text>
             </Box>
           </Inline>
-          <ButtonPressAnimation>
-            <Inline alignVertical="center">
-              <Text size="15pt" weight="bold" color="labelTertiary">
-                􀑁
-              </Text>
-              <Text size="17pt" weight="bold">
-                {' Highest '}
-              </Text>
-              <Text size="15pt" weight="bold">
-                􀆈
-              </Text>
-            </Inline>
-          </ButtonPressAnimation>
+
+          <ContextMenuButton
+            menuConfig={menuConfig}
+            // onPressAndroid={onPressAndroid}
+            onPressMenuItem={onPressMenuItem}
+          >
+            <ButtonPressAnimation>
+              <Inline alignVertical="center">
+                <Text size="15pt" weight="bold" color="labelTertiary">
+                  {sortBy.icon}
+                </Text>
+                <Text size="17pt" weight="bold">
+                  {` ${sortBy.name} `}
+                </Text>
+                <Text size="15pt" weight="bold">
+                  􀆈
+                </Text>
+              </Inline>
+            </ButtonPressAnimation>
+          </ContextMenuButton>
         </Inline>
         <Bleed horizontal="20px">
           <Box background="blue" height={{ custom: 117.75 }} width="full" />
