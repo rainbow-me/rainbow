@@ -84,7 +84,7 @@ export default function BackupCloudStep() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { selectedWallet, setIsWalletLoading, isDamaged } = useWallets();
+  const { selectedWallet, isDamaged } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
@@ -239,10 +239,9 @@ export default function BackupCloudStep() {
   const onError = useCallback(
     msg => {
       setTimeout(onPasswordSubmit, 1000);
-      setIsWalletLoading(null);
       DelayedAlert({ title: msg }, 500);
     },
-    [onPasswordSubmit, setIsWalletLoading]
+    [onPasswordSubmit]
   );
 
   const onSuccess = useCallback(async () => {

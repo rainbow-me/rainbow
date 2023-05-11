@@ -82,7 +82,7 @@ export default function BackupConfirmPasswordStep() {
     `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
   );
   const passwordRef = useRef();
-  const { selectedWallet, setIsWalletLoading } = useWallets();
+  const { selectedWallet } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
 
   const isSettingsRoute = useRouteExistsInNavigationState(
@@ -133,14 +133,10 @@ export default function BackupConfirmPasswordStep() {
     []
   );
 
-  const onError = useCallback(
-    msg => {
-      passwordRef.current?.focus();
-      setIsWalletLoading(null);
-      DelayedAlert({ title: msg }, 500);
-    },
-    [setIsWalletLoading]
-  );
+  const onError = useCallback(msg => {
+    passwordRef.current?.focus();
+    DelayedAlert({ title: msg }, 500);
+  }, []);
 
   const onSuccess = useCallback(async () => {
     logger.log('BackupConfirmPasswordStep:: saving backup password');
