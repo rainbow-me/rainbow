@@ -13,6 +13,8 @@ import { CoinIcon } from '@/components/coin-icon';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
+import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
+import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
@@ -30,16 +32,22 @@ type PaymentMethodConfig = {
 const providerNames = {
   [FiatProviderName.Ramp]: 'Ramp',
   [FiatProviderName.Ratio]: 'Ratio',
+  [FiatProviderName.Coinbase]: 'Coinbase',
+  [FiatProviderName.Moonpay]: 'MoonPay',
 };
 
 const providerDescriptions = {
-  [FiatProviderName.Ramp]: `Cards, banks, and international options`,
+  [FiatProviderName.Ramp]: `Cards, banks, & international options`,
   [FiatProviderName.Ratio]: `Any US bank account`,
+  [FiatProviderName.Coinbase]: `Transfer from Coinbase & other options`,
+  [FiatProviderName.Moonpay]: `Cards, banks, & international options`,
 };
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
   [FiatProviderName.Ratio]: RatioLogo,
+  [FiatProviderName.Coinbase]: CoinbaseLogo,
+  [FiatProviderName.Moonpay]: MoonpayLogo,
 };
 
 const paymentMethodConfig: {

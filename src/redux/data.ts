@@ -17,7 +17,6 @@ import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { gretch } from 'gretchen';
-import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import {
   cancelDebouncedUpdateGenericAssets,
@@ -82,6 +81,7 @@ import { analyticsV2 } from '@/analytics';
 import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
+import { ratioGetUserActivityItem } from '@/resources/f2c';
 
 const storage = new MMKV();
 
@@ -837,13 +837,16 @@ export const maybeFetchF2CHashForPendingTransactions = async (
               queryKey: ['f2c', 'ratio', 'pending_tx_check'],
               staleTime: 10_000, // only fetch AT MOST once every 10 seconds
               async queryFn() {
-                const { data, error } = await gretch<ActivityItem>(
-                  `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
-                ).json();
+                const { data, error } = await ratioGetUserActivityItem({
+                  userId,
+                  orderId,
+                });
 
                 if (!data || error) {
+                  const [{ message }] = error.errors;
+
                   if (error) {
-                    throw error;
+                    throw new Error(message);
                   } else {
                     throw new Error(
                       'Ratio API returned no data for this transaction'

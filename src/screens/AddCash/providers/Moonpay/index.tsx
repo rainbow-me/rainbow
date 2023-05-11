@@ -13,15 +13,15 @@ import {
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { analyticsV2 } from '@/analytics';
-import { rampGetWidgetURL } from '@/resources/f2c';
+import { moonpayGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
 
 const providerConfig = {
-  name: FiatProviderName.Ramp,
+  name: FiatProviderName.Moonpay,
   enabled: true,
   metadata: {
-    accentColor: '#21BF73',
+    accentColor: '#7E01FF',
     paymentMethods: [
       {
         type: PaymentMethod.DebitCard,
@@ -54,7 +54,7 @@ const providerConfig = {
     },
     {
       type: CalloutType.Rate,
-      value: '2.49-4.9%',
+      value: '1-3.89%',
     },
     {
       type: CalloutType.PaymentMethods,
@@ -88,15 +88,15 @@ const providerConfig = {
   ],
 };
 
-export function Ramp({ accountAddress }: { accountAddress: string }) {
+export function Moonpay({ accountAddress }: { accountAddress: string }) {
   return (
     <ButtonPressAnimation
       onPress={async () => {
         try {
           const sessionId = nanoid();
-          const { data, error } = await rampGetWidgetURL({
+          const { data, error } = await moonpayGetWidgetURL({
             depositAddress: accountAddress,
-            redirectUri: `https://rnbw.app/f2c?provider=${FiatProviderName.Ramp}&sessionId=${sessionId}`,
+            redirectUri: `https://rnbw.app/f2c?provider=${FiatProviderName.Moonpay}&sessionId=${sessionId}`,
           });
 
           if (!data || error) {
@@ -107,18 +107,18 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
           const { url } = data;
 
           analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
-            provider: FiatProviderName.Ramp,
+            provider: FiatProviderName.Moonpay,
             sessionId,
           });
 
           logger.info('F2C: opening provider', {
-            provider: FiatProviderName.Ramp,
+            provider: FiatProviderName.Moonpay,
           });
 
           Linking.openURL(url);
         } catch (e) {
           logger.error(new RainbowError('F2C: failed to open provider'), {
-            provider: FiatProviderName.Ramp,
+            provider: FiatProviderName.Moonpay,
             message: (e as Error).message,
           });
 
