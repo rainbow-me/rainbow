@@ -15,7 +15,7 @@ query getNFTOffers(
   $walletAddress: String!
   $sortBy: SortCriteria = TOP_BID_VALUE
 ) {
-  getNFTOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
+  nftOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
     contractAddress
     tokenId
     floorDifferencePercentage

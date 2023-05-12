@@ -6,21 +6,36 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
-import { MarqueeList } from '../list';
 import { ScrollView } from 'react-native';
-import { AssetTypes } from '@/entities';
 import { CoinIcon } from '../coin-icon';
+import { useNFTOffers } from '@/resources/nftOffers';
+import { SortCriteria } from '@/graphql/__generated__/nfts';
 
 const SortBy = {
-  Highest: { name: 'Highest', icon: '􀑁', key: 'highest' },
-  FromFloor: { name: 'From Floor', icon: '􀅺', key: 'fromFloor' },
-  Recent: { name: 'Recent', icon: '􀐫', key: 'recent' },
+  Highest: {
+    name: 'Highest',
+    icon: '􀑁',
+    key: 'highest',
+    criteria: SortCriteria.TopBidValue,
+  },
+  FromFloor: {
+    name: 'From Floor',
+    icon: '􀅺',
+    key: 'fromFloor',
+    criteria: SortCriteria.FloorDifferencePercentage,
+  },
+  Recent: {
+    name: 'Recent',
+    icon: '􀐫',
+    key: 'recent',
+    criteria: SortCriteria.DateCreated,
+  },
 } as const;
 
 const Offer = () => {
@@ -62,6 +77,10 @@ export const NFTOffersCard = () => {
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
+
+  const {
+    data: { nftOffers },
+  } = useNFTOffers({ walletAddress: 'test', sortBy: sortBy.criteria });
 
   const menuConfig = {
     menuTitle: '',
