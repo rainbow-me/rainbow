@@ -18,7 +18,7 @@ import {
 import { MMKV } from 'react-native-mmkv';
 
 import AesEncryptor from '@/handlers/aesEncryption';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/delay';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import {
@@ -27,6 +27,14 @@ import {
 } from '@/handlers/authentication';
 
 export const encryptor = new AesEncryptor();
+
+export type KeychainOptions = Options & {
+  /**
+   * If we already have the user's pin in memory, pass it here to prevent
+   * another authentication prompt and lookup.
+   */
+  androidEncryptionPin?: string;
+};
 
 export enum ErrorType {
   Unknown = 0,
@@ -58,24 +66,24 @@ export const publicAccessControlOptions: Options = {
  */
 export async function get(
   key: string,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<Result<string>> {
   logger.debug(`keychain: get`, { key }, logger.DebugContext.keychain);
 
   async function _get(attempts = 0): Promise<Result<string>> {
-    logger.debug(
-      `keychain: get attempt ${attempts}`,
-      { key },
-      logger.DebugContext.keychain
-    );
+    if (attempts > 0) {
+      logger.debug(
+        `keychain: get attempt ${attempts}`,
+        { key },
+        logger.DebugContext.keychain
+      );
+    }
 
     let data = cache.getString(key);
 
     if (!data) {
       try {
-        logger.debug(`before`);
         const result = await getInternetCredentials(key, options);
-        logger.debug(`after`, { result });
 
         if (result) {
           if (
@@ -83,11 +91,16 @@ export async function get(
             !(await getSupportedBiometryType()) &&
             result.password.includes('cipher')
           ) {
-            logger.debug(`keychain: decrypting private data on Android`, {
-              key,
-            });
+            logger.debug(
+              `keychain: decrypting private data on Android`,
+              {
+                key,
+              },
+              logger.DebugContext.keychain
+            );
 
-            const pin = await authenticateWithPIN();
+            const pin =
+              options.androidEncryptionPin || (await authenticateWithPIN());
             const decryptedValue = await encryptor.decrypt(
               pin,
               result.password
@@ -169,7 +182,7 @@ export async function get(
 export async function set(
   key: string,
   value: string,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<void> {
   logger.debug(`keychain: set`, { key }, logger.DebugContext.keychain);
 
@@ -182,9 +195,15 @@ export async function set(
     IS_ANDROID &&
     !(await getSupportedBiometryType())
   ) {
-    logger.debug(`setting private data on android`, { key, options });
+    logger.debug(
+      `keychain: encrypting private data on android`,
+      { key, options },
+      logger.DebugContext.keychain
+    );
 
-    const pin = await authenticateWithPINAndCreateIfNeeded();
+    const pin =
+      options.androidEncryptionPin ||
+      (await authenticateWithPINAndCreateIfNeeded());
     const encryptedValue = await encryptor.encrypt(pin, value);
 
     if (encryptedValue) {
@@ -203,7 +222,7 @@ export async function set(
  */
 export async function getObject<
   T extends Record<string, any> = Record<string, unknown>
->(key: string, options: Options = {}): Promise<Result<T>> {
+>(key: string, options: KeychainOptions = {}): Promise<Result<T>> {
   logger.debug(`keychain: getObject`, { key }, logger.DebugContext.keychain);
 
   const { value, error } = await get(key, options);
@@ -225,7 +244,7 @@ export async function getObject<
 export async function setObject(
   key: string,
   value: Record<string, any>,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<void> {
   logger.debug(`keychain: setObject`, { key }, logger.DebugContext.keychain);
 
