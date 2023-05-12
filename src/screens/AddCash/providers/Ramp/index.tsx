@@ -1,7 +1,5 @@
 import React from 'react';
-import qs from 'query-string';
 import { Linking } from 'react-native';
-import { RAMP_HOST_API_KEY } from 'react-native-dotenv';
 import { nanoid } from 'nanoid/non-secure';
 
 import { logger, RainbowError } from '@/logger';
@@ -15,6 +13,9 @@ import {
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { analyticsV2 } from '@/analytics';
+import { rampGetWidgetURL } from '@/resources/f2c';
+import { WrappedAlert } from '@/helpers/alert';
+import * as lang from '@/languages';
 
 const providerConfig = {
   name: FiatProviderName.Ramp,
@@ -90,33 +91,46 @@ const providerConfig = {
 export function Ramp({ accountAddress }: { accountAddress: string }) {
   return (
     <ButtonPressAnimation
-      onPress={() => {
-        const host = 'https://buy.ramp.network';
-        const sessionId = nanoid();
-        const params = qs.stringify({
-          hostLogoUrl: 'https://rainbow.me/images/rainbow-app-icon-rounded.svg',
-          hostAppName: 'Rainbow',
-          hostApiKey: RAMP_HOST_API_KEY,
-          userAddress: accountAddress,
-          defaultAsset: 'ETH',
-          swapAsset: 'ETH_*,MATIC_*,ARBITRUM_*,BSC_*,OPTIMISM_*',
-          finalUrl: `https://rnbw.app/f2c?provider=${FiatProviderName.Ramp}&sessionId=${sessionId}`,
-        });
-        const uri = `${host}/?${params}`;
-
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
-          provider: FiatProviderName.Ramp,
-          sessionId,
-        });
-
-        logger.info('F2C: opening Ramp');
-
+      onPress={async () => {
         try {
-          Linking.openURL(uri);
+          const sessionId = nanoid();
+          const { data, error } = await rampGetWidgetURL({
+            depositAddress: accountAddress,
+            redirectUri: `https://rnbw.app/f2c?provider=${FiatProviderName.Ramp}&sessionId=${sessionId}`,
+          });
+
+          if (!data || error) {
+            const [{ message }] = error.errors || [];
+            throw new Error(`F2C: URL generation failed: ${message}`);
+          }
+
+          const { url } = data;
+
+          analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+            provider: FiatProviderName.Ramp,
+            sessionId,
+          });
+
+          logger.info('F2C: opening provider', {
+            provider: FiatProviderName.Ramp,
+          });
+
+          Linking.openURL(url);
         } catch (e) {
-          logger.error(new RainbowError('F2C: failed to open Ramp'), {
+          logger.error(new RainbowError('F2C: failed to open provider'), {
+            provider: FiatProviderName.Ramp,
             message: (e as Error).message,
           });
+
+          WrappedAlert.alert(
+            lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
+            lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
+            [
+              {
+                text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+              },
+            ]
+          );
         }
       }}
       overflowMargin={30}

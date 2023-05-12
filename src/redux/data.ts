@@ -17,7 +17,6 @@ import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { gretch } from 'gretchen';
-import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import {
   cancelDebouncedUpdateGenericAssets,
@@ -82,6 +81,7 @@ import { analyticsV2 } from '@/analytics';
 import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
+import { ratioGetUserActivityItem } from '@/resources/f2c';
 
 const storage = new MMKV();
 
@@ -140,7 +140,7 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-const DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS =
+export const DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS =
   'data/DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS';
 
 const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
@@ -837,13 +837,16 @@ export const maybeFetchF2CHashForPendingTransactions = async (
               queryKey: ['f2c', 'ratio', 'pending_tx_check'],
               staleTime: 10_000, // only fetch AT MOST once every 10 seconds
               async queryFn() {
-                const { data, error } = await gretch<ActivityItem>(
-                  `https://f2c.rainbow.me/v1/providers/ratio/users/${userId}/activity/${orderId}`
-                ).json();
+                const { data, error } = await ratioGetUserActivityItem({
+                  userId,
+                  orderId,
+                });
 
                 if (!data || error) {
+                  const [{ message }] = error.errors;
+
                   if (error) {
-                    throw error;
+                    throw new Error(message);
                   } else {
                     throw new Error(
                       'Ratio API returned no data for this transaction'
@@ -1225,6 +1228,39 @@ export const dataAddNewTransaction = (
   } catch (error) {
     loggr.error(new Error('dataAddNewTransaction: failed'), { error });
   }
+};
+
+export const dataRemovePendingTransaction = (
+  txHash: string,
+  network: Network
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataUpdatePendingTransactionSuccessAction
+  >,
+  getState: AppGetState
+) => {
+  loggr.debug('dataRemovePendingTransaction', { txHash });
+
+  const { pendingTransactions } = getState().data;
+  const { accountAddress } = getState().settings;
+
+  const _pendingTransactions = pendingTransactions.filter(tx => {
+    // if we find the pending tx, filter it out
+    if (tx.hash === txHash && tx.network === network) {
+      loggr.debug('dataRemovePendingTransaction: removed tx', { txHash });
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+  dispatch({
+    payload: _pendingTransactions,
+    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+  });
+  saveLocalPendingTransactions(_pendingTransactions, accountAddress, network);
 };
 
 /**
