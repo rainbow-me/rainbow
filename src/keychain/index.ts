@@ -86,11 +86,14 @@ export async function get(
         const result = await getInternetCredentials(key, options);
 
         if (result) {
-          if (
-            IS_ANDROID &&
-            !(await getSupportedBiometryType()) &&
-            result.password.includes('cipher')
-          ) {
+          /*
+           * If we're on Android and the password is a serialized object like
+           * `{ cipher: ... }`, then we know we need to decrypt that value.
+           *
+           * This is true even if the user recently enabled biometrics on their
+           * device, since prior to that they would have been using a pin code.
+           */
+          if (IS_ANDROID && result.password.includes('cipher')) {
             logger.debug(
               `keychain: decrypting private data on Android`,
               {
@@ -121,6 +124,24 @@ export async function get(
         }
       } catch (e: any) {
         switch (e.toString()) {
+          /*
+           * Can happen if the user initially had biometrics enabled, installed
+           * the app, created a wallet, etc, and THEN disabled biometrics.
+           *
+           * In this case, values previously saved privately (like seephrase)
+           * will fail because the library can't authenticate.
+           */
+          case 'Error: code: 11, msg: No fingerprints enrolled.': {
+            logger.warn(
+              `keychain: no fingerprints enrolled, user may have disabled biometrics`,
+              {}
+            );
+
+            return {
+              value: undefined,
+              error: ErrorType.NotAuthenticated, // TODO may want a different type here
+            };
+          }
           case 'Error: User canceled the operation.': {
             return {
               value: undefined,
