@@ -11,7 +11,11 @@ import {
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
-import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  ETH_ADDRESS,
+  POAP_NFT_ADDRESS,
+} from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import {
   NFT,
@@ -394,7 +398,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
           f.marketplace_id
         )!,
         paymentToken: {
-          address: f.payment_token.address,
+          address: f.payment_token.address ?? ETH_ADDRESS,
           decimals: f.payment_token.decimals,
           name: f.payment_token.name!,
           symbol: f.payment_token.symbol!,
@@ -448,12 +452,12 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       !isNil(nft.last_sale?.unit_price)
         ? {
             paymentToken: {
-              address: nft.last_sale?.payment_token.address,
+              address: nft.last_sale?.payment_token.address ?? ETH_ADDRESS,
               decimals: nft.last_sale?.payment_token.decimals,
               name: nft.last_sale?.payment_token.name,
               symbol: nft.last_sale?.payment_token.symbol,
             },
-            value: nft.last_sale?.unit_price,
+            value: nft.last_sale?.unit_price!,
           }
         : undefined,
     marketplaces,
