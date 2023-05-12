@@ -527,6 +527,16 @@ const DevSection = () => {
                 titleComponent={<MenuItem.Title text={'Copy log lines'} />}
               />
             )}
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔐" isEmoji />}
+              onPress={async () => {
+                navigate(Routes.KEYCHAIN_SANDBOX_SCREEN);
+              }}
+              size={52}
+              titleComponent={
+                <MenuItem.Title text={'Go to keychain sandbox'} />
+              }
+            />
           </Menu>
           <Menu header="Feature Flags">
             {Object.keys(config)

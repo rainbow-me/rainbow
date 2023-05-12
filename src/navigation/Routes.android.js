@@ -75,6 +75,7 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
+import { KeychainSandbox } from '@/screens/KeychainSandbox';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -368,6 +369,11 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
+        options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.KEYCHAIN_SANDBOX_SCREEN}
+        component={KeychainSandbox}
         options={{ ...bottomSheetPreset }}
       />
     </BSStack.Navigator>

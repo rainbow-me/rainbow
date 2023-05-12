@@ -89,6 +89,7 @@ import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
+import { KeychainSandbox } from '@/screens/KeychainSandbox';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -437,6 +438,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
+        {...opRewardsSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.KEYCHAIN_SANDBOX_SCREEN}
+        component={KeychainSandbox}
         {...opRewardsSheetConfig}
       />
     </NativeStack.Navigator>

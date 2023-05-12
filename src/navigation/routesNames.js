@@ -84,6 +84,7 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
+  KEYCHAIN_SANDBOX_SCREEN: 'KeychainSandboxScreen',
 };
 
 export const NATIVE_ROUTES = [
