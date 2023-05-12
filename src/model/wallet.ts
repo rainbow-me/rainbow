@@ -32,7 +32,7 @@ import profileUtils, {
   addressHashedEmoji,
 } from '../utils/profileUtils';
 import * as keychain from '@/model/keychain';
-import { getSupportedBiometryType } from '@/keychain';
+import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -771,7 +771,14 @@ export const createWallet = async ({
     const id = existingWalletId || `wallet_${Date.now()}`;
     logger.debug('[createWallet] - wallet ID', { id }, DebugContext.wallet);
 
-    await saveSeedPhrase(walletSeed, id);
+    // load this up front and pass to other keychain setters to avoid multiple
+    // auth requests
+    const androidEncryptionPin =
+      IS_ANDROID && !(await kc.getSupportedBiometryType())
+        ? await authenticateWithPINAndCreateIfNeeded()
+        : undefined;
+
+    await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
     logger.debug('[createWallet] - saved seed phrase', {}, DebugContext.wallet);
 
@@ -780,7 +787,9 @@ export const createWallet = async ({
     logger.debug('[createWallet] - saved address', {}, DebugContext.wallet);
 
     // Save private key
-    await saveKeyForWallet(walletAddress, pkey, isHardwareWallet);
+    await saveKeyForWallet(walletAddress, pkey, isHardwareWallet, {
+      androidEncryptionPin,
+    });
     logger.debug('[createWallet] - saved private key', {}, DebugContext.wallet);
 
     const colorIndexForWallet =
@@ -1052,12 +1061,17 @@ export const createWallet = async ({
 export const saveKeyForWallet = async (
   address: EthereumAddress,
   walletKey: null | EthereumPrivateKey | HardwareKey,
-  hardware: boolean
+  hardware: boolean,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   if (hardware) {
-    return await saveHardwareKey(address, walletKey as HardwareKey);
+    return await saveHardwareKey(address, walletKey as HardwareKey, {
+      androidEncryptionPin,
+    });
   } else {
-    return await savePrivateKey(address, walletKey);
+    return await savePrivateKey(address, walletKey, { androidEncryptionPin });
   }
 };
 
@@ -1086,7 +1100,10 @@ export const getKeyForWallet = async (
  */
 export const savePrivateKey = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey
+  privateKey: null | EthereumPrivateKey,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
@@ -1097,7 +1114,10 @@ export const savePrivateKey = async (
     version: privateKeyVersion,
   };
   // if its a hardware wallet we dont want in the private keychain
-  await keychain.saveObject(key, val, privateAccessControlOptions);
+  await kc.setObject(key, val, {
+    ...privateAccessControlOptions,
+    androidEncryptionPin,
+  });
 };
 
 /**
@@ -1108,7 +1128,10 @@ export const savePrivateKey = async (
  */
 export const saveHardwareKey = async (
   address: EthereumAddress,
-  privateKey: null | HardwareKey
+  privateKey: null | HardwareKey,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1174,7 +1197,10 @@ export const getHardwareKey = async (
 
 export const saveSeedPhrase = async (
   seedphrase: EthereumWalletSeed,
-  keychain_id: RainbowWallet['id']
+  keychain_id: RainbowWallet['id'],
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ): Promise<void> => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
@@ -1184,19 +1210,29 @@ export const saveSeedPhrase = async (
     version: seedPhraseVersion,
   };
 
-  return keychain.saveObject(key, val, privateAccessControlOptions);
+  return kc.setObject(key, val, {
+    ...privateAccessControlOptions,
+    androidEncryptionPin,
+  });
 };
 
 export const getSeedPhrase = async (
-  id: RainbowWallet['id']
+  id: RainbowWallet['id'],
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;
-    const seedPhraseData = (await keychain.loadObject(key, {
-      authenticationPrompt,
-    })) as SeedPhraseData | -2;
+    const { value: seedPhraseData, error } = await kc.getObject<SeedPhraseData>(
+      key,
+      {
+        authenticationPrompt,
+        androidEncryptionPin,
+      }
+    );
 
-    if (seedPhraseData === -2) {
+    if (error === -2) {
       Alert.alert(
         lang.t('wallet.authenticate.alert.error'),
         lang.t(
@@ -1290,8 +1326,15 @@ export const generateAccount = async (
       seedphrase = migratedSecrets?.seedphrase;
     }
 
+    // load this up front and pass to other keychain setters to avoid multiple
+    // auth requests
+    const androidEncryptionPin =
+      IS_ANDROID && !(await kc.getSupportedBiometryType())
+        ? await authenticateWithPIN()
+        : undefined;
+
     if (!seedphrase) {
-      const seedData = await getSeedPhrase(id);
+      const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       callbackAfterSeeds?.();
       callbackAfterSeeds = null;
       seedphrase = seedData?.seedphrase;
@@ -1315,7 +1358,9 @@ export const generateAccount = async (
     );
 
     const newAccount = new Wallet(walletPkey);
-    await saveKeyForWallet(walletAddress, walletPkey, false);
+    await saveKeyForWallet(walletAddress, walletPkey, false, {
+      androidEncryptionPin,
+    });
     // Creating signature for this wallet
     await createSignature(walletAddress, walletPkey);
 
