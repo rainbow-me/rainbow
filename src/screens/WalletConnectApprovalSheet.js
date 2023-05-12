@@ -11,7 +11,6 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
-import { Alert } from '../components/alerts';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
@@ -229,7 +228,6 @@ export default function WalletConnectApprovalSheet() {
   const { navigate } = useNavigation();
   const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
-  const [scam, setScam] = useState(false);
   const [approvalAccount, setApprovalAccount] = useState({
     address: accountAddress,
     wallet: selectedWallet,
@@ -256,29 +254,6 @@ export default function WalletConnectApprovalSheet() {
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
-
-  const checkIfScam = useCallback(
-    async dappUrl => {
-      const isScam = await ethereumUtils.checkIfUrlIsAScam(dappUrl);
-      if (isScam) {
-        Alert({
-          buttons: [
-            {
-              text: lang.t('button.proceed_anyway'),
-            },
-            {
-              onPress: () => setScam(true),
-              style: 'cancel',
-              text: lang.t('walletconnect.scam.ignore_this_request'),
-            },
-          ],
-          message: lang.t('walletconnect.scam.we_found_this_website_in_a_list'),
-          title: ` 🚨 ${lang.t('walletconnect.scam.heads_up_title')} 🚨`,
-        });
-      }
-    },
-    [setScam]
-  );
 
   useEffect(() => {
     return () => {
@@ -368,7 +343,6 @@ export default function WalletConnectApprovalSheet() {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       analytics.track('Shown Walletconnect session request');
-      type === WalletConnectApprovalSheetType.connect && checkIfScam(dappUrl);
     });
     // Reject if the modal is dismissed
     return () => {
@@ -430,12 +404,6 @@ export default function WalletConnectApprovalSheet() {
     });
     return;
   }, [goBack, navigate, timedOut]);
-
-  useEffect(() => {
-    if (scam) {
-      handleCancel();
-    }
-  }, [handleCancel, scam]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const NetworkSwitcherParent =

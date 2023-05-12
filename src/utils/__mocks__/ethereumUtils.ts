@@ -2,7 +2,6 @@ import { jest } from '@jest/globals';
 
 export default {
   calculateL1FeeOptimism: jest.fn(),
-  checkIfUrlIsAScam: jest.fn(),
   formatGenericAsset: jest.fn(),
   getAssetFromAllAssets: jest.fn(),
   getAccountAsset: jest.fn(),
