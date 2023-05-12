@@ -1,7 +1,5 @@
 /* eslint-disable import/namespace */
 import React, { useMemo } from 'react';
-import * as CoinIconsImages from 'react-coin-icon/lib/pngs';
-import { Image } from 'react-native';
 import { StyleSheet, View } from 'react-primitives';
 import FallbackIcon from './FallbackIcon';
 
@@ -57,18 +55,6 @@ const CoinIcon = ({
       shadowRadius: isSmall ? 4.5 : 6,
     };
   }, [color, shadowColor, size]);
-
-  if (!forceFallback && CoinIconsImages[formattedSymbol]) {
-    return (
-      <View {...circleProps} {...shadowProps} style={[sx.container, style]}>
-        <Image
-          resizeMode="contain"
-          source={CoinIconsImages[formattedSymbol]}
-          style={sx.image}
-        />
-      </View>
-    );
-  }
 
   return (
     <View {...circleProps} style={[sx.container, style]}>

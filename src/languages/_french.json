@@ -392,6 +392,7 @@
       "applied": "APPLIED :)",
       "backups_deleted_successfully": "Backups deleted successfully :)",
       "clear_async_storage": "Clear async storage :)",
+      "clean_pending_txs": "Clear Pending Transactions :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_local_storage": "Clear local storage :)",
@@ -405,7 +406,12 @@
       "not_applied": "NOT APPLIED :)",
       "notifications_debug": "Notifications Debug :)",
       "remove_all_backups": "Remove all backups :)",
-      "reset_keychain": "Reset Keychain :)",
+      "keychain": {
+        "menu_title": "Reset Keychain :)",
+        "delete_wallets": "Delete all wallets :)",
+        "alert_title": "Careful! :)",
+        "alert_body": "🚨🚨🚨 This will permanently delete all of your wallets private keys & data, please make sure you have everything backed up before proceeding!! 🚨🚨🚨 :)"
+      },
       "restart_app": "Restart app :)",
       "reset_experimental_config": "Reset experimental config :)",
       "status": "Status :)",
@@ -1546,7 +1552,8 @@
       },
       "actions_menu": {
         "speed_up": "Speed Up :)",
-        "cancel": "Cancel :)"
+        "cancel": "Cancel :)",
+        "remove": "Remove :)"
       }
     },
     "time": {
