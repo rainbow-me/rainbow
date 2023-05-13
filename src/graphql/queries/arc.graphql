@@ -1,20 +1,17 @@
-fragment token on NFTPaymentToken {
-  contractAddress
+fragment token on Asset {
+  address
   symbol
   decimals
   name
 }
 
-fragment amount on NFTPaymentAmount {
+fragment amount on AssetAmount {
   raw
   decimal
   usd
 }
 
-query getNFTOffers(
-  $walletAddress: String!
-  $sortBy: SortCriteria = TOP_BID_VALUE
-) {
+query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
   nftOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
     contractAddress
     tokenId

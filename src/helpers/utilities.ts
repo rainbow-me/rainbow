@@ -237,11 +237,24 @@ export const handleSignificantDecimalsWithThreshold = (
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+export const abbreviateNumber = (number: BigNumberish): string => {
+  if (number >= 1000000000) {
+    return Math.round(number / 100000000) / 10 + 'b';
+  } else if (number >= 1000000) {
+    return Math.round(number / 100000) / 10 + 'm';
+  } else if (number >= 1000) {
+    return Math.round(number / 100) / 10 + 'k';
+  } else {
+    return number;
+  }
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
   buffer = 3,
-  skipDecimals = false
+  skipDecimals = false,
+  abbreviate = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
     decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
@@ -253,6 +266,15 @@ export const handleSignificantDecimals = (
     new BigNumber(value).toFixed(decimals)
   ).toFixed();
   const resultBN = new BigNumber(result);
+  if (abbreviate) {
+    if (resultBN >= 1000000000) {
+      return Math.round(resultBN / 100000000) / 10 + 'b';
+    } else if (resultBN >= 1000000) {
+      return Math.round(resultBN / 100000) / 10 + 'm';
+    } else if (resultBN >= 1000) {
+      return Math.round(resultBN / 100) / 10 + 'k';
+    }
+  }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
     : resultBN.toFormat();
@@ -394,7 +416,8 @@ export const convertAmountToNativeDisplay = (
   value: BigNumberish,
   nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
-  skipDecimals?: boolean
+  skipDecimals?: boolean,
+  abbreviate?: boolean
 ) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
@@ -402,7 +425,8 @@ export const convertAmountToNativeDisplay = (
     value,
     decimals,
     buffer,
-    skipDecimals
+    skipDecimals,
+    abbreviate
   );
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;

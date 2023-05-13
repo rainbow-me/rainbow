@@ -17,8 +17,8 @@ exports.config = {
       url: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
     },
   },
-  nfts: {
-    document: './queries/nfts.graphql',
+  arc: {
+    document: './queries/arc.graphql',
     schema: {
       method: 'GET',
       url: 'http://127.0.0.1:8787/graphql',

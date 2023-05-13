@@ -30,6 +30,7 @@ export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
+  AssetAmount,
   AssetContract,
   IndexToken,
   SavingsAsset,

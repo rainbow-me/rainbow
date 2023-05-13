@@ -12,4 +12,4 @@ export const metadataClient = getMetadataSdk(
 export const uniswapClient = getUniswapSdk(
   getFetchRequester(config.uniswap.schema)
 );
-export const nftsClient = getNftsSdk(getFetchRequester(config.nfts.schema));
+export const arcClient = getNftsSdk(getFetchRequester(config.arc.schema));

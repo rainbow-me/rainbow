@@ -2,68 +2,145 @@ import {
   Bleed,
   Box,
   Inline,
+  Inset,
   Stack,
   Text,
   useForegroundColor,
 } from '@/design-system';
 import React, { useState } from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
-import { useDimensions } from '@/hooks';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
 import { ScrollView } from 'react-native';
 import { CoinIcon } from '../coin-icon';
 import { useNFTOffers } from '@/resources/nftOffers';
-import { SortCriteria } from '@/graphql/__generated__/nfts';
+import { NftOffer, SortCriterion } from '@/graphql/__generated__/nfts';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '@/helpers/utilities';
+import { ImgixImage } from '../images';
+import { isNil } from 'lodash';
 
-const SortBy = {
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+
+type SortOption = { name: string; icon: string; criterion: SortCriterion };
+
+const SortOptions = {
   Highest: {
     name: 'Highest',
     icon: '􀑁',
-    key: 'highest',
-    criteria: SortCriteria.TopBidValue,
+    criterion: SortCriterion.TopBidValue,
   },
   FromFloor: {
     name: 'From Floor',
     icon: '􀅺',
-    key: 'fromFloor',
-    criteria: SortCriteria.FloorDifferencePercentage,
+    criterion: SortCriterion.FloorDifferencePercentage,
   },
   Recent: {
     name: 'Recent',
     icon: '􀐫',
-    key: 'recent',
-    criteria: SortCriteria.DateCreated,
+    criterion: SortCriterion.DateCreated,
   },
 } as const;
 
-const Offer = () => {
+const getFormattedTimeRemaining = (ms: number): string => {
+  const totalMinutes = Math.floor(ms / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
+  const formattedHours = hours ? hours + 'h ' : '';
+
+  return formattedHours + formattedMinutes;
+};
+
+const Offer = ({
+  offer,
+  sortCriterion,
+}: {
+  offer: NftOffer;
+  sortCriterion: SortCriterion;
+}) => {
+  const { nativeCurrency } = useAccountSettings();
+  const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
+  const timeRemaining = offer.validUntil
+    ? Math.max(offer.validUntil - Date.now(), 0)
+    : undefined;
+  const lessThanTwoHoursRemaining =
+    !isNil(timeRemaining) && timeRemaining <= TWO_HOURS_MS;
+
+  let textColor;
+  let text;
+  switch (sortCriterion) {
+    case SortCriterion.TopBidValue:
+    case SortCriterion.DateCreated:
+      if (lessThanTwoHoursRemaining) {
+        textColor = 'red';
+        text = getFormattedTimeRemaining(timeRemaining);
+      } else {
+        textColor = 'labelTertiary';
+        text = convertAmountToNativeDisplay(
+          offer.grossAmount.usd,
+          nativeCurrency,
+          undefined,
+          true,
+          true
+        );
+      }
+      break;
+    case SortCriterion.FloorDifferencePercentage:
+      if (lessThanTwoHoursRemaining) {
+        textColor = 'red';
+        text = getFormattedTimeRemaining(timeRemaining);
+      } else if (isFloorDiffPercentagePositive) {
+        textColor = 'green';
+        text = `+${offer.floorDifferencePercentage}%`;
+      } else {
+        textColor = 'labelTertiary';
+        text = `${offer.floorDifferencePercentage}%`;
+      }
+      break;
+    default:
+      logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
+      break;
+  }
+
   return (
     <Stack space="12px">
       <Box
+        as={ImgixImage}
         width={{ custom: 77.75 }}
         height={{ custom: 77.75 }}
-        background="blue"
+        source={{ uri: offer.imageUrl }}
         borderRadius={12}
+        shadow="18px"
       />
       <Stack space={{ custom: 7 }}>
         <Inline space="4px" alignVertical="center">
           <CoinIcon
             // mainnet_address={'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
             // address="0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
-            address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+            address={offer.offerPaymentToken.address}
             size={12}
             // badgeSize="tiny"
-            symbol="WETH"
+            symbol={offer.offerPaymentToken.symbol}
             // type={AssetTypes.polygon}
           />
           <Text size="13pt" weight="heavy">
-            10.5
+            {handleSignificantDecimals(
+              offer.grossAmount.decimal,
+              18,
+              3,
+              undefined,
+              true
+            )}
           </Text>
         </Inline>
-        <Text color="green" size="13pt" weight="semibold">
-          +29.4%
+        <Text color={textColor} size="13pt" weight="semibold">
+          {text}
         </Text>
       </Stack>
     </Stack>
@@ -71,46 +148,65 @@ const Offer = () => {
 };
 
 export const NFTOffersCard = () => {
-  const [sortBy, setSortBy] = useState<keyof typeof SortBy>(SortBy.Highest);
-  const NUM_OFFERS = 65;
-  const TOTAL_VALUE_USD = '$42.4k';
+  const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { data } = useNFTOffers({
+    walletAddress: accountAddress,
+    sortBy: sortOption.criterion,
+  });
 
-  const {
-    data: { nftOffers },
-  } = useNFTOffers({ walletAddress: 'test', sortBy: sortBy.criteria });
+  const offers = data?.nftOffers ?? [];
+
+  const totalUSDValue = offers.reduce(
+    (acc, offer) => acc + offer.grossAmount.usd,
+    0
+  );
+
+  const totalValue = convertAmountToNativeDisplay(
+    totalUSDValue,
+    nativeCurrency,
+    undefined,
+    true,
+    true
+  );
 
   const menuConfig = {
     menuTitle: '',
     menuItems: [
       {
-        actionKey: SortBy.Highest.key,
-        actionTitle: SortBy.Highest.name,
+        actionKey: SortOptions.Highest.criterion,
+        actionTitle: SortOptions.Highest.name,
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'chart.line.uptrend.xyaxis',
         },
-        menuState: sortBy.key === SortBy.Highest.key ? 'on' : 'off',
+        menuState:
+          sortOption.criterion === SortOptions.Highest.criterion ? 'on' : 'off',
       },
       {
-        actionKey: SortBy.FromFloor.key,
-        actionTitle: SortBy.FromFloor.name,
+        actionKey: SortOptions.FromFloor.criterion,
+        actionTitle: SortOptions.FromFloor.name,
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'plus.forwardslash.minus',
         },
-        menuState: sortBy.key === SortBy.FromFloor.key ? 'on' : 'off',
+        menuState:
+          sortOption.criterion === SortOptions.FromFloor.criterion
+            ? 'on'
+            : 'off',
       },
       {
-        actionKey: SortBy.Recent.key,
-        actionTitle: SortBy.Recent.name,
+        actionKey: SortOptions.Recent.criterion,
+        actionTitle: SortOptions.Recent.name,
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'clock',
         },
-        menuState: sortBy.key === SortBy.Recent.key ? 'on' : 'off',
+        menuState:
+          sortOption.criterion === SortOptions.Recent.criterion ? 'on' : 'off',
       },
     ],
   };
@@ -118,14 +214,14 @@ export const NFTOffersCard = () => {
   const onPressMenuItem = ({ nativeEvent: { actionKey } }) => {
     haptics.selection();
     switch (actionKey) {
-      case SortBy.Highest.key:
-        setSortBy(SortBy.Highest);
+      case SortOptions.Highest.criterion:
+        setSortOption(SortOptions.Highest);
         break;
-      case SortBy.FromFloor.key:
-        setSortBy(SortBy.FromFloor);
+      case SortOptions.FromFloor.criterion:
+        setSortOption(SortOptions.FromFloor);
         break;
-      case SortBy.Recent.key:
-        setSortBy(SortBy.Recent);
+      case SortOptions.Recent.criterion:
+        setSortOption(SortOptions.Recent);
         break;
       default:
         logger.error(
@@ -140,26 +236,28 @@ export const NFTOffersCard = () => {
       <Stack space="20px">
         <Inline alignVertical="center" alignHorizontal="justify">
           <Inline alignVertical="center" space={{ custom: 7 }}>
-            <Text weight="heavy" size="20pt">{`${NUM_OFFERS} Offers`}</Text>
-            <Box
-              style={{
-                borderWidth: 1,
-                borderColor,
-                borderRadius: 7,
-              }}
-              justifyContent="center"
-              alignItems="center"
-              padding={{ custom: 5 }}
-            >
-              <Text
-                align="center"
-                color="labelTertiary"
-                size="13pt"
-                weight="semibold"
+            <Text weight="heavy" size="20pt">{`${offers.length} Offers`}</Text>
+            <Bleed vertical="4px">
+              <Box
+                style={{
+                  borderWidth: 1,
+                  borderColor,
+                  borderRadius: 7,
+                }}
+                justifyContent="center"
+                alignItems="center"
+                padding={{ custom: 5 }}
               >
-                {TOTAL_VALUE_USD}
-              </Text>
-            </Box>
+                <Text
+                  align="center"
+                  color="labelTertiary"
+                  size="13pt"
+                  weight="semibold"
+                >
+                  {totalValue}
+                </Text>
+              </Box>
+            </Bleed>
           </Inline>
 
           <ContextMenuButton
@@ -170,10 +268,10 @@ export const NFTOffersCard = () => {
             <ButtonPressAnimation>
               <Inline alignVertical="center">
                 <Text size="15pt" weight="bold" color="labelTertiary">
-                  {sortBy.icon}
+                  {sortOption.icon}
                 </Text>
                 <Text size="17pt" weight="bold">
-                  {` ${sortBy.name} `}
+                  {` ${sortOption.name} `}
                 </Text>
                 <Text size="15pt" weight="bold">
                   􀆈
@@ -183,12 +281,53 @@ export const NFTOffersCard = () => {
           </ContextMenuButton>
         </Inline>
         <Bleed horizontal="20px">
-          <ScrollView horizontal style={{ paddingLeft: 20 }}>
-            <Inline space={{ custom: 14 }}>
-              <Offer />
-              <Offer />
-              <Offer />
-            </Inline>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Inset horizontal="20px">
+              <Inline space={{ custom: 14 }}>
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+                {offers.map(offer => (
+                  <Offer
+                    key={offer.contractAddress + offer.tokenId}
+                    offer={offer}
+                    sortCriterion={sortOption.criterion}
+                  />
+                ))}
+              </Inline>
+            </Inset>
           </ScrollView>
         </Bleed>
         <Box
