@@ -408,7 +408,7 @@
     "react-native/react-devtools-core": "4.24.0",
     "cross-fetch": "3.1.5",
     "**/undici": "5.19.1",
-    "**/vm2": "3.9.17",
+    "**/vm2": "3.9.18",
     "**/d3-color": "3.1.0",
     "**/minimatch": "3.0.5",
     "**/@xmldom/xmldom": "0.7.7",
