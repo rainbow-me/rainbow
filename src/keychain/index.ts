@@ -208,10 +208,17 @@ export async function remove(key: string) {
  * This method originates in a patch that we applied manually to the underlying
  * keychain library. Check out our patches directory for more info.
  */
-export async function getAllKeys(): Promise<UserCredentials[]> {
-  logger.debug(`keychain: getAllKeys`, {}, logger.DebugContext.keychain);
-  const res = await getAllInternetCredentials();
-  return res ? res.results : [];
+export async function getAllKeys(): Promise<UserCredentials[] | undefined> {
+  try {
+    logger.debug(`keychain: getAllKeys`, {}, logger.DebugContext.keychain);
+    const res = await getAllInternetCredentials();
+    return res ? res.results : [];
+  } catch (e: any) {
+    logger.error(new RainbowError(`keychain: getAllKeys() failed`), {
+      message: e.toString(),
+    });
+    return undefined;
+  }
 }
 
 /**
@@ -226,6 +233,8 @@ export async function clear() {
   cache.clearAll();
 
   const credentials = await getAllKeys();
+
+  if (!credentials) return;
 
   await Promise.all(
     credentials?.map(c => resetInternetCredentials(c.username))
