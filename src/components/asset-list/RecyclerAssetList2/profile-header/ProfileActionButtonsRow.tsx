@@ -174,11 +174,6 @@ function BuyButton() {
       return;
     }
 
-    if (!config.wyre_enabled) {
-      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
-      return;
-    }
-
     analytics.track('Tapped "Add Cash"', {
       category: 'home screen',
     });
