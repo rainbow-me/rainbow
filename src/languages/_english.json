@@ -1980,11 +1980,6 @@
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
       },
-      "scam": {
-        "heads_up_title": "Heads up!",
-        "ignore_this_request": "Ignore This Request",
-        "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately"
-      },
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
       "titles": {
