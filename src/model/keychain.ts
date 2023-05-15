@@ -100,7 +100,7 @@ export async function remove(key: string): Promise<void> {
  *    await getAllKeys()
  */
 export async function loadAllKeys(): Promise<null | UserCredentials[]> {
-  return kc.getAllKeys();
+  return (await kc.getAllKeys()) || null;
 }
 
 /**
