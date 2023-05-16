@@ -428,7 +428,7 @@ export const gasPricesStartPolling = (
             let dataIsReady = true;
             if (isL2) {
               let adjustedGasFees;
-              switch(network){
+              switch(network) {
                 case Network.polygon: 
                   adjustedGasFees = await getPolygonGasPrices();
                   break;
