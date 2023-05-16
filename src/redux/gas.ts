@@ -428,8 +428,8 @@ export const gasPricesStartPolling = (
             let dataIsReady = true;
             if (isL2) {
               let adjustedGasFees;
-              switch(network) {
-                case Network.polygon: 
+              switch (network) {
+                case Network.polygon:
                   adjustedGasFees = await getPolygonGasPrices();
                   break;
                 case Network.arbitrum:
@@ -439,7 +439,7 @@ export const gasPricesStartPolling = (
                   adjustedGasFees = await getOptimismGasPrices();
                   dataIsReady = l1GasFeeOptimism !== null;
                   break;
-                case Network.bsc: 
+                case Network.bsc:
                   adjustedGasFees = await getBscGasPrices();
                   break;
                 default:
