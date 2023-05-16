@@ -61,6 +61,7 @@ import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
 import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
+import { getFCMToken } from '@/notifications/tokens';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -514,6 +515,20 @@ const DevSection = () => {
               titleComponent={
                 <MenuItem.Title text={'Copy signing wallet address'} />
               }
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🌎" isEmoji />}
+              onPress={async () => {
+                const fcmToken = await getFCMToken();
+
+                if (fcmToken) {
+                  Clipboard.setString(fcmToken);
+                }
+
+                Alert.alert(fcmToken ? `Copied` : `Couldn't get fcm token`);
+              }}
+              size={52}
+              titleComponent={<MenuItem.Title text={'Copy FCM token'} />}
             />
             {getExperimetalFlag(LOG_PUSH) && (
               <MenuItem
