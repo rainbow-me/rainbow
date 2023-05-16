@@ -428,15 +428,22 @@ export const gasPricesStartPolling = (
             let dataIsReady = true;
             if (isL2) {
               let adjustedGasFees;
-              if (network === Network.polygon) {
-                adjustedGasFees = await getPolygonGasPrices();
-              } else if (network === Network.arbitrum) {
-                adjustedGasFees = await getArbitrumGasPrices();
-              } else if (network === Network.optimism) {
-                adjustedGasFees = await getOptimismGasPrices();
-                dataIsReady = l1GasFeeOptimism !== null;
-              } else if (network === Network.bsc) {
-                adjustedGasFees = await getBscGasPrices();
+              switch(network){
+                case Network.polygon: 
+                  adjustedGasFees = await getPolygonGasPrices();
+                  break;
+                case Network.arbitrum:
+                  adjustedGasFees = await getArbitrumGasPrices();
+                  break;
+                case Network.optimism:
+                  adjustedGasFees = await getOptimismGasPrices();
+                  dataIsReady = l1GasFeeOptimism !== null;
+                  break;
+                case Network.bsc: 
+                  adjustedGasFees = await getBscGasPrices();
+                  break;
+                default:
+                  break;
               }
               if (!adjustedGasFees) return;
 
