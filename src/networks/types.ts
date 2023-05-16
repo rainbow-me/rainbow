@@ -1,8 +1,5 @@
-import {
-  GasFeesBySpeed,
-  GasPricesAPIData,
-  LegacyGasFeesBySpeed,
-} from '@/entities/gas';
+import { EthereumAddress } from '@/entities';
+import { GasPricesAPIData } from '@/entities/gas';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Chain } from '@wagmi/chains';
 // network.ts
@@ -34,7 +31,9 @@ export interface NetworkProperties extends Chain {
     mainnetAddress?: string;
   };
 
+  rpc: string;
   getProvider: Promise<StaticJsonRpcProvider>;
+  balanceCheckerAddress: EthereumAddress;
 
   // feature flags
   features: {
@@ -63,6 +62,10 @@ export interface NetworkProperties extends Chain {
   swaps: {
     defaultSlippage: number;
     defaultToFastGas?: boolean;
+  };
+
+  nfts: {
+    simplehashNetwork?: string;
   };
 
   // design tings

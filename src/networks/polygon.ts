@@ -4,6 +4,7 @@ import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getPolygonGasPrices } from '@/redux/gas';
+import config from '@/model/config';
 
 export const PolygonNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -23,8 +24,9 @@ export const PolygonNetworkObject: NetworkProperties = {
     mainnetAddress: MATIC_MAINNET_ADDRESS,
   },
 
-  // this should be refactored to have less deps
+  rpc: config.polygon_mainnet_rpc,
   getProvider: getProviderForNetwork(Network.polygon),
+  balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 
   // features
   features: {
@@ -54,6 +56,8 @@ export const PolygonNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
     defaultToFastGas: true,
   },
+
+  nfts: {},
 
   // design tings
   colors: {

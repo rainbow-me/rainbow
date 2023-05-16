@@ -1,27 +1,16 @@
 import remoteConfig from '@react-native-firebase/remote-config';
 import { captureException } from '@sentry/react-native';
 import {
-  // @ts-ignore
   ARBITRUM_MAINNET_RPC,
-  // @ts-ignore
   DATA_API_KEY,
-  // @ts-ignore
   DATA_ENDPOINT,
-  // @ts-ignore
   DATA_ORIGIN,
-  // @ts-ignore
   ETHEREUM_GOERLI_RPC,
-  // @ts-ignore
   ETHEREUM_GOERLI_RPC_DEV,
-  // @ts-ignore
   ETHEREUM_MAINNET_RPC,
-  // @ts-ignore
   ETHEREUM_MAINNET_RPC_DEV,
-  // @ts-ignore
   OPTIMISM_MAINNET_RPC,
-  // @ts-ignore
   POLYGON_MAINNET_RPC,
-  // @ts-ignore
   BSC_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
@@ -32,28 +21,29 @@ import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
 
 import Logger from '@/utils/logger';
 
-export interface RainbowConfig extends Record<string, any> {
-  arbitrum_mainnet_rpc?: string;
-  bsc_mainnet_rpc?: string;
-  data_api_key?: string;
-  data_endpoint?: string;
-  data_origin?: string;
-  default_slippage_bips?: string;
-  ethereum_goerli_rpc?: string;
-  ethereum_mainnet_rpc?: string;
-  f2c_enabled?: boolean;
-  f2c_ratio_enabled?: boolean;
-  flashbots_enabled?: boolean;
-  op_nft_network?: string;
-  op_rewards_enabled?: boolean;
-  optimism_mainnet_rpc?: string;
-  polygon_mainnet_rpc?: string;
-  swagg_enabled?: boolean;
-  trace_call_block_number_offset?: number;
-  profiles_enabled?: boolean;
+export interface RainbowConfig
+  extends Record<string, string | boolean | number> {
+  arbitrum_mainnet_rpc: string;
+  bsc_mainnet_rpc: string;
+  data_api_key: string;
+  data_endpoint: string;
+  data_origin: string;
+  default_slippage_bips: string;
+  ethereum_goerli_rpc: string;
+  ethereum_mainnet_rpc: string;
+  f2c_enabled: boolean;
+  f2c_ratio_enabled: boolean;
+  flashbots_enabled: boolean;
+  op_nft_network: string;
+  op_rewards_enabled: boolean;
+  optimism_mainnet_rpc: string;
+  polygon_mainnet_rpc: string;
+  swagg_enabled: boolean;
+  trace_call_block_number_offset: number;
+  profiles_enabled: boolean;
 }
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: RainbowConfig = {
   arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',

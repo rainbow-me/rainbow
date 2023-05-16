@@ -1,41 +1,41 @@
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
-import { mainnet } from '@wagmi/chains';
+import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import config from '@/model/config';
 
-export const MainnetNetworkObject: NetworkProperties = {
+export const GoerliNetworkObject: NetworkProperties = {
   // wagmi chain data
-  ...mainnet,
+  ...goerli,
 
   // network related data
   enabled: true,
-  name: 'Ethereum',
-  longName: 'Ethereum',
-  value: Network.mainnet,
-  networkType: 'layer1',
+  name: 'Goerli',
+  longName: 'Goerli',
+  value: Network.goerli,
+  networkType: 'testnet',
   blockTimeInMs: 15_000,
 
   nativeCurrency: {
-    ...mainnet.nativeCurrency,
+    ...goerli.nativeCurrency,
     address: ETH_ADDRESS,
   },
 
   // this should be refactored to have less deps
-  getProvider: getProviderForNetwork(Network.mainnet),
-  rpc: config.ethereum_mainnet_rpc,
-  balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
+  getProvider: getProviderForNetwork(Network.goerli),
+  rpc: config.ethereum_goerli_rpc,
+  balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
   // features
   features: {
     txHistory: true,
 
     // not sure if flashbots is being used app wide vs just swaps
-    flashbots: true,
+    flashbots: false,
     walletconnect: true,
-    swaps: true,
-    nfts: true,
+    swaps: false,
+    nfts: false,
     savings: true,
     pools: true,
   },
@@ -57,9 +57,7 @@ export const MainnetNetworkObject: NetworkProperties = {
     defaultToFastGas: true,
   },
 
-  nfts: {
-    simplehashNetwork: 'ethereum',
-  },
+  nfts: {},
 
   // design tings
   colors: {

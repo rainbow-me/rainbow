@@ -4,6 +4,7 @@ import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
+import config from '@/model/config';
 
 export const OptimismNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -22,8 +23,9 @@ export const OptimismNetworkObject: NetworkProperties = {
     address: OPTIMISM_ETH_ADDRESS,
   },
 
-  // this should be refactored to have less deps
+  rpc: config.optimism_mainnet_rpc,
   getProvider: getProviderForNetwork(Network.optimism),
+  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
   // features
   features: {
@@ -52,6 +54,8 @@ export const OptimismNetworkObject: NetworkProperties = {
   swaps: {
     defaultSlippage: 200,
   },
+
+  nfts: {},
 
   // design tings
   colors: {

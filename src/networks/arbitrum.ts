@@ -4,6 +4,7 @@ import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getArbitrumGasPrices } from '@/redux/gas';
+import config from '@/model/config';
 
 export const ArbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -21,8 +22,9 @@ export const ArbitrumNetworkObject: NetworkProperties = {
     address: ARBITRUM_ETH_ADDRESS,
   },
 
-  // this should be refactored to have less deps
+  rpc: config.arbitrum_mainnet_rpc,
   getProvider: getProviderForNetwork(Network.arbitrum),
+  balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 
   // features
   features: {
@@ -54,6 +56,8 @@ export const ArbitrumNetworkObject: NetworkProperties = {
   swaps: {
     defaultSlippage: 200,
   },
+
+  nfts: {},
 
   // design tings
   colors: {

@@ -36,13 +36,11 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
-  delay,
   fromWei,
   greaterThan,
   isZero,
@@ -52,7 +50,6 @@ import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import {
-  ARBITRUM_BLOCK_EXPLORER_URL,
   ARBITRUM_ETH_ADDRESS,
   chains,
   ETH_ADDRESS,
@@ -60,18 +57,15 @@ import {
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   BNB_BSC_ADDRESS,
-  OPTIMISM_BLOCK_EXPLORER_URL,
   OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
-  POLYGON_BLOCK_EXPLORER_URL,
-  BSC_BLOCK_EXPLORER_URL,
   BNB_MAINNET_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
-import { getNetworkObj } from '@/networks';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 
 // hate this pattern but could be messy
 const getNetworkNativeAsset = (
@@ -322,19 +316,21 @@ const getChainIdFromType = (type: string) => {
  * @param  {Number} chainId
  */
 const getNetworkFromChainId = (chainId: number): Network => {
-  const networkData = chains.find(chain => chain.chain_id === chainId);
-  return (networkData?.network as Network) ?? Network.mainnet;
+  return (
+    RainbowNetworks.find(network => network.id === chainId)?.value ||
+    getNetworkObj(Network.mainnet).value
+  );
 };
 
 /**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkNameFromChainId = (chainId: number): string | undefined => {
-  const networkData = chains.find(chain => chain.chain_id === chainId);
-  const networkName =
-    networkInfo[networkData?.network ?? Network.mainnet]?.name;
-  return networkName;
+const getNetworkNameFromChainId = (chainId: number): string => {
+  return (
+    RainbowNetworks.find(network => network.id === chainId)?.name ||
+    getNetworkObj(Network.mainnet).name
+  );
 };
 
 /**

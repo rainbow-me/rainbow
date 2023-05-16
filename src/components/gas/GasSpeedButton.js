@@ -12,7 +12,6 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
 import networkTypes, { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
@@ -336,8 +335,8 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
-    const network = currentNetwork ?? networkTypes.mainnet;
-    const networkName = networkInfo[network]?.name;
+    const networkObj = getNetworkObj(currentNetwork);
+    const networkName = networkObj.name;
     if (crossChainServiceTime) {
       navigate(Routes.EXPLAIN_SHEET, {
         inputCurrency,
