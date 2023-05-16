@@ -46,6 +46,7 @@ export interface BackupUserData {
 }
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
+  // TODO hangs
   const allKeys = await keychain.loadAllKeys();
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };

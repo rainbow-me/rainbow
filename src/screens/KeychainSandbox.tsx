@@ -6,6 +6,7 @@ import { BackgroundProvider, Box, Text } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import * as keychain from '@/keychain';
+import * as oldKeychain from '@/model/keychain';
 
 export const KeychainSandbox: React.FC = () => {
   const { height } = useDimensions();
@@ -56,10 +57,9 @@ export const KeychainSandbox: React.FC = () => {
 
             <Pressable
               onPress={async () => {
-                const result = await keychain.get('keychain_sandbox_private', {
-                  authenticationPrompt: 'Auth plz',
-                });
-                setLastValue(result.value!);
+                // TODO does not hang
+                const result = await oldKeychain.loadAllKeys();
+                setLastValue(JSON.stringify(result));
               }}
             >
               <Box paddingBottom="12px">
