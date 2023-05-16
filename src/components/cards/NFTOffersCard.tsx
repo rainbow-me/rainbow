@@ -1,6 +1,7 @@
 import {
   Bleed,
   Box,
+  Cover,
   Inline,
   Inset,
   Stack,
@@ -23,8 +24,11 @@ import {
 } from '@/helpers/utilities';
 import { ImgixImage } from '../images';
 import { isNil } from 'lodash';
+import Svg, { Path } from 'react-native-svg';
+import MaskedView from '@react-native-masked-view/masked-view';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const NFT_IMAGE_SIZE = 77.75;
 
 type SortOption = { name: string; icon: string; criterion: SortCriterion };
 
@@ -56,6 +60,26 @@ const getFormattedTimeRemaining = (ms: number): string => {
 
   return formattedHours + formattedMinutes;
 };
+
+const NFTImageMask = () => (
+  <Svg width="77.75" height="77.75" viewBox="0 0 77.75 77.75">
+    <Path
+      d="M77.749 17.9662C77.7477 17.1595 77.747 16.7562 77.6896 16.5228C77.4757 15.6521 77.0923 15.2694 76.2212 15.0569C75.9877 15 75.4085 15 74.25 15V15C68.1749 15 63.25 10.0751 63.25 4V4C63.25 2.84152 63.25 2.26229 63.1931 2.02879C62.9806 1.15771 62.5979 0.774301 61.7272 0.56038C61.4938 0.503038 61.0905 0.502343 60.2838 0.500952C59.7318 0.5 59.1545 0.5 58.55 0.5H19.2C12.4794 0.5 9.11905 0.5 6.55211 1.80792C4.29417 2.9584 2.4584 4.79417 1.30792 7.05211C0 9.61905 0 12.9794 0 19.7V59.05C0 65.7706 0 69.1309 1.30792 71.6979C2.4584 73.9558 4.29417 75.7916 6.55211 76.9421C9.11905 78.25 12.4794 78.25 19.2 78.25H58.55C65.2706 78.25 68.6309 78.25 71.1979 76.9421C73.4558 75.7916 75.2916 73.9558 76.4421 71.6979C77.75 69.1309 77.75 65.7706 77.75 59.05V19.7C77.75 19.0955 77.75 18.5182 77.749 17.9662Z"
+      fill="black"
+    />
+  </Svg>
+);
+
+const NFTImage = ({ url }: { url: string }) => (
+  <Box
+    as={ImgixImage}
+    width={{ custom: NFT_IMAGE_SIZE }}
+    height={{ custom: NFT_IMAGE_SIZE }}
+    source={{ uri: url }}
+    borderRadius={12}
+    shadow="18px"
+  />
+);
 
 const Offer = ({
   offer,
@@ -109,27 +133,44 @@ const Offer = ({
   }
 
   return (
-    <Stack space="12px">
-      <Box
-        as={ImgixImage}
-        width={{ custom: 77.75 }}
-        height={{ custom: 77.75 }}
-        source={{ uri: offer.imageUrl }}
-        borderRadius={12}
-        shadow="18px"
-      />
-      <Stack space={{ custom: 7 }}>
+    <ButtonPressAnimation>
+      {lessThanTwoHoursRemaining ? (
+        <>
+          <Box
+            width={{ custom: 19 }}
+            height={{ custom: 19 }}
+            right={{ custom: -6 }}
+            top={{ custom: -6 }}
+            position="absolute"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text size="15pt" weight="bold" align="center" color="red">
+              􀐬
+            </Text>
+          </Box>
+          <MaskedView
+            style={{
+              width: NFT_IMAGE_SIZE,
+              height: NFT_IMAGE_SIZE,
+            }}
+            maskElement={<NFTImageMask />}
+          >
+            <NFTImage url={offer.imageUrl} />
+          </MaskedView>
+        </>
+      ) : (
+        <NFTImage url={offer.imageUrl} />
+      )}
+      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
         <Inline space="4px" alignVertical="center">
           <CoinIcon
-            // mainnet_address={'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
-            // address="0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
             address={offer.offerPaymentToken.address}
             size={12}
-            // badgeSize="tiny"
             symbol={offer.offerPaymentToken.symbol}
-            // type={AssetTypes.polygon}
           />
           <Text size="13pt" weight="heavy">
+            {/* abbreviate w/ k, m, b notation, round to 3 decimals */}
             {handleSignificantDecimals(
               offer.grossAmount.decimal,
               18,
@@ -139,11 +180,11 @@ const Offer = ({
             )}
           </Text>
         </Inline>
-        <Text color={textColor} size="13pt" weight="semibold">
-          {text}
-        </Text>
-      </Stack>
-    </Stack>
+      </Box>
+      <Text color={textColor} size="13pt" weight="semibold">
+        {text}
+      </Text>
+    </ButtonPressAnimation>
   );
 };
 
@@ -281,7 +322,11 @@ export const NFTOffersCard = () => {
           </ContextMenuButton>
         </Inline>
         <Bleed horizontal="20px">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ overflow: 'visible' }}
+          >
             <Inset horizontal="20px">
               <Inline space={{ custom: 14 }}>
                 {offers.map(offer => (
