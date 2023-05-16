@@ -2594,10 +2594,10 @@
     uuid "3.3.2"
     validator "^7.0.0"
 
-"@rainbow-me/swaps@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.3.0.tgz#80766954eff252d66aa4f3cc69a010d08506cf77"
-  integrity sha512-VkQ+oCpPoYAz9wkLBB1qBod1ETCrhs/YTz0Vr24V7SBEXuEWtGxxUbSYo+ZXYMeLeRl5diR/2M6PtRmVaL+s3Q==
+"@rainbow-me/swaps@0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.4.0.tgz#ba37d4dc8d3279433d411707de038620e94f844d"
+  integrity sha512-Cq5cunQNPe4F88z76UFqLe2hzKX8A7uWTkZ/M/FmEgkHAWNcFzaT4wa39L6Wls+Wbu30jX9QAtGk26lm9Uf4kQ==
   dependencies:
     "@ethersproject/abi" "5.7.0"
     "@ethersproject/abstract-signer" "5.7.0"
