@@ -1,4 +1,5 @@
 import {
+  AccentColorProvider,
   Bleed,
   Box,
   Cover,
@@ -14,7 +15,7 @@ import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { CoinIcon } from '../coin-icon';
 import { useNFTOffers } from '@/resources/nftOffers';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/nfts';
@@ -26,6 +27,8 @@ import { ImgixImage } from '../images';
 import { isNil } from 'lodash';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import { useTheme } from '@/theme';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 77.75;
@@ -80,6 +83,42 @@ const NFTImage = ({ url }: { url: string }) => (
     shadow="18px"
   />
 );
+
+const FakeOffer = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.skeleton}>
+      <Box
+        background="accent"
+        width={{ custom: NFT_IMAGE_SIZE }}
+        height={{ custom: NFT_IMAGE_SIZE }}
+        borderRadius={12}
+      />
+      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
+        <Inline space="4px" alignVertical="center">
+          <Box
+            background="accent"
+            width={{ custom: 12 }}
+            height={{ custom: 12 }}
+            borderRadius={6}
+          />
+          <Box
+            background="accent"
+            width={{ custom: 50 }}
+            height={{ custom: 12 }}
+            borderRadius={6}
+          />
+        </Inline>
+      </Box>
+      <Box
+        background="accent"
+        width={{ custom: 50 }}
+        height={{ custom: 9.3333 }}
+        borderRadius={9.3333 / 2}
+      />
+    </AccentColorProvider>
+  );
+};
 
 const Offer = ({
   offer,
@@ -198,8 +237,9 @@ export const NFTOffersCard = () => {
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
   });
+  const { colors } = useTheme();
 
-  const offers = data?.nftOffers ?? [];
+  const offers = (data?.nftOffers ?? []).slice(0, 10);
 
   const totalUSDValue = offers.reduce(
     (acc, offer) => acc + offer.grossAmount.usd,
@@ -277,30 +317,44 @@ export const NFTOffersCard = () => {
       <Stack space="20px">
         <Inline alignVertical="center" alignHorizontal="justify">
           <Inline alignVertical="center" space={{ custom: 7 }}>
-            <Text weight="heavy" size="20pt">{`${offers.length} Offers`}</Text>
-            <Bleed vertical="4px">
-              <Box
-                style={{
-                  borderWidth: 1,
-                  borderColor,
-                  borderRadius: 7,
-                }}
-                justifyContent="center"
-                alignItems="center"
-                padding={{ custom: 5 }}
-              >
-                <Text
-                  align="center"
-                  color="labelTertiary"
-                  size="13pt"
-                  weight="semibold"
-                >
-                  {totalValue}
+            {!offers.length ? (
+              <AccentColorProvider color={colors.skeleton}>
+                <Box
+                  background="accent"
+                  height={{ custom: 14 }}
+                  width={{ custom: 157 }}
+                  borderRadius={7}
+                />
+              </AccentColorProvider>
+            ) : (
+              <>
+                <Text weight="heavy" size="20pt">
+                  {offers.length === 1 ? '1 Offer' : `${offers.length} Offers`}
                 </Text>
-              </Box>
-            </Bleed>
+                <Bleed vertical="4px">
+                  <Box
+                    style={{
+                      borderWidth: 1,
+                      borderColor,
+                      borderRadius: 7,
+                    }}
+                    justifyContent="center"
+                    alignItems="center"
+                    padding={{ custom: 5 }}
+                  >
+                    <Text
+                      align="center"
+                      color="labelTertiary"
+                      size="13pt"
+                      weight="semibold"
+                    >
+                      {totalValue}
+                    </Text>
+                  </Box>
+                </Bleed>
+              </>
+            )}
           </Inline>
-
           <ContextMenuButton
             menuConfig={menuConfig}
             // onPressAndroid={onPressAndroid}
@@ -329,48 +383,23 @@ export const NFTOffersCard = () => {
           >
             <Inset horizontal="20px">
               <Inline space={{ custom: 14 }}>
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
-                {offers.map(offer => (
-                  <Offer
-                    key={offer.contractAddress + offer.tokenId}
-                    offer={offer}
-                    sortCriterion={sortOption.criterion}
-                  />
-                ))}
+                {!offers.length ? (
+                  <>
+                    <FakeOffer />
+                    <FakeOffer />
+                    <FakeOffer />
+                    <FakeOffer />
+                    <FakeOffer />
+                  </>
+                ) : (
+                  offers.map(offer => (
+                    <Offer
+                      key={offer.contractAddress + offer.tokenId}
+                      offer={offer}
+                      sortCriterion={sortOption.criterion}
+                    />
+                  ))
+                )}
               </Inline>
             </Inset>
           </ScrollView>
