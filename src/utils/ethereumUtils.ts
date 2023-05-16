@@ -51,7 +51,6 @@ import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import {
   ARBITRUM_ETH_ADDRESS,
-  chains,
   ETH_ADDRESS,
   ethUnits,
   MATIC_MAINNET_ADDRESS,
