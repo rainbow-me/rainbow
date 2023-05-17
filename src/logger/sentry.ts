@@ -31,7 +31,7 @@ export const defaultOptions = {
 export async function initSentry() {
   try {
     const dist = `${VersionNumber.buildVersion}`; // MUST BE A STRING
-    const release = `${VersionNumber.appVersion} (${dist})`; // MUST BE A STRING
+    const release = `${VersionNumber.bundleIdentifier}@${VersionNumber.appVersion}+${dist}`; // MUST BE A STRING
 
     Sentry.init({
       ...defaultOptions,

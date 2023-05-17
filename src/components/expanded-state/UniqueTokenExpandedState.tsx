@@ -76,13 +76,9 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import {
-  buildRainbowUrl,
-  getUniqueTokenType,
-  magicMemo,
-  safeAreaInsetValues,
-} from '@/utils';
+import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,

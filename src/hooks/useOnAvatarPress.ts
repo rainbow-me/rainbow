@@ -23,11 +23,12 @@ import {
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { buildRainbowUrl, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import useAccountAsset from './useAccountAsset';
 import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
+import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */

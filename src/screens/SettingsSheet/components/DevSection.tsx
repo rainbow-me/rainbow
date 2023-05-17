@@ -58,6 +58,9 @@ import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/Set
 import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
+import { isAuthenticated } from '@/utils/authentication';
+import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
+import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -224,6 +227,17 @@ const DevSection = () => {
     return Promise.resolve();
   }, [notificationSettings]);
 
+  const clearPendingTransactions = async () => {
+    // clear local storage
+    saveLocalPendingTransactions([], accountAddress, Network.mainnet);
+
+    // clear redux
+    dispatch({
+      payload: [],
+      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
+    });
+  };
+
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
 
@@ -249,6 +263,45 @@ const DevSection = () => {
     addDefaultNotificationGroupSettings(true);
 
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
+  };
+
+  const wipeKeychainWithAlert = async () => {
+    const confirmKeychainAlert = () =>
+      new Promise<boolean>(resolve => {
+        Alert.alert(
+          lang.t('developer_settings.keychain.alert_title'),
+          lang.t('developer_settings.keychain.alert_body'),
+          [
+            {
+              onPress: () => {
+                resolve(true);
+              },
+              text: lang.t('developer_settings.keychain.delete_wallets'),
+            },
+            {
+              onPress: () => {
+                resolve(false);
+              },
+              style: 'cancel',
+              text: lang.t('button.cancel'),
+            },
+          ]
+        );
+      });
+
+    const isAuth = await isAuthenticated();
+
+    // we should require auth before wiping the keychain
+    if (isAuth) {
+      const shouldWipeKeychain = await confirmKeychainAlert();
+      if (shouldWipeKeychain) {
+        await wipeKeychain();
+        await clearMMKVStorage();
+
+        // we need to navigate back to the welcome screen
+        navigate(Routes.WELCOME_SCREEN);
+      }
+    }
   };
 
   const onPressNavigationEntryPoint = () =>
@@ -289,6 +342,26 @@ const DevSection = () => {
           }
           rightComponent={
             loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
+          }
+        />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
+          onPress={clearPendingTransactions}
+          size={52}
+          testID="clear-pending-transactions-section"
+          titleComponent={
+            <MenuItem.Title text={lang.t('Clear Pending Transactions')} />
+          }
+        />
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
+          onPress={wipeKeychainWithAlert}
+          size={52}
+          testID="reset-keychain-section"
+          titleComponent={
+            <MenuItem.Title
+              text={lang.t('developer_settings.keychain.menu_title')}
+            />
           }
         />
       </Menu>
@@ -338,17 +411,6 @@ const DevSection = () => {
               titleComponent={
                 <MenuItem.Title
                   text={lang.t('developer_settings.clear_image_cache')}
-                />
-              }
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="💣" isEmoji />}
-              onPress={wipeKeychain}
-              size={52}
-              testID="reset-keychain-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.reset_keychain')}
                 />
               }
             />

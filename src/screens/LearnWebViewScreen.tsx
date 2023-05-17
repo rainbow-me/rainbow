@@ -14,6 +14,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
+import {
+  buildRainbowLearnUrl,
+  LearnUTMCampaign,
+} from '@/utils/buildRainbowUrl';
 
 const HEADER_HEIGHT = 60;
 
@@ -133,7 +137,13 @@ export default function LearnWebViewScreen() {
             height: webViewHeight,
           }}
           source={{
-            uri: `${url}${isDarkMode ? '?theme=dark' : ''}`,
+            uri: buildRainbowLearnUrl({
+              url,
+              query: {
+                campaign: LearnUTMCampaign.Card,
+                isDarkMode,
+              },
+            }),
           }}
         />
       </View>

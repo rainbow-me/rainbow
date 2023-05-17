@@ -8,8 +8,6 @@ import {
   useExpandedStateNavigation,
   useWallets,
 } from '@/hooks';
-import config from '@/model/config';
-import { useNavigation } from '@/navigation';
 
 import Routes from '@/navigation/routesNames';
 import { useRoute } from '@react-navigation/native';
@@ -18,7 +16,6 @@ function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
-  const { navigate: appNavigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
   const { name: routeName } = useRoute();
@@ -29,18 +26,13 @@ function BuyActionButton({ color: givenColor, ...props }) {
       return;
     }
 
-    if (!config.wyre_enabled) {
-      appNavigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
-      return;
-    }
-
     navigate(Routes.ADD_CASH_SHEET, params => params);
 
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
       routeName,
     });
-  }, [accountAddress, appNavigate, isDamaged, navigate, routeName]);
+  }, [accountAddress, isDamaged, navigate, routeName]);
 
   return (
     <SheetActionButton

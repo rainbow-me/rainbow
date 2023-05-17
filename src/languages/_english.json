@@ -391,6 +391,7 @@
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups deleted successfully",
       "clear_async_storage": "Clear async storage",
+      "clean_pending_txs": "Clear Pending Transactions",
       "clear_image_cache": "Clear Image Cache",
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
       "clear_local_storage": "Clear local storage",
@@ -404,7 +405,12 @@
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
       "remove_all_backups": "Remove all backups",
-      "reset_keychain": "Reset Keychain",
+      "keychain": {
+        "menu_title": "Reset Keychain",
+        "delete_wallets": "Delete all wallets",
+        "alert_title": "Careful!",
+        "alert_body": "🚨🚨🚨 \nThis will permanently delete all of your wallets private keys & data, please make sure you have everything backed up before proceeding!! \n🚨🚨🚨"
+      },
       "restart_app": "Restart app",
       "reset_experimental_config": "Reset experimental config",
       "status": "Status",
@@ -680,8 +686,8 @@
         "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
         "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
         "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering.",
-        "finiliar_text": "A special edition Rainbow Finiliar icon that keeps you up to date on the price of gas, rain or shine.",
-        "finiliar_title": "You've unlocked a\nRainbow Finiliar",
+        "finiliar_text": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine.",
+        "finiliar_title": "You've unlocked a\nRainbow Fini",
         "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
         "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
         "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom.",
@@ -816,15 +822,6 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about our approach to routing swaps."
-        }
-      },
-      "wyre_degradation": {
-        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
-        "title": "It's happening \nThe Merge is underway",
-        "still_curious": {
-          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
-          "fragment2": "Learn more",
-          "fragment3": ""
         }
       },
       "slippage": {
@@ -1546,7 +1543,8 @@
       },
       "actions_menu": {
         "speed_up": "Speed Up",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "remove": "Remove"
       }
     },
     "time": {
@@ -1982,11 +1980,6 @@
         "button": "Paste session URI",
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
-      },
-      "scam": {
-        "heads_up_title": "Heads up!",
-        "ignore_this_request": "Ignore This Request",
-        "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately"
       },
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
