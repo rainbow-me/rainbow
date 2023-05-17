@@ -32,7 +32,7 @@ This will allow us a safely typed and consistent interface to scale our supporte
 
 ### Adding a new network
 
-#### Add Remote Config values
+#### Add Remote Config
 Add the following variable(s) to `@/model/config`, `networkName_enabled`. Make sure you add it to the parsing section as a boolean so it is processed & typed correctly.
 
 #### Add Network Config
@@ -46,7 +46,8 @@ Network badge assets need to be added in the following places and should be in m
 `@assets/badges` -> `networkBadge` `networkBadgeDark` `networkBadgeLarge` `networkBadgeLargeDark` `networkBadgeNoShadow`
 
 `ios/Images.xcassets/badges` -> `networkBadge` `networkBadgeDark` `networkBadgeNoShadow`
-*Emphasize* _ios assets are best added via xcode_
+
+_ios assets are best added via xcode_
 
 Note: we want to refactor this to use svgs but the current react native svg packages do not support filters 
 
