@@ -10,7 +10,7 @@ export const MainnetNetworkObject: NetworkProperties = {
   ...mainnet,
 
   // network related data
-  enabled: true,
+  enabled: config.mainnet_enabled,
   name: 'Ethereum',
   longName: 'Ethereum',
   value: Network.mainnet,

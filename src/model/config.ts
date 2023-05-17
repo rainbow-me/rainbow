@@ -41,6 +41,15 @@ export interface RainbowConfig
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
+  arbitrum_enabled: boolean;
+  bsc_enabled: boolean;
+  polygon_enabled: boolean;
+  optimism_enabled: boolean;
+  op_chains_enabled: boolean;
+
+  mainnet_enabled: boolean;
+
+  goerli_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -70,6 +79,16 @@ const DEFAULT_CONFIG: RainbowConfig = {
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
+
+  arbitrum_enabled: true,
+  bsc_enabled: true,
+  polygon_enabled: true,
+  optimism_enabled: true,
+  op_chains_enabled: true,
+
+  mainnet_enabled: true,
+
+  goerli_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -104,7 +123,14 @@ const init = async () => {
         key === 'f2c_ratio_enabled' ||
         key === 'swagg_enabled' ||
         key === 'op_rewards_enabled' ||
-        key === 'profiles_enabled'
+        key === 'profiles_enabled' ||
+        key === 'mainnet_enabled' ||
+        key === 'arbitrum_enabled' ||
+        key === 'bsc_enabled' ||
+        key === 'polygon_enabled' ||
+        key === 'optimism_enabled' ||
+        key === 'op_chains_enabled' ||
+        key === 'goerli_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

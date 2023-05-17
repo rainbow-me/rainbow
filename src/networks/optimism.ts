@@ -11,7 +11,7 @@ export const OptimismNetworkObject: NetworkProperties = {
   ...optimism,
 
   // network related data
-  enabled: true,
+  enabled: config.optimism_enabled && config.op_chains_enabled,
   name: 'Optimism',
   longName: 'Optimism',
   value: Network.optimism,

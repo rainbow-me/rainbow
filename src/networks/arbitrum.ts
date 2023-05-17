@@ -10,7 +10,7 @@ export const ArbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
   ...arbitrum,
   // network related data
-  enabled: true,
+  enabled: config.arbitrum_enabled,
   name: 'Arbitrum',
   longName: 'Arbitrum',
   value: Network.arbitrum,

@@ -10,7 +10,7 @@ export const GoerliNetworkObject: NetworkProperties = {
   ...goerli,
 
   // network related data
-  enabled: true,
+  enabled: config.goerli_enabled,
   name: 'Goerli',
   longName: 'Goerli',
   value: Network.goerli,
