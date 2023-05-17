@@ -3,7 +3,7 @@ import { NftOffer, SortCriterion } from '@/graphql/__generated__/nfts';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-const STALE_TIME = 600000; // 10 minutes
+const STALE_TIME = 60000; // 1 minute
 
 export const nftOffersQueryKey = ({
   address,
@@ -31,8 +31,7 @@ export function useNFTOffers({
     async () => await arcClient.getNFTOffers({ walletAddress, sortBy }),
     {
       enabled: !!walletAddress,
-      // staleTime: STALE_TIME,
-      staleTime: 0,
+      staleTime: STALE_TIME,
     }
   );
 }
