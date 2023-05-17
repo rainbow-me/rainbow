@@ -73,9 +73,4 @@ export interface NetworkProperties extends Chain {
     light: string;
     dark: string;
   };
-
-  // TODO: reafactor badges to simplify code
-  assets: {
-    badgeSmall: string;
-  };
 }

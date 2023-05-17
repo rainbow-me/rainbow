@@ -62,8 +62,4 @@ export const OptimismNetworkObject: NetworkProperties = {
     light: '#FF4040',
     dark: '#FF6A6A',
   },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
-  },
 };

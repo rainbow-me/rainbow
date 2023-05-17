@@ -64,8 +64,4 @@ export const ArbitrumNetworkObject: NetworkProperties = {
     light: '#2D374B',
     dark: '#ADBFE3',
   },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
-  },
 };

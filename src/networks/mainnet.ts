@@ -66,8 +66,4 @@ export const MainnetNetworkObject: NetworkProperties = {
     light: '#25292E',
     dark: '#25292E',
   },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
-  },
 };

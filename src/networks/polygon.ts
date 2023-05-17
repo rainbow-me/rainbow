@@ -64,8 +64,4 @@ export const PolygonNetworkObject: NetworkProperties = {
     light: '#8247E5',
     dark: '#A275EE',
   },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
-  },
 };

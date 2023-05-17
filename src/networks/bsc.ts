@@ -2,7 +2,6 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
-import { BSC_MAINNET_RPC } from 'react-native-dotenv';
 import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
 import config from '@/model/config';
@@ -65,9 +64,5 @@ export const BSCNetworkObject: NetworkProperties = {
   colors: {
     light: '#8247E5',
     dark: '#F0B90B',
-  },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
   },
 };
