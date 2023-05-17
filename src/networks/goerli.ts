@@ -61,11 +61,7 @@ export const GoerliNetworkObject: NetworkProperties = {
 
   // design tings
   colors: {
-    light: '#25292E',
-    dark: '#25292E',
-  },
-
-  assets: {
-    badgeSmall: '@assets/badges/ethereumBadgeSmall.png',
+    light: '#f6c343',
+    dark: '#f6c343',
   },
 };
