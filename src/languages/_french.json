@@ -1072,6 +1072,20 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
+    "nftOffers": {
+      "card": {
+        "title": {
+          "singular": "1 Offer :)",
+          "plural": "%{numOffers} Offers :)"
+        },
+        "sortCriteria": {
+          "highest": "Highest :)",
+          "fromFloor": "From Floor :)",
+          "recent": "Recent :)"
+        },
+        "button": "View All Offers :)"
+      }
+    },
     "notification": {
       "error": {
         "failed_get_account_tx": "Échec de l’obtention des transactions de compte",

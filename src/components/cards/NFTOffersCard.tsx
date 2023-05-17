@@ -2,7 +2,6 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
-  Cover,
   Inline,
   Inset,
   Stack,
@@ -15,7 +14,7 @@ import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { CoinIcon } from '../coin-icon';
 import { useNFTOffers } from '@/resources/nftOffers';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/nfts';
@@ -27,8 +26,8 @@ import { ImgixImage } from '../images';
 import { isNil } from 'lodash';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
-import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useTheme } from '@/theme';
+import * as i18n from '@/languages';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 77.75;
@@ -37,17 +36,17 @@ type SortOption = { name: string; icon: string; criterion: SortCriterion };
 
 const SortOptions = {
   Highest: {
-    name: 'Highest',
+    name: i18n.t(i18n.l.nftOffers.card.sortCriteria.highest),
     icon: '􀑁',
     criterion: SortCriterion.TopBidValue,
   },
   FromFloor: {
-    name: 'From Floor',
+    name: i18n.t(i18n.l.nftOffers.card.sortCriteria.fromFloor),
     icon: '􀅺',
     criterion: SortCriterion.FloorDifferencePercentage,
   },
   Recent: {
-    name: 'Recent',
+    name: i18n.t(i18n.l.nftOffers.card.sortCriteria.recent),
     icon: '􀐫',
     criterion: SortCriterion.DateCreated,
   },
@@ -127,7 +126,6 @@ const Offer = ({
   offer: NftOffer;
   sortCriterion: SortCriterion;
 }) => {
-  const { nativeCurrency } = useAccountSettings();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const timeRemaining = offer.validUntil
     ? Math.max(offer.validUntil - Date.now(), 0)
@@ -147,7 +145,7 @@ const Offer = ({
         textColor = 'labelTertiary';
         text = convertAmountToNativeDisplay(
           offer.grossAmount.usd,
-          nativeCurrency,
+          'USD',
           undefined,
           true,
           true
@@ -209,7 +207,6 @@ const Offer = ({
             symbol={offer.offerPaymentToken.symbol}
           />
           <Text size="13pt" weight="heavy">
-            {/* abbreviate w/ k, m, b notation, round to 3 decimals */}
             {handleSignificantDecimals(
               offer.grossAmount.decimal,
               18,
@@ -232,7 +229,7 @@ export const NFTOffersCard = () => {
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { data } = useNFTOffers({
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
@@ -248,7 +245,7 @@ export const NFTOffersCard = () => {
 
   const totalValue = convertAmountToNativeDisplay(
     totalUSDValue,
-    nativeCurrency,
+    'USD',
     undefined,
     true,
     true
@@ -329,7 +326,11 @@ export const NFTOffersCard = () => {
             ) : (
               <>
                 <Text weight="heavy" size="20pt">
-                  {offers.length === 1 ? '1 Offer' : `${offers.length} Offers`}
+                  {offers.length === 1
+                    ? i18n.t(i18n.l.nftOffers.card.title.singular)
+                    : i18n.t(i18n.l.nftOffers.card.title.plural, {
+                        numOffers: offers.length,
+                      })}
                 </Text>
                 <Bleed vertical="4px">
                   <Box
@@ -357,7 +358,6 @@ export const NFTOffersCard = () => {
           </Inline>
           <ContextMenuButton
             menuConfig={menuConfig}
-            // onPressAndroid={onPressAndroid}
             onPressMenuItem={onPressMenuItem}
           >
             <ButtonPressAnimation>
@@ -417,7 +417,7 @@ export const NFTOffersCard = () => {
           {/* unfortunately shimmer width must be hardcoded */}
           <ShimmerAnimation color={buttonColor} width={deviceWidth - 40} />
           <Text align="center" size="15pt" weight="bold">
-            View All Offers
+            {i18n.t(i18n.l.nftOffers.card.button)}
           </Text>
         </Box>
       </Stack>
