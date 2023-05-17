@@ -32,7 +32,6 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { chains as supportedChainConfigs } from '@/references';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 import { IS_DEV, IS_ANDROID } from '@/env';
@@ -45,6 +44,7 @@ import {
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
+import { RainbowNetworks } from '@/networks';
 
 enum RPCMethod {
   Sign = 'eth_sign',
@@ -231,9 +231,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  for (const config of supportedChainConfigs) {
-    if (config.chain_id === chainId) return true;
-  }
+  return !!RainbowNetworks.find(({ id }) => id === chainId);
 }
 
 /**
