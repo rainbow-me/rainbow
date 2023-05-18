@@ -298,14 +298,22 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const swapAddresses = ((): Set<string> => {
+  const contractAddresses = new Set(
+    Array.from(SOCKET_REGISTRY_CONTRACT_ADDRESSESS.values()).map(addr =>
+      addr.toLowerCase()
+    )
+  );
+
+  contractAddresses.add(RAINBOW_ROUTER_CONTRACT_ADDRESS.toLowerCase());
+
+  return contractAddresses;
+})();
+
 const overrideSwap = (tx: ZerionTransaction): ZerionTransaction => {
-  if (
-    isLowerCaseMatch(
-      tx.address_to || '',
-      SOCKET_REGISTRY_CONTRACT_ADDRESSESS
-    ) ||
-    isLowerCaseMatch(tx.address_to || '', RAINBOW_ROUTER_CONTRACT_ADDRESS)
-  ) {
+  const to = tx.address_to?.toLowerCase() || '';
+
+  if (swapAddresses.has(to)) {
     return { ...tx, type: TransactionType.trade };
   }
   return tx;

@@ -19,7 +19,6 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
-import config from '@/model/config';
 import { useRoute } from '@react-navigation/native';
 
 const ContainerWidth = 261;
@@ -192,11 +191,6 @@ const AddFundsInterstitial = ({ network }) => {
       if (isDamaged) {
         showWalletErrorAlert();
         captureMessage('Damaged wallet preventing add cash');
-        return;
-      }
-
-      if (!config.wyre_enabled) {
-        navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
         return;
       }
 
