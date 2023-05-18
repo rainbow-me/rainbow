@@ -64,6 +64,11 @@ export const event = {
   rewardsPressedSwappedCard: 'rewards.pressed_swapped_card',
   rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
   rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
+
+  wcNewSessionTimeout: 'New WalletConnect session time out',
+  wcNewSessionRejected: 'Rejected new WalletConnect session',
+  wcNewSessionApproved: 'Approved new WalletConnect session',
+  wcShowingSigningRequest: 'Showing Walletconnect signing request',
 } as const;
 
 /**
@@ -203,4 +208,18 @@ export type EventProperties = {
   [event.rewardsPressedSwappedCard]: undefined;
   [event.rewardsPressedBridgedCard]: undefined;
   [event.rewardsPressedLeaderboardItem]: { ens?: string };
+
+  [event.wcNewSessionApproved]: {
+    dappName: string;
+    dappUrl: string;
+  };
+  [event.wcNewSessionTimeout]: undefined;
+  [event.wcNewSessionRejected]: {
+    dappName: string;
+    dappUrl: string;
+  };
+  [event.wcShowingSigningRequest]: {
+    dappName: string;
+    dappUrl: string;
+  };
 };

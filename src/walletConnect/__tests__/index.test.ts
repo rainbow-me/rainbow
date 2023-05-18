@@ -1,11 +1,47 @@
 import { jest, test } from '@jest/globals';
+import { isAddress } from '@ethersproject/address';
+import Minimizer from 'react-native-minimizer';
+import { nanoid } from 'nanoid/non-secure';
+import { Web3WalletTypes } from '@walletconnect/web3wallet';
+
+import Navigation from '@/navigation/Navigation';
+import { mocked } from '@/testing/utils';
+import {
+  parseRPCParams,
+  maybeGoBackAndClearHasPendingRedirect,
+  setHasPendingDeeplinkPendingRedirect,
+  pair,
+  onSessionProposal,
+} from '@/walletConnect';
+import { RPCMethod } from '@/walletConnect/types';
 
 jest.mock('@walletconnect/core');
+jest.mock('@walletconnect/web3wallet', () => ({
+  Web3Wallet: {
+    init: jest.fn(async () => ({
+      on: jest.fn(),
+      off: jest.fn(),
+      core: {
+        pairing: {
+          pair: jest.fn(),
+        },
+      },
+    })),
+  },
+}));
+jest.mock('react-native', () => ({
+  InteractionManager: {
+    runAfterInteractions: jest.fn((cb: any) => cb()),
+  },
+}));
+jest.mock('@react-native-firebase/messaging', () => ({}));
 
 jest.mock('@/redux/store');
 jest.mock('@/redux/walletconnect');
 jest.mock('@/redux/requests');
-jest.mock('@/navigation/Navigation');
+jest.mock('@/navigation/Navigation', () => ({
+  handleAction: jest.fn(),
+}));
 jest.mock('@/handlers/imgix');
 jest.mock('@/utils/ethereumUtils');
 jest.mock('@/parsers/requests');
@@ -18,8 +54,222 @@ jest.mock('@/screens/Portal');
 jest.mock('@/walletConnect/sheets/AuthRequest', () => ({
   AuthRequest: jest.fn(),
 }));
+jest.mock('@/analytics');
 
-// import { parseRPCParams } from '@/walletConnect';
-// import { RPCMethod } from '@/walletConnect/types';
+/**
+ * Generates a unique WC URI for each test
+ *
+ * `urlKey` is our param, just to differentiate between tests and avoid cache
+ * hits on `walletConnectURICache`
+ */
+function generateWCUri({ version }: { version: number }) {
+  return `wc:topic@${version}?relay-protocol=protocol&symKey=symKey&urlKey=${nanoid()}`;
+}
 
-test(`works`, () => {});
+test(`parseRPCParams`, () => {
+  const send_transaction = {
+    method: RPCMethod.SendTransaction,
+    params: [
+      {
+        data: '0x',
+        from: '0xA2Eaa7BAe79F0F9FfB23667cdAc9CE285b30aE0E',
+        gasLimit: '0x5208',
+        gasPrice: '0x14f075c57e',
+        nonce: '0x27',
+        to: '0xA2Eaa7BAe79F0F9FfB23667cdAc9CE285b30aE0E',
+        value: '0x00',
+      },
+    ],
+  };
+  const personal_sign = {
+    method: RPCMethod.PersonalSign,
+    params: [
+      '0x4d7920656d61696c206973206a6f686e40646f652e636f6d202d2031363833353832363034343835',
+      '0xA2Eaa7BAe79F0F9FfB23667cdAc9CE285b30aE0E',
+    ],
+  };
+  const eth_sign = {
+    method: RPCMethod.Sign,
+    params: [
+      '0xA2Eaa7BAe79F0F9FfB23667cdAc9CE285b30aE0E',
+      '0x4d7920656d61696c206973206a6f686e40646f652e636f6d202d2031363833353832363433383539',
+    ],
+  };
+  const eth_signTypedData = {
+    method: RPCMethod.SignTypedData,
+    params: [
+      '0xA2Eaa7BAe79F0F9FfB23667cdAc9CE285b30aE0E',
+      `{
+        "types": {
+          "EIP712Domain": [
+            { "name": "name", "type": "string" },
+            { "name": "version", "type": "string" },
+            { "name": "chainId", "type": "uint256" },
+            { "name": "verifyingContract", "type": "address" }
+          ],
+          "Person": [
+            { "name": "name", "type": "string" },
+            { "name": "wallet", "type": "address" }
+          ],
+          "Mail": [
+            { "name": "from", "type": "Person" },
+            { "name": "to", "type": "Person" },
+            { "name": "contents", "type": "string" }
+          ]
+        },
+        "primaryType": "Mail",
+        "domain": {
+          "name": "Ether Mail",
+          "version": "1",
+          "chainId": 1,
+          "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+        },
+        "message": {
+          "from": {
+            "name": "Cow",
+            "wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+          },
+          "to": {
+            "name": "Bob",
+            "wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+          },
+          "contents": "Hello, Bob!"
+        }
+      }`,
+    ],
+  };
+
+  const sendTransactionResult = parseRPCParams(send_transaction);
+  expect(sendTransactionResult).toMatchSnapshot();
+  expect(isAddress(sendTransactionResult.address!)).toBeTruthy();
+
+  const personalSignResult = parseRPCParams(personal_sign);
+  expect(personalSignResult).toMatchSnapshot();
+  expect(isAddress(personalSignResult.address!)).toBeTruthy();
+
+  const ethSignResult = parseRPCParams(eth_sign);
+  expect(ethSignResult).toMatchSnapshot();
+  expect(isAddress(ethSignResult.address!)).toBeTruthy();
+
+  const ethSignTypedDataResult = parseRPCParams(eth_signTypedData);
+  expect(ethSignTypedDataResult).toMatchSnapshot();
+  expect(isAddress(ethSignTypedDataResult.address!)).toBeTruthy();
+});
+
+test(`maybeGoBackAndClearHasPendingRedirect`, () => {
+  jest.useFakeTimers();
+
+  setHasPendingDeeplinkPendingRedirect(true);
+  maybeGoBackAndClearHasPendingRedirect();
+
+  jest.advanceTimersByTime(1);
+
+  expect(Minimizer.goBack).toHaveBeenCalled();
+
+  jest.useRealTimers();
+});
+
+test(`pair: timeout`, async () => {
+  jest.useFakeTimers();
+
+  const uri = generateWCUri({ version: 2 });
+
+  await pair({ uri });
+
+  jest.advanceTimersByTime(10_000);
+
+  expect(Navigation.handleAction).toHaveBeenCalled();
+});
+
+test.skip(`onSessionProposal`, async () => {
+  const proposal: Web3WalletTypes.SessionProposal = {
+    id: 1683746513153348,
+    params: {
+      id: 1683746513153348,
+      pairingTopic:
+        '984de015e003c68a5d3bc9faa48f5069c9276360d79a279a9e670b6a76d47925',
+      expiry: 1683746816,
+      requiredNamespaces: {
+        eip155: {
+          chains: ['eip155:1'],
+          methods: ['eth_sendTransaction', 'personal_sign'],
+          events: ['chainChanged', 'accountsChanged'],
+          // rpcMap: {
+          //   '1': 'https://cloudflare-eth.com',
+          // },
+        },
+      },
+      optionalNamespaces: {
+        eip155: {
+          chains: [
+            'eip155:137',
+            'eip155:42161',
+            'eip155:10',
+            'eip155:56',
+            'eip155:43114',
+          ],
+          methods: [
+            'eth_sendTransaction',
+            'personal_sign',
+            'eth_accounts',
+            'eth_requestAccounts',
+            'eth_call',
+            'eth_getBalance',
+            'eth_sendRawTransaction',
+            'eth_sign',
+            'eth_signTransaction',
+            'eth_signTypedData',
+            'eth_signTypedData_v3',
+            'eth_signTypedData_v4',
+            'wallet_switchEthereumChain',
+            'wallet_addEthereumChain',
+            'wallet_getPermissions',
+            'wallet_requestPermissions',
+            'wallet_registerOnboarding',
+            'wallet_watchAsset',
+            'wallet_scanQRCode',
+          ],
+          events: [
+            'chainChanged',
+            'accountsChanged',
+            'message',
+            'disconnect',
+            'connect',
+          ],
+          // rpcMap: {
+          //   '1': 'https://cloudflare-eth.com',
+          //   '10': 'https://mainnet.optimism.io',
+          //   '56': 'https://rpc.ankr.com/bsc',
+          //   '137': 'https://polygon-rpc.com',
+          //   '42161': 'https://arb1.arbitrum.io/rpc',
+          //   '43114': 'https://api.avax.network/ext/bc/C/rpc',
+          // },
+        },
+      },
+      relays: [
+        {
+          protocol: 'irn',
+        },
+      ],
+      proposer: {
+        publicKey:
+          'd613a392f572c7c6401e1716842e664e0f2a43e5a2f4632cb22c03fbbb3b7e47',
+        metadata: {
+          description: '',
+          url: 'https://wagmi-walletconnect.vercel.app',
+          icons: [],
+          name: 'wagmi',
+        },
+      },
+    },
+    context: {
+      verified: {
+        verifyUrl: '',
+        validation: 'UNKNOWN',
+        origin: 'https://wagmi-walletconnect.vercel.app',
+      },
+    },
+  };
+
+  await onSessionProposal(proposal);
+});
