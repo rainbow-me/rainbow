@@ -38,6 +38,7 @@ export function resolveToken<TokenName extends string, TokenValue, CustomValue>(
 
 export type BoxProps = {
   alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
+  background?: BackgroundProviderProps['color'];
   borderRadius?: number;
   borderTopLeftRadius?: number;
   borderTopRightRadius?: number;
@@ -74,6 +75,7 @@ export type BoxProps = {
   paddingVertical?: Space;
   position?: Position;
   right?: PositionSpace;
+  shadow?: Shadow;
   top?: PositionSpace;
   width?: Width;
   overflow?: 'hidden' | 'visible' | 'scroll';
@@ -90,17 +92,7 @@ export type BoxProps = {
       borderRightRadius?: number;
       borderTopRadius?: never;
     }
-) &
-  (
-    | {
-        background?: BackgroundProviderProps['color'];
-        shadow?: never;
-      }
-    | {
-        background: BackgroundProviderProps['color'];
-        shadow: Shadow;
-      }
-  );
+);
 
 type PolymorphicBox = Polymorphic.ForwardRefComponent<typeof View, BoxProps>;
 

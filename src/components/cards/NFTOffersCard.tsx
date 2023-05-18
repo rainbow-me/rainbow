@@ -17,7 +17,7 @@ import { RainbowError, logger } from '@/logger';
 import { ScrollView } from 'react-native';
 import { CoinIcon } from '../coin-icon';
 import { useNFTOffers } from '@/resources/nftOffers';
-import { NftOffer, SortCriterion } from '@/graphql/__generated__/nfts';
+import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import {
   convertAmountToNativeDisplay,
   handleSignificantDecimals,
@@ -28,6 +28,7 @@ import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
+import { TextColor } from '@/design-system/color/palettes';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 77.75;
@@ -80,6 +81,7 @@ const NFTImage = ({ url }: { url: string }) => (
     source={{ uri: url }}
     borderRadius={12}
     shadow="18px"
+    size={NFT_IMAGE_SIZE}
   />
 );
 
@@ -133,7 +135,7 @@ const Offer = ({
   const lessThanTwoHoursRemaining =
     !isNil(timeRemaining) && timeRemaining <= TWO_HOURS_MS;
 
-  let textColor;
+  let textColor: TextColor;
   let text;
   switch (sortCriterion) {
     case SortCriterion.TopBidValue:
@@ -165,6 +167,8 @@ const Offer = ({
       }
       break;
     default:
+      textColor = 'labelTertiary';
+      text = '';
       logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
       break;
   }
@@ -206,7 +210,7 @@ const Offer = ({
             size={12}
             symbol={offer.offerPaymentToken.symbol}
           />
-          <Text size="13pt" weight="heavy">
+          <Text color="label" size="13pt" weight="heavy">
             {handleSignificantDecimals(
               offer.grossAmount.decimal,
               18,
@@ -289,7 +293,11 @@ export const NFTOffersCard = () => {
     ],
   };
 
-  const onPressMenuItem = ({ nativeEvent: { actionKey } }) => {
+  const onPressMenuItem = ({
+    nativeEvent: { actionKey },
+  }: {
+    nativeEvent: { actionKey: SortCriterion };
+  }) => {
     haptics.selection();
     switch (actionKey) {
       case SortOptions.Highest.criterion:
@@ -325,7 +333,7 @@ export const NFTOffersCard = () => {
               </AccentColorProvider>
             ) : (
               <>
-                <Text weight="heavy" size="20pt">
+                <Text color="label" weight="heavy" size="20pt">
                   {offers.length === 1
                     ? i18n.t(i18n.l.nftOffers.card.title.singular)
                     : i18n.t(i18n.l.nftOffers.card.title.plural, {
@@ -365,10 +373,10 @@ export const NFTOffersCard = () => {
                 <Text size="15pt" weight="bold" color="labelTertiary">
                   {sortOption.icon}
                 </Text>
-                <Text size="17pt" weight="bold">
+                <Text color="label" size="17pt" weight="bold">
                   {` ${sortOption.name} `}
                 </Text>
-                <Text size="15pt" weight="bold">
+                <Text color="label" size="15pt" weight="bold">
                   􀆈
                 </Text>
               </Inline>
@@ -416,7 +424,7 @@ export const NFTOffersCard = () => {
         >
           {/* unfortunately shimmer width must be hardcoded */}
           <ShimmerAnimation color={buttonColor} width={deviceWidth - 40} />
-          <Text align="center" size="15pt" weight="bold">
+          <Text color="label" align="center" size="15pt" weight="bold">
             {i18n.t(i18n.l.nftOffers.card.button)}
           </Text>
         </Box>
