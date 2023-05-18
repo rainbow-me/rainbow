@@ -17,4 +17,11 @@ exports.config = {
       url: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
     },
   },
+  arc: {
+    document: './queries/arc.graphql',
+    schema: {
+      method: 'GET',
+      url: 'https://arc.graphql.rainbow.me/graphql',
+    },
+  },
 };
