@@ -345,12 +345,14 @@ const DevSection = () => {
           }
         />
         <MenuItem
-          leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
+          leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearPendingTransactions}
           size={52}
           testID="clear-pending-transactions-section"
           titleComponent={
-            <MenuItem.Title text={lang.t('Clear Pending Transactions')} />
+            <MenuItem.Title
+              text={lang.t('developer_settings.clear_pending_txs')}
+            />
           }
         />
         <MenuItem
