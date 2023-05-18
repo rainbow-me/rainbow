@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.18-1",
+  "version": "1.8.19-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -98,7 +98,7 @@
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/react-native-payments": "1.1.5",
-    "@rainbow-me/swaps": "0.3.0",
+    "@rainbow-me/swaps": "0.4.0",
     "@ratio.me/ratio-react-native-library": "0.8.5",
     "@react-native-async-storage/async-storage": "1.17.7",
     "@react-native-community/blur": "3.6.0",
@@ -200,7 +200,6 @@
     "qs": "6.9.7",
     "querystring-es3": "0.2.1",
     "react": "17.0.2",
-    "react-coin-icon": "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
     "react-native": "rainbow-me/react-native#e4199f33b90914aeefcb638e02285711f45e422e",
@@ -409,7 +408,7 @@
     "react-native/react-devtools-core": "4.24.0",
     "cross-fetch": "3.1.5",
     "**/undici": "5.19.1",
-    "**/vm2": "3.9.17",
+    "**/vm2": "3.9.18",
     "**/d3-color": "3.1.0",
     "**/minimatch": "3.0.5",
     "**/@xmldom/xmldom": "0.7.7",

@@ -785,11 +785,12 @@ export default function TransactionConfirmationScreen() {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
           await handleSessionRequestResponse(walletConnectV2RequestValues, {
-            result,
+            result: result.hash,
           });
         } else {
           await dispatch(
@@ -884,6 +885,7 @@ export default function TransactionConfirmationScreen() {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {
@@ -903,19 +905,21 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
-    method,
-    accountInfo.address,
-    provider,
     params,
+    accountInfo.address,
+    accountInfo.isHardwareWallet,
+    provider,
+    method,
     dappName,
     dappUrl,
+    currentNetwork,
     requestId,
     callback,
     closeScreen,
+    walletConnectV2RequestValues,
     dispatch,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     onCancel,
   ]);

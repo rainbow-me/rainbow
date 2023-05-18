@@ -141,7 +141,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const flipCurrencies = useCallback(() => {
-    if (currentNetwork === Network.arbitrum || inputNetwork !== outputNetwork) {
+    if (inputNetwork !== outputNetwork) {
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
