@@ -115,7 +115,7 @@ interface ExplorerState {
 }
 
 // A `ZerionAsset` with additional fields available for L2 assets.
-type ZerionAsseWithL2Fields = ZerionAsset & {
+type ZerionAssetWithL2Fields = ZerionAsset & {
   mainnet_address: string;
   network: string;
 };
@@ -128,7 +128,7 @@ type ZerionAsseWithL2Fields = ZerionAsset & {
 interface L2AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
-      asset: ZerionAsseWithL2Fields;
+      asset: ZerionAssetWithL2Fields;
     }[];
   };
   meta?: MessageMeta;
@@ -843,7 +843,7 @@ const l2AddressAssetsReceived = (
   const { genericAssets } = getState().data;
 
   const newAssets:
-    | { asset: ZerionAsseWithL2Fields }[]
+    | { asset: ZerionAssetWithL2Fields }[]
     | undefined = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
     const fallbackAsset =
@@ -859,7 +859,7 @@ const l2AddressAssetsReceived = (
           price: {
             ...asset?.asset?.price,
             ...fallbackAsset.price,
-          } as ZerionAsseWithL2Fields['price'],
+          } as ZerionAssetWithL2Fields['price'],
         },
       };
     }
