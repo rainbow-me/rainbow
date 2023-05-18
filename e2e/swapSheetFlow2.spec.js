@@ -67,7 +67,11 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('settings-sheet');
     await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');
-    await Helpers.scrollTo('developer-settings-sheet', 'bottom');
+    await Helpers.swipeUntilVisible(
+      'alert-section',
+      'developer-settings-sheet',
+      'up'
+    );
     await Helpers.waitAndTap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
