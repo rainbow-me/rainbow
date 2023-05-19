@@ -237,18 +237,6 @@ export const handleSignificantDecimalsWithThreshold = (
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
-export const abbreviateNumber = (number: BigNumberish): string => {
-  if (number >= 1000000000) {
-    return Math.round(number / 100000000) / 10 + 'b';
-  } else if (number >= 1000000) {
-    return Math.round(number / 100000) / 10 + 'm';
-  } else if (number >= 1000) {
-    return Math.round(number / 100) / 10 + 'k';
-  } else {
-    return number;
-  }
-};
-
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
@@ -267,12 +255,12 @@ export const handleSignificantDecimals = (
   ).toFixed();
   const resultBN = new BigNumber(result);
   if (abbreviate) {
-    if (resultBN >= 1000000000) {
-      return Math.round(resultBN / 100000000) / 10 + 'b';
-    } else if (resultBN >= 1000000) {
-      return Math.round(resultBN / 100000) / 10 + 'm';
-    } else if (resultBN >= 1000) {
-      return Math.round(resultBN / 100) / 10 + 'k';
+    if (resultBN.isGreaterThanOrEqualTo(1_000_000_000)) {
+      return resultBN.div(1_000_000_000).toFormat(1) + 'b';
+    } else if (resultBN.isGreaterThanOrEqualTo(1_000_000)) {
+      return resultBN.div(1_000_000).toFormat(1) + 'm';
+    } else if (resultBN.isGreaterThanOrEqualTo(1000)) {
+      return resultBN.div(1000).toFormat(1) + 'k';
     }
   }
   return resultBN.dp() <= 2
