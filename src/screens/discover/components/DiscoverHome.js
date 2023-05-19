@@ -3,6 +3,7 @@ import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
   HARDWARE_WALLETS,
+  NFT_OFFERS,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -27,17 +28,21 @@ import { useNFTOffers } from '@/resources/nftOffers';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
-  const { data } = useNFTOffers({ walletAddress: accountAddress });
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
   const isProfilesEnabled =
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const { wallets } = useWallets();
+  const { isReadOnlyWallet, wallets } = useWallets();
+  const { data } = useNFTOffers({
+    walletAddress: accountAddress,
+    enabled: !isReadOnlyWallet,
+  });
 
   const hasHardwareWallets =
     Object.keys(wallets || {}).filter(
@@ -56,7 +61,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {hasNFTOffers && (
+              {nftOffersEnabled && hasNFTOffers && (
                 <>
                   <Separator color="separator" thickness={1} />
                   <NFTOffersCard />
