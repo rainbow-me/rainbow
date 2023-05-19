@@ -74,13 +74,9 @@ const NFTImageMask = () => (
 );
 
 const NFTImage = ({ url }: { url: string }) => (
-  <Box
-    as={ImgixImage}
-    width={{ custom: NFT_IMAGE_SIZE }}
-    height={{ custom: NFT_IMAGE_SIZE }}
+  <ImgixImage
     source={{ uri: url }}
-    borderRadius={12}
-    shadow="18px"
+    style={{ width: NFT_IMAGE_SIZE, height: NFT_IMAGE_SIZE, borderRadius: 12 }}
     size={NFT_IMAGE_SIZE}
   />
 );
