@@ -4,11 +4,12 @@ import {
   Box,
   Inline,
   Inset,
+  Separator,
   Stack,
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -29,9 +30,15 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { TextColor } from '@/design-system/color/palettes';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 77.75;
+const CARD_HEIGHT = 250;
 
 type SortOption = { name: string; icon: string; criterion: SortCriterion };
 
@@ -236,7 +243,28 @@ export const NFTOffersCard = () => {
   });
   const { colors } = useTheme();
 
+  const [hasOffers, setHasOffers] = useReducer(() => true, false);
+
   const offers = (data?.nftOffers ?? []).slice(0, 10);
+
+  const heightValue = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: heightValue.value + 1,
+    };
+  });
+
+  const handleStretch = useCallback(() => {
+    heightValue.value = withTiming(CARD_HEIGHT - 1);
+  }, [heightValue]);
+
+  useEffect(() => {
+    if (!hasOffers && offers.length) {
+      setHasOffers();
+      handleStretch();
+    }
+  }, [handleStretch, hasOffers, offers.length]);
 
   const totalUSDValue = offers.reduce(
     (acc, offer) => acc + offer.grossAmount.usd,
@@ -314,117 +342,128 @@ export const NFTOffersCard = () => {
   };
 
   return (
-    <Box width="full">
-      <Stack space="20px">
-        <Inline alignVertical="center" alignHorizontal="justify">
-          <Inline alignVertical="center" space={{ custom: 7 }}>
-            {!offers.length ? (
-              <AccentColorProvider color={colors.skeleton}>
-                <Box
-                  background="accent"
-                  height={{ custom: 14 }}
-                  width={{ custom: 157 }}
-                  borderRadius={7}
+    <Bleed horizontal="20px">
+      <Box style={{ overflow: 'hidden' }}>
+        <Inset horizontal="20px">
+          <Box as={Animated.View} width="full" style={[animatedStyle]}>
+            <Stack space="20px">
+              <Separator color="separator" thickness={1} />
+              <Inline alignVertical="center" alignHorizontal="justify">
+                <Inline alignVertical="center" space={{ custom: 7 }}>
+                  {!offers.length ? (
+                    <AccentColorProvider color={colors.skeleton}>
+                      <Box
+                        background="accent"
+                        height={{ custom: 14 }}
+                        width={{ custom: 157 }}
+                        borderRadius={7}
+                      />
+                    </AccentColorProvider>
+                  ) : (
+                    <>
+                      <Text color="label" weight="heavy" size="20pt">
+                        {offers.length === 1
+                          ? i18n.t(i18n.l.nftOffers.card.title.singular)
+                          : i18n.t(i18n.l.nftOffers.card.title.plural, {
+                              numOffers: offers.length,
+                            })}
+                      </Text>
+                      <Bleed vertical="4px">
+                        <Box
+                          style={{
+                            borderWidth: 1,
+                            borderColor,
+                            borderRadius: 7,
+                          }}
+                          justifyContent="center"
+                          alignItems="center"
+                          padding={{ custom: 5 }}
+                        >
+                          <Text
+                            align="center"
+                            color="labelTertiary"
+                            size="13pt"
+                            weight="semibold"
+                          >
+                            {totalValue}
+                          </Text>
+                        </Box>
+                      </Bleed>
+                    </>
+                  )}
+                </Inline>
+                <ContextMenuButton
+                  menuConfig={menuConfig}
+                  onPressMenuItem={onPressMenuItem}
+                >
+                  <ButtonPressAnimation>
+                    <Inline alignVertical="center">
+                      <Text size="15pt" weight="bold" color="labelTertiary">
+                        {sortOption.icon}
+                      </Text>
+                      <Text color="label" size="17pt" weight="bold">
+                        {` ${sortOption.name} `}
+                      </Text>
+                      <Text color="label" size="15pt" weight="bold">
+                        􀆈
+                      </Text>
+                    </Inline>
+                  </ButtonPressAnimation>
+                </ContextMenuButton>
+              </Inline>
+              <Bleed horizontal="20px">
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ overflow: 'visible' }}
+                >
+                  <Inset horizontal="20px">
+                    <Inline space={{ custom: 14 }}>
+                      {!offers.length ? (
+                        <>
+                          <FakeOffer />
+                          <FakeOffer />
+                          <FakeOffer />
+                          <FakeOffer />
+                          <FakeOffer />
+                        </>
+                      ) : (
+                        offers.map(offer => (
+                          <Offer
+                            key={offer.contractAddress + offer.tokenId}
+                            offer={offer}
+                            sortCriterion={sortOption.criterion}
+                          />
+                        ))
+                      )}
+                    </Inline>
+                  </Inset>
+                </ScrollView>
+              </Bleed>
+              <Box
+                as={ButtonPressAnimation}
+                background="fillSecondary"
+                height="36px"
+                width="full"
+                borderRadius={99}
+                justifyContent="center"
+                alignItems="center"
+                style={{ overflow: 'hidden' }}
+              >
+                {/* unfortunately shimmer width must be hardcoded */}
+                <ShimmerAnimation
+                  color={buttonColor}
+                  width={deviceWidth - 40}
                 />
-              </AccentColorProvider>
-            ) : (
-              <>
-                <Text color="label" weight="heavy" size="20pt">
-                  {offers.length === 1
-                    ? i18n.t(i18n.l.nftOffers.card.title.singular)
-                    : i18n.t(i18n.l.nftOffers.card.title.plural, {
-                        numOffers: offers.length,
-                      })}
+                <Text color="label" align="center" size="15pt" weight="bold">
+                  {i18n.t(i18n.l.nftOffers.card.button)}
                 </Text>
-                <Bleed vertical="4px">
-                  <Box
-                    style={{
-                      borderWidth: 1,
-                      borderColor,
-                      borderRadius: 7,
-                    }}
-                    justifyContent="center"
-                    alignItems="center"
-                    padding={{ custom: 5 }}
-                  >
-                    <Text
-                      align="center"
-                      color="labelTertiary"
-                      size="13pt"
-                      weight="semibold"
-                    >
-                      {totalValue}
-                    </Text>
-                  </Box>
-                </Bleed>
-              </>
-            )}
-          </Inline>
-          <ContextMenuButton
-            menuConfig={menuConfig}
-            onPressMenuItem={onPressMenuItem}
-          >
-            <ButtonPressAnimation>
-              <Inline alignVertical="center">
-                <Text size="15pt" weight="bold" color="labelTertiary">
-                  {sortOption.icon}
-                </Text>
-                <Text color="label" size="17pt" weight="bold">
-                  {` ${sortOption.name} `}
-                </Text>
-                <Text color="label" size="15pt" weight="bold">
-                  􀆈
-                </Text>
-              </Inline>
-            </ButtonPressAnimation>
-          </ContextMenuButton>
-        </Inline>
-        <Bleed horizontal="20px">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ overflow: 'visible' }}
-          >
-            <Inset horizontal="20px">
-              <Inline space={{ custom: 14 }}>
-                {!offers.length ? (
-                  <>
-                    <FakeOffer />
-                    <FakeOffer />
-                    <FakeOffer />
-                    <FakeOffer />
-                    <FakeOffer />
-                  </>
-                ) : (
-                  offers.map(offer => (
-                    <Offer
-                      key={offer.contractAddress + offer.tokenId}
-                      offer={offer}
-                      sortCriterion={sortOption.criterion}
-                    />
-                  ))
-                )}
-              </Inline>
-            </Inset>
-          </ScrollView>
-        </Bleed>
-        <Box
-          as={ButtonPressAnimation}
-          background="fillSecondary"
-          height="36px"
-          width="full"
-          borderRadius={99}
-          justifyContent="center"
-          alignItems="center"
-          style={{ overflow: 'hidden' }}
-        >
-          {/* unfortunately shimmer width must be hardcoded */}
-          <ShimmerAnimation color={buttonColor} width={deviceWidth - 40} />
-          <Text color="label" align="center" size="15pt" weight="bold">
-            {i18n.t(i18n.l.nftOffers.card.button)}
-          </Text>
-        </Box>
-      </Stack>
-    </Box>
+              </Box>
+              <Separator color="separator" thickness={1} />
+            </Stack>
+          </Box>
+        </Inset>
+      </Box>
+    </Bleed>
   );
 };

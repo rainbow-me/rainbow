@@ -24,10 +24,9 @@ import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
-import { useNFTOffers } from '@/resources/nftOffers';
 
 export default function DiscoverHome() {
-  const { accountAddress, network } = useAccountSettings();
+  const { network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -39,17 +38,11 @@ export default function DiscoverHome() {
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { isReadOnlyWallet, wallets } = useWallets();
-  const { data } = useNFTOffers({
-    walletAddress: accountAddress,
-    enabled: !isReadOnlyWallet,
-  });
 
   const hasHardwareWallets =
     Object.keys(wallets || {}).filter(
       key => wallets[key].type === walletTypes.bluetooth
     ).length > 0;
-
-  const hasNFTOffers = data?.nftOffers?.length > 0;
 
   return (
     <Inset top="20px" bottom={{ custom: 150 }}>
@@ -61,14 +54,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {nftOffersEnabled && hasNFTOffers && (
-                <>
-                  <Separator color="separator" thickness={1} />
-                  <NFTOffersCard />
-                  <Separator color="separator" thickness={1} />
-                </>
-              )}
-
+              {nftOffersEnabled && !isReadOnlyWallet && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
