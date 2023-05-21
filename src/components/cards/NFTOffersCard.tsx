@@ -9,7 +9,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -135,15 +135,14 @@ const Offer = ({
   const timeRemaining = offer.validUntil
     ? Math.max(offer.validUntil - Date.now(), 0)
     : undefined;
-  const lessThanTwoHoursRemaining =
-    !isNil(timeRemaining) && timeRemaining <= TWO_HOURS_MS;
+  const isExpiring = !isNil(timeRemaining) && timeRemaining <= TWO_HOURS_MS;
 
   let textColor: TextColor;
   let text;
   switch (sortCriterion) {
     case SortCriterion.TopBidValue:
     case SortCriterion.DateCreated:
-      if (lessThanTwoHoursRemaining) {
+      if (isExpiring) {
         textColor = 'red';
         text = getFormattedTimeRemaining(timeRemaining);
       } else {
@@ -158,7 +157,7 @@ const Offer = ({
       }
       break;
     case SortCriterion.FloorDifferencePercentage:
-      if (lessThanTwoHoursRemaining) {
+      if (isExpiring) {
         textColor = 'red';
         text = getFormattedTimeRemaining(timeRemaining);
       } else if (isFloorDiffPercentagePositive) {
@@ -178,7 +177,7 @@ const Offer = ({
 
   return (
     <ButtonPressAnimation>
-      {lessThanTwoHoursRemaining ? (
+      {isExpiring ? (
         <>
           <Box
             width={{ custom: 19 }}
@@ -255,16 +254,12 @@ export const NFTOffersCard = () => {
     };
   });
 
-  const handleStretch = useCallback(() => {
-    heightValue.value = withTiming(CARD_HEIGHT - 1);
-  }, [heightValue]);
-
   useEffect(() => {
     if (!hasOffers && offers.length) {
       setHasOffers();
-      handleStretch();
+      heightValue.value = withTiming(CARD_HEIGHT - 1);
     }
-  }, [handleStretch, hasOffers, offers.length]);
+  }, [hasOffers, heightValue, offers.length]);
 
   const totalUSDValue = offers.reduce(
     (acc, offer) => acc + offer.grossAmount.usd,
