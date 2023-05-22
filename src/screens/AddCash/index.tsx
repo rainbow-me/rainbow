@@ -81,15 +81,15 @@ export function AddCashSheet() {
           <Box paddingVertical="44px" width="full">
             <Separator color="separatorTertiary" />
 
-            <Box paddingTop="20px">
-              <Moonpay accountAddress={accountAddress} />
-            </Box>
-
             {isRatioEnabled && (
               <Box paddingTop="20px">
                 <Ratio accountAddress={accountAddress} />
               </Box>
             )}
+
+            <Box paddingTop="20px">
+              <Moonpay accountAddress={accountAddress} />
+            </Box>
 
             <Box paddingTop="20px">
               <Ramp accountAddress={accountAddress} />
