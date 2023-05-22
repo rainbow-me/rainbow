@@ -277,7 +277,7 @@ export default function BackupCloudStep() {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
             onConfirmBackup();
-          }, 250);
+          }, 300);
         });
       },
       type: 'backup',
