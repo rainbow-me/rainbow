@@ -1,4 +1,6 @@
 import React from 'react';
+// @ts-expect-error // no declaration for this yet
+import * as CoinIconsImages from 'react-coin-icon/lib/pngs';
 import { Image, StyleSheet, View } from 'react-native';
 import { FastChainBadge } from './FastCoinBadge';
 import { FastFallbackCoinIconImage } from './FastFallbackCoinIconImage';
@@ -26,6 +28,12 @@ const fallbackIconStyle = {
   ...borders.buildCircleAsObject(40),
   position: 'absolute',
 };
+
+function formatSymbol(symbol: string) {
+  return symbol
+    ? symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase()
+    : '';
+}
 
 /**
  * If mainnet asset is available, get the token under /ethereum/ (token) url.
@@ -89,6 +97,11 @@ export default React.memo(function FastCoinIcon({
 
   const eth = isETH(resolvedAddress);
 
+  const formattedSymbol = formatSymbol(symbol);
+
+  const shouldRenderFallback = !eth && !tokenMetadata;
+  const shouldRenderLocalCoinIconImage =
+    !shouldRenderFallback && !!CoinIconsImages[formattedSymbol];
   const shouldRenderContract = symbol === 'contract';
 
   return (
@@ -103,6 +116,21 @@ export default React.memo(function FastCoinIcon({
           ]}
         >
           <Image source={EthIcon} style={sx.coinIconFallback} />
+        </View>
+      ) : shouldRenderLocalCoinIconImage ? (
+        <View
+          style={[
+            sx.coinIconFallback,
+            sx.reactCoinIconContainer,
+            sx.withShadow,
+            { shadowColor },
+          ]}
+        >
+          <Image
+            resizeMode="contain"
+            source={CoinIconsImages[formattedSymbol]}
+            style={sx.reactCoinIconImage}
+          />
         </View>
       ) : shouldRenderContract ? (
         <Image source={ContractInteraction} style={sx.contract} />
