@@ -183,12 +183,20 @@ export function getApprovedNamespaces(
     } {
   try {
     const namespaces = buildApprovedNamespaces(props);
+
     return {
       success: true,
       result: namespaces,
       error: undefined,
     };
   } catch (e: any) {
+    logger.error(
+      new RainbowError(`WC v2: buildApprovedNamespaces threw an error`),
+      {
+        message: e.toString(),
+      }
+    );
+
     return {
       success: false,
       result: undefined,
