@@ -21,6 +21,7 @@ import { useNFTOffers } from '@/resources/nftOffers';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import {
   convertAmountToNativeDisplay,
+  getFormattedTimeQuantity,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
 import { ImgixImage } from '../images';
@@ -59,17 +60,6 @@ const SortOptions = {
     criterion: SortCriterion.DateCreated,
   },
 } as const;
-
-const getFormattedTimeRemaining = (ms: number): string => {
-  const totalMinutes = Math.floor(ms / (1000 * 60));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
-  const formattedHours = hours ? hours + 'h ' : '';
-
-  return formattedHours + formattedMinutes;
-};
 
 const NFTImageMask = () => (
   <Svg width="77.75" height="77.75" viewBox="0 0 77.75 77.75">
@@ -144,7 +134,7 @@ const Offer = ({
     case SortCriterion.DateCreated:
       if (isExpiring) {
         textColor = 'red';
-        text = getFormattedTimeRemaining(timeRemaining);
+        text = getFormattedTimeQuantity(timeRemaining);
       } else {
         textColor = 'labelTertiary';
         text = convertAmountToNativeDisplay(
@@ -159,7 +149,7 @@ const Offer = ({
     case SortCriterion.FloorDifferencePercentage:
       if (isExpiring) {
         textColor = 'red';
-        text = getFormattedTimeRemaining(timeRemaining);
+        text = getFormattedTimeQuantity(timeRemaining);
       } else if (isFloorDiffPercentagePositive) {
         textColor = 'green';
         text = `+${offer.floorDifferencePercentage}%`;
@@ -244,8 +234,9 @@ export const NFTOffersCard = () => {
 
   const [hasOffers, setHasOffers] = useReducer(() => true, false);
 
+  // only show the first 10 offers
   const offers = (data?.nftOffers ?? []).slice(0, 10);
-  console.log(offers, 'OFFERS');
+
   const heightValue = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {

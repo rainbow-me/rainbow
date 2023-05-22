@@ -543,3 +543,20 @@ export const pickBy = <T>(
       return acc;
     }, {} as Dictionary<T>);
 };
+
+/**
+ * Formats ms since epoch into a string of the form "Xh Ym" where X is the number of hours and Y is the number of minutes.
+ * Doesn't support days, months, or years.
+ * @param ms ms since epoch
+ * @returns string of the format "Xh Ym"
+ */
+export const getFormattedTimeQuantity = (ms: number): string => {
+  const totalMinutes = Math.floor(ms / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
+  const formattedHours = hours ? hours + 'h ' : '';
+
+  return formattedHours + formattedMinutes;
+};
