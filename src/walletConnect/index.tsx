@@ -1,6 +1,10 @@
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import { getSdkError, parseUri } from '@walletconnect/utils';
+import {
+  getSdkError,
+  parseUri,
+  buildApprovedNamespaces,
+} from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { isAddress, getAddress } from '@ethersproject/address';
@@ -16,7 +20,7 @@ import { logger, RainbowError } from '@/logger';
 import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
+import { analyticsV2 as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import Alert from '@/components/alerts/Alert';
 import * as lang from '@/languages';
@@ -45,6 +49,10 @@ import {
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
+
+const SUPPORTED_EVM_CHAIN_IDS = supportedChainConfigs.map(
+  chain => chain.network_id
+);
 
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
@@ -94,17 +102,15 @@ let syncWeb3WalletClient:
 
 const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
 
-export const web3WalletClient = Promise.resolve(
-  Web3Wallet.init({
-    core: walletConnectCore,
-    metadata: {
-      name: '🌈 Rainbow',
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      url: 'https://rainbow.me',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    },
-  })
-);
+export const web3WalletClient = Web3Wallet.init({
+  core: walletConnectCore,
+  metadata: {
+    name: '🌈 Rainbow',
+    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+    url: 'https://rainbow.me',
+    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+  },
+});
 
 /**
  * For RPC requests that have [address, message] tuples (order may change),
@@ -157,19 +163,23 @@ export function parseRPCParams({
   }
 }
 
+const SUPPORTED_SIGNING_METHODS = [
+  RPCMethod.Sign,
+  RPCMethod.PersonalSign,
+  RPCMethod.SignTypedData,
+  RPCMethod.SignTypedDataV1,
+  RPCMethod.SignTypedDataV3,
+  RPCMethod.SignTypedDataV4,
+];
+
+const SUPPORTED_TRANSACTION_METHODS = [RPCMethod.SendTransaction];
+
 export function isSupportedSigningMethod(method: RPCMethod) {
-  return [
-    RPCMethod.Sign,
-    RPCMethod.PersonalSign,
-    RPCMethod.SignTypedData,
-    RPCMethod.SignTypedDataV1,
-    RPCMethod.SignTypedDataV3,
-    RPCMethod.SignTypedDataV4,
-  ].includes(method);
+  return SUPPORTED_SIGNING_METHODS.includes(method);
 }
 
 export function isSupportedTransactionMethod(method: RPCMethod) {
-  return [RPCMethod.SendTransaction].includes(method);
+  return SUPPORTED_TRANSACTION_METHODS.includes(method);
 }
 
 export function isSupportedMethod(method: RPCMethod) {
@@ -217,7 +227,7 @@ async function rejectProposal({
 
   await client.rejectSession({ id, reason: getSdkError(reason) });
 
-  analytics.track('Rejected new WalletConnect session', {
+  analytics.track(analytics.event.wcNewSessionRejected, {
     dappName: proposer.metadata.name,
     dappUrl: proposer.metadata.url,
   });
@@ -254,7 +264,7 @@ export async function pair({ uri }: { uri: string }) {
     client.off('session_proposal', handler);
     client.off('auth_request', handler);
     showErrorSheet();
-    analytics.track('New WalletConnect session time out');
+    analytics.track(analytics.event.wcNewSessionTimeout);
   }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
@@ -348,7 +358,7 @@ export async function onSessionProposal(
 ) {
   logger.debug(
     `WC v2: session_proposal`,
-    {},
+    { proposal },
     logger.DebugContext.walletconnect
   );
 
@@ -383,10 +393,7 @@ export async function onSessionProposal(
   const supportedChainIds = chainIds.filter(isSupportedChain);
   const unsupportedChainIds = chainIds.filter(id => !isSupportedChain(id));
 
-  if (
-    (unsupportedChainIds.length && !supportedChainIds.length) ||
-    unsupportedNamespaces.length
-  ) {
+  if (unsupportedChainIds.length) {
     logger.warn(
       `WC v2: session proposal requested unsupported networks or namespaces`,
       {
@@ -402,10 +409,6 @@ export async function onSessionProposal(
       },
     });
     return;
-  } else if (unsupportedChainIds.length) {
-    logger.info(`WC v2: session proposal requested unsupported networks`, {
-      unsupportedChainIds,
-    });
   }
 
   const peerMeta = proposer.metadata;
@@ -452,29 +455,29 @@ export async function onSessionProposal(
           logger.DebugContext.walletconnect
         );
 
-        const namespaces: Parameters<
-          typeof client.approveSession
-        >[0]['namespaces'] = {};
-
-        for (const [key, value] of Object.entries(requiredNamespaces)) {
-          namespaces[key] = {
-            accounts: [],
-            methods: value.methods,
-            events: value.events,
-          };
-
-          // @ts-expect-error We checked the namespace for chains prop above
-          for (const chain of value.chains) {
-            const chainId = parseInt(chain.split(`${key}:`)[1]);
-            namespaces[key].accounts.push(
-              `${key}:${chainId}:${accountAddress}`
-            );
-          }
-        }
+        // we only support EVM chains rn
+        const requiredNamespace = requiredNamespaces.eip155;
+        /** @see https://chainagnostic.org/CAIPs/caip-2 */
+        const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
+        /** @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util */
+        const namespaces = buildApprovedNamespaces({
+          proposal: proposal.params,
+          supportedNamespaces: {
+            eip155: {
+              chains: caip2ChainIds,
+              methods: [
+                ...SUPPORTED_SIGNING_METHODS,
+                ...SUPPORTED_TRANSACTION_METHODS,
+              ],
+              events: requiredNamespace.events,
+              accounts: caip2ChainIds.map(id => `${id}:${accountAddress}`),
+            },
+          },
+        });
 
         logger.debug(
           `WC v2: session approved namespaces`,
-          {},
+          { namespaces },
           logger.DebugContext.walletconnect
         );
 
@@ -503,7 +506,7 @@ export async function onSessionProposal(
             logger.DebugContext.walletconnect
           );
 
-          analytics.track('Approved new WalletConnect session', {
+          analytics.track(analytics.event.wcNewSessionApproved, {
             dappName: proposer.metadata.name,
             dappUrl: proposer.metadata.url,
           });
@@ -751,7 +754,7 @@ export async function onSessionRequest(
         transactionDetails: request,
       });
 
-      analytics.track('Showing Walletconnect signing request', {
+      analytics.track(analytics.event.wcShowingSigningRequest, {
         dappName: request.dappName,
         dappUrl: request.dappUrl,
       });
