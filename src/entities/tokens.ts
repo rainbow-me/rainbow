@@ -16,12 +16,6 @@ export interface Asset {
   symbol: string;
 }
 
-export interface AssetAmount {
-  raw: string;
-  decimal: number;
-  usd: number;
-}
-
 export interface Token extends Asset {
   chainId: ChainId;
 }
