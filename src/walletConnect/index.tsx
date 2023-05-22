@@ -445,13 +445,6 @@ export async function onSessionProposal(
     return;
   }
 
-  const peerMeta = proposer.metadata;
-  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
-
-  /**
-   * Log these, but it's OK if they list them now, we'll just ignore requests
-   * to use them later.
-   */
   const unsupportedMethods = methods.filter(
     method => !isSupportedMethod(method as RPCMethod)
   );
@@ -468,6 +461,9 @@ export async function onSessionProposal(
     });
     return;
   }
+
+  const peerMeta = proposer.metadata;
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
