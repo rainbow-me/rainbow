@@ -25,7 +25,6 @@ import {
   handleSignificantDecimals,
 } from '@/helpers/utilities';
 import { ImgixImage } from '../images';
-import { isNil } from 'lodash';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useTheme } from '@/theme';
@@ -125,7 +124,8 @@ const Offer = ({
   const timeRemaining = offer.validUntil
     ? Math.max(offer.validUntil - Date.now(), 0)
     : undefined;
-  const isExpiring = !isNil(timeRemaining) && timeRemaining <= TWO_HOURS_MS;
+  const isExpiring =
+    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
 
   let textColor: TextColor;
   let text;
