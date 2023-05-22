@@ -109,6 +109,10 @@ export const web3WalletClient = Web3Wallet.init({
     description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
     url: 'https://rainbow.me',
     icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+    redirect: {
+      native: 'rainbow://wc',
+      universal: 'https://rnbwapp.com/wc',
+    },
   },
 });
 
