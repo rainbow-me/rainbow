@@ -15,7 +15,7 @@ export interface SeparatorProps {
 export function Separator({
   color,
   direction = 'horizontal',
-  thickness,
+  thickness = 2,
 }: SeparatorProps) {
   const foregroundColor = useForegroundColor(color ?? 'separator'); // Fallback for JS consumers
   const style = useMemo(
@@ -24,11 +24,11 @@ export function Separator({
       borderRadius: 1,
       ...(direction === 'horizontal'
         ? {
-            height: thickness ?? 2,
+            height: thickness,
           }
         : {
             flexGrow: 1,
-            width: thickness ?? 2,
+            width: thickness,
           }),
     }),
     [foregroundColor, direction, thickness]
