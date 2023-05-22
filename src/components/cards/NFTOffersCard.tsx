@@ -245,7 +245,7 @@ export const NFTOffersCard = () => {
   const [hasOffers, setHasOffers] = useReducer(() => true, false);
 
   const offers = (data?.nftOffers ?? []).slice(0, 10);
-
+  console.log(offers, 'OFFERS');
   const heightValue = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -406,13 +406,9 @@ export const NFTOffersCard = () => {
                   </ButtonPressAnimation>
                 </ContextMenuButton>
               </Inline>
-              <Bleed horizontal="20px">
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ overflow: 'visible' }}
-                >
-                  <Inset horizontal="20px">
+              <Bleed horizontal="20px" vertical="6px">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Inset horizontal="20px" vertical="6px">
                     <Inline space={{ custom: 14 }}>
                       {!offers.length ? (
                         <>
