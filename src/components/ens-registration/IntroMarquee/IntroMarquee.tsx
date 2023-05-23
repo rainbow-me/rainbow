@@ -13,6 +13,7 @@ import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { ensIntroMarqueeNames } from '@/references';
 
 type MarqueeItemType = {
+  account: EnsMarqueeAccount;
   name: string;
   onPress: () => void;
   testID?: string;

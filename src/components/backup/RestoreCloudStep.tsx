@@ -1,6 +1,11 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
+import {
+  EmitterSubscription,
+  InteractionManager,
+  Keyboard,
+  StyleSheet,
+} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { isSamsungGalaxy } from '@/helpers/samsung';
 import {
@@ -88,8 +93,8 @@ export default function RestoreCloudStep({
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
-  const keyboardShowListener = useRef(null);
-  const keyboardHideListener = useRef(null);
+  const keyboardShowListener = useRef<EmitterSubscription>();
+  const keyboardHideListener = useRef<EmitterSubscription>();
 
   const isScaleMoreThanDefault = scale > 3;
 
@@ -149,7 +154,11 @@ export default function RestoreCloudStep({
   }, [incorrectPassword, password]);
 
   const onPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
+    ({
+      nativeEvent: { text: inputText },
+    }: {
+      nativeEvent: { text: string };
+    }) => {
       setPassword(inputText);
       setIncorrectPassword(false);
     },

@@ -94,8 +94,8 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     [canBeCancelled, canBeResubmitted]
   );
 
-  // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
   const onMenuItemPress = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     e => {
       const { actionKey } = e.nativeEvent;
       haptics.selection();
