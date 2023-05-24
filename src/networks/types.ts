@@ -44,6 +44,7 @@ export interface NetworkProperties extends Chain {
     nfts: boolean;
     savings: boolean;
     pools: boolean;
+    txs: boolean;
   };
 
   gas: {

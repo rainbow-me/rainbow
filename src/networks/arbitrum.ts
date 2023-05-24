@@ -37,6 +37,7 @@ export const ArbitrumNetworkObject: NetworkProperties = {
     nfts: true,
     savings: false,
     pools: false,
+    txs: config.arbitrum_tx_enabled,
   },
 
   gas: {

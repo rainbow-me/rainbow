@@ -38,6 +38,7 @@ export const MainnetNetworkObject: NetworkProperties = {
     nfts: true,
     savings: true,
     pools: true,
+    txs: config.mainnet_tx_enabled,
   },
 
   gas: {

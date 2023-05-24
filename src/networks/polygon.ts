@@ -37,6 +37,7 @@ export const PolygonNetworkObject: NetworkProperties = {
     nfts: true,
     savings: false,
     pools: false,
+    txs: config.polygon_tx_enabled,
   },
 
   gas: {

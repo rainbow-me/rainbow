@@ -38,6 +38,7 @@ export const GoerliNetworkObject: NetworkProperties = {
     nfts: false,
     savings: true,
     pools: true,
+    txs: config.goerli_tx_enabled,
   },
 
   gas: {

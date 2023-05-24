@@ -38,6 +38,7 @@ export const BSCNetworkObject: NetworkProperties = {
     nfts: true,
     savings: false,
     pools: false,
+    txs: config.bsc_tx_enabled,
   },
 
   gas: {

@@ -41,15 +41,22 @@ export interface RainbowConfig
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
+
   arbitrum_enabled: boolean;
   bsc_enabled: boolean;
   polygon_enabled: boolean;
   optimism_enabled: boolean;
   op_chains_enabled: boolean;
-
   mainnet_enabled: boolean;
-
   goerli_enabled: boolean;
+
+  arbitrum_tx_enabled: boolean;
+  bsc_tx_enabled: boolean;
+  polygon_tx_enabled: boolean;
+  optimism_tx_enabled: boolean;
+  op_chains_tx_enabled: boolean;
+  mainnet_tx_enabled: boolean;
+  goerli_tx_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -89,6 +96,16 @@ const DEFAULT_CONFIG: RainbowConfig = {
   mainnet_enabled: true,
 
   goerli_enabled: true,
+
+  arbitrum_tx_enabled: true,
+  bsc_tx_enabled: true,
+  polygon_tx_enabled: true,
+  optimism_tx_enabled: true,
+  op_chains_tx_enabled: true,
+
+  mainnet_tx_enabled: true,
+
+  goerli_tx_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -124,6 +141,13 @@ const init = async () => {
         key === 'swagg_enabled' ||
         key === 'op_rewards_enabled' ||
         key === 'profiles_enabled' ||
+        key === 'mainnet_tx_enabled' ||
+        key === 'arbitrum_tx_enabled' ||
+        key === 'bsc_tx_enabled' ||
+        key === 'polygon_tx_enabled' ||
+        key === 'optimism_tx_enabled' ||
+        key === 'op_chains_etx_nabled' ||
+        key === 'goerli_tx_enabled' ||
         key === 'mainnet_enabled' ||
         key === 'arbitrum_enabled' ||
         key === 'bsc_enabled' ||

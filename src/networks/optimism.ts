@@ -36,6 +36,7 @@ export const OptimismNetworkObject: NetworkProperties = {
     nfts: true,
     savings: false,
     pools: false,
+    txs: config.optimism_tx_enabled && config.op_chains_tx_enabled,
   },
 
   gas: {
