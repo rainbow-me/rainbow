@@ -51,5 +51,14 @@ _ios assets are best added via xcode_
 
 Note: we want to refactor this to use svgs but the current react native svg packages do not support filters 
 
+#### Add asset type & balance/tx fetching
+
+Add the network to `entities/assetTypes.ts`
+
+Add the relevent socket subscriptions in `redux/explorer/ts`
+
+Note: we can automate this part when we move off websockets
+
+
 
 #### Note that we want to keep the interface the same for all networks so we can dynamically support adding new networks. This means no hardcoded network checking or specific handling outside of these files and the given interface
