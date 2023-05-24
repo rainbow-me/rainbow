@@ -120,10 +120,20 @@ const Offer = ({
   offer: NftOffer;
   sortCriterion: SortCriterion;
 }) => {
+  const [timeRemaining, setTimeRemaining] = useState(
+    offer.validUntil ? Math.max(offer.validUntil - Date.now(), 0) : undefined
+  );
+
+  useEffect(() => {
+    if (offer.validUntil) {
+      const interval = setInterval(() => {
+        setTimeRemaining(Math.max(offer.validUntil! - Date.now(), 0));
+      }, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [offer.validUntil]);
+
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
-  const timeRemaining = offer.validUntil
-    ? Math.max(offer.validUntil - Date.now(), 0)
-    : undefined;
   const isExpiring =
     timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
 
