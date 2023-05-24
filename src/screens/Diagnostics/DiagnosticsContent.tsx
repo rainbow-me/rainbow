@@ -174,16 +174,18 @@ export function DiagnosticsContent({
         </Fragment>
       )}
       {keys && (
-        <SheetActionButton
-          color={colors.alpha(colors.appleBlue, 0.06)}
-          isTransparent
-          label={i18n.t(i18n.l.button.got_it)}
-          onPress={onClose}
-          size="big"
-          style={{ margin: 0, padding: 0 }}
-          textColor={colors.appleBlue}
-          weight="heavy"
-        />
+        <Box paddingBottom={IS_ANDROID ? '44px' : '16px'}>
+          <SheetActionButton
+            color={colors.alpha(colors.appleBlue, 0.06)}
+            isTransparent
+            label={i18n.t(i18n.l.button.got_it)}
+            onPress={onClose}
+            size="big"
+            style={{ margin: 0, padding: 0 }}
+            textColor={colors.appleBlue}
+            weight="heavy"
+          />
+        </Box>
       )}
     </>
   );

@@ -7,7 +7,7 @@ import {
   MenuActionConfig,
 } from 'react-native-ios-context-menu';
 import { supportedLanguages } from '../../../languages';
-import AppVersionStamp from '../../../components/AppVersionStamp';
+import { AppVersionStamp } from '@/components/AppVersionStamp';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
@@ -31,7 +31,7 @@ import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
-import { Box } from '@/design-system';
+import { Bleed, Box } from '@/design-system';
 import networkInfo from '@/helpers/networkInfo';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
@@ -240,7 +240,10 @@ const SettingsSection = ({
   );
 
   return (
-    <MenuContainer testID="settings-menu-container">
+    <MenuContainer
+      testID="settings-menu-container"
+      Footer={<AppVersionStamp />}
+    >
       <Menu>
         {canBeBackedUp && (
           <MenuItem
@@ -454,9 +457,6 @@ const SettingsSection = ({
           }
         />
       </Menu>
-      <Box alignItems="center" width="full">
-        <AppVersionStamp />
-      </Box>
     </MenuContainer>
   );
 };

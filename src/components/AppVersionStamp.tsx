@@ -5,16 +5,18 @@ import { useAppVersion, useTimeout } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const DEBUG_TAP_COUNT = 15;
 
 const StyledButton = styled(Pressable)({
-  marginBottom: -10,
-  paddingBottom: 10,
+  paddingTop: IS_IOS ? 32 : 16,
+  paddingBottom: IS_ANDROID ? 32 : 0,
   paddingHorizontal: 40,
+  alignItems: 'center',
 });
 
-export default function AppVersionStamp() {
+export function AppVersionStamp() {
   const [appVersion, codePushVersion] = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
@@ -36,6 +38,7 @@ export default function AppVersionStamp() {
 
   return (
     <StyledButton
+      hitSlop={10}
       onLongPress={() => setShowCodePushVersion(true)}
       onPress={handleVersionPress}
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}

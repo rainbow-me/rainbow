@@ -12,19 +12,19 @@ import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { useWalletsWithBalancesAndNames } from '@/hooks';
-import Routes from '@rainbow-me/routes';
+import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { getDeviceId } from '@/analytics/utils';
 import { UserCredentials } from 'react-native-keychain';
 import { DiagnosticsContent } from '@/screens/Diagnostics/DiagnosticsContent';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { BackgroundProvider, Box, globalColors } from '@/design-system';
+import { BackgroundProvider, Box } from '@/design-system';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
 import { haptics } from '@/utils';
 import Clipboard from '@react-native-community/clipboard';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 const encryptor = new AesEncryptor();
 
@@ -134,7 +134,7 @@ export const WalletDiagnosticsSheet = () => {
       init();
     }, 2000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userPin]);
 
   const seeds = useMemo(
     () => keys?.filter(key => key.username.indexOf(`_${seedPhraseKey}`) !== -1),
@@ -165,7 +165,7 @@ export const WalletDiagnosticsSheet = () => {
         navigate(Routes.DIAGNOSTICS_SHEET, {
           userPin: pin,
         });
-      }, 300);
+      }, 500);
     } catch (e) {
       return null;
     }
