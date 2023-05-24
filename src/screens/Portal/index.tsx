@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 
-import { Navigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';

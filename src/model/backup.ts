@@ -1,12 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
-  getSupportedBiometryType,
-  Options,
-  requestSharedWebCredentials,
-  setSharedWebCredentials,
-} from 'react-native-keychain';
-import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
   getDataFromCloud,
@@ -20,7 +14,8 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '@/utils/keychainConstants';
-import * as keychain from './keychain';
+import * as keychain from '@/model/keychain';
+import * as kc from '@/keychain';
 import {
   AllRainbowWallets,
   allWalletsVersion,
@@ -149,7 +144,7 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
 ) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
-  const hasBiometricsEnabled = await getSupportedBiometryType();
+  const hasBiometricsEnabled = await kc.getSupportedBiometryType();
   if (IS_ANDROID && !hasBiometricsEnabled) {
     /*
      * The PIN code is passed as an argument.
@@ -271,7 +266,7 @@ export async function restoreCloudBackup({
     }
 
     let userPIN: string | undefined;
-    const hasBiometricsEnabled = await getSupportedBiometryType();
+    const hasBiometricsEnabled = await kc.getSupportedBiometryType();
     if (IS_ANDROID && !hasBiometricsEnabled) {
       const currentLoadingState = store.getState().wallets.isWalletLoading;
       try {
@@ -385,10 +380,10 @@ async function restoreCurrentBackupIntoKeychain(
         let value = backedUpData[key];
         const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
         const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
-        const accessControl: Options =
+        const accessControl: typeof kc.publicAccessControlOptions =
           theKeyIsASeedPhrase || theKeyIsAPrivateKey
             ? privateAccessControlOptions
-            : keychain.publicAccessControlOptions;
+            : kc.publicAccessControlOptions;
 
         /*
          * Backups that were saved encrypted with PIN to the cloud need to be
@@ -509,7 +504,7 @@ export async function saveBackupPassword(
 ): Promise<void> {
   try {
     if (ios) {
-      await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+      await kc.setSharedWebCredentials('Backup Password', password);
       analytics.track('Saved backup password on iCloud');
     }
   } catch (e) {
@@ -524,7 +519,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
   }
 
   try {
-    const results = await requestSharedWebCredentials();
+    const { value: results } = await kc.getSharedWebCredentials();
     if (results) {
       return results.password as BackupPassword;
     }

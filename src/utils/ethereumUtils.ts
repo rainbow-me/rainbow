@@ -16,7 +16,6 @@ import { isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
-import URL from 'url-parse';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   AssetType,
@@ -314,7 +313,7 @@ const getChainIdFromType = (type: string) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkFromChainId = (chainId: number): Network => {
+export const getNetworkFromChainId = (chainId: number): Network => {
   return (
     RainbowNetworks.find(network => network.id === chainId)?.value ||
     getNetworkObj(Network.mainnet).value
@@ -423,29 +422,6 @@ export const getFirstTransactionTimestamp = async (
   const parsedResponse = await response.json();
   const timestamp = parsedResponse.result[0]?.timeStamp;
   return timestamp ? timestamp * 1000 : undefined;
-};
-
-const checkIfUrlIsAScam = async (url: string) => {
-  try {
-    const { hostname } = new URL(url);
-    const exceptions = ['twitter.com'];
-    if (exceptions.includes(hostname?.toLowerCase())) {
-      return false;
-    }
-    const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
-    const { result } = await request.json();
-    const found = result.find(
-      (s: any) => s?.name?.toLowerCase() === hostname?.toLowerCase()
-    );
-    if (found) {
-      return true;
-    }
-    return false;
-  } catch (e: any) {
-    logger.error(new RainbowError('Error fetching cryptoscamdb.org list'), {
-      message: e.message,
-    });
-  }
 };
 
 function getBlockExplorer(network: Network) {
@@ -652,7 +628,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
 
 export default {
   calculateL1FeeOptimism,
-  checkIfUrlIsAScam,
   formatGenericAsset,
   getAssetFromAllAssets,
   getAccountAsset,

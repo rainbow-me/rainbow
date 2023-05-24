@@ -1,35 +1,26 @@
-import {
-  getSupportedBiometryType,
-  hasInternetCredentials,
-} from 'react-native-keychain';
-
-import { IS_ANDROID } from '@/env';
-import * as keychain from '@/model/keychain';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import {
   authenticateWithPINAndCreateIfNeeded,
   getExistingPIN,
 } from '@/handlers/authentication';
+import * as keychain from '@/keychain';
 
 const FAKE_LOCAL_AUTH_KEY = `fake-local-auth-key`;
 const FAKE_LOCAL_AUTH_VALUE = `fake-local-auth-value`;
 
 // only for iOS
 async function maybeSaveFakeAuthKey() {
-  if (await hasInternetCredentials(FAKE_LOCAL_AUTH_KEY)) return;
+  if (await keychain.has(FAKE_LOCAL_AUTH_KEY)) return;
   const options = await keychain.getPrivateAccessControlOptions();
-  await keychain.saveString(
-    FAKE_LOCAL_AUTH_KEY,
-    FAKE_LOCAL_AUTH_VALUE,
-    options
-  );
+  await keychain.set(FAKE_LOCAL_AUTH_KEY, FAKE_LOCAL_AUTH_VALUE, options);
 }
 
 export async function isAuthenticated() {
-  const hasBiometricsEnabled = await getSupportedBiometryType();
-  if (hasBiometricsEnabled) {
+  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
+  if (hasBiometricsEnabled || IS_DEV) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
-    const value = await keychain.loadString(FAKE_LOCAL_AUTH_KEY, options);
+    const { value } = await keychain.get(FAKE_LOCAL_AUTH_KEY, options);
     return Boolean(value === FAKE_LOCAL_AUTH_VALUE);
   } else if (!hasBiometricsEnabled && IS_ANDROID) {
     // if user does not have biometrics enabled, we fallback to PIN

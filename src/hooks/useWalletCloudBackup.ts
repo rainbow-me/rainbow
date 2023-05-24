@@ -22,7 +22,7 @@ import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import logger from '@/utils/logger';
-import { getSupportedBiometryType } from 'react-native-keychain';
+import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
 import { authenticateWithPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';

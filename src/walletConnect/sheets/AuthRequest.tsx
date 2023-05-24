@@ -10,7 +10,6 @@ import {
   AccentColorProvider,
 } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import useAccountProfile from '@/hooks/useAccountProfile';
 import { ImgixImage } from '@/components/images';
 import { initials } from '@/utils/formatters';
 import { useTheme } from '@/theme';
