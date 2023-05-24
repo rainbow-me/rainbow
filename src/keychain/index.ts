@@ -17,6 +17,7 @@ import {
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
+import * as keychainConstants from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { delay } from '@/utils/delay';
 import { IS_DEV, IS_ANDROID } from '@/env';
@@ -27,6 +28,12 @@ import {
 } from '@/handlers/authentication';
 
 export const encryptor = new AesEncryptor();
+
+const EXEMPT_ENCRYPTED_KEYS = [
+  keychainConstants.pinKey,
+  keychainConstants.signingWallet,
+  keychainConstants.signingWalletAddress,
+];
 
 export type KeychainOptions = Options & {
   /**
@@ -62,7 +69,9 @@ export const publicAccessControlOptions: Options = {
 };
 
 /**
- * Retrieve a value from the keychain.
+ * Retrieve a value from the keychain. If we're on Android and the value is
+ * encrypted, we'll prompt the user to authenticate with their PIN and then
+ * decrypt the data.
  */
 export async function get(
   key: string,
@@ -92,8 +101,17 @@ export async function get(
            *
            * This is true even if the user recently enabled biometrics on their
            * device, since prior to that they would have been using a pin code.
+           *
+           * IMPORTANT: there are other keys in the keychain that are
+           * technically encrypted with the same cipher. These user the
+           * `RAINBOW_MASTER_KEY`, and are saved as "public" values. We don't
+           * want to decrypt those here.
            */
-          if (IS_ANDROID && result.password.includes('cipher')) {
+          if (
+            IS_ANDROID &&
+            result.password.includes('cipher') &&
+            !EXEMPT_ENCRYPTED_KEYS.includes(key)
+          ) {
             logger.debug(
               `keychain: decrypting private data on Android`,
               {
