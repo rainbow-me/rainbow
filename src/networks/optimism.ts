@@ -43,7 +43,7 @@ export const OptimismNetworkObject: NetworkProperties = {
     speeds: [gasUtils.NORMAL],
 
     // ?
-    gasType: 'eip1559',
+    gasType: 'legacy',
     roundGasDisplay: true,
 
     // this prob can just be blockTime,

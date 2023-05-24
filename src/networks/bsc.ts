@@ -45,7 +45,7 @@ export const BSCNetworkObject: NetworkProperties = {
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
     // ?
-    gasType: 'eip1559',
+    gasType: 'legacy',
     roundGasDisplay: false,
 
     // this prob can just be blockTime
