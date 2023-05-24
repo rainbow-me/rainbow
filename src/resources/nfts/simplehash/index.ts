@@ -9,6 +9,8 @@ import {
   SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
 import { RainbowNetworks } from '@/networks';
+import { UniqueAsset } from '@/entities';
+import { RainbowError, logger } from '@/logger';
 
 export const START_CURSOR = 'start';
 
@@ -108,4 +110,62 @@ export async function fetchSimpleHashNFTListing(
     curr.price < prev.price ? curr : prev
   );
   return cheapestListing;
+}
+
+/**
+ * Given an NFT, refresh its contract metadata on SimpleHash. If we can't,
+ * refresh metadata for this NFT only.
+ * @param nft
+ */
+export async function refreshNFTContractMetadata(nft: UniqueAsset) {
+  const chain = nft.isPoap
+    ? SimpleHashChain.Gnosis
+    : getSimpleHashChainFromNetwork(nft.network);
+
+  if (!chain) {
+    logger.error(
+      new RainbowError(
+        `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
+      )
+    );
+  }
+
+  try {
+    await nftApi.post(
+      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+      {},
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': NFT_API_KEY,
+        },
+      }
+    );
+  } catch {
+    logger.warn(
+      `refreshNFTContractMetadata: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
+    );
+    try {
+      // If the collection has > 20k NFTs, the above request will fail.
+      // In that case, we need to refresh the given NFT individually.
+      await nftApi.post(
+        `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
+        {},
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': NFT_API_KEY,
+          },
+        }
+      );
+    } catch {
+      logger.error(
+        new RainbowError(
+          `refreshNFTContractMetadata: failed to refresh metadata for NFT #${nft.id} after failing to refresh metadata for NFT contract ${nft.asset_contract.address}`
+        )
+      );
+    }
+  }
 }

@@ -130,12 +130,12 @@
     "@unstoppabledomains/resolution": "7.1.4",
     "@wagmi/chains": "0.2.21",
     "@walletconnect/client": "1.8.0",
-    "@walletconnect/core": "2.5.1",
+    "@walletconnect/core": "2.7.3",
     "@walletconnect/legacy-utils": "2.0.0",
-    "@walletconnect/react-native-compat": "2.5.1",
-    "@walletconnect/types": "2.5.1",
-    "@walletconnect/utils": "2.5.1",
-    "@walletconnect/web3wallet": "1.5.0",
+    "@walletconnect/react-native-compat": "2.7.3",
+    "@walletconnect/types": "2.7.3",
+    "@walletconnect/utils": "2.7.3",
+    "@walletconnect/web3wallet": "1.7.1",
     "appcenter": "4.4.3",
     "assert": "1.5.0",
     "async-mutex": "0.3.2",
@@ -416,7 +416,8 @@
     "**/json5": "2.2.2",
     "**/ua-parser-js": "0.7.33",
     "**/http-cache-semantics": "4.1.1",
-    "**/@sideway/formula": "3.0.1"
+    "**/@sideway/formula": "3.0.1",
+    "**/socket.io-parser": "4.2.3"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

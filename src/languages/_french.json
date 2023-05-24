@@ -392,7 +392,7 @@
       "applied": "APPLIED :)",
       "backups_deleted_successfully": "Backups deleted successfully :)",
       "clear_async_storage": "Clear async storage :)",
-      "clean_pending_txs": "Clear Pending Transactions :)",
+      "clear_pending_txs": "Clear Pending Transactions :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_local_storage": "Clear local storage :)",
@@ -677,6 +677,7 @@
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
         "view_on_web": "View on Web :)",
+        "refresh": "Refresh Metadata :)",
         "hide": "Hide",
         "unhide": "Unhide"
       }

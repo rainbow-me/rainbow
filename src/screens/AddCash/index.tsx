@@ -88,11 +88,11 @@ export function AddCashSheet() {
             )}
 
             <Box paddingTop="20px">
-              <Ramp accountAddress={accountAddress} />
+              <Moonpay accountAddress={accountAddress} />
             </Box>
 
             <Box paddingTop="20px">
-              <Moonpay accountAddress={accountAddress} />
+              <Ramp accountAddress={accountAddress} />
             </Box>
 
             <Box paddingTop="20px">
