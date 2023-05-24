@@ -1,5 +1,5 @@
-import React from "react";
-import { G, Path, Mask, Defs, ClipPath, SvgProps } from "react-native-svg";
+import React from 'react';
+import { G, Path, Mask, Defs, ClipPath, SvgProps } from 'react-native-svg';
 import Svg from '../Svg';
 
 export function Ratio(props: SvgProps) {
@@ -10,7 +10,7 @@ export function Ratio(props: SvgProps) {
         <Mask
           id="a"
           style={{
-            maskType: "luminance"
+            maskType: 'luminance',
           }}
           maskUnits="userSpaceOnUse"
           x={2}
