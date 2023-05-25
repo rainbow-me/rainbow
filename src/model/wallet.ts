@@ -918,7 +918,8 @@ export const createWallet = async ({
           await saveKeyForWallet(
             nextWallet.address,
             nextWallet.privateKey,
-            isHardwareWallet
+            isHardwareWallet,
+            { androidEncryptionPin }
           );
           logger.debug(
             `[createWallet] - saved private key for wallet index: ${index}`,
