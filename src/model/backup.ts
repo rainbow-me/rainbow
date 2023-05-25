@@ -306,7 +306,8 @@ export async function restoreCloudBackup({
       );
     } else {
       restoredSuccessfully = await restoreSpecificBackupIntoKeychain(
-        dataToRestore
+        dataToRestore,
+        userPIN
       );
     }
 
@@ -326,7 +327,8 @@ export async function restoreCloudBackup({
 }
 
 async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData
+  backedUpData: BackedUpData,
+  userPin?: string
 ): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
 
@@ -345,7 +347,11 @@ async function restoreSpecificBackupIntoKeychain(
             backupPIN,
           });
         }
-        await createWallet({ seed: processedSeedPhrase, overwrite: true });
+        await createWallet({
+          seed: processedSeedPhrase,
+          overwrite: true,
+          userPin,
+        });
       }
     }
     return true;

@@ -662,6 +662,7 @@ type CreateWalletParams = {
   image?: null | string;
   silent?: boolean;
   clearCallbackOnStartCreation?: boolean;
+  userPin?: string;
 };
 
 export const createWallet = async ({
@@ -673,6 +674,7 @@ export const createWallet = async ({
   image = null,
   silent = false,
   clearCallbackOnStartCreation = false,
+  userPin,
 }: CreateWalletParams): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
@@ -775,7 +777,7 @@ export const createWallet = async ({
     // auth requests
     const androidEncryptionPin =
       IS_ANDROID && !(await kc.getSupportedBiometryType())
-        ? await authenticateWithPINAndCreateIfNeeded()
+        ? userPin || (await authenticateWithPINAndCreateIfNeeded())
         : undefined;
 
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
