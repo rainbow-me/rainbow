@@ -278,28 +278,27 @@ function handleWalletConnect(uri: string) {
     parsedUri,
   });
 
-  if (uri && query && parsedUri && parsedUri.version === 1) {
+  if (uri && query && parsedUri) {
     // make sure we don't handle this again
     walletConnectURICache.add(cacheKey);
 
-    store.dispatch(walletConnectSetPendingRedirect());
-    store.dispatch(
-      walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
-        logger.debug(`walletConnectOnSessionRequest callback`, {
-          status,
-          dappScheme,
-        });
-        const type = status === 'approved' ? 'connect' : status;
-        store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-      })
-    );
-  } else if (uri && query && parsedUri && parsedUri.version === 2) {
-    // make sure we don't handle this again
-    walletConnectURICache.add(cacheKey);
-
-    logger.debug(`handleWalletConnect: handling v2`, { uri });
-    setHasPendingDeeplinkPendingRedirect(true);
-    pairWalletConnect({ uri });
+    if (parsedUri.version === 1) {
+      store.dispatch(walletConnectSetPendingRedirect());
+      store.dispatch(
+        walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
+          logger.debug(`walletConnectOnSessionRequest callback`, {
+            status,
+            dappScheme,
+          });
+          const type = status === 'approved' ? 'connect' : status;
+          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+        })
+      );
+    } else if (parsedUri.version === 2) {
+      logger.debug(`handleWalletConnect: handling v2`, { uri });
+      setHasPendingDeeplinkPendingRedirect(true);
+      pairWalletConnect({ uri });
+    }
   } else {
     logger.debug(`handleWalletConnect: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
