@@ -1,5 +1,13 @@
 import React from 'react';
-import { G, Path, Mask, Defs, ClipPath, SvgProps } from 'react-native-svg';
+import {
+  G,
+  Path,
+  Mask,
+  Defs,
+  ClipPath,
+  SvgProps,
+  EMaskUnits,
+} from 'react-native-svg';
 import Svg from '../Svg';
 
 export function Ratio(props: SvgProps) {
@@ -9,10 +17,7 @@ export function Ratio(props: SvgProps) {
         <Path d="M16 0H0v16h16V0z" fill="#7EFDCF" />
         <Mask
           id="a"
-          style={{
-            maskType: 'luminance',
-          }}
-          maskUnits="userSpaceOnUse"
+          maskUnits={EMaskUnits.USER_SPACE_ON_USE}
           x={2}
           y={3}
           width={12}
