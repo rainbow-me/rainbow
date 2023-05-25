@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.19)
+
+### Added
+
+- Keychain updates
+- Sentry updates
+- Output based swaps on Arbitrum
+- F2C: added Moonpay & Coinbase
+- NFT metadata refresh
+
 ## [1.8.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.18)
 
 ### Added
