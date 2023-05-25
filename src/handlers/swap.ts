@@ -210,7 +210,9 @@ export const getSwapGasLimitWithFakeApproval = async (
           from: tradeDetails.from,
           gas: toHexNoLeadingZeros(gas),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to: RAINBOW_ROUTER_CONTRACT_ADDRESS,
+          to:
+            (tradeDetails as CrosschainQuote)?.allowanceTarget ||
+            RAINBOW_ROUTER_CONTRACT_ADDRESS,
           value: '0x0', // 100 gwei
         },
         'latest',
