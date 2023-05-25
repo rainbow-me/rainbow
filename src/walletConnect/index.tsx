@@ -163,6 +163,48 @@ export function parseRPCParams({
   }
 }
 
+/**
+ * Better signature for this type of function
+ *
+ * @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util
+ */
+export function getApprovedNamespaces(
+  props: Parameters<typeof buildApprovedNamespaces>[0]
+):
+  | {
+      success: true;
+      result: ReturnType<typeof buildApprovedNamespaces>;
+      error: undefined;
+    }
+  | {
+      success: false;
+      result: undefined;
+      error: Error;
+    } {
+  try {
+    const namespaces = buildApprovedNamespaces(props);
+
+    return {
+      success: true,
+      result: namespaces,
+      error: undefined,
+    };
+  } catch (e: any) {
+    logger.error(
+      new RainbowError(`WC v2: buildApprovedNamespaces threw an error`),
+      {
+        message: e.toString(),
+      }
+    );
+
+    return {
+      success: false,
+      result: undefined,
+      error: e,
+    };
+  }
+}
+
 const SUPPORTED_SIGNING_METHODS = [
   RPCMethod.Sign,
   RPCMethod.PersonalSign,
@@ -411,13 +453,6 @@ export async function onSessionProposal(
     return;
   }
 
-  const peerMeta = proposer.metadata;
-  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
-
-  /**
-   * Log these, but it's OK if they list them now, we'll just ignore requests
-   * to use them later.
-   */
   const unsupportedMethods = methods.filter(
     method => !isSupportedMethod(method as RPCMethod)
   );
@@ -426,7 +461,17 @@ export async function onSessionProposal(
     logger.info(`WC v2: dapp requested unsupported RPC methods`, {
       methods: unsupportedMethods,
     });
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
+    showErrorSheet({
+      onClose() {
+        maybeGoBackAndClearHasPendingRedirect();
+      },
+    });
+    return;
   }
+
+  const peerMeta = proposer.metadata;
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
@@ -459,8 +504,7 @@ export async function onSessionProposal(
         const requiredNamespace = requiredNamespaces.eip155;
         /** @see https://chainagnostic.org/CAIPs/caip-2 */
         const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
-        /** @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util */
-        const namespaces = buildApprovedNamespaces({
+        const namespaces = getApprovedNamespaces({
           proposal: proposal.params,
           supportedNamespaces: {
             eip155: {
@@ -482,34 +526,47 @@ export async function onSessionProposal(
         );
 
         try {
-          /**
-           * This is equivalent handling of setPendingRequest and
-           * walletConnectApproveSession, since setPendingRequest is only used
-           * within the /redux/walletconnect handlers
-           *
-           * WC v2 stores existing _pairings_ itself, so we don't need to persist
-           * ourselves
-           */
-          await client.approveSession({
-            id,
-            namespaces,
-          });
+          if (namespaces.success) {
+            /**
+             * This is equivalent handling of setPendingRequest and
+             * walletConnectApproveSession, since setPendingRequest is only used
+             * within the /redux/walletconnect handlers
+             *
+             * WC v2 stores existing _pairings_ itself, so we don't need to persist
+             * ourselves
+             */
+            await client.approveSession({
+              id,
+              namespaces: namespaces.result,
+            });
 
-          // let the ConnectedDappsSheet know we've got a new one
-          events.emit('walletConnectV2SessionCreated');
+            // let the ConnectedDappsSheet know we've got a new one
+            events.emit('walletConnectV2SessionCreated');
 
-          maybeGoBackAndClearHasPendingRedirect();
+            logger.debug(
+              `WC v2: session created`,
+              {},
+              logger.DebugContext.walletconnect
+            );
 
-          logger.debug(
-            `WC v2: session created`,
-            {},
-            logger.DebugContext.walletconnect
-          );
+            analytics.track(analytics.event.wcNewSessionApproved, {
+              dappName: proposer.metadata.name,
+              dappUrl: proposer.metadata.url,
+            });
 
-          analytics.track(analytics.event.wcNewSessionApproved, {
-            dappName: proposer.metadata.name,
-            dappUrl: proposer.metadata.url,
-          });
+            maybeGoBackAndClearHasPendingRedirect();
+          } else {
+            await rejectProposal({
+              proposal,
+              reason: 'INVALID_SESSION_SETTLE_REQUEST',
+            });
+
+            showErrorSheet({
+              onClose() {
+                maybeGoBackAndClearHasPendingRedirect();
+              },
+            });
+          }
         } catch (e) {
           setHasPendingDeeplinkPendingRedirect(false);
 
