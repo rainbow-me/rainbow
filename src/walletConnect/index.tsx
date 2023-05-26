@@ -50,9 +50,9 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 
-const SUPPORTED_EVM_CHAIN_IDS = supportedChainConfigs.map(
-  chain => chain.network_id
-);
+const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
+  ({ features }) => features.walletconnect
+).map(({ id }) => id);
 
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 

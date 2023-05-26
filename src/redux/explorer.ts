@@ -189,7 +189,6 @@ type OrderType = 'asc' | 'desc';
  */
 const createSocket = (endpoint: string): Socket =>
   io(`${config.data_endpoint}/${endpoint}`, {
-    // @ts-expect-error
     extraHeaders: { origin: config.data_origin },
     query: {
       api_token: config.data_api_key,

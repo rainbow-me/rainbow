@@ -65,7 +65,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 
-// hate this pattern but could be messy
+// TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
