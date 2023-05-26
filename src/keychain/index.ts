@@ -22,6 +22,7 @@ import { MMKV } from 'react-native-mmkv';
 import { delay } from '@/helpers/utilities';
 import { IS_DEV, IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 export enum ErrorType {
   Unknown = 0,
@@ -41,7 +42,7 @@ type Result<T = any> =
     };
 
 const cache = new MMKV({
-  id: 'rainbowKeychainLocalStorage',
+  id: STORAGE_IDS.KEYCHAIN,
 });
 
 export const publicAccessControlOptions: Options = {
