@@ -275,7 +275,7 @@ const DevSection = () => {
       new Promise<boolean>(resolve => {
         Alert.alert(
           i18n.t(i18n.l.developer_settings.keychain.alert_title),
-        i18n.t(i18n.l.developer_settings.keychain.alert_body),
+          i18n.t(i18n.l.developer_settings.keychain.alert_body),
           [
             {
               onPress: () => {
