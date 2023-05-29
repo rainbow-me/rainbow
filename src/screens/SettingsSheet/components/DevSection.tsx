@@ -447,7 +447,7 @@ const DevSection = () => {
               testID="reset-keychain-section"
               titleComponent={
                 <MenuItem.Title
-                  text={i18n.t(i18n.l.developer_settings.reset_keychain)}
+                  text={i18n.t(i18n.l.developer_settings.keychain.menu_title)}
                 />
               }
             />
