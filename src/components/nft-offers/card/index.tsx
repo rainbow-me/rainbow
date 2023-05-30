@@ -10,35 +10,26 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import React, { useEffect, useReducer, useState } from 'react';
-import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '../../animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
 import { ScrollView } from 'react-native';
-import { CoinIcon } from '../coin-icon';
 import { useNFTOffers } from '@/resources/nftOffers';
-import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
-import {
-  convertAmountToNativeDisplay,
-  getFormattedTimeQuantity,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
-import { ImgixImage } from '../images';
-import Svg, { Path } from 'react-native-svg';
-import MaskedView from '@react-native-masked-view/masked-view';
+import { SortCriterion } from '@/graphql/__generated__/arc';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
-import { TextColor } from '@/design-system/color/palettes';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { FakeOffer, Offer } from './Offer';
 
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-const NFT_IMAGE_SIZE = 77.75;
 const CARD_HEIGHT = 250;
+const MAX_OFFERS = 20;
 
 type SortOption = { name: string; icon: string; criterion: SortCriterion };
 
@@ -60,176 +51,6 @@ const SortOptions = {
   },
 } as const;
 
-const NFTImageMask = () => (
-  <Svg width="77.75" height="77.75" viewBox="0 0 77.75 77.75">
-    <Path
-      d="M77.749 17.9662C77.7477 17.1595 77.747 16.7562 77.6896 16.5228C77.4757 15.6521 77.0923 15.2694 76.2212 15.0569C75.9877 15 75.4085 15 74.25 15V15C68.1749 15 63.25 10.0751 63.25 4V4C63.25 2.84152 63.25 2.26229 63.1931 2.02879C62.9806 1.15771 62.5979 0.774301 61.7272 0.56038C61.4938 0.503038 61.0905 0.502343 60.2838 0.500952C59.7318 0.5 59.1545 0.5 58.55 0.5H19.2C12.4794 0.5 9.11905 0.5 6.55211 1.80792C4.29417 2.9584 2.4584 4.79417 1.30792 7.05211C0 9.61905 0 12.9794 0 19.7V59.05C0 65.7706 0 69.1309 1.30792 71.6979C2.4584 73.9558 4.29417 75.7916 6.55211 76.9421C9.11905 78.25 12.4794 78.25 19.2 78.25H58.55C65.2706 78.25 68.6309 78.25 71.1979 76.9421C73.4558 75.7916 75.2916 73.9558 76.4421 71.6979C77.75 69.1309 77.75 65.7706 77.75 59.05V19.7C77.75 19.0955 77.75 18.5182 77.749 17.9662Z"
-      fill="black"
-    />
-  </Svg>
-);
-
-const NFTImage = ({ url }: { url: string }) => (
-  <ImgixImage
-    source={{ uri: url }}
-    style={{ width: NFT_IMAGE_SIZE, height: NFT_IMAGE_SIZE, borderRadius: 12 }}
-    size={NFT_IMAGE_SIZE}
-  />
-);
-
-const FakeOffer = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.skeleton}>
-      <Box
-        background="accent"
-        width={{ custom: NFT_IMAGE_SIZE }}
-        height={{ custom: NFT_IMAGE_SIZE }}
-        borderRadius={12}
-      />
-      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
-        <Inline space="4px" alignVertical="center">
-          <Box
-            background="accent"
-            width={{ custom: 12 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
-          />
-          <Box
-            background="accent"
-            width={{ custom: 50 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
-          />
-        </Inline>
-      </Box>
-      <Box
-        background="accent"
-        width={{ custom: 50 }}
-        height={{ custom: 9.3333 }}
-        borderRadius={9.3333 / 2}
-      />
-    </AccentColorProvider>
-  );
-};
-
-const Offer = ({
-  offer,
-  sortCriterion,
-}: {
-  offer: NftOffer;
-  sortCriterion: SortCriterion;
-}) => {
-  const [timeRemaining, setTimeRemaining] = useState(
-    offer.validUntil ? Math.max(offer.validUntil - Date.now(), 0) : undefined
-  );
-
-  useEffect(() => {
-    if (offer.validUntil) {
-      const interval = setInterval(() => {
-        setTimeRemaining(Math.max(offer.validUntil! - Date.now(), 0));
-      }, 60000);
-      return () => clearInterval(interval);
-    }
-  }, [offer.validUntil]);
-
-  const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
-  const isExpiring =
-    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
-
-  let textColor: TextColor;
-  let text;
-  switch (sortCriterion) {
-    case SortCriterion.TopBidValue:
-    case SortCriterion.DateCreated:
-      if (isExpiring) {
-        textColor = 'red';
-        text = getFormattedTimeQuantity(timeRemaining);
-      } else {
-        textColor = 'labelTertiary';
-        text = convertAmountToNativeDisplay(
-          offer.grossAmount.usd,
-          'USD',
-          undefined,
-          true,
-          true
-        );
-      }
-      break;
-    case SortCriterion.FloorDifferencePercentage:
-      if (isExpiring) {
-        textColor = 'red';
-        text = getFormattedTimeQuantity(timeRemaining);
-      } else if (isFloorDiffPercentagePositive) {
-        textColor = 'green';
-        text = `+${offer.floorDifferencePercentage}%`;
-      } else {
-        textColor = 'labelTertiary';
-        text = `${offer.floorDifferencePercentage}%`;
-      }
-      break;
-    default:
-      textColor = 'labelTertiary';
-      text = '';
-      logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
-      break;
-  }
-
-  return (
-    <ButtonPressAnimation>
-      {isExpiring ? (
-        <>
-          <Box
-            width={{ custom: 19 }}
-            height={{ custom: 19 }}
-            right={{ custom: -6 }}
-            top={{ custom: -6 }}
-            position="absolute"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text size="15pt" weight="bold" align="center" color="red">
-              􀐬
-            </Text>
-          </Box>
-          <MaskedView
-            style={{
-              width: NFT_IMAGE_SIZE,
-              height: NFT_IMAGE_SIZE,
-            }}
-            maskElement={<NFTImageMask />}
-          >
-            <NFTImage url={offer.imageUrl} />
-          </MaskedView>
-        </>
-      ) : (
-        <NFTImage url={offer.imageUrl} />
-      )}
-      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
-        <Inline space="4px" alignVertical="center">
-          <CoinIcon
-            address={offer.offerPaymentToken.address}
-            size={12}
-            symbol={offer.offerPaymentToken.symbol}
-          />
-          <Text color="label" size="13pt" weight="heavy">
-            {handleSignificantDecimals(
-              offer.grossAmount.decimal,
-              18,
-              3,
-              undefined,
-              true
-            )}
-          </Text>
-        </Inline>
-      </Box>
-      <Text color={textColor} size="13pt" weight="semibold">
-        {text}
-      </Text>
-    </ButtonPressAnimation>
-  );
-};
-
 export const NFTOffersCard = () => {
   const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
   const borderColor = useForegroundColor('separator');
@@ -244,8 +65,8 @@ export const NFTOffersCard = () => {
 
   const [hasOffers, setHasOffers] = useReducer(() => true, false);
 
-  // only show the first 10 offers
-  const offers = (data?.nftOffers ?? []).slice(0, 10);
+  // only show the first MAX_OFFERS offers
+  const offers = (data?.nftOffers ?? []).slice(0, MAX_OFFERS);
 
   const heightValue = useSharedValue(0);
 
@@ -258,6 +79,7 @@ export const NFTOffersCard = () => {
   useEffect(() => {
     if (!hasOffers && offers.length) {
       setHasOffers();
+      // -1 bc we still want to show the <Divider /> (thickness 1)
       heightValue.value = withTiming(CARD_HEIGHT - 1);
     }
   }, [hasOffers, heightValue, offers.length]);
@@ -407,9 +229,9 @@ export const NFTOffersCard = () => {
                   </ButtonPressAnimation>
                 </ContextMenuButton>
               </Inline>
-              <Bleed horizontal="20px" vertical="6px">
+              <Bleed horizontal="20px" vertical="10px">
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  <Inset horizontal="20px" vertical="6px">
+                  <Inset horizontal="20px" vertical="10px">
                     <Inline space={{ custom: 14 }}>
                       {!offers.length ? (
                         <>

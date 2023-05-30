@@ -7,14 +7,13 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Separator, Stack } from '@/design-system';
+import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { DPICard } from '@/components/cards/DPICard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
-import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import {
   avoidScamsCard,
   backupsCard,
@@ -24,6 +23,7 @@ import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
+import { NFTOffersCard } from '@/components/nft-offers/card';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
