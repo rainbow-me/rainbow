@@ -1,17 +1,14 @@
 import store from '@/redux/store';
-import { getCircularReferenceReplacer } from '@/screens/Diagnostics/helpers/getCircularReferenceReplacer';
 import RNFS from 'react-native-fs';
 import { APP_STATE_DUMP_FILE_NAME } from '@/screens/Diagnostics/constants';
 import RNShare from 'react-native-share';
 import { IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import { stringify } from 'flatted';
 
 export async function createAndShareStateDumpFile() {
   const appState = store.getState();
-  const stringifiedState = JSON.stringify(
-    appState,
-    getCircularReferenceReplacer()
-  );
+  const stringifiedState = stringify(appState);
 
   const documentsFilePath = `${RNFS.DocumentDirectoryPath}/${APP_STATE_DUMP_FILE_NAME}`;
   try {
