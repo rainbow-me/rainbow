@@ -28,7 +28,6 @@ import {
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,
@@ -39,7 +38,6 @@ import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
   setAllWalletsWithIdsAsBackedUp,
-  setIsWalletLoading,
   walletsLoadState,
   walletsSetSelected,
 } from '@/redux/wallets';
@@ -167,7 +165,6 @@ export default function RestoreCloudStep({
 
   const onSubmit = useCallback(async () => {
     try {
-      dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
       const status = await restoreCloudBackup({
         password,
         userData,
@@ -239,10 +236,8 @@ export default function RestoreCloudStep({
           } else {
             replace(Routes.SWIPE_LAYOUT);
           }
-          dispatch(setIsWalletLoading(null));
         });
       } else {
-        dispatch(setIsWalletLoading(null));
         switch (status) {
           case RestoreCloudBackupResultStates.incorrectPassword:
             setIncorrectPassword(true);
@@ -256,7 +251,6 @@ export default function RestoreCloudStep({
         }
       }
     } catch (e) {
-      dispatch(setIsWalletLoading(null));
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
   }, [

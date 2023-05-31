@@ -31,8 +31,6 @@ import {
   authenticateWithPINAndCreateIfNeeded,
   decryptPIN,
 } from '@/handlers/authentication';
-import { setIsWalletLoading } from '@/redux/wallets';
-import store from '@/redux/store';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -138,6 +136,7 @@ export async function addWalletToCloudBackup({
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
+// we decrypt seedphrase and private key before backing up
 async function decryptAllPinEncryptedSecretsIfNeeded(
   secrets: Record<string, string>,
   userPIN?: string
@@ -268,15 +267,9 @@ export async function restoreCloudBackup({
     let userPIN: string | undefined;
     const hasBiometricsEnabled = await kc.getSupportedBiometryType();
     if (IS_ANDROID && !hasBiometricsEnabled) {
-      const currentLoadingState = store.getState().wallets.isWalletLoading;
       try {
-        // we need to hide the top level loading indicator for a while
-        // to not cover the PIN screen
-        store.dispatch(setIsWalletLoading(null));
         userPIN = await authenticateWithPINAndCreateIfNeeded();
-        store.dispatch(setIsWalletLoading(currentLoadingState));
       } catch (e) {
-        store.dispatch(setIsWalletLoading(currentLoadingState));
         return RestoreCloudBackupResultStates.incorrectPinCode;
       }
     }
@@ -313,7 +306,8 @@ export async function restoreCloudBackup({
       );
     } else {
       restoredSuccessfully = await restoreSpecificBackupIntoKeychain(
-        dataToRestore
+        dataToRestore,
+        userPIN
       );
     }
 
@@ -333,7 +327,8 @@ export async function restoreCloudBackup({
 }
 
 async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData
+  backedUpData: BackedUpData,
+  userPin?: string
 ): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
 
@@ -347,14 +342,16 @@ async function restoreSpecificBackupIntoKeychain(
         let processedSeedPhrase = parsedValue.seedphrase;
         if (processedSeedPhrase && processedSeedPhrase.includes('cipher')) {
           const backupPIN = await decryptPIN(encryptedBackupPinData);
-          processedSeedPhrase = await decryptSecretFromBackupPinAndEncryptWithNewPin(
-            {
-              secret: parsedValue.seedphrase,
-              backupPIN,
-            }
-          );
+          processedSeedPhrase = await decryptSecretFromBackupPin({
+            secret: parsedValue.seedphrase,
+            backupPIN,
+          });
         }
-        await createWallet({ seed: processedSeedPhrase, overwrite: true });
+        await createWallet({
+          seed: processedSeedPhrase,
+          overwrite: true,
+          userPin,
+        });
       }
     }
     return true;
@@ -393,23 +390,17 @@ async function restoreCurrentBackupIntoKeychain(
          */
         if (theKeyIsASeedPhrase) {
           const parsedValue = JSON.parse(value);
-          parsedValue.seedphrase = await decryptSecretFromBackupPinAndEncryptWithNewPin(
-            {
-              secret: parsedValue.seedphrase,
-              newPIN,
-              backupPIN,
-            }
-          );
+          parsedValue.seedphrase = await decryptSecretFromBackupPin({
+            secret: parsedValue.seedphrase,
+            backupPIN,
+          });
           value = JSON.stringify(parsedValue);
         } else if (theKeyIsAPrivateKey) {
           const parsedValue = JSON.parse(value);
-          parsedValue.privateKey = await decryptSecretFromBackupPinAndEncryptWithNewPin(
-            {
-              secret: parsedValue.privateKey,
-              newPIN,
-              backupPIN,
-            }
-          );
+          parsedValue.privateKey = await decryptSecretFromBackupPin({
+            secret: parsedValue.privateKey,
+            backupPIN,
+          });
           value = JSON.stringify(parsedValue);
         }
 
@@ -424,9 +415,15 @@ async function restoreCurrentBackupIntoKeychain(
         }
 
         if (typeof value === 'string') {
-          return keychain.saveString(key, value, accessControl);
+          return kc.set(key, value, {
+            ...accessControl,
+            androidEncryptionPin: newPIN,
+          });
         } else {
-          return keychain.saveObject(key, value, accessControl);
+          return kc.setObject(key, value, {
+            ...accessControl,
+            androidEncryptionPin: newPIN,
+          });
         }
       })
     );
@@ -439,13 +436,11 @@ async function restoreCurrentBackupIntoKeychain(
   }
 }
 
-async function decryptSecretFromBackupPinAndEncryptWithNewPin({
+async function decryptSecretFromBackupPin({
   secret,
-  newPIN,
   backupPIN,
 }: {
   secret?: string;
-  newPIN?: string;
   backupPIN?: string;
 }) {
   let processedSecret = secret;
@@ -475,23 +470,6 @@ async function decryptSecretFromBackupPinAndEncryptWithNewPin({
         )
       );
       return processedSecret;
-    }
-  }
-
-  /*
-   * For devices that don't support biometrics or for users without
-   * biometrics enabled, we need to encrypt the secret with a PIN code
-   * for storage in Android device keychain
-   */
-  if (newPIN && PIN_REGEX.test(newPIN)) {
-    const encryptedSecret = await encryptor.encrypt(newPIN, processedSecret);
-
-    if (encryptedSecret) {
-      processedSecret = encryptedSecret;
-    } else {
-      logger.error(
-        new RainbowError('Failed to encrypt seed phrase with new PIN.')
-      );
     }
   }
 

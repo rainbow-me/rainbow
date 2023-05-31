@@ -2,18 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
-import {
-  addressSetSelected,
-  setIsWalletLoading as rawSetIsWalletLoading,
-  walletsSetSelected,
-} from '../redux/wallets';
+import { addressSetSelected, walletsSetSelected } from '../redux/wallets';
 import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
-import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 
 const walletSelector = createSelector(
   ({
@@ -48,12 +43,6 @@ export default function useWallets() {
     walletNames,
     wallets,
   } = useSelector(walletSelector);
-
-  const setIsWalletLoading = useCallback(
-    (isLoading: WalletLoadingState | null) =>
-      dispatch(rawSetIsWalletLoading(isLoading)),
-    [dispatch]
-  );
 
   const isDamaged = useMemo(() => {
     const bool = selectedWallet?.damaged;
@@ -91,7 +80,6 @@ export default function useWallets() {
     isWalletLoading,
     latestBackup,
     selectedWallet,
-    setIsWalletLoading,
     switchToWalletWithAddress,
     walletNames,
     wallets,

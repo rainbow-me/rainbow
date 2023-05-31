@@ -15,9 +15,9 @@ async function maybeSaveFakeAuthKey() {
   await keychain.set(FAKE_LOCAL_AUTH_KEY, FAKE_LOCAL_AUTH_VALUE, options);
 }
 
-export async function isAuthenticated() {
+export async function isAuthenticated(): Promise<boolean> {
   const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
-  if (hasBiometricsEnabled || IS_DEV) {
+  if (hasBiometricsEnabled || !IS_ANDROID || IS_DEV) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
     const { value } = await keychain.get(FAKE_LOCAL_AUTH_KEY, options);
@@ -32,4 +32,6 @@ export async function isAuthenticated() {
       return false;
     }
   }
+
+  return false;
 }
