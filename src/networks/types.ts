@@ -10,6 +10,7 @@ export enum Network {
   optimism = 'optimism',
   polygon = 'polygon',
   bsc = 'bsc',
+  zora = 'zora',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
