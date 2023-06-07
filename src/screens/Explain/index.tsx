@@ -19,10 +19,7 @@ type ButtonProps = React.PropsWithChildren<
 
 /**
  * Proxy for `SheetActionButton` with no changes to API.
- *
- * TODO This is proxied because eventually I'd like to replace this.
  */
-// export const Button = SheetActionButton;
 export function Button({ children, ...props }: ButtonProps) {
   const { colors } = useTheme();
 
