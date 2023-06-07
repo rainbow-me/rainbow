@@ -4,9 +4,11 @@ import { Box, Inset, Stack } from '@/design-system';
 
 interface MenuContainerProps {
   children: React.ReactNode;
+  Footer?: React.ReactNode;
   testID?: string;
 }
-const MenuContainer = ({ children, testID }: MenuContainerProps) => {
+
+const MenuContainer = ({ children, testID, Footer }: MenuContainerProps) => {
   return (
     // ios scroll fix
     <Inset {...(ios && { bottom: '42px (Deprecated)', top: '12px' })}>
@@ -26,6 +28,7 @@ const MenuContainer = ({ children, testID }: MenuContainerProps) => {
         >
           <Stack space="36px">{children}</Stack>
         </Box>
+        {Footer}
       </ScrollView>
     </Inset>
   );
