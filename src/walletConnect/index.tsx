@@ -1,3 +1,4 @@
+import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import {
@@ -41,6 +42,8 @@ import supportedChainConfigs from '@/references/chains.json';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
+import * as explain from '@/screens/Explain';
+import { Box } from '@/design-system';
 import {
   AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
@@ -54,6 +57,7 @@ const SUPPORTED_EVM_CHAIN_IDS = supportedChainConfigs.map(
   chain => chain.network_id
 );
 
+const T = lang.l.walletconnect;
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
 /**
@@ -246,14 +250,36 @@ export function isSupportedChain(chainId: number) {
  * `explainers` object in `ExplainSheet`
  */
 function showErrorSheet({
-  reason,
+  title,
+  body,
+  cta,
   onClose,
-}: { reason?: string; onClose?: () => void } = {}) {
-  logger.debug(`showErrorSheet`, { reason });
-  Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-    type: reason || 'failed_wc_connection',
-    onClose,
-  });
+  sheetHeight,
+}: {
+  title: string;
+  body: string;
+  cta?: string;
+  onClose?: () => void;
+  sheetHeight?: number;
+}) {
+  explain.open(
+    () => (
+      <>
+        <explain.Title>{title}</explain.Title>
+        <explain.Body>{body}</explain.Body>
+        <Box paddingTop="8px">
+          <explain.Button
+            label={cta || lang.t(T.errors.go_back)}
+            onPress={() => {
+              explain.close();
+              onClose?.();
+            }}
+          />
+        </Box>
+      </>
+    ),
+    { sheetHeight }
+  );
 }
 
 async function rejectProposal({
@@ -309,7 +335,11 @@ export async function pair({ uri }: { uri: string }) {
     logger.warn(`WC v2: pairing timeout`, { uri });
     client.off('session_proposal', handler);
     client.off('auth_request', handler);
-    showErrorSheet();
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_timeout),
+      sheetHeight: 270,
+    });
     analytics.track(analytics.event.wcNewSessionTimeout);
   }, 10_000);
 
@@ -425,10 +455,10 @@ export async function onSessionProposal(
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
-      reason: 'failed_wc_invalid_chains',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_networks),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
     return;
   }
@@ -449,10 +479,10 @@ export async function onSessionProposal(
     );
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
-      reason: 'failed_wc_invalid_chains',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_networks),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
     return;
   }
@@ -467,9 +497,10 @@ export async function onSessionProposal(
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
     showErrorSheet({
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_methods),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
     return;
   }
@@ -566,9 +597,10 @@ export async function onSessionProposal(
             });
 
             showErrorSheet({
-              onClose() {
-                maybeGoBackAndClearHasPendingRedirect();
-              },
+              title: lang.t(T.errors.generic_title),
+              body: lang.t(T.errors.generic_error),
+              sheetHeight: 250,
+              onClose: maybeGoBackAndClearHasPendingRedirect,
             });
           }
         } catch (e) {
@@ -658,9 +690,10 @@ export async function onSessionRequest(
         });
 
         showErrorSheet({
-          onClose() {
-            maybeGoBackAndClearHasPendingRedirect();
-          },
+          title: lang.t(T.errors.generic_title),
+          body: lang.t(T.errors.request_invalid),
+          sheetHeight: 270,
+          onClose: maybeGoBackAndClearHasPendingRedirect,
         });
         return;
       }
@@ -693,9 +726,10 @@ export async function onSessionRequest(
         });
 
         showErrorSheet({
-          onClose() {
-            maybeGoBackAndClearHasPendingRedirect();
-          },
+          title: lang.t(T.errors.generic_title),
+          body: lang.t(T.errors.request_invalid),
+          sheetHeight: 270,
+          onClose: maybeGoBackAndClearHasPendingRedirect,
         });
         return;
       }
@@ -748,10 +782,10 @@ export async function onSessionRequest(
       }
 
       showErrorSheet({
-        reason: 'failed_wc_invalid_chain',
-        onClose() {
-          maybeGoBackAndClearHasPendingRedirect();
-        },
+        title: lang.t(T.errors.generic_title),
+        body: lang.t(T.errors.request_unsupported_network),
+        sheetHeight: 250,
+        onClose: maybeGoBackAndClearHasPendingRedirect,
       });
 
       return;
@@ -842,10 +876,10 @@ export async function onSessionRequest(
     }
 
     showErrorSheet({
-      reason: 'failed_wc_invalid_methods',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.request_unsupported_methods),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
   }
 }

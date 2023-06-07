@@ -2019,6 +2019,17 @@
         "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet",
         "error_alert_title": "Authentication failed",
         "error_alert_description": "Something went wrong. Please try again, or reach out to our support team."
+      },
+      "errors": {
+        "go_back": "Go back",
+        "generic_title": "Connection failed",
+        "generic_error": "Something went wrong. Please try again, or reach out to our support team.",
+        "pairing_timeout": "This session timed-out before a connection could be established. This is usually due to a network error. Please try again.",
+        "pairing_unsupported_methods": "The dapp requested wallet RPC methods that are unsupported by Rainbow.",
+        "pairing_unsupported_networks": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
+        "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
       }
     },
     "warning": {
