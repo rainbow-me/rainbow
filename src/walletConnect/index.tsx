@@ -344,8 +344,8 @@ export async function pair({ uri }: { uri: string }) {
   }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
-  // client.on('session_proposal', handler);
-  // client.on('auth_request', handler);
+  client.on('session_proposal', handler);
+  client.on('auth_request', handler);
 
   // init pairing
   await client.core.pairing.pair({ uri });
