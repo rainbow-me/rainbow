@@ -274,6 +274,8 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
+const ZORA_EXPLAINER = lang.t('explain.zora.text');
+
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
@@ -714,6 +716,26 @@ export const explainers = (params, colors) => ({
     }),
     text: BSC_EXPLAINER,
     title: lang.t('explain.bsc.title'),
+  },
+  zora: {
+    emoji: '⛽️',
+    extraHeight: 144,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.zora}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+    text: ZORA_EXPLAINER,
+    title: lang.t('explain.zora.title'),
   },
   failed_wc_connection: {
     emoji: '😵',

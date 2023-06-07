@@ -369,6 +369,24 @@ export const getOptimismGasPrices = async () => {
   return priceData;
 };
 
+export const getZoraGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.zora);
+  const baseGasPrice = await provider.getGasPrice();
+  console.log({ baseGasPrice });
+  console.log({ baseGasPrice });
+  const normalGasPrice = weiToGwei(baseGasPrice.toString());
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
+
 export const getEIP1559GasParams = async () => {
   const { data } = (await rainbowMeteorologyGetData(Network.mainnet)) as {
     data: RainbowMeteorologyData;

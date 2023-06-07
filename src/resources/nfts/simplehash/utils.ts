@@ -60,6 +60,8 @@ export function getSimpleHashChainFromNetwork(
       return SimpleHashChain.Optimism;
     case Network.bsc:
       return SimpleHashChain.Bsc;
+    case Network.zora:
+      return SimpleHashChain.Zora;
     default:
       return undefined;
   }
@@ -84,6 +86,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.optimism;
     case SimpleHashChain.Bsc:
       return Network.bsc;
+    case SimpleHashChain.Zora:
+      return Network.zora;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this
@@ -108,6 +112,7 @@ export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
 ): ValidatedSimpleHashNFT[] {
+  console.log({ nfts });
   return nfts
     .filter(nft => {
       const lowercasedContractAddress = nft.contract_address?.toLowerCase();
