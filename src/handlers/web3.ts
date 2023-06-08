@@ -405,7 +405,10 @@ export async function estimateGasWithPadding(
     logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
   } catch (e: any) {
-    logger.error(new RainbowError('Error calculating gas limit with padding'), {
+    /*
+     * Reported ~400x per day, but if it's not actionable it might as well be a warning.
+     */
+    logger.warn('Error calculating gas limit with padding', {
       message: e.message,
     });
     return null;
