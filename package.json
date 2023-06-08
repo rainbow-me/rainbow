@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.19-1",
+  "version": "1.8.20-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -167,6 +167,7 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "fast-text-encoding": "1.0.4",
+    "flatted": "3.2.7",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
     "graphql-request": "5.0.0",
@@ -256,6 +257,7 @@
     "react-native-screen-corner-radius": "0.1.1",
     "react-native-screens": "2.9.0",
     "react-native-section-list-get-item-layout": "2.2.3",
+    "react-native-share": "8.2.1",
     "react-native-splash-screen": "3.2.0",
     "react-native-storage": "1.0.1",
     "react-native-store-review": "0.1.5",

@@ -4017,11 +4017,6 @@
   dependencies:
     "@vibrant/types" "^3.2.1-alpha.1"
 
-"@wagmi/chains@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.1.0.tgz#d351b3dc6f472b167f180721f46f6098b6c1585b"
-  integrity sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==
-
 "@walletconnect/auth-client@2.0.7":
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@walletconnect/auth-client/-/auth-client-2.0.7.tgz#f6e1eeeaa57865d1d219bbc1439d147d5ab2d354"
@@ -8097,6 +8092,11 @@ flat-cache@^3.0.4:
 flat@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"
+
+flatted@3.2.7:
+  version "3.2.7"
+  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
+  integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
 flatted@^3.1.0:
   version "3.2.2"
@@ -13365,6 +13365,11 @@ react-native-section-list-get-item-layout@2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/react-native-section-list-get-item-layout/-/react-native-section-list-get-item-layout-2.2.3.tgz#152a8efdcb3847dbcbeb04cd2d0de4312d3d2fcb"
   integrity sha512-fzCW5SiYP6qCZyDHebaElHonIFr8NFrZK9JDkxFLnpxMJih4d+HQ4rHyOs0Z4Gb/FjyCVbRH7RtEnjeQ0XffMg==
+
+react-native-share@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-8.2.1.tgz#f9933852de3ddd0f474ab63448e06c22cfecc9d4"
+  integrity sha512-dUIgrcdg4nOHrbKN1w+hs17RZ+51NeXd62CEezPAd4tEyj2Ki1qeAxWnJe8ZPRwvB5/6ml7YUR/2PJApxGHCAQ==
 
 react-native-splash-screen@3.2.0:
   version "3.2.0"

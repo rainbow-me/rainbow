@@ -101,9 +101,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
 import { logger as loggr } from '@/logger';
-import { goBack } from 'react-native-minimizer';
 import { getNetworkObj } from '@/networks';
-import { current } from 'immer';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -112,6 +110,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
+  [Network.zora]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {

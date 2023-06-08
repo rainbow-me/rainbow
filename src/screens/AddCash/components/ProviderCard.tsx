@@ -162,7 +162,11 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
           alignItems="center"
           justifyContent="center"
         >
-          <Logo width={14} height={14} color="white" />
+          <Logo
+            width={14}
+            height={14}
+            color={config.metadata.accentForegroundColor || 'white'}
+          />
         </Box>
         <Box paddingLeft="8px">
           <Text size="20pt" weight="heavy" color="label">
