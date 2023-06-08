@@ -39,18 +39,6 @@ jobs:
       - name: Install deps via Yarn
         run: yarn setup-ci
 
-      - name: Check for frozen lockfile
-        run: yarn check-lockfile
-
-      - name: Audit CI
-        run:  yarn audit-ci --config audit-ci.jsonc
-
-      - name: Lint
-        run: yarn lint:ci
-
-      - name: Unit tests
-        run: yarn test
-
       - name: Install Pods
         run: cd ios && pod install && cd ..
 

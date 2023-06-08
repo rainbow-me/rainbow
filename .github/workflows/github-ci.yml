@@ -1,0 +1,39 @@
+name: React Native CI
+
+on:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    # Cancel current builds if there's a newer commit on the same branch
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: install yarn
+        run: npm i yarn@1 -g
+
+      - name: Install deps via Yarn
+        run: yarn
+
+      - name: Check for frozen lockfile
+        run: yarn check-lockfile
+
+      - name: Audit CI
+        run:  yarn audit-ci --config audit-ci.jsonc
+
+      - name: Lint
+        run: yarn lint:ci
+
+      - name: Unit tests
+        run: yarn test
+
