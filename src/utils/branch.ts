@@ -120,9 +120,11 @@ export const branchListener = async (
       }
     } else if (params.uri) {
       /**
-       * Sometimes `params.uri` differs from `uri`, and in these cases we should use `params.uri`.
+       * Sometimes `params.uri` differs from `uri`, and in these cases we
+       * should use `params.uri`. This happens about 8k times per week, so it's
+       * very expected.
        */
-      logger.warn(`Branch: using preferred URI value from params`, {
+      logger.debug(`Branch: using preferred URI value from params`, {
         params,
         uri,
       });
