@@ -37,6 +37,7 @@ jest.mock('react-native', () => ({
   },
 }));
 jest.mock('@react-native-firebase/messaging', () => ({}));
+jest.mock('react-native-reanimated', () => ({}));
 
 jest.mock('@/redux/store');
 jest.mock('@/redux/walletconnect');
