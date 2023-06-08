@@ -39,6 +39,9 @@ jobs:
       - name: Install deps via Yarn
         run: yarn setup-ci
 
+      - name: Audit CI
+        run:  yarn audit-ci --config audit-ci.jsonc
+
       - name: Install Pods
         run: cd ios && pod install && cd ..
 
