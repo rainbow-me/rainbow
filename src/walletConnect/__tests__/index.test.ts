@@ -32,6 +32,9 @@ jest.mock('react-native', () => ({
   InteractionManager: {
     runAfterInteractions: jest.fn((cb: any) => cb()),
   },
+  Dimensions: {
+    get: jest.fn(() => ({ width: 100, height: 100 })),
+  },
 }));
 jest.mock('@react-native-firebase/messaging', () => ({}));
 
