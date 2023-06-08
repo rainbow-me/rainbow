@@ -4,8 +4,6 @@ import Minimizer from 'react-native-minimizer';
 import { nanoid } from 'nanoid/non-secure';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
-import Navigation from '@/navigation/Navigation';
-import { mocked } from '@/testing/utils';
 import {
   parseRPCParams,
   maybeGoBackAndClearHasPendingRedirect,
@@ -14,6 +12,7 @@ import {
   onSessionProposal,
 } from '@/walletConnect';
 import { RPCMethod } from '@/walletConnect/types';
+import * as explain from '@/screens/Explain';
 
 jest.mock('@walletconnect/core');
 jest.mock('@walletconnect/web3wallet', () => ({
@@ -55,6 +54,10 @@ jest.mock('@/walletConnect/sheets/AuthRequest', () => ({
   AuthRequest: jest.fn(),
 }));
 jest.mock('@/analytics');
+jest.mock('@/design-system', () => ({}));
+jest.mock('@/screens/Explain', () => ({
+  open: jest.fn(),
+}));
 
 /**
  * Generates a unique WC URI for each test
@@ -178,7 +181,7 @@ test(`pair: timeout`, async () => {
 
   jest.advanceTimersByTime(10_000);
 
-  expect(Navigation.handleAction).toHaveBeenCalled();
+  expect(explain.open).toHaveBeenCalled();
 });
 
 test.skip(`onSessionProposal`, async () => {
