@@ -21,9 +21,14 @@ export const branchListener = async (
    */
   const unsubscribe = branch.subscribe(({ error, params, uri }) => {
     if (error) {
-      logger.error(new RainbowError('Branch: error when handling event'), {
-        error,
-      });
+      switch (error) {
+        case 'Trouble reaching the Branch servers, please try again shortly.':
+          break;
+        default:
+          logger.error(new RainbowError('Branch: error when handling event'), {
+            error,
+          });
+      }
     }
 
     logger.debug(
