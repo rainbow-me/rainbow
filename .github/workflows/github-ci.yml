@@ -31,6 +31,9 @@ jobs:
       - name: Audit CI
         run:  yarn audit-ci --config audit-ci.jsonc
 
+      - name: Patch Packages
+        run: yarn patch-package
+
       - name: Lint
         run: yarn lint:ci
 
