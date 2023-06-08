@@ -25,6 +25,9 @@ jobs:
       - name: Install deps via Yarn
         run: yarn install && yarn graphql-codegen:install && yarn ds:install && yarn graphql-codegen
 
+      - name: Create env
+        run: touch .env
+
       - name: Copy config
         run: mv src/config/defaultDebug.ts src/config/debug.ts
 
