@@ -40,8 +40,8 @@ jobs:
       - name: Patch Packages
         run: yarn patch-package
 
-      # - name: Lint
-      #   run: yarn format:check && yarn lint:ts && yarn lint:js --quiet
+      - name: Lint
+        run: yarn format:check && yarn lint:ts && yarn lint:js --quiet
 
       - name: Unit tests
         run: yarn test
