@@ -425,7 +425,12 @@ async function subscribeToEchoServer({
   }).json();
 
   if (res.error) {
-    logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
+    /*
+     * Most of these appear to be network errors and timeouts. So our backend
+     * should report these to Datadog, and we can leave this as a warn to
+     * continue to monitor.
+     */
+    logger.warn(`WC v2: echo server subscription failed`, {
       error: res.error,
     });
   }
