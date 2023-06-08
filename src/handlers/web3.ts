@@ -41,6 +41,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
+import { getNetworkObj } from '@/networks';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -146,15 +147,7 @@ export const web3SetHttpProvider = async (
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Network = (network: Network | string): boolean => {
-  switch (network) {
-    case Network.arbitrum:
-    case Network.optimism:
-    case Network.polygon:
-    case Network.bsc:
-      return true;
-    default:
-      return false;
-  }
+  return getNetworkObj(network as Network).networkType === 'layer2';
 };
 
 /**
@@ -172,14 +165,10 @@ export const isHardHat = (providerUrl: string): boolean => {
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetNetwork = (network: Network): boolean => {
-  switch (network) {
-    case Network.goerli:
-      return true;
-    default:
-      return false;
-  }
+  return getNetworkObj(network as Network).networkType === 'testnet';
 };
 
+// shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
     'https://rpc.flashbots.net',
@@ -204,7 +193,7 @@ export const getProviderForNetwork = async (
     networkProviders[Network.mainnet] = provider;
     return provider;
   } else {
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    const chainId = getNetworkObj(network).id;
     const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
     if (!networkProviders[network]) {
       networkProviders[network] = provider;

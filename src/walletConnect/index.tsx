@@ -38,7 +38,6 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import supportedChainConfigs from '@/references/chains.json';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
@@ -52,10 +51,11 @@ import {
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
+import { RainbowNetworks } from '@/networks';
 
-const SUPPORTED_EVM_CHAIN_IDS = supportedChainConfigs.map(
-  chain => chain.network_id
-);
+const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
+  ({ features }) => features.walletconnect
+).map(({ id }) => id);
 
 const T = lang.l.walletconnect;
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
@@ -239,9 +239,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  for (const config of supportedChainConfigs) {
-    if (config.chain_id === chainId) return true;
-  }
+  return !!RainbowNetworks.find(({ id }) => id === chainId);
 }
 
 /**

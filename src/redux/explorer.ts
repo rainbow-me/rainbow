@@ -43,7 +43,6 @@ import {
 } from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
-import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
@@ -56,6 +55,7 @@ import {
 } from '@/references';
 import { ethereumUtils, TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -189,7 +189,6 @@ type OrderType = 'asc' | 'desc';
  */
 const createSocket = (endpoint: string): Socket =>
   io(`${config.data_endpoint}/${endpoint}`, {
-    // @ts-expect-error
     extraHeaders: { origin: config.data_origin },
     query: {
       api_token: config.data_api_key,
@@ -525,7 +524,7 @@ const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
   network: Network
 ): Promise<{ [tokenAddress: string]: string } | null> => {
   const balanceCheckerContract = new Contract(
-    networkInfo[network]?.balance_checker_contract_address,
+    getNetworkObj(network).balanceCheckerAddress,
     balanceCheckerContractAbi,
     web3Provider
   );

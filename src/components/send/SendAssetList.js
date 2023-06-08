@@ -22,6 +22,7 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import styled from '@/styled-thing';
+import { getNetworkObj } from '@/networks';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -85,7 +86,11 @@ export default class SendAssetList extends React.Component {
       this.data.push(smallBalances);
     }
 
-    if (savings && savings.length > 0 && network === networkTypes.mainnet) {
+    if (
+      savings &&
+      savings.length > 0 &&
+      getNetworkObj(network).features.savings
+    ) {
       this.data = this.data.concat([
         { data: savings, name: lang.t('savings.label') },
       ]);

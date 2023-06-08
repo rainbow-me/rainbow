@@ -90,6 +90,7 @@ import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
+import { getNetworkObj } from '@/networks';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS
@@ -736,13 +737,9 @@ export default function SendSheet(props) {
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      if (currentNetwork === Network.polygon) {
-        label = lang.t('button.confirm_exchange.insufficient_matic');
-      } else if (currentNetwork === Network.bsc) {
-        label = lang.t('button.confirm_exchange.insufficient_bnb');
-      } else {
-        label = lang.t('button.confirm_exchange.insufficient_eth');
-      }
+      label = lang.t('button.confirm_exchange.insufficient_token', {
+        tokenName: getNetworkObj(currentNetwork).nativeCurrency.symbol,
+      });
     } else if (!isValidGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.invalid_fee');
@@ -763,9 +760,10 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
+    currentNetwork,
+    l1GasFeeOptimism,
     isSufficientGas,
     isValidGas,
-    currentNetwork,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
