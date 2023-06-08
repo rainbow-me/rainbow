@@ -228,8 +228,7 @@ const NotificationsSection = () => {
     const watchedWallets: RainbowAccount[] = [];
     // group wallets by relationship if the arrays are empty
     if (watchedWallets.length === 0 && ownedWallets.length === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const walletIDs = Object.keys(wallets!);
+      const walletIDs = Object.keys(wallets ?? {});
       walletIDs.forEach(key => {
         const wallet = wallets?.[key];
 

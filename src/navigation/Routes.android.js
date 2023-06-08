@@ -31,7 +31,7 @@ import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
-import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
+import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import RegisterENSNavigator from './RegisterENSNavigator';
@@ -346,7 +346,8 @@ function BSNavigator() {
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
-        name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        name={Routes.DIAGNOSTICS_SHEET}
+        options={{ ...bottomSheetPreset }}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen
