@@ -117,7 +117,6 @@ async function getTokenListUpdate(
       status,
       response: { headers },
     } = await gretch(RAINBOW_LEAN_TOKEN_LIST_URL, {
-      method: 'GET',
       headers: etag
         ? { ...commonHeaders, 'If-None-Match': etag }
         : { ...commonHeaders },

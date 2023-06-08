@@ -5,10 +5,6 @@ import { logger, RainbowError } from '@/logger';
 
 const dispersionApi = create({
   baseURL: 'https://metadata.p.rainbow.me',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
   timeout: 30000,
 });
 

@@ -25,10 +25,6 @@ export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 
 const preferencesAPI = create({
   baesURL: PREFS_ENDPOINT,
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
   timeout: 30000, // 30 secs
 });
 
