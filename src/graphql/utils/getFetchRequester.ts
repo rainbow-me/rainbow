@@ -1,11 +1,11 @@
-import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
+import { gretch, GretchOptions } from 'gretchen';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
 
 const allowedOperations = ['mutation', 'query'];
 
-type Options = Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>;
+type Options = Pick<GretchOptions, 'timeout' | 'headers'>;
 
 type Config = {
   url: string;
@@ -35,7 +35,7 @@ export function getFetchRequester(config: Config) {
 
     const { query, operationName } = resolveRequestDocument(node);
     let requestUrl: string = url;
-    const requestOptions: RainbowFetchRequestOpts = {
+    const requestOptions: GretchOptions = {
       ...options,
       method,
     };
@@ -53,7 +53,7 @@ export function getFetchRequester(config: Config) {
         operationName,
       });
     }
-    const { data } = await rainbowFetch(requestUrl, requestOptions);
+    const { data } = await gretch(requestUrl, requestOptions).json();
 
     return data.data;
   };

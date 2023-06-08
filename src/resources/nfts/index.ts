@@ -10,7 +10,7 @@ import {
   filterSimpleHashNFTs,
   simpleHashNFTToUniqueAsset,
 } from '@/resources/nfts/simplehash/utils';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { gretch } from 'gretchen';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { Network } from '@/helpers';
@@ -39,10 +39,9 @@ function fetchPolygonAllowlist() {
     ['polygon-allowlist'],
     async () => {
       const polygonAllowlistAddresses = (
-        await rainbowFetch(
-          'https://metadata.p.rainbow.me/token-list/137-allowlist.json',
-          { method: 'get' }
-        )
+        await gretch(
+          'https://metadata.p.rainbow.me/token-list/137-allowlist.json'
+        ).json()
       ).data.data.addresses;
 
       const polygonAllowlist: PolygonAllowlist = {};

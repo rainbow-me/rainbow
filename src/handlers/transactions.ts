@@ -1,5 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { isEmpty } from 'lodash';
+import { gretch } from 'gretchen';
+import qs from 'query-string';
 import { web3Provider } from './web3';
 import { metadataClient } from '@/apollo/client';
 import { CONTRACT_FUNCTION } from '@/apollo/queries';
@@ -19,18 +21,9 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { getTitle, getTransactionLabel } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
 import { fetchWalletENSAvatars, fetchWalletNames } from '@/redux/wallets';
-import { RainbowFetchClient } from '@/rainbow-fetch';
 import { IS_TEST } from '@/env';
 import { API_BASE_URL } from '@rainbow-me/swaps';
 import { logger, RainbowError } from '@/logger';
-
-const flashbotsApi = new RainbowFetchClient({
-  baseURL: 'https://protect.flashbots.net',
-});
-
-const rainbowSwapsApi = new RainbowFetchClient({
-  baseURL: API_BASE_URL,
-});
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -180,8 +173,10 @@ export const getTransactionFlashbotStatus = async (
   txHash: string
 ) => {
   try {
-    const fbStatus = await flashbotsApi.get(`/tx/${txHash}`);
-    const flashbotStatus = fbStatus.data.status;
+    const fbStatus = await gretch(
+      `https://protect.flashbots.net/tx/${txHash}`
+    ).json();
+    const flashbotStatus = fbStatus.data?.status;
     // Make sure it wasn't dropped after 25 blocks or never made it
     if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {
       const transactionStatus = TransactionStatus.dropped;
@@ -210,13 +205,14 @@ export const getTransactionSocketStatus = async (
     ? TransactionStatus.bridging
     : TransactionStatus.swapping;
   try {
-    const socketStatus = await rainbowSwapsApi.get('/bridge-status', {
-      params: {
-        txHash: txHash || '',
-        fromChainId: String(swap?.fromChainId),
-        toChainId: String(swap?.toChainId),
-      },
+    const query = qs.stringify({
+      txHash: txHash || '',
+      fromChainId: String(swap?.fromChainId),
+      toChainId: String(swap?.toChainId),
     });
+    const socketStatus = await gretch(
+      `${API_BASE_URL}/bridge-status?${query}`
+    ).json();
     const socketResponse = socketStatus.data;
     if (socketResponse.success) {
       if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {

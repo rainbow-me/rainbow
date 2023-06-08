@@ -1,5 +1,5 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
-import { RainbowFetchClient } from '@/rainbow-fetch';
+import { create } from 'gretchen';
 import { Network } from '@/helpers';
 import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
 import {
@@ -14,7 +14,7 @@ import { RainbowError, logger } from '@/logger';
 
 export const START_CURSOR = 'start';
 
-const nftApi = new RainbowFetchClient({
+const nftApi = create({
   baseURL: `https://${NFT_API_URL}/api/v0`,
 });
 
@@ -34,7 +34,7 @@ export async function fetchSimpleHashNFT(
     );
   }
 
-  const response = await nftApi.get(
+  const response = await nftApi<SimpleHashNFT>(
     `/nfts/${chain}/${contractAddress}/${tokenId}`,
     {
       headers: {
@@ -43,8 +43,9 @@ export async function fetchSimpleHashNFT(
         'x-api-key': NFT_API_KEY,
       },
     }
-  );
-  return response?.data;
+  ).json();
+
+  return response.data;
 }
 
 export async function fetchSimpleHashNFTs(
@@ -55,7 +56,7 @@ export async function fetchSimpleHashNFTs(
     .map(network => network.nfts?.simplehashNetwork || network.value)
     .join(',');
   const cursorSuffix = createCursorSuffix(cursor);
-  const response = await nftApi.get(
+  const response = await nftApi(
     `/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
     {
       headers: {
@@ -64,7 +65,7 @@ export async function fetchSimpleHashNFTs(
         'x-api-key': NFT_API_KEY,
       },
     }
-  );
+  ).json();
   return {
     data: response?.data?.nfts ?? [],
     nextCursor: response?.data?.next_cursor,
@@ -84,7 +85,7 @@ export async function fetchSimpleHashNFTListing(
   while (cursor) {
     const cursorSuffix = createCursorSuffix(cursor);
     // eslint-disable-next-line no-await-in-loop
-    const response = await nftApi.get(
+    const response = await nftApi(
       // OpenSea ETH offers only for now
       `/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
       {
@@ -94,7 +95,7 @@ export async function fetchSimpleHashNFTListing(
           'x-api-key': NFT_API_KEY,
         },
       }
-    );
+    ).json();
     cursor = response?.data?.next_cursor;
     // aggregate array of eth listings on OpenSea
     listings = [

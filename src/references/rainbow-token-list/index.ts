@@ -4,7 +4,7 @@ import { keyBy } from 'lodash';
 // @ts-ignore
 import { RAINBOW_LEAN_TOKEN_LIST_URL } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
-import { rainbowFetch } from '../../rainbow-fetch';
+import { gretch } from 'gretchen';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
@@ -112,15 +112,16 @@ async function getTokenListUpdate(
   };
 
   try {
-    const { data, status, headers } = await rainbowFetch(
-      RAINBOW_LEAN_TOKEN_LIST_URL,
-      {
-        headers: etag
-          ? { ...commonHeaders, 'If-None-Match': etag }
-          : { ...commonHeaders },
-        method: 'get',
-      }
-    );
+    const {
+      data,
+      status,
+      response: { headers },
+    } = await gretch(RAINBOW_LEAN_TOKEN_LIST_URL, {
+      method: 'GET',
+      headers: etag
+        ? { ...commonHeaders, 'If-None-Match': etag }
+        : { ...commonHeaders },
+    }).json();
     const currentDate = new Date(currentTokenListData?.timestamp);
     const freshDate = new Date((data as TokenListData)?.timestamp);
 

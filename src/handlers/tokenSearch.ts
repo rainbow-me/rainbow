@@ -1,6 +1,6 @@
 import { isAddress } from '@ethersproject/address';
-import { qs } from 'url-parse';
-import { RainbowFetchClient } from '../rainbow-fetch';
+import qs from 'query-string';
+import { create } from 'gretchen';
 import {
   TokenSearchThreshold,
   TokenSearchTokenListId,
@@ -9,12 +9,8 @@ import {
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 
-const tokenSearchApi = new RainbowFetchClient({
+const tokenSearchApi = create({
   baseURL: 'https://token-search.rainbow.me/v2',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
   timeout: 30000,
 });
 
@@ -47,7 +43,7 @@ export const tokenSearch = async (searchParams: {
       params.keys = `networks.${params.chainId}.address`;
     }
     const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
-    const tokenSearch = await tokenSearchApi.get(url);
+    const tokenSearch = await tokenSearchApi(url).json();
     return tokenSearch.data?.data;
   } catch (e: any) {
     logger.error(
@@ -67,10 +63,13 @@ export const walletFilter = async (params: {
 }) => {
   try {
     const { addresses, fromChainId, toChainId } = params;
-    const filteredAddresses = await tokenSearchApi.post(`/${fromChainId}`, {
-      addresses,
-      toChainId,
-    });
+    const filteredAddresses = await tokenSearchApi(`/${fromChainId}`, {
+      method: 'POST',
+      json: {
+        addresses,
+        toChainId,
+      },
+    }).json();
     return filteredAddresses?.data?.data || [];
   } catch (e: any) {
     logger.error(

@@ -5,7 +5,8 @@ import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { PREFS_ENDPOINT } from '../model/preferences';
-import { rainbowFetch } from '../rainbow-fetch';
+import { gretch } from 'gretchen';
+import qs from 'query-string';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
@@ -19,12 +20,8 @@ const tokenFamilyItem = item => (
 );
 
 async function fetchShowcaseForAddress(address) {
-  const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
-    method: 'get',
-    params: {
-      address,
-    },
-  });
+  const query = qs.stringify({ address });
+  const response = await gretch(`${PREFS_ENDPOINT}/address?${query}`).json();
   return response.data;
 }
 

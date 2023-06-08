@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react-native';
-import { RainbowFetchClient } from '../rainbow-fetch';
+import { create } from 'gretchen';
+import qs from 'query-string';
 import { EthereumAddress } from '@/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
@@ -22,7 +23,8 @@ export interface PreferencesResponse {
 
 export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 
-const preferencesAPI = new RainbowFetchClient({
+const preferencesAPI = create({
+  baesURL: PREFS_ENDPOINT,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -52,11 +54,14 @@ export async function setPreference(
     const message = JSON.stringify(objToSign);
     const signature2 = await signWithSigningWallet(message);
     logger.log('☁️  SENDING ', message);
-    const response = await preferencesAPI.post(`${PREFS_ENDPOINT}/${key}`, {
-      message,
-      signature,
-      signature2,
-    });
+    const response = await preferencesAPI(`/${key}`, {
+      method: 'POST',
+      json: {
+        message,
+        signature,
+        signature2,
+      },
+    }).json();
     const responseData: PreferencesResponse = response.data as PreferencesResponse;
     logger.log('☁️  RESPONSE', {
       reason: responseData?.reason,
@@ -78,9 +83,8 @@ export async function getPreference(
   address: EthereumAddress
 ): Promise<any | null> {
   try {
-    const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
-      params: { address },
-    });
+    const query = qs.stringify({ address });
+    const response = await preferencesAPI(`/${key}?${query}`).json();
     const responseData: PreferencesResponse = response.data as PreferencesResponse;
     logger.log('☁️  RESPONSE', {
       reason: responseData?.reason,
