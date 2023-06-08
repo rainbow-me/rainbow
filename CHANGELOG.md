@@ -17,6 +17,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Added
 
+- WCv2 updates
+- PIN keychain updates (droid)
+- Diagnostic Sheet updates
+
+## [1.8.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.19)
+
+### Added
+
 - Keychain updates
 - Sentry updates
 - Output based swaps on Arbitrum
