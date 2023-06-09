@@ -132,17 +132,13 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
   }
 
   try {
-    await nftApi.post(
-      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
-      {},
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'x-api-key': NFT_API_KEY,
-        },
-      }
-    );
+    await nftApi(`/nfts/refresh/${chain}/${nft.asset_contract.address}`, {
+      method: 'POST',
+      json: {},
+      headers: {
+        'x-api-key': NFT_API_KEY,
+      },
+    }).flush();
   } catch {
     logger.warn(
       `refreshNFTContractMetadata: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
@@ -150,17 +146,16 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     try {
       // If the collection has > 20k NFTs, the above request will fail.
       // In that case, we need to refresh the given NFT individually.
-      await nftApi.post(
+      await nftApi(
         `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
-        {},
         {
+          method: 'POST',
+          json: {},
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'x-api-key': NFT_API_KEY,
           },
         }
-      );
+      ).flush();
     } catch {
       logger.error(
         new RainbowError(
