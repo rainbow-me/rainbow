@@ -164,9 +164,9 @@ export const Offer = ({
         <Box
           style={{
             shadowColor:
-              colorMode === 'dark' || !offer.predominantColor
+              colorMode === 'dark' || !offer.nft.predominantColor
                 ? globalColors.grey100
-                : offer.predominantColor,
+                : offer.nft.predominantColor,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -189,8 +189,7 @@ export const Offer = ({
             <Box
               as={ImgixImage}
               background="surfacePrimary"
-              // @ts-ignore
-              source={{ uri: offer.imageUrl }}
+              source={{ uri: offer.nft.imageUrl }}
               width={{ custom: NFT_IMAGE_SIZE }}
               height={{ custom: NFT_IMAGE_SIZE }}
               borderRadius={12}
@@ -202,9 +201,9 @@ export const Offer = ({
       <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
         <Inline space="4px" alignVertical="center">
           <CoinIcon
-            address={offer.offerPaymentToken.address}
+            address={offer.paymentToken.address}
             size={12}
-            symbol={offer.offerPaymentToken.symbol}
+            symbol={offer.paymentToken.symbol}
           />
           <Text color="label" size="13pt" weight="heavy">
             {handleSignificantDecimals(

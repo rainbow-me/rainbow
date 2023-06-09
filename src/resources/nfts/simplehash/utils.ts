@@ -183,7 +183,10 @@ export function simpleHashNFTToUniqueAsset(
 
   return {
     animation_url: maybeSignUri(
-      nft?.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      nft?.image_url ??
+        nft?.video_url ??
+        nft.extra_metadata?.animation_original_url ??
+        undefined,
       { fm: 'mp4' }
     ),
     asset_contract: {

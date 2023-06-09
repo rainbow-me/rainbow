@@ -29,7 +29,7 @@ import Animated, {
 import { FakeOffer, Offer } from './Offer';
 
 const CARD_HEIGHT = 250;
-const MAX_OFFERS = 20;
+const MAX_OFFERS = 10;
 
 type SortOption = { name: string; icon: string; criterion: SortCriterion };
 
@@ -66,7 +66,7 @@ export const NFTOffersCard = () => {
   const [hasOffers, setHasOffers] = useReducer(() => true, false);
 
   // only show the first MAX_OFFERS offers
-  const offers = (data?.nftOffers ?? []).slice(0, MAX_OFFERS);
+  const offers = data?.nftOffers ?? [];
 
   const heightValue = useSharedValue(0);
 
@@ -242,13 +242,15 @@ export const NFTOffersCard = () => {
                           <FakeOffer />
                         </>
                       ) : (
-                        offers.map(offer => (
-                          <Offer
-                            key={offer.contractAddress + offer.tokenId}
-                            offer={offer}
-                            sortCriterion={sortOption.criterion}
-                          />
-                        ))
+                        offers
+                          .slice(0, MAX_OFFERS)
+                          .map(offer => (
+                            <Offer
+                              key={offer.nft.uniqueId}
+                              offer={offer}
+                              sortCriterion={sortOption.criterion}
+                            />
+                          ))
                       )}
                     </Inline>
                   </Inset>
