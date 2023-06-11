@@ -256,11 +256,26 @@ export const handleSignificantDecimals = (
   const resultBN = new BigNumber(result);
   if (abbreviate) {
     if (resultBN.isGreaterThanOrEqualTo(1_000_000_000)) {
-      return resultBN.div(1_000_000_000).toFormat(1) + 'b';
+      return (
+        resultBN
+          .div(1_000_000_000)
+          .toFormat(1)
+          .replace(/\.?0+$/, '') + 'b'
+      );
     } else if (resultBN.isGreaterThanOrEqualTo(1_000_000)) {
-      return resultBN.div(1_000_000).toFormat(1) + 'm';
+      return (
+        resultBN
+          .div(1_000_000)
+          .toFormat(1)
+          .replace(/\.?0+$/, '') + 'm'
+      );
     } else if (resultBN.isGreaterThanOrEqualTo(1000)) {
-      return resultBN.div(1000).toFormat(1) + 'k';
+      return (
+        resultBN
+          .div(1000)
+          .toFormat(1)
+          .replace(/\.?0+$/, '') + 'k'
+      );
     }
   }
   return resultBN.dp() <= 2

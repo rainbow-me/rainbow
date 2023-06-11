@@ -1070,18 +1070,26 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
-    "nftOffers": {
+    "nft_offers": {
       "card": {
         "title": {
           "singular": "1 Offer :)",
           "plural": "%{numOffers} Offers :)"
         },
-        "sortCriteria": {
-          "highest": "Highest :)",
-          "fromFloor": "From Floor :)",
-          "recent": "Recent :)"
-        },
         "button": "View All Offers :)"
+      },
+      "sheet": {
+        "title": "Offers :)",
+        "total": "Total :)",
+        "above_floor": "above floor :)",
+        "below_floor": "below floor :)"
+      },
+      "sort_menu": {
+        "criteria": {
+          "highest": "Highest :)",
+          "from_floor": "From Floor :)",
+          "recent": "Recent :)"
+        }
       }
     },
     "notification": {

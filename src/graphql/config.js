@@ -21,7 +21,8 @@ exports.config = {
     document: './queries/arc.graphql',
     schema: {
       method: 'GET',
-      url: 'https://arc-graphql.rainbow.me/graphql',
+      // url: 'https://arc-graphql.rainbow.me/graphql',
+      url: 'http://127.0.0.1:8787/graphql',
     },
   },
 };

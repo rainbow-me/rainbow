@@ -112,7 +112,7 @@ export const Offer = ({
           'USD',
           undefined,
           true,
-          true
+          offer.grossAmount.usd >= 10_000
         );
       }
       break;
