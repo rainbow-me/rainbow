@@ -11,7 +11,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { OfferRow } from './components/OfferRow';
+import { FakeOfferRow, OfferRow } from './components/OfferRow';
 import { useAccountProfile } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
@@ -127,9 +127,25 @@ export const NFTOffersSheet = () => {
             <Separator color="separatorTertiary" />
             <Inset top="20px">
               <Stack space="20px">
-                {offers.map(offer => (
-                  <OfferRow key={offer.nft.uniqueId} offer={offer} />
-                ))}
+                {!offers.length ? (
+                  <>
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                    <FakeOfferRow />
+                  </>
+                ) : (
+                  offers.map(offer => (
+                    <OfferRow key={offer.nft.uniqueId} offer={offer} />
+                  ))
+                )}
               </Stack>
             </Inset>
           </Inset>

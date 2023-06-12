@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  AccentColorProvider,
   Bleed,
   Box,
   Column,
@@ -22,9 +23,12 @@ import {
 } from '@/helpers/utilities';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme';
+import { View } from 'react-native';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
+const COIN_ICON_SIZE = 16;
 
 const NFTImageMask = () => (
   <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
@@ -34,6 +38,66 @@ const NFTImageMask = () => (
     />
   </Svg>
 );
+
+export const FakeOfferRow = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.black}>
+      <Columns space="16px" alignVertical="center">
+        <Column width="content">
+          <Box
+            background="accent"
+            width={{ custom: NFT_SIZE }}
+            height={{ custom: NFT_SIZE }}
+            borderRadius={12}
+          />
+        </Column>
+        <Column>
+          <Stack space="10px">
+            <Box
+              background="accent"
+              width={{ custom: 70 }}
+              height={{ custom: 12 }}
+              borderRadius={6}
+            />
+            <Box
+              background="accent"
+              width={{ custom: 100 }}
+              height={{ custom: 9.3333 }}
+              borderRadius={9.3333 / 2}
+            />
+          </Stack>
+        </Column>
+        <Column width="content">
+          <Stack space="10px" alignHorizontal="right">
+            <Inline space="6px" alignVertical="center">
+              <Bleed vertical="2px">
+                <Box
+                  background="accent"
+                  width={{ custom: COIN_ICON_SIZE }}
+                  height={{ custom: COIN_ICON_SIZE }}
+                  borderRadius={99}
+                />
+              </Bleed>
+              <Box
+                background="accent"
+                width={{ custom: 90 }}
+                height={{ custom: 12 }}
+                borderRadius={6}
+              />
+            </Inline>
+            <Box
+              background="accent"
+              width={{ custom: 100 }}
+              height={{ custom: 9.3333 }}
+              borderRadius={9.3333 / 2}
+            />
+          </Stack>
+        </Column>
+      </Columns>
+    </AccentColorProvider>
+  );
+};
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
@@ -69,7 +133,6 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                   size={NFT_SIZE}
                   background="surfaceSecondary"
                   source={{ uri: offer.nft.imageUrl }}
-                  borderRadius={1.5}
                 />
               </MaskedView>
             </Box>
@@ -119,7 +182,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
               <Bleed vertical="2px">
                 <CoinIcon
                   address={offer.paymentToken.address}
-                  size={16}
+                  size={COIN_ICON_SIZE}
                   symbol={offer.paymentToken.symbol}
                 />
               </Bleed>

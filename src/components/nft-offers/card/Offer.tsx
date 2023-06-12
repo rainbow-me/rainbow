@@ -55,8 +55,8 @@ export const FakeOffer = () => {
           <Box
             background="accent"
             width={{ custom: 50 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
+            height={{ custom: 9.3333 }}
+            borderRadius={9.3333 / 2}
           />
         </Inline>
       </Box>
