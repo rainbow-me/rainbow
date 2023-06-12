@@ -42,4 +42,11 @@ module.exports = {
       },
     ],
   },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.android.tsx', '.ios.tsx'],
+      },
+    },
+  },
 };
