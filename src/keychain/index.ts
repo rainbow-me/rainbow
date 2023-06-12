@@ -160,19 +160,33 @@ export async function get(
               error: ErrorType.NotAuthenticated, // TODO may want a different type here
             };
           }
+          case 'Error: code: 7, msg: Too many attempts. Try again later.': {
+            logger.warn(`keychain: too many attempts`, {});
+
+            return {
+              value: undefined,
+              error: ErrorType.NotAuthenticated, // TODO may want a different type here
+            };
+          }
           case 'Error: User canceled the operation.': {
+            logger.warn(`keychain: user canceled (temp)`, {});
+
             return {
               value: undefined,
               error: ErrorType.UserCanceled,
             };
           }
           case 'Error: Wrapped error: User not authenticated': {
+            logger.warn(`keychain: user not authenticated (temp)`, {});
+
             return {
               value: undefined,
               error: ErrorType.NotAuthenticated,
             };
           }
           case 'Error: The user name or passphrase you entered is not correct.': {
+            logger.warn(`keychain: incorrect password (temp)`, {});
+
             if (attempts > 2) {
               return {
                 value: undefined,

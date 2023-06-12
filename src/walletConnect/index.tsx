@@ -392,10 +392,14 @@ export async function initListeners() {
       });
     } else {
       if (!IS_DEV) {
-        logger.error(
-          new RainbowError(
-            `WC v2: FCM token not found, push notifications will not be received`
-          )
+        /*
+         * If we failed to fetch an FCM token, this will fail too. You should
+         * see these errors increase proportionally if something goes wrong,
+         * which could be due to network flakiness, SSL server error (has
+         * happened), etc. Things out of our control.
+         */
+        logger.warn(
+          `WC v2: FCM token not found, push notifications will not be received`
         );
       }
     }
@@ -421,7 +425,12 @@ async function subscribeToEchoServer({
   }).json();
 
   if (res.error) {
-    logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
+    /*
+     * Most of these appear to be network errors and timeouts. So our backend
+     * should report these to Datadog, and we can leave this as a warn to
+     * continue to monitor.
+     */
+    logger.warn(`WC v2: echo server subscription failed`, {
       error: res.error,
     });
   }
