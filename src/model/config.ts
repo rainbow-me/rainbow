@@ -32,7 +32,6 @@ export interface RainbowConfig
   ethereum_goerli_rpc: string;
   ethereum_mainnet_rpc: string;
   f2c_enabled: boolean;
-  f2c_ratio_enabled: boolean;
   flashbots_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
@@ -76,7 +75,6 @@ const DEFAULT_CONFIG: RainbowConfig = {
     ? ETHEREUM_MAINNET_RPC_DEV
     : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
-  f2c_ratio_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
@@ -137,7 +135,6 @@ const init = async () => {
       } else if (
         key === 'flashbots_enabled' ||
         key === 'f2c_enabled' ||
-        key === 'f2c_ratio_enabled' ||
         key === 'swagg_enabled' ||
         key === 'op_rewards_enabled' ||
         key === 'profiles_enabled' ||
