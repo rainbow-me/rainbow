@@ -2,6 +2,8 @@ import React from 'react';
 import {
   Bleed,
   Box,
+  Column,
+  Columns,
   Cover,
   globalColors,
   Inline,
@@ -38,59 +40,59 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   return (
     <ButtonPressAnimation>
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline space="16px" alignVertical="center">
-          <Box>
+      <Columns space="16px" alignVertical="center">
+        <Column width="content">
+          <Box
+            style={{
+              shadowColor: globalColors.grey100,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.02,
+              shadowRadius: 3,
+            }}
+          >
             <Box
               style={{
-                shadowColor: globalColors.grey100,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.02,
-                shadowRadius: 3,
+                shadowColor:
+                  colorMode === 'dark' || !offer.nft.predominantColor
+                    ? globalColors.grey100
+                    : offer.nft.predominantColor,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.16,
+                shadowRadius: 6,
               }}
             >
-              <Box
-                style={{
-                  shadowColor:
-                    colorMode === 'dark' || !offer.nft.predominantColor
-                      ? globalColors.grey100
-                      : offer.nft.predominantColor,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.16,
-                  shadowRadius: 6,
-                }}
-              >
-                <MaskedView maskElement={<NFTImageMask />}>
-                  <Box
-                    as={ImgixImage}
-                    width={{ custom: NFT_SIZE }}
-                    height={{ custom: NFT_SIZE }}
-                    size={NFT_SIZE}
-                    background="surfaceSecondary"
-                    source={{ uri: offer.nft.imageUrl }}
-                    borderRadius={1.5}
-                  />
-                </MaskedView>
-              </Box>
-            </Box>
-            <Cover>
-              <Bleed left={{ custom: 5 }}>
+              <MaskedView maskElement={<NFTImageMask />}>
                 <Box
                   as={ImgixImage}
-                  width={{ custom: MARKETPLACE_ORB_SIZE }}
-                  height={{ custom: MARKETPLACE_ORB_SIZE }}
-                  source={{ uri: offer.marketplace.imageUrl }}
-                  size={MARKETPLACE_ORB_SIZE}
-                  marginTop={{
-                    custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
-                  }}
-                  marginRight={{
-                    custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
-                  }}
+                  width={{ custom: NFT_SIZE }}
+                  height={{ custom: NFT_SIZE }}
+                  size={NFT_SIZE}
+                  background="surfaceSecondary"
+                  source={{ uri: offer.nft.imageUrl }}
+                  borderRadius={1.5}
                 />
-              </Bleed>
-            </Cover>
+              </MaskedView>
+            </Box>
           </Box>
+          <Cover>
+            <Bleed left={{ custom: 5 }}>
+              <Box
+                as={ImgixImage}
+                width={{ custom: MARKETPLACE_ORB_SIZE }}
+                height={{ custom: MARKETPLACE_ORB_SIZE }}
+                source={{ uri: offer.marketplace.imageUrl }}
+                size={MARKETPLACE_ORB_SIZE}
+                marginTop={{
+                  custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
+                }}
+                marginRight={{
+                  custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
+                }}
+              />
+            </Bleed>
+          </Cover>
+        </Column>
+        <Column>
           <Stack space="10px">
             <Text size="17pt" weight="bold" color="label">
               {convertAmountToNativeDisplay(
@@ -100,50 +102,60 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 true
               )}
             </Text>
-            <Text size="13pt" weight="medium" color="labelTertiary">
-              {offer.nft.name}
-            </Text>
-          </Stack>
-        </Inline>
-        <Stack space="10px" alignHorizontal="right">
-          <Inline space="6px" alignVertical="center">
-            <Bleed vertical="2px">
-              <CoinIcon
-                address={offer.paymentToken.address}
-                size={16}
-                symbol={offer.paymentToken.symbol}
-              />
-            </Bleed>
-            <Text size="17pt" weight="bold" color="label">
-              {handleSignificantDecimals(
-                offer.grossAmount.decimal,
-                18,
-                3,
-                undefined,
-                true
-              )}
-            </Text>
-          </Inline>
-          <Inline>
             <Text
               size="13pt"
               weight="medium"
-              color={isFloorDiffPercentagePositive ? 'green' : 'labelTertiary'}
+              color="labelTertiary"
+              ellipsizeMode="tail"
+              numberOfLines={1}
             >
-              {`${isFloorDiffPercentagePositive ? '+' : ''}${
-                offer.floorDifferencePercentage
-              }% `}
+              {offer.nft.name}
             </Text>
-            <Text size="13pt" weight="medium" color="labelTertiary">
-              {i18n.t(
-                isFloorDiffPercentagePositive
-                  ? i18n.l.nft_offers.sheet.above_floor
-                  : i18n.l.nft_offers.sheet.below_floor
-              )}
-            </Text>
-          </Inline>
-        </Stack>
-      </Inline>
+          </Stack>
+        </Column>
+        <Column width="content">
+          <Stack space="10px" alignHorizontal="right">
+            <Inline space="6px" alignVertical="center">
+              <Bleed vertical="2px">
+                <CoinIcon
+                  address={offer.paymentToken.address}
+                  size={16}
+                  symbol={offer.paymentToken.symbol}
+                />
+              </Bleed>
+              <Text size="17pt" weight="bold" color="label">
+                {handleSignificantDecimals(
+                  offer.grossAmount.decimal,
+                  18,
+                  3,
+                  undefined,
+                  true
+                )}
+              </Text>
+            </Inline>
+            <Inline>
+              <Text
+                size="13pt"
+                weight="medium"
+                color={
+                  isFloorDiffPercentagePositive ? 'green' : 'labelTertiary'
+                }
+              >
+                {`${isFloorDiffPercentagePositive ? '+' : ''}${
+                  offer.floorDifferencePercentage
+                }% `}
+              </Text>
+              <Text size="13pt" weight="medium" color="labelTertiary">
+                {i18n.t(
+                  isFloorDiffPercentagePositive
+                    ? i18n.l.nft_offers.sheet.above_floor
+                    : i18n.l.nft_offers.sheet.below_floor
+                )}
+              </Text>
+            </Inline>
+          </Stack>
+        </Column>
+      </Columns>
     </ButtonPressAnimation>
   );
 };
