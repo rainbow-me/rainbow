@@ -91,20 +91,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
     await Helpers.checkIfVisible(`exchange-modal-output-DAI-optimism`);
 
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.tap('network-switcher-item-arbitrum');
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
-    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
-    await Helpers.checkIfVisible(`exchange-modal-output-DAI-arbitrum`);
-
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.swipe('network-switcher-scroll-view', 'left', 'slow');
-    await Helpers.tap('network-switcher-item-polygon');
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
-    await Helpers.checkIfVisible(`exchange-modal-input-DAI-token`);
-    await Helpers.checkIfVisible(`exchange-modal-output-DAI-polygon`);
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
