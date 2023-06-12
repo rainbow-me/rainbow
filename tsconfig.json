@@ -7,7 +7,6 @@
     "jsx": "react-native",
     "lib": ["esnext", "dom"],
     "moduleResolution": "node",
-    "moduleSuffixes": [".js", ".jsx", ".ts", ".tsx", ".ios", ".android", ""],
     "noEmit": true,
     "strict": true,
     "target": "esnext",
