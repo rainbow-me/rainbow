@@ -184,7 +184,7 @@ const NetworkPill = ({ chainIds }) => {
               })}
             </>
           ) : (
-            <Inline alignVertical="center">
+            <Inline alignVertical="center" wrap={false}>
               {availableNetworks[0] !== Network.mainnet ? (
                 <ChainBadge
                   assetType={availableNetworks[0]}
