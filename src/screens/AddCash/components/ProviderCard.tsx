@@ -29,20 +29,6 @@ type PaymentMethodConfig = {
   icon: string;
 };
 
-const providerNames = {
-  [FiatProviderName.Ramp]: 'Ramp',
-  [FiatProviderName.Ratio]: 'Ratio',
-  [FiatProviderName.Coinbase]: 'Coinbase',
-  [FiatProviderName.Moonpay]: 'MoonPay',
-};
-
-const providerDescriptions = {
-  [FiatProviderName.Ramp]: `Cards, banks, & international options`,
-  [FiatProviderName.Ratio]: `Any US bank account`,
-  [FiatProviderName.Coinbase]: `Transfer from Coinbase & other options`,
-  [FiatProviderName.Moonpay]: `Cards, banks, & international options`,
-};
-
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
   [FiatProviderName.Ratio]: RatioLogo,
@@ -142,7 +128,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
   const backgroundColorAlpha = React.useMemo(() => {
     return `rgba(${chroma(backgroundColor).rgb()},0)`;
   }, [backgroundColor]);
-  const Logo = React.useMemo(() => providerLogos[config.name], [config.name]);
+  const Logo = React.useMemo(() => providerLogos[config.id], [config.id]);
 
   return (
     <Box
@@ -170,14 +156,14 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
         </Box>
         <Box paddingLeft="8px">
           <Text size="20pt" weight="heavy" color="label">
-            {providerNames[config.name]}
+            {config.content.title}
           </Text>
         </Box>
       </Inline>
 
       <Box paddingTop="8px" paddingBottom="20px">
         <Text size="17pt" weight="semibold" color="labelSecondary">
-          {providerDescriptions[config.name]}
+          {config.content.description}
         </Text>
       </Box>
 
@@ -202,7 +188,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
             paddingHorizontal="20px"
             paddingBottom="20px"
           >
-            {config.callouts.map(callout => {
+            {config.content.callouts.map(callout => {
               let title = '';
               let content = null;
 

@@ -3,6 +3,8 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { SheetHandle } from '@/components/sheet';
 import { deviceUtils } from '@/utils';
@@ -11,20 +13,26 @@ import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
-import config from '@/model/config';
+import { getProviders } from '@/resources/f2c';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
 
+const providerComponents = {
+  [FiatProviderName.Ratio]: Ratio,
+  [FiatProviderName.Ramp]: Ramp,
+  [FiatProviderName.Coinbase]: Coinbase,
+  [FiatProviderName.Moonpay]: Moonpay,
+};
+
 export function AddCashSheet() {
-  const isRatioEnabled = config.f2c_ratio_enabled;
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
   const { accountAddress } = useSelector(({ settings }: AppState) => ({
@@ -34,6 +42,19 @@ export function AddCashSheet() {
   const sheetHeight = IS_IOS
     ? deviceHeight - insets.top
     : deviceHeight - statusBarHeight;
+
+  const { isLoading, data: providers } = useQuery(
+    ['f2c', 'providers'],
+    async () => {
+      const { data, error } = await getProviders();
+
+      if (!data || error) {
+        throw error || new Error(`F2C: Failed to fetch providers`);
+      }
+
+      return data.providers;
+    }
+  );
 
   return (
     <Box
@@ -81,23 +102,18 @@ export function AddCashSheet() {
           <Box paddingVertical="44px" width="full">
             <Separator color="separatorTertiary" />
 
-            {isRatioEnabled && (
-              <Box paddingTop="20px">
-                <Ratio accountAddress={accountAddress} />
-              </Box>
-            )}
-
-            <Box paddingTop="20px">
-              <Moonpay accountAddress={accountAddress} />
-            </Box>
-
-            <Box paddingTop="20px">
-              <Ramp accountAddress={accountAddress} />
-            </Box>
-
-            <Box paddingTop="20px">
-              <Coinbase accountAddress={accountAddress} />
-            </Box>
+            {!isLoading && providers?.length ? (
+              <>
+                {providers.map((provider, index) => {
+                  const Comp = providerComponents[provider.id];
+                  return (
+                    <Box key={provider.id} paddingTop="20px">
+                      <Comp accountAddress={accountAddress} config={provider} />
+                    </Box>
+                  );
+                })}
+              </>
+            ) : null}
 
             <Box paddingTop="20px">
               <Box
