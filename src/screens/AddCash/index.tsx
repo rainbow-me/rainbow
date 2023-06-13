@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import wait from 'w2t';
 
 import { SheetHandle } from '@/components/sheet';
 import { deviceUtils } from '@/utils';
@@ -14,6 +15,10 @@ import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 import { getProviders } from '@/resources/f2c';
+import Skeleton from '@/components/skeleton/Skeleton';
+import Navigation from '@/navigation/Navigation';
+import { WrappedAlert } from '@/helpers/alert';
+import { logger, RainbowError } from '@/logger';
 
 import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
@@ -43,18 +48,39 @@ export function AddCashSheet() {
     ? deviceHeight - insets.top
     : deviceHeight - statusBarHeight;
 
-  const { isLoading, data: providers } = useQuery(
+  const { isLoading, data: providers, error } = useQuery(
     ['f2c', 'providers'],
     async () => {
-      const { data, error } = await getProviders();
+      const [{ data, error }] = await wait(1000, [await getProviders()]);
 
       if (!data || error) {
-        throw error || new Error(`F2C: Failed to fetch providers`);
+        const e = new RainbowError('F2C: failed to fetch providers');
+
+        logger.error(e);
+
+        // throw to useEffect
+        throw new Error(e.message);
       }
 
       return data.providers;
     }
   );
+
+  React.useEffect(() => {
+    if (error || !providers?.length) {
+      Navigation.goBack();
+
+      WrappedAlert.alert(
+        lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
+        lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
+        [
+          {
+            text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+          },
+        ]
+      );
+    }
+  }, [providers, error]);
 
   return (
     <Box
@@ -113,7 +139,24 @@ export function AddCashSheet() {
                   );
                 })}
               </>
-            ) : null}
+            ) : (
+              <>
+                {Array(3)
+                  .fill(0)
+                  .map((_, index) => (
+                    <Box key={index} paddingTop="20px" height={{ custom: 140 }}>
+                      <Skeleton animated>
+                        <Box
+                          background="body (Deprecated)"
+                          borderRadius={30}
+                          height={{ custom: 120 }}
+                          width="full"
+                        />
+                      </Skeleton>
+                    </Box>
+                  ))}
+              </>
+            )}
 
             <Box paddingTop="20px">
               <Box

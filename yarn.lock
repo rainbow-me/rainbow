@@ -15792,6 +15792,11 @@ vm2@3.9.18, vm2@^3.9.8:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
 
+w2t@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/w2t/-/w2t-3.0.2.tgz#20805f8b2c7a67968270dfa35be14260664126ea"
+  integrity sha512-PyiEQuGRZ1en7FZplnexFGSQI5vWuN7p8pDBMw578wBegkMABh1vynDkLiyatNA2pZ29c/bdoJWGo6UdRjIGAA==
+
 walkdir@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/walkdir/-/walkdir-0.4.1.tgz#dc119f83f4421df52e3061e514228a2db20afa39"
