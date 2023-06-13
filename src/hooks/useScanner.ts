@@ -119,12 +119,20 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
+
+      let uri = qrCodeData;
+
+      if (/^https?/.test(qrCodeData)) {
+        const maybeUri = qs.parse(qrCodeData.split('?')[1]).uri;
+        if (maybeUri) uri = maybeUri;
+      }
+
       try {
-        const { version } = parseUri(qrCodeData);
+        const { version } = parseUri(uri);
         if (version === 1) {
-          await walletConnectOnSessionRequest(qrCodeData, () => {});
+          await walletConnectOnSessionRequest(uri, () => {});
         } else if (version === 2) {
-          await pairWalletConnect({ uri: qrCodeData });
+          await pairWalletConnect({ uri });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
