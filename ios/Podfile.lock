@@ -476,7 +476,7 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (4.5.0):
+  - react-native-safe-area-context (4.5.3):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -694,8 +694,9 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.9.0):
-    - React
+  - RNScreens (3.20.0):
+    - React-Core
+    - React-RCTImage
   - RNSentry (3.4.1):
     - React-Core
     - Sentry (= 7.11.0)
@@ -1242,7 +1243,7 @@ SPEC CHECKSUMS:
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
-  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
+  react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-screen-corner-radius: 57b6dea3c024035bff8377618df6e5056e6c6f27
   react-native-skia: 1afb1ede8750b9e3534545b18a9a5086e6705f9f
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -1290,7 +1291,7 @@ SPEC CHECKSUMS:
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 6668b0587bebd4b15dd849b99e5a9c70fc12ed95
-  RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
+  RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
