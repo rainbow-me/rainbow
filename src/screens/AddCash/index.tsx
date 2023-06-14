@@ -12,7 +12,13 @@ import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
-import { Box, Text, Separator, useForegroundColor } from '@/design-system';
+import {
+  Box,
+  Text,
+  Separator,
+  useForegroundColor,
+  useBackgroundColor,
+} from '@/design-system';
 import { AppState } from '@/redux/store';
 import { getProviders } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
@@ -44,6 +50,7 @@ export function AddCashSheet() {
     accountAddress: settings.accountAddress,
   }));
   const borderColor = useForegroundColor('separatorTertiary');
+  const skeletonColor = useBackgroundColor('surfacePrimaryElevated');
   const sheetHeight = IS_IOS
     ? deviceHeight - insets.top
     : deviceHeight - statusBarHeight;
@@ -144,20 +151,27 @@ export function AddCashSheet() {
               </>
             ) : (
               <>
-                {Array(3)
+                {Array(4)
                   .fill(0)
-                  .map((_, index) => (
-                    <Box key={index} paddingTop="20px" height={{ custom: 140 }}>
-                      <Skeleton animated>
-                        <Box
-                          background="body (Deprecated)"
-                          borderRadius={30}
-                          height={{ custom: 120 }}
-                          width="full"
-                        />
-                      </Skeleton>
-                    </Box>
-                  ))}
+                  .map((_, index) => {
+                    const height = 140;
+                    return (
+                      <Box
+                        key={index}
+                        paddingTop="20px"
+                        height={{ custom: height + 20 }}
+                      >
+                        <Skeleton skeletonColor={skeletonColor}>
+                          <Box
+                            background="surfacePrimaryElevated"
+                            borderRadius={30}
+                            height={{ custom: height }}
+                            width="full"
+                          />
+                        </Skeleton>
+                      </Box>
+                    );
+                  })}
               </>
             )}
 
