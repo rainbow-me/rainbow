@@ -202,6 +202,7 @@
     "qs": "6.9.7",
     "querystring-es3": "0.2.1",
     "react": "17.0.2",
+    "react-coin-icon": "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
     "react-native": "rainbow-me/react-native#e4199f33b90914aeefcb638e02285711f45e422e",
