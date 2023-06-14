@@ -50,7 +50,7 @@ export function AddCashSheet() {
     accountAddress: settings.accountAddress,
   }));
   const borderColor = useForegroundColor('separatorTertiary');
-  const skeletonColor = useBackgroundColor('surfacePrimaryElevated');
+  const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
   const sheetHeight = IS_IOS
     ? deviceHeight - insets.top
     : deviceHeight - statusBarHeight;
