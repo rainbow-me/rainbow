@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AccentColorProvider,
   Bleed,
@@ -24,11 +24,33 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
-import { View } from 'react-native';
+import { getClient, Execute, createClient } from '@reservoir0x/reservoir-sdk';
+import { createWalletClient, http } from 'viem';
+import { useAccountSettings } from '@/hooks';
+import { mainnet } from 'viem/chains';
+import { loadPrivateKey } from '@/model/wallet';
+import { privateKeyToAccount } from 'viem/accounts';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
 const COIN_ICON_SIZE = 16;
+
+createClient({
+  chains: [
+    {
+      id: 1,
+      baseApiUrl: 'https://api.reservoir.tools',
+      active: true,
+      apiKey: 'demo-api-key',
+    },
+    {
+      id: 137,
+      baseApiUrl: 'https://api-polygon.reservoir.tools',
+      active: true,
+      apiKey: 'demo-api-key',
+    },
+  ],
+});
 
 const NFTImageMask = () => (
   <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
@@ -100,10 +122,48 @@ export const FakeOfferRow = () => {
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
+  const { accountAddress } = useAccountSettings();
+  const [signer, setSigner] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const pkey = await loadPrivateKey(accountAddress, false);
+      console.log(pkey);
+      if (typeof pkey === 'string') {
+        const acc = privateKeyToAccount(pkey);
+        const s = createWalletClient({
+          account: acc,
+          chain: mainnet,
+          transport: http(),
+        });
+        setSigner(s);
+      }
+    })();
+  }, [accountAddress]);
+
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation
+      onPress={() => {
+        console.log('attempting stuff');
+        if (signer) {
+          console.log('accepting offer');
+          getClient()?.actions.acceptOffer({
+            items: [
+              {
+                token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+                quantity: 1,
+              },
+            ],
+            signer,
+            onProgress: (steps: Execute['steps'], path: Execute['path']) => {
+              console.log(steps);
+            },
+          });
+        }
+      }}
+    >
       <Columns space="16px" alignVertical="center">
         <Column width="content">
           <Box
