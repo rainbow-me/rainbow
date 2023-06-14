@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
-import { Box } from '@/design-system';
+import { Box, Inline, Text, BackgroundProvider } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
@@ -15,13 +15,21 @@ import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
+import { IS_IOS } from '@/env';
+import { createBottomSheetNavigator } from '@/navigation/bottom-sheet';
+import * as i18n from '@/languages';
+import { bottomSheetPreset } from '@/navigation/effects';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { useDimensions } from '@/hooks';
 
 const Stack = createStackNavigator();
+const BStack = createBottomSheetNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { params } = useRoute<any>();
   const { colors } = useTheme();
+  const { height: deviceHeight } = useDimensions();
 
   const sectionOnPressFactory = (section: any) => () => {
     navigate(section.key, params);
@@ -48,94 +56,177 @@ export function SettingsSheet() {
   }, [navigate, params]);
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
-  return (
-    <Box
-      background="cardBackdrop (Deprecated)"
-      flexGrow={1}
-      testID="settings-sheet"
-      {...(android && {
-        borderTopRadius: 30,
-        marginTop: { custom: CUSTOM_MARGIN_TOP_ANDROID },
-      })}
-    >
-      <Stack.Navigator
-        // @ts-ignore
-        screenOptions={{
-          ...memoSettingsOptions,
-          headerRight: renderHeaderRight,
-          headerStyle: memoSettingsOptions.headerStyle,
-        }}
+
+  if (IS_IOS) {
+    return (
+      <Box
+        background="cardBackdrop (Deprecated)"
+        flexGrow={1}
+        testID="settings-sheet"
+        {...(android && {
+          borderTopRadius: 30,
+          marginTop: { custom: CUSTOM_MARGIN_TOP_ANDROID },
+        })}
       >
-        <Stack.Screen
-          name="SettingsSection"
-          options={{
-            cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: lang.t('settings.label'),
+        <Stack.Navigator
+          // @ts-ignore
+          screenOptions={{
+            ...memoSettingsOptions,
+            headerRight: renderHeaderRight,
+            headerStyle: memoSettingsOptions.headerStyle,
           }}
         >
-          {() => (
-            <SettingsSection
-              onCloseModal={goBack}
-              onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
-              onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
-              onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
-              onPressDev={sectionOnPressFactory(SettingsPages.dev)}
-              onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
-              onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
-              onPressNotifications={sectionOnPressFactory(
-                SettingsPages.notifications
-              )}
-              onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
-            />
-          )}
-        </Stack.Screen>
-        {Object.values(SettingsPages).map(
-          ({ component, getTitle, key }) =>
-            component && (
-              <Stack.Screen
-                component={component}
-                key={key}
-                name={key}
-                options={{
-                  cardStyleInterpolator: settingsCardStyleInterpolator,
-                  title: getTitle(),
-                }}
-                // @ts-ignore
-                title={getTitle()}
+          <Stack.Screen
+            name="SettingsSection"
+            options={{
+              cardStyleInterpolator: settingsCardStyleInterpolator,
+              title: lang.t('settings.label'),
+            }}
+          >
+            {() => (
+              <SettingsSection
+                onCloseModal={goBack}
+                onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
+                onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
+                onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
+                onPressDev={sectionOnPressFactory(SettingsPages.dev)}
+                onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
+                onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
+                onPressNotifications={sectionOnPressFactory(
+                  SettingsPages.notifications
+                )}
+                onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
               />
-            )
+            )}
+          </Stack.Screen>
+          {Object.values(SettingsPages).map(
+            ({ component, getTitle, key }) =>
+              component && (
+                <Stack.Screen
+                  component={component}
+                  key={key}
+                  name={key}
+                  options={{
+                    cardStyleInterpolator: settingsCardStyleInterpolator,
+                    title: getTitle(),
+                  }}
+                  // @ts-ignore
+                  title={getTitle()}
+                />
+              )
+          )}
+          <Stack.Screen
+            component={WalletNotificationsSettings}
+            name="WalletNotificationsSettings"
+            options={({ route }: any) => ({
+              cardStyleInterpolator: settingsCardStyleInterpolator,
+              title: route.params?.title,
+            })}
+          />
+          <Stack.Screen
+            component={SettingsBackupView}
+            name="SettingsBackupView"
+            options={({ route }: any) => ({
+              cardStyleInterpolator: settingsCardStyleInterpolator,
+              title: route.params?.title || lang.t('settings.backup'),
+              headerStyle: {
+                ...memoSettingsOptions.headerStyle,
+                // only do this if sheet needs a header subtitle AND is not scrollable
+                // if it's scrollable we need a better fix
+                ...(ios && { backgroundColor: 'transparent' }),
+              },
+            })}
+          />
+          <Stack.Screen
+            component={ShowSecretView}
+            name="ShowSecretView"
+            options={({ route }: any) => ({
+              cardStyleInterpolator: settingsCardStyleInterpolator,
+              title: route.params?.title || lang.t('settings.backup'),
+            })}
+          />
+        </Stack.Navigator>
+      </Box>
+    );
+  } else {
+    // Android
+    return (
+      <BackgroundProvider color="surfaceSecondary">
+        {({ backgroundColor }) => (
+          <SimpleSheet
+            backgroundColor={backgroundColor as string}
+            customHeight={deviceHeight}
+          >
+            <Inline alignHorizontal="center" alignVertical="center">
+              <Box paddingTop="19px (Deprecated)" paddingBottom="12px">
+                <Text size="22pt" weight="heavy" color="label">
+                  {i18n.t(i18n.l.settings.label)}
+                </Text>
+              </Box>
+            </Inline>
+
+            <BStack.Navigator
+            // @ts-ignore
+            >
+              <BStack.Screen
+                name="SettingsSection"
+                //@ts-ignore
+                options={bottomSheetPreset}
+              >
+                {() => (
+                  <SettingsSection
+                    onCloseModal={goBack}
+                    onPressAppIcon={sectionOnPressFactory(
+                      SettingsPages.appIcon
+                    )}
+                    onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
+                    onPressCurrency={sectionOnPressFactory(
+                      SettingsPages.currency
+                    )}
+                    onPressDev={sectionOnPressFactory(SettingsPages.dev)}
+                    onPressLanguage={sectionOnPressFactory(
+                      SettingsPages.language
+                    )}
+                    onPressNetwork={sectionOnPressFactory(
+                      SettingsPages.network
+                    )}
+                    onPressNotifications={sectionOnPressFactory(
+                      SettingsPages.notifications
+                    )}
+                    onPressPrivacy={sectionOnPressFactory(
+                      SettingsPages.privacy
+                    )}
+                  />
+                )}
+              </BStack.Screen>
+              {Object.values(SettingsPages).map(
+                ({ component, getTitle, key }) =>
+                  component && (
+                    <BStack.Screen
+                      component={component}
+                      key={key}
+                      name={key}
+                      //@ts-ignore
+                      options={bottomSheetPreset}
+                    />
+                  )
+              )}
+              <BStack.Screen
+                component={WalletNotificationsSettings}
+                name="WalletNotificationsSettings"
+                //@ts-ignore
+                options={bottomSheetPreset}
+              />
+              <BStack.Screen
+                component={SettingsBackupView}
+                name="SettingsBackupView"
+                //@ts-ignore
+                options={bottomSheetPreset}
+              />
+            </BStack.Navigator>
+          </SimpleSheet>
         )}
-        <Stack.Screen
-          component={WalletNotificationsSettings}
-          name="WalletNotificationsSettings"
-          options={({ route }: any) => ({
-            cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title,
-          })}
-        />
-        <Stack.Screen
-          component={SettingsBackupView}
-          name="SettingsBackupView"
-          options={({ route }: any) => ({
-            cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title || lang.t('settings.backup'),
-            headerStyle: {
-              ...memoSettingsOptions.headerStyle,
-              // only do this if sheet needs a header subtitle AND is not scrollable
-              // if it's scrollable we need a better fix
-              ...(ios && { backgroundColor: 'transparent' }),
-            },
-          })}
-        />
-        <Stack.Screen
-          component={ShowSecretView}
-          name="ShowSecretView"
-          options={({ route }: any) => ({
-            cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title || lang.t('settings.backup'),
-          })}
-        />
-      </Stack.Navigator>
-    </Box>
-  );
+      </BackgroundProvider>
+    );
+  }
 }
