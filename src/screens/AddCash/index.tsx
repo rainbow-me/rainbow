@@ -63,11 +63,14 @@ export function AddCashSheet() {
       }
 
       return data.providers;
+    },
+    {
+      staleTime: 1000 * 60, // one min
     }
   );
 
   React.useEffect(() => {
-    if (error || !providers?.length) {
+    if (error) {
       Navigation.goBack();
 
       WrappedAlert.alert(
