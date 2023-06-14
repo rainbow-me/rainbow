@@ -15,7 +15,6 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 export default function ShowSecretView() {
   useEffect(() => {
-    console.log('YO FUCK');
     analytics.track('Show Secret View', {
       category: 'settings backup',
     });
