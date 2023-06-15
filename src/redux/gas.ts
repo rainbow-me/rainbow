@@ -372,8 +372,6 @@ export const getOptimismGasPrices = async () => {
 export const getZoraGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.zora);
   const baseGasPrice = await provider.getGasPrice();
-  console.log({ baseGasPrice });
-  console.log({ baseGasPrice });
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
   const priceData = {
     fast: normalGasPrice,
