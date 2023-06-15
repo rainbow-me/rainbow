@@ -19,6 +19,7 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
+import { getNetworkObj } from '@/networks';
 
 const NOOP = () => null;
 
@@ -123,13 +124,9 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    if (currentNetwork === NetworkTypes.polygon) {
-      label = lang.t('button.confirm_exchange.insufficient_matic');
-    } else if (currentNetwork === NetworkTypes.bsc) {
-      label = lang.t('button.confirm_exchange.insufficient_bnb');
-    } else {
-      label = lang.t('button.confirm_exchange.insufficient_eth');
-    }
+    label = lang.t('button.confirm_exchange.insufficient_token', {
+      tokenName: getNetworkObj(currentNetwork).nativeCurrency.symbol,
+    });
   } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {

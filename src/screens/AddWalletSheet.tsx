@@ -22,7 +22,6 @@ import {
   logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -52,12 +51,7 @@ export const AddWalletSheet = () => {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
-  const {
-    isDamaged,
-    selectedWallet,
-    setIsWalletLoading,
-    wallets,
-  } = useWallets();
+  const { isDamaged, selectedWallet, wallets } = useWallets();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -93,11 +87,9 @@ export const AddWalletSheet = () => {
             isNewProfile: true,
             onCancel: () => {
               creatingWallet.current = false;
-              setIsWalletLoading(null);
             },
             onCloseModal: async (args: any) => {
               if (args) {
-                setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
@@ -187,7 +179,6 @@ export const AddWalletSheet = () => {
                 }
               }
               creatingWallet.current = false;
-              setIsWalletLoading(null);
             },
             profile: {
               color: null,
@@ -198,7 +189,6 @@ export const AddWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
-      setIsWalletLoading(null);
       logger.error(e as RainbowError, {
         description: 'Error while trying to add account',
       });

@@ -22,7 +22,7 @@ export const saveFCMToken = async () => {
       }
     }
   } catch (error) {
-    logger.error(new RainbowError('Error while getting and saving FCM token'), {
+    logger.warn('Error while getting and saving FCM token', {
       error,
     });
   }

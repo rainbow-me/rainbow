@@ -7,21 +7,21 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
-import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
+import { RainbowNetworks } from '@/networks';
 
-const networkMenuItems = Object.values(networkInfo)
-  .filter(({ disabled, testnet }) => !disabled && !testnet)
-  .map(netInfo => ({
-    chainId: ethereumUtils.getChainIdFromNetwork(netInfo.value),
-    network: netInfo.value,
-    title: netInfo.name,
-    type: netInfo.value !== Network.mainnet ? netInfo.value : AssetType.token,
-  }));
+const networkMenuItems = RainbowNetworks.filter(
+  network => network.features.swaps
+).map(network => ({
+  chainId: network.id,
+  network: network.value,
+  title: network.name,
+  type: network.value !== Network.mainnet ? network.value : AssetType.token,
+}));
 
 const NetworkSwitcherv2 = ({
   currentChainId,

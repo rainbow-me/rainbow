@@ -44,7 +44,8 @@ const providerConfig = {
   name: FiatProviderName.Ratio,
   enabled: true,
   metadata: {
-    accentColor: '#5F6162',
+    accentColor: '#7EFDCF',
+    accentForegroundColor: '#1E2435',
     paymentMethods: [
       {
         type: PaymentMethod.Bank,

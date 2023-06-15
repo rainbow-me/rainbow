@@ -125,6 +125,11 @@ function handleAction(name, params, replace = false) {
   TopLevelNavigationRef?.dispatch(action);
 }
 
+function goBack() {
+  if (!TopLevelNavigationRef) return;
+  TopLevelNavigationRef.goBack();
+}
+
 /**
  * Set Top Level Navigator
  */
@@ -139,4 +144,5 @@ export default {
   handleAction,
   setTopLevelNavigator,
   transitionPosition,
+  goBack,
 };

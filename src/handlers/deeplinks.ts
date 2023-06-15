@@ -253,6 +253,11 @@ export default async function handleDeeplink(
  * to a session that's either already active or expired. In WC v1, we handled
  * this using `walletConnectUris` state in Redux. We now handle this here,
  * before we even reach application code.
+ *
+ * Important: dapps also use deeplinks to re-focus the user to our app, where
+ * the socket connections then take over. So those URIs are always the same,
+ * and we DON'T want ignore those by caching them. So only cache URIs with query
+ * metadata include, other URIs are used merely for re-focusing.
  */
 const walletConnectURICache = new Set();
 
@@ -264,9 +269,6 @@ function handleWalletConnect(uri: string) {
     return;
   }
 
-  // make sure we don't handle this again
-  walletConnectURICache.add(cacheKey);
-
   const { query } = new URL(uri);
   const parsedUri = uri ? parseUri(uri) : null;
 
@@ -276,25 +278,31 @@ function handleWalletConnect(uri: string) {
     parsedUri,
   });
 
-  if (uri && query && parsedUri && parsedUri.version === 1) {
-    store.dispatch(walletConnectSetPendingRedirect());
-    store.dispatch(
-      walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
-        logger.debug(`walletConnectOnSessionRequest callback`, {
-          status,
-          dappScheme,
-        });
-        const type = status === 'approved' ? 'connect' : status;
-        store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-      })
-    );
-  } else if (uri && query && parsedUri && parsedUri.version === 2) {
-    logger.debug(`handleWalletConnect: handling v2`, { uri });
-    setHasPendingDeeplinkPendingRedirect(true);
-    pairWalletConnect({ uri });
+  if (uri && query && parsedUri) {
+    // make sure we don't handle this again
+    walletConnectURICache.add(cacheKey);
+
+    if (parsedUri.version === 1) {
+      store.dispatch(walletConnectSetPendingRedirect());
+      store.dispatch(
+        walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
+          logger.debug(`walletConnectOnSessionRequest callback`, {
+            status,
+            dappScheme,
+          });
+          const type = status === 'approved' ? 'connect' : status;
+          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+        })
+      );
+    } else if (parsedUri.version === 2) {
+      logger.debug(`handleWalletConnect: handling v2`, { uri });
+      setHasPendingDeeplinkPendingRedirect(true);
+      pairWalletConnect({ uri });
+    }
   } else {
     logger.debug(`handleWalletConnect: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
+    // Don't add this URI to cache
     setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }

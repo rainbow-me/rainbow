@@ -1,3 +1,4 @@
+import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import {
@@ -37,10 +38,11 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import supportedChainConfigs from '@/references/chains.json';
 import { IS_DEV, IS_ANDROID } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
+import * as explain from '@/screens/Explain';
+import { Box } from '@/design-system';
 import {
   AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
@@ -49,11 +51,13 @@ import {
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
+import { RainbowNetworks } from '@/networks';
 
-const SUPPORTED_EVM_CHAIN_IDS = supportedChainConfigs.map(
-  chain => chain.network_id
-);
+const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
+  ({ features }) => features.walletconnect
+).map(({ id }) => id);
 
+const T = lang.l.walletconnect;
 let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
 /**
@@ -109,6 +113,10 @@ export const web3WalletClient = Web3Wallet.init({
     description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
     url: 'https://rainbow.me',
     icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+    redirect: {
+      native: 'rainbow://wc',
+      universal: 'https://rnbwapp.com/wc',
+    },
   },
 });
 
@@ -163,6 +171,48 @@ export function parseRPCParams({
   }
 }
 
+/**
+ * Better signature for this type of function
+ *
+ * @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util
+ */
+export function getApprovedNamespaces(
+  props: Parameters<typeof buildApprovedNamespaces>[0]
+):
+  | {
+      success: true;
+      result: ReturnType<typeof buildApprovedNamespaces>;
+      error: undefined;
+    }
+  | {
+      success: false;
+      result: undefined;
+      error: Error;
+    } {
+  try {
+    const namespaces = buildApprovedNamespaces(props);
+
+    return {
+      success: true,
+      result: namespaces,
+      error: undefined,
+    };
+  } catch (e: any) {
+    logger.error(
+      new RainbowError(`WC v2: buildApprovedNamespaces threw an error`),
+      {
+        message: e.toString(),
+      }
+    );
+
+    return {
+      success: false,
+      result: undefined,
+      error: e,
+    };
+  }
+}
+
 const SUPPORTED_SIGNING_METHODS = [
   RPCMethod.Sign,
   RPCMethod.PersonalSign,
@@ -189,9 +239,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  for (const config of supportedChainConfigs) {
-    if (config.chain_id === chainId) return true;
-  }
+  return !!RainbowNetworks.find(({ id }) => id === chainId);
 }
 
 /**
@@ -200,14 +248,36 @@ export function isSupportedChain(chainId: number) {
  * `explainers` object in `ExplainSheet`
  */
 function showErrorSheet({
-  reason,
+  title,
+  body,
+  cta,
   onClose,
-}: { reason?: string; onClose?: () => void } = {}) {
-  logger.debug(`showErrorSheet`, { reason });
-  Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-    type: reason || 'failed_wc_connection',
-    onClose,
-  });
+  sheetHeight,
+}: {
+  title: string;
+  body: string;
+  cta?: string;
+  onClose?: () => void;
+  sheetHeight?: number;
+}) {
+  explain.open(
+    () => (
+      <>
+        <explain.Title>{title}</explain.Title>
+        <explain.Body>{body}</explain.Body>
+        <Box paddingTop="8px">
+          <explain.Button
+            label={cta || lang.t(T.errors.go_back)}
+            onPress={() => {
+              explain.close();
+              onClose?.();
+            }}
+          />
+        </Box>
+      </>
+    ),
+    { sheetHeight }
+  );
 }
 
 async function rejectProposal({
@@ -263,7 +333,11 @@ export async function pair({ uri }: { uri: string }) {
     logger.warn(`WC v2: pairing timeout`, { uri });
     client.off('session_proposal', handler);
     client.off('auth_request', handler);
-    showErrorSheet();
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_timeout),
+      sheetHeight: 270,
+    });
     analytics.track(analytics.event.wcNewSessionTimeout);
   }, 10_000);
 
@@ -318,10 +392,14 @@ export async function initListeners() {
       });
     } else {
       if (!IS_DEV) {
-        logger.error(
-          new RainbowError(
-            `WC v2: FCM token not found, push notifications will not be received`
-          )
+        /*
+         * If we failed to fetch an FCM token, this will fail too. You should
+         * see these errors increase proportionally if something goes wrong,
+         * which could be due to network flakiness, SSL server error (has
+         * happened), etc. Things out of our control.
+         */
+        logger.warn(
+          `WC v2: FCM token not found, push notifications will not be received`
         );
       }
     }
@@ -347,7 +425,12 @@ async function subscribeToEchoServer({
   }).json();
 
   if (res.error) {
-    logger.error(new RainbowError(`WC v2: echo server subscription failed`), {
+    /*
+     * Most of these appear to be network errors and timeouts. So our backend
+     * should report these to Datadog, and we can leave this as a warn to
+     * continue to monitor.
+     */
+    logger.warn(`WC v2: echo server subscription failed`, {
       error: res.error,
     });
   }
@@ -379,10 +462,10 @@ export async function onSessionProposal(
     });
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
-      reason: 'failed_wc_invalid_chains',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_networks),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
     return;
   }
@@ -403,21 +486,14 @@ export async function onSessionProposal(
     );
     await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
     showErrorSheet({
-      reason: 'failed_wc_invalid_chains',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_networks),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
     return;
   }
 
-  const peerMeta = proposer.metadata;
-  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
-
-  /**
-   * Log these, but it's OK if they list them now, we'll just ignore requests
-   * to use them later.
-   */
   const unsupportedMethods = methods.filter(
     method => !isSupportedMethod(method as RPCMethod)
   );
@@ -426,7 +502,18 @@ export async function onSessionProposal(
     logger.info(`WC v2: dapp requested unsupported RPC methods`, {
       methods: unsupportedMethods,
     });
+    await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.pairing_unsupported_methods),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
+    });
+    return;
   }
+
+  const peerMeta = proposer.metadata;
+  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
   const routeParams: WalletconnectApprovalSheetRouteParams = {
     receivedTimestamp,
@@ -459,8 +546,7 @@ export async function onSessionProposal(
         const requiredNamespace = requiredNamespaces.eip155;
         /** @see https://chainagnostic.org/CAIPs/caip-2 */
         const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
-        /** @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util */
-        const namespaces = buildApprovedNamespaces({
+        const namespaces = getApprovedNamespaces({
           proposal: proposal.params,
           supportedNamespaces: {
             eip155: {
@@ -482,34 +568,48 @@ export async function onSessionProposal(
         );
 
         try {
-          /**
-           * This is equivalent handling of setPendingRequest and
-           * walletConnectApproveSession, since setPendingRequest is only used
-           * within the /redux/walletconnect handlers
-           *
-           * WC v2 stores existing _pairings_ itself, so we don't need to persist
-           * ourselves
-           */
-          await client.approveSession({
-            id,
-            namespaces,
-          });
+          if (namespaces.success) {
+            /**
+             * This is equivalent handling of setPendingRequest and
+             * walletConnectApproveSession, since setPendingRequest is only used
+             * within the /redux/walletconnect handlers
+             *
+             * WC v2 stores existing _pairings_ itself, so we don't need to persist
+             * ourselves
+             */
+            await client.approveSession({
+              id,
+              namespaces: namespaces.result,
+            });
 
-          // let the ConnectedDappsSheet know we've got a new one
-          events.emit('walletConnectV2SessionCreated');
+            // let the ConnectedDappsSheet know we've got a new one
+            events.emit('walletConnectV2SessionCreated');
 
-          maybeGoBackAndClearHasPendingRedirect();
+            logger.debug(
+              `WC v2: session created`,
+              {},
+              logger.DebugContext.walletconnect
+            );
 
-          logger.debug(
-            `WC v2: session created`,
-            {},
-            logger.DebugContext.walletconnect
-          );
+            analytics.track(analytics.event.wcNewSessionApproved, {
+              dappName: proposer.metadata.name,
+              dappUrl: proposer.metadata.url,
+            });
 
-          analytics.track(analytics.event.wcNewSessionApproved, {
-            dappName: proposer.metadata.name,
-            dappUrl: proposer.metadata.url,
-          });
+            maybeGoBackAndClearHasPendingRedirect();
+          } else {
+            await rejectProposal({
+              proposal,
+              reason: 'INVALID_SESSION_SETTLE_REQUEST',
+            });
+
+            showErrorSheet({
+              title: lang.t(T.errors.generic_title),
+              body: lang.t(T.errors.generic_error),
+              sheetHeight: 250,
+              onClose: maybeGoBackAndClearHasPendingRedirect,
+            });
+          }
         } catch (e) {
           setHasPendingDeeplinkPendingRedirect(false);
 
@@ -597,9 +697,10 @@ export async function onSessionRequest(
         });
 
         showErrorSheet({
-          onClose() {
-            maybeGoBackAndClearHasPendingRedirect();
-          },
+          title: lang.t(T.errors.generic_title),
+          body: lang.t(T.errors.request_invalid),
+          sheetHeight: 270,
+          onClose: maybeGoBackAndClearHasPendingRedirect,
         });
         return;
       }
@@ -632,9 +733,10 @@ export async function onSessionRequest(
         });
 
         showErrorSheet({
-          onClose() {
-            maybeGoBackAndClearHasPendingRedirect();
-          },
+          title: lang.t(T.errors.generic_title),
+          body: lang.t(T.errors.request_invalid),
+          sheetHeight: 270,
+          onClose: maybeGoBackAndClearHasPendingRedirect,
         });
         return;
       }
@@ -687,10 +789,10 @@ export async function onSessionRequest(
       }
 
       showErrorSheet({
-        reason: 'failed_wc_invalid_chain',
-        onClose() {
-          maybeGoBackAndClearHasPendingRedirect();
-        },
+        title: lang.t(T.errors.generic_title),
+        body: lang.t(T.errors.request_unsupported_network),
+        sheetHeight: 250,
+        onClose: maybeGoBackAndClearHasPendingRedirect,
       });
 
       return;
@@ -781,10 +883,10 @@ export async function onSessionRequest(
     }
 
     showErrorSheet({
-      reason: 'failed_wc_invalid_methods',
-      onClose() {
-        maybeGoBackAndClearHasPendingRedirect();
-      },
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.request_unsupported_methods),
+      sheetHeight: 250,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
     });
   }
 }

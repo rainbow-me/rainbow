@@ -2,8 +2,6 @@ import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  canImplyAuthentication,
   getAllInternetCredentials,
   getInternetCredentials,
   getSupportedBiometryType as originalGetSupportedBiometryType,
@@ -19,9 +17,31 @@ import {
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
-import { delay } from '@/helpers/utilities';
-import { IS_DEV, IS_IOS } from '@/env';
+import * as keychainConstants from '@/utils/keychainConstants';
+import AesEncryptor from '@/handlers/aesEncryption';
+import { delay } from '@/utils/delay';
+import { IS_DEV, IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
+import {
+  authenticateWithPINAndCreateIfNeeded,
+  authenticateWithPIN,
+} from '@/handlers/authentication';
+
+export const encryptor = new AesEncryptor();
+
+const EXEMPT_ENCRYPTED_KEYS = [
+  keychainConstants.pinKey,
+  keychainConstants.signingWallet,
+  keychainConstants.signingWalletAddress,
+];
+
+export type KeychainOptions = Options & {
+  /**
+   * If we already have the user's pin in memory, pass it here to prevent
+   * another authentication prompt and lookup.
+   */
+  androidEncryptionPin?: string;
+};
 
 export enum ErrorType {
   Unknown = 0,
@@ -49,20 +69,24 @@ export const publicAccessControlOptions: Options = {
 };
 
 /**
- * Retrieve a value from the keychain.
+ * Retrieve a value from the keychain. If we're on Android and the value is
+ * encrypted, we'll prompt the user to authenticate with their PIN and then
+ * decrypt the data.
  */
 export async function get(
   key: string,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<Result<string>> {
   logger.debug(`keychain: get`, { key }, logger.DebugContext.keychain);
 
   async function _get(attempts = 0): Promise<Result<string>> {
-    logger.debug(
-      `keychain: get attempt ${attempts}`,
-      { key },
-      logger.DebugContext.keychain
-    );
+    if (attempts > 0) {
+      logger.debug(
+        `keychain: get attempt ${attempts}`,
+        { key },
+        logger.DebugContext.keychain
+      );
+    }
 
     let data = cache.getString(key);
 
@@ -71,23 +95,98 @@ export async function get(
         const result = await getInternetCredentials(key, options);
 
         if (result) {
-          data = result.password;
+          /*
+           * If we're on Android and the password is a serialized object like
+           * `{ cipher: ... }`, then we know we need to decrypt that value.
+           *
+           * This is true even if the user recently enabled biometrics on their
+           * device, since prior to that they would have been using a pin code.
+           *
+           * IMPORTANT: there are other keys in the keychain that are
+           * technically encrypted with the same cipher. These user the
+           * `RAINBOW_MASTER_KEY`, and are saved as "public" values. We don't
+           * want to decrypt those here.
+           */
+          if (
+            IS_ANDROID &&
+            result.password.includes('cipher') &&
+            !EXEMPT_ENCRYPTED_KEYS.includes(key)
+          ) {
+            logger.debug(
+              `keychain: decrypting private data on Android`,
+              {
+                key,
+              },
+              logger.DebugContext.keychain
+            );
+
+            const pin =
+              options.androidEncryptionPin || (await authenticateWithPIN());
+            const decryptedValue = await encryptor.decrypt(
+              pin,
+              result.password
+            );
+
+            if (decryptedValue) {
+              data = decryptedValue;
+            } else {
+              logger.error(
+                new RainbowError(
+                  `keychain: failed to decrypt private data on Android`
+                )
+              );
+            }
+          } else {
+            data = result.password;
+          }
         }
       } catch (e: any) {
         switch (e.toString()) {
+          /*
+           * Can happen if the user initially had biometrics enabled, installed
+           * the app, created a wallet, etc, and THEN disabled biometrics.
+           *
+           * In this case, values previously saved privately (like seephrase)
+           * will fail because the library can't authenticate.
+           */
+          case 'Error: code: 11, msg: No fingerprints enrolled.': {
+            logger.warn(
+              `keychain: no fingerprints enrolled, user may have disabled biometrics`,
+              {}
+            );
+
+            return {
+              value: undefined,
+              error: ErrorType.NotAuthenticated, // TODO may want a different type here
+            };
+          }
+          case 'Error: code: 7, msg: Too many attempts. Try again later.': {
+            logger.warn(`keychain: too many attempts`, {});
+
+            return {
+              value: undefined,
+              error: ErrorType.NotAuthenticated, // TODO may want a different type here
+            };
+          }
           case 'Error: User canceled the operation.': {
+            logger.warn(`keychain: user canceled (temp)`, {});
+
             return {
               value: undefined,
               error: ErrorType.UserCanceled,
             };
           }
           case 'Error: Wrapped error: User not authenticated': {
+            logger.warn(`keychain: user not authenticated (temp)`, {});
+
             return {
               value: undefined,
               error: ErrorType.NotAuthenticated,
             };
           }
           case 'Error: The user name or passphrase you entered is not correct.': {
+            logger.warn(`keychain: incorrect password (temp)`, {});
+
             if (attempts > 2) {
               return {
                 value: undefined,
@@ -136,14 +235,35 @@ export async function get(
 export async function set(
   key: string,
   value: string,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<void> {
   logger.debug(`keychain: set`, { key }, logger.DebugContext.keychain);
 
   // only save public data to mmkv
   // private data has accessControl
-  if (!options?.accessControl) {
+  if (!options.accessControl) {
     cache.set(key, value);
+  } else if (
+    options.accessControl &&
+    IS_ANDROID &&
+    !(await getSupportedBiometryType())
+  ) {
+    logger.debug(
+      `keychain: encrypting private data on android`,
+      { key, options },
+      logger.DebugContext.keychain
+    );
+
+    const pin =
+      options.androidEncryptionPin ||
+      (await authenticateWithPINAndCreateIfNeeded());
+    const encryptedValue = await encryptor.encrypt(pin, value);
+
+    if (encryptedValue) {
+      value = encryptedValue;
+    } else {
+      throw new Error(`keychain: failed to encrypt value`);
+    }
   }
 
   await setInternetCredentials(key, key, String(value), options);
@@ -155,7 +275,7 @@ export async function set(
  */
 export async function getObject<
   T extends Record<string, any> = Record<string, unknown>
->(key: string, options: Options = {}): Promise<Result<T>> {
+>(key: string, options: KeychainOptions = {}): Promise<Result<T>> {
   logger.debug(`keychain: getObject`, { key }, logger.DebugContext.keychain);
 
   const { value, error } = await get(key, options);
@@ -177,7 +297,7 @@ export async function getObject<
 export async function setObject(
   key: string,
   value: Record<string, any>,
-  options: Options = {}
+  options: KeychainOptions = {}
 ): Promise<void> {
   logger.debug(`keychain: setObject`, { key }, logger.DebugContext.keychain);
 
@@ -317,26 +437,14 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
     logger.DebugContext.keychain
   );
 
-  let canAuthenticate = false;
-
-  if (IS_IOS) {
-    canAuthenticate = await canImplyAuthentication({
-      authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-    });
-  } else {
-    canAuthenticate = Boolean(await getSupportedBiometryType());
-  }
-
   const isSimulator = IS_DEV && (await DeviceInfo.isEmulator());
 
-  if (canAuthenticate && !isSimulator) {
-    return {
-      accessControl: ios
-        ? ACCESS_CONTROL.USER_PRESENCE
-        : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
-      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    };
-  }
+  if (isSimulator) return {};
 
-  return {};
+  return {
+    accessControl: ios
+      ? ACCESS_CONTROL.USER_PRESENCE
+      : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
+    accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  };
 }

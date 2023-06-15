@@ -1,11 +1,10 @@
-import * as Sentry from '@sentry/react-native';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress } from '@/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
 } from '@/helpers/signingWallet';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 
 export enum PreferenceActionType {
   update = 'update',
@@ -51,24 +50,22 @@ export async function setPreference(
     };
     const message = JSON.stringify(objToSign);
     const signature2 = await signWithSigningWallet(message);
-    logger.log('☁️  SENDING ', message);
+    logger.debug('☁️  SENDING ', { message });
     const response = await preferencesAPI.post(`${PREFS_ENDPOINT}/${key}`, {
       message,
       signature,
       signature2,
     });
     const responseData: PreferencesResponse = response.data as PreferencesResponse;
-    logger.log('☁️  RESPONSE', {
+    logger.debug('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,
     });
     return responseData?.success;
   } catch (e) {
-    Sentry.captureException(
-      new Error(`Preferences API failed to set preference`),
-      { extra: { preferenceKey: key } }
-    );
-    logger.log('☁️  error setting pref', e);
+    logger.warn(`Preferences API failed to set preference`, {
+      preferenceKey: key,
+    });
     return false;
   }
 }
@@ -82,17 +79,15 @@ export async function getPreference(
       params: { address },
     });
     const responseData: PreferencesResponse = response.data as PreferencesResponse;
-    logger.log('☁️  RESPONSE', {
+    logger.debug('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,
     });
     return responseData?.data || null;
   } catch (e) {
-    Sentry.captureException(
-      new Error(`Preferences API failed to get preference`),
-      { extra: { preferenceKey: key } }
-    );
-    logger.log('☁️  error getting pref', e);
+    logger.warn(`Preferences API failed to get preference`, {
+      preferenceKey: key,
+    });
     return null;
   }
 }

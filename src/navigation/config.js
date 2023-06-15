@@ -12,13 +12,13 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/Sen
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
-import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
+import { getNetworkObj } from '@/networks';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -119,6 +119,17 @@ export const transactionDetailsConfig = {
 };
 
 export const opRewardsSheetConfig = {
+  options: ({ route }) => {
+    return buildCoolModalConfig({
+      ...route.params,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    });
+  },
+};
+
+export const walletDiagnosticsSheetConfig = {
   options: ({ route }) => {
     return buildCoolModalConfig({
       ...route.params,
@@ -306,7 +317,7 @@ export const ensAdditionalRecordsSheetConfig = {
 
 export const explainSheetConfig = {
   options: ({
-    route: { params = { network: networkInfo[networkTypes.mainnet].name } },
+    route: { params = { network: getNetworkObj(networkTypes.mainnet).name } },
   }) => {
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
