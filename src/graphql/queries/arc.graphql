@@ -1,4 +1,4 @@
-fragment token on Asset {
+fragment asset on Asset {
   address
   symbol
   decimals
@@ -13,30 +13,40 @@ fragment amount on AssetAmount {
 
 query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
   nftOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
-    contractAddress
-    tokenId
+    nft {
+      name
+      contractAddress
+      tokenId
+      collectionName
+      imageUrl
+      uniqueId
+      predominantColor
+    }
     floorDifferencePercentage
     validUntil
-    marketplace
+    marketplace {
+      name
+      imageUrl
+    }
     grossAmount {
       ...amount
     }
     netAmount {
       ...amount
     }
-    offerPaymentToken {
-      ...token
+    paymentToken {
+      ...asset
     }
     royaltiesPercentage
     feesPercentage
-    name
-    collectionName
-    floorPriceAmount {
-      ...amount
+    floorPrice {
+      amount {
+        ...amount
+      }
+      paymentToken {
+        ...asset
+      }
     }
-    floorPricePaymentToken {
-      ...token
-    }
-    imageUrl
+    network
   }
 }
