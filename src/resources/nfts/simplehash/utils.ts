@@ -112,7 +112,6 @@ export function filterSimpleHashNFTs(
   nfts: SimpleHashNFT[],
   polygonAllowlist?: PolygonAllowlist
 ): ValidatedSimpleHashNFT[] {
-  console.log({ nfts });
   return nfts
     .filter(nft => {
       const lowercasedContractAddress = nft.contract_address?.toLowerCase();

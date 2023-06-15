@@ -1,14 +1,14 @@
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
-import { zoraTestnet } from '@wagmi/chains';
+import { zora } from '@wagmi/chains';
 import { ZORA_ETH_ADDRESS } from '@/references';
 import { getZoraGasPrices } from '@/redux/gas';
 import config from '@/model/config';
 
 export const ZoraNetworkObject: NetworkProperties = {
   // wagmi chain data
-  ...zoraTestnet,
+  ...zora,
 
   // network related data
   enabled: config.zora_enabled && config.op_chains_enabled,
@@ -19,7 +19,7 @@ export const ZoraNetworkObject: NetworkProperties = {
   blockTimeInMs: 5_000,
 
   nativeCurrency: {
-    ...zoraTestnet.nativeCurrency,
+    ...zora.nativeCurrency,
     address: ZORA_ETH_ADDRESS,
   },
 
@@ -45,6 +45,7 @@ export const ZoraNetworkObject: NetworkProperties = {
     // ?
     gasType: 'legacy',
     roundGasDisplay: true,
+    OptimismTxFee: true,
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
@@ -57,7 +58,7 @@ export const ZoraNetworkObject: NetworkProperties = {
   },
 
   nfts: {
-    simplehashNetwork: 'zora-testnet',
+    simplehashNetwork: 'zora',
   },
 
   // design tings

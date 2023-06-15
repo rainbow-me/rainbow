@@ -470,6 +470,14 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
         'unsubscribe'
       )
     );
+    addressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        addressSubscribed!,
+        nativeCurrency,
+        Network.zora,
+        'unsubscribe'
+      )
+    );
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
@@ -666,6 +674,13 @@ export const explorerInit = () => async (
         accountAddress,
         nativeCurrency,
         Network.bsc
+      )
+    );
+    newAddressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        accountAddress,
+        nativeCurrency,
+        Network.zora
       )
     );
   });
@@ -880,7 +895,6 @@ const l2AddressAssetsReceived = (
       assets: newAssetsMap,
     },
   };
-
   dispatch(addressAssetsReceived(updatedMessage, network));
 };
 

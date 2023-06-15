@@ -45,6 +45,7 @@ export const OptimismNetworkObject: NetworkProperties = {
     // ?
     gasType: 'legacy',
     roundGasDisplay: true,
+    OptimismTxFee: true,
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
