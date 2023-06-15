@@ -7,7 +7,7 @@ export enum SimpleHashChain {
   Gnosis = 'gnosis',
   Optimism = 'optimism',
   Polygon = 'polygon',
-  Zora = 'zora-testnet',
+  Zora = 'zora',
 }
 
 /**
