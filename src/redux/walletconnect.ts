@@ -22,7 +22,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
 import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
@@ -30,6 +29,7 @@ import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_TEST } from '@/env';
+import { RainbowNetworks } from '@/networks';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -535,14 +535,9 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         // @ts-expect-error "_chainId" is private.
         Number(walletConnector._chainId)
       );
-      const supportedChains = [
-        networkTypes.mainnet,
-        networkTypes.goerli,
-        networkTypes.polygon,
-        networkTypes.bsc,
-        networkTypes.optimism,
-        networkTypes.arbitrum,
-      ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
+      const supportedChains = RainbowNetworks.filter(
+        network => network.features.walletconnect
+      ).map(network => network.id.toString());
       const numericChainId = convertHexToString(chainId);
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());

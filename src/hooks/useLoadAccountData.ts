@@ -8,6 +8,7 @@ import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ export default function useLoadAccountData() {
       const promises = [];
 
       // tokens + nfts
-      if (network === networkTypes.mainnet) {
+      if (getNetworkObj(network).networkType !== 'testnet') {
         const p1 = dispatch(dataLoadState());
         promises.push(p1);
       }

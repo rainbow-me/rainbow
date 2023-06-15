@@ -25,7 +25,6 @@ import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import TheMergePng from '@/assets/theMerge.png';
-import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
@@ -40,6 +39,7 @@ import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
+import { getNetworkObj } from '@/networks';
 
 const { GAS_TRENDS } = gasUtils;
 const APP_ICON_SIZE = 64;
@@ -231,7 +231,7 @@ const gasExplainer = network =>
 
 const availableNetworksExplainer = (tokenSymbol, networks) => {
   const readableNetworks = networks
-    ?.map(network => networkInfo[network]?.name)
+    ?.map(network => getNetworkObj(network).name)
     ?.join(', ');
 
   return lang.t('explain.available_networks.text', {
@@ -462,7 +462,7 @@ export const explainers = (params, colors) => ({
           }`,
           {
             inputToken: params?.inputToken,
-            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+            fromNetwork: getNetworkObj(params?.fromNetwork).name,
           }
         )
       : lang.t('explain.output_disabled.title_empty'),
@@ -475,12 +475,12 @@ export const explainers = (params, colors) => ({
           {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
-            fromNetwork: networkInfo[params?.fromNetwork]?.name,
-            toNetwork: networkInfo[params?.toNetwork]?.name,
+            fromNetwork: getNetworkObj(params?.fromNetwork).name,
+            toNetwork: getNetworkObj(params?.toNetwork).name,
           }
         )
       : lang.t('explain.output_disabled.text', {
-          fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          fromNetwork: getNetworkObj(params?.fromNetwork)?.name,
           inputToken: params?.inputToken,
           outputToken: params?.outputToken,
         }),
@@ -755,7 +755,7 @@ export const explainers = (params, colors) => ({
   },
   swapResetInputs: {
     button: {
-      label: `Continue with ${networkInfo[params?.network]?.name}`,
+      label: `Continue with ${getNetworkObj(params?.network)?.name}`,
       bgColor:
         colors?.networkColors[params?.network] &&
         colors?.alpha(colors?.networkColors[params?.network], 0.06),
@@ -766,7 +766,7 @@ export const explainers = (params, colors) => ({
     emoji: '🔐',
     extraHeight: -90,
     text: SWAP_RESET_EXPLAINER,
-    title: `Switching to ${networkInfo[params?.network]?.name}`,
+    title: `Switching to ${getNetworkObj(params?.network)?.name}`,
     logo:
       params?.network !== 'mainnet' ? (
         <ChainBadge

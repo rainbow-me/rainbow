@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { isHardHat } from '@/handlers/web3';
 import { useInternetStatus } from '@/hooks';
+import { getNetworkObj } from '@/networks';
 
 const TestnetToast = ({ network, web3Provider }) => {
   const isConnected = useInternetStatus();
   const providerUrl = web3Provider?.connection?.url;
-  const { name, color } = networkInfo[network] || {};
+  const { name, colors: networkColors } = getNetworkObj(network);
   const [visible, setVisible] = useState(!network === networkTypes.mainnet);
   const [networkName, setNetworkName] = useState(name);
 
@@ -28,11 +28,16 @@ const TestnetToast = ({ network, web3Provider }) => {
     }
   }, [name, network, providerUrl, isConnected]);
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon color={color} marginHorizontal={5} marginTop={1} name="dot" />
+      <Icon
+        color={isDarkMode ? networkColors.dark : networkColors.light}
+        marginHorizontal={5}
+        marginTop={1}
+        name="dot"
+      />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>

@@ -1,37 +1,35 @@
-import networkInfo from './networkInfo';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { Network } from '@/networks/types';
 import store from '@/redux/store';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return Object.values(networkInfo)
-    .filter(
-      ({ disabled, testnet }) => !disabled && (testnetsEnabled || !testnet)
-    )
-    .map(netInfo => netInfo.name);
+  return RainbowNetworks.filter(
+    ({ features, networkType }) =>
+      features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
+  ).map(network => network.name);
 };
-
-const androidReverseNetworkWithName = (name: any) =>
-  Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
 export const networksMenuItems = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return Object.values(networkInfo)
-    .filter(
-      ({ disabled, testnet }) => !disabled && (testnetsEnabled || !testnet)
-    )
-    .map(netInfo => ({
-      actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${netInfo.value}`,
-      actionTitle: netInfo.longName || netInfo.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${
-          netInfo.layer2 ? `${netInfo.value}BadgeNoShadow` : 'ethereumBadge'
-        }`,
-      },
-    }));
+  return RainbowNetworks.filter(
+    ({ features, networkType }) =>
+      features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
+  ).map(network => ({
+    actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${network.value}`,
+    actionTitle: network.name,
+    icon: {
+      iconType: 'ASSET',
+      iconValue: `${
+        network.networkType === 'layer2'
+          ? `${network.value}BadgeNoShadow`
+          : 'ethereumBadge'
+      }`,
+    },
+  }));
 };
 
 const networksAvailable = networksMenuItems();
@@ -85,10 +83,11 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     (idx: any) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'value' does not exist on type '{ balance... Remove this comment to see the full error message
-        const { value } = androidReverseNetworkWithName(networkActions[idx]);
-        const chainId = ethereumUtils.getChainIdFromNetwork(value);
-        callback({ chainId, network: value });
+        const networkObj =
+          RainbowNetworks.find(
+            network => network.name === networkActions[idx]
+          ) || getNetworkObj(Network.mainnet);
+        callback({ chainId: networkObj.id, network: networkObj.value });
       }
     }
   );

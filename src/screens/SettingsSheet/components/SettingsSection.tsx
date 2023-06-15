@@ -31,8 +31,6 @@ import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
-import { Bleed, Box } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
@@ -42,6 +40,7 @@ import {
   buildRainbowLearnUrl,
   LearnUTMCampaign,
 } from '@/utils/buildRainbowUrl';
+import { getNetworkObj } from '@/networks';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -312,7 +311,7 @@ const SettingsSection = ({
             onPress={onPressNetwork}
             rightComponent={
               <MenuItem.Selection>
-                {networkInfo?.[network]?.name}
+                {getNetworkObj(network).name}
               </MenuItem.Selection>
             }
             size={60}

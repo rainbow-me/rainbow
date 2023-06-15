@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@/theme';
 
 import {
   Box,
@@ -11,14 +12,33 @@ import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
 import { ImageSourcePropType } from 'react-native';
 
-export { open, useOpen } from '@/screens/Portal';
+export { open, close, useOpen } from '@/screens/Portal';
+
+type ButtonProps = React.PropsWithChildren<
+  Omit<Parameters<typeof SheetActionButton>[0], 'children'>
+>;
 
 /**
  * Proxy for `SheetActionButton` with no changes to API.
- *
- * TODO This is proxied because eventually I'd like to replace this.
  */
-export const Button = SheetActionButton;
+export function Button({ children, ...props }: ButtonProps) {
+  const { colors } = useTheme();
+
+  return (
+    // @ts-ignore
+    <SheetActionButton
+      color={colors.alpha(colors.appleBlue, 0.04)}
+      isTransparent
+      label={typeof children === 'string' ? children : undefined}
+      size="big"
+      textColor={colors.appleBlue}
+      weight="heavy"
+      {...props}
+    >
+      {typeof children !== 'string' ? children : undefined}
+    </SheetActionButton>
+  );
+}
 
 /**
  * Image icon component for use within the Portal sheet.
