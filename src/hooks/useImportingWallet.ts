@@ -29,7 +29,6 @@ import {
   isValidWallet,
 } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
@@ -41,7 +40,7 @@ import { logger as Logger, RainbowError } from '@/logger';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
-  const { selectedWallet, setIsWalletLoading, wallets } = useWallets();
+  const { selectedWallet, wallets } = useWallets();
 
   const {
     dangerouslyGetParent,
@@ -315,9 +314,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   }
                   if (android) {
                     handleSetImporting(false);
-                    InteractionManager.runAfterInteractions(() =>
-                      setIsWalletLoading(null)
-                    );
                   }
 
                   setTimeout(() => {
@@ -344,7 +340,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 });
               } else {
                 if (android) {
-                  setIsWalletLoading(null);
                   handleSetImporting(false);
                 }
                 // Wait for error messages then refocus
@@ -390,19 +385,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     dispatch,
     showImportModal,
     profilesEnabled,
-    setIsWalletLoading,
     dangerouslyGetParent,
   ]);
-
-  useEffect(() => {
-    setIsWalletLoading(
-      isImporting
-        ? showImportModal
-          ? WalletLoadingStates.IMPORTING_WALLET
-          : WalletLoadingStates.IMPORTING_WALLET_SILENTLY
-        : null
-    );
-  }, [isImporting, setIsWalletLoading, showImportModal]);
 
   return {
     busy,

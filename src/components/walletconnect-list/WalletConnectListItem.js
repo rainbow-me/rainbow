@@ -11,7 +11,6 @@ import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkInfo from '@/helpers/networkInfo';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
@@ -24,6 +23,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -79,7 +79,7 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { wallets, walletNames } = useWallets();
 
   const approvalAccountInfo = useMemo(() => {
@@ -95,14 +95,16 @@ export default function WalletConnectListItem({
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
+    const networkObj = getNetworkObj(
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
+    );
     return {
       chainId,
-      color: colors.networkColors[network],
-      name: networkInfo[network]?.name,
-      value: network,
+      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
+      name: networkObj.name,
+      value: networkObj.value,
     };
-  }, [chainId, colors]);
+  }, [chainId, isDarkMode]);
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {

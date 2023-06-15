@@ -12,6 +12,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { Network } from '@/networks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -120,7 +121,7 @@ export default function MoreButton({
         setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address);
+        ethereumUtils.openAddressInBlockExplorer(address, Network.mainnet);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

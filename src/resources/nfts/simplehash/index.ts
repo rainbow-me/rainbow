@@ -8,6 +8,7 @@ import {
   SimpleHashNFT,
   SimpleHashMarketplaceId,
 } from '@/resources/nfts/simplehash/types';
+import { RainbowNetworks } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 
@@ -50,14 +51,9 @@ export async function fetchSimpleHashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
 ): Promise<{ data: SimpleHashNFT[]; nextCursor: string | null }> {
-  const chainsParam = [
-    SimpleHashChain.Ethereum,
-    SimpleHashChain.Arbitrum,
-    SimpleHashChain.Optimism,
-    SimpleHashChain.Polygon,
-    SimpleHashChain.Bsc,
-    SimpleHashChain.Gnosis,
-  ].join(',');
+  const chainsParam = RainbowNetworks.filter(network => network.features.nfts)
+    .map(network => network.nfts?.simplehashNetwork || network.value)
+    .join(',');
   const cursorSuffix = createCursorSuffix(cursor);
   const response = await nftApi.get(
     `/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,

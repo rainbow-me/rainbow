@@ -27,7 +27,7 @@ export const getUniswapV2Tokens = async (
       return res?.data?.tokens ?? null;
     }
   } catch (e: any) {
-    logger.error(new RainbowError(`Error fetching uniswap v2 tokens`), {
+    logger.warn(`dispersionApi: error fetching uniswap v2 tokens`, {
       message: e.message,
     });
   }
@@ -42,7 +42,7 @@ export const getDPIBalance = async (): Promise<{
     const res = await dispersionApi.get('/dispersion/v1/dpi');
     return res?.data?.data ?? null;
   } catch (e: any) {
-    logger.error(new RainbowError(`Error fetching dpi balance`), {
+    logger.warn(`dispersionApi: error fetching dpi balance`, {
       message: e.message,
     });
     return null;
@@ -56,7 +56,7 @@ export const getTrendingAddresses = async (): Promise<
     const res = await dispersionApi.get('/dispersion/v1/trending');
     return res?.data?.data?.trending ?? null;
   } catch (e: any) {
-    logger.error(new RainbowError(`Error fetching trending addresses`), {
+    logger.warn(`dispersionApi: error fetching trending addresses`, {
       message: e.message,
     });
     return null;
@@ -73,7 +73,7 @@ export const getAdditionalAssetData = async (
     );
     return res?.data?.data ?? null;
   } catch (e: any) {
-    logger.error(new RainbowError(`Error fetching additional asset data`), {
+    logger.warn(`dispersionApi: error fetching additional asset data`, {
       message: e.message,
     });
     return null;

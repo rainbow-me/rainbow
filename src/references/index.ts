@@ -5,7 +5,6 @@ import { Asset, SavingsAsset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
-export { default as chains } from './chains.json';
 export { default as chainAssets } from './chain-assets.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { DefaultTokenListsSource as DefaultTokenLists };

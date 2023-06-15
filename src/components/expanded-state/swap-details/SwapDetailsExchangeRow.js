@@ -17,16 +17,14 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
 import { SocketBridges } from '@/references/swap/bridges';
+import { RainbowNetworks } from '@/networks';
 
 const parseExchangeName = name => {
-  const networks = Object.keys(networkInfo).map(network =>
-    network.toLowerCase()
-  );
+  const networks = RainbowNetworks.map(network => network.name.toLowerCase());
 
   const removeNetworks = name =>
     networks.some(network => name.toLowerCase().includes(network))

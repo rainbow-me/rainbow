@@ -69,6 +69,7 @@ export type ProviderConfig = {
   enabled: boolean;
   metadata: {
     accentColor: string;
+    accentForegroundColor?: string;
     paymentMethods: { type: PaymentMethod }[];
     networks: Network[];
     instantAvailable: boolean;

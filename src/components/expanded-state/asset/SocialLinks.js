@@ -50,7 +50,7 @@ export default function SocialLinks({
             display={` ${startCase(blockExplorerName)}`}
             emoji="􀉣"
             transformOrigin="center"
-            url={`https://${etherscanURL}/token/${address}`}
+            url={`${etherscanURL}/token/${address}`}
           />
         )}
         {!!links?.twitter_screen_name && (

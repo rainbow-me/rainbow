@@ -7,29 +7,31 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import networkInfo from '@/helpers/networkInfo';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 
 const networkMenuItems = () => {
-  return Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
-    .map(netInfo => ({
-      actionKey: netInfo.value,
-      actionTitle: netInfo.longName || netInfo.name,
+  return RainbowNetworks.filter(network => network.features.swaps).map(
+    network => ({
+      actionKey: network.value,
+      actionTitle: network.name,
       icon: {
         iconType: 'ASSET',
         iconValue: `${
-          netInfo.layer2 ? `${netInfo.value}BadgeNoShadow` : 'ethereumBadge'
+          network.networkType === 'layer2'
+            ? `${network.value}BadgeNoShadow`
+            : 'ethereumBadge'
         }`,
       },
-    }));
+    })
+  );
 };
 const androidNetworkMenuItems = () => {
-  return Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
-    .map(netInfo => netInfo.name);
+  return RainbowNetworks.filter(network => network.features.swaps).map(
+    network => network.name
+  );
 };
 
 const NetworkSwitcherv1 = ({
@@ -118,10 +120,9 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network:
-                  networkInfo[
-                    ethereumUtils.getNetworkFromChainId(currentChainId)
-                  ]?.name,
+                network: getNetworkObj(
+                  ethereumUtils.getNetworkFromChainId(currentChainId)
+                ).name,
               })}
             </Text>
           </Column>
