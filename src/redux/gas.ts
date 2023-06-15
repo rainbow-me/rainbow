@@ -27,6 +27,7 @@ import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
+  toHex,
   web3Provider,
 } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
@@ -372,7 +373,13 @@ export const getOptimismGasPrices = async () => {
 export const getZoraGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.zora);
   const baseGasPrice = await provider.getGasPrice();
-  const normalGasPrice = weiToGwei(baseGasPrice.toString());
+
+  const ZoraPriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(
+    Math.ceil(Number((baseGasPrice.toString(), ZoraPriceBumpFactor)))
+  );
+
+  console.log({ normalGasPrice });
   const priceData = {
     fast: normalGasPrice,
     fastWait: 0.34,
@@ -440,7 +447,7 @@ export const gasPricesStartPolling = (
 
             if (networkObj.networkType === 'layer2') {
               // OP chains have an additional fee we need to load
-              if (network === Network.optimism) {
+              if (getNetworkObj(network).gas?.OptimismTxFee) {
                 dataIsReady = l1GasFeeOptimism !== null;
               }
 
@@ -655,7 +662,7 @@ export const gasUpdateTxFee = (
     const { nativeCurrency } = getState().settings;
     if (
       isEmpty(gasFeeParamsBySpeed) ||
-      (txNetwork === Network.optimism && l1GasFeeOptimism === null)
+      (getNetworkObj(txNetwork).gas?.OptimismTxFee && l1GasFeeOptimism === null)
     ) {
       // if fee prices not ready, we need to store the gas limit for future calculations
       // the rest is as the initial state value

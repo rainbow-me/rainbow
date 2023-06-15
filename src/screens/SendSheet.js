@@ -735,7 +735,8 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
+      (getNetworkObj(currentNetwork).gas?.OptimismTxFee &&
+        l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;

@@ -510,7 +510,7 @@ export default function ExchangeModal({
       const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
-        if (currentNetwork === Network.optimism) {
+        if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // @ts-ignore
