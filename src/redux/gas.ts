@@ -379,7 +379,6 @@ export const getZoraGasPrices = async () => {
     Math.ceil(Number((baseGasPrice.toString(), ZoraPriceBumpFactor)))
   );
 
-  console.log({ normalGasPrice });
   const priceData = {
     fast: normalGasPrice,
     fastWait: 0.34,
