@@ -12,6 +12,7 @@ import {
   OPTIMISM_MAINNET_RPC,
   POLYGON_MAINNET_RPC,
   BSC_MAINNET_RPC,
+  ZORA_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
   getNetwork,
@@ -38,6 +39,7 @@ export interface RainbowConfig
   op_rewards_enabled: boolean;
   optimism_mainnet_rpc: string;
   polygon_mainnet_rpc: string;
+  zora_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -46,6 +48,7 @@ export interface RainbowConfig
   bsc_enabled: boolean;
   polygon_enabled: boolean;
   optimism_enabled: boolean;
+  zora_enabled: boolean;
   op_chains_enabled: boolean;
   mainnet_enabled: boolean;
   goerli_enabled: boolean;
@@ -54,6 +57,7 @@ export interface RainbowConfig
   bsc_tx_enabled: boolean;
   polygon_tx_enabled: boolean;
   optimism_tx_enabled: boolean;
+  zora_tx_enabled: boolean;
   op_chains_tx_enabled: boolean;
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
@@ -83,6 +87,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
+  zora_mainnet_rpc: ZORA_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
@@ -91,6 +96,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   bsc_enabled: true,
   polygon_enabled: true,
   optimism_enabled: true,
+  zora_enabled: true,
   op_chains_enabled: true,
 
   mainnet_enabled: true,
@@ -101,6 +107,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   bsc_tx_enabled: true,
   polygon_tx_enabled: true,
   optimism_tx_enabled: true,
+  zora_tx_enabled: true,
   op_chains_tx_enabled: true,
 
   mainnet_tx_enabled: true,
@@ -146,13 +153,15 @@ const init = async () => {
         key === 'bsc_tx_enabled' ||
         key === 'polygon_tx_enabled' ||
         key === 'optimism_tx_enabled' ||
-        key === 'op_chains_etx_nabled' ||
+        key === 'zora_tx_enabled' ||
+        key === 'op_chains_tx_enabled' ||
         key === 'goerli_tx_enabled' ||
         key === 'mainnet_enabled' ||
         key === 'arbitrum_enabled' ||
         key === 'bsc_enabled' ||
         key === 'polygon_enabled' ||
         key === 'optimism_enabled' ||
+        key === 'zora_enabled' ||
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled'
       ) {

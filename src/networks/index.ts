@@ -5,6 +5,7 @@ import { GoerliNetworkObject } from './goerli';
 import { OptimismNetworkObject } from './optimism';
 import { PolygonNetworkObject } from './polygon';
 import { Network, NetworkProperties } from './types';
+import { ZoraNetworkObject } from './zora';
 
 /**
  * Array of all Rainbow Networks
@@ -15,6 +16,7 @@ export const RainbowNetworks = [
   BSCNetworkObject,
   OptimismNetworkObject,
   PolygonNetworkObject,
+  ZoraNetworkObject,
 
   // Testnets
   GoerliNetworkObject,
@@ -37,6 +39,8 @@ export function getNetworkObj(network: Network): NetworkProperties {
       return OptimismNetworkObject;
     case Network.polygon:
       return PolygonNetworkObject;
+    case Network.zora:
+      return ZoraNetworkObject;
 
     // Testnets
     case Network.goerli:

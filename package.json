@@ -128,7 +128,7 @@
     "@types/react-redux": "7.1.9",
     "@types/url-join": "4.0.1",
     "@unstoppabledomains/resolution": "7.1.4",
-    "@wagmi/chains": "0.2.21",
+    "@wagmi/chains": "1.1.1",
     "@walletconnect/client": "1.8.0",
     "@walletconnect/core": "2.8.0",
     "@walletconnect/legacy-utils": "2.0.0",
