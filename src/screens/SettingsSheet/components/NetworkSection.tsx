@@ -14,9 +14,11 @@ import {
   useResetAccountState,
 } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import networkInfo from '@/helpers/networkInfo';
+import { RainbowNetworks } from '@/networks';
 
-const networks = values(networkInfo).filter(network => !network.layer2);
+const networks = values(RainbowNetworks).filter(
+  ({ networkType }) => networkType !== 'layer2'
+);
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -43,9 +45,9 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   );
 
   const renderNetworkList = useCallback(() => {
-    return networks.map(({ disabled, name, value, testnet }: any) => (
+    return networks.map(({ name, value, networkType }) => (
       <MenuItem
-        disabled={(!testnetsEnabled && testnet) || disabled}
+        disabled={!testnetsEnabled && networkType === 'testnet'}
         key={value}
         onPress={() => onNetworkChange(value)}
         rightComponent={
@@ -55,7 +57,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
         testID={`${value}-network`}
         titleComponent={
           <MenuItem.Title
-            disabled={(!testnetsEnabled && testnet) || disabled}
+            disabled={!testnetsEnabled && networkType === 'testnet'}
             text={name}
             weight={inDevSection ? 'medium' : 'semibold'}
           />

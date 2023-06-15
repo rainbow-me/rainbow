@@ -7,7 +7,6 @@ import {
   WALLET_BALANCES_FROM_STORAGE,
 } from '@/handlers/localstorage/walletBalances';
 import { web3Provider } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query';
 import { balanceCheckerContractAbi } from '@/references';
@@ -15,6 +14,7 @@ import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
 import logger from '@/utils/logger';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { getNetworkObj } from '@/networks';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -34,7 +34,7 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
     try {
       // Check all the ETH balances at once
       const balanceCheckerContract = new Contract(
-        networkInfo[network]?.balance_checker_contract_address,
+        getNetworkObj(network).balanceCheckerAddress,
         balanceCheckerContractAbi,
         web3Provider
       );

@@ -43,6 +43,7 @@ const MAX_IMAGE_SCALE = 3;
 const FULL_NFT_IMAGE_SIZE = size * MAX_IMAGE_SCALE;
 const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 
+// same thing here, seems like only difference is we use mainnet instead of ethereum
 /**
  * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
  * a `Network` has no counterpart in SimpleHash.

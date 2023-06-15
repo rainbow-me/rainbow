@@ -20,7 +20,6 @@ import {
 } from '@/handlers/cloudBackup';
 import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import logger from '@/utils/logger';
 import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
@@ -49,7 +48,7 @@ function getUserError(e: Error) {
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
-  const { latestBackup, setIsWalletLoading, wallets } = useWallets();
+  const { latestBackup, wallets } = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({
@@ -103,12 +102,10 @@ export default function useWalletCloudBackup() {
       let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
-        setIsWalletLoading(WalletLoadingStates.FETCHING_PASSWORD);
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
         fetchedPassword = await fetchBackupPassword();
-        setIsWalletLoading(null);
         await delay(300);
         wasPasswordFetched = true;
       }
@@ -131,7 +128,6 @@ export default function useWalletCloudBackup() {
         }
       }
 
-      setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET);
       // We want to make it clear why are we requesting faceID twice
       // So we delayed it to make sure the user can read before seeing the auth prompt
       if (wasPasswordFetched) {
@@ -201,7 +197,7 @@ export default function useWalletCloudBackup() {
         });
       }
     },
-    [dispatch, latestBackup, setIsWalletLoading, wallets]
+    [dispatch, latestBackup, wallets]
   );
 
   return walletCloudBackup;

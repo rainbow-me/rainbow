@@ -9,6 +9,7 @@ import { containsEmoji } from '@/helpers/strings';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
   borderRadius?: number;
@@ -35,6 +36,7 @@ type Props = {
   textSize?: string | number;
   truncate?: boolean;
   weight?: string;
+  style?: StyleProp<ViewStyle>;
 };
 
 const addChartsStyling = (isCharts: boolean) =>

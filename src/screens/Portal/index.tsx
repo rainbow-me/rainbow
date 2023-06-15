@@ -82,3 +82,7 @@ export function open(
     ...options,
   });
 }
+
+export function close() {
+  Navigation.goBack();
+}
