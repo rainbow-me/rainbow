@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
 import { Network } from '.';
+import { getNetworkObj } from '@/networks';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -87,7 +88,11 @@ const withBriefUniswapSection = (
     uid: 'pool-' + pool.address,
   }));
 
-  if (pools.length > 0 && network === Network.mainnet && !isLoadingAssets) {
+  if (
+    pools.length > 0 &&
+    getNetworkObj(network).features.pools &&
+    !isLoadingAssets
+  ) {
     return [
       {
         type: 'POOLS_HEADER',

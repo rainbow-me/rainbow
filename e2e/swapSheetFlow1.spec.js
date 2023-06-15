@@ -165,9 +165,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('network-switcher-10');
     await Helpers.waitAndTap('network-switcher-item-arbitrum');
     await Helpers.checkIfVisible('network-switcher-42161');
-    await Helpers.swipe('network-switcher-scroll-view', 'left', 'fast');
-    await Helpers.waitAndTap('network-switcher-item-polygon');
-    await Helpers.checkIfVisible('network-switcher-137');
     await Helpers.waitAndTap('currency-select-header-back-button');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');

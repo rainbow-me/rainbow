@@ -392,7 +392,7 @@
       "applied": "APPLIED :)",
       "backups_deleted_successfully": "Backups deleted successfully :)",
       "clear_async_storage": "Clear async storage :)",
-      "clean_pending_txs": "Clear Pending Transactions :)",
+      "clear_pending_txs": "Clear Pending Transactions :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_local_storage": "Clear local storage :)",
@@ -1813,9 +1813,19 @@
           "reminder_title": "Reminder :)",
           "these_words_are_for_your_eyes_only": "These words are for your eyes only. Your secret phrase gives access to your entire wallet. \n\n       Be very careful with it. :)"
         },
-        "uuid": "UUID :)",
-        "wallet_diagnostics_title": "Wallet Diagnostics :)",
-        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets :)"
+        "uuid": "Your UUID :)",
+        "uuid_copied": "\uDBC0\uDC63 UUID copied :)",
+        "uuid_description": "This identifier allows us to find your application error and crash reports. :)",
+        "loading": "Loading... :)",
+        "app_state_diagnostics_title": "App State :)",
+        "app_state_diagnostics_description": "Allows you to take a snapshot of the application state so that you can share it with our support team. :)",
+        "wallet_diagnostics_title": "Wallet :)",
+        "sheet_title": "Diagnostics :)",
+        "pin_auth_title": "PIN Authentication :)",
+        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets :)",
+        "share_application_state": "Share application state dump :)",
+        "wallet_details_title": "Wallet details :)",
+        "wallet_details_description": "Below are the details of all wallets added to Rainbow. :)"
       },
       "error_displaying_address": "Error displaying address :)",
       "feedback": {
@@ -2032,6 +2042,17 @@
         "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet :)",
         "error_alert_title": "Authentication failed :)",
         "error_alert_description": "Something went wrong. Please try again, or reach out to our support team. :)"
+      },
+      "errors": {
+        "go_back": "Go back",
+        "generic_title": "Connection failed",
+        "generic_error": "Something went wrong. Please try again, or reach out to our support team.",
+        "pairing_timeout": "This session timed-out before a connection could be established. This is usually due to a network error. Please try again.",
+        "pairing_unsupported_methods": "The dapp requested wallet RPC methods that are unsupported by Rainbow.",
+        "pairing_unsupported_networks": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
+        "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
       }
     },
     "warning": {
