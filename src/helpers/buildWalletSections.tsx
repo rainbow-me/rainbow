@@ -1,9 +1,12 @@
-import React from 'react';
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
 import { Network } from '.';
 import { getNetworkObj } from '@/networks';
+import { queryClient } from '@/react-query';
+import { Position, positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import store from '@/redux/store';
+import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -58,10 +61,12 @@ const buildBriefWalletSections = (
   uniswapSection: any
 ) => {
   const { balanceSection, isEmpty } = balanceSectionData;
+  const positionSection = withPositionsSection();
   const sections = [
     balanceSection,
     savings,
     uniswapSection,
+    positionSection,
     uniqueTokenFamiliesSection,
   ];
 
@@ -73,6 +78,41 @@ const buildBriefWalletSections = (
     briefSectionsData: filteredSections,
     isEmpty,
   };
+};
+
+const withPositionsSection = () => {
+  const {
+    accountAddress: address,
+    nativeCurrency: currency,
+  } = store.getState().settings;
+  const { isLoadingAssets } = store.getState().data;
+  const positions: Position[] | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address, currency })
+  );
+
+  const result: PositionExtraData[] = [];
+  positions?.forEach((position, index) => {
+    const listData = {
+      type: 'POSITION',
+      uniqueId: position.type,
+      uid: `position-${position.type}`,
+      index,
+    };
+    result.push(listData);
+  });
+  if (result.length && !isLoadingAssets) {
+    const res = [
+      {
+        type: 'POSITIONS_HEADER',
+        uid: 'positions-header',
+        value: '$69420.11',
+      },
+      ...result,
+    ];
+
+    return res;
+  }
+  return [];
 };
 
 const withBriefUniswapSection = (

@@ -65,6 +65,13 @@ const ViewDimensions: Record<CellType, Dim> = {
   },
   [CellType.NFT_SPACE_AFTER]: { height: 5 },
   [CellType.LOADING_ASSETS]: { height: AssetListItemSkeletonHeight },
+  [CellType.POSITIONS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.POSITIONS_SPACE_BEFORE]: { height: 24 },
+  [CellType.POSITIONS_SPACE_AFTER]: { height: 24 },
+  [CellType.POSITION]: {
+    height: 140,
+    width: deviceUtils.dimensions.width / 2 - 0.1,
+  },
 };
 
 export default ViewDimensions;
