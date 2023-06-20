@@ -13,3 +13,4 @@ export const uniswapClient = getUniswapSdk(
   getFetchRequester(config.uniswap.schema)
 );
 export const arcClient = getArcSdk(getFetchRequester(config.arc.schema));
+export const arcDevClient = getArcSdk(getFetchRequester(config.arcDev.schema));

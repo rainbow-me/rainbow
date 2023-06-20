@@ -1,5 +1,3 @@
-import { IS_PROD } from '@/env';
-
 exports.config = {
   ens: {
     document: './queries/ens.graphql',
@@ -23,9 +21,14 @@ exports.config = {
     document: './queries/arc.graphql',
     schema: {
       method: 'GET',
-      url: IS_PROD
-        ? 'https://arc-graphql.rainbow.me/graphql'
-        : 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
+      url: 'https://arc-graphql.rainbow.me/graphql',
+    },
+  },
+  arcDev: {
+    document: './queries/arc.graphql',
+    schema: {
+      method: 'GET',
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
     },
   },
 };
