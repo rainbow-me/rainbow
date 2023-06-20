@@ -1,12 +1,29 @@
 import { Box, Column, Columns, Stack, Text } from '@/design-system';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from '@/theme';
 
-import { Position } from '@/resources/defi/PositionsQuery';
+import {
+  Borrow,
+  Claimable,
+  Deposit,
+  Position,
+} from '@/resources/defi/PositionsQuery';
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
-import { AssetType, EthereumAddress } from '@/entities';
+import { Asset, AssetType, EthereumAddress, ZerionAsset } from '@/entities';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import {
+  add,
+  convertAmountToNativeDisplay,
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
+  divide,
+  greaterThan,
+  lessThan,
+  multiply,
+  toFixedDecimals,
+} from '@/helpers/utilities';
 
 type PositionCardProps = {
   position: Position;
@@ -17,6 +34,13 @@ type CoinStackToken = {
   address: EthereumAddress;
   type: AssetType;
   symbol: string;
+};
+
+type subPosition = {
+  asset: ZerionAsset;
+  display: { amount: string; display: string };
+  type: 'deposit' | 'borrow' | 'claimable';
+  position: Deposit | Borrow | Claimable;
 };
 
 const positionColor = '#f5d0e5';
@@ -55,6 +79,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
 
 export const PositionCard = ({ position, onPress }: PositionCardProps) => {
   const { colors } = useTheme();
+  const [totalDeposits, setTotalDeposits] = useState<string | null>(null);
 
   // seen in rewards, do we have support for all of these?
   // TODO: For now we are disabling using the asset price in native currency
@@ -72,6 +97,53 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
     });
 
     return tokens;
+  }, [position]);
+
+  const subPositions: subPosition[] = useMemo(() => {
+    let subPositions: subPosition[] = [];
+    let totalDeposits: string = '0';
+    position.deposits.forEach((position: Deposit) => {
+      let positionTokens: {
+        asset: ZerionAsset;
+        nativeDisplay: { amount: string; display: string };
+        quantity: string;
+      }[] = [];
+
+      position.underlying.forEach(
+        (underlying: { asset: ZerionAsset; quantity: string }) => {
+          let asset = underlying.asset;
+          let nativeDisplay = convertRawAmountToNativeDisplay(
+            underlying.quantity,
+            asset.decimals,
+            asset.price?.value!,
+            'USD'
+          );
+          console.log({ symbol: asset.symbol, nativeDisplay });
+          totalDeposits = add(totalDeposits, nativeDisplay.amount);
+          const newUnderlying = {
+            asset,
+            nativeDisplay,
+            quantity: underlying.quantity,
+          };
+          positionTokens.push(newUnderlying);
+        }
+      );
+
+      // const display = convertAmountAndPriceToNativeDisplay(asset.quantity, asset.price?.value!, 'USD')
+      // console.log({...asset})
+      // console.log({display})
+      // const type = 'deposit'
+      // subPositions.push({
+      //   asset,
+      //   type,
+      //   position,
+      //   display
+      // });
+    });
+
+    console.log({ totalDeposits });
+    setTotalDeposits(convertAmountToNativeDisplay(totalDeposits, 'USD'));
+    return subPositions;
   }, [position]);
 
   return (
@@ -107,7 +179,7 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
             {startCase(position.type.split('-')[0])}
           </Text>
           <Text color={{ custom: colors.black }} size="17pt" weight="semibold">
-            {'$6969.42'}
+            {totalDeposits}
           </Text>
         </Stack>
       </GenericCard>

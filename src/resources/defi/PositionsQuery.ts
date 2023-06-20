@@ -8,7 +8,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { Asset, NativeCurrencyKey } from '@/entities';
+import { Asset, NativeCurrencyKey, ZerionAsset } from '@/entities';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 
@@ -44,25 +44,25 @@ export type PositionsArgs = {
   currency: NativeCurrencyKey;
 };
 
-type Claimable = {
-  asset: Asset;
+export type Claimable = {
+  asset: ZerionAsset;
   quantity: string;
 };
-type Deposit = {
+export type Deposit = {
   apr: string;
   apy: string;
-  asset: Asset;
+  asset: ZerionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: Asset;
+  underlying: any;
 };
-type Borrow = {
+export type Borrow = {
   apr: string;
   apy: string;
-  asset: Asset;
+  asset: ZerionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: Asset;
+  underlying: ZerionAsset[];
 };
 
 // TODO: need to add dapp metadata once its added via BE
