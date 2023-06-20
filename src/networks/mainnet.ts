@@ -42,7 +42,7 @@ export const MainnetNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
     gasType: 'eip1559',
     roundGasDisplay: true,
 
