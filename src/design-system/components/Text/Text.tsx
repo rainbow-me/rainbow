@@ -36,7 +36,9 @@ export type TextProps = {
       children: string | (string | null)[];
     }
   | { containsEmoji?: false; children: ReactNode }
-);
+) & {
+    style: Record<string, unknown>;
+  };
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
     {
@@ -51,6 +53,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       testID,
       uppercase,
       weight,
+      style,
     },
     ref
   ) {
@@ -89,7 +92,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
         numberOfLines={numberOfLines}
         ellipsizeMode={ellipsizeMode}
         ref={ref}
-        style={textStyle}
+        style={[textStyle, style]}
         testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)
