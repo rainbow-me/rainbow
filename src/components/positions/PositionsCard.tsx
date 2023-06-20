@@ -1,4 +1,13 @@
-import { Box, Column, Columns, Stack, Text } from '@/design-system';
+import {
+  Box,
+  Column,
+  Columns,
+  Inline,
+  Row,
+  Rows,
+  Stack,
+  Text,
+} from '@/design-system';
 import React, { useMemo, useState } from 'react';
 import { useTheme } from '@/theme';
 
@@ -15,6 +24,7 @@ import { Asset, AssetType, EthereumAddress, ZerionAsset } from '@/entities';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import {
   add,
+  subtract,
   convertAmountToNativeDisplay,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -79,10 +89,11 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
 
 export const PositionCard = ({ position, onPress }: PositionCardProps) => {
   const { colors } = useTheme();
-  const [totalDeposits, setTotalDeposits] = useState<string | null>(null);
-
-  // seen in rewards, do we have support for all of these?
-  // TODO: For now we are disabling using the asset price in native currency
+  const [positionValueDisplay, setPositionValueDisplay] = useState<
+    string | null
+  >(null);
+  const totalPositions =
+    (position.borrows?.length || 0) + (position.deposits?.length || 0);
 
   const depositTokens: CoinStackToken[] = useMemo(() => {
     let tokens: CoinStackToken[] = [];
@@ -141,13 +152,55 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
       // });
     });
 
-    console.log({ totalDeposits });
-    setTotalDeposits(convertAmountToNativeDisplay(totalDeposits, 'USD'));
+    let totalBorrows = '0';
+    position?.borrows?.forEach((position: Borrow) => {
+      let positionTokens: {
+        asset: ZerionAsset;
+        nativeDisplay: { amount: string; display: string };
+        quantity: string;
+      }[] = [];
+
+      position.underlying.forEach(
+        (underlying: { asset: ZerionAsset; quantity: string }) => {
+          let asset = underlying.asset;
+          let nativeDisplay = convertRawAmountToNativeDisplay(
+            underlying.quantity,
+            asset.decimals,
+            asset.price?.value!,
+            'USD'
+          );
+          console.log({ symbol: asset.symbol, nativeDisplay });
+          totalBorrows = add(totalBorrows, nativeDisplay.amount);
+          const newUnderlying = {
+            asset,
+            nativeDisplay,
+            quantity: underlying.quantity,
+          };
+          positionTokens.push(newUnderlying);
+        }
+      );
+
+      // const display = convertAmountAndPriceToNativeDisplay(asset.quantity, asset.price?.value!, 'USD')
+      // console.log({...asset})
+      // console.log({display})
+      // const type = 'deposit'
+      // subPositions.push({
+      //   asset,
+      //   type,
+      //   position,
+      //   display
+      // });
+    });
+
+    console.log({ totalDeposits, totalBorrows });
+    setPositionValueDisplay(
+      convertAmountToNativeDisplay(subtract(totalDeposits, totalBorrows), 'USD')
+    );
     return subPositions;
   }, [position]);
 
   return (
-    <Box width="full">
+    <Box width="full" height="126px">
       <GenericCard
         type={'stretch'}
         onPress={onPress}
@@ -175,11 +228,38 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
               </Column>
             </Columns>
           </Box>
-          <Text color={{ custom: colors.pink }} size="15pt" weight="bold">
-            {startCase(position.type.split('-')[0])}
-          </Text>
+
+          <Inline
+            alignVertical="center"
+            horizontalSpace={'4px'}
+            verticalSpace={{ custom: 0 }}
+          >
+            <Text color={{ custom: colors.pink }} size="15pt" weight="bold">
+              {startCase(position.type.split('-')[0])}
+            </Text>
+
+            {totalPositions > 1 && (
+              <Box
+                borderRadius={9}
+                padding={{ custom: 5.5 }}
+                style={{
+                  borderColor: colors.alpha(colors.pink, 0.05),
+                  borderWidth: 2,
+                  marginVertical: -10,
+                }}
+              >
+                <Text
+                  color={{ custom: colors.pink }}
+                  size="15pt"
+                  weight="semibold"
+                >
+                  {totalPositions}
+                </Text>
+              </Box>
+            )}
+          </Inline>
           <Text color={{ custom: colors.black }} size="17pt" weight="semibold">
-            {totalDeposits}
+            {positionValueDisplay}
           </Text>
         </Stack>
       </GenericCard>

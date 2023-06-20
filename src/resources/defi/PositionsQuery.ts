@@ -62,7 +62,7 @@ export type Borrow = {
   asset: ZerionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: ZerionAsset[];
+  underlying: any;
 };
 
 // TODO: need to add dapp metadata once its added via BE
