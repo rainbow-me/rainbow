@@ -23,5 +23,5 @@ exports.config = {
       method: 'GET',
       url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
     },
-  }
+  },
 };
