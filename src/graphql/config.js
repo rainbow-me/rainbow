@@ -10,11 +10,18 @@ exports.config = {
     document: './queries/metadata.graphql',
     schema: { method: 'GET', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },
-  uniswap: {
-    document: './queries/uniswap.graphql',
+  arc: {
+    document: './queries/arc.graphql',
     schema: {
-      method: 'POST',
-      url: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
+      method: 'GET',
+      url: 'https://arc-graphql.rainbow.me/graphql',
+    },
+  },
+  arcDev: {
+    document: './queries/arc.graphql',
+    schema: {
+      method: 'GET',
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
     },
   },
 };
