@@ -3,6 +3,7 @@ import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
   HARDWARE_WALLETS,
+  NFT_OFFERS,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -22,19 +23,21 @@ import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
+import { NFTOffersCard } from '@/components/nft-offers/card';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
   const isProfilesEnabled =
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const { wallets } = useWallets();
+  const { isReadOnlyWallet, wallets } = useWallets();
 
   const hasHardwareWallets =
     Object.keys(wallets || {}).filter(
@@ -51,6 +54,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
+              {nftOffersEnabled && !isReadOnlyWallet && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}

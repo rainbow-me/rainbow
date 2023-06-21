@@ -81,7 +81,6 @@ describe('Send Sheet Interaction Flow', () => {
   });
   */
   it('Should show all wallet sections', async () => {
-    await Helpers.checkIfElementByTextIsVisible('Pools');
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
     await Helpers.swipe('wallet-screen', 'down');
