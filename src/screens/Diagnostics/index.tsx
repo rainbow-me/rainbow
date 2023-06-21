@@ -63,7 +63,8 @@ export const WalletDiagnosticsSheet = () => {
                 const secretObj = JSON.parse(key.password);
                 let secret = secretObj.seedphrase || secretObj.privateKey;
                 if (
-                  (secret.indexOf('cipher') === -1 &&
+                  (secret &&
+                    secret.indexOf('cipher') === -1 &&
                     secret.indexOf('salt') === -1) ||
                   userPin
                 ) {
