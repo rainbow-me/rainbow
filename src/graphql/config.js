@@ -10,13 +10,6 @@ exports.config = {
     document: './queries/metadata.graphql',
     schema: { method: 'GET', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },
-  uniswap: {
-    document: './queries/uniswap.graphql',
-    schema: {
-      method: 'POST',
-      url: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
-    },
-  },
   arc: {
     document: './queries/arc.graphql',
     schema: {
