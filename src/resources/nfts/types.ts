@@ -1,5 +1,5 @@
 import { Network } from '@/helpers/networkTypes';
-import { AssetContract, AssetType } from '@/entities';
+import { Asset, AssetContract, AssetType } from '@/entities';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
 
 export type PolygonAllowlist = Record<string, boolean>;
@@ -7,13 +7,6 @@ export type PolygonAllowlist = Record<string, boolean>;
 export enum NFTMarketplaceId {
   OpenSea = 'opensea',
 }
-
-export type NFTPaymentToken = {
-  address: string | null; // null address = native token
-  decimals: number;
-  name: string;
-  symbol: string;
-};
 
 export type NFTMarketplace = {
   collectionId: string | undefined;
@@ -26,12 +19,12 @@ export type NFTMarketplace = {
 export type NFTFloorPrice = {
   marketplaceId: NFTMarketplaceId;
   value: number;
-  paymentToken: NFTPaymentToken;
+  paymentToken: Asset;
 };
 
 export type NFTLastSale = {
   value: number;
-  paymentToken: NFTPaymentToken;
+  paymentToken: Asset;
 };
 
 type NFTCollection = {
