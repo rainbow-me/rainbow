@@ -1,8 +1,11 @@
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
-import { arcClient } from '@/graphql';
+import { IS_PROD } from '@/env';
+import { arcClient, arcDevClient } from '@/graphql';
 import { GetNftOffersQuery, SortCriterion } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
+
+const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 
 export const nftOffersQueryKey = ({
   address,
@@ -28,7 +31,7 @@ export function useNFTOffers({
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   return useQuery<GetNftOffersQuery>(
     nftOffersQueryKey({ address: walletAddress, sortCriterion: sortBy }),
-    async () => await arcClient.getNFTOffers({ walletAddress, sortBy }),
+    async () => await graphqlClient.getNFTOffers({ walletAddress, sortBy }),
     {
       enabled: nftOffersEnabled && !!walletAddress,
       staleTime: 60_000, // 1 minute

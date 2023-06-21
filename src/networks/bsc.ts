@@ -14,7 +14,7 @@ export const BSCNetworkObject: NetworkProperties = {
   enabled: config.bsc_enabled,
   name: 'BSC',
   longName: 'Binance Smart Chain',
-  value: Network.polygon,
+  value: Network.bsc,
   networkType: 'layer2',
   blockTimeInMs: 3_000,
 

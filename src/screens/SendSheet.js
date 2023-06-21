@@ -368,6 +368,10 @@ export default function SendSheet(props) {
             setCurrentNetwork(Network.optimism);
             provider = await getProviderForNetwork(Network.optimism);
             break;
+          case AssetTypes.zora:
+            setCurrentNetwork(Network.zora);
+            provider = await getProviderForNetwork(Network.zora);
+            break;
           default:
             setCurrentNetwork(network);
         }
@@ -549,7 +553,7 @@ export default function SendSheet(props) {
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
-            if (currentNetwork === Network.optimism) {
+            if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
               updateTxFee(updatedGasLimit, null);
@@ -731,7 +735,8 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (currentNetwork === Network.optimism && l1GasFeeOptimism === null)
+      (getNetworkObj(currentNetwork).gas?.OptimismTxFee &&
+        l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -930,7 +935,7 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(async gasLimit => {
-          if (currentNetwork === Network.optimism) {
+          if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);

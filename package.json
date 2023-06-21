@@ -129,7 +129,7 @@
     "@types/react-redux": "7.1.9",
     "@types/url-join": "4.0.1",
     "@unstoppabledomains/resolution": "7.1.4",
-    "@wagmi/chains": "0.2.21",
+    "@wagmi/chains": "1.1.1",
     "@walletconnect/client": "1.8.0",
     "@walletconnect/core": "2.8.0",
     "@walletconnect/legacy-utils": "2.0.0",
@@ -303,7 +303,8 @@
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
     "viem": "1.0.7",
-    "vm-browserify": "0.0.4"
+    "vm-browserify": "0.0.4",
+    "w2t": "3.0.2"
   },
   "devDependencies": {
     "@babel/core": "7.18.13",

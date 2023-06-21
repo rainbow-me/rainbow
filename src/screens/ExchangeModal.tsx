@@ -110,6 +110,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
+  [Network.zora]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -509,7 +510,7 @@ export default function ExchangeModal({
       const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
-        if (currentNetwork === Network.optimism) {
+        if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // @ts-ignore

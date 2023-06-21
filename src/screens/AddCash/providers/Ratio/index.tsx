@@ -21,12 +21,7 @@ import { Network as InternalNetwork } from '@/helpers';
 import { emailRainbow } from '@/utils/emailRainbow';
 import Routes from '@/navigation/routesNames';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
-import {
-  PaymentMethod,
-  Network,
-  FiatCurrency,
-  CalloutType,
-} from '@/screens/AddCash/types';
+import { ProviderConfig } from '@/screens/AddCash/types';
 import {
   getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded,
   signWithSigningWallet,
@@ -40,45 +35,13 @@ import { ratioGetClientSession } from '@/resources/f2c';
 
 const ERROR_USER_FAILED_AUTH = 'user_failed_auth';
 
-const providerConfig = {
-  name: FiatProviderName.Ratio,
-  enabled: true,
-  metadata: {
-    accentColor: '#7EFDCF',
-    accentForegroundColor: '#1E2435',
-    paymentMethods: [
-      {
-        type: PaymentMethod.Bank,
-      },
-    ],
-    networks: [Network.Ethereum, Network.Polygon],
-    instantAvailable: true,
-    fiatCurrencies: [FiatCurrency.USD],
-  },
-  callouts: [
-    {
-      type: CalloutType.InstantAvailable,
-    },
-    {
-      type: CalloutType.Rate,
-      value: `0-3%`,
-    },
-    {
-      type: CalloutType.PaymentMethods,
-      methods: [
-        {
-          type: PaymentMethod.Bank,
-        },
-      ],
-    },
-    {
-      type: CalloutType.Networks,
-      networks: [Network.Ethereum, Network.Polygon],
-    },
-  ],
-};
-
-export function Ratio({ accountAddress }: { accountAddress: string }) {
+export function Ratio({
+  accountAddress,
+  config,
+}: {
+  accountAddress: string;
+  config: ProviderConfig;
+}) {
   const [userId, setUserId] = React.useState('');
   const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
@@ -340,10 +303,7 @@ export function Ratio({ accountAddress }: { accountAddress: string }) {
         pendingTransactionSheetExplainerType.current = '';
       }}
     >
-      <ProviderCard
-        // @ts-ignore
-        config={providerConfig}
-      />
+      <ProviderCard config={config} />
     </RatioComponent>
   );
 }
