@@ -229,11 +229,7 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
             </Columns>
           </Box>
 
-          <Inline
-            alignVertical="center"
-            horizontalSpace={'4px'}
-            verticalSpace={{ custom: 0 }}
-          >
+          <Inline alignVertical="center" horizontalSpace={'4px'}>
             <Text color={{ custom: colors.pink }} size="15pt" weight="bold">
               {startCase(position.type.split('-')[0])}
             </Text>
@@ -245,7 +241,8 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
                 style={{
                   borderColor: colors.alpha(colors.pink, 0.05),
                   borderWidth: 2,
-                  marginVertical: -10,
+                  // offset vertical padding
+                  marginVertical: -11,
                 }}
               >
                 <Text
