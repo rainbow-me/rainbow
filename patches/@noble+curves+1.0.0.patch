@@ -1,0 +1,229 @@
+diff --git a/node_modules/@noble/curves/esm/package.json b/node_modules/@noble/curves/esm/package.json
+index 267769c..d6776d2 100644
+--- a/node_modules/@noble/curves/esm/package.json
++++ b/node_modules/@noble/curves/esm/package.json
+@@ -1,7 +1,57 @@
+ {
+   "type": "module",
+   "browser": {
+-    "crypto": false,
+-    "./crypto": "./esm/crypto.js"
++    "crypto": "react-native-crypto",
++    "./crypto": "./esm/crypto.js",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "react-native": {
++    "crypto": "react-native-crypto",
++    "./crypto": "./esm/crypto.js",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
+   }
+ }
+diff --git a/node_modules/@noble/curves/secp256k1.d.ts b/node_modules/@noble/curves/secp256k1/index.d.ts
+similarity index 71%
+rename from node_modules/@noble/curves/secp256k1.d.ts
+rename to node_modules/@noble/curves/secp256k1/index.d.ts
+index 427c051..69dd008 100644
+--- a/node_modules/@noble/curves/secp256k1.d.ts
++++ b/node_modules/@noble/curves/secp256k1/index.d.ts
+@@ -1,14 +1,14 @@
+-import { mod } from './abstract/modular.js';
+-import { ProjPointType as PointType } from './abstract/weierstrass.js';
+-import type { Hex, PrivKey } from './abstract/utils.js';
+-import { bytesToNumberBE } from './abstract/utils.js';
+-import * as htf from './abstract/hash-to-curve.js';
++import { mod } from '../abstract/modular.js';
++import { ProjPointType as PointType } from '../abstract/weierstrass.js';
++import type { Hex, PrivKey } from '../abstract/utils.js';
++import { bytesToNumberBE } from '../abstract/utils.js';
++import * as htf from '../abstract/hash-to-curve.js';
+ export declare const secp256k1: Readonly<{
+-    create: (hash: import("./abstract/utils.js").CHash) => import("./abstract/weierstrass.js").CurveFn;
++    create: (hash: import("../abstract/utils.js").CHash) => import("../abstract/weierstrass.js").CurveFn;
+     CURVE: Readonly<{
+         readonly nBitLength: number;
+         readonly nByteLength: number;
+-        readonly Fp: import("./abstract/modular.js").IField<bigint>;
++        readonly Fp: import("../abstract/modular.js").IField<bigint>;
+         readonly n: bigint;
+         readonly h: bigint;
+         readonly hEff?: bigint | undefined;
+@@ -28,9 +28,9 @@ export declare const secp256k1: Readonly<{
+                 k2: bigint;
+             };
+         } | undefined;
+-        readonly isTorsionFree?: ((c: import("./abstract/weierstrass.js").ProjConstructor<bigint>, point: PointType<bigint>) => boolean) | undefined;
+-        readonly clearCofactor?: ((c: import("./abstract/weierstrass.js").ProjConstructor<bigint>, point: PointType<bigint>) => PointType<bigint>) | undefined;
+-        readonly hash: import("./abstract/utils.js").CHash;
++        readonly isTorsionFree?: ((c: import("../abstract/weierstrass.js").ProjConstructor<bigint>, point: PointType<bigint>) => boolean) | undefined;
++        readonly clearCofactor?: ((c: import("../abstract/weierstrass.js").ProjConstructor<bigint>, point: PointType<bigint>) => PointType<bigint>) | undefined;
++        readonly hash: import("../abstract/utils.js").CHash;
+         readonly hmac: (key: Uint8Array, ...messages: Uint8Array[]) => Uint8Array;
+         readonly randomBytes: (bytesLength?: number | undefined) => Uint8Array;
+         lowS: boolean;
+@@ -40,13 +40,13 @@ export declare const secp256k1: Readonly<{
+     }>;
+     getPublicKey: (privateKey: PrivKey, isCompressed?: boolean | undefined) => Uint8Array;
+     getSharedSecret: (privateA: PrivKey, publicB: Hex, isCompressed?: boolean | undefined) => Uint8Array;
+-    sign: (msgHash: Hex, privKey: PrivKey, opts?: import("./abstract/weierstrass.js").SignOpts | undefined) => import("./abstract/weierstrass.js").SignatureType;
++    sign: (msgHash: Hex, privKey: PrivKey, opts?: import("../abstract/weierstrass.js").SignOpts | undefined) => import("../abstract/weierstrass.js").SignatureType;
+     verify: (signature: Hex | {
+         r: bigint;
+         s: bigint;
+-    }, msgHash: Hex, publicKey: Hex, opts?: import("./abstract/weierstrass.js").VerOpts | undefined) => boolean;
+-    ProjectivePoint: import("./abstract/weierstrass.js").ProjConstructor<bigint>;
+-    Signature: import("./abstract/weierstrass.js").SignatureConstructor;
++    }, msgHash: Hex, publicKey: Hex, opts?: import("../abstract/weierstrass.js").VerOpts | undefined) => boolean;
++    ProjectivePoint: import("../abstract/weierstrass.js").ProjConstructor<bigint>;
++    Signature: import("../abstract/weierstrass.js").SignatureConstructor;
+     utils: {
+         normPrivateKeyToScalar: (key: PrivKey) => bigint;
+         isValidPrivateKey(privateKey: PrivKey): boolean;
+diff --git a/node_modules/@noble/curves/secp256k1.d.ts.map b/node_modules/@noble/curves/secp256k1/index.d.ts.map
+similarity index 100%
+rename from node_modules/@noble/curves/secp256k1.d.ts.map
+rename to node_modules/@noble/curves/secp256k1/index.d.ts.map
+diff --git a/node_modules/@noble/curves/secp256k1.js b/node_modules/@noble/curves/secp256k1/index.js
+similarity index 97%
+rename from node_modules/@noble/curves/secp256k1.js
+rename to node_modules/@noble/curves/secp256k1/index.js
+index c8f1566..ba49e31 100644
+--- a/node_modules/@noble/curves/secp256k1.js
++++ b/node_modules/@noble/curves/secp256k1/index.js
+@@ -5,11 +5,11 @@ exports.encodeToCurve = exports.hashToCurve = exports.schnorr = exports.secp256k
+ /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
+ const sha256_1 = require("@noble/hashes/sha256");
+ const utils_1 = require("@noble/hashes/utils");
+-const modular_js_1 = require("./abstract/modular.js");
+-const weierstrass_js_1 = require("./abstract/weierstrass.js");
+-const utils_js_1 = require("./abstract/utils.js");
+-const htf = require("./abstract/hash-to-curve.js");
+-const _shortw_utils_js_1 = require("./_shortw_utils.js");
++const modular_js_1 = require("../abstract/modular.js");
++const weierstrass_js_1 = require("../abstract/weierstrass.js");
++const utils_js_1 = require("../abstract/utils.js");
++const htf = require("../abstract/hash-to-curve.js");
++const _shortw_utils_js_1 = require("../_shortw_utils.js");
+ const secp256k1P = BigInt('0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f');
+ const secp256k1N = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
+ const _1n = BigInt(1);
+diff --git a/node_modules/@noble/curves/secp256k1.js.map b/node_modules/@noble/curves/secp256k1/index.js.map
+similarity index 100%
+rename from node_modules/@noble/curves/secp256k1.js.map
+rename to node_modules/@noble/curves/secp256k1/index.js.map
+diff --git a/node_modules/@noble/curves/secp256k1/package.json b/node_modules/@noble/curves/secp256k1/package.json
+new file mode 100644
+index 0000000..957c7cb
+--- /dev/null
++++ b/node_modules/@noble/curves/secp256k1/package.json
+@@ -0,0 +1,67 @@
++{
++  "types": "index.d.ts",
++  "module": "index.js",
++  "main": "index.js",
++  "dependencies": {
++    "@noble/hashes": "1.3.0"
++  },
++  "devDependencies": {
++    "fast-check": "3.0.0",
++    "micro-bmark": "0.3.1",
++    "micro-should": "0.4.0",
++    "prettier": "2.8.4",
++    "typescript": "5.0.2"
++  },
++  "react-native": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "browser": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
++}
