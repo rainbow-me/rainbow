@@ -9,6 +9,7 @@ import {
 } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 
 type SwappableAddresses = {
   [Network.mainnet]: EthereumAddress[];
@@ -31,7 +32,17 @@ export const useSwappableUserAssets = (params: {
   });
 
   const filteredAssetsInWallet = useMemo(
-    () => assetsInWallet.filter(asset => !hiddenCoinsObj[asset.uniqueId]),
+    () =>
+      assetsInWallet.filter(asset => {
+        // filter out hidden tokens
+        if (hiddenCoinsObj[asset.uniqueId]) return true;
+
+        // filter out networks where swaps are not enabled
+        const assetNetwork = ethereumUtils.getNetworkFromType(asset.type);
+        if (getNetworkObj(assetNetwork).features.swaps) return true;
+
+        return false;
+      }),
     [assetsInWallet, hiddenCoinsObj]
   );
 
@@ -67,12 +78,10 @@ export const useSwappableUserAssets = (params: {
   );
 
   const getSwappableAddressesInWallet = useCallback(async () => {
-    const networks = [
-      Network.mainnet,
-      Network.optimism,
-      Network.polygon,
-      Network.arbitrum,
-    ];
+    const networks = RainbowNetworks.filter(
+      ({ features }) => features.swaps
+    ).map(({ value }) => value);
+
     const walletFilterRequests: Promise<void>[] = [];
     networks.forEach(network => {
       const assetsAddressesOnChain = filteredAssetsInWallet

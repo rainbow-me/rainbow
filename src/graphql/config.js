@@ -24,4 +24,11 @@ exports.config = {
       url: 'https://arc-graphql.rainbow.me/graphql',
     },
   },
+  arcDev: {
+    document: './queries/arc.graphql',
+    schema: {
+      method: 'GET',
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
+    },
+  },
 };

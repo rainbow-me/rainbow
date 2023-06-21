@@ -4120,10 +4120,10 @@
   dependencies:
     "@vibrant/types" "^3.2.1-alpha.1"
 
-"@wagmi/chains@0.2.21":
-  version "0.2.21"
-  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-0.2.21.tgz#96d6581719a11c685e3b02937644c5c6edce3b94"
-  integrity sha512-5vlt52nbUXFZUfEhKRtuhJGnNfhHQ3Afeu2yDGp1/uACvKabUb6aafUULC7RZljUIeOF+mlnl09/3QBwxfd7XQ==
+"@wagmi/chains@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.1.1.tgz#596121d036a3c3f59b8ac49cfac745f5add71c0f"
+  integrity sha512-Db+QH8rEKpk948zhLe1kDPly9TO0ZMU01reWoWgwkOJD6HbhIbnErtgCCbLd7fbmtG1NZBH2SIksmZPhe9tx8A==
 
 "@walletconnect/auth-client@2.1.0":
   version "2.1.0"
@@ -16003,6 +16003,11 @@ vm2@3.9.18, vm2@^3.9.8:
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
+
+w2t@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/w2t/-/w2t-3.0.2.tgz#20805f8b2c7a67968270dfa35be14260664126ea"
+  integrity sha512-PyiEQuGRZ1en7FZplnexFGSQI5vWuN7p8pDBMw578wBegkMABh1vynDkLiyatNA2pZ29c/bdoJWGo6UdRjIGAA==
 
 walkdir@^0.4.1:
   version "0.4.1"
