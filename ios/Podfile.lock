@@ -451,8 +451,8 @@ PODS:
     - react-native-flipper-performance-plugin/FBDefines (= 0.3.1)
   - react-native-flipper-performance-plugin/FBDefines (0.3.1):
     - React-Core
-  - react-native-get-random-values (1.5.0):
-    - React
+  - react-native-get-random-values (1.9.0):
+    - React-Core
   - react-native-ios-context-menu (1.7.4):
     - React-Core
   - react-native-mail (4.1.0):
@@ -1245,7 +1245,7 @@ SPEC CHECKSUMS:
   react-native-cloud-fs: cd21282c5cecaf285225e447dd7f3cf2f9015496
   react-native-flipper: 7eeb9b59b667dd0619372c7349cf7c78032d1de2
   react-native-flipper-performance-plugin: 2b873b68da3e368afeaf29c9c7a8c2b0ff908c4f
-  react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
+  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-menu: 52089949cbe30b035c51e54f92a7d99136c2fed4
