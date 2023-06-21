@@ -7,6 +7,7 @@ import { queryClient } from '@/react-query';
 import { Position, positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -81,6 +82,10 @@ const buildBriefWalletSections = (
 };
 
 const withPositionsSection = () => {
+  // check if the feature is enabled
+  const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
+  if (!positionsEnabled) return [];
+
   const {
     accountAddress: address,
     nativeCurrency: currency,
