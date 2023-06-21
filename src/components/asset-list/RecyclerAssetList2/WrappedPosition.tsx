@@ -18,7 +18,7 @@ export default function WrappedPosition({
     currency: nativeCurrency,
   });
 
-  const position = data?.find(position => position.type === uniqueId);
+  const position = data?.positions.find(position => position.type === uniqueId);
 
   const { navigate } = useNavigation();
 

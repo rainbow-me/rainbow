@@ -18,6 +18,7 @@ import {
   NFTFamilyExtraData,
   PoolsHeaderExtraData,
   PositionExtraData,
+  PositionHeaderExtraData,
   SavingExtraData,
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
@@ -176,11 +177,13 @@ function rowRenderer(
         />
       );
     }
-    case CellType.POSITIONS_HEADER:
+    case CellType.POSITIONS_HEADER: {
+      const { total } = data as PositionHeaderExtraData;
       return (
         // @ts-expect-error JavaScript component
-        <AssetListHeader title="Positions" />
+        <AssetListHeader title="Positions" totalValue={total} />
       );
+    }
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
 

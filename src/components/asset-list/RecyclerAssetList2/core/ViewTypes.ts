@@ -82,6 +82,9 @@ export type PositionExtraData = {
   uniqueId: string;
   index: number;
 };
+export type PositionHeaderExtraData = {
+  total: string;
+};
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
@@ -101,6 +104,7 @@ export type CellExtraData =
   | NFTExtraData
   | AssetsHeaderExtraData
   | PoolsHeaderExtraData
-  | PositionExtraData;
+  | PositionExtraData
+  | PositionHeaderExtraData;
 
 export type CellTypes = BaseCellType & CellExtraData;

@@ -4,7 +4,10 @@ import { add, convertAmountToNativeDisplay } from './utilities';
 import { Network } from '.';
 import { getNetworkObj } from '@/networks';
 import { queryClient } from '@/react-query';
-import { Position, positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import {
+  RainbowPositions,
+  positionsQueryKey,
+} from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
@@ -91,12 +94,12 @@ const withPositionsSection = () => {
     nativeCurrency: currency,
   } = store.getState().settings;
   const { isLoadingAssets } = store.getState().data;
-  const positions: Position[] | undefined = queryClient.getQueryData(
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
     positionsQueryKey({ address, currency })
   );
 
   const result: PositionExtraData[] = [];
-  positions?.forEach((position, index) => {
+  positionsObj?.positions?.forEach((position, index) => {
     const listData = {
       type: 'POSITION',
       uniqueId: position.type,
@@ -110,7 +113,7 @@ const withPositionsSection = () => {
       {
         type: 'POSITIONS_HEADER',
         uid: 'positions-header',
-        value: '$69420.11',
+        total: positionsObj?.totals.total.display,
       },
       ...result,
     ];
