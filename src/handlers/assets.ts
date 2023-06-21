@@ -29,6 +29,7 @@ export function isL2Asset(type: any) {
     case AssetTypes.optimism:
     case AssetTypes.polygon:
     case AssetTypes.bsc:
+    case AssetTypes.zora:
       return true;
     default:
       return false;

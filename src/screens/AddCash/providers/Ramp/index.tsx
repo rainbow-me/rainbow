@@ -4,12 +4,7 @@ import { nanoid } from 'nanoid/non-secure';
 
 import { logger, RainbowError } from '@/logger';
 import { FiatProviderName } from '@/entities/f2c';
-import {
-  PaymentMethod,
-  Network,
-  FiatCurrency,
-  CalloutType,
-} from '@/screens/AddCash/types';
+import { ProviderConfig } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { analyticsV2 } from '@/analytics';
@@ -17,78 +12,13 @@ import { rampGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
 
-const providerConfig = {
-  name: FiatProviderName.Ramp,
-  enabled: true,
-  metadata: {
-    accentColor: '#21BF73',
-    paymentMethods: [
-      {
-        type: PaymentMethod.DebitCard,
-      },
-      {
-        type: PaymentMethod.CreditCard,
-      },
-      {
-        type: PaymentMethod.Bank,
-      },
-      {
-        type: PaymentMethod.ApplePay,
-      },
-      {
-        type: PaymentMethod.GooglePay,
-      },
-    ],
-    networks: [
-      Network.Ethereum,
-      Network.Polygon,
-      Network.Arbitrum,
-      Network.Optimism,
-    ],
-    instantAvailable: true,
-    fiatCurrencies: [FiatCurrency.USD],
-  },
-  callouts: [
-    {
-      type: CalloutType.InstantAvailable,
-    },
-    {
-      type: CalloutType.Rate,
-      value: '2.49-4.9%',
-    },
-    {
-      type: CalloutType.PaymentMethods,
-      methods: [
-        {
-          type: PaymentMethod.DebitCard,
-        },
-        {
-          type: PaymentMethod.CreditCard,
-        },
-        {
-          type: PaymentMethod.Bank,
-        },
-        {
-          type: PaymentMethod.ApplePay,
-        },
-        {
-          type: PaymentMethod.GooglePay,
-        },
-      ],
-    },
-    {
-      type: CalloutType.Networks,
-      networks: [
-        Network.Ethereum,
-        Network.Polygon,
-        Network.Arbitrum,
-        Network.Optimism,
-      ],
-    },
-  ],
-};
-
-export function Ramp({ accountAddress }: { accountAddress: string }) {
+export function Ramp({
+  accountAddress,
+  config,
+}: {
+  accountAddress: string;
+  config: ProviderConfig;
+}) {
   return (
     <ButtonPressAnimation
       onPress={async () => {
@@ -135,10 +65,7 @@ export function Ramp({ accountAddress }: { accountAddress: string }) {
       }}
       overflowMargin={30}
     >
-      <ProviderCard
-        /* @ts-ignore */
-        config={providerConfig}
-      />
+      <ProviderCard config={config} />
     </ButtonPressAnimation>
   );
 }

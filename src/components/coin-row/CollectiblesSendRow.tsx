@@ -98,6 +98,7 @@ const UniqueTokenCoinIcon = magicMemo(
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
           {...props}
+          badgeYPosition={-4}
         />
       </Centered>
     );

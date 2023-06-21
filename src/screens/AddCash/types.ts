@@ -1,10 +1,5 @@
 import { FiatProviderName } from '@/entities/f2c';
 
-// Use `@entities/f2c` `FiatProviderName`
-// export enum ProviderName {
-//   Ramp = 'ramp',
-// }
-
 export enum Network {
   Ethereum = 'ethereum',
   Polygon = 'polygon',
@@ -65,36 +60,40 @@ export enum CalloutType {
 }
 
 export type ProviderConfig = {
-  name: FiatProviderName;
+  id: FiatProviderName;
   enabled: boolean;
   metadata: {
     accentColor: string;
-    accentForegroundColor?: string;
+    accentForegroundColor: string;
     paymentMethods: { type: PaymentMethod }[];
     networks: Network[];
     instantAvailable: boolean;
     fiatCurrencies: FiatCurrency[];
   };
-  callouts: (
-    | {
-        type: CalloutType.Rate;
-        value: string;
-      }
-    | {
-        type: CalloutType.InstantAvailable;
-        value?: string;
-      }
-    | {
-        type: CalloutType.PaymentMethods;
-        methods: { type: PaymentMethod }[];
-      }
-    | {
-        type: CalloutType.Networks;
-        networks: Network[];
-      }
-    | {
-        type: CalloutType.FiatCurrencies;
-        currencies: FiatCurrency[];
-      }
-  )[];
+  content: {
+    title: string;
+    description: string;
+    callouts: (
+      | {
+          type: CalloutType.Rate;
+          value: string;
+        }
+      | {
+          type: CalloutType.InstantAvailable;
+          value?: string;
+        }
+      | {
+          type: CalloutType.PaymentMethods;
+          methods: { type: PaymentMethod }[];
+        }
+      | {
+          type: CalloutType.Networks;
+          networks: Network[];
+        }
+      | {
+          type: CalloutType.FiatCurrencies;
+          currencies: FiatCurrency[];
+        }
+    )[];
+  };
 };
