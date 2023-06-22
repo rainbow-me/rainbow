@@ -4,9 +4,9 @@ import { getSdk as getEnsSdk } from './__generated__/ens';
 import { getSdk as getMetadataSdk } from './__generated__/metadata';
 import { getSdk as getArcSdk } from './__generated__/arc';
 
-export const ensClient = getEnsSdk(getFetchRequester(config.ens.schema));
+export const ensClient = getEnsSdk(getFetchRequester(config.ens));
 export const metadataClient = getMetadataSdk(
-  getFetchRequester(config.metadata.schema)
+  getFetchRequester(config.metadata)
 );
-export const arcClient = getArcSdk(getFetchRequester(config.arc.schema));
-export const arcDevClient = getArcSdk(getFetchRequester(config.arcDev.schema));
+export const arcClient = getArcSdk(getFetchRequester(config.arc));
+export const arcDevClient = getArcSdk(getFetchRequester(config.arcDev));
