@@ -84,4 +84,5 @@ declare module 'react-native-dotenv' {
   export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
   export const LOG_DEBUG: string;
   export const QUIET_OLD_LOGGER: string;
+  export const ARC_GRAPHQL_API_KEY: string;
 }

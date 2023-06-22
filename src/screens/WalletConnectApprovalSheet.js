@@ -519,17 +519,17 @@ export default function WalletConnectApprovalSheet() {
                   )}
                   <Box
                     // avatar width (22) + avatar right margin (5)
-                    paddingLeft={{ custom: 27 }}
-                    position="absolute"
+                    paddingLeft={{ custom: 5 }}
                     width="full"
-                    justifyContent="center"
+                    flexDirection="row"
                   >
-                    <LabelText position="relative" ellipsizeMode="middle">
-                      {`${approvalAccountInfo.accountLabel} ${
-                        type === WalletConnectApprovalSheetType.connect
-                          ? '􀁰'
-                          : ''
-                      }`}
+                    <LabelText style={{ maxWidth: '80%' }}>
+                      {`${approvalAccountInfo.accountLabel}`}
+                    </LabelText>
+                    <LabelText>
+                      {type === WalletConnectApprovalSheetType.connect
+                        ? '􀁰'
+                        : ''}
                     </LabelText>
                   </Box>
                 </ButtonPressAnimation>
