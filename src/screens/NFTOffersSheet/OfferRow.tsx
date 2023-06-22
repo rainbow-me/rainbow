@@ -101,6 +101,25 @@ export const FakeOfferRow = () => {
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
+  const dollarAmount = convertAmountToNativeDisplay(
+    offer.grossAmount.usd,
+    'USD',
+    undefined,
+    // don't show decimals
+    true,
+    // abbreviate if amount is >= 10,000
+    offer.grossAmount.decimal >= 10_000
+  );
+  const cryptoAmount = handleSignificantDecimals(
+    offer.grossAmount.decimal,
+    18,
+    // don't show more than 3 decimals
+    3,
+    undefined,
+    // abbreviate if amount is >= 10,000
+    offer.grossAmount.decimal >= 10_000
+  );
+
   return (
     <ButtonPressAnimation>
       <Columns space="16px" alignVertical="center">
@@ -157,12 +176,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
         <Column>
           <Stack space="10px">
             <Text size="17pt" weight="bold" color="label">
-              {convertAmountToNativeDisplay(
-                offer.grossAmount.usd,
-                'USD',
-                undefined,
-                true
-              )}
+              {dollarAmount}
             </Text>
             <Text
               size="13pt"
@@ -186,13 +200,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 />
               </Bleed>
               <Text size="17pt" weight="bold" color="label">
-                {handleSignificantDecimals(
-                  offer.grossAmount.decimal,
-                  18,
-                  3,
-                  undefined,
-                  true
-                )}
+                {cryptoAmount}
               </Text>
             </Inline>
             <Inline>

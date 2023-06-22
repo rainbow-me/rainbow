@@ -242,7 +242,10 @@ export const handleSignificantDecimalsWithThreshold = (
  * Rounds to 1 decimal place, stripping trailing zeros.
  * Example: 3100000000 => "3.1b"
  */
-export const abbreviateBigNumber = (value: BigNumber): string => {
+export const abbreviateBigNumber = (
+  value: BigNumber,
+  buffer: number
+): string => {
   // converts a big number like 3,100,000,000 to "3.1" or 3,000,000 to "3"
   const getNumericCounterpart = (value: BigNumber): string =>
     value.toFormat(1).replace(/\.?0+$/, '');
@@ -253,8 +256,17 @@ export const abbreviateBigNumber = (value: BigNumber): string => {
     return getNumericCounterpart(value.div(1_000_000)) + 'm';
   } else if (value.isGreaterThanOrEqualTo(1000)) {
     return getNumericCounterpart(value.div(1000)) + 'k';
+  } else if (value.isEqualTo(0)) {
+    // just return '0'
+    return value.toString();
   } else {
-    return value.toFixed(0);
+    // only display `buffer` number of digits after the decimal point
+    // trim trailing zeros
+    const roundedValue = value.toFormat(buffer).replace(/\.?0+$/, '');
+    // if this rounded value is 0, indicate that the actual value is less than 0.0...01
+    return roundedValue === '0'
+      ? `< 0.${'0'.repeat(buffer - 1)}1`
+      : roundedValue;
   }
 };
 
@@ -276,7 +288,7 @@ export const handleSignificantDecimals = (
   ).toFixed();
   const resultBN = new BigNumber(result);
   if (abbreviate) {
-    return abbreviateBigNumber(resultBN);
+    return abbreviateBigNumber(resultBN, buffer);
   }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
