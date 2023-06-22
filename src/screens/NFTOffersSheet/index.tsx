@@ -11,7 +11,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { FakeOfferRow, OfferRow } from './components/OfferRow';
+import { FakeOfferRow, OfferRow } from './OfferRow';
 import { useAccountProfile } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';

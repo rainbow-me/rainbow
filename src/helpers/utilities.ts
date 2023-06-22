@@ -237,6 +237,27 @@ export const handleSignificantDecimalsWithThreshold = (
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+/**
+ * Converts a `BigNumber` to a string abbreviation with a suffix like "k", "m", or "b".
+ * Rounds to 1 decimal place, stripping trailing zeros.
+ * Example: 3100000000 => "3.1b"
+ */
+export const abbreviateBigNumber = (value: BigNumber): string => {
+  // converts a big number like 3,100,000,000 to "3.1" or 3,000,000 to "3"
+  const getNumericCounterpart = (value: BigNumber): string =>
+    value.toFormat(1).replace(/\.?0+$/, '');
+
+  if (value.isGreaterThanOrEqualTo(1_000_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000_000)) + 'b';
+  } else if (value.isGreaterThanOrEqualTo(1_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000)) + 'm';
+  } else if (value.isGreaterThanOrEqualTo(1000)) {
+    return getNumericCounterpart(value.div(1000)) + 'k';
+  } else {
+    return value.toFixed(0);
+  }
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
@@ -255,28 +276,7 @@ export const handleSignificantDecimals = (
   ).toFixed();
   const resultBN = new BigNumber(result);
   if (abbreviate) {
-    if (resultBN.isGreaterThanOrEqualTo(1_000_000_000)) {
-      return (
-        resultBN
-          .div(1_000_000_000)
-          .toFormat(1)
-          .replace(/\.?0+$/, '') + 'b'
-      );
-    } else if (resultBN.isGreaterThanOrEqualTo(1_000_000)) {
-      return (
-        resultBN
-          .div(1_000_000)
-          .toFormat(1)
-          .replace(/\.?0+$/, '') + 'm'
-      );
-    } else if (resultBN.isGreaterThanOrEqualTo(1000)) {
-      return (
-        resultBN
-          .div(1000)
-          .toFormat(1)
-          .replace(/\.?0+$/, '') + 'k'
-      );
-    }
+    return abbreviateBigNumber(resultBN);
   }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)

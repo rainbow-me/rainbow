@@ -24,7 +24,6 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
-import { View } from 'react-native';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;

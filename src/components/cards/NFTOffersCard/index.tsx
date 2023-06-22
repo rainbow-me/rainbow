@@ -10,7 +10,10 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import React, { useEffect, useReducer, useState } from 'react';
-import { ButtonPressAnimation, ShimmerAnimation } from '../../animations';
+import {
+  ButtonPressAnimation,
+  ShimmerAnimation,
+} from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { ScrollView } from 'react-native';
 import { useNFTOffers } from '@/resources/nftOffers';
@@ -25,7 +28,11 @@ import Animated, {
 import { FakeOffer, Offer } from './Offer';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { SortMenu, SortOption, SortOptions } from '../SortMenu';
+import {
+  SortMenu,
+  SortOption,
+  SortOptions,
+} from '@/components/nft-offers/SortMenu';
 
 const CARD_HEIGHT = 250;
 const MAX_OFFERS = 10;

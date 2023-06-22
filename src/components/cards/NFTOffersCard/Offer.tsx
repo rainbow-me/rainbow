@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
-import { ImgixImage } from '../../images';
+import { ImgixImage } from '@/components/images';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 import {
@@ -9,7 +9,7 @@ import {
   getFormattedTimeQuantity,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { CoinIcon } from '../../coin-icon';
+import { CoinIcon } from '@/components/coin-icon';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { useTheme } from '@/theme';
 import {
