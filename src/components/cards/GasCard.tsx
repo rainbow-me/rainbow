@@ -4,6 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Routes from '@/navigation/routesNames';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -23,6 +24,7 @@ import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
+import { useNavigation } from '@/navigation';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -55,6 +57,7 @@ export const GasCard = () => {
   } = useGas();
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
+  const { navigate } = useNavigation();
 
   const container = useSharedValue(1);
   const opacity = useSharedValue(0);
@@ -123,7 +126,8 @@ export const GasCard = () => {
       withTiming(1, fadeOutConfig),
       withTiming(0, { duration: 0 })
     );
-  }, [container, opacity, scale]);
+    navigate(Routes.MINT_SHEET, {});
+  }, [container, navigate, opacity, scale]);
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
     'worklet';
