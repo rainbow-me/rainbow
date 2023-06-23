@@ -241,7 +241,8 @@ export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
   buffer = 3,
-  skipDecimals = false
+  skipDecimals = false,
+  abbreviate = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
     decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
@@ -253,6 +254,15 @@ export const handleSignificantDecimals = (
     new BigNumber(value).toFixed(decimals)
   ).toFixed();
   const resultBN = new BigNumber(result);
+  if (abbreviate) {
+    if (resultBN.isGreaterThanOrEqualTo(1_000_000_000)) {
+      return resultBN.div(1_000_000_000).toFormat(1) + 'b';
+    } else if (resultBN.isGreaterThanOrEqualTo(1_000_000)) {
+      return resultBN.div(1_000_000).toFormat(1) + 'm';
+    } else if (resultBN.isGreaterThanOrEqualTo(1000)) {
+      return resultBN.div(1000).toFormat(1) + 'k';
+    }
+  }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
     : resultBN.toFormat();
@@ -394,7 +404,8 @@ export const convertAmountToNativeDisplay = (
   value: BigNumberish,
   nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
-  skipDecimals?: boolean
+  skipDecimals?: boolean,
+  abbreviate?: boolean
 ) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
@@ -402,7 +413,8 @@ export const convertAmountToNativeDisplay = (
     value,
     decimals,
     buffer,
-    skipDecimals
+    skipDecimals,
+    abbreviate
   );
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
@@ -530,4 +542,21 @@ export const pickBy = <T>(
       acc[key] = obj[key];
       return acc;
     }, {} as Dictionary<T>);
+};
+
+/**
+ * Formats ms since epoch into a string of the form "Xh Ym" where X is the number of hours and Y is the number of minutes.
+ * Doesn't support days, months, or years.
+ * @param ms ms since epoch
+ * @returns string of the format "Xh Ym"
+ */
+export const getFormattedTimeQuantity = (ms: number): string => {
+  const totalMinutes = Math.floor(ms / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
+  const formattedHours = hours ? hours + 'h ' : '';
+
+  return formattedHours + formattedMinutes;
 };

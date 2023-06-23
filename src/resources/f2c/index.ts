@@ -3,6 +3,7 @@ import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import qs from 'query-string';
 
 import { IS_PROD } from '@/env';
+import { ProviderConfig } from '@/screens/AddCash/types';
 
 type ErrorResponse = {
   errors: {
@@ -92,5 +93,11 @@ export function rampGetWidgetURL({
   });
   return gretch<{ url: string }, ErrorResponse>(
     `/v1/providers/ramp/create-widget-url?${query}`
+  ).json();
+}
+
+export function getProviders() {
+  return gretch<{ providers: ProviderConfig[] }, ErrorResponse>(
+    `/v1/providers/list`
   ).json();
 }

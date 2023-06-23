@@ -42,6 +42,7 @@ declare module 'react-native-dotenv' {
   export const POLYGON_MAINNET_RPC: string;
   export const ARBITRUM_MAINNET_RPC: string;
   export const BSC_MAINNET_RPC: string;
+  export const ZORA_MAINNET_RPC: string;
   export const RAINBOW_WYRE_MERCHANT_ID: string;
   export const RAINBOW_WYRE_MERCHANT_ID_TEST: string;
   export const WYRE_ACCOUNT_ID: string;
@@ -83,4 +84,5 @@ declare module 'react-native-dotenv' {
   export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
   export const LOG_DEBUG: string;
   export const QUIET_OLD_LOGGER: string;
+  export const ARC_GRAPHQL_API_KEY: string;
 }

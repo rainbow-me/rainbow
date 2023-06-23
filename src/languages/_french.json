@@ -760,6 +760,10 @@
         "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Optimism?"
       },
+      "zora": {
+        "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Zora Network?"
+      },
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
@@ -1069,6 +1073,20 @@
       "tx_verify": "Vérifiez votre transaction ici",
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
+    },
+    "nftOffers": {
+      "card": {
+        "title": {
+          "singular": "1 Offer :)",
+          "plural": "%{numOffers} Offers :)"
+        },
+        "sortCriteria": {
+          "highest": "Highest :)",
+          "fromFloor": "From Floor :)",
+          "recent": "Recent :)"
+        },
+        "button": "View All Offers :)"
+      }
     },
     "notification": {
       "error": {

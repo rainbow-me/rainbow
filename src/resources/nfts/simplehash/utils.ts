@@ -11,7 +11,11 @@ import {
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
 import { handleAndSignImages } from '@/utils/handleAndSignImages';
-import { ENS_NFT_CONTRACT_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  ETH_ADDRESS,
+  POAP_NFT_ADDRESS,
+} from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import {
   NFT,
@@ -60,6 +64,8 @@ export function getSimpleHashChainFromNetwork(
       return SimpleHashChain.Optimism;
     case Network.bsc:
       return SimpleHashChain.Bsc;
+    case Network.zora:
+      return SimpleHashChain.Zora;
     default:
       return undefined;
   }
@@ -84,6 +90,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.optimism;
     case SimpleHashChain.Bsc:
       return Network.bsc;
+    case SimpleHashChain.Zora:
+      return Network.zora;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this
@@ -180,7 +188,10 @@ export function simpleHashNFTToUniqueAsset(
 
   return {
     animation_url: maybeSignUri(
-      nft?.video_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
+      nft?.image_url ??
+        nft?.video_url ??
+        nft.extra_metadata?.animation_original_url ??
+        undefined,
       { fm: 'mp4' }
     ),
     asset_contract: {
@@ -395,7 +406,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
           f.marketplace_id
         )!,
         paymentToken: {
-          address: f.payment_token.address,
+          address: f.payment_token.address ?? ETH_ADDRESS,
           decimals: f.payment_token.decimals,
           name: f.payment_token.name!,
           symbol: f.payment_token.symbol!,
@@ -449,12 +460,12 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       !isNil(nft.last_sale?.unit_price)
         ? {
             paymentToken: {
-              address: nft.last_sale?.payment_token.address,
+              address: nft.last_sale?.payment_token.address ?? ETH_ADDRESS,
               decimals: nft.last_sale?.payment_token.decimals,
               name: nft.last_sale?.payment_token.name,
               symbol: nft.last_sale?.payment_token.symbol,
             },
-            value: nft.last_sale?.unit_price,
+            value: nft.last_sale?.unit_price!,
           }
         : undefined,
     marketplaces,

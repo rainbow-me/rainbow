@@ -16,6 +16,8 @@ export const L2_TXS = 'L2 Transactions';
 export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
+export const NFT_OFFERS = 'NFT Offers';
+
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -40,6 +42,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
   [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
+  [NFT_OFFERS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

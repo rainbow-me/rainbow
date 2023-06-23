@@ -8,6 +8,8 @@ import PolygonBadge from '@/assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '@/assets/badges/polygonBadgeDark.png';
 import BscBadge from '@/assets/badges/bscBadge.png';
 import BscBadgeDark from '@/assets/badges/bscBadgeDark.png';
+import ZoraBadge from '@/assets/badges/zoraBadge.png';
+import ZoraBadgeDark from '@/assets/badges/zoraBadgeDark.png';
 import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
@@ -36,6 +38,10 @@ const AssetIconsByTheme: {
   [AssetType.bsc]: {
     dark: BscBadgeDark,
     light: BscBadge,
+  },
+  [AssetType.zora]: {
+    dark: ZoraBadgeDark,
+    light: ZoraBadge,
   },
 };
 

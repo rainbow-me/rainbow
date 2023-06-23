@@ -75,6 +75,7 @@ const messages = {
     RECEIVED_OPTIMISM: 'received address optimism-assets',
     RECEIVED_POLYGON: 'received address polygon-assets',
     RECEIVED_BSC: 'received address bsc-assets',
+    RECEIVED_ZORA: 'received address zora-assets',
   },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
@@ -86,6 +87,7 @@ const messages = {
     RECEIVED_OPTIMISM: 'received address optimism-transactions',
     RECEIVED_POLYGON: 'received address polygon-transactions',
     RECEIVED_BSC: 'received address bsc-transactions',
+    RECEIVED_ZORA: 'received address zora-transactions',
   },
   ASSET_CHARTS: {
     RECEIVED: 'received assets charts',
@@ -384,6 +386,7 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.optimism}-transactions`,
       `${Network.polygon}-transactions`,
       `${Network.bsc}-transactions`,
+      `${Network.zora}-transactions`,
     ],
   },
 ];
@@ -464,6 +467,14 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
         addressSubscribed!,
         nativeCurrency,
         Network.bsc,
+        'unsubscribe'
+      )
+    );
+    addressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        addressSubscribed!,
+        nativeCurrency,
+        Network.zora,
         'unsubscribe'
       )
     );
@@ -663,6 +674,13 @@ export const explorerInit = () => async (
         accountAddress,
         nativeCurrency,
         Network.bsc
+      )
+    );
+    newAddressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        accountAddress,
+        nativeCurrency,
+        Network.zora
       )
     );
   });
@@ -877,7 +895,6 @@ const l2AddressAssetsReceived = (
       assets: newAssetsMap,
     },
   };
-
   dispatch(addressAssetsReceived(updatedMessage, network));
 };
 
@@ -939,6 +956,13 @@ const listenOnAddressMessages = (socket: Socket) => (
       dispatch(transactionsReceived(message));
     }
   );
+  socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_ZORA,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('zora txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
 
   socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
@@ -968,10 +992,18 @@ const listenOnAddressMessages = (socket: Socket) => (
       dispatch(l2AddressAssetsReceived(message, Network.polygon));
     }
   );
+
   socket.on(
     messages.ADDRESS_ASSETS.RECEIVED_BSC,
     (message: L2AddressAssetsReceivedMessage) => {
       dispatch(l2AddressAssetsReceived(message, Network.bsc));
+    }
+  );
+
+  socket.on(
+    messages.ADDRESS_ASSETS.RECEIVED_ZORA,
+    (message: L2AddressAssetsReceivedMessage) => {
+      dispatch(l2AddressAssetsReceived(message, Network.zora));
     }
   );
 

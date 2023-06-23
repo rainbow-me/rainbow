@@ -10,6 +10,7 @@ export enum Network {
   optimism = 'optimism',
   polygon = 'polygon',
   bsc = 'bsc',
+  zora = 'zora',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
@@ -50,6 +51,7 @@ export interface NetworkProperties extends Chain {
   gas: {
     speeds: string[];
     gasType: 'eip1559' | 'legacy';
+    OptimismTxFee?: boolean;
 
     // for some networks gas is so cheap we dont want to round the gwei #
     roundGasDisplay: boolean;
