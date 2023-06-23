@@ -12,33 +12,17 @@ import {
   SheetActionButtonRow,
   SlackSheet,
 } from '../../components/sheet';
-
 import { CardSize } from '../../components/unique-token/CardSize';
-
 import {
-  AccentColorProvider,
-  BackgroundProvider,
-  Bleed,
   Box,
   ColorModeProvider,
-  Columns,
-  Heading,
-  HeadingProps,
-  Inline,
-  Inset,
-  MarkdownText,
-  MarkdownTextProps,
   Row,
   Rows,
-  Separator,
-  Space,
   Stack,
   Text,
-  TextProps,
 } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
