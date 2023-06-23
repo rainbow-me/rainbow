@@ -90,7 +90,6 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
   const imageUrl = maybeSignUri(
     'https://assets.poap.xyz/d5979728-1082-49ed-9b3c-e0e806210c8c.png'
   );
-  console.log(imageUrl);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -98,6 +97,14 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
+  /* 
+    POAPS:
+    error states: already minted - mint window is closed
+
+
+    open qs:
+    should there be an account switcher? this would require us to rehit endpoints tho 🤔
+  */
   return (
     <>
       {ios && (
@@ -107,7 +114,7 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
               source={{ uri: imageUrl }}
               resizeMode="cover"
               size={CardSize}
-              style={{ height: deviceHeight, width: deviceWidth }}
+              style={{ height: deviceHeight - 200, width: deviceWidth }}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -120,7 +127,6 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
             ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
             : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
-        bottomInset={42}
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
@@ -128,7 +134,6 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
         scrollEnabled
         testID="unique-token-expanded-state"
         yPosition={yPosition}
-        sh
       >
         <ColorModeProvider value="darkTinted">
           <Box
@@ -180,4 +185,4 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
   );
 };
 
-export default magicMemo(MintSheet, 'asset');
+export default magicMemo(MintSheet, 'eventId');

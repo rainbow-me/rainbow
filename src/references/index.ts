@@ -64,6 +64,7 @@ export const CRYPTO_PUNKS_NFT_ADDRESS =
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
+export const POAP_BASE_URL = 'https://poap.website';
 
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';

@@ -16,7 +16,7 @@ import {
   isENSAddressFormat,
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
@@ -183,6 +183,17 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
+      }
+      if (data.startsWith(POAP_BASE_URL)) {
+        console.log({ data });
+        const secretWordOrCode = data.split(POAP_BASE_URL)[1];
+        console.log('have code: ', secretWordOrCode);
+        if (secretWordOrCode.length === 6) {
+          console.log('its a code');
+        }
+        if (secretWordOrCode.length > 6) {
+          console.log('its a secret word');
+        }
       }
 
       return handleScanInvalid(data);
