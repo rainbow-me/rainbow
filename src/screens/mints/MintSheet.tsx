@@ -145,7 +145,7 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
             <Rows space="20px" alignHorizontal="center">
               <Row height={'content'}>
                 <Box paddingTop={'104px'}>
-                  <Stack space={'28px'}>
+                  <Stack space={'28px'} alignHorizontal="center">
                     <Text size="26pt" color="label" weight="bold">
                       You found a POAP!
                     </Text>
