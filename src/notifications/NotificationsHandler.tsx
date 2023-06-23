@@ -300,7 +300,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         `NotificationsHandler: handling wallet connect notification`,
         { notification }
       );
-      setHasPendingDeeplinkPendingRedirect(true);
     } else {
       logger.warn(`NotificationsHandler: received unknown notification`, {
         notification,
