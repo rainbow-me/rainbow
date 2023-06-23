@@ -52,6 +52,7 @@ const Routes = {
   PAIR_HARDWARE_WALLET_SIGNING_SHEET: 'PairHardwareWalletSigningSheet',
   PAIR_HARDWARE_WALLET_SUCCESS_SHEET: 'PairHardwareWalletSuccessSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
+  POSITION_SHEET: 'PositionSheet',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',
   PROFILE_SHEET: 'ProfileSheet',

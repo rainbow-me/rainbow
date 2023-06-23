@@ -19,6 +19,7 @@ import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
 import { getNetworkObj } from '@/networks';
+import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -158,6 +159,18 @@ export const addTokenSheetConfig = {
       longFormHeight: 394,
     }),
   }),
+};
+
+export const positionSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    const height = getPositionSheetHeight(params);
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
 };
 
 export const sendConfirmationSheetConfig = {

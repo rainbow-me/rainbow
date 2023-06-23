@@ -161,7 +161,7 @@ const AssetListHeader = ({
             />
           </WalletSelectButtonWrapper>
         )}
-        {isLoadingAssets ? (
+        {isLoadingAssets && title !== 'Collectibles' ? (
           <TotalAmountSkeleton>
             <FakeText height={16} width={placeholderWidth} />
           </TotalAmountSkeleton>

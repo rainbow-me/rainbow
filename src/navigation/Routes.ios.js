@@ -67,6 +67,7 @@ import {
   opRewardsSheetConfig,
   portalSheetConfig,
   walletDiagnosticsSheetConfig,
+  positionSheetConfig,
 } from './config';
 import {
   addCashSheet,
@@ -90,6 +91,7 @@ import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
+import { PositionSheet } from '@/screens/positions/PositionSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -198,6 +200,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={PositionSheet}
+        name={Routes.POSITION_SHEET}
+        {...positionSheetConfig}
       />
       <NativeStack.Screen
         component={ShowcaseScreen}

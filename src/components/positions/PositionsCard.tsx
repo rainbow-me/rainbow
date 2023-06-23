@@ -1,5 +1,5 @@
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
 import { RainbowPosition } from '@/resources/defi/PositionsQuery';
@@ -7,7 +7,29 @@ import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
 import { AssetType, EthereumAddress } from '@/entities';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
+export const POSstyles = {
+  'aave-v2': {
+    url:
+      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://aave.com&size=50',
+    color: '#559CBB',
+    website: 'https://app.aave.com',
+  },
+  'yearn-vault-v2': {
+    url:
+      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://yearn.finance&size=50',
+    color: '#000000',
+    website: 'https://yearn.finance',
+  },
+  'compound': {
+    url:
+      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://compound.finance&size=50',
+    color: '#00D395',
+    website: 'https://app.compound.finance',
+  },
+};
 type PositionCardProps = {
   position: RainbowPosition;
   onPress: (position: RainbowPosition) => void;
@@ -19,9 +41,13 @@ type CoinStackToken = {
   symbol: string;
 };
 
-const positionColor = '#f5d0e5';
-
-function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
+function CoinIconStack({
+  tokens,
+  positionColor,
+}: {
+  tokens: CoinStackToken[];
+  positionColor: string;
+}) {
   const { colors } = useTheme();
 
   return (
@@ -36,7 +62,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               position: 'relative',
               zIndex: tokens.length + index,
               borderRadius: 30,
-              borderColor: index > 0 ? positionColor : colors.transparent,
+              borderColor: index > 0 ? colors.transparent : colors.transparent,
               borderWidth: 2,
             }}
           >
@@ -57,7 +83,10 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
   const { colors } = useTheme();
   const totalPositions =
     (position.borrows?.length || 0) + (position.deposits?.length || 0);
-
+  const { navigate } = useNavigation();
+  const onPressHandler = useCallback(() => {
+    navigate(Routes.POSITION_SHEET, { position });
+  }, [navigate, position]);
   const depositTokens: CoinStackToken[] = useMemo(() => {
     let tokens: CoinStackToken[] = [];
     position.deposits.forEach((deposit: any) => {
@@ -73,13 +102,15 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
     return tokens;
   }, [position]);
 
+  const positionColor = POSstyles[position.type].color;
+
   return (
     <Box width="full" height="126px">
       <GenericCard
         type={'stretch'}
-        onPress={onPress}
-        color={positionColor}
-        borderColor={colors.alpha(colors.pink, 0.2)}
+        onPress={onPressHandler}
+        color={colors.alpha(positionColor, 0.04)}
+        borderColor={colors.alpha(positionColor, 0.02)}
         padding={'16px'}
       >
         <Stack space="12px">
@@ -88,23 +119,28 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
               <Column width="content">
                 {/* @ts-ignore js component*/}
                 <RequestVendorLogoIcon
-                  backgroundColor={colors.pink}
+                  backgroundColor={
+                    position.type === 'compound'
+                      ? colors.transparent
+                      : positionColor
+                  }
                   dappName={startCase(position.type.split('-')[0])}
                   size={32}
                   borderRadius={10}
-                  imageUrl={
-                    'https://raw.githubusercontent.com/rainbow-me/assets/master/exchanges/hop.png'
-                  }
+                  imageUrl={POSstyles[position.type].url}
                 />
               </Column>
               <Column width="content">
-                <CoinIconStack tokens={depositTokens} />
+                <CoinIconStack
+                  tokens={depositTokens}
+                  positionColor={positionColor}
+                />
               </Column>
             </Columns>
           </Box>
 
           <Inline alignVertical="center" horizontalSpace={'4px'}>
-            <Text color={{ custom: colors.pink }} size="15pt" weight="bold">
+            <Text color={{ custom: positionColor }} size="15pt" weight="bold">
               {startCase(position.type.split('-')[0])}
             </Text>
 
@@ -113,14 +149,14 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
                 borderRadius={9}
                 padding={{ custom: 5.5 }}
                 style={{
-                  borderColor: colors.alpha(colors.pink, 0.05),
+                  borderColor: colors.alpha(positionColor, 0.05),
                   borderWidth: 2,
                   // offset vertical padding
                   marginVertical: -11,
                 }}
               >
                 <Text
-                  color={{ custom: colors.pink }}
+                  color={{ custom: positionColor }}
                   size="15pt"
                   weight="semibold"
                 >

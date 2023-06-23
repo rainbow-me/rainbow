@@ -36,6 +36,7 @@ import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
+import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 
 function rowRenderer(
   type: CellType,
@@ -179,10 +180,7 @@ function rowRenderer(
     }
     case CellType.POSITIONS_HEADER: {
       const { total } = data as PositionHeaderExtraData;
-      return (
-        // @ts-expect-error JavaScript component
-        <AssetListHeader title="Positions" totalValue={total} />
-      );
+      return <WrappedPositionsListHeader total={total} />;
     }
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
