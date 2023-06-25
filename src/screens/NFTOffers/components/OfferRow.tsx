@@ -29,7 +29,8 @@ import { createWalletClient, http } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { mainnet } from 'viem/chains';
 import { loadPrivateKey } from '@/model/wallet';
-import { privateKeyToAccount } from 'viem/accounts';
+import { Wallet } from '@ethersproject/wallet';
+import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -130,7 +131,8 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
       const pkey = await loadPrivateKey(accountAddress, false);
       console.log(pkey);
       if (typeof pkey === 'string') {
-        const acc = privateKeyToAccount(pkey);
+        const signer = new Wallet(pkey);
+        const acc = adaptEthersSigner(signer);
         const s = createWalletClient({
           account: acc,
           chain: mainnet,
