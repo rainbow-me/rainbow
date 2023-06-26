@@ -75,6 +75,7 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -369,6 +370,11 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
+        options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.NFT_OFFERS_SHEET}
+        component={NFTOffersSheet}
         options={{ ...bottomSheetPreset }}
       />
     </BSStack.Navigator>
