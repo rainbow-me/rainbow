@@ -98,6 +98,8 @@ export function ProfileAvatarRow({
             ],
             outputRange: [0, 0, 12],
           }),
+        },
+        {
           scale: position!.interpolate({
             inputRange: [
               -insets.top,

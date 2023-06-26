@@ -8,7 +8,7 @@ export default function useChartDataLabels({ asset, chartType, points }: any) {
   const latestPrice = asset?.native?.price?.amount;
 
   const getPercentChangeForPrice = useCallback(
-    startPrice => {
+    (startPrice: number) => {
       const endPrice = points?.[points.length - 1].y;
       const percent = ((endPrice - startPrice) / startPrice) * 100;
       return formatPercentChange(percent);

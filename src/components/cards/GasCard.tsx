@@ -85,6 +85,7 @@ export const GasCard = () => {
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
   const renderGweiText = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     animatedNumber => {
       const priceText =
         animatedNumber === 0
@@ -101,6 +102,7 @@ export const GasCard = () => {
     [currentGwei, isCurrentGweiLoaded, lastKnownGwei]
   );
 
+  // @ts-expect-error passed to an untyped JS component
   const formatGasPrice = useCallback(animatedValue => {
     if (animatedValue === null || isNaN(animatedValue)) {
       return 0;

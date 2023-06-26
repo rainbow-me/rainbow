@@ -1,7 +1,7 @@
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import qs from 'qs';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
 import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
@@ -27,8 +27,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
-  const enabledVar = useRef();
+  const enabledVar = useRef<boolean>();
 
   const enableScanning = useCallback(() => {
     logger.log('📠✅ Enabling QR Code Scanner');
@@ -50,12 +49,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
     enabledVar.current = enabled;
   }, [enabled, disableScanning, enableScanning]);
 
-  const handleScanEthereumUrl = useCallback(data => {
+  const handleScanEthereumUrl = useCallback((data: string) => {
     ethereumUtils.parseEthereumUrl(data);
   }, []);
 
   const handleScanAddress = useCallback(
-    async address => {
+    async (address: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned address QR code');
       const ensName = isENSAddressFormat(address)
@@ -81,7 +80,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanRainbowProfile = useCallback(
-    async url => {
+    async (url: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned Rainbow profile url');
 
@@ -113,7 +112,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanWalletConnect = useCallback(
-    async qrCodeData => {
+    async (qrCodeData: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
@@ -134,7 +133,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanInvalid = useCallback(
-    qrCodeData => {
+    (qrCodeData: string) => {
       haptics.notificationError();
       analytics.track('Scanned broken or unsupported QR code', { qrCodeData });
 
@@ -148,7 +147,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const onScan = useCallback(
-    async ({ data }) => {
+    async ({ data }: { data: string }) => {
       if (!data || !enabledVar.current) return null;
 
       disableScanning();
@@ -161,8 +160,11 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       }
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
       // Ethereum address (no ethereum: prefix)
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
-      if (data.startsWith('0x') && isValidAddress(address)) {
+      if (
+        data.startsWith('0x') &&
+        address !== null &&
+        isValidAddress(address)
+      ) {
         return handleScanAddress(address);
       }
       // Walletconnect QR Code
@@ -178,6 +180,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri } = qs.parse(urlObj.query.substring(1));
         onSuccess();
+        // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
         return handleScanWalletConnect(uri);
       }
       // Rainbow profile QR code

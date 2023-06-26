@@ -18,6 +18,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import { ENS_RECORDS } from '@/helpers/ens';
 
 export const coverMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -114,7 +115,7 @@ const RegistrationCover = ({
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
-      onRemoveField({ key: 'header' });
+      onRemoveField({ key: ENS_RECORDS.header });
       setCoverMetadata(undefined);
       setDisabled(false);
       setTimeout(() => {

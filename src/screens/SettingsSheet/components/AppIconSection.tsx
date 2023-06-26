@@ -28,12 +28,13 @@ import {
   ZoraIcon,
 } from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
+import { ImageSourcePropType } from 'react-native';
 
 type AppIcon = {
   accentColor?: string;
   key: string;
   name: string;
-  source: StaticImageData;
+  source: ImageSourcePropType;
 };
 
 const supportedAppIcons: { [key: string]: AppIcon } = {
@@ -114,7 +115,7 @@ const AppIconSection = () => {
   const { colors, isDarkMode } = useTheme();
 
   const onSelectIcon = useCallback(
-    icon => {
+    (icon: string) => {
       Logger.log('onSelectIcon', icon);
       analytics.track('Set App Icon', { appIcon: icon });
       settingsChangeAppIcon(icon);

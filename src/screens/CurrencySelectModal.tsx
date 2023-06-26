@@ -218,7 +218,7 @@ export default function CurrencySelectModal() {
   } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
-    (newAsset, selectAsset, type) => {
+    (newAsset: any, selectAsset: any, type: any) => {
       const otherAsset = type === 'input' ? outputCurrency : inputCurrency;
       const hasShownWarning = getHasShownWarning();
       if (
@@ -375,7 +375,7 @@ export default function CurrencySelectModal() {
   }, [activeSwapCurrencyList, getWalletCurrencyList, type]);
 
   const handleFavoriteAsset = useCallback(
-    (asset, isFavorited) => {
+    (asset: any, isFavorited: any) => {
       setAssetsToFavoriteQueue(prevFavoriteQueue => ({
         ...prevFavoriteQueue,
         [asset.address]: isFavorited,
@@ -392,7 +392,7 @@ export default function CurrencySelectModal() {
   );
 
   const handleNavigate = useCallback(
-    item => {
+    (item: any) => {
       delayNext();
       // @ts-expect-error – updating read-only property
       dangerouslyGetState().index = 1;
@@ -447,7 +447,7 @@ export default function CurrencySelectModal() {
     ]
   );
   const checkForRequiredAssets = useCallback(
-    item => {
+    (item: any) => {
       if (
         type === CurrencySelectionTypes.output &&
         currentChainId &&
@@ -480,7 +480,7 @@ export default function CurrencySelectModal() {
   );
 
   const handleSelectAsset = useCallback(
-    item => {
+    (item: any) => {
       if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
       const isMainnet = currentChainId === 1;

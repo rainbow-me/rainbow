@@ -65,7 +65,7 @@ export default function useChartInfo(asset: any) {
   }, [address, chartType, dispatch]);
 
   const updateChartType = useCallback(
-    type => {
+    (type: any) => {
       setParams({ chartType: type });
     },
     [setParams]

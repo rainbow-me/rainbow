@@ -345,7 +345,7 @@ export default function useENSRegistrationActionHandler(
         toAddress,
         transferControl,
         wallet: walletOverride,
-      }
+      }: any
     ) => {
       let wallet = walletOverride;
       if (!wallet) {

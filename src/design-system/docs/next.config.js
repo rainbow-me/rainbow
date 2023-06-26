@@ -1,19 +1,18 @@
 const path = require('path');
 const { createVanillaExtractPlugin } = require('@vanilla-extract/next-plugin');
 const withPlugins = require('next-compose-plugins');
-const createTM = require('next-transpile-modules');
 const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-dependencies
 
-const withTM = createTM([
-  'react-native-reanimated',
-  'react-native-markdown-display',
-  'react-native-drop-shadow',
-]);
 const withVanillaExtract = createVanillaExtractPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   babelConfigFile: path.resolve('./babel.config.js'),
+  transpilePackages: [
+    'react-native-reanimated',
+    'react-native-markdown-display',
+    'react-native-drop-shadow',
+  ],
   experimental: {
     externalDir: true, // https://github.com/vercel/next.js/pull/22867
   },
@@ -39,11 +38,11 @@ const nextConfig = {
 };
 
 module.exports = withPlugins(
-  [withVanillaExtract, withReactNativeWeb, withTM],
+  [withVanillaExtract, withReactNativeWeb],
   nextConfig
 );
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 function withReactNativeWeb(nextConfig) {
   return {

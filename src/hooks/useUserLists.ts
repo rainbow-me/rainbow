@@ -26,11 +26,11 @@ export default function useUserLists() {
     [dispatch]
   );
   const clearList = useCallback(
-    listId => dispatch(userListsClearList(listId)),
+    (listId: string) => dispatch(userListsClearList(listId)),
     [dispatch]
   );
   const setSelectedList = useCallback(
-    listId => dispatch(userListsSetSelectedList(listId)),
+    (listId: string) => dispatch(userListsSetSelectedList(listId)),
     [dispatch]
   );
 

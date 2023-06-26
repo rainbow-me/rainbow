@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
@@ -28,7 +28,6 @@ import {
 } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
@@ -184,6 +183,7 @@ export function WalletConnectV2ListItem({
   }, [session, address, dappName, dappUrl, handlePressChangeWallet]);
 
   const handleOnPressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
         await disconnectSession(session);

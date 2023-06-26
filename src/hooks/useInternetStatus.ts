@@ -7,7 +7,7 @@ import { analytics } from '@/analytics';
 export default function useInternetStatus() {
   const [isInternetReachable, setIsInternetReachable] = useState(true);
   const { refresh } = useRefreshAccountData();
-  const onChange = useCallback(
+  const onChange: NetInfo.NetInfoChangeHandler = useCallback(
     ({ isInternetReachable: newIsInternetReachable }) => {
       if (!isNil(newIsInternetReachable)) {
         setIsInternetReachable(newIsInternetReachable);

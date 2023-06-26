@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { StatusBar } from 'react-native';
+import { ImageSourcePropType, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
@@ -33,9 +33,9 @@ type SheetActionButtonProps = {
 };
 
 type PromoSheetProps = {
-  headerImage: StaticImageData;
+  headerImage: ImageSourcePropType;
   headerImageAspectRatio: number;
-  backgroundImage?: StaticImageData;
+  backgroundImage?: ImageSourcePropType;
   backgroundColor: string;
   accentColor: string;
   sheetHandleColor?: string;

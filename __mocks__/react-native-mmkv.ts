@@ -1,6 +1,6 @@
 import type { NativeMMKV } from 'react-native-mmkv';
 
-type MMKVValue = string | boolean | number;
+type MMKVValue = boolean | string | number | Uint8Array;
 
 const GLOBAL_SHARED_STORAGE: {
   [key: string]: Map<string, MMKVValue>;
@@ -12,7 +12,7 @@ const GLOBAL_SHARED_STORAGE: {
  * @see https://github.com/mrousavy/react-native-mmkv/blob/77982c1a61a5e6d2683e6569ca92e09390b28c48/src/createMMKV.mock.ts
  */
 export class MMKV implements NativeMMKV {
-  id: string = 'default';
+  id = 'default';
   storage: Map<string, MMKVValue>;
 
   constructor({ id }: { id: string }) {
@@ -54,7 +54,6 @@ export class MMKV implements NativeMMKV {
 
   getBuffer(key: string) {
     const result = this.storage.get(key);
-    // @ts-expect-error
     return result instanceof Uint8Array ? result : undefined;
   }
 
