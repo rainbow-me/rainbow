@@ -8,6 +8,7 @@ declare module 'react-native-radial-gradient' {
     radius?: number;
     style?: StyleProp<ViewStyle>;
     stops?: number[];
+    children?: React.ReactNode;
   }
 
   export default class RadialGradient extends Component<RadialGradientProps> {}

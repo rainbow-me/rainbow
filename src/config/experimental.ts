@@ -24,7 +24,13 @@ export const NFT_OFFERS = 'NFT Offers';
  */
 export const LOG_PUSH = 'Enable Log Push';
 
-export const defaultConfig = {
+export type ExperimentalValue = {
+  settings: boolean;
+  value: boolean;
+  needsRestart?: boolean;
+};
+
+export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },

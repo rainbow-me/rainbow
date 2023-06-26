@@ -180,7 +180,7 @@ export default function useENSRegistrationForm({
   }, [changedRecords, initializeForm, setErrors]);
 
   const onAddField = useCallback(
-    (fieldToAdd, selectedFields) => {
+    (fieldToAdd: TextRecordField, selectedFields: TextRecordField[]) => {
       setSelectedFields(selectedFields);
       updateRecordByKey(fieldToAdd.key, '');
     },
@@ -188,7 +188,10 @@ export default function useENSRegistrationForm({
   );
 
   const onRemoveField = useCallback(
-    (fieldToRemove, selectedFields = undefined) => {
+    (
+      fieldToRemove: Pick<TextRecordField, 'key'>,
+      selectedFields: TextRecordField[] | undefined = undefined
+    ) => {
       if (!isEmpty(errors)) {
         setErrors(errors => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -223,7 +226,7 @@ export default function useENSRegistrationForm({
   );
 
   const onBlurField = useCallback(
-    ({ key, value }) => {
+    ({ key, value }: { key: string; value: string }) => {
       setValuesMap(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
@@ -234,7 +237,7 @@ export default function useENSRegistrationForm({
   );
 
   const onChangeField = useCallback(
-    ({ key, value }) => {
+    ({ key, value }: { key: string; value: string }) => {
       setIsValidating(true);
       const validation = textRecordFields[key as ENS_RECORDS]?.validation;
       if (validation) {
@@ -287,7 +290,7 @@ export default function useENSRegistrationForm({
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
-    async submitFn => {
+    async (submitFn: () => Promise<void> | void) => {
       setSubmitting(true);
       try {
         await submitFn();

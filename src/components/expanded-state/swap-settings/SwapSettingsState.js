@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Keyboard } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 import { useDispatch } from 'react-redux';
@@ -32,6 +32,7 @@ import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -57,7 +58,8 @@ export default function SwapSettingsState({ asset }) {
   const { updateSwapSource, source } = useSwapSettings();
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
-
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
   const handleKeyboardDidHide = useCallback(() => {
@@ -75,13 +77,19 @@ export default function SwapSettingsState({ asset }) {
   }, [dispatch, flashbotsEnabled, settingsChangeFlashbotsEnabled]);
 
   useEffect(() => {
-    if (android) {
-      Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
-      Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
+    if (IS_ANDROID) {
+      keyboardShowListener.current = Keyboard.addListener(
+        'keyboardDidShow',
+        handleKeyboardDidShow
+      );
+      keyboardHideListener.current = Keyboard.addListener(
+        'keyboardDidHide',
+        handleKeyboardDidHide
+      );
     }
     return () => {
-      Keyboard.removeListener('keyboardDidHide', handleKeyboardDidHide);
-      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
+      keyboardShowListener.current?.remove();
+      keyboardHideListener.current?.remove();
     };
   }, [handleKeyboardDidHide, handleKeyboardDidShow]);
 

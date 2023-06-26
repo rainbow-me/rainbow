@@ -69,15 +69,22 @@ export default function InlineField({
   });
 
   const [inputHeight, setInputHeight] = useState(textSizeNumeric);
-  const handleContentSizeChange = useCallback(({ nativeEvent }) => {
-    const contentHeight =
-      nativeEvent.contentSize.height - textSizeNumeric - paddingVertical;
-    if (contentHeight > 30) {
-      setInputHeight(contentHeight);
-    } else {
-      setInputHeight(textSizeNumeric);
-    }
-  }, []);
+  const handleContentSizeChange = useCallback(
+    ({
+      nativeEvent,
+    }: {
+      nativeEvent: { contentSize: { width: number; height: number } };
+    }) => {
+      const contentHeight =
+        nativeEvent.contentSize.height - textSizeNumeric - paddingVertical;
+      if (contentHeight > 30) {
+        setInputHeight(contentHeight);
+      } else {
+        setInputHeight(textSizeNumeric);
+      }
+    },
+    []
+  );
 
   const valueRef = useRef(value);
   const style = useMemo(

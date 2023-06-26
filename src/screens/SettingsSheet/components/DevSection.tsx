@@ -85,7 +85,7 @@ const DevSection = () => {
   });
 
   const onExperimentalKeyChange = useCallback(
-    value => {
+    (value: any) => {
       setConfig({ ...config, [value]: !config[value] });
       if ((defaultConfig as any)[value].needsRestart) {
         Navigation.handleAction(Routes.WALLET_SCREEN, {});

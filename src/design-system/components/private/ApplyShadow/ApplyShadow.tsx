@@ -1,10 +1,7 @@
-import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
-import { useExperimentalFlags } from '../../../context/ExperimentalFlagsContext';
 import { AndroidShadow } from './AndroidShadow';
-import { AndroidShadow as AndroidShadowV2 } from './AndroidShadow.v2';
 import { IOSShadow } from './IOSShadow';
 
 export type AndroidShadowItem = {
@@ -93,8 +90,6 @@ export const ApplyShadow = React.forwardRef(
     { backgroundColor, children: child, shadows }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
-    const { androidShadowsV2 } = useExperimentalFlags();
-
     if (!shadows) return child;
 
     const [parentStyles, childStyles] = splitPositionStyles(
@@ -115,32 +110,21 @@ export const ApplyShadow = React.forwardRef(
             style={childStyles}
           />
         )}
-        {android && !androidShadowsV2 && (
+        {android && (
           <AndroidShadow
             backgroundColor={backgroundColor}
             shadow={shadows.android}
             style={childStyles}
           />
         )}
-        <ConditionalWrap
-          condition={Boolean(android && androidShadowsV2)}
-          wrap={children => (
-            <AndroidShadowV2
-              backgroundColor={backgroundColor}
-              shadows={iosShadows}
-            >
-              {children}
-            </AndroidShadowV2>
-          )}
-        >
-          {React.cloneElement(child, {
-            style: [
-              { flex: 1 },
-              childStyles,
-              android && !androidShadowsV2 ? androidChildStyles : undefined,
-            ],
-          })}
-        </ConditionalWrap>
+
+        {React.cloneElement(child, {
+          style: [
+            { flex: 1 },
+            childStyles,
+            android ? androidChildStyles : undefined,
+          ],
+        })}
       </View>
     );
   }

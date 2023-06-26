@@ -194,7 +194,7 @@ const SimpleScaleButton = ({
   testID,
 }: Props) => {
   const onNativePress = useCallback(
-    ({ nativeEvent: { type } }) => {
+    ({ nativeEvent: { type } }: any) => {
       if (type === 'longPress') {
         onLongPress?.();
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {

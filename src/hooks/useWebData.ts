@@ -15,6 +15,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
+import { useTheme } from '@/theme';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -48,12 +49,11 @@ export default function useWebData() {
     })
   );
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
   const initWebData = useCallback(
-    async showcaseTokens => {
+    async (showcaseTokens: any) => {
       await setPreference(
         PreferenceActionType.init,
         'showcase',
@@ -98,7 +98,7 @@ export default function useWebData() {
   }, [accountAddress, dispatch, webDataEnabled]);
 
   const updateWebProfile = useCallback(
-    async (address, name, color) => {
+    async (address: string, name: string, color: string) => {
       if (!webDataEnabled) return;
       const wallet = findWalletWithAccount(wallets!, address);
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
@@ -119,13 +119,13 @@ export default function useWebData() {
     [accountColor, accountSymbol, wallets, webDataEnabled]
   );
 
-  const getWebProfile = useCallback(async address => {
+  const getWebProfile = useCallback(async (address: string) => {
     const response = address && (await getPreference('profile', address));
     return response?.profile;
   }, []);
 
   const updateWebShowcase = useCallback(
-    async assetIds => {
+    async (assetIds: any) => {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
@@ -146,7 +146,7 @@ export default function useWebData() {
   );
 
   const updateWebHidden = useCallback(
-    async assetIds => {
+    async (assetIds: any) => {
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
       if (response?.ids?.length > 0) {

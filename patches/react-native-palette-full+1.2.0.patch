@@ -1,3 +1,23 @@
+diff --git a/node_modules/react-native-palette-full/android/build.gradle b/node_modules/react-native-palette-full/android/build.gradle
+index e723e56..a7f750f 100644
+--- a/node_modules/react-native-palette-full/android/build.gradle
++++ b/node_modules/react-native-palette-full/android/build.gradle
+@@ -12,12 +12,12 @@ buildscript {
+ apply plugin: 'com.android.library'
+ 
+ android {
+-    compileSdkVersion 28
++    compileSdkVersion 31
+     buildToolsVersion "28.0.3"
+ 
+     defaultConfig {
+-        minSdkVersion 16
+-        targetSdkVersion 28
++        minSdkVersion 21
++        targetSdkVersion 33
+         versionCode 1
+         versionName "1.0"
+     }
 diff --git a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java b/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
 index 1cfd46e..020d4e4 100644
 --- a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
