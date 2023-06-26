@@ -7,6 +7,7 @@ import {
 
 export type TransformOrigin = [number, number];
 export type Direction = 'bottom' | 'left' | 'right' | 'top';
+export type ButtonPressAnimationTouchEvent = NativeSyntheticEvent<NativeTouchEvent>;
 
 export interface BaseButtonAnimationProps
   extends Pick<ViewProps, 'onLayout' | 'style' | 'testID'>,
@@ -15,7 +16,7 @@ export interface BaseButtonAnimationProps
   disabled?: boolean;
   duration?: number;
   minLongPressDuration?: number;
-  onPress: (event?: NativeSyntheticEvent<NativeTouchEvent>) => void;
+  onPress: (event?: ButtonPressAnimationTouchEvent) => void;
   onLongPress?: () => void;
   transformOrigin?: TransformOrigin | Direction;
   scaleTo?: number;

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { upperFirst } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
 import useClipboard from './useClipboard';
@@ -200,6 +200,7 @@ export default function useENSRecordDisplayProperties({
   const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
   const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'open-url' && url) {
         Linking.openURL(url);
@@ -228,7 +229,7 @@ export default function useENSRecordDisplayProperties({
   );
 
   const Button = useCallback(
-    ({ children, ...props }) => (
+    ({ children, ...props }: PropsWithChildren<any>) => (
       <ContextMenuButton
         enableContextMenu
         menuConfig={{ menuItems, menuTitle: '' }}

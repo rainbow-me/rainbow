@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../../animations';
@@ -11,7 +11,7 @@ import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { StyleProp, ViewStyle } from 'react-native';
 
-type Props = {
+type Props = PropsWithChildren<{
   borderRadius?: number;
   color?: string;
   disabled?: boolean;
@@ -37,7 +37,7 @@ type Props = {
   truncate?: boolean;
   weight?: string;
   style?: StyleProp<ViewStyle>;
-};
+}>;
 
 const addChartsStyling = (isCharts: boolean) =>
   isCharts ? { position: 'absolute', width: '100%' } : {};

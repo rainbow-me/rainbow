@@ -9,7 +9,7 @@ export default function useWalletManualBackup() {
   const dispatch = useDispatch();
 
   const onManuallyBackupWalletId = useCallback(
-    async walletId => {
+    async (walletId: string) => {
       try {
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
       } catch (e) {

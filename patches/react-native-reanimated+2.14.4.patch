@@ -1,12 +1,12 @@
 diff --git a/node_modules/react-native-reanimated/react-native-reanimated.d.ts b/node_modules/react-native-reanimated/react-native-reanimated.d.ts
-index a6489ae..02becb2 100644
+index c33d830..7064de1 100644
 --- a/node_modules/react-native-reanimated/react-native-reanimated.d.ts
 +++ b/node_modules/react-native-reanimated/react-native-reanimated.d.ts
-@@ -1184,4 +1184,17 @@ declare module 'react-native-reanimated' {
+@@ -1245,4 +1245,17 @@ declare module 'react-native-reanimated' {
    export const useValue: typeof Animated.useValue;
    export const ReverseAnimation: typeof Animated.ReverseAnimation;
    export function enableLayoutAnimations(flag: boolean): void;
-+
++  
 +  export class WorkletEventHandler<T> {
 +    worklet: (event: T) => void;
 +    eventNames: string[];

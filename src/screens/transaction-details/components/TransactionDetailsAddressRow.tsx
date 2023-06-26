@@ -155,6 +155,7 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
   );
 
   const onPressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     e => {
       const actionKey = e.nativeEvent.actionKey;
       if (actionKey !== 'copy') {

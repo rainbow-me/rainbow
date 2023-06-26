@@ -75,6 +75,7 @@ const CodePreview = ({
   const { element } = React.useMemo(() => getSourceFromExample({ Example }), [
     Example,
   ]);
+  // @ts-expect-error Argument of type 'Source...' is not assignable to parameter of type 'ReactNode'.
   return <>{wrapper(element)}</>;
 };
 

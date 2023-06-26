@@ -178,7 +178,7 @@ export default function FeesPanel({
   ]);
 
   const openGasHelper = useCallback(
-    type => {
+    (type: string) => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
@@ -251,7 +251,7 @@ export default function FeesPanel({
   );
 
   const updatePriorityFeePerGas = useCallback(
-    priorityFeePerGas => {
+    (priorityFeePerGas: number) => {
       setLastFocusedInputHandle(minerTipFieldRef);
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
@@ -294,7 +294,7 @@ export default function FeesPanel({
   );
 
   const updateFeePerGas = useCallback(
-    feePerGas => {
+    (feePerGas: number) => {
       setLastFocusedInputHandle(maxBaseFieldRef);
       const maxBaseFee = selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei ?? 0;
 
@@ -340,7 +340,7 @@ export default function FeesPanel({
   }, [updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
-    text => {
+    (text: string) => {
       const maxBaseFee = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxBaseFee.amount)) return;
@@ -361,7 +361,7 @@ export default function FeesPanel({
   );
 
   const onMinerTipChange = useCallback(
-    text => {
+    (text: string) => {
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
@@ -451,7 +451,7 @@ export default function FeesPanel({
   );
 
   const onAlertProceeded = useCallback(
-    callback => {
+    (callback?: () => void) => {
       setUserProcededOnWarnings(true);
       setCanGoBack?.(true);
       callback?.();
@@ -577,7 +577,7 @@ export default function FeesPanel({
   ]);
 
   const alertMaxBaseFee = useCallback(
-    callback => {
+    (callback?: () => void) => {
       Alert({
         buttons: [
           {
@@ -598,7 +598,7 @@ export default function FeesPanel({
   );
 
   const alertMaxPriority = useCallback(
-    callback => {
+    (callback?: () => void) => {
       const highAlert = maxPriorityFeeWarning?.type === HIGH_ALERT;
       Alert({
         buttons: [
@@ -623,10 +623,11 @@ export default function FeesPanel({
     [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
   );
 
-  validateGasParams.current = callback => validateParams(callback);
+  validateGasParams.current = (callback?: () => void) =>
+    validateParams(callback);
 
   const validateParams = useCallback(
-    callback => {
+    (callback?: () => void) => {
       if (userProceededOnWarnings || !selectedOptionIsCustom) return;
       const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
       const maxPriorityValidated =

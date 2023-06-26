@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -46,11 +47,11 @@ const storage = new MMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
-export default function RainbowContextWrapper({ children }: any) {
+export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const [config, setConfig] = useState(
+  const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce(
       (acc, [key, { value }]) => ({ ...acc, [key]: value }),
       {}
@@ -65,13 +66,17 @@ export default function RainbowContextWrapper({ children }: any) {
     }
   }, []);
 
-  const setConfigWithStorage = useCallback(newConfig => {
-    storage.set(storageKey, JSON.stringify(newConfig));
-    setConfig(newConfig);
-  }, []);
+  const setConfigWithStorage = useCallback(
+    (newConfig: Record<string, boolean>) => {
+      storage.set(storageKey, JSON.stringify(newConfig));
+      setConfig(newConfig);
+    },
+    []
+  );
 
   const setGlobalState = useCallback(
-    newState => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
+    (newState: any) =>
+      updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
     [updateGlobalState]
   );
 

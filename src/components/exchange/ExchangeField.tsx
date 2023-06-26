@@ -89,12 +89,14 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   }, [inputRef]);
 
   const handleBlur = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     event => {
       onBlur?.(event);
     },
     [onBlur]
   );
   const handleFocus = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     event => {
       onFocus?.(event);
       if (loading) {
@@ -105,6 +107,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   );
 
   const onChangeText = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     text => {
       setAmount(text);
       setValue(text);

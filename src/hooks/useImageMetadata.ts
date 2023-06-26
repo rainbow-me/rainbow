@@ -25,7 +25,7 @@ export default function useImageMetadata(imageUrl: string | null) {
 
   const isCached = !!metadata && !!(metadata as ImageMetadata)?.color;
   const onCacheImageMetadata = useCallback(
-    async ({ color, height, width }) => {
+    async ({ height, width }: { width: number; height: number }) => {
       if (isCached || !imageUrl) return;
 
       dispatch(
