@@ -1089,11 +1089,9 @@
         "below_floor": "below floor :)"
       },
       "sort_menu": {
-        "criteria": {
-          "highest": "Highest :)",
-          "from_floor": "From Floor :)",
-          "recent": "Recent :)"
-        }
+        "highest": "Highest :)",
+        "from_floor": "From Floor :)",
+        "recent": "Recent :)"
       }
     },
     "notification": {
