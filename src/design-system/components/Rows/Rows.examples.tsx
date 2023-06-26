@@ -1,14 +1,17 @@
-import React from 'react';
+import * as React from 'react';
 
 import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
 import { Box } from '../Box/Box';
 import { Row, Rows } from './Rows';
+import { ReactNode } from 'react';
 
 export const basicUsage: Example = {
   name: 'Basic usage',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="20px">
@@ -21,7 +24,9 @@ export const basicUsage: Example = {
 
 export const customSpace: Example = {
   name: 'Custom space',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space={{ custom: 10 }}>
@@ -34,7 +39,9 @@ export const customSpace: Example = {
 
 export const customHeights: Example = {
   name: 'Custom heights',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="20px">
@@ -50,7 +57,9 @@ export const customHeights: Example = {
 
 export const rowWithContentHeight: Example = {
   name: 'Row with content height',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="12px">
@@ -64,7 +73,9 @@ export const rowWithContentHeight: Example = {
 
 export const nestedRows: Example = {
   name: 'Nested rows',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="12px">
@@ -79,7 +90,9 @@ export const nestedRows: Example = {
 
 export const nestedRowsWithExplicitHeights: Example = {
   name: 'Nested rows with explicit heights',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="12px">
@@ -96,7 +109,9 @@ export const nestedRowsWithExplicitHeights: Example = {
 
 export const nestedRowsWithExplicitHeightsContent: Example = {
   name: 'Nested rows with explicit heights (content)',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows space="20px">
@@ -117,7 +132,9 @@ export const nestedRowsWithExplicitHeightsContent: Example = {
 
 export const centerAlignedVertically: Example = {
   name: 'Center-aligned vertically',
-  wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 300 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows alignVertical="center" space="20px">
@@ -133,7 +150,9 @@ export const centerAlignedVertically: Example = {
 
 export const bottomAlignedVertically: Example = {
   name: 'Bottom-aligned vertically',
-  wrapper: children => <Box height={{ custom: 300 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 300 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows alignVertical="bottom" space="20px">
@@ -149,7 +168,9 @@ export const bottomAlignedVertically: Example = {
 
 export const centerAlignedHorizontally: Example = {
   name: 'Center-aligned horizontally',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows alignHorizontal="center" space="20px">
@@ -162,7 +183,9 @@ export const centerAlignedHorizontally: Example = {
 
 export const rightAlignedHorizontally: Example = {
   name: 'Right-aligned horizontally',
-  wrapper: children => <Box height={{ custom: 200 }}>{children}</Box>,
+  wrapper: (children: React.ReactNode) => (
+    <Box height={{ custom: 200 }}>{children}</Box>
+  ),
   Example: () =>
     source(
       <Rows alignHorizontal="right" space="20px">

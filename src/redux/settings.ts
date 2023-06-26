@@ -188,9 +188,9 @@ export const settingsLoadLanguage = () => async (
   }
 };
 
-export const settingsChangeTestnetsEnabled = (testnetsEnabled: any) => async (
-  dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>
-) => {
+export const settingsChangeTestnetsEnabled = (
+  testnetsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>) => {
   dispatch({
     payload: testnetsEnabled,
     type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,

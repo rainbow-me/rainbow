@@ -10,7 +10,7 @@ export default function useSwapInputRefs() {
   const outputFieldRef = useRef<TextInput>(null);
 
   const findNextInput = useCallback(
-    currentFocusedInputHandle => {
+    (currentFocusedInputHandle: any) => {
       const inputRefHandle = inputFieldRef.current;
       const nativeInputRefHandle = nativeFieldRef.current;
       const outputRefHandle = outputFieldRef.current;

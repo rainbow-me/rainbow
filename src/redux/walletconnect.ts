@@ -166,7 +166,7 @@ export interface WalletconnectApprovalSheetRouteParams {
 /**
  * A callback for a WalletConnect request.
  */
-type WalletconnectRequestCallback = (
+export type WalletconnectRequestCallback = (
   type: WalletconnectResultType,
   scheme?: string | null
 ) => unknown;

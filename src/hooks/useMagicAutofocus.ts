@@ -1,5 +1,5 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { setListener } from '@/navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
@@ -46,11 +46,11 @@ export default function useMagicAutofocus(
   const isScreenFocused = useIsFocused();
   const lastFocusedInputHandle = useRef(null);
 
-  const handleFocus = useCallback(({ target }) => {
+  const handleFocus = useCallback(({ target }: { target: any }) => {
     lastFocusedInputHandle.current = target.getNativeRef();
   }, []);
 
-  const setLastFocusedInputHandle = useCallback(ref => {
+  const setLastFocusedInputHandle = useCallback((ref: React.RefObject<any>) => {
     lastFocusedInputHandle.current = ref.current;
   }, []);
 

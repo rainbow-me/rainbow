@@ -79,7 +79,7 @@ export default function usePoolDetails(address: string) {
   const rate = useNativeCurrencyToUSD();
 
   const format = useCallback(
-    value =>
+    (value: number) =>
       value
         ? bigNumberFormat(cutIfOver10000(value), nativeCurrency, value >= 10000)
         : '',

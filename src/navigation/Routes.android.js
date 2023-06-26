@@ -76,6 +76,10 @@ import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable import/no-unresolved */
+// @ts-ignore .android and .ios exports cause errors
+import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -180,6 +184,12 @@ function MainNavigator() {
         component={WelcomeScreen}
         name={Routes.WELCOME_SCREEN}
         options={{ animationEnabled: false, gestureEnabled: false }}
+      />
+      <Stack.Screen
+        component={ShowSecretView}
+        name="ShowSecretView"
+        //@ts-ignore
+        options={bottomSheetPreset}
       />
     </Stack.Navigator>
   );
