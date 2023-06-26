@@ -58,19 +58,3 @@ target 'Rainbow' do
     use_flipper!({'Flipper' => '0.162.0'}) # should match the version of your Flipper client app
   end
 
-  post_install do |installer|
-    react_native_post_install(installer)
-    # This is necessary for Xcode 14, because it signs resource bundles by default when building for devices.
-    installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-        resource_bundle_target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
-      end
-    end
-    installer.pods_project.build_configurations.each do |config|
-      __apply_Xcode_12_5_M1_post_install_workaround(installer)
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-    end
-  end
-end
