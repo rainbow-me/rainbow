@@ -99,12 +99,10 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -117,12 +115,10 @@ const FiniliarAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconFiniliar}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -135,12 +131,10 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -153,12 +147,10 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -171,12 +163,10 @@ const PoolyAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconPooly}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -189,12 +179,10 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -207,12 +195,10 @@ const ZoraAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconZora}
-        background="surfacePrimary"
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
-        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -226,7 +212,6 @@ const ZorbAppIcon = () => {
         as={ImgixImage}
         source={AppIconZorb}
         size={APP_ICON_SIZE}
-        background="surfacePrimary"
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"

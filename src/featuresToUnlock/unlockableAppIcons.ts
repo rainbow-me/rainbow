@@ -113,7 +113,7 @@ export const FiniliarIcon: UnlockableAppIcon = {
 export const ZorbIcon: UnlockableAppIcon = {
   key: 'zorb',
   explainSheetType: 'zorb_app_icon',
-  network: Network.mainnet,
+  network: Network.zora,
   unlockingNfts: [ZORB_NFT_ADDRESS],
   unlockKey: 'zorb_nft_app_icon',
 };
