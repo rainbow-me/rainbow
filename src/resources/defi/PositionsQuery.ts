@@ -17,15 +17,20 @@ import {
   convertRawAmountToNativeDisplay,
   subtract,
 } from '@/helpers/utilities';
+import { RainbowNetworks } from '@/networks';
+import { maybeSignUri } from '@/handlers/imgix';
 
-export const buildPositionsUrl = (address: string) =>
-  `https://addys.p.rainbow.me/v2/1/${address}/positions`;
+export const buildPositionsUrl = (address: string) => {
+  const networkString = RainbowNetworks.filter(network => network.enabled)
+    .map(network => network.id)
+    .join(',');
+  return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
+};
 
 const getPositions = async (
   address: string,
   currency: NativeCurrencyKey
 ): Promise<AddysPositionsResponse> => {
-  console.log('FETCHING POSITIONS VIA NETWORK');
   const response = await rainbowFetch(buildPositionsUrl(address), {
     method: 'get',
     params: {
@@ -53,6 +58,17 @@ export type PositionsArgs = {
 export type NativeDisplay = {
   amount: string;
   display: string;
+};
+
+export type PositionDapp = {
+  name: string;
+  url: string;
+  icon_url: string;
+  colors: {
+    primary: string;
+    fallback: string;
+    shadow: string;
+  };
 };
 
 export type PositionsTotals = {
@@ -109,6 +125,7 @@ export type Position = {
   claimables: Claimable[];
   borrows: Borrow[];
   deposits: Deposit[];
+  dapp: PositionDapp;
 };
 
 export type RainbowPosition = {
@@ -117,6 +134,7 @@ export type RainbowPosition = {
   claimables: RainbowClaimable[];
   borrows: RainbowBorrow[];
   deposits: RainbowDeposit[];
+  dapp: PositionDapp;
 };
 
 export type RainbowPositions = {
@@ -221,11 +239,45 @@ const parsePosition = (position: Position): RainbowPosition => {
     deposits: parsedDeposits,
     borrows: parsedBorrows,
     claimables: position.claimables,
+    // revert dapp name bs once versions are handled via backend
+    dapp: {
+      ...position.dapp,
+      name: position.type,
+      icon_url: maybeSignUri(position.dapp.icon_url) || position.dapp.icon_url,
+    },
   };
 };
 const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
   console.log('PARSING POSITIONS');
-  const positions: Position[] = data.payload?.positions;
+
+  const networkAgnosticPositions = data.payload?.positions.reduce(
+    (acc: Record<string, Position>, position: Position) => {
+      return {
+        ...acc,
+        [position.type]: {
+          claimables: [
+            ...(acc?.[position.type]?.claimables || []),
+            ...(position?.claimables || []),
+          ],
+          deposits: [
+            ...(acc?.[position.type]?.deposits || []),
+            ...(position?.deposits || []),
+          ],
+          borrows: [
+            ...(acc?.[position.type]?.borrows || []),
+            ...(position?.borrows || []),
+          ],
+          dapp: position.dapp,
+        },
+      };
+    },
+    {}
+  );
+
+  const positions = Object.keys(networkAgnosticPositions).map(key => ({
+    type: key,
+    ...networkAgnosticPositions[key],
+  }));
 
   const parsedPositions = positions.map(position => parsePosition(position));
 

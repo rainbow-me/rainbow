@@ -10,26 +10,6 @@ import { AssetType, EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
-export const POSstyles = {
-  'aave-v2': {
-    url:
-      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://aave.com&size=50',
-    color: '#559CBB',
-    website: 'https://app.aave.com',
-  },
-  'yearn-vault-v2': {
-    url:
-      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://yearn.finance&size=50',
-    color: '#000000',
-    website: 'https://yearn.finance',
-  },
-  'compound': {
-    url:
-      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://compound.finance&size=50',
-    color: '#00D395',
-    website: 'https://app.compound.finance',
-  },
-};
 type PositionCardProps = {
   position: RainbowPosition;
   onPress: (position: RainbowPosition) => void;
@@ -102,7 +82,8 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
     return tokens;
   }, [position]);
 
-  const positionColor = POSstyles[position.type].color;
+  const positionColor =
+    position.dapp.colors.primary || position.dapp.colors.fallback;
 
   return (
     <Box width="full" height="126px">
@@ -127,7 +108,7 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
                   dappName={startCase(position.type.split('-')[0])}
                   size={32}
                   borderRadius={10}
-                  imageUrl={POSstyles[position.type].url}
+                  imageUrl={position.dapp.icon_url}
                 />
               </Column>
               <Column width="content">

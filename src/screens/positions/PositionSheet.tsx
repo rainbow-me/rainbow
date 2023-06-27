@@ -20,7 +20,6 @@ import {
   convertAmountToPercentageDisplayWithThreshold,
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
-import { POSstyles } from '@/components/positions/PositionsCard';
 
 const DEPOSIT_ITEM_HEIGHT = 80;
 const BORROW_ITEM_HEIGHT = 80;
@@ -61,7 +60,6 @@ export const PositionSheet: React.FC = () => {
     address: accountAddress,
     currency: nativeCurrency,
   });
-  console.log({ params });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const position: RainbowPosition = params.position!;
 
@@ -87,12 +85,12 @@ export const PositionSheet: React.FC = () => {
     }, [])
   );
 
-  const positionColor = POSstyles[position.type].color;
+  const positionColor =
+    position.dapp.colors.primary || position.dapp.colors.fallback;
 
   const openDapp = useCallback(() => {
-    console.log('opening: ', POSstyles[position.type].website);
-    Linking.openURL(POSstyles[position.type].website);
-  }, [position.type]);
+    Linking.openURL(position.dapp.url);
+  }, [position.dapp.url]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -118,7 +116,7 @@ export const PositionSheet: React.FC = () => {
                     }
                     dappName={startCase(position.type.split('-')[0])}
                     size={48}
-                    imageUrl={POSstyles[position.type].url}
+                    imageUrl={position.dapp.icon_url}
                   />
                   <Stack space={'10px'}>
                     <Text
@@ -154,9 +152,11 @@ export const PositionSheet: React.FC = () => {
               </Inline>
 
               <Stack space={'24px'}>
-                <Text size="17pt" weight="heavy" color="label">
-                  Deposits
-                </Text>
+                {(position?.deposits?.length || false) && (
+                  <Text size="17pt" weight="heavy" color="label">
+                    Deposits
+                  </Text>
+                )}
                 {position?.deposits?.map(deposit => {
                   const greenOrGrey =
                     (deposit.underlying[0].asset.price?.relative_change_24h ||
