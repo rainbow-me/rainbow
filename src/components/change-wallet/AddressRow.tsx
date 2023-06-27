@@ -220,6 +220,7 @@ export default function AddressRow({
   };
 
   const handleSelectMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       switch (actionKey) {
         case ContextMenuKeys.Remove:

@@ -8,10 +8,11 @@ import Caret from '@/assets/family-dropdown-arrow.png';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
+import { ImageSourcePropType } from 'react-native';
 
 interface ImageIconProps {
   size?: number;
-  source: StaticImageData | Source;
+  source: ImageSourcePropType | Source;
 }
 
 const ImageIcon = ({ size = 60, source }: ImageIconProps) => (

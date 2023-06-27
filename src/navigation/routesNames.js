@@ -42,6 +42,7 @@ const Routes = {
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
+  NFT_OFFERS_SHEET: 'NFTOffersSheet',
   NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   OP_REWARDS_SHEET: 'OpRewardsSheet',
   PAIR_HARDWARE_WALLET_AGAIN_SHEET: 'PairHardwareWalletAgainSheet',

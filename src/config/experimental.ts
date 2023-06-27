@@ -17,6 +17,7 @@ export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
+export const NFT_OFFERS = 'NFT Offers';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -24,7 +25,13 @@ export const DEFI_POSITIONS = 'Defi Positions';
  */
 export const LOG_PUSH = 'Enable Log Push';
 
-export const defaultConfig = {
+export type ExperimentalValue = {
+  settings: boolean;
+  value: boolean;
+  needsRestart?: boolean;
+};
+
+export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
   [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },
@@ -37,6 +44,7 @@ export const defaultConfig = {
   [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
+  [NFT_OFFERS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

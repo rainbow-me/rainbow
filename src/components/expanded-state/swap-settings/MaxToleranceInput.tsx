@@ -72,11 +72,12 @@ export const MaxToleranceInput = forwardRef(
     }));
 
     const updateSlippage = useCallback(
-      increment => {
+      (increment: any) => {
         const newSlippage = add(slippageValue, increment);
         const newSlippageValue = convertNumberToString(newSlippage);
         if (greaterThan(0, newSlippageValue)) return;
 
+        // @ts-expect-error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
         updateSwapSlippage(convertPercentToBips(parseFloat(newSlippageValue)));
         setSlippageValue(newSlippageValue);
       },
@@ -92,7 +93,8 @@ export const MaxToleranceInput = forwardRef(
     }, [updateSlippage]);
 
     const onSlippageChange = useCallback(
-      value => {
+      (value: any) => {
+        // @ts-expect-error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
         updateSwapSlippage(convertPercentToBips(value));
         setSlippageValue(value);
       },

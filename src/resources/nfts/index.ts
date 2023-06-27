@@ -138,7 +138,8 @@ export function useNFTListing({
       null,
     {
       enabled: !!network && !!contractAddress && !!tokenId,
-      staleTime: NFTS_STALE_TIME,
+      staleTime: 0,
+      cacheTime: 0,
     }
   );
 }

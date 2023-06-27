@@ -10,6 +10,7 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
+import { ImageSourcePropType } from 'react-native';
 
 export { open, close, useOpen } from '@/screens/Portal';
 
@@ -52,7 +53,7 @@ export function Logo({
   size = 64,
 }: {
   accentColor: string;
-  source: StaticImageData;
+  source: ImageSourcePropType;
   size?: number;
 }) {
   return (

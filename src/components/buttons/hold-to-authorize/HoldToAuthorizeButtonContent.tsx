@@ -245,7 +245,9 @@ function HoldToAuthorizeButtonContent2({
     }
   }
   return (
+    // @ts-expect-error RNGH props are not compatible with React 18
     <TapGestureHandler enabled={!disabled} onHandlerStateChange={onTapChange}>
+      {/* @ts-expect-error RNGH props are not compatible with React 18 */}
       <LongPressGestureHandler
         enabled={enableLongPress}
         minDurationMs={LONG_PRESS_DURATION_IN_MS}

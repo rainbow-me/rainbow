@@ -28,7 +28,7 @@ export const ReceiveAssetsCard = () => {
   );
 
   const onPressCopy = useCallback(
-    onNewEmoji => {
+    (onNewEmoji: () => void) => {
       if (!isToastActive) {
         setToastActive(true);
         setTimeout(() => {
