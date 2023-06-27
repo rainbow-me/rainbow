@@ -113,7 +113,7 @@ export function NFTSingleOfferSheet() {
           <Inset top="32px" horizontal="28px" bottom="52px">
             <Inset bottom={{ custom: 36 }}>
               <Text color="label" align="center" size="20pt" weight="heavy">
-                Offer
+                {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
               </Text>
               <Inset top="10px">
                 <Inline
@@ -135,7 +135,7 @@ export function NFTSingleOfferSheet() {
                     size="15pt"
                     weight="semibold"
                   >
-                    Expires in
+                    {i18n.t(i18n.l.nft_offers.single_offer_sheet.expires_in)}
                   </Text>
                   <Text
                     color={isExpiring ? 'red' : 'labelTertiary'}
@@ -224,7 +224,7 @@ export function NFTSingleOfferSheet() {
             <Inset top="24px">
               <Row
                 symbol="􀐾"
-                label="Floor Price"
+                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
                 value={
                   <Inline
                     space="4px"
@@ -251,7 +251,7 @@ export function NFTSingleOfferSheet() {
 
               <Row
                 symbol="􀍩"
-                label="Marketplace"
+                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace)}
                 value={
                   <Inline
                     space="4px"
@@ -283,7 +283,10 @@ export function NFTSingleOfferSheet() {
 
               <Row
                 symbol="􀘾"
-                label={offer.marketplace.name + ' Fees'}
+                label={i18n.t(
+                  i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
+                  { marketplace: offer.marketplace.name }
+                )}
                 value={
                   <Text
                     color="labelSecondary"
@@ -298,7 +301,9 @@ export function NFTSingleOfferSheet() {
 
               <Row
                 symbol="􀣶"
-                label="Creator Royalties"
+                label={i18n.t(
+                  i18n.l.nft_offers.single_offer_sheet.creator_royalties
+                )}
                 value={
                   <Text
                     color="labelSecondary"
@@ -313,7 +318,7 @@ export function NFTSingleOfferSheet() {
 
               <Row
                 symbol="􀖅"
-                label="Receive"
+                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
                 value={
                   <Text
                     color="labelSecondary"
@@ -333,7 +338,7 @@ export function NFTSingleOfferSheet() {
               <Columns alignVertical="center">
                 <Column>
                   <Text color="label" size="17pt" weight="bold">
-                    Proceeds
+                    {i18n.t(i18n.l.nft_offers.single_offer_sheet.proceeds)}
                   </Text>
                 </Column>
                 <Column>
@@ -392,7 +397,9 @@ export function NFTSingleOfferSheet() {
                         size="15pt"
                         weight="bold"
                       >
-                        View Offer
+                        {i18n.t(
+                          i18n.l.nft_offers.single_offer_sheet.view_offer
+                        )}
                       </Text>
                     </Box>
                   </>
