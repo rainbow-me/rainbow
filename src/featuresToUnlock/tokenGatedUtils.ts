@@ -9,6 +9,7 @@ const TOKEN_GATE_CHECKER_ADDRESS: Record<string, string> = {
   mainnet: '0x47c9c137fc9aa5ccdbea707b0b27d52780565476',
   optimism: '0x400a9f1bb1db80643c33710c2232a0d74ef5cff1',
   polygon: '0x400a9f1bb1db80643c33710c2232a0d74ef5cff1',
+  zora: '0x12a39421c23f4d3f788c33f0f9281652ac4f909a',
 };
 
 export const checkIfWalletsOwnNft = async (
