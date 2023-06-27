@@ -57,6 +57,7 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
         inputRange: [0, 1],
         outputRange: [1, 0],
       }),
+      paddingRight: 4,
     }),
     [animation]
   );
