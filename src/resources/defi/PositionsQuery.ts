@@ -19,6 +19,8 @@ import {
 } from '@/helpers/utilities';
 import { RainbowNetworks } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
+import { ethereumUtils } from '@/utils';
+import { Network } from '@/networks/types';
 
 export const buildPositionsUrl = (address: string) => {
   const networkString = RainbowNetworks.filter(network => network.enabled)
@@ -144,6 +146,7 @@ export type RainbowPositions = {
     claimables: NativeDisplay;
     deposits: NativeDisplay;
   };
+  positionTokens: string[];
   positions: RainbowPosition[];
 };
 
@@ -281,6 +284,19 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
 
   const parsedPositions = positions.map(position => parsePosition(position));
 
+  const positionTokens: string[] = [];
+
+  parsedPositions.forEach(({ deposits }) => {
+    deposits.forEach(({ asset }) => {
+      console.log({ asset });
+      const assetType = ethereumUtils.getAssetTypeFromNetwork(Network.mainnet);
+      const uniqueId = `${asset.asset_code}_${assetType}`;
+      console.log({ uniqueId });
+
+      positionTokens.push(uniqueId);
+    });
+  });
+
   const positionsTotals = parsedPositions.reduce(
     (acc, position) => ({
       borrows: {
@@ -328,6 +344,7 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
       ...positionsTotals,
     },
     positions: parsedPositions,
+    positionTokens,
   };
 };
 

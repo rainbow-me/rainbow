@@ -82,6 +82,10 @@ import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
 import { ratioGetUserActivityItem } from '@/resources/f2c';
+import {
+  RainbowPositions,
+  positionsQueryKey,
+} from '@/resources/defi/PositionsQuery';
 
 const storage = new MMKV();
 
@@ -925,17 +929,26 @@ export const addressAssetsReceived = (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, network, nativeCurrency } = getState().settings;
   const responseAddress = message?.meta?.address;
   const addressMatch =
     accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
   const newAssets = message?.payload?.assets ?? {};
+
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
+  );
+
+  const positionTokens = positionsObj?.positionTokens || [];
+
   let updatedAssets = pickBy(
     newAssets,
     asset =>
-      asset?.asset?.type !== AssetTypes.compound &&
+      !positionTokens.find(
+        positionToken => positionToken === `${asset.asset.asset_code}_token`
+      ) &&
       asset?.asset?.type !== AssetTypes.trash &&
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
   );
