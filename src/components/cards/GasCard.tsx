@@ -21,10 +21,11 @@ import {
   Text,
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import { useGas } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 import { useNavigation } from '@/navigation';
+import { arcDevClient } from '@/graphql';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -58,6 +59,7 @@ export const GasCard = () => {
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
   const { navigate } = useNavigation();
+  const { accountAddress: walletAddress } = useAccountSettings();
 
   const container = useSharedValue(1);
   const opacity = useSharedValue(0);
@@ -111,7 +113,7 @@ export const GasCard = () => {
     }
   }, []);
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback(async () => {
     opacity.value = 0;
     scale.value = 0;
     container.value = withSequence(
@@ -128,7 +130,12 @@ export const GasCard = () => {
       withTiming(1, fadeOutConfig),
       withTiming(0, { duration: 0 })
     );
-    navigate(Routes.MINT_SHEET, {});
+
+    // Poap tings
+    const event = await arcDevClient.getPoapEventBySecretWord({
+      secretWord: 'note-remove-couple',
+    });
+    navigate(Routes.MINT_SHEET, { event: event.getPoapEventBySecretWord });
   }, [container, navigate, opacity, scale]);
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {

@@ -1,10 +1,11 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, { useRef } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 import useWallets from '../../hooks/useWallets';
+import Routes from '@/navigation/routesNames';
 
 import ImgixImage from '../../components/images/ImgixImage';
 import {
@@ -30,6 +31,14 @@ import { magicMemo } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useRoute } from '@react-navigation/native';
+import { PoapEvent } from '@/graphql/__generated__/arcDev';
+import { format } from 'date-fns';
+import { arcDevClient } from '@/graphql';
+import Spinner from '@/components/Spinner';
+import { delay } from '@/utils/delay';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { UniqueAsset } from '@/entities';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -61,25 +70,88 @@ const BlurWrapper = styled(View).attrs({
 });
 
 interface MintSheetProps {
-  eventId: string;
+  event: PoapEvent;
 }
 
-const MintSheet = ({ eventId }: MintSheetProps) => {
+type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
+
+const MintSheet = ({ event }: MintSheetProps) => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, setOptions } = useNavigation();
+  const { navigate, setOptions, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+  const params = useRoute();
+  const { data: uniqueTokens } = useLegacyNFTs({
+    address: accountAddress,
+  });
 
-  const imageUrl = maybeSignUri(
-    'https://assets.poap.xyz/d5979728-1082-49ed-9b3c-e0e806210c8c.png'
-  );
+  const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
+  const [nft, setNft] = useState<UniqueAsset | null>(null);
+
+  const poapEvent: PoapEvent = (params.params as MintSheetProps)?.event;
+
+  const imageUrl = maybeSignUri(poapEvent.imageUrl);
+
+  const poapGalleryUrl = `https://poap.gallery/event/${poapEvent.id}`;
+
+  const getFormattedDate = () =>
+    format(new Date(poapEvent.createdAt), 'MMMM dd, yyyy');
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
+
+  const claimPoapBySecret = useCallback(async () => {
+    setClaimStatus('claiming');
+    const response = await arcDevClient.claimPoapBySecretWord({
+      walletAddress: accountAddress,
+      secretWord: 'note-remove-couple',
+    });
+    await delay(1000);
+    const isSuccess = response.claimPoapBySecretWord?.success;
+    console.log({ isSuccess });
+    if (isSuccess) {
+      setClaimStatus('claimed');
+      await delay(3000);
+      goBack();
+    } else {
+      setClaimStatus('error');
+    }
+  }, [accountAddress, goBack]);
+
+  const isClaiming = claimStatus === 'claiming';
+  const isClaimed = claimStatus === 'claimed';
+  const isError = claimStatus === 'error';
+
+  const actionOnPress = useCallback(async () => {
+    if (isClaimed) {
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: nft,
+        backgroundOpacity: 1,
+        cornerRadius: 'device',
+        external: false,
+        springDamping: 1,
+        topOffset: 0,
+        transitionDuration: 0.25,
+        type: 'unique_token',
+      });
+    } else {
+      await claimPoapBySecret();
+    }
+  }, [claimPoapBySecret, isClaimed, navigate, nft]);
+
+  useEffect(() => {
+    const nft = uniqueTokens.find(
+      item => item.image_original_url === poapEvent.imageUrl
+    );
+    if (nft) {
+      setClaimStatus('claimed');
+      setNft(nft);
+    }
+  }, [imageUrl, poapEvent.imageUrl, uniqueTokens]);
 
   /* 
     POAPS:
@@ -145,17 +217,39 @@ const MintSheet = ({ eventId }: MintSheetProps) => {
 
               <Stack space="10px" alignHorizontal="center">
                 <Text size="20pt" color="label" weight="heavy">
-                  Babys first POAP
+                  {poapEvent.name}
                 </Text>
                 <Text size="15pt" color="labelSecondary" weight="bold">
-                  June 22, 2023
+                  {getFormattedDate()}
                 </Text>
               </Stack>
               <Stack alignHorizontal="center">
                 <SheetActionButtonRow>
-                  <SheetActionButton color={imageColor} label="􀑒 Claim POAP" />
+                  <SheetActionButton
+                    color={isError ? colors.red : imageColor}
+                    onPress={actionOnPress}
+                  >
+                    {isClaiming && (
+                      <Spinner
+                        color={colors.white}
+                        size={'small'}
+                        style={{ paddingRight: 6 }}
+                      />
+                    )}
+                    <Text size="17pt" color="label" weight="bold">
+                      {isError
+                        ? 'Error Claiming'
+                        : isClaimed
+                        ? 'Poap Claimed!'
+                        : isClaiming
+                        ? 'Claiming...'
+                        : '􀑒 Claim POAP'}
+                    </Text>
+                  </SheetActionButton>
                 </SheetActionButtonRow>
-                <ButtonPressAnimation>
+                <ButtonPressAnimation
+                  onPress={() => Linking.openURL(poapGalleryUrl)}
+                >
                   <Text size="15pt" color="labelSecondary" weight="bold">
                     View on POAP 􀮶
                   </Text>

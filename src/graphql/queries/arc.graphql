@@ -50,3 +50,23 @@ query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
     network
   }
 }
+
+query getPoapEventBySecretWord($secretWord: String!) {
+  getPoapEventBySecretWord(secretWord: $secretWord) {
+    id
+    name
+    imageUrl
+    createdAt
+    qrHash
+    secret
+  }
+}
+
+query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
+  claimPoapBySecretWord(
+    walletAddress: $walletAddress
+    secretWord: $secretWord
+  ) {
+    success
+  }
+}
