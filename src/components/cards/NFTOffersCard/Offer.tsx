@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
-import { ImgixImage } from '../../images';
+import { ImgixImage } from '@/components/images';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 import {
@@ -9,7 +9,7 @@ import {
   getFormattedTimeQuantity,
   handleSignificantDecimals,
 } from '@/helpers/utilities';
-import { CoinIcon } from '../../coin-icon';
+import { CoinIcon } from '@/components/coin-icon';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { useTheme } from '@/theme';
 import {
@@ -55,8 +55,8 @@ export const FakeOffer = () => {
           <Box
             background="accent"
             width={{ custom: 50 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
+            height={{ custom: 9.3333 }}
+            borderRadius={9.3333 / 2}
           />
         </Inline>
       </Box>
@@ -77,13 +77,13 @@ export const Offer = ({
   offer: NftOffer;
   sortCriterion: SortCriterion;
 }) => {
+  const { colorMode } = useColorMode();
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
       ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
       : undefined
   );
 
-  const { colorMode } = useColorMode();
   useEffect(() => {
     if (offer.validUntil) {
       const interval = setInterval(() => {
@@ -93,44 +93,55 @@ export const Offer = ({
     }
   }, [offer.validUntil]);
 
+  const cryptoAmount = handleSignificantDecimals(
+    offer.grossAmount.decimal,
+    18,
+    // don't show more than 3 decimals
+    3,
+    undefined,
+    // abbreviate if amount is >= 10,000
+    offer.grossAmount.decimal >= 10_000
+  );
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const isExpiring =
     timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
 
-  let textColor: TextColor;
-  let text;
+  let secondaryTextColor: TextColor;
+  let secondaryText;
   switch (sortCriterion) {
     case SortCriterion.TopBidValue:
     case SortCriterion.DateCreated:
       if (isExpiring) {
-        textColor = 'red';
-        text = getFormattedTimeQuantity(timeRemaining);
+        secondaryTextColor = 'red';
+        secondaryText = getFormattedTimeQuantity(timeRemaining);
       } else {
-        textColor = 'labelTertiary';
-        text = convertAmountToNativeDisplay(
+        secondaryTextColor = 'labelTertiary';
+        secondaryText = convertAmountToNativeDisplay(
           offer.grossAmount.usd,
           'USD',
           undefined,
+          // don't show decimals
           true,
-          true
+          // abbreviate if amount is >= 10,000
+          offer.grossAmount.usd >= 10_000
         );
       }
       break;
     case SortCriterion.FloorDifferencePercentage:
       if (isExpiring) {
-        textColor = 'red';
-        text = getFormattedTimeQuantity(timeRemaining);
+        secondaryTextColor = 'red';
+        secondaryText = getFormattedTimeQuantity(timeRemaining);
       } else if (isFloorDiffPercentagePositive) {
-        textColor = 'green';
-        text = `+${offer.floorDifferencePercentage}%`;
+        secondaryTextColor = 'green';
+        secondaryText = `+${offer.floorDifferencePercentage}%`;
       } else {
-        textColor = 'labelTertiary';
-        text = `${offer.floorDifferencePercentage}%`;
+        secondaryTextColor = 'labelTertiary';
+        secondaryText = `${offer.floorDifferencePercentage}%`;
       }
       break;
     default:
-      textColor = 'labelTertiary';
-      text = '';
+      secondaryTextColor = 'labelTertiary';
+      secondaryText = '';
       logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
       break;
   }
@@ -206,18 +217,12 @@ export const Offer = ({
             symbol={offer.paymentToken.symbol}
           />
           <Text color="label" size="13pt" weight="heavy">
-            {handleSignificantDecimals(
-              offer.grossAmount.decimal,
-              18,
-              3,
-              undefined,
-              true
-            )}
+            {cryptoAmount}
           </Text>
         </Inline>
       </Box>
-      <Text color={textColor} size="13pt" weight="semibold">
-        {text}
+      <Text color={secondaryTextColor} size="13pt" weight="semibold">
+        {secondaryText}
       </Text>
     </ButtonPressAnimation>
   );
