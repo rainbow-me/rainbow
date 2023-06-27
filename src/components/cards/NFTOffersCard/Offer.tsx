@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
@@ -21,6 +22,7 @@ import {
 } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
+import Routes from '@/navigation/routesNames';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 78;
@@ -77,6 +79,7 @@ export const Offer = ({
   offer: NftOffer;
   sortCriterion: SortCriterion;
 }) => {
+  const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
@@ -147,7 +150,11 @@ export const Offer = ({
   }
 
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation
+      onPress={() => {
+        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
+      }}
+    >
       {isExpiring && (
         <Box
           width={{ custom: 19 }}
