@@ -88,6 +88,15 @@
 					<string>finiliar</string>
 				</array>
 			</dict>
+			<key>zorb</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>zorb</string>
+				</array>
+			</dict>
 			<key>og</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>

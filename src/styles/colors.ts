@@ -162,7 +162,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     whiteLabel: '#FFFFFF', // '255, 255, 255'
     yellow: '#FFD657', // '255, 214, 87'
     yellowFavorite: '#FFB200', // '255, 178, 0'
-    yellowOrange: '#FFC400', // '255, 196, 0'
+    yellowOrange: '#FFC400', // '255, 196, 0',
+    zorbPink: '#FC4C74', // '252, 76, 116'
+    zorbPink06: 'rgba(252, 76, 116, 0.06)',
   };
 
   const avatarColor = [
