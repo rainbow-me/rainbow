@@ -241,7 +241,7 @@ export function NFTSingleOfferSheet() {
               </Box>
 
               <Inset top={{ custom: 40 }} bottom="24px">
-                <Columns>
+                <Columns alignVertical="center">
                   <Column>
                     <Text color="label" size="17pt" weight="bold">
                       {offer.nft.name}
