@@ -12,6 +12,7 @@ import {
   Text,
   Columns,
   Column,
+  useForegroundColor,
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import {
@@ -105,6 +106,7 @@ export function NFTSingleOfferSheet() {
   const time = timeRemaining
     ? getFormattedTimeQuantity(timeRemaining)
     : undefined;
+  const buttonColorFallback = useForegroundColor('accent');
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -372,7 +374,9 @@ export function NFTSingleOfferSheet() {
               </Columns>
             </Inset>
 
-            <AccentColorProvider color={offer.nft.predominantColor || 'accent'}>
+            <AccentColorProvider
+              color={offer.nft.predominantColor || buttonColorFallback}
+            >
               {/* @ts-ignore js component */}
               <Box
                 as={ButtonPressAnimation}
