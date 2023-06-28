@@ -584,9 +584,9 @@ export const getFormattedTimeQuantity = (ms: number): string => {
   const hours = totalHours % 24;
   const minutes = totalMinutes % 60;
 
-  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
-  const formattedHours = days ? days + 'd ' : '';
-  const formattedDays = hours || minutes ? '' : days + 'd';
+  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
+  const formattedHours = hours ? hours + 'h ' : '';
+  const formattedDays = days ? days + 'd ' : '';
 
-  return formattedDays + formattedHours + formattedMinutes;
+  return (formattedDays + formattedHours + formattedMinutes).trim();
 };

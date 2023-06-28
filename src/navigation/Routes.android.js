@@ -58,6 +58,7 @@ import {
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
   addCashSheet,
+  nftSingleOfferSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -391,7 +392,7 @@ function BSNavigator() {
       <BSStack.Screen
         name={Routes.NFT_SINGLE_OFFER_SHEET}
         component={NFTSingleOfferSheet}
-        options={{ ...bottomSheetPreset }}
+        options={nftSingleOfferSheetPreset}
       />
     </BSStack.Navigator>
   );

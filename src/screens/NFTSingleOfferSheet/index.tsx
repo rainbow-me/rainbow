@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
@@ -24,6 +24,9 @@ import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { CoinIcon } from '@/components/coin-icon';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useNavigation } from '@/navigation';
+import { IS_ANDROID } from '@/env';
+import ConditionalWrap from 'conditional-wrap';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -60,7 +63,15 @@ function Row({
 
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
+  const { setParams } = useNavigation();
+
   const { offer } = params as { offer: NftOffer };
+
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    setParams({ longFormHeight: height });
+  }, [height, setParams]);
 
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
@@ -126,14 +137,17 @@ export function NFTSingleOfferSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string}>
-          <Inset top="32px" horizontal="28px" bottom="52px">
-            <Inset bottom={{ custom: 36 }}>
-              <Text color="label" align="center" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
-              </Text>
-              <Inset top="10px">
-                <Box height={{ custom: 10 }}>
+        <SimpleSheet
+          backgroundColor={backgroundColor as string}
+          scrollEnabled={false}
+        >
+          <View onLayout={e => setHeight(e.nativeEvent.layout.height)}>
+            <Inset top="32px" horizontal="28px" bottom="52px">
+              <Inset bottom={{ custom: 36 }}>
+                <Text color="label" align="center" size="20pt" weight="heavy">
+                  {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
+                </Text>
+                <Inset top="10px">
                   {timeRemaining !== undefined && (
                     <Inline
                       space="4px"
@@ -169,178 +183,196 @@ export function NFTSingleOfferSheet() {
                       </Text>
                     </Inline>
                   )}
-                </Box>
+                </Inset>
               </Inset>
-            </Inset>
 
-            <Box alignItems="center">
-              <Box
-                as={ImgixImage}
-                background="surfacePrimary"
-                source={{ uri: offer.nft.imageUrl }}
-                width={{ custom: 160 }}
-                height={{ custom: 160 }}
-                borderRadius={16}
-                size={160}
-                shadow="30px"
-              />
-            </Box>
+              <Box alignItems="center">
+                <ConditionalWrap
+                  condition={!!offer.nft.predominantColor}
+                  wrap={(children: React.ReactNode) => (
+                    <AccentColorProvider color={offer.nft.predominantColor!}>
+                      {children}
+                    </AccentColorProvider>
+                  )}
+                >
+                  <Box
+                    as={ImgixImage}
+                    background="surfacePrimary"
+                    source={{ uri: offer.nft.imageUrl }}
+                    width={{ custom: 160 }}
+                    height={{ custom: 160 }}
+                    borderRadius={16}
+                    size={160}
+                    shadow={offer.nft.predominantColor ? '30px accent' : '30px'}
+                  />
+                </ConditionalWrap>
+              </Box>
 
-            <Inset top={{ custom: 40 }} bottom="24px">
-              <Columns>
-                <Column>
-                  <Text color="label" size="17pt" weight="bold">
-                    {offer.nft.name}
-                  </Text>
-                  <Inset top="10px">
-                    <Text color="labelTertiary" size="13pt" weight="medium">
-                      {offer.nft.collectionName}
+              <Inset top={{ custom: 40 }} bottom="24px">
+                <Columns>
+                  <Column>
+                    <Text color="label" size="17pt" weight="bold">
+                      {offer.nft.name}
                     </Text>
-                  </Inset>
-                </Column>
-                <Column>
-                  <Inline
-                    space="4px"
-                    alignVertical="center"
-                    alignHorizontal="right"
-                  >
-                    <CoinIcon
-                      address={offer.paymentToken.address}
-                      size={16}
-                      symbol={offer.paymentToken.symbol}
-                    />
-
-                    <Text color="label" align="right" size="17pt" weight="bold">
-                      {listPrice} {offer.paymentToken.symbol}
-                    </Text>
-                  </Inline>
-
-                  <Inset top="6px">
-                    <Inline alignHorizontal="right">
-                      <Text
-                        size="13pt"
-                        weight="medium"
-                        color={
-                          isFloorDiffPercentagePositive
-                            ? 'green'
-                            : 'labelTertiary'
-                        }
-                      >
-                        {`${isFloorDiffPercentagePositive ? '+' : ''}${
-                          offer.floorDifferencePercentage
-                        }% `}
+                    <Inset top="10px">
+                      <Text color="labelTertiary" size="13pt" weight="medium">
+                        {offer.nft.collectionName}
                       </Text>
-                      <Text size="13pt" weight="medium" color="labelTertiary">
-                        {i18n.t(
-                          isFloorDiffPercentagePositive
-                            ? i18n.l.nft_offers.sheet.above_floor
-                            : i18n.l.nft_offers.sheet.below_floor
-                        )}
+                    </Inset>
+                  </Column>
+                  <Column>
+                    <Inline
+                      space="4px"
+                      alignVertical="center"
+                      alignHorizontal="right"
+                    >
+                      <CoinIcon
+                        address={offer.paymentToken.address}
+                        size={16}
+                        symbol={offer.paymentToken.symbol}
+                      />
+
+                      <Text
+                        color="label"
+                        align="right"
+                        size="17pt"
+                        weight="bold"
+                      >
+                        {listPrice} {offer.paymentToken.symbol}
                       </Text>
                     </Inline>
-                  </Inset>
-                </Column>
-              </Columns>
-            </Inset>
 
-            <Separator color="separatorTertiary" />
+                    <Inset top="6px">
+                      <Inline alignHorizontal="right">
+                        <Text
+                          size="13pt"
+                          weight="medium"
+                          color={
+                            isFloorDiffPercentagePositive
+                              ? 'green'
+                              : 'labelTertiary'
+                          }
+                        >
+                          {`${isFloorDiffPercentagePositive ? '+' : ''}${
+                            offer.floorDifferencePercentage
+                          }% `}
+                        </Text>
+                        <Text size="13pt" weight="medium" color="labelTertiary">
+                          {i18n.t(
+                            isFloorDiffPercentagePositive
+                              ? i18n.l.nft_offers.sheet.above_floor
+                              : i18n.l.nft_offers.sheet.below_floor
+                          )}
+                        </Text>
+                      </Inline>
+                    </Inset>
+                  </Column>
+                </Columns>
+              </Inset>
 
-            <Inset top="24px">
-              <Row
-                symbol="􀐾"
-                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
-                value={
-                  <Inline
-                    space="4px"
-                    alignVertical="center"
-                    alignHorizontal="right"
-                  >
-                    <CoinIcon
-                      address={offer.paymentToken.address}
-                      size={16}
-                      symbol={offer.paymentToken.symbol}
-                    />
+              <Separator color="separatorTertiary" />
 
+              <Inset top="24px">
+                <Row
+                  symbol="􀐾"
+                  label={i18n.t(
+                    i18n.l.nft_offers.single_offer_sheet.floor_price
+                  )}
+                  value={
+                    <Inline
+                      space="4px"
+                      alignVertical="center"
+                      alignHorizontal="right"
+                    >
+                      <CoinIcon
+                        address={offer.paymentToken.address}
+                        size={16}
+                        symbol={offer.paymentToken.symbol}
+                      />
+
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {floorPrice} {offer.paymentToken.symbol}
+                      </Text>
+                    </Inline>
+                  }
+                />
+
+                <Row
+                  symbol="􀍩"
+                  label={i18n.t(
+                    i18n.l.nft_offers.single_offer_sheet.marketplace
+                  )}
+                  value={
+                    <Inline
+                      space="4px"
+                      alignVertical="center"
+                      alignHorizontal="right"
+                    >
+                      <Box
+                        as={ImgixImage}
+                        background="surfacePrimary"
+                        source={{ uri: offer.marketplace.imageUrl }}
+                        width={{ custom: 16 }}
+                        height={{ custom: 16 }}
+                        borderRadius={16}
+                        size={16}
+                        // shadow is way off on android idk why
+                        shadow={IS_ANDROID ? undefined : '30px accent'}
+                      />
+
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {offer.marketplace.name}
+                      </Text>
+                    </Inline>
+                  }
+                />
+
+                <Row
+                  symbol="􀘾"
+                  label={i18n.t(
+                    i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
+                    { marketplace: offer.marketplace.name }
+                  )}
+                  value={
                     <Text
                       color="labelSecondary"
                       align="right"
                       size="17pt"
                       weight="medium"
                     >
-                      {floorPrice} {offer.paymentToken.symbol}
+                      {(offer.feesPercentage / 100).toFixed(1)}%
                     </Text>
-                  </Inline>
-                }
-              />
+                  }
+                />
 
-              <Row
-                symbol="􀍩"
-                label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace)}
-                value={
-                  <Inline
-                    space="4px"
-                    alignVertical="center"
-                    alignHorizontal="right"
-                  >
-                    <Box
-                      as={ImgixImage}
-                      background="surfacePrimary"
-                      source={{ uri: offer.marketplace.imageUrl }}
-                      width={{ custom: 16 }}
-                      height={{ custom: 16 }}
-                      borderRadius={16}
-                      size={16}
-                      shadow="30px accent"
-                    />
-
+                <Row
+                  symbol="􀣶"
+                  label={i18n.t(
+                    i18n.l.nft_offers.single_offer_sheet.creator_royalties
+                  )}
+                  value={
                     <Text
                       color="labelSecondary"
                       align="right"
                       size="17pt"
                       weight="medium"
                     >
-                      {offer.marketplace.name}
+                      {offer.royaltiesPercentage}%
                     </Text>
-                  </Inline>
-                }
-              />
+                  }
+                />
 
-              <Row
-                symbol="􀘾"
-                label={i18n.t(
-                  i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
-                  { marketplace: offer.marketplace.name }
-                )}
-                value={
-                  <Text
-                    color="labelSecondary"
-                    align="right"
-                    size="17pt"
-                    weight="medium"
-                  >
-                    {(offer.feesPercentage / 100).toFixed(1)}%
-                  </Text>
-                }
-              />
-
-              <Row
-                symbol="􀣶"
-                label={i18n.t(
-                  i18n.l.nft_offers.single_offer_sheet.creator_royalties
-                )}
-                value={
-                  <Text
-                    color="labelSecondary"
-                    align="right"
-                    size="17pt"
-                    weight="medium"
-                  >
-                    {offer.royaltiesPercentage}%
-                  </Text>
-                }
-              />
-
-              {/* <Row
+                {/* <Row
                 symbol="􀖅"
                 label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
                 value={
@@ -354,78 +386,84 @@ export function NFTSingleOfferSheet() {
                   </Text>
                 }
               /> */}
-            </Inset>
+              </Inset>
 
-            <Separator color="separatorTertiary" />
+              <Separator color="separatorTertiary" />
 
-            <Inset vertical="24px">
-              <Columns alignVertical="center">
-                <Column>
-                  <Text color="label" size="17pt" weight="bold">
-                    {i18n.t(i18n.l.nft_offers.single_offer_sheet.proceeds)}
-                  </Text>
-                </Column>
-                <Column>
-                  <Inline
-                    space="4px"
-                    alignVertical="center"
-                    alignHorizontal="right"
-                  >
-                    <CoinIcon
-                      address={offer.paymentToken.address}
-                      size={16}
-                      symbol={offer.paymentToken.symbol}
-                    />
-
-                    <Text color="label" align="right" size="17pt" weight="bold">
-                      {netCrypto} {offer.paymentToken.symbol}
+              <Inset vertical="24px">
+                <Columns alignVertical="center">
+                  <Column>
+                    <Text color="label" size="17pt" weight="bold">
+                      {i18n.t(i18n.l.nft_offers.single_offer_sheet.proceeds)}
                     </Text>
-                  </Inline>
-
-                  <Inset top="10px">
-                    <Text
-                      color="labelTertiary"
-                      align="right"
-                      size="13pt"
-                      weight="medium"
+                  </Column>
+                  <Column>
+                    <Inline
+                      space="4px"
+                      alignVertical="center"
+                      alignHorizontal="right"
                     >
-                      {netCurrency}
-                    </Text>
-                  </Inset>
-                </Column>
-              </Columns>
-            </Inset>
+                      <CoinIcon
+                        address={offer.paymentToken.address}
+                        size={16}
+                        symbol={offer.paymentToken.symbol}
+                      />
 
-            <AccentColorProvider
-              color={offer.nft.predominantColor || buttonColorFallback}
-            >
-              {/* @ts-ignore js component */}
-              <Box
-                as={ButtonPressAnimation}
-                background="accent"
-                height="46px"
-                // @ts-ignore
-                disabled={isExpired}
-                width="full"
-                borderRadius={99}
-                justifyContent="center"
-                alignItems="center"
-                style={{ overflow: 'hidden' }}
-                onPress={() => {
-                  // TODO
-                  // Linking.openURL(offer)
-                }}
+                      <Text
+                        color="label"
+                        align="right"
+                        size="17pt"
+                        weight="bold"
+                      >
+                        {netCrypto} {offer.paymentToken.symbol}
+                      </Text>
+                    </Inline>
+
+                    <Inset top="10px">
+                      <Text
+                        color="labelTertiary"
+                        align="right"
+                        size="13pt"
+                        weight="medium"
+                      >
+                        {netCurrency}
+                      </Text>
+                    </Inset>
+                  </Column>
+                </Columns>
+              </Inset>
+
+              <AccentColorProvider
+                color={offer.nft.predominantColor || buttonColorFallback}
               >
-                <Text color="label" align="center" size="17pt" weight="heavy">
-                  {i18n.t(
-                    isExpired
-                      ? i18n.l.nft_offers.single_offer_sheet.offer_expired
-                      : i18n.l.nft_offers.single_offer_sheet.view_offer
-                  )}
-                </Text>
-              </Box>
-            </AccentColorProvider>
-          </Inset>
+                {/* @ts-ignore js component */}
+                <Box
+                  as={ButtonPressAnimation}
+                  background="accent"
+                  height="46px"
+                  // @ts-ignore
+                  disabled={isExpired}
+                  width="full"
+                  borderRadius={99}
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{ overflow: 'hidden' }}
+                  onPress={() => {
+                    // TODO
+                    // Linking.openURL(offer)
+                  }}
+                >
+                  <Text color="label" align="center" size="17pt" weight="heavy">
+                    {i18n.t(
+                      isExpired
+                        ? i18n.l.nft_offers.single_offer_sheet.offer_expired
+                        : i18n.l.nft_offers.single_offer_sheet.view_offer
+                    )}
+                  </Text>
+                </Box>
+              </AccentColorProvider>
+            </Inset>
+          </View>
         </SimpleSheet>
       )}
     </BackgroundProvider>

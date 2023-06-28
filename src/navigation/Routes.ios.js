@@ -51,6 +51,7 @@ import {
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
+  nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
@@ -452,7 +453,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         name={Routes.NFT_SINGLE_OFFER_SHEET}
         component={NFTSingleOfferSheet}
-        {...nftOffersSheetConfig}
+        {...nftSingleOfferSheetConfig}
       />
     </NativeStack.Navigator>
   );
