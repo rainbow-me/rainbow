@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -61,6 +61,13 @@ function Row({
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { offer } = params as { offer: NftOffer };
+
+  const [timeRemaining, setTimeRemaining] = useState(
+    offer.validUntil
+      ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
+      : undefined
+  );
+
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const listPrice = handleSignificantDecimals(
     offer.grossAmount.decimal,
@@ -98,11 +105,19 @@ export function NFTSingleOfferSheet() {
     // abbreviate if amount is >= 10,000
     offer.netAmount.decimal >= 10_000
   );
-  const timeRemaining = offer.validUntil
-    ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
-    : undefined;
+
+  useEffect(() => {
+    if (offer.validUntil) {
+      const interval = setInterval(() => {
+        setTimeRemaining(Math.max(offer.validUntil * 1000 - Date.now(), 0));
+      }, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [offer.validUntil]);
+
   const isExpiring =
     timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
+  const isExpired = timeRemaining === 0;
   const time = timeRemaining
     ? getFormattedTimeQuantity(timeRemaining)
     : undefined;
@@ -118,36 +133,43 @@ export function NFTSingleOfferSheet() {
                 {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
               </Text>
               <Inset top="10px">
-                <Inline
-                  space="4px"
-                  alignHorizontal="center"
-                  alignVertical="center"
-                >
-                  <Text
-                    color="labelTertiary"
-                    align="center"
-                    size="13pt"
-                    weight="semibold"
-                  >
-                    􀐫
-                  </Text>
-                  <Text
-                    color="labelTertiary"
-                    align="center"
-                    size="15pt"
-                    weight="semibold"
-                  >
-                    {i18n.t(i18n.l.nft_offers.single_offer_sheet.expires_in)}
-                  </Text>
-                  <Text
-                    color={isExpiring ? 'red' : 'labelTertiary'}
-                    align="center"
-                    size="15pt"
-                    weight="semibold"
-                  >
-                    {time}
-                  </Text>
-                </Inline>
+                <Box height={{ custom: 10 }}>
+                  {timeRemaining !== undefined && (
+                    <Inline
+                      space="4px"
+                      alignHorizontal="center"
+                      alignVertical="center"
+                    >
+                      <Text
+                        color={
+                          isExpiring || isExpired ? 'red' : 'labelTertiary'
+                        }
+                        align="center"
+                        size="13pt"
+                        weight="semibold"
+                      >
+                        {isExpired ? '􀇾' : '􀐫'}
+                      </Text>
+                      <Text
+                        color={
+                          isExpiring || isExpired ? 'red' : 'labelTertiary'
+                        }
+                        align="center"
+                        size="15pt"
+                        weight="semibold"
+                      >
+                        {isExpired
+                          ? i18n.t(i18n.l.nft_offers.single_offer_sheet.expired)
+                          : i18n.t(
+                              i18n.l.nft_offers.single_offer_sheet.expires_in,
+                              {
+                                timeLeft: time!,
+                              }
+                            )}
+                      </Text>
+                    </Inline>
+                  )}
+                </Box>
               </Inset>
             </Inset>
 
@@ -318,7 +340,7 @@ export function NFTSingleOfferSheet() {
                 }
               />
 
-              <Row
+              {/* <Row
                 symbol="􀖅"
                 label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
                 value={
@@ -331,7 +353,7 @@ export function NFTSingleOfferSheet() {
                     {offer.paymentToken.symbol}
                   </Text>
                 }
-              />
+              /> */}
             </Inset>
 
             <Separator color="separatorTertiary" />
@@ -382,6 +404,8 @@ export function NFTSingleOfferSheet() {
                 as={ButtonPressAnimation}
                 background="accent"
                 height="46px"
+                // @ts-ignore
+                disabled={isExpired}
                 width="full"
                 borderRadius={99}
                 justifyContent="center"
@@ -392,8 +416,12 @@ export function NFTSingleOfferSheet() {
                   // Linking.openURL(offer)
                 }}
               >
-                <Text color="label" align="center" size="15pt" weight="bold">
-                  {i18n.t(i18n.l.nft_offers.single_offer_sheet.view_offer)}
+                <Text color="label" align="center" size="17pt" weight="heavy">
+                  {i18n.t(
+                    isExpired
+                      ? i18n.l.nft_offers.single_offer_sheet.offer_expired
+                      : i18n.l.nft_offers.single_offer_sheet.view_offer
+                  )}
                 </Text>
               </Box>
             </AccentColorProvider>
