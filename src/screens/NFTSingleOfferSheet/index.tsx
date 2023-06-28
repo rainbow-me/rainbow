@@ -373,38 +373,25 @@ export function NFTSingleOfferSheet() {
             </Inset>
 
             <AccentColorProvider color={offer.nft.predominantColor || 'accent'}>
-              <BackgroundProvider color="accent">
-                {({ backgroundColor }) => (
-                  <>
-                    {/* @ts-ignore js component */}
-                    <Box
-                      as={ButtonPressAnimation}
-                      background="accent"
-                      height="46px"
-                      width="full"
-                      borderRadius={99}
-                      justifyContent="center"
-                      alignItems="center"
-                      style={{ overflow: 'hidden' }}
-                      onPress={() => {
-                        // TODO
-                        // Linking.openURL(offer)
-                      }}
-                    >
-                      <Text
-                        color="label"
-                        align="center"
-                        size="15pt"
-                        weight="bold"
-                      >
-                        {i18n.t(
-                          i18n.l.nft_offers.single_offer_sheet.view_offer
-                        )}
-                      </Text>
-                    </Box>
-                  </>
-                )}
-              </BackgroundProvider>
+              {/* @ts-ignore js component */}
+              <Box
+                as={ButtonPressAnimation}
+                background="accent"
+                height="46px"
+                width="full"
+                borderRadius={99}
+                justifyContent="center"
+                alignItems="center"
+                style={{ overflow: 'hidden' }}
+                onPress={() => {
+                  // TODO
+                  // Linking.openURL(offer)
+                }}
+              >
+                <Text color="label" align="center" size="15pt" weight="bold">
+                  {i18n.t(i18n.l.nft_offers.single_offer_sheet.view_offer)}
+                </Text>
+              </Box>
             </AccentColorProvider>
           </Inset>
         </SimpleSheet>
