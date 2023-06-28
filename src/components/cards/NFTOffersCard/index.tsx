@@ -9,7 +9,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ButtonPressAnimation,
   ShimmerAnimation,
@@ -33,6 +33,7 @@ import {
   SortOption,
   SortOptions,
 } from '@/components/nft-offers/SortMenu';
+import { NftOffer } from '@/graphql/__generated__/arc';
 
 const CARD_HEIGHT = 250;
 const MAX_OFFERS = 10;
@@ -43,14 +44,14 @@ export const NFTOffersCard = () => {
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
-  const { data } = useNFTOffers({
+  const { data, isLoading } = useNFTOffers({
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
   });
   const { colors } = useTheme();
   const { navigate } = useNavigation();
 
-  const [hasOffers, setHasOffers] = useReducer(() => true, false);
+  const [hasOffers, setHasOffers] = useState(false);
 
   // only show the first MAX_OFFERS offers
   const offers = data?.nftOffers ?? [];
@@ -63,16 +64,24 @@ export const NFTOffersCard = () => {
     };
   });
 
+  // animate in/out card depending on if there are offers
   useEffect(() => {
-    if (!hasOffers && offers.length) {
-      setHasOffers();
-      // -1 bc we still want to show the <Divider /> (thickness 1)
-      heightValue.value = withTiming(CARD_HEIGHT - 1);
+    if (!hasOffers) {
+      if (offers.length) {
+        setHasOffers(true);
+        // -1 bc we still want to show the <Divider /> (thickness 1)
+        heightValue.value = withTiming(CARD_HEIGHT - 1);
+      }
+    } else {
+      if (!offers.length && !isLoading) {
+        setHasOffers(false);
+        heightValue.value = withTiming(1);
+      }
     }
-  }, [hasOffers, heightValue, offers.length]);
+  }, [hasOffers, heightValue, isLoading, offers.length]);
 
   const totalUSDValue = offers.reduce(
-    (acc, offer) => acc + offer.grossAmount.usd,
+    (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
     0
   );
 
@@ -142,7 +151,11 @@ export const NFTOffersCard = () => {
                 />
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ height: 138 }}
+                >
                   <Inset horizontal="20px" vertical="10px">
                     <Inline space={{ custom: 14 }}>
                       {!offers.length ? (
