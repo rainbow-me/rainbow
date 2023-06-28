@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -27,6 +27,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
+import Routes from '@/navigation/routesNames';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountSettings } from '@/hooks';
+import { UniqueAsset } from '@/entities';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -63,11 +67,21 @@ function Row({
 
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
-  const { setParams } = useNavigation();
+  const { navigate, setParams } = useNavigation();
+  const { accountAddress } = useAccountSettings();
+  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
 
   const [height, setHeight] = useState(0);
+
+  const nft = useMemo(() => {
+    if (nfts) {
+      return nfts.find(
+        (nft: UniqueAsset) => nft.fullUniqueId === offer.nft.uniqueId
+      );
+    }
+  }, [nfts, offer.nft.uniqueId]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -125,7 +139,6 @@ export function NFTSingleOfferSheet() {
       return () => clearInterval(interval);
     }
   }, [offer.validUntil]);
-
   const isExpiring =
     timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
   const isExpired = timeRemaining === 0;
@@ -187,25 +200,44 @@ export function NFTSingleOfferSheet() {
               </Inset>
 
               <Box alignItems="center">
-                <ConditionalWrap
-                  condition={!!offer.nft.predominantColor}
-                  wrap={(children: React.ReactNode) => (
-                    <AccentColorProvider color={offer.nft.predominantColor!}>
-                      {children}
-                    </AccentColorProvider>
-                  )}
+                <ButtonPressAnimation
+                  disabled={!nft}
+                  onPress={() =>
+                    navigate(Routes.EXPANDED_ASSET_SHEET, {
+                      asset: nft,
+                      backgroundOpacity: 1,
+                      cornerRadius: 'device',
+                      external: false,
+                      springDamping: 1,
+                      topOffset: 0,
+                      transitionDuration: 0.25,
+                      type: 'unique_token',
+                    })
+                  }
+                  overflowMargin={100}
                 >
-                  <Box
-                    as={ImgixImage}
-                    background="surfacePrimary"
-                    source={{ uri: offer.nft.imageUrl }}
-                    width={{ custom: 160 }}
-                    height={{ custom: 160 }}
-                    borderRadius={16}
-                    size={160}
-                    shadow={offer.nft.predominantColor ? '30px accent' : '30px'}
-                  />
-                </ConditionalWrap>
+                  <ConditionalWrap
+                    condition={!!offer.nft.predominantColor}
+                    wrap={(children: React.ReactNode) => (
+                      <AccentColorProvider color={offer.nft.predominantColor!}>
+                        {children}
+                      </AccentColorProvider>
+                    )}
+                  >
+                    <Box
+                      as={ImgixImage}
+                      background="surfacePrimary"
+                      source={{ uri: offer.nft.imageUrl }}
+                      width={{ custom: 160 }}
+                      height={{ custom: 160 }}
+                      borderRadius={16}
+                      size={160}
+                      shadow={
+                        offer.nft.predominantColor ? '30px accent' : '30px'
+                      }
+                    />
+                  </ConditionalWrap>
+                </ButtonPressAnimation>
               </Box>
 
               <Inset top={{ custom: 40 }} bottom="24px">
@@ -350,7 +382,7 @@ export function NFTSingleOfferSheet() {
                       size="17pt"
                       weight="medium"
                     >
-                      {(offer.feesPercentage / 100).toFixed(1)}%
+                      {Math.floor(offer.feesPercentage * 10) / 10}%
                     </Text>
                   }
                 />
@@ -367,7 +399,7 @@ export function NFTSingleOfferSheet() {
                       size="17pt"
                       weight="medium"
                     >
-                      {offer.royaltiesPercentage}%
+                      {Math.floor(offer.royaltiesPercentage * 10) / 10}%
                     </Text>
                   }
                 />
