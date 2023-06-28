@@ -448,10 +448,7 @@ export function NFTSingleOfferSheet() {
                   justifyContent="center"
                   alignItems="center"
                   style={{ overflow: 'hidden' }}
-                  onPress={() => {
-                    // TODO
-                    // Linking.openURL(offer)
-                  }}
+                  onPress={() => Linking.openURL(offer.url)}
                 >
                   <Text color="label" align="center" size="17pt" weight="heavy">
                     {i18n.t(
