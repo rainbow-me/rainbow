@@ -12,14 +12,7 @@ import {
 } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
-import { useTheme } from '@/theme';
-import {
-  AccentColorProvider,
-  Box,
-  Inline,
-  Text,
-  useColorMode,
-} from '@/design-system';
+import { Box, Inline, Text, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
@@ -36,41 +29,38 @@ const NFTImageMask = () => (
   </Svg>
 );
 
-export const FakeOffer = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.skeleton}>
-      <Box
-        background="accent"
-        width={{ custom: NFT_IMAGE_SIZE }}
-        height={{ custom: NFT_IMAGE_SIZE }}
-        borderRadius={12}
-      />
-      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
-        <Inline space="4px" alignVertical="center">
-          <Box
-            background="accent"
-            width={{ custom: 12 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
-          />
-          <Box
-            background="accent"
-            width={{ custom: 50 }}
-            height={{ custom: 9.3333 }}
-            borderRadius={9.3333 / 2}
-          />
-        </Inline>
-      </Box>
-      <Box
-        background="accent"
-        width={{ custom: 50 }}
-        height={{ custom: 9.3333 }}
-        borderRadius={9.3333 / 2}
-      />
-    </AccentColorProvider>
-  );
-};
+export const FakeOffer = () => (
+  <>
+    <Box
+      background="fill"
+      width={{ custom: NFT_IMAGE_SIZE }}
+      height={{ custom: NFT_IMAGE_SIZE }}
+      borderRadius={12}
+    />
+    <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
+      <Inline space="4px" alignVertical="center">
+        <Box
+          background="fill"
+          width={{ custom: 12 }}
+          height={{ custom: 12 }}
+          borderRadius={6}
+        />
+        <Box
+          background="fill"
+          width={{ custom: 50 }}
+          height={{ custom: 9.3333 }}
+          borderRadius={9.3333 / 2}
+        />
+      </Inline>
+    </Box>
+    <Box
+      background="fill"
+      width={{ custom: 50 }}
+      height={{ custom: 9.3333 }}
+      borderRadius={9.3333 / 2}
+    />
+  </>
+);
 
 export const Offer = ({
   offer,
@@ -206,7 +196,7 @@ export const Offer = ({
           >
             <Box
               as={ImgixImage}
-              background="surfacePrimary"
+              background="surfacePrimaryElevated"
               source={{ uri: offer.nft.imageUrl }}
               width={{ custom: NFT_IMAGE_SIZE }}
               height={{ custom: NFT_IMAGE_SIZE }}

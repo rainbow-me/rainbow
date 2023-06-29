@@ -1,5 +1,4 @@
 import {
-  AccentColorProvider,
   Bleed,
   Box,
   Inline,
@@ -18,7 +17,6 @@ import { useAccountSettings, useDimensions } from '@/hooks';
 import { ScrollView } from 'react-native';
 import { useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import Animated, {
   useAnimatedStyle,
@@ -48,7 +46,6 @@ export const NFTOffersCard = () => {
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
   });
-  const { colors } = useTheme();
   const { navigate } = useNavigation();
 
   const [hasOffers, setHasOffers] = useState(false);
@@ -103,14 +100,12 @@ export const NFTOffersCard = () => {
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
-                    <AccentColorProvider color={colors.skeleton}>
-                      <Box
-                        background="accent"
-                        height={{ custom: 14 }}
-                        width={{ custom: 157 }}
-                        borderRadius={7}
-                      />
-                    </AccentColorProvider>
+                    <Box
+                      background="fill"
+                      height={{ custom: 14 }}
+                      width={{ custom: 157 }}
+                      borderRadius={7}
+                    />
                   ) : (
                     <>
                       <Text color="label" weight="heavy" size="20pt">
@@ -169,7 +164,7 @@ export const NFTOffersCard = () => {
                       ) : (
                         offers
                           .slice(0, MAX_OFFERS)
-                          .map(offer => (
+                          .map((offer: NftOffer) => (
                             <Offer
                               key={offer.nft.uniqueId}
                               offer={offer}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  AccentColorProvider,
   Bleed,
   Box,
   Column,
@@ -24,7 +23,6 @@ import {
 } from '@/helpers/utilities';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 
 const NFT_SIZE = 50;
@@ -40,65 +38,60 @@ const NFTImageMask = () => (
   </Svg>
 );
 
-export const FakeOfferRow = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.black}>
-      <Columns space="16px" alignVertical="center">
-        <Column width="content">
+export const FakeOfferRow = () => (
+  <Columns space="16px" alignVertical="center">
+    <Column width="content">
+      <Box
+        background="fillSecondary"
+        width={{ custom: NFT_SIZE }}
+        height={{ custom: NFT_SIZE }}
+        borderRadius={12}
+      />
+    </Column>
+    <Column>
+      <Stack space="10px">
+        <Box
+          background="fillSecondary"
+          width={{ custom: 70 }}
+          height={{ custom: 12 }}
+          borderRadius={6}
+        />
+        <Box
+          background="fillSecondary"
+          width={{ custom: 100 }}
+          height={{ custom: 9.3333 }}
+          borderRadius={9.3333 / 2}
+        />
+      </Stack>
+    </Column>
+    <Column width="content">
+      <Stack space="10px" alignHorizontal="right">
+        <Inline space="6px" alignVertical="center">
+          <Bleed vertical="2px">
+            <Box
+              background="fillSecondary"
+              width={{ custom: COIN_ICON_SIZE }}
+              height={{ custom: COIN_ICON_SIZE }}
+              borderRadius={99}
+            />
+          </Bleed>
           <Box
-            background="accent"
-            width={{ custom: NFT_SIZE }}
-            height={{ custom: NFT_SIZE }}
-            borderRadius={12}
+            background="fillSecondary"
+            width={{ custom: 90 }}
+            height={{ custom: 12 }}
+            borderRadius={6}
           />
-        </Column>
-        <Column>
-          <Stack space="10px">
-            <Box
-              background="accent"
-              width={{ custom: 70 }}
-              height={{ custom: 12 }}
-              borderRadius={6}
-            />
-            <Box
-              background="accent"
-              width={{ custom: 100 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
-            />
-          </Stack>
-        </Column>
-        <Column width="content">
-          <Stack space="10px" alignHorizontal="right">
-            <Inline space="6px" alignVertical="center">
-              <Bleed vertical="2px">
-                <Box
-                  background="accent"
-                  width={{ custom: COIN_ICON_SIZE }}
-                  height={{ custom: COIN_ICON_SIZE }}
-                  borderRadius={99}
-                />
-              </Bleed>
-              <Box
-                background="accent"
-                width={{ custom: 90 }}
-                height={{ custom: 12 }}
-                borderRadius={6}
-              />
-            </Inline>
-            <Box
-              background="accent"
-              width={{ custom: 100 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
-            />
-          </Stack>
-        </Column>
-      </Columns>
-    </AccentColorProvider>
-  );
-};
+        </Inline>
+        <Box
+          background="fillSecondary"
+          width={{ custom: 100 }}
+          height={{ custom: 9.3333 }}
+          borderRadius={9.3333 / 2}
+        />
+      </Stack>
+    </Column>
+  </Columns>
+);
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
@@ -168,8 +161,10 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 as={ImgixImage}
                 width={{ custom: MARKETPLACE_ORB_SIZE }}
                 height={{ custom: MARKETPLACE_ORB_SIZE }}
+                background="surfaceSecondaryElevated"
                 source={{ uri: offer.marketplace.imageUrl }}
                 size={MARKETPLACE_ORB_SIZE}
+                borderRadius={MARKETPLACE_ORB_SIZE / 2}
                 marginTop={{
                   custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
                 }}

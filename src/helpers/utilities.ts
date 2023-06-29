@@ -578,7 +578,7 @@ export const pickBy = <T>(
  * @returns string of the format "Xd Yh Zm"
  */
 export const getFormattedTimeQuantity = (ms: number): string => {
-  const totalMinutes = Math.floor(ms / (1000 * 60));
+  const totalMinutes = Math.ceil(ms / (1000 * 60));
   const totalHours = Math.floor(totalMinutes / 60);
   const days = Math.floor(totalHours / 24);
   const hours = totalHours % 24;

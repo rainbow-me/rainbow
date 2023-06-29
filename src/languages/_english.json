@@ -1084,7 +1084,8 @@
         "title": "Offers",
         "total": "Total",
         "above_floor": "above floor",
-        "below_floor": "below floor"
+        "below_floor": "below floor",
+        "no_offers_found": "No offers found"
       },
       "sort_menu": {
         "highest": "Highest",

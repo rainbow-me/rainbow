@@ -226,7 +226,7 @@ export function NFTSingleOfferSheet() {
                   >
                     <Box
                       as={ImgixImage}
-                      background="surfacePrimary"
+                      background="surfaceSecondaryElevated"
                       source={{ uri: offer.nft.imageUrl }}
                       width={{ custom: 160 }}
                       height={{ custom: 160 }}
@@ -347,7 +347,7 @@ export function NFTSingleOfferSheet() {
                     >
                       <Box
                         as={ImgixImage}
-                        background="surfacePrimary"
+                        background="surfaceSecondaryElevated"
                         source={{ uri: offer.marketplace.imageUrl }}
                         width={{ custom: 16 }}
                         height={{ custom: 16 }}

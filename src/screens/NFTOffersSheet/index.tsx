@@ -15,7 +15,7 @@ import { FakeOfferRow, OfferRow } from './OfferRow';
 import { useAccountProfile } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
-import { useNFTOffers } from '@/resources/nftOffers';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import {
   SortMenu,
@@ -23,6 +23,9 @@ import {
   SortOptions,
 } from '@/components/nft-offers/SortMenu';
 import * as i18n from '@/languages';
+import { NftOffer } from '@/graphql/__generated__/arc';
+import { ButtonPressAnimation } from '@/components/animations';
+import { queryClient } from '@/react-query';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -37,7 +40,7 @@ export const NFTOffersSheet = () => {
 
   const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
 
-  const { data } = useNFTOffers({
+  const { data, dataUpdatedAt, isLoading } = useNFTOffers({
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
   });
@@ -45,7 +48,7 @@ export const NFTOffersSheet = () => {
   const offers = data?.nftOffers ?? [];
 
   const totalUSDValue = offers.reduce(
-    (acc, offer) => acc + offer.grossAmount.usd,
+    (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
     0
   );
 
@@ -61,7 +64,6 @@ export const NFTOffersSheet = () => {
                 <Inline alignHorizontal="justify" alignVertical="center">
                   <AccentColorProvider color={accountColor}>
                     {accountImage ? (
-                      // @ts-expect-error Box is demanding a background prop but I REFUSE to yield
                       <Box
                         as={ImgixImage}
                         background="surfaceSecondary"
@@ -97,14 +99,23 @@ export const NFTOffersSheet = () => {
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <Text
-                      color="labelTertiary"
-                      align="center"
-                      size="15pt"
-                      weight="bold"
-                    >
-                      {offers.length}
-                    </Text>
+                    {isLoading ? (
+                      <Box
+                        background="fillSecondary"
+                        width={{ custom: 20 }}
+                        height={{ custom: 15 }}
+                        borderRadius={15 / 2}
+                      />
+                    ) : (
+                      <Text
+                        color="labelTertiary"
+                        align="center"
+                        size="15pt"
+                        weight="bold"
+                      >
+                        {offers.length}
+                      </Text>
+                    )}
                   </Box>
                 </Inline>
                 <Inline alignHorizontal="justify" alignVertical="center">
@@ -112,9 +123,18 @@ export const NFTOffersSheet = () => {
                     <Text size="15pt" weight="semibold" color="labelSecondary">
                       {i18n.t(i18n.l.nft_offers.sheet.total)}
                     </Text>
-                    <Text size="22pt" weight="heavy" color="label">
-                      {totalValue}
-                    </Text>
+                    {isLoading ? (
+                      <Box
+                        background="fillSecondary"
+                        width={{ custom: 100 }}
+                        height={{ custom: 15 }}
+                        borderRadius={15 / 2}
+                      />
+                    ) : (
+                      <Text size="22pt" weight="heavy" color="label">
+                        {totalValue}
+                      </Text>
+                    )}
                   </Stack>
                   <SortMenu
                     sortOption={sortOption}
@@ -127,7 +147,8 @@ export const NFTOffersSheet = () => {
             <Separator color="separatorTertiary" />
             <Inset top="20px">
               <Stack space="20px">
-                {!offers.length ? (
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {isLoading ? (
                   <>
                     <FakeOfferRow />
                     <FakeOfferRow />
@@ -141,10 +162,52 @@ export const NFTOffersSheet = () => {
                     <FakeOfferRow />
                     <FakeOfferRow />
                   </>
-                ) : (
-                  offers.map(offer => (
+                ) : offers.length ? (
+                  offers.map((offer: NftOffer) => (
                     <OfferRow key={offer.nft.uniqueId} offer={offer} />
                   ))
+                ) : (
+                  <Box
+                    paddingTop={{ custom: 180 }}
+                    width="full"
+                    alignItems="center"
+                  >
+                    <Stack space="36px">
+                      <Text
+                        align="center"
+                        color="labelSecondary"
+                        weight="bold"
+                        size="20pt"
+                      >
+                        {i18n.t(i18n.l.nft_offers.sheet.no_offers_found)}
+                      </Text>
+                      <ButtonPressAnimation
+                        onPress={() => {
+                          // only allow refresh if data is at least 30 seconds old
+                          if (
+                            !dataUpdatedAt ||
+                            Date.now() - dataUpdatedAt > 30_000
+                          ) {
+                            queryClient.invalidateQueries({
+                              queryKey: nftOffersQueryKey({
+                                address: accountAddress,
+                                sortCriterion: sortOption.criterion,
+                              }),
+                            });
+                          }
+                        }}
+                      >
+                        <Text
+                          align="center"
+                          color="labelSecondary"
+                          size="34pt"
+                          weight="semibold"
+                        >
+                          􀅈
+                        </Text>
+                      </ButtonPressAnimation>
+                    </Stack>
+                  </Box>
                 )}
               </Stack>
             </Inset>
