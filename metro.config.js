@@ -29,6 +29,7 @@ if (process.env.CI) {
 module.exports = {
   resolver: {
     blacklistRE,
+    unstable_enablePackageExports: true,
   },
   transformer,
 };

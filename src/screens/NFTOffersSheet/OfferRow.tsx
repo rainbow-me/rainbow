@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AccentColorProvider,
   Bleed,
@@ -24,10 +24,35 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
+import { getClient, Execute, createClient } from '@reservoir0x/reservoir-sdk';
+import { createWalletClient, http } from 'viem';
+import { useAccountSettings } from '@/hooks';
+import { mainnet } from 'viem/chains';
+import { loadPrivateKey } from '@/model/wallet';
+// import { Wallet } from '@ethersproject/wallet';
+import { Wallet } from 'ethers';
+import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
 const COIN_ICON_SIZE = 16;
+
+createClient({
+  chains: [
+    {
+      id: 1,
+      baseApiUrl: 'https://api.reservoir.tools',
+      active: true,
+      apiKey: 'demo-api-key',
+    },
+    {
+      id: 137,
+      baseApiUrl: 'https://api-polygon.reservoir.tools',
+      active: true,
+      apiKey: 'demo-api-key',
+    },
+  ],
+});
 
 const NFTImageMask = () => (
   <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
@@ -99,29 +124,54 @@ export const FakeOfferRow = () => {
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
+  const { accountAddress } = useAccountSettings();
+  const [signer, setSigner] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const pkey = await loadPrivateKey(accountAddress, false);
+      console.log(pkey);
+      if (typeof pkey === 'string') {
+        const signer = new Wallet(pkey);
+        console.log(signer);
+        // console.log('IS SIGNER', signer.isSigner());
+        const acc = adaptEthersSigner(signer);
+        console.log(acc);
+        const s = createWalletClient({
+          account: acc,
+          chain: mainnet,
+          transport: http(),
+        });
+        setSigner(acc);
+      }
+    })();
+  }, [accountAddress]);
+
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
-  const dollarAmount = convertAmountToNativeDisplay(
-    offer.grossAmount.usd,
-    'USD',
-    undefined,
-    // don't show decimals
-    true,
-    // abbreviate if amount is >= 10,000
-    offer.grossAmount.decimal >= 10_000
-  );
-  const cryptoAmount = handleSignificantDecimals(
-    offer.grossAmount.decimal,
-    18,
-    // don't show more than 3 decimals
-    3,
-    undefined,
-    // abbreviate if amount is >= 10,000
-    offer.grossAmount.decimal >= 10_000
-  );
-
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation
+      onPress={() => {
+        console.log('attempting stuff');
+        if (signer) {
+          console.log('accepting offer');
+          console.log(getClient().actions);
+          getClient()?.actions.acceptOffer({
+            items: [
+              {
+                token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+                quantity: 1,
+              },
+            ],
+            wallet: signer,
+            onProgress: (steps: Execute['steps'], path: Execute['path']) => {
+              console.log(steps);
+            },
+          });
+          console.log('TEST');
+        }
+      }}
+    >
       <Columns space="16px" alignVertical="center">
         <Column width="content">
           <Box
@@ -176,7 +226,12 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
         <Column>
           <Stack space="10px">
             <Text size="17pt" weight="bold" color="label">
-              {dollarAmount}
+              {convertAmountToNativeDisplay(
+                offer.grossAmount.usd,
+                'USD',
+                undefined,
+                true
+              )}
             </Text>
             <Text
               size="13pt"
@@ -200,7 +255,13 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 />
               </Bleed>
               <Text size="17pt" weight="bold" color="label">
-                {cryptoAmount}
+                {handleSignificantDecimals(
+                  offer.grossAmount.decimal,
+                  18,
+                  3,
+                  undefined,
+                  true
+                )}
               </Text>
             </Inline>
             <Inline>
