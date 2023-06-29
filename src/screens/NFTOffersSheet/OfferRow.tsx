@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   AccentColorProvider,
   Bleed,
@@ -24,6 +25,7 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
+import Routes from '@/navigation/routesNames';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -99,6 +101,7 @@ export const FakeOfferRow = () => {
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
+  const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const dollarAmount = convertAmountToNativeDisplay(
@@ -121,7 +124,11 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   );
 
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation
+      onPress={() => {
+        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
+      }}
+    >
       <Columns space="16px" alignVertical="center">
         <Column width="content">
           <Box
