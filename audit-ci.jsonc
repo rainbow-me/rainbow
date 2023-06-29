@@ -10,6 +10,7 @@
     "GHSA-9vvw-cc9w-f27h", // https://github.com/advisories/GHSA-9vvw-cc9w-f27h
     "GHSA-p8p7-x288-28g6", // https://github.com/advisories/GHSA-p8p7-x288-28g6
     "GHSA-776f-qx25-q3cc", // https://github.com/advisories/GHSA-776f-qx25-q3cc
-    "GHSA-f9xv-q969-pqx4" // https://github.com/advisories/GHSA-f9xv-q969-pqx4
+    "GHSA-f9xv-q969-pqx4", // https://github.com/advisories/GHSA-f9xv-q969-pqx4
+    "GHSA-j8xg-fqg3-53r7" // https://github.com/advisories/GHSA-j8xg-fqg3-53r7
   ]
 }

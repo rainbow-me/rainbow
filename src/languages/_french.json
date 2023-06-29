@@ -1094,6 +1094,20 @@
         "highest": "Highest :)",
         "from_floor": "From Floor :)",
         "recent": "Recent :)"
+      },
+      "single_offer_sheet": {
+        "title": "Offer :)",
+        "expires_in": "Expires in %{timeLeft} :)",
+        "floor_price": "Floor Price :)",
+        "marketplace": "Marketplace :)",
+        "marketplace_fees": "%{marketplace} Fees :)",
+        "creator_royalties": "Creator Royalties :)",
+        "receive": "Receive :)",
+        "proceeds": "Proceeds :)",
+        "view_offer": "View Offer :)",
+        "hold_to_accept": "Hold to Accept :)",
+        "offer_expired": "Offer Expired :)",
+        "expired": "Expired :)"
       }
     },
     "notification": {

@@ -139,6 +139,19 @@ export const nftOffersSheetConfig = {
   }),
 };
 
+export const nftSingleOfferSheetConfig = {
+  options: ({
+    route: {
+      params: { longFormHeight, ...params },
+    },
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || 0,
+    }),
+  }),
+};
+
 export const walletDiagnosticsSheetConfig = {
   options: ({ route }) => {
     return buildCoolModalConfig({
