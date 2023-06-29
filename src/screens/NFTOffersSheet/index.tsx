@@ -69,6 +69,7 @@ export const NFTOffersSheet = () => {
                         background="surfaceSecondary"
                         width={{ custom: PROFILE_AVATAR_SIZE }}
                         height={{ custom: PROFILE_AVATAR_SIZE }}
+                        size={PROFILE_AVATAR_SIZE}
                         borderRadius={PROFILE_AVATAR_SIZE / 2}
                         source={{ uri: accountImage }}
                         shadow="12px accent"
