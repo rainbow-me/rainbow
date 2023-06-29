@@ -84,7 +84,7 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
-};
+} as const;
 
 export const NATIVE_ROUTES = [
   Routes.RECEIVE_MODAL,

@@ -1,31 +1,63 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import BackButton from '../components/header/BackButton';
-import { Icon } from '../components/icons';
-import { SheetHandleFixedToTopHeight } from '../components/sheet';
-import { Text } from '../components/text';
-import { getENSAdditionalRecordsSheetHeight } from '../screens/ENSAdditionalRecordsSheet';
-import { ENSConfirmRegisterSheetHeight } from '../screens/ENSConfirmRegisterSheet';
-import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
-import { ExternalLinkWarningSheetHeight } from '../screens/ExternalLinkWarningSheet';
-import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
-import { useTheme } from '../theme/ThemeContext';
-import colors from '../theme/currentColors';
-import { onWillPop } from './Navigation';
-import networkTypes from '@/helpers/networkTypes';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+
+import { useTheme } from '@/theme/ThemeContext';
+import colors from '@/theme/currentColors';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
+import networkTypes from '@/helpers/networkTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
 import { getNetworkObj } from '@/networks';
+
+import BackButton from '@/components/header/BackButton';
+import { Icon } from '@/components/icons';
+import { SheetHandleFixedToTopHeight } from '@/components/sheet';
+import { Text } from '@/components/text';
+
+import { getENSAdditionalRecordsSheetHeight } from '@/screens/ENSAdditionalRecordsSheet';
+import { ENSConfirmRegisterSheetHeight } from '@/screens/ENSConfirmRegisterSheet';
+import { explainers, ExplainSheetHeight } from '@/screens/ExplainSheet';
+import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
+import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';
+
+import { onWillPop } from '@/navigation/Navigation';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
+import {
+  StackNavigationOptions,
+  createStackNavigator,
+} from '@react-navigation/stack';
+import { PartialNavigatorConfigOptions } from '@/navigation/types';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
-const buildCoolModalConfig = params => ({
+export type CoolModalConfigOptions = StackNavigationOptions & {
+  allowsDragToDismiss?: boolean;
+  allowsTapToDismiss?: boolean;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
+  blocksBackgroundTouches?: boolean;
+  cornerRadius?: number;
+  customStack?: boolean;
+  disableShortFormAfterTransitionToLongForm?: boolean;
+  headerHeight?: number;
+  ignoreBottomOffset?: boolean;
+  isShortFormEnabled?: boolean;
+  longFormHeight?: number;
+  onAppear?: () => void;
+  onWillDismiss?: () => void;
+  scrollEnabled?: boolean;
+  single?: boolean;
+  springDamping?: number;
+  startFromShortForm?: boolean;
+  topOffset?: number;
+  transitionDuration?: number;
+};
+
+const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
-  backgroundColor: params.backgroundColor || colors.themedColors.shadowBlack,
+  backgroundColor: params.backgroundColor || colors.themedColors?.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
   cornerRadius:
@@ -66,9 +98,11 @@ const backupSheetSizes = {
   short: 394,
 };
 
-export const backupSheetConfig = {
+export const backupSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ navigation, route }) => {
-    const { params: { longFormHeight, step, ...params } = {} } = route;
+    const { params: { longFormHeight, step, ...params } = {} } = route as {
+      params: any;
+    };
 
     let heightForStep = backupSheetSizes.short;
     if (
@@ -108,7 +142,7 @@ export const swapDetailsSheetConfig = {
   }),
 };
 
-export const transactionDetailsConfig = {
+export const transactionDetailsConfig: PartialNavigatorConfigOptions = {
   options: ({ route }) => {
     return buildCoolModalConfig({
       longFormHeight: 0,
@@ -118,7 +152,7 @@ export const transactionDetailsConfig = {
   },
 };
 
-export const opRewardsSheetConfig = {
+export const opRewardsSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route }) => {
     return buildCoolModalConfig({
       ...route.params,
@@ -129,7 +163,7 @@ export const opRewardsSheetConfig = {
   },
 };
 
-export const walletDiagnosticsSheetConfig = {
+export const walletDiagnosticsSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route }) => {
     return buildCoolModalConfig({
       ...route.params,
@@ -140,7 +174,7 @@ export const walletDiagnosticsSheetConfig = {
   },
 };
 
-export const customGasSheetConfig = {
+export const customGasSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -151,7 +185,7 @@ export const customGasSheetConfig = {
   }),
 };
 
-export const addTokenSheetConfig = {
+export const addTokenSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -160,9 +194,9 @@ export const addTokenSheetConfig = {
   }),
 };
 
-export const sendConfirmationSheetConfig = {
+export const sendConfirmationSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => {
-    const height = getSendConfirmationSheetHeight(params);
+    const height = getSendConfirmationSheetHeight(params as any);
     return {
       ...buildCoolModalConfig({
         ...params,
@@ -172,7 +206,7 @@ export const sendConfirmationSheetConfig = {
   },
 };
 
-export const settingsSheetConfig = {
+export const settingsSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -183,7 +217,7 @@ export const settingsSheetConfig = {
   }),
 };
 
-export const qrScannerConfig = {
+export const qrScannerConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -197,7 +231,7 @@ export const qrScannerConfig = {
   }),
 };
 
-export const pairHardwareWalletNavigatorConfig = {
+export const pairHardwareWalletNavigatorConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -209,7 +243,7 @@ export const pairHardwareWalletNavigatorConfig = {
   }),
 };
 
-export const hardwareWalletTxNavigatorConfig = {
+export const hardwareWalletTxNavigatorConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -222,7 +256,7 @@ export const hardwareWalletTxNavigatorConfig = {
   }),
 };
 
-export const registerENSNavigatorConfig = {
+export const registerENSNavigatorConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -234,7 +268,7 @@ export const registerENSNavigatorConfig = {
   }),
 };
 
-export const addWalletNavigatorConfig = {
+export const addWalletNavigatorConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -245,7 +279,7 @@ export const addWalletNavigatorConfig = {
   }),
 };
 
-export const learnWebViewScreenConfig = {
+export const learnWebViewScreenConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -257,7 +291,7 @@ export const learnWebViewScreenConfig = {
   }),
 };
 
-export const promoSheetConfig = {
+export const promoSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -269,7 +303,7 @@ export const promoSheetConfig = {
   }),
 };
 
-export const profileConfig = {
+export const profileConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -281,7 +315,7 @@ export const profileConfig = {
   }),
 };
 
-export const profilePreviewConfig = {
+export const profilePreviewConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -289,6 +323,7 @@ export const profilePreviewConfig = {
       disableShortFormAfterTransitionToLongForm: true,
       isShortFormEnabled: true,
       scrollEnabled: true,
+      // @ts-ignore
       shortFormHeight: 281 + params.descriptionProfilePreviewHeight,
       springDamping: 1,
       startFromShortForm: true,
@@ -297,7 +332,7 @@ export const profilePreviewConfig = {
   }),
 };
 
-export const ensConfirmRegisterSheetConfig = {
+export const ensConfirmRegisterSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       longFormHeight: ENSConfirmRegisterSheetHeight,
@@ -306,7 +341,7 @@ export const ensConfirmRegisterSheetConfig = {
   }),
 };
 
-export const ensAdditionalRecordsSheetConfig = {
+export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -315,10 +350,11 @@ export const ensAdditionalRecordsSheetConfig = {
   }),
 };
 
-export const explainSheetConfig = {
+export const explainSheetConfig: PartialNavigatorConfigOptions = {
   options: ({
     route: { params = { network: getNetworkObj(networkTypes.mainnet).name } },
   }) => {
+    // @ts-ignore
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
       ...params,
@@ -329,7 +365,7 @@ export const explainSheetConfig = {
   },
 };
 
-export const externalLinkWarningSheetConfig = {
+export const externalLinkWarningSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => {
     return buildCoolModalConfig({
       ...params,
@@ -338,7 +374,7 @@ export const externalLinkWarningSheetConfig = {
   },
 };
 
-export const expandedAssetSheetConfig = {
+export const expandedAssetSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -347,7 +383,7 @@ export const expandedAssetSheetConfig = {
   }),
 };
 
-export const expandedAssetSheetConfigWithLimit = {
+export const expandedAssetSheetConfigWithLimit: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -357,7 +393,8 @@ export const expandedAssetSheetConfigWithLimit = {
   }),
 };
 
-export const restoreSheetConfig = {
+export const restoreSheetConfig: PartialNavigatorConfigOptions = {
+  // @ts-ignore
   options: ({ route: { params: { longFormHeight, ...params } = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -366,7 +403,7 @@ export const restoreSheetConfig = {
   }),
 };
 
-export const basicSheetConfig = {
+export const basicSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -376,10 +413,11 @@ export const basicSheetConfig = {
   }),
 };
 
-export const portalSheetConfig = {
+export const portalSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      // @ts-ignore
       longFormHeight: params.sheetHeight,
     }),
   }),
@@ -391,22 +429,23 @@ export const stackNavigationConfig = {
   mode: 'modal',
 };
 
-export const defaultScreenStackOptions = {
+export const defaultScreenStackOptions: StackNavigationOptions = {
   animationTypeForReplace: 'pop',
   gestureEnabled: true,
 };
 
 export const closeKeyboardOnClose = {
   listeners: {
+    // @ts-ignore
     transitionEnd: ({ data: { closing } }) => {
       closing && android && Keyboard.dismiss();
     },
   },
 };
 
-export const nativeStackDefaultConfig = {
+export const nativeStackDefaultConfig: CoolModalConfigOptions = {
   allowsDragToDismiss: true,
-  backgroundColor: colors.themedColors.stackBackground,
+  backgroundColor: colors.themedColors?.stackBackground,
   backgroundOpacity: 1,
   customStack: true,
   headerHeight: 0,
@@ -416,7 +455,7 @@ export const nativeStackDefaultConfig = {
   transitionDuration: 0.3,
 };
 
-export const nativeStackDefaultConfigWithoutStatusBar = {
+export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions = {
   ...nativeStackDefaultConfig,
   onWillDismiss: () => {
     onWillPop();
@@ -444,7 +483,7 @@ export const exchangeTabNavigatorConfig = {
 };
 
 const BackArrow = styled(Icon).attrs({
-  color: colors.themedColors.appleBlue,
+  color: colors.themedColors?.appleBlue,
   direction: 'left',
   name: 'caret',
 })({
@@ -458,6 +497,7 @@ const BackImage = () => <BackArrow />;
 const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
+    // @ts-ignore
     fontSize: parseFloat(fonts.size.large),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
@@ -475,19 +515,21 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors.themedColors.dark,
+    color: colors.themedColors?.dark,
     fontFamily: fonts.family.SFProRounded,
+    // @ts-ignore
     fontSize: parseFloat(fonts.size.large),
     fontWeight: fonts.weight.heavy,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
 
+// @ts-expect-error Styled Thing types are incomplete
 const EmptyButtonPlaceholder = styled.View({
   flex: 1,
 });
 
-const SettingsTitle = ({ children }) => {
+const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
@@ -503,7 +545,7 @@ const SettingsTitle = ({ children }) => {
   );
 };
 
-export const settingsOptions = colors => ({
+export const settingsOptions = (colors: any) => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
@@ -526,8 +568,8 @@ export const settingsOptions = colors => ({
     color: colors.dark,
   },
   ...(android && {
-    headerLeft: props => <BackButton {...props} textChevron />,
+    headerLeft: (props: any) => <BackButton {...props} textChevron />,
     headerRight: () => <EmptyButtonPlaceholder />,
-    headerTitle: props => <SettingsTitle {...props} />,
+    headerTitle: (props: any) => <SettingsTitle {...props} />,
   }),
 });

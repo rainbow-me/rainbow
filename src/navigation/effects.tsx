@@ -1,17 +1,23 @@
 import React from 'react';
 import { Animated, StatusBar, View } from 'react-native';
-import { HeaderHeightWithStatusBar } from '../components/header';
-import { AvatarCircle } from '../components/profile';
-import Routes from '@/navigation/routesNames';
+import {
+  StackNavigationOptions,
+  TransitionPreset,
+} from '@react-navigation/stack';
+
+import { IS_IOS } from '@/env';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
+import { HeaderHeightWithStatusBar } from '@/components/header';
+import AvatarCircle from '@/components/profile/AvatarCircle';
+import Routes from '@/navigation/routesNames';
 import {
   EmojiAvatar,
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
-import { IS_IOS } from '@/env';
+import { BottomSheetNavigationOptions } from './bottom-sheet/types';
 
 const statusBarHeight = IS_IOS
   ? safeAreaInsetValues.top
@@ -23,7 +29,7 @@ export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
 const backgroundInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
@@ -47,7 +53,7 @@ const backgroundInterpolator = ({
 const emojiStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 1, 1],
@@ -71,7 +77,7 @@ const emojiStyleInterpolator = ({
 export const speedUpAndCancelStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 0.6, 1],
@@ -84,7 +90,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadowBlack,
+      shadowColor: colors.themedColors?.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -99,7 +105,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 const exchangeStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 1, 1],
@@ -112,7 +118,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadowBlack,
+      shadowColor: colors.themedColors?.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -124,10 +130,10 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-const expandStyleInterpolator = targetOpacity => ({
+const expandStyleInterpolator = (targetOpacity: number) => ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, targetOpacity, targetOpacity],
@@ -140,7 +146,7 @@ const expandStyleInterpolator = targetOpacity => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadow,
+      shadowColor: colors.themedColors?.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -156,7 +162,7 @@ const expandStyleInterpolator = targetOpacity => ({
 const savingsStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.4, 0.4],
@@ -170,14 +176,14 @@ const savingsStyleInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadow,
+      shadowColor: colors.themedColors?.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
       transform: [{ translateY }],
     },
     overlayStyle: {
-      backgroundColor: colors.themedColors.shadow,
+      backgroundColor: colors.themedColors?.shadow,
       opacity: backgroundOpacity,
     },
   };
@@ -186,7 +192,7 @@ const savingsStyleInterpolator = ({
 const sheetStyleInterpolator = (targetOpacity = 1) => ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, targetOpacity, targetOpacity],
@@ -200,7 +206,7 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadowBlack,
+      shadowColor: colors.themedColors?.shadowBlack,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
@@ -216,7 +222,7 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 const swapDetailInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.6, 0.6],
@@ -229,7 +235,7 @@ const swapDetailInterpolator = ({
 
   return {
     cardStyle: {
-      shadowColor: colors.themedColors.shadow,
+      shadowColor: colors.themedColors?.shadow,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.5,
       shadowRadius: 25,
@@ -243,7 +249,7 @@ const swapDetailInterpolator = ({
   };
 };
 
-const closeSpec = {
+const closeSpec: TransitionPreset['transitionSpec']['close'] = {
   animation: 'spring',
   config: {
     bounciness: 0,
@@ -251,7 +257,7 @@ const closeSpec = {
   },
 };
 
-const emojiOpenSpec = {
+const emojiOpenSpec: TransitionPreset['transitionSpec']['open'] = {
   animation: 'spring',
   config: {
     damping: 37.5,
@@ -260,7 +266,7 @@ const emojiOpenSpec = {
   },
 };
 
-const openSpec = {
+const openSpec: TransitionPreset['transitionSpec']['open'] = {
   animation: 'spring',
   config: {
     bounciness: 6,
@@ -268,7 +274,7 @@ const openSpec = {
   },
 };
 
-const sheetOpenSpec = {
+const sheetOpenSpec: TransitionPreset['transitionSpec']['open'] = {
   animation: 'spring',
   config: {
     bounciness: 0,
@@ -276,9 +282,10 @@ const sheetOpenSpec = {
   },
 };
 
-const gestureResponseDistanceFactory = distance => ({
-  vertical: distance,
-});
+/**
+ * @see https://reactnavigation.org/docs/upgrading-from-5.x/#the-gestureresponsedistance-option-is-now-a-number-instead-of-an-object
+ */
+const gestureResponseDistanceFactory = (distance: number) => distance;
 
 const gestureResponseDistance = gestureResponseDistanceFactory(
   deviceUtils.dimensions.height
@@ -291,8 +298,8 @@ export const backgroundPreset = {
   gestureResponseDistance,
 };
 
-export const emojiPreset = {
-  cardOverlay: ({ style }) => {
+export const emojiPreset: StackNavigationOptions = {
+  cardOverlay: ({ style }: any) => {
     const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
@@ -304,7 +311,7 @@ export const emojiPreset = {
         style={{
           backgroundColor:
             colors.theme === 'dark'
-              ? colors.themedColors.offWhite
+              ? colors.themedColors?.offWhite
               : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
@@ -318,6 +325,7 @@ export const emojiPreset = {
             top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
           }}
         >
+          {/* @ts-ignore */}
           <AvatarCircle overlayStyles />
         </View>
       </Animated.View>
@@ -327,16 +335,15 @@ export const emojiPreset = {
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: emojiStyleInterpolator,
-  cardTransparent: true,
   gestureDirection: 'vertical-inverted',
   gestureEnabled: false,
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: emojiOpenSpec },
 };
 
-export const emojiPresetWallet = {
+export const emojiPresetWallet: StackNavigationOptions = {
   ...emojiPreset,
-  cardOverlay: ({ style }) => {
+  cardOverlay: ({ style }: any) => {
     const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
@@ -348,7 +355,7 @@ export const emojiPresetWallet = {
         style={{
           backgroundColor:
             colors.theme === 'dark'
-              ? colors.themedColors.offWhite
+              ? colors.themedColors?.offWhite
               : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
@@ -367,34 +374,35 @@ export const emojiPresetWallet = {
       </Animated.View>
     );
   },
-  cardStyle: { marginTop: 24, ...emojiPreset.cardStyle },
+  cardStyle: {
+    marginTop: 24,
+    ...(typeof emojiPreset.cardStyle === 'object' ? emojiPreset.cardStyle : {}),
+  },
 };
 
-export const exchangePreset = {
+export const exchangePreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: exchangeStyleInterpolator,
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureEnabled: true,
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const ensPreset = {
+export const ensPreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureEnabled: true,
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const androidRecievePreset = {
+export const androidRecievePreset: StackNavigationOptions = {
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: expandStyleInterpolator(0.9),
   gestureDirection: 'vertical',
@@ -408,61 +416,54 @@ export const wcPromptPreset = {
   cardStyleInterpolator: expandStyleInterpolator(0.7),
 };
 
-export const expandedPreset = {
+export const expandedPreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(0.7),
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const swapSettingsPreset = {
+export const swapSettingsPreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(1),
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const overlayExpandedPreset = {
+export const overlayExpandedPreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
   cardStyleInterpolator: expandStyleInterpolator(0.7),
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const bottomSheetPreset = {
+export const bottomSheetPreset: StackNavigationOptions &
+  BottomSheetNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: savingsStyleInterpolator,
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const sheetPresetWithSmallGestureResponseDistance = navigation => ({
-  ...sheetPreset(navigation),
-  gestureResponseDistance: smallGestureResponseDistance,
-});
-
-export const expandedPresetWithSmallGestureResponseDistance = {
+export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions &
+  BottomSheetNavigationOptions = {
   ...expandedPreset,
   gestureResponseDistance: smallGestureResponseDistance,
 };
 
-export const addWalletNavigatorPreset = ({ route }) => ({
+export const addWalletNavigatorPreset = ({ route }: any) => ({
   height: route.params?.sheetHeight,
 });
 
@@ -471,7 +472,9 @@ export const hardwareWalletTxNavigatorPreset = {
   backdropOpacity: 1,
 };
 
-export const sheetPreset = ({ route }) => {
+export const sheetPreset = ({
+  route,
+}: any): StackNavigationOptions & BottomSheetNavigationOptions => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
@@ -484,7 +487,6 @@ export const sheetPreset = ({ route }) => {
     cardStyleInterpolator: sheetStyleInterpolator(
       shouldUseNonTransparentOverlay ? 0.7 : 0
     ),
-    cardTransparent: true,
     gestureDirection: 'vertical',
     gestureResponseDistance:
       route.params?.type === 'unique_token'
@@ -494,17 +496,14 @@ export const sheetPreset = ({ route }) => {
   };
 };
 
-export const addCashSheet = () => {
-  return {
-    cardOverlayEnabled: true,
-    cardShadowEnabled: true,
-    cardStyle: { backgroundColor: 'transparent' },
-    cardStyleInterpolator: sheetStyleInterpolator(1),
-    cardTransparent: true,
-    gestureDirection: 'vertical',
-    gestureResponseDistance: gestureResponseDistance,
-    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-  };
+export const addCashSheet: StackNavigationOptions = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: sheetStyleInterpolator(1),
+  gestureDirection: 'vertical',
+  gestureResponseDistance: gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const selectUniquePreset = () => {
@@ -513,14 +512,13 @@ export const selectUniquePreset = () => {
     cardShadowEnabled: true,
     cardStyle: { backgroundColor: 'transparent' },
     cardStyleInterpolator: sheetStyleInterpolator(0.7),
-    cardTransparent: true,
     gestureDirection: 'vertical',
     gestureResponseDistance: gestureResponseDistanceFactory(300),
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };
 
-export const settingsPreset = ({ route }) => ({
+export const settingsPreset = ({ route }: any) => ({
   ...sheetPreset({ route }),
   cardStyleInterpolator: sheetStyleInterpolator(0.7),
 });
@@ -541,7 +539,6 @@ export const swapDetailsPreset = {
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: swapDetailInterpolator,
-  cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },

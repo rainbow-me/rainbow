@@ -91,6 +91,11 @@ import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
 
+type StackNavigatorParams = {
+  [Routes.SEND_SHEET]: unknown;
+  [Routes.MODAL_SCREEN]: unknown;
+};
+
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
 
@@ -115,7 +120,7 @@ function SendFlowNavigator() {
 }
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext);
+  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
 
   return (
     <Stack.Navigator
@@ -445,15 +450,22 @@ function NativeStackNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <NavigationContainer
-    onReady={props.onReady}
-    onStateChange={onNavigationStateChange}
-    ref={ref}
-  >
-    <NativeStackNavigator />
-  </NavigationContainer>
-));
+const AppContainerWithAnalytics = React.forwardRef(
+  (
+    props: {
+      onReady: () => void;
+    },
+    ref
+  ) => (
+    <NavigationContainer
+      onReady={props.onReady}
+      onStateChange={onNavigationStateChange}
+      ref={ref}
+    >
+      <NativeStackNavigator />
+    </NavigationContainer>
+  )
+);
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 
