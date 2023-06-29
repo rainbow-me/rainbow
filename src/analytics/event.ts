@@ -73,6 +73,7 @@ export const event = {
   nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
   nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
   nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
+  nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
 } as const;
 
 /**
@@ -244,5 +245,8 @@ export type EventProperties = {
       offerPriceUSD: number;
       network: string;
     };
+  };
+  [event.nftOffersSelectedSortCriterion]: {
+    sortCriterion: string;
   };
 };
