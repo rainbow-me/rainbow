@@ -1,3 +1,4 @@
+import { analyticsV2 } from '@/analytics';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
 import { IS_PROD } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
@@ -48,6 +49,18 @@ export function useNFTOffers({
       refetchInterval: 300_000, // 5 minutes
     }
   );
+
+  useEffect(() => {
+    const nftOffers = query.data?.nftOffers ?? [];
+    const totalUSDValue = nftOffers.reduce(
+      (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
+      0
+    );
+    analyticsV2.identify({
+      nftOffersAmount: nftOffers.length,
+      nftOffersUSDValue: totalUSDValue,
+    });
+  }, [query.data?.nftOffers]);
 
   // every 1 min check for invalid offers and remove them from the cache
   useEffect(() => {
