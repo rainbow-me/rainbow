@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { debounce, isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TextInputProps, ViewProps } from 'react-native';
+import { LayoutChangeEvent, TextInputProps, ViewProps } from 'react-native';
 import InlineField, { InlineFieldProps } from '../../inputs/InlineField';
 import Skeleton, { FakeText } from '../../skeleton/Skeleton';
 import { Box, Column, Columns, Separator, Stack } from '@/design-system';
@@ -42,7 +42,7 @@ export default function TextRecordsForm({
   }, [...Object.keys(errors), onError, yOffsets, submitting]);
 
   const handleLayout = useCallback(
-    (e, key) => {
+    (e: LayoutChangeEvent, key: ENS_RECORDS) => {
       const yOffset = e.nativeEvent?.layout.y;
       setYOffsets(yOffsets => ({
         ...yOffsets,

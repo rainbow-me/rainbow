@@ -396,7 +396,7 @@ export default function SendConfirmationSheet() {
   ]);
 
   const handleCheckbox = useCallback(
-    checkbox => {
+    (checkbox: Checkbox & { index: number }) => {
       const newCheckboxesState = [...checkboxes];
       newCheckboxesState[checkbox.index] = checkbox;
       setCheckboxes(newCheckboxesState);

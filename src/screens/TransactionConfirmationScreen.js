@@ -114,6 +114,7 @@ import {
 import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
+import { getNetworkObj } from '@/networks';
 
 const springConfig = {
   damping: 500,
@@ -555,7 +556,7 @@ export default function TransactionConfirmationScreen() {
         logger.DebugContext.walletconnect
       );
 
-      if (currentNetwork === networkTypes.optimism) {
+      if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
           txPayload,
           provider

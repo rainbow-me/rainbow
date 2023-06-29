@@ -91,7 +91,7 @@ import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
-import { NFTOffersSheet } from '@/screens/NFTOffers';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();

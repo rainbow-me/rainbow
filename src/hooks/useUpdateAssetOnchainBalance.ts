@@ -9,11 +9,11 @@ export default function useUpdateAssetOnchainBalance() {
 
   const updateAssetOnchainBalance = useCallback(
     async (
-      assetToUpdate,
-      accountAddress,
-      network,
-      provider,
-      successCallback
+      assetToUpdate: any,
+      accountAddress: any,
+      network: any,
+      provider: any,
+      successCallback: any
     ) => {
       const balance = await getOnchainAssetBalance(
         assetToUpdate,

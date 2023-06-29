@@ -1,0 +1,20 @@
+diff --git a/node_modules/react-native-tooltips/android/build.gradle b/node_modules/react-native-tooltips/android/build.gradle
+index 64ae039..eef21ed 100644
+--- a/node_modules/react-native-tooltips/android/build.gradle
++++ b/node_modules/react-native-tooltips/android/build.gradle
+@@ -15,12 +15,12 @@ buildscript {
+ apply plugin: 'com.android.library'
+ 
+ android {
+-    compileSdkVersion 28
++    compileSdkVersion 31
+     buildToolsVersion '28.0.3'
+ 
+     defaultConfig {
+-        minSdkVersion 19
+-        targetSdkVersion 28
++        minSdkVersion 21
++        targetSdkVersion 33
+         versionCode 1
+         versionName "1.0"
+     }

@@ -58,6 +58,13 @@ export default function useWalletCloudBackup() {
       onSuccess,
       password,
       walletId,
+    }: {
+      handleNoLatestBackup?: () => void;
+      handlePasswordNotFound?: () => void;
+      onError?: (error: string) => void;
+      onSuccess?: () => void;
+      password?: string;
+      walletId: string;
     }) => {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
@@ -98,14 +105,14 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      let fetchedPassword = password;
+      let fetchedPassword: string | undefined = password;
       let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
-        fetchedPassword = await fetchBackupPassword();
+        fetchedPassword = (await fetchBackupPassword()) ?? undefined;
         await delay(300);
         wasPasswordFetched = true;
       }
@@ -123,7 +130,7 @@ export default function useWalletCloudBackup() {
         try {
           userPIN = (await authenticateWithPIN()) ?? undefined;
         } catch (e) {
-          onError(i18n.t(i18n.l.back_up.wrong_pin));
+          onError?.(i18n.t(i18n.l.back_up.wrong_pin));
           return;
         }
       }

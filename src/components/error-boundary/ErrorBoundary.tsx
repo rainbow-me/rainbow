@@ -1,11 +1,11 @@
 import { captureException } from '@sentry/react-native';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 // @ts-ignore
 import { IS_TESTING } from 'react-native-dotenv';
 import Fallback from './Fallback';
 import logger from '@/utils/logger';
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component<PropsWithChildren> {
   static getDerivedStateFromError(_error: any) {
     return { hasError: true };
   }

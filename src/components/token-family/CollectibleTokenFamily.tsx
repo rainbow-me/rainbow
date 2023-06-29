@@ -35,7 +35,7 @@ const CollectibleTokenFamily = ({
   );
 
   const renderChild = useCallback(
-    i => (
+    (i: number) => (
       <UniqueTokenRow
         external={external}
         item={item[i]}

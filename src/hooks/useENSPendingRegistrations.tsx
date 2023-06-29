@@ -60,7 +60,7 @@ export default function useENSPendingRegistrations() {
   }, [pendingRegistrations, uniqueTokens]);
 
   const removeRegistration = useCallback(
-    name => removeRegistrationByName(name),
+    (name: string) => removeRegistrationByName(name),
     [removeRegistrationByName]
   );
 
@@ -69,7 +69,7 @@ export default function useENSPendingRegistrations() {
   }, [dispatch]);
 
   const finishRegistration = useCallback(
-    name => {
+    (name: string) => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
       setTimeout(() => {
         navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});

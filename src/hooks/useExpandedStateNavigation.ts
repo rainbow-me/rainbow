@@ -37,7 +37,7 @@ export default function useExpandedStateNavigation(
   }, [asset, fromDiscover, inputType]);
 
   return useCallback(
-    (routeName, traverseParams) => {
+    (routeName: string, traverseParams: any) => {
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         return;

@@ -69,6 +69,7 @@ const getDefaultGasLimit = (
     case Network.bsc:
     case Network.optimism:
     case Network.mainnet:
+    case Network.zora:
     default:
       return defaultGasLimit;
   }

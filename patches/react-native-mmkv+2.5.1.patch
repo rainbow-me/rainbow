@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/react-native-mmkv/lib/module/hooks.js
-index 0c5fe95..9fdf560 100644
+index 3341a0a..813e9d5 100644
 --- a/node_modules/react-native-mmkv/lib/module/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/module/hooks.js
-@@ -70,7 +70,7 @@ function createMMKVHook(getter) {
+@@ -66,7 +66,7 @@ function createMMKVHook(getter) {
      useEffect(() => {
        const listener = mmkv.addOnValueChangedListener(changedKey => {
          if (changedKey === key) {
@@ -11,7 +11,7 @@ index 0c5fe95..9fdf560 100644
          }
        });
        return () => listener.remove();
-@@ -138,6 +138,13 @@ export function useMMKVObject(key, instance) {
+@@ -146,6 +146,13 @@ export function useMMKVObject(key, instance) {
      if (v == null) {
        // Clear the Value
        setString(undefined);
@@ -26,10 +26,10 @@ index 0c5fe95..9fdf560 100644
        // Store the Object as a serialized Value
        setString(JSON.stringify(v));
 diff --git a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts b/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
-index 54c6ae9..6d992a7 100644
+index b4a07cd..4a8856d 100644
 --- a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
 +++ b/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
-@@ -53,7 +53,7 @@ export declare const useMMKVBoolean: (key: string, instance?: MMKV | undefined)
+@@ -64,7 +64,7 @@ export declare const useMMKVBuffer: (key: string, instance?: MMKV | undefined) =
   * const [user, setUser] = useMMKVObject<User>("user")
   * ```
   */

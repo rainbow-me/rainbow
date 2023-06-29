@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import {
   InteractionManager,
+  LayoutChangeEvent,
   Pressable,
   PressableProps,
   StyleSheet,
@@ -528,7 +529,7 @@ export function ImagePreviewOverlayTarget({
   const hasMounted = useRef<any>(false);
 
   const handleLayout = useCallback(
-    ({ nativeEvent }) => {
+    ({ nativeEvent }: LayoutChangeEvent) => {
       const {
         layout: { width },
       } = nativeEvent;

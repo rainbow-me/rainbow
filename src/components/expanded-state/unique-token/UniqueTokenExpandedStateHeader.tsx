@@ -342,6 +342,7 @@ const UniqueTokenExpandedStateHeader = ({
   ]);
 
   const handlePressFamilyMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (
         actionKey === FamilyActionsEnum.viewCollection &&
@@ -366,6 +367,7 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const handlePressAssetMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer(
