@@ -16,6 +16,7 @@ import { Box, Inline, Text, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
+import { analyticsV2 } from '@/analytics';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 78;
@@ -142,6 +143,14 @@ export const Offer = ({
   return (
     <ButtonPressAnimation
       onPress={() => {
+        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+          entryPoint: 'NFTOffersCard',
+          nft: {
+            collectionAddress: offer.nft.contractAddress,
+            network: offer.network,
+            offerPriceUSD: offer.grossAmount.usd,
+          },
+        });
         navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
       }}
     >

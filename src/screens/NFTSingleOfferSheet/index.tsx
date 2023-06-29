@@ -31,6 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '@/hooks';
 import { UniqueAsset } from '@/entities';
+import { analyticsV2 } from '@/analytics';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -480,7 +481,20 @@ export function NFTSingleOfferSheet() {
                   justifyContent="center"
                   alignItems="center"
                   style={{ overflow: 'hidden' }}
-                  onPress={() => Linking.openURL(offer.url)}
+                  onPress={() => {
+                    analyticsV2.track(
+                      analyticsV2.event.nftOffersViewedExternalOffer,
+                      {
+                        marketplace: offer.marketplace.name,
+                        nft: {
+                          collectionAddress: offer.nft.contractAddress,
+                          network: offer.network,
+                          offerPriceUSD: offer.grossAmount.usd,
+                        },
+                      }
+                    );
+                    Linking.openURL(offer.url);
+                  }}
                 >
                   <Text color="label" align="center" size="17pt" weight="heavy">
                     {i18n.t(

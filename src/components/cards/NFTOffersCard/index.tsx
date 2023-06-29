@@ -32,6 +32,7 @@ import {
   SortOptions,
 } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
+import { analyticsV2 } from '@/analytics';
 
 const CARD_HEIGHT = 250;
 const MAX_OFFERS = 10;
@@ -186,7 +187,13 @@ export const NFTOffersCard = () => {
                 justifyContent="center"
                 alignItems="center"
                 style={{ overflow: 'hidden' }}
-                onPress={() => navigate(Routes.NFT_OFFERS_SHEET)}
+                onPress={() => {
+                  analyticsV2.track(
+                    analyticsV2.event.nftOffersOpenedOffersSheet,
+                    { entryPoint: 'NFTOffersCard' }
+                  );
+                  navigate(Routes.NFT_OFFERS_SHEET);
+                }}
               >
                 {/* unfortunately shimmer width must be hardcoded */}
                 <ShimmerAnimation

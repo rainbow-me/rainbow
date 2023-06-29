@@ -69,6 +69,10 @@ export const event = {
   wcNewSessionRejected: 'Rejected new WalletConnect session',
   wcNewSessionApproved: 'Approved new WalletConnect session',
   wcShowingSigningRequest: 'Showing Walletconnect signing request',
+
+  nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
+  nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
+  nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
 } as const;
 
 /**
@@ -221,5 +225,24 @@ export type EventProperties = {
   [event.wcShowingSigningRequest]: {
     dappName: string;
     dappUrl: string;
+  };
+  [event.nftOffersOpenedOffersSheet]: {
+    entryPoint: string;
+  };
+  [event.nftOffersOpenedSingleOfferSheet]: {
+    entryPoint: string;
+    nft: {
+      collectionAddress: string;
+      offerPriceUSD: number;
+      network: string;
+    };
+  };
+  [event.nftOffersViewedExternalOffer]: {
+    marketplace: string;
+    nft: {
+      collectionAddress: string;
+      offerPriceUSD: number;
+      network: string;
+    };
   };
 };

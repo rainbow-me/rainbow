@@ -24,6 +24,7 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { analyticsV2 } from '@/analytics';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -119,6 +120,14 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   return (
     <ButtonPressAnimation
       onPress={() => {
+        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+          entryPoint: 'NFTOffersSheet',
+          nft: {
+            collectionAddress: offer.nft.contractAddress,
+            network: offer.network,
+            offerPriceUSD: offer.grossAmount.usd,
+          },
+        });
         navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
       }}
     >

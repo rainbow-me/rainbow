@@ -42,7 +42,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
   [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
-  [NFT_OFFERS]: { settings: true, value: false },
+  [NFT_OFFERS]: { settings: true, value: true },
 };
 
 const storageKey = 'config';
