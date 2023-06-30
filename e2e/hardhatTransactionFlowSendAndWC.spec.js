@@ -219,6 +219,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
   });
 
+  /* Disabling until we can convert this to v2
   if (ios) {
     // TODO important
     it('Should receive the WC connect request and approve it', async () => {
@@ -422,6 +423,7 @@ describe('Hardhat Transaction Flow', () => {
       }
     });
   }
+  */
 
   afterAll(async () => {
     // Reset the app state
