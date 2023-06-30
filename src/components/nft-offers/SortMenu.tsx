@@ -1,14 +1,7 @@
 import React from 'react';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { ButtonPressAnimation } from '../animations';
-import {
-  AccentColorProvider,
-  Box,
-  Inline,
-  Inset,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { ButtonPressAnimation } from '@/components/animations';
+import { Box, Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import { RainbowError, logger } from '@/logger';
 import { SortCriterion } from '@/graphql/__generated__/arc';
@@ -48,7 +41,6 @@ export const SortMenu = ({
   setSortOption: (sortOption: SortOption) => void;
   type: 'card' | 'sheet';
 }) => {
-  const labelSecondary = useForegroundColor('labelSecondary');
   const menuConfig = {
     menuTitle: '',
     menuItems: [
@@ -119,19 +111,17 @@ export const SortMenu = ({
       <ButtonPressAnimation>
         <ConditionalWrap
           condition={type === 'sheet'}
-          wrap={children => (
-            <AccentColorProvider color={labelSecondary}>
-              <Box
-                background="surfaceSecondaryElevated"
-                borderRadius={99}
-                justifyContent="center"
-                alignItems="center"
-                paddingHorizontal="12px"
-                paddingVertical={{ custom: 13 }}
-              >
-                {children}
-              </Box>
-            </AccentColorProvider>
+          wrap={(children: React.ReactNode) => (
+            <Box
+              background="surfaceSecondaryElevated"
+              borderRadius={99}
+              justifyContent="center"
+              alignItems="center"
+              paddingHorizontal="12px"
+              paddingVertical={{ custom: 13 }}
+            >
+              {children}
+            </Box>
           )}
         >
           <Inset top={type === 'sheet' ? undefined : '2px'}>

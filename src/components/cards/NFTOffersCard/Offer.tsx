@@ -12,7 +12,6 @@ import {
 } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
-import { useTheme } from '@/theme';
 import {
   AccentColorProvider,
   Box,
@@ -23,6 +22,7 @@ import {
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 78;
@@ -81,6 +81,8 @@ export const Offer = ({
 }) => {
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
+  const { isDarkMode } = useTheme();
+
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
       ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
@@ -206,7 +208,11 @@ export const Offer = ({
           >
             <Box
               as={ImgixImage}
-              background="surfacePrimary"
+              background={
+                isDarkMode
+                  ? 'surfaceSecondaryElevated'
+                  : 'surfacePrimaryElevated'
+              }
               source={{ uri: offer.nft.imageUrl }}
               width={{ custom: NFT_IMAGE_SIZE }}
               height={{ custom: NFT_IMAGE_SIZE }}
