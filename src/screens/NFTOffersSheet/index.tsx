@@ -26,6 +26,7 @@ import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
 import { queryClient } from '@/react-query';
+import { useTheme } from '@/theme';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -37,6 +38,7 @@ export const NFTOffersSheet = () => {
     accountSymbol,
     accountAddress,
   } = useAccountProfile();
+  const { isDarkMode } = useTheme();
 
   const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
 
@@ -102,7 +104,11 @@ export const NFTOffersSheet = () => {
                   >
                     {isLoading ? (
                       <Box
-                        background="fillSecondary"
+                        background={
+                          isDarkMode
+                            ? 'surfaceSecondaryElevated'
+                            : 'fillSecondary'
+                        }
                         width={{ custom: 20 }}
                         height={{ custom: 15 }}
                         borderRadius={15 / 2}
@@ -126,7 +132,11 @@ export const NFTOffersSheet = () => {
                     </Text>
                     {isLoading ? (
                       <Box
-                        background="fillSecondary"
+                        background={
+                          isDarkMode
+                            ? 'surfaceSecondaryElevated'
+                            : 'fillSecondary'
+                        }
                         width={{ custom: 100 }}
                         height={{ custom: 15 }}
                         borderRadius={15 / 2}
