@@ -221,7 +221,7 @@ export default function AlreadyBackedUpView() {
               }
             >
               <Box
-                background="card (Deprecated)"
+                background="surfaceSecondaryElevated"
                 borderRadius={56}
                 height={{ custom: 48 }}
                 justifyContent="center"

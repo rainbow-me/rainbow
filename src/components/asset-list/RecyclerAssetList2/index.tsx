@@ -82,7 +82,7 @@ function NavbarOverlay({ position }: { position: RNAnimated.Value }) {
   return (
     <Box
       as={RNAnimated.View}
-      background="body (Deprecated)"
+      background="surfacePrimary"
       style={[
         {
           height: navbarHeight + insets.top,

@@ -198,7 +198,7 @@ export default function ENSAssignRecordsSheet() {
             ? BottomSheetScrollView
             : ScrollView) as typeof ScrollView
         }
-        background="body (Deprecated)"
+        background="surfaceSecondary"
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
         }}
@@ -376,7 +376,7 @@ export function ENSAssignRecordsBottomActions({
       )}
       <Box
         as={Animated.View}
-        background="body (Deprecated)"
+        background="surfaceSecondary"
         style={[animatedStyle, { position: 'absolute', width: '100%' }]}
         testID="ens-assign-records-sheet"
       >
@@ -529,7 +529,7 @@ function Shadow() {
     <>
       <Cover>
         <Box
-          background="body (Deprecated)"
+          background="surfaceSecondary"
           height="30px"
           shadow={{
             custom: {
@@ -553,7 +553,7 @@ function Shadow() {
         />
       </Cover>
       <Cover>
-        <Box background="body (Deprecated)" height="46px" width="full" />
+        <Box background="surfaceSecondary" height="46px" width="full" />
       </Cover>
     </>
   );

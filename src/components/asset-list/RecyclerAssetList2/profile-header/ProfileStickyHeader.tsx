@@ -23,7 +23,7 @@ export function ProfileStickyHeader() {
   return (
     <StickyHeader name="profile-header" visibleAtYPosition={visiblePosition}>
       <Box
-        background="body (Deprecated)"
+        background="surfacePrimary"
         justifyContent="center"
         height={{ custom: ProfileStickyHeaderHeight }}
         paddingHorizontal="19px (Deprecated)"

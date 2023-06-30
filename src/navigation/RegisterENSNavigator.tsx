@@ -12,7 +12,7 @@ import ENSSearchSheet from '../screens/ENSSearchSheet';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { Box } from '@/design-system';
+import { BackgroundProvider, Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useDimensions,
@@ -151,68 +151,72 @@ export default function RegisterENSNavigator() {
 
   return (
     <>
-      {/* @ts-expect-error JavaScript component */}
-      <SlackSheet
-        additionalTopPadding={android ? StatusBar.currentHeight : false}
-        contentHeight={contentHeight}
-        height="100%"
-        ref={sheetRef}
-        removeTopPadding
-        scrollEnabled
-      >
-        <Box
-          style={{
-            height: wrapperHeight,
-            overflow: 'hidden',
-          }}
-        >
-          <Swipe.Navigator
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={currentRouteName}
-            pager={renderPager}
-            swipeEnabled={false}
-            tabBar={renderTabBar}
+      <BackgroundProvider color="surfaceSecondary">
+        {({ backgroundColor }) => (
+          <SlackSheet
+            additionalTopPadding={android ? StatusBar.currentHeight : false}
+            contentHeight={contentHeight}
+            height="100%"
+            ref={sheetRef}
+            removeTopPadding
+            scrollEnabled
+            backgroundColor={backgroundColor}
           >
-            <Swipe.Screen
-              component={ENSIntroSheet}
-              initialParams={{
-                contentHeight,
-                onSearchForNewName: () => setIsSearchEnabled(true),
-                onSelectExistingName: () => setIsSearchEnabled(false),
+            <Box
+              style={{
+                height: wrapperHeight,
+                overflow: 'hidden',
               }}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.ENS_INTRO_SHEET);
-                },
-              }}
-              name={Routes.ENS_INTRO_SHEET}
-            />
-            {isSearchEnabled && (
-              <Swipe.Screen
-                component={ENSSearchSheet}
-                listeners={{
-                  focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
-                }}
-                name={Routes.ENS_SEARCH_SHEET}
-              />
-            )}
-            <Swipe.Screen
-              component={ENSAssignRecordsSheet}
-              initialParams={{
-                autoFocusKey: params?.autoFocusKey,
-                mode: params?.mode,
-                sheetRef,
-              }}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
-                },
-              }}
-              name={Routes.ENS_ASSIGN_RECORDS_SHEET}
-            />
-          </Swipe.Navigator>
-        </Box>
-      </SlackSheet>
+            >
+              <Swipe.Navigator
+                initialLayout={deviceUtils.dimensions}
+                initialRouteName={currentRouteName}
+                pager={renderPager}
+                swipeEnabled={false}
+                tabBar={renderTabBar}
+              >
+                <Swipe.Screen
+                  component={ENSIntroSheet}
+                  initialParams={{
+                    contentHeight,
+                    onSearchForNewName: () => setIsSearchEnabled(true),
+                    onSelectExistingName: () => setIsSearchEnabled(false),
+                  }}
+                  listeners={{
+                    focus: () => {
+                      setCurrentRouteName(Routes.ENS_INTRO_SHEET);
+                    },
+                  }}
+                  name={Routes.ENS_INTRO_SHEET}
+                />
+                {isSearchEnabled && (
+                  <Swipe.Screen
+                    component={ENSSearchSheet}
+                    listeners={{
+                      focus: () => setCurrentRouteName(Routes.ENS_SEARCH_SHEET),
+                    }}
+                    name={Routes.ENS_SEARCH_SHEET}
+                  />
+                )}
+                <Swipe.Screen
+                  component={ENSAssignRecordsSheet}
+                  initialParams={{
+                    autoFocusKey: params?.autoFocusKey,
+                    mode: params?.mode,
+                    sheetRef,
+                  }}
+                  listeners={{
+                    focus: () => {
+                      setCurrentRouteName(Routes.ENS_ASSIGN_RECORDS_SHEET);
+                    },
+                  }}
+                  name={Routes.ENS_ASSIGN_RECORDS_SHEET}
+                />
+              </Swipe.Navigator>
+            </Box>
+          </SlackSheet>
+        )}
+      </BackgroundProvider>
 
       {/**
        * The `ENSAssignRecordsBottomActions` is a component that is external from the ENS navigator and only

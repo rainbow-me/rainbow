@@ -64,7 +64,7 @@ export default function HourglassAnimation() {
   }));
 
   return (
-    <BackgroundProvider color="body (Deprecated)">
+    <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <Box alignItems="center" justifyContent="center" width="full">
           <Box

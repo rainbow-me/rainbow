@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../../../animations';
 
 import { ExtendedState } from '../core/RawRecyclerList';
 import FastCoinIcon from './FastCoinIcon';
-import { Text } from '@/design-system';
+import { Text, useBackgroundColor } from '@/design-system';
 import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
@@ -42,18 +42,13 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
     ),
   };
 
+  const borderColor = useBackgroundColor('surfaceSecondary');
+
   return (
     <View style={sx.checkboxContainer}>
       <ButtonPressAnimation onPress={onPress}>
         <View style={sx.checkboxInnerContainer}>
-          {showOutline && (
-            <View
-              style={[
-                sx.circleOutline,
-                { borderColor: colors.alpha(colors.blueGreyDark, 0.12) },
-              ]}
-            />
-          )}
+          {showOutline && <View style={[sx.circleOutline, { borderColor }]} />}
 
           {coinIconPlaceholder && (
             <CoinIconIndicator

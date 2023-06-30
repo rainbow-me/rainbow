@@ -60,7 +60,7 @@ export function SettingsSheet() {
   if (IS_IOS) {
     return (
       <Box
-        background="cardBackdrop (Deprecated)"
+        background="surfaceSecondary"
         flexGrow={1}
         testID="settings-sheet"
         {...(android && {

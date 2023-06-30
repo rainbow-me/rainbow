@@ -25,6 +25,7 @@ import {
 import { emitChartsRequest } from '@/redux/explorer';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { useBackgroundColor } from '@/design-system';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -34,8 +35,6 @@ const Container = styled(Row).attrs({
   justify: 'space-between',
 })({
   ...padding.object(4, 19, 5, 0),
-  backgroundColor: ({ isCoinListEdited, theme: { colors } }) =>
-    isCoinListEdited ? colors.white : colors.transparent,
   height: CoinDividerContainerHeight,
   width: ({ deviceWidth }) => deviceWidth,
 });
@@ -146,9 +145,16 @@ export default function CoinDivider({
     );
   }, [clearSelectedCoins, setIsCoinListEdited]);
 
+  const bgColor = useBackgroundColor('surfacePrimary');
   return (
     <Animated.View {...interpolation}>
-      <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
+      <Container
+        deviceWidth={deviceWidth}
+        isCoinListEdited={isCoinListEdited}
+        style={{
+          backgroundColor: isCoinListEdited ? bgColor : 'transparent',
+        }}
+      >
         <Row>
           <View
             opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}

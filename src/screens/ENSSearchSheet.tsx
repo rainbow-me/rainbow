@@ -102,7 +102,7 @@ export default function ENSSearchSheet() {
 
   return (
     <Box
-      background="body (Deprecated)"
+      background="surfaceSecondary"
       flexGrow={1}
       paddingTop={{ custom: topPadding }}
       testID="ens-search-sheet"

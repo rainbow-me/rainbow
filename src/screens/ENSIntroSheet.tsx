@@ -159,7 +159,7 @@ export default function ENSIntroSheet() {
 
   return (
     <Box
-      background="body (Deprecated)"
+      background="surfaceSecondary"
       paddingTop={{ custom: topPadding }}
       style={{ height: contentHeight }}
       testID="ens-intro-sheet"

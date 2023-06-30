@@ -7,6 +7,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
+import { useBackgroundColor } from '@/design-system';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
@@ -21,9 +22,6 @@ const ButtonContent = styled(Row).attrs({
         0.4
       )
     : {}),
-  backgroundColor: isActive
-    ? colors.appleBlue
-    : colors.alpha(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
 }));
@@ -47,7 +45,7 @@ const CoinDividerEditButton = ({
       );
     }
   }, [onPress, shouldReloadList]);
-
+  const bgColor = useBackgroundColor('surfaceSecondary');
   return (
     <OpacityToggler isVisible={!isVisible}>
       <ButtonPressAnimation
@@ -55,7 +53,13 @@ const CoinDividerEditButton = ({
         radiusAndroid={15}
         scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
       >
-        <ButtonContent isActive={isActive} style={style}>
+        <ButtonContent
+          isActive={isActive}
+          style={{
+            ...style,
+            backgroundColor: isActive ? colors.appleBlue : bgColor,
+          }}
+        >
           <Text
             align={ios ? 'center' : 'left'}
             color={

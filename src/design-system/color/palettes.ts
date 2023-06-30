@@ -187,9 +187,7 @@ export type BackgroundColor =
   | 'yellow'
   | 'body (Deprecated)'
   | 'action (Deprecated)'
-  | 'swap (Deprecated)'
-  | 'card (Deprecated)'
-  | 'cardBackdrop (Deprecated)';
+  | 'swap (Deprecated)';
 
 export type BackgroundColorValue = {
   color: string;
@@ -206,7 +204,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.grey100,
       mode: 'dark',
     },
   },
@@ -216,7 +214,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
@@ -226,7 +224,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
@@ -236,7 +234,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.dark,
+      color: globalColors.blueGrey100,
       mode: 'dark',
     },
   },
@@ -356,26 +354,6 @@ export const backgroundColors: Record<
     lightTinted: {
       color: deprecatedColors.white,
       mode: 'lightTinted',
-    },
-  },
-  'card (Deprecated)': {
-    dark: {
-      color: deprecatedColors.dark,
-      mode: 'dark',
-    },
-    light: {
-      color: deprecatedColors.white,
-      mode: 'light',
-    },
-  },
-  'cardBackdrop (Deprecated)': {
-    dark: {
-      color: deprecatedColors.darker,
-      mode: 'dark',
-    },
-    light: {
-      color: deprecatedColors.offwhite,
-      mode: 'light',
     },
   },
   'swap (Deprecated)': {
