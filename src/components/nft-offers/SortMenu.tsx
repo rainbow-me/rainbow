@@ -7,6 +7,7 @@ import { RainbowError, logger } from '@/logger';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
+import { analyticsV2 } from '@/analytics';
 
 export type SortOption = {
   name: string;
@@ -88,12 +89,21 @@ export const SortMenu = ({
     switch (actionKey) {
       case SortOptions.Highest.criterion:
         setSortOption(SortOptions.Highest);
+        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
+          sortCriterion: SortOptions.Highest.criterion,
+        });
         break;
       case SortOptions.FromFloor.criterion:
         setSortOption(SortOptions.FromFloor);
+        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
+          sortCriterion: SortOptions.FromFloor.criterion,
+        });
         break;
       case SortOptions.Recent.criterion:
         setSortOption(SortOptions.Recent);
+        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
+          sortCriterion: SortOptions.Recent.criterion,
+        });
         break;
       default:
         logger.error(

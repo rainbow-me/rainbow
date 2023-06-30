@@ -14,6 +14,10 @@ export interface UserProperties {
   NFTs?: number;
   poaps?: number;
 
+  // nft offers
+  nftOffersAmount?: number;
+  nftOffersUSDValue?: number;
+
   // ens
   // TODO: remove ensProfile tracking the entire object
   ensProfile?: Record<any, any>;
