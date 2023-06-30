@@ -1,4 +1,5 @@
 import {
+  AccentColorProvider,
   Bleed,
   Box,
   Inline,
@@ -32,6 +33,7 @@ import {
   SortOptions,
 } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
+import { useTheme } from '@/theme';
 
 const CARD_HEIGHT = 250;
 const MAX_OFFERS = 10;
@@ -42,6 +44,7 @@ export const NFTOffersCard = () => {
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
   const { data, isLoading } = useNFTOffers({
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
@@ -100,12 +103,14 @@ export const NFTOffersCard = () => {
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
-                    <Box
-                      background="fill"
-                      height={{ custom: 14 }}
-                      width={{ custom: 157 }}
-                      borderRadius={7}
-                    />
+                    <AccentColorProvider color={colors.skeleton}>
+                      <Box
+                        background="accent"
+                        height={{ custom: 14 }}
+                        width={{ custom: 157 }}
+                        borderRadius={7}
+                      />
+                    </AccentColorProvider>
                   ) : (
                     <>
                       <Text color="label" weight="heavy" size="20pt">
