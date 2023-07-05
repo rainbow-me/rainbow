@@ -232,17 +232,19 @@ export type EventProperties = {
   };
   [event.nftOffersOpenedSingleOfferSheet]: {
     entryPoint: string;
+    offerPriceUSD: number;
     nft: {
       collectionAddress: string;
-      offerPriceUSD: number;
       network: string;
+      tokenId: string;
     };
   };
   [event.nftOffersViewedExternalOffer]: {
     marketplace: string;
+    offerPriceUSD: number;
     nft: {
       collectionAddress: string;
-      offerPriceUSD: number;
+      tokenId: string;
       network: string;
     };
   };
