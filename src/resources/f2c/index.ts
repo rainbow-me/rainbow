@@ -4,6 +4,7 @@ import qs from 'query-string';
 
 import { IS_PROD } from '@/env';
 import { ProviderConfig } from '@/screens/AddCash/types';
+import isTestFlight from '@/helpers/isTestFlight';
 
 type ErrorResponse = {
   errors: {
@@ -16,7 +17,7 @@ const STAGING_HOST = `https://f2c.rainbowdotme.workers.dev`;
 const PROD_HOST = `https://f2c.rainbow.me`;
 
 const gretch = create({
-  baseURL: IS_PROD ? PROD_HOST : STAGING_HOST,
+  baseURL: IS_PROD && !isTestFlight() ? PROD_HOST : STAGING_HOST,
 });
 
 export function ratioGetClientSession({
