@@ -17,7 +17,7 @@ const STAGING_HOST = `https://f2c.rainbowdotme.workers.dev`;
 const PROD_HOST = `https://f2c.rainbow.me`;
 
 const gretch = create({
-  baseURL: IS_PROD && !isTestFlight() ? PROD_HOST : STAGING_HOST,
+  baseURL: IS_PROD && !isTestFlight ? PROD_HOST : STAGING_HOST,
 });
 
 export function ratioGetClientSession({
