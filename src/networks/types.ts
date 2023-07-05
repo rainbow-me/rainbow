@@ -11,6 +11,7 @@ export enum Network {
   polygon = 'polygon',
   bsc = 'bsc',
   zora = 'zora',
+  gnosis = 'gnosis',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';

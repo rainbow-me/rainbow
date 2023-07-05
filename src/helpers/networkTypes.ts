@@ -6,6 +6,7 @@ export enum Network {
   polygon = 'polygon',
   bsc = 'bsc',
   zora = 'zora',
+  gnosis = 'gnosis',
 }
 
 // We need to keep this one until
@@ -18,4 +19,5 @@ export default {
   polygon: 'polygon' as Network,
   bsc: 'bsc' as Network,
   zora: 'zora' as Network,
+  gnosis: 'gnosis' as Network,
 };
