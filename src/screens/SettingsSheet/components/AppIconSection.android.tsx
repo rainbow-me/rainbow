@@ -14,6 +14,7 @@ import AppIconPixel from '@/assets/appIconPixel.png';
 import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
+import AppIconZorb from '@/assets/appIconZorb.png';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -27,6 +28,7 @@ import {
   RainDogeIcon,
   SmolIcon,
   ZoraIcon,
+  ZorbIcon,
 } from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
 import { ImageSourcePropType } from 'react-native';
@@ -108,6 +110,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     source: AppIconFiniliar,
     unlock_key: FiniliarIcon.unlockKey,
   },
+  zorb: {
+    accentColor: 'zorbPink',
+    key: ZorbIcon.key,
+    name: 'Rainbow Zorb Energy',
+    source: AppIconZorb,
+    unlock_key: ZorbIcon.unlockKey,
+  },
 };
 
 const mmkv = new MMKV();
@@ -175,6 +184,7 @@ const AppIconSection = () => {
                             style={{
                               height: 36,
                               width: 36,
+                              borderRadius: 8,
                             }}
                             size={30}
                           />

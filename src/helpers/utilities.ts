@@ -572,18 +572,21 @@ export const pickBy = <T>(
 };
 
 /**
- * Formats ms since epoch into a string of the form "Xh Ym" where X is the number of hours and Y is the number of minutes.
- * Doesn't support days, months, or years.
+ * Formats ms since epoch into a string of the form "Xd Yh Zm".
+ * Doesn't support months, or years.
  * @param ms ms since epoch
- * @returns string of the format "Xh Ym"
+ * @returns string of the format "Xd Yh Zm"
  */
 export const getFormattedTimeQuantity = (ms: number): string => {
-  const totalMinutes = Math.floor(ms / (1000 * 60));
-  const hours = Math.floor(totalMinutes / 60);
+  const totalMinutes = Math.ceil(ms / (1000 * 60));
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
   const minutes = totalMinutes % 60;
 
-  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
+  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
   const formattedHours = hours ? hours + 'h ' : '';
+  const formattedDays = days ? days + 'd ' : '';
 
-  return formattedHours + formattedMinutes;
+  return (formattedDays + formattedHours + formattedMinutes).trim();
 };

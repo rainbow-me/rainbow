@@ -24,6 +24,7 @@ import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
+import AppIconZorb from '@/assets/appIconZorb.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -203,6 +204,23 @@ const ZoraAppIcon = () => {
   );
 };
 
+const ZorbAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.zorbPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZorb}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
 const TheMergeIcon = () => {
   return (
     <Box
@@ -326,6 +344,10 @@ const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
 const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.finiliar_text');
 
 const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.finiliar_title');
+
+const ZORB_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
+
+const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
@@ -453,6 +475,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.appleBlue,
       bgColor: colors?.appleBlue06,
+    },
+  },
+  zorb_app_icon: {
+    logo: <ZorbAppIcon />,
+    extraHeight: -65,
+    text: ZORB_APP_ICON_EXPLAINER,
+    title: ZORB_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.zorbPink,
+      bgColor: colors?.zorbPink06,
     },
   },
   output_disabled: {
@@ -1333,9 +1367,6 @@ const ExplainSheet = () => {
     explainSheetConfig.button,
     explainSheetConfig.secondaryButton,
     explainSheetConfig?.readMoreLink,
-    explainSheetConfig.secondaryButton?.bgColor,
-    explainSheetConfig.secondaryButton?.label,
-    explainSheetConfig.secondaryButton?.textColor,
     goBack,
     handleClose,
     handleReadMore,

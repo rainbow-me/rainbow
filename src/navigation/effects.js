@@ -466,6 +466,11 @@ export const addWalletNavigatorPreset = ({ route }) => ({
   height: route.params?.sheetHeight,
 });
 
+export const nftSingleOfferSheetPreset = ({ route }) => ({
+  ...bottomSheetPreset,
+  height: route?.params.longFormHeight,
+});
+
 export const hardwareWalletTxNavigatorPreset = {
   height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   backdropOpacity: 1,

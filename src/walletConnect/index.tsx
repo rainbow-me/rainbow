@@ -133,8 +133,8 @@ export function parseRPCParams({
   message?: string;
 } {
   switch (method) {
-    case 'eth_sign':
-    case 'personal_sign': {
+    case RPCMethod.Sign:
+    case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
 
@@ -149,10 +149,10 @@ export function parseRPCParams({
      * @see https://eips.ethereum.org/EIPS/eip-712#specification-of-the-eth_signtypeddata-json-rpc
      * @see https://docs.metamask.io/guide/signing-data.html#a-brief-history
      */
-    case 'eth_signTypedData':
-    case 'eth_signTypedData_v1':
-    case 'eth_signTypedData_v3':
-    case 'eth_signTypedData_v4': {
+    case RPCMethod.SignTypedData:
+    case RPCMethod.SignTypedDataV1:
+    case RPCMethod.SignTypedDataV3:
+    case RPCMethod.SignTypedDataV4: {
       const [address, message] = params;
 
       return {
@@ -160,7 +160,7 @@ export function parseRPCParams({
         message: JSON.parse(message),
       };
     }
-    case 'eth_sendTransaction': {
+    case RPCMethod.SendTransaction: {
       const [tx] = params;
       return {
         address: getAddress(tx.from),
