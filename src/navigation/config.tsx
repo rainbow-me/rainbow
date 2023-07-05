@@ -28,6 +28,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
+import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -279,7 +280,9 @@ export const addWalletNavigatorConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const learnWebViewScreenConfig: PartialNavigatorConfigOptions = {
+export const learnWebViewScreenConfig: PartialNavigatorConfigOptions & {
+  options: BottomSheetNavigationOptions;
+} = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

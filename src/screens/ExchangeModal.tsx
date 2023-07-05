@@ -70,7 +70,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@react-navigation/core';
 import {
   executeRap,
   getSwapRapEstimationByType,
@@ -205,7 +205,7 @@ export default function ExchangeModal({
     goBack,
     navigate,
     setParams,
-    dangerouslyGetParent,
+    getParent: dangerouslyGetParent,
     addListener,
   } = useNavigation();
 
@@ -460,7 +460,7 @@ export default function ExchangeModal({
       isDismissing.current = true;
     };
     const unsubscribe = (
-      dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
+      dangerouslyGetParent()?.getParent()?.addListener || addListener
     )(
       // @ts-expect-error - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
       'transitionEnd',

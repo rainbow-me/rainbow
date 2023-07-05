@@ -51,7 +51,11 @@ type Props = MaterialTopTabScreenProps<RouteParams, 'WalletScreen'>;
 
 export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
   const { params } = route;
-  const { setParams, dangerouslyGetState, dangerouslyGetParent } = navigation;
+  const {
+    setParams,
+    getState: dangerouslyGetState,
+    getParent: dangerouslyGetParent,
+  } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
@@ -107,12 +111,12 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
     const isWelcomeScreen =
-      dangerouslyGetParent()?.dangerouslyGetState().routes[0].name ===
+      dangerouslyGetParent()?.getState().routes[0].name ===
       Routes.WELCOME_SCREEN;
     if (isWelcomeScreen) {
       removeFirst();
     }
-  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
+  }, [dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 

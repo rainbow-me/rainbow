@@ -40,7 +40,11 @@ export default function useSwapCurrencyHandlers({
 }: any = {}) {
   const dispatch = useDispatch();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+  const {
+    navigate,
+    setParams,
+    getParent: dangerouslyGetParent,
+  } = useNavigation();
 
   const { derivedValues } = useSwapDerivedValues();
 

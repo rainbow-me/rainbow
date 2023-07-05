@@ -126,6 +126,7 @@ export const HardwareWalletTxNavigator = () => {
           <Swipe.Navigator
             initialLayout={{ width, height }}
             initialRouteName={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET}
+            // @ts-expect-error types are incomplete?
             swipeEnabled={false}
             sceneContainerStyle={{ backgroundColor: backgroundColor }}
             tabBar={() => null}

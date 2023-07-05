@@ -415,6 +415,7 @@ const AppContainerWithAnalytics = React.forwardRef(
     <NavigationContainer
       onReady={props.onReady}
       onStateChange={onNavigationStateChange}
+      // @ts-ignore
       ref={ref}
     >
       <AuthNavigator />

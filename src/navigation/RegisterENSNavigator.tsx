@@ -49,6 +49,11 @@ const defaultScreenOptions = {
     scrollEnabled: true,
     useAccentAsSheetBackground: false,
   },
+  // TODO needed to add this but should check if this config is ok
+  [Routes.ENS_CONFIRM_REGISTER_SHEET]: {
+    scrollEnabled: true,
+    useAccentAsSheetBackground: false,
+  },
 };
 
 export default function RegisterENSNavigator() {
@@ -169,6 +174,7 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
+            // @ts-ignore
             pager={renderPager}
             swipeEnabled={false}
             tabBar={renderTabBar}
