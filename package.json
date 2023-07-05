@@ -98,7 +98,7 @@
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.4.0",
-    "@ratio.me/ratio-react-native-library": "0.8.5",
+    "@ratio.me/ratio-react-native-library": "0.11.0",
     "@react-native-async-storage/async-storage": "1.17.7",
     "@react-native-community/blur": "4.3.0",
     "@react-native-community/cameraroll": "4.1.2",

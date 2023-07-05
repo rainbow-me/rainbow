@@ -743,9 +743,12 @@ export const transactionsReceived = (
     cloneDeep(pendingTransactions)
   );
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
-    tx => !txHashes.includes(ethereumUtils.getHash(tx))
-  );
+  const updatedPendingTransactions = maybeUpdatedPendingTransactions
+    // filter out any pending txns that now have hashes returned from F2C
+    // providers, returning only those that are pending (not tx hash)
+    .filter(tx => !txHashes.includes(ethereumUtils.getHash(tx)))
+    // filter out any pending txns that returned failed from F2C providers
+    .filter(tx => tx.status !== 'failed');
 
   dispatch({
     payload: updatedPendingTransactions,
@@ -755,6 +758,7 @@ export const transactionsReceived = (
     payload: parsedTransactions,
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
+  // TODO can I save this here?
   saveLocalTransactions(parsedTransactions, accountAddress, network);
   saveLocalPendingTransactions(
     updatedPendingTransactions,
@@ -866,7 +870,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
               }
             );
 
-            if (data.crypto.transactionHash) {
+            if (data.crypto.status === 'COMPLETED') {
               tx.hash = data.crypto.transactionHash;
 
               analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
@@ -876,6 +880,12 @@ export const maybeFetchF2CHashForPendingTransactions = async (
 
               loggr.debug(
                 `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
+              );
+            } else if (data.crypto.status === 'FAILED') {
+              tx.status = TransactionStatus.failed;
+
+              loggr.debug(
+                `maybeFetchF2CHashForPendingTransactions: fetched order and found that it failed`
               );
             } else {
               loggr.info(
