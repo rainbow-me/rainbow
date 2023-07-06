@@ -486,10 +486,11 @@ export function NFTSingleOfferSheet() {
                       analyticsV2.event.nftOffersViewedExternalOffer,
                       {
                         marketplace: offer.marketplace.name,
+                        offerPriceUSD: offer.grossAmount.usd,
                         nft: {
                           collectionAddress: offer.nft.contractAddress,
+                          tokenId: offer.nft.tokenId,
                           network: offer.network,
-                          offerPriceUSD: offer.grossAmount.usd,
                         },
                       }
                     );

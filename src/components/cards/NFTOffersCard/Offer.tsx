@@ -157,10 +157,11 @@ export const Offer = ({
       onPress={() => {
         analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
           entryPoint: 'NFTOffersCard',
+          offerPriceUSD: offer.grossAmount.usd,
           nft: {
             collectionAddress: offer.nft.contractAddress,
+            tokenId: offer.nft.tokenId,
             network: offer.network,
-            offerPriceUSD: offer.grossAmount.usd,
           },
         });
         navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });

@@ -402,7 +402,8 @@ export default function SendSheet(props) {
 
       if (
         assetNetwork === currentNetwork &&
-        currentProviderNetwork === currentNetwork
+        currentProviderNetwork === currentNetwork &&
+        selected.type !== AssetTypes.nft
       ) {
         updateAssetOnchainBalanceIfNeeded(
           selected,
