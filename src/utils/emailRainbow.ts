@@ -8,15 +8,17 @@ import { Alert } from '@/components/alerts';
 type Options = {
   subject: string;
   email?: string;
+  hideRainbowBranding?: boolean;
 };
 
 export function emailRainbow({
   subject,
   email = 'support@rainbow.me',
+  hideRainbowBranding = false,
 }: Options) {
   const config = {
     recipients: [email],
-    subject: `🌈️ Rainbow: ${subject}`,
+    subject: hideRainbowBranding ? subject : `🌈️ Rainbow: ${subject}`,
   };
 
   Mailer.mail(
