@@ -3,12 +3,14 @@ import {
   SwapsPromoCampaignExclusion,
 } from './swapsPromoCampaign';
 import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
+import { NFTOffersPromoCampaign } from './nftOffersPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
 export enum CampaignKey {
   swapsLaunch = 'swaps_launch',
   notificationsLaunch = 'notifications_launch',
+  nftOffersLaunch = 'nft_offers_launch',
 }
 
 export enum CampaignCheckType {
@@ -37,6 +39,7 @@ export interface Campaign {
 export const activeCampaigns: Campaign[] = [
   SwapsPromoCampaign,
   NotificationsPromoCampaign,
+  NFTOffersPromoCampaign,
 ];
 
 export const runCampaignChecks = async (): Promise<boolean> => {

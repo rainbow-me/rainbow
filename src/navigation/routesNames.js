@@ -43,6 +43,7 @@ const Routes = {
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',
   NFT_OFFERS_SHEET: 'NFTOffersSheet',
+  NFT_OFFERS_PROMO_SHEET: 'NFTOffersPromoSheet',
   NFT_SINGLE_OFFER_SHEET: 'NFTSingleOfferSheet',
   NOTIFICATIONS_PROMO_SHEET: 'NotificationsPromoSheet',
   OP_REWARDS_SHEET: 'OpRewardsSheet',

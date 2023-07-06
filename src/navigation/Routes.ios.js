@@ -27,6 +27,7 @@ import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
+import NFTOffersPromoSheet from '../screens/NFTOffersPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
@@ -260,6 +261,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={NotificationsPromoSheet}
         name={Routes.NOTIFICATIONS_PROMO_SHEET}
+        {...promoSheetConfig}
+      />
+      <NativeStack.Screen
+        component={NFTOffersPromoSheet}
+        name={Routes.NFT_OFFERS_PROMO_SHEET}
         {...promoSheetConfig}
       />
       <NativeStack.Screen
