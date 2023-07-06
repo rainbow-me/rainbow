@@ -103,6 +103,7 @@ export type Borrow = {
 export type RainbowClaimable = {
   asset: ZerionAsset;
   quantity: string;
+  native: NativeDisplay;
 };
 export type RainbowDeposit = {
   apr: string;
@@ -164,7 +165,7 @@ type AddysPositionsResponse =
   | Record<string, never>;
 
 const parsePosition = (position: Position): RainbowPosition => {
-  let totalDeposits: string = '0';
+  let totalDeposits = '0';
   const parsedDeposits = position.deposits?.map(
     (deposit: Deposit): RainbowDeposit => {
       deposit.underlying = deposit.underlying?.map(
@@ -190,7 +191,7 @@ const parsePosition = (position: Position): RainbowPosition => {
     }
   );
 
-  let totalBorrows: string = '0';
+  let totalBorrows = '0';
 
   const parsedBorrows = position.borrows?.map(
     (borrow: Borrow): RainbowBorrow => {
@@ -217,11 +218,29 @@ const parsePosition = (position: Position): RainbowPosition => {
     }
   );
 
+  let totalClaimables = '0';
+  const parsedClaimables = position.claimables?.map(
+    (claim: Claimable): RainbowClaimable => {
+      const nativeDisplay = convertRawAmountToNativeDisplay(
+        claim.quantity,
+        claim.asset.decimals,
+        claim.asset.price?.value!,
+        'USD'
+      );
+      totalClaimables = add(totalClaimables, nativeDisplay.amount);
+      return {
+        asset: claim.asset,
+        quantity: claim.quantity,
+        native: nativeDisplay,
+      };
+    }
+  );
+
   const positionTotals: PositionsTotals = {
     totals: {
-      amount: subtract(add(totalDeposits, '0'), totalBorrows),
+      amount: subtract(add(totalDeposits, totalClaimables), totalBorrows),
       display: convertAmountToNativeDisplay(
-        subtract(add(totalDeposits, 0), totalBorrows),
+        subtract(add(totalDeposits, totalClaimables), totalBorrows),
         'USD'
       ),
     },
@@ -229,7 +248,10 @@ const parsePosition = (position: Position): RainbowPosition => {
       amount: totalBorrows,
       display: convertAmountToNativeDisplay(totalBorrows, 'USD'),
     },
-    claimables: { amount: '0', display: '0' },
+    claimables: {
+      amount: totalClaimables,
+      display: convertAmountToNativeDisplay(totalClaimables, 'USD'),
+    },
     deposits: {
       amount: totalDeposits,
       display: convertAmountToNativeDisplay(totalDeposits, 'USD'),
@@ -241,7 +263,7 @@ const parsePosition = (position: Position): RainbowPosition => {
     totals: positionTotals,
     deposits: parsedDeposits,
     borrows: parsedBorrows,
-    claimables: position.claimables,
+    claimables: parsedClaimables,
     // revert dapp name bs once versions are handled via backend
     dapp: {
       ...position.dapp,
@@ -288,10 +310,8 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
 
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      console.log({ asset });
       const assetType = ethereumUtils.getAssetTypeFromNetwork(Network.mainnet);
       const uniqueId = `${asset.asset_code}_${assetType}`;
-      console.log({ uniqueId });
 
       positionTokens.push(uniqueId);
     });

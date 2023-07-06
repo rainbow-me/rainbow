@@ -1,29 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { useDimensions } from '@/hooks';
-import { BackgroundProvider, Box, Inline, Stack, Text } from '@/design-system';
+import {
+  BackgroundProvider,
+  Box,
+  Inline,
+  Separator,
+  Stack,
+  Text,
+} from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { Linking, StatusBar } from 'react-native';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
-import { RainbowPosition, usePositions } from '@/resources/defi/PositionsQuery';
-import { CoinIcon, RequestVendorLogoIcon } from '@/components/coin-icon';
+import { RainbowPosition } from '@/resources/defi/PositionsQuery';
+import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AssetType } from '@/entities';
-import {
-  convertAmountToPercentageDisplay,
-  convertAmountToPercentageDisplayWithThreshold,
-  convertRawAmountToRoundedDecimal,
-} from '@/helpers/utilities';
+import { SubPositionListItem } from './SubPositionListItem';
 
-const DEPOSIT_ITEM_HEIGHT = 80;
-const BORROW_ITEM_HEIGHT = 80;
-const CLAIMABLE_ITEM_HEIGHT = 10;
+const DEPOSIT_ITEM_HEIGHT = 44;
+const BORROW_ITEM_HEIGHT = 44;
+const CLAIMABLE_ITEM_HEIGHT = 44;
+const ITEM_PADDING = 20;
+const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({
   position,
@@ -31,15 +33,29 @@ export function getPositionSheetHeight({
   position: RainbowPosition;
 }) {
   console.log('inside: ', { position });
-  let height = android ? 140 : 120;
+  let height = android ? 120 : 100;
   const numberOfDeposits = position?.deposits?.length || 0;
   const numberOfBorrows = position?.borrows?.length || 0;
   const numberOfClaimables = position?.claimables?.length || 0;
+  console.log(position?.claimables[0]);
 
-  height += numberOfDeposits * DEPOSIT_ITEM_HEIGHT;
-  height += numberOfBorrows * BORROW_ITEM_HEIGHT;
-  height += numberOfClaimables * CLAIMABLE_ITEM_HEIGHT;
+  height +=
+    numberOfDeposits > 0
+      ? SECTION_TITLE_HEIGHT +
+        numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING)
+      : 0;
+  height +=
+    numberOfBorrows > 0
+      ? SECTION_TITLE_HEIGHT +
+        numberOfBorrows * (BORROW_ITEM_HEIGHT + ITEM_PADDING)
+      : 0;
+  height +=
+    numberOfClaimables > 0
+      ? SECTION_TITLE_HEIGHT +
+        numberOfClaimables * (CLAIMABLE_ITEM_HEIGHT + ITEM_PADDING)
+      : 0;
 
+  console.log({ numberOfBorrows, numberOfDeposits, numberOfClaimables });
   console.log('height for ', position?.type, ' is ', height);
   return height;
 }
@@ -49,19 +65,8 @@ export const PositionSheet: React.FC = () => {
   const { colors } = useTheme();
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const accountAddress = useSelector(
-    (state: AppState) => state.settings.accountAddress
-  );
-  const nativeCurrency = useSelector(
-    (state: AppState) => state.settings.nativeCurrency
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const { data, isLoading: queryIsLoading, isLoadingError } = usePositions({
-    address: accountAddress,
-    currency: nativeCurrency,
-  });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const position: RainbowPosition = params.position!;
+
+  const { position } = params as { position: RainbowPosition };
 
   // TODO: For now we are disabling using the asset price in native currency
   //  we will use the fallback which is price in USD provided by backend
@@ -75,13 +80,9 @@ export const PositionSheet: React.FC = () => {
   //   return ethereumUtils.getAssetPrice(assetCode);
   // }, [data?.rewards?.meta.token.asset]);
 
-  useEffect(() => {
-    setIsLoading(queryIsLoading);
-  }, [queryIsLoading]);
-
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
+      //analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
     }, [])
   );
 
@@ -104,16 +105,15 @@ export const PositionSheet: React.FC = () => {
           scrollEnabled
         >
           <Box padding="20px" width="full">
-            <Stack space="52px">
-              <Inline alignHorizontal="justify">
-                <Inline horizontalSpace={'10px'}>
+            <Stack
+              space="24px"
+              separator={<Separator color="separatorTertiary" thickness={1} />}
+            >
+              <Inline alignHorizontal="justify" alignVertical="center">
+                <Inline horizontalSpace={'10px'} alignVertical="center">
                   {/* @ts-ignore js component*/}
                   <RequestVendorLogoIcon
-                    backgroundColor={
-                      position.type === 'compound'
-                        ? colors.transparent
-                        : positionColor
-                    }
+                    backgroundColor={positionColor}
                     dappName={startCase(position.type.split('-')[0])}
                     size={48}
                     imageUrl={position.dapp.icon_url}
@@ -136,6 +136,7 @@ export const PositionSheet: React.FC = () => {
                     style={{
                       backgroundColor: colors.alpha(positionColor, 0.08),
                       borderRadius: 20,
+                      height: 40,
                     }}
                     justifyContent="center"
                     padding="12px"
@@ -151,177 +152,54 @@ export const PositionSheet: React.FC = () => {
                 </ButtonPressAnimation>
               </Inline>
 
-              <Stack space={'24px'}>
+              <Stack space={'20px'}>
                 {(position?.deposits?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     Deposits
                   </Text>
                 )}
-                {position?.deposits?.map(deposit => {
-                  const greenOrGrey =
-                    (deposit.underlying[0].asset.price?.relative_change_24h ||
-                      0) < 0
-                      ? colors.blueGreyDark60
-                      : colors.green;
-                  return (
-                    <Inline
-                      key={`${deposit.underlying[0].asset.symbol}-${deposit.underlying[0].quantity}`}
-                      alignHorizontal="justify"
-                      alignVertical="center"
-                    >
-                      <Inline alignVertical="center" horizontalSpace={'10px'}>
-                        <CoinIcon
-                          address={deposit.underlying[0].asset.asset_code}
-                          type={AssetType.token}
-                          symbol={deposit.underlying[0].asset.symbol}
-                        />
-                        <Stack space="10px">
-                          <Text size="17pt" weight="bold" color="label">
-                            {deposit.underlying[0].asset.name}
-                          </Text>
-                          <Inline
-                            alignVertical="center"
-                            horizontalSpace={'6px'}
-                          >
-                            <Text
-                              size="17pt"
-                              weight="semibold"
-                              color="labelTertiary"
-                            >
-                              {`${convertRawAmountToRoundedDecimal(
-                                deposit.underlying[0].quantity,
-                                deposit.underlying[0].asset.decimals,
-                                3
-                              )} ${deposit.underlying[0].asset.symbol}`}
-                            </Text>
-                            <Box
-                              style={{
-                                backgroundColor: colors.alpha(
-                                  positionColor,
-                                  0.08
-                                ),
-                                borderRadius: 20,
-                              }}
-                              justifyContent="center"
-                              padding="6px"
-                            >
-                              <Text
-                                size="13pt"
-                                weight="bold"
-                                color={{ custom: positionColor }}
-                              >
-                                {`${convertAmountToPercentageDisplayWithThreshold(
-                                  deposit.apy
-                                )} APY`}
-                              </Text>
-                            </Box>
-                          </Inline>
-                        </Stack>
-                      </Inline>
-                      <Stack space="10px">
-                        <Text size="17pt" weight="medium" color="label">
-                          {deposit.underlying[0].native.display}
-                        </Text>
-                        <Text
-                          size="13pt"
-                          weight="medium"
-                          color={{ custom: greenOrGrey }}
-                          align="right"
-                        >
-                          {convertAmountToPercentageDisplay(
-                            `${deposit.underlying[0].asset.price?.relative_change_24h}`
-                          )}
-                        </Text>
-                      </Stack>
-                    </Inline>
-                  );
-                })}
+                {position?.deposits?.map(deposit => (
+                  <SubPositionListItem
+                    key={`deposit-${deposit.underlying[0].asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
+                    asset={deposit.underlying[0].asset}
+                    quantity={deposit.underlying[0].quantity}
+                    native={deposit.underlying[0].native}
+                    positionColor={positionColor}
+                    apy={deposit.apy}
+                  />
+                ))}
 
                 {(position?.borrows?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     Borrows
                   </Text>
                 )}
-                {position?.borrows?.map(deposit => {
-                  const greenOrGrey =
-                    (deposit.underlying[0].asset.price?.relative_change_24h ||
-                      0) < 0
-                      ? colors.blueGreyDark60
-                      : colors.green;
+                {position?.borrows?.map(borrow => (
+                  <SubPositionListItem
+                    key={`borrow-${borrow.underlying[0].asset.asset_code}-${borrow.quantity}-${borrow.apy}`}
+                    asset={borrow.underlying[0].asset}
+                    quantity={borrow.underlying[0].quantity}
+                    native={borrow.underlying[0].native}
+                    positionColor={positionColor}
+                    apy={borrow.apy}
+                  />
+                ))}
 
-                  return (
-                    <Inline
-                      key={`${deposit.underlying[0].asset.symbol}-${deposit.underlying[0].quantity}`}
-                      alignHorizontal="justify"
-                      alignVertical="center"
-                    >
-                      <Inline alignVertical="center" horizontalSpace={'10px'}>
-                        <CoinIcon
-                          address={deposit.underlying[0].asset.asset_code}
-                          type={AssetType.token}
-                          symbol={deposit.underlying[0].asset.symbol}
-                        />
-                        <Stack space="10px">
-                          <Text size="17pt" weight="bold" color="label">
-                            {deposit.underlying[0].asset.name}
-                          </Text>
-                          <Inline
-                            alignVertical="center"
-                            horizontalSpace={'6px'}
-                          >
-                            <Text
-                              size="17pt"
-                              weight="semibold"
-                              color="labelTertiary"
-                            >
-                              {`${convertRawAmountToRoundedDecimal(
-                                deposit.underlying[0].quantity,
-                                deposit.underlying[0].asset.decimals,
-                                3
-                              )} ${deposit.underlying[0].asset.symbol}`}
-                            </Text>
-                            <Box
-                              style={{
-                                backgroundColor: colors.alpha(
-                                  positionColor,
-                                  0.08
-                                ),
-                                borderRadius: 20,
-                              }}
-                              justifyContent="center"
-                              padding="6px"
-                            >
-                              <Text
-                                size="13pt"
-                                weight="bold"
-                                color={{ custom: positionColor }}
-                              >
-                                {`${convertAmountToPercentageDisplayWithThreshold(
-                                  deposit.apy
-                                )} APY`}
-                              </Text>
-                            </Box>
-                          </Inline>
-                        </Stack>
-                      </Inline>
-                      <Stack space="10px">
-                        <Text size="17pt" weight="medium" color="label">
-                          {deposit.underlying[0].native.display}
-                        </Text>
-                        <Text
-                          size="13pt"
-                          weight="medium"
-                          color={{ custom: greenOrGrey }}
-                          align="right"
-                        >
-                          {convertAmountToPercentageDisplay(
-                            `${deposit.underlying[0].asset.price?.relative_change_24h}`
-                          )}
-                        </Text>
-                      </Stack>
-                    </Inline>
-                  );
-                })}
+                {(position?.claimables?.length || false) && (
+                  <Text size="17pt" weight="heavy" color="label">
+                    Rewards
+                  </Text>
+                )}
+                {position?.claimables?.map(claim => (
+                  <SubPositionListItem
+                    key={`claimable-${claim.asset.asset_code}-${claim.quantity}`}
+                    asset={claim.asset}
+                    quantity={claim.quantity}
+                    native={claim.native}
+                    positionColor={positionColor}
+                    apy={undefined}
+                  />
+                ))}
               </Stack>
             </Stack>
           </Box>
