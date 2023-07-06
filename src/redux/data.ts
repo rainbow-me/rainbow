@@ -742,12 +742,18 @@ export const transactionsReceived = (
   const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
     cloneDeep(pendingTransactions)
   );
-  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
   const updatedPendingTransactions = maybeUpdatedPendingTransactions
-    // filter out any pending txns that now have hashes returned from F2C
-    // providers, returning only those that are pending (not tx hash)
-    .filter(tx => !txHashes.includes(ethereumUtils.getHash(tx)))
-    // filter out any pending txns that returned failed from F2C providers
+    /*
+     * Filter out any pending txns that now have hashes returned from F2C
+     * providers, returning only those that are pending (no tx hash).
+     */
+    .filter(tx => !tx.hash)
+    /*
+     * Filter but any pending txns that returned failed from F2C providers.
+     *
+     * We manually set this `status` here to `failed` when we receive a failed
+     * txn from a provider.
+     */
     .filter(tx => tx.status !== 'failed');
 
   dispatch({
@@ -758,7 +764,6 @@ export const transactionsReceived = (
     payload: parsedTransactions,
     type: DATA_LOAD_TRANSACTIONS_SUCCESS,
   });
-  // TODO can I save this here?
   saveLocalTransactions(parsedTransactions, accountAddress, network);
   saveLocalPendingTransactions(
     updatedPendingTransactions,
@@ -795,7 +800,9 @@ export const maybeFetchF2CHashForPendingTransactions = async (
 ) => {
   loggr.debug(
     `maybeFetchF2CHashForPendingTransactions`,
-    {},
+    {
+      pendingTransactions: pendingTransactions.length,
+    },
     loggr.DebugContext.f2c
   );
 
@@ -821,7 +828,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
       }
 
       // If it is from an F2C provider, see if we can add the tx hash to it
-      switch (tx.fiatProvider?.name) {
+      switch (tx.fiatProvider.name) {
         // handle Ratio case
         case FiatProviderName.Ratio: {
           loggr.debug(
@@ -865,6 +872,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
             loggr.debug(
               `maybeFetchF2CHashForPendingTransactions: fetched order`,
               {
+                data,
                 hasData: Boolean(data),
                 hasHash: Boolean(data?.crypto?.transactionHash),
               }
