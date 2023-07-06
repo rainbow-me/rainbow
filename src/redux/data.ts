@@ -872,7 +872,6 @@ export const maybeFetchF2CHashForPendingTransactions = async (
             loggr.debug(
               `maybeFetchF2CHashForPendingTransactions: fetched order`,
               {
-                data,
                 hasData: Boolean(data),
                 hasHash: Boolean(data?.crypto?.transactionHash),
               }
