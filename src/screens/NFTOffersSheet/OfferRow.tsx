@@ -28,10 +28,12 @@ import { getClient, Execute, createClient } from '@reservoir0x/reservoir-sdk';
 import { createWalletClient, http } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { mainnet } from 'viem/chains';
-import { loadPrivateKey } from '@/model/wallet';
+import { loadPrivateKey, loadWallet } from '@/model/wallet';
 // import { Wallet } from '@ethersproject/wallet';
 import { Wallet } from 'ethers';
 import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/helpers';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -52,6 +54,7 @@ createClient({
       apiKey: 'demo-api-key',
     },
   ],
+  logLevel: 4,
 });
 
 const NFTImageMask = () => (
@@ -130,18 +133,22 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   useEffect(() => {
     (async () => {
       const pkey = await loadPrivateKey(accountAddress, false);
-      console.log(pkey);
+      // console.log(pkey);
       if (typeof pkey === 'string') {
-        const signer = new Wallet(pkey);
-        console.log(signer);
+        const provider = await getProviderForNetwork(Network.mainnet);
+        // console.log(provider);
+        const signer = await loadWallet(accountAddress, true, provider);
+        // console.log(signer);
         // console.log('IS SIGNER', signer.isSigner());
-        const acc = adaptEthersSigner(signer);
-        console.log(acc);
-        const s = createWalletClient({
-          account: acc,
-          chain: mainnet,
-          transport: http(),
-        });
+        console.log(signer);
+        if (!provider) return;
+        const acc = adaptEthersSigner(signer as Wallet);
+        // console.log(acc);
+        // const s = createWalletClient({
+        //   account: acc,
+        //   chain: mainnet,
+        //   transport: http(),
+        // });
         setSigner(acc);
       }
     })();
