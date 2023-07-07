@@ -184,20 +184,23 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
         return handleScanWalletConnect(uri);
       }
-      // Rainbow profile QR code
-      if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
-        return handleScanRainbowProfile(data);
-      }
-      if (data.startsWith(POAP_BASE_URL)) {
-        console.log({ data });
-        const secretWord = data.split(POAP_BASE_URL)?.[1];
+
+      // poap mints
+      if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
+        const secretWord = data.split(
+          `${RAINBOW_PROFILES_BASE_URL}/poap/`
+        )?.[1];
         if (checkValidSecretWord(secretWord)) {
-          logger.log('onScan: handling poap scan', { data });
-          await getPoapAndOpenSheet(secretWord);
-          return;
+          logger.log('onScan: handling poap scan', { secretWord });
+          return getPoapAndOpenSheet(secretWord);
         } else {
           logger.warn('onScan: invalid poap secret', { data });
         }
+      }
+
+      // Rainbow profile QR code
+      if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
+        return handleScanRainbowProfile(data);
       }
 
       return handleScanInvalid(data);
