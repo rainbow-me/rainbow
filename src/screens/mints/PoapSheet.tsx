@@ -39,7 +39,7 @@ import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { IS_IOS } from '@/env';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -189,9 +189,7 @@ const PoapSheet = () => {
             ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
             : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
-        {...(ios
-          ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: deviceHeight })}
+        height={'100%'}
         ref={sheetRef}
         scrollEnabled
         testID="unique-token-expanded-state"
@@ -200,7 +198,7 @@ const PoapSheet = () => {
         <ColorModeProvider value="darkTinted">
           <Box
             width="full"
-            height={{ custom: deviceHeight - 100 }}
+            height={{ custom: deviceHeight - (IS_IOS ? 100 : 50) }}
             justifyContent="center"
             alignItems="center"
           >
