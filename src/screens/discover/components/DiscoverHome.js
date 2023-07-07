@@ -23,7 +23,7 @@ import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
-import { NFTOffersCard } from '@/components/nft-offers/card';
+import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();

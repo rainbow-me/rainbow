@@ -20,6 +20,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, position, shadow } from '@/styles';
 import { useTheme } from '@/theme';
+import { IS_ANDROID } from '@/env';
+import { deviceUtils } from '@/utils';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
@@ -160,7 +162,9 @@ export default function AlreadyBackedUpView() {
   return (
     <Box
       alignItems="center"
-      height="full"
+      height={
+        IS_ANDROID ? { custom: deviceUtils.dimensions.height - 100 } : 'full'
+      }
       justifyContent="space-between"
       width="full"
     >

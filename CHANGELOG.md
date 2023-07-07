@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.22)
+
+### Added
+
+- Some NFT offers work (behind flag)
+- RN upgrade to 0.70.9
+- Zorb app icon
+
 ## [1.8.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.21)
 
 ### Added

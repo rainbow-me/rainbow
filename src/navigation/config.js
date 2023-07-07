@@ -129,6 +129,29 @@ export const opRewardsSheetConfig = {
   },
 };
 
+export const nftOffersSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+    }),
+  }),
+};
+
+export const nftSingleOfferSheetConfig = {
+  options: ({
+    route: {
+      params: { longFormHeight, ...params },
+    },
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || 0,
+    }),
+  }),
+};
+
 export const walletDiagnosticsSheetConfig = {
   options: ({ route }) => {
     return buildCoolModalConfig({

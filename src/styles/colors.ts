@@ -162,7 +162,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     whiteLabel: '#FFFFFF', // '255, 255, 255'
     yellow: '#FFD657', // '255, 214, 87'
     yellowFavorite: '#FFB200', // '255, 178, 0'
-    yellowOrange: '#FFC400', // '255, 196, 0'
+    yellowOrange: '#FFC400', // '255, 196, 0',
+    zorbPink: '#FC4C74', // '252, 76, 116'
+    zorbPink06: 'rgba(252, 76, 116, 0.06)',
   };
 
   const avatarColor = [
@@ -197,6 +199,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
   let networkColors = {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
+    gnosis: '#479E9C',
     mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
@@ -380,6 +383,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     networkColors = {
       arbitrum: '#ADBFE3',
       goerli: '#f6c343',
+      gnosis: '#479E9C',
       mainnet: '#E0E8FF',
       optimism: '#FF6A6A',
       polygon: '#A275EE',

@@ -1,9 +1,15 @@
+import { analyticsV2 } from '@/analytics';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
 import { IS_PROD } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
-import { GetNftOffersQuery, SortCriterion } from '@/graphql/__generated__/arc';
-import { createQueryKey } from '@/react-query';
+import {
+  GetNftOffersQuery,
+  NftOffer,
+  SortCriterion,
+} from '@/graphql/__generated__/arc';
+import { createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 
@@ -29,8 +35,12 @@ export function useNFTOffers({
   sortBy?: SortCriterion;
 }) {
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  return useQuery<GetNftOffersQuery>(
-    nftOffersQueryKey({ address: walletAddress, sortCriterion: sortBy }),
+  const queryKey = nftOffersQueryKey({
+    address: walletAddress,
+    sortCriterion: sortBy,
+  });
+  const query = useQuery<GetNftOffersQuery>(
+    queryKey,
     async () => await graphqlClient.getNFTOffers({ walletAddress, sortBy }),
     {
       enabled: nftOffersEnabled && !!walletAddress,
@@ -39,4 +49,35 @@ export function useNFTOffers({
       refetchInterval: 300_000, // 5 minutes
     }
   );
+
+  useEffect(() => {
+    const nftOffers = query.data?.nftOffers ?? [];
+    const totalUSDValue = nftOffers.reduce(
+      (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
+      0
+    );
+    analyticsV2.identify({
+      nftOffersAmount: nftOffers.length,
+      nftOffersUSDValue: totalUSDValue,
+    });
+  }, [query.data?.nftOffers]);
+
+  // every 1 min check for invalid offers and remove them from the cache
+  useEffect(() => {
+    const nftOffers = query.data?.nftOffers ?? [];
+    if (nftOffers.length) {
+      const interval = setInterval(() => {
+        const validOffers = nftOffers.filter(
+          (offer: NftOffer) =>
+            !offer.validUntil || offer.validUntil * 1000 - Date.now() > 0
+        );
+        if (validOffers.length < nftOffers.length) {
+          queryClient.setQueryData(queryKey, { nftOffers: validOffers });
+        }
+      }, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [query.data?.nftOffers, queryKey]);
+
+  return query;
 }

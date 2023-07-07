@@ -10,7 +10,7 @@ export const SwapDetailsMastheadHeight =
 
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
-    <RowWithMargins>
+    <RowWithMargins margin={0}>
       <Text
         color="secondary60 (Deprecated)"
         size="16px / 22px (Deprecated)"

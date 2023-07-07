@@ -50,6 +50,8 @@ import {
   externalLinkWarningSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
+  nftOffersSheetConfig,
+  nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
   profileConfig,
   profilePreviewConfig,
@@ -91,6 +93,8 @@ import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
 import MintSheet from '@/screens/mints/MintSheet';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
+import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -446,6 +450,16 @@ function NativeStackNavigator() {
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
         {...opRewardsSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.NFT_OFFERS_SHEET}
+        component={NFTOffersSheet}
+        {...nftOffersSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.NFT_SINGLE_OFFER_SHEET}
+        component={NFTSingleOfferSheet}
+        {...nftSingleOfferSheetConfig}
       />
     </NativeStack.Navigator>
   );
