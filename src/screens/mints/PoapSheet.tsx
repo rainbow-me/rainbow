@@ -27,7 +27,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo } from '@/utils';
+import { magicMemo, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -39,6 +39,7 @@ import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -69,16 +70,16 @@ const BlurWrapper = styled(View).attrs({
   ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
-interface MintSheetProps {
+interface PoapSheetProps {
   event: PoapEvent;
 }
 
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
-const MintSheet = ({ event }: MintSheetProps) => {
+const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, setOptions, goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
@@ -89,14 +90,15 @@ const MintSheet = ({ event }: MintSheetProps) => {
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
   const [nft, setNft] = useState<UniqueAsset | null>(null);
 
-  const poapEvent: PoapEvent = (params.params as MintSheetProps)?.event;
+  const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
 
   const imageUrl = maybeSignUri(poapEvent.imageUrl);
 
   const poapGalleryUrl = `https://poap.gallery/event/${poapEvent.id}`;
 
-  const getFormattedDate = () =>
-    format(new Date(poapEvent.createdAt), 'MMMM dd, yyyy');
+  const getFormattedDate = () => {
+    return format(new Date(poapEvent.createdAt), 'MMMM dd, yyyy');
+  };
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -105,6 +107,10 @@ const MintSheet = ({ event }: MintSheetProps) => {
   const yPosition = useSharedValue(0);
 
   const claimPoapBySecret = useCallback(async () => {
+    if (isReadOnlyWallet) {
+      watchingAlert();
+      return;
+    }
     setClaimStatus('claiming');
     const response = await arcDevClient.claimPoapBySecretWord({
       walletAddress: accountAddress,
@@ -120,7 +126,7 @@ const MintSheet = ({ event }: MintSheetProps) => {
     } else {
       setClaimStatus('error');
     }
-  }, [accountAddress, goBack]);
+  }, [accountAddress, goBack, isReadOnlyWallet]);
 
   const isClaiming = claimStatus === 'claiming';
   const isClaimed = claimStatus === 'claimed';
@@ -263,4 +269,4 @@ const MintSheet = ({ event }: MintSheetProps) => {
   );
 };
 
-export default magicMemo(MintSheet, 'eventId');
+export default magicMemo(PoapSheet, 'eventId');

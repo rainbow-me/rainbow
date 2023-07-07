@@ -34,7 +34,7 @@ const Routes = {
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
   IMPORT_SCREEN: 'ImportScreen',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
-  MINT_SHEET: 'MintSheet',
+  POAP_SHEET: 'PoapSheet',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',

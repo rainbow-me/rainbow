@@ -4,7 +4,6 @@ import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Routes from '@/navigation/routesNames';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -25,7 +24,6 @@ import { useAccountSettings, useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
 import { useNavigation } from '@/navigation';
-import { arcDevClient } from '@/graphql';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -130,13 +128,7 @@ export const GasCard = () => {
       withTiming(1, fadeOutConfig),
       withTiming(0, { duration: 0 })
     );
-
-    // Poap tings
-    const event = await arcDevClient.getPoapEventBySecretWord({
-      secretWord: 'note-remove-couple',
-    });
-    navigate(Routes.MINT_SHEET, { event: event.getPoapEventBySecretWord });
-  }, [container, navigate, opacity, scale]);
+  }, [container, opacity, scale]);
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
     'worklet';

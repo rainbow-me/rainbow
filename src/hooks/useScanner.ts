@@ -22,6 +22,7 @@ import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';
+import { checkValidSecretWord, getPoapAndOpenSheet } from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -189,13 +190,13 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       }
       if (data.startsWith(POAP_BASE_URL)) {
         console.log({ data });
-        const secretWordOrCode = data.split(POAP_BASE_URL)[1];
-        console.log('have code: ', secretWordOrCode);
-        if (secretWordOrCode.length === 6) {
-          console.log('its a code');
-        }
-        if (secretWordOrCode.length > 6) {
-          console.log('its a secret word');
+        const secretWord = data.split(POAP_BASE_URL)?.[1];
+        if (checkValidSecretWord(secretWord)) {
+          logger.log('onScan: handling poap scan', { data });
+          await getPoapAndOpenSheet(secretWord);
+          return;
+        } else {
+          logger.warn('onScan: invalid poap secret', { data });
         }
       }
 
