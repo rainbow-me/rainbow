@@ -35,7 +35,6 @@ module.exports = function (api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
-    'react-native-reanimated/plugin',
     [
       'module:react-native-dotenv',
       {
@@ -43,6 +42,7 @@ module.exports = function (api) {
         moduleName: 'react-native-dotenv',
       },
     ],
+    'react-native-reanimated/plugin',
   ];
 
   const presets = ['module:metro-react-native-babel-preset'];

@@ -6,5 +6,4 @@ export default {
   getActiveRouteName: jest.fn(),
   handleAction: jest.fn(),
   setTopLevelNavigator: jest.fn(),
-  transitionPosition: jest.fn(),
 };

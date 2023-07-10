@@ -663,6 +663,7 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
+  console.log('OH SHIT');
   loggr.debug('transactionsReceived', {
     message: {
       ...message,

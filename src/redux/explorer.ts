@@ -916,6 +916,7 @@ const listenOnAddressMessages = (socket: Socket) => (
   socket.on(
     messages.ADDRESS_TRANSACTIONS.RECEIVED,
     (message: TransactionsReceivedMessage) => {
+      console.log('OMMGGG')
       // logger.log('mainnet txns received', message?.payload?.transactions);
 
       if (getExperimetalFlag(L2_TXS)) {

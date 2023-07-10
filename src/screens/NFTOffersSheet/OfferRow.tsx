@@ -128,39 +128,18 @@ export const FakeOfferRow = () => {
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { accountAddress } = useAccountSettings();
-  const [signer, setSigner] = useState<any>(null);
 
-  useEffect(() => {
-    (async () => {
-      const pkey = await loadPrivateKey(accountAddress, false);
-      // console.log(pkey);
-      if (typeof pkey === 'string') {
-        const provider = await getProviderForNetwork(Network.mainnet);
-        // console.log(provider);
-        const signer = await loadWallet(accountAddress, true, provider);
-        // console.log(signer);
-        // console.log('IS SIGNER', signer.isSigner());
-        console.log(signer);
-        if (!provider) return;
-        const acc = adaptEthersSigner(signer as Wallet);
-        // console.log(acc);
-        // const s = createWalletClient({
-        //   account: acc,
-        //   chain: mainnet,
-        //   transport: http(),
-        // });
-        setSigner(acc);
-      }
-    })();
-  }, [accountAddress]);
 
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   return (
     <ButtonPressAnimation
-      onPress={() => {
-        console.log('attempting stuff');
-        if (signer) {
+      onPress={async () => {
+        const provider = await getProviderForNetwork(Network.mainnet);
+        const signer = await loadWallet(accountAddress, true, provider);
+        if (!provider) return;
+        const acc = adaptEthersSigner(signer as Wallet);
+
           console.log('accepting offer');
           console.log(getClient().actions);
           getClient()?.actions.acceptOffer({
@@ -170,13 +149,12 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 quantity: 1,
               },
             ],
-            wallet: signer,
+            wallet: acc,
             onProgress: (steps: Execute['steps'], path: Execute['path']) => {
               console.log(steps);
             },
           });
           console.log('TEST');
-        }
       }}
     >
       <Columns space="16px" alignVertical="center">

@@ -9,7 +9,7 @@ import {
 } from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, Text } from '@/design-system';
 import { StatusBar, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
@@ -28,30 +28,27 @@ export const AddWalletNavigator = () => {
   const { height: deviceHeight } = useDimensions();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  console.log('we in here');
 
   return (
     // wrapping in View prevents keyboard from pushing up sheet on android
     <View
       style={{
         height: deviceHeight,
+        flex: 1,
       }}
     >
+     
       <BackgroundProvider color="surfaceSecondary">
         {({ backgroundColor }) => (
           // @ts-expect-error js component
-          <SlackSheet
-            contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
-            additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-            backgroundColor={backgroundColor}
-            height="100%"
-            scrollEnabled={scrollEnabled}
-          >
             <Swipe.Navigator
               initialLayout={deviceUtils.dimensions}
               initialRouteName={Routes.ADD_WALLET_SHEET}
               // @ts-expect-error types are incomplete?
               swipeEnabled={false}
               tabBar={() => null}
+              contentContainerStyle={{flex: 1}}
             >
               <Swipe.Screen
                 component={AddWalletSheet}
@@ -74,7 +71,6 @@ export const AddWalletNavigator = () => {
                 }}
               />
             </Swipe.Navigator>
-          </SlackSheet>
         )}
       </BackgroundProvider>
     </View>
