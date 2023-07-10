@@ -9,7 +9,7 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ButtonPressAnimation,
   ShimmerAnimation,
@@ -18,7 +18,6 @@ import { useAccountSettings, useDimensions } from '@/hooks';
 import { ScrollView } from 'react-native';
 import { useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import Animated, {
   useAnimatedStyle,
@@ -33,6 +32,9 @@ import {
   SortOption,
   SortOptions,
 } from '@/components/nft-offers/SortMenu';
+import { NftOffer } from '@/graphql/__generated__/arc';
+import { analyticsV2 } from '@/analytics';
+import { useTheme } from '@/theme';
 
 const CARD_HEIGHT = 250;
 const MAX_OFFERS = 10;
@@ -43,14 +45,14 @@ export const NFTOffersCard = () => {
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
-  const { data } = useNFTOffers({
+  const { colors } = useTheme();
+  const { data, isLoading } = useNFTOffers({
     walletAddress: accountAddress,
     sortBy: sortOption.criterion,
   });
-  const { colors } = useTheme();
   const { navigate } = useNavigation();
 
-  const [hasOffers, setHasOffers] = useReducer(() => true, false);
+  const [hasOffers, setHasOffers] = useState(false);
 
   // only show the first MAX_OFFERS offers
   const offers = data?.nftOffers ?? [];
@@ -63,16 +65,24 @@ export const NFTOffersCard = () => {
     };
   });
 
+  // animate in/out card depending on if there are offers
   useEffect(() => {
-    if (!hasOffers && offers.length) {
-      setHasOffers();
-      // -1 bc we still want to show the <Divider /> (thickness 1)
-      heightValue.value = withTiming(CARD_HEIGHT - 1);
+    if (!hasOffers) {
+      if (offers.length) {
+        setHasOffers(true);
+        // -1 bc we still want to show the <Divider /> (thickness 1)
+        heightValue.value = withTiming(CARD_HEIGHT - 1);
+      }
+    } else {
+      if (!offers.length && !isLoading) {
+        setHasOffers(false);
+        heightValue.value = withTiming(1);
+      }
     }
-  }, [hasOffers, heightValue, offers.length]);
+  }, [hasOffers, heightValue, isLoading, offers.length]);
 
   const totalUSDValue = offers.reduce(
-    (acc, offer) => acc + offer.grossAmount.usd,
+    (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
     0
   );
 
@@ -142,7 +152,11 @@ export const NFTOffersCard = () => {
                 />
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ height: 138 }}
+                >
                   <Inset horizontal="20px" vertical="10px">
                     <Inline space={{ custom: 14 }}>
                       {!offers.length ? (
@@ -156,7 +170,7 @@ export const NFTOffersCard = () => {
                       ) : (
                         offers
                           .slice(0, MAX_OFFERS)
-                          .map(offer => (
+                          .map((offer: NftOffer) => (
                             <Offer
                               key={offer.nft.uniqueId}
                               offer={offer}
@@ -178,7 +192,13 @@ export const NFTOffersCard = () => {
                 justifyContent="center"
                 alignItems="center"
                 style={{ overflow: 'hidden' }}
-                onPress={() => navigate(Routes.NFT_OFFERS_SHEET)}
+                onPress={() => {
+                  analyticsV2.track(
+                    analyticsV2.event.nftOffersOpenedOffersSheet,
+                    { entryPoint: 'NFTOffersCard' }
+                  );
+                  navigate(Routes.NFT_OFFERS_SHEET);
+                }}
               >
                 {/* unfortunately shimmer width must be hardcoded */}
                 <ShimmerAnimation

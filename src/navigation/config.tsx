@@ -174,6 +174,20 @@ export const nftOffersSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const nftSingleOfferSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({
+    route: {
+      // @ts-ignore
+      params: { longFormHeight, ...params },
+    },
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || 0,
+    }),
+  }),
+};
+
 export const walletDiagnosticsSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route }) => {
     return buildCoolModalConfig({

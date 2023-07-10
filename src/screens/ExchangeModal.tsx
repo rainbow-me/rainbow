@@ -111,6 +111,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
+  [Network.gnosis]: 200,
   [Network.zora]: 200,
 };
 

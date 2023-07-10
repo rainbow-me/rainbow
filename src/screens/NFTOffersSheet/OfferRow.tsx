@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
-  AccentColorProvider,
   Bleed,
   Box,
   Column,
@@ -23,39 +23,13 @@ import {
 } from '@/helpers/utilities';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
-import { getClient, Execute, createClient } from '@reservoir0x/reservoir-sdk';
-import { createWalletClient, http } from 'viem';
-import { useAccountSettings } from '@/hooks';
-import { mainnet } from 'viem/chains';
-import { loadPrivateKey, loadWallet } from '@/model/wallet';
-// import { Wallet } from '@ethersproject/wallet';
-import { Wallet } from 'ethers';
-import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
 const COIN_ICON_SIZE = 16;
-
-createClient({
-  chains: [
-    {
-      id: 1,
-      baseApiUrl: 'https://api.reservoir.tools',
-      active: true,
-      apiKey: 'demo-api-key',
-    },
-    {
-      id: 137,
-      baseApiUrl: 'https://api-polygon.reservoir.tools',
-      active: true,
-      apiKey: 'demo-api-key',
-    },
-  ],
-  logLevel: 4,
-});
 
 const NFTImageMask = () => (
   <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
@@ -67,94 +41,109 @@ const NFTImageMask = () => (
 );
 
 export const FakeOfferRow = () => {
-  const { colors } = useTheme();
+  const { isDarkMode } = useTheme();
   return (
-    <AccentColorProvider color={colors.black}>
-      <Columns space="16px" alignVertical="center">
-        <Column width="content">
+    <Columns space="16px" alignVertical="center">
+      <Column width="content">
+        <Box
+          background={isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'}
+          width={{ custom: NFT_SIZE }}
+          height={{ custom: NFT_SIZE }}
+          borderRadius={12}
+        />
+      </Column>
+      <Column>
+        <Stack space="10px">
           <Box
-            background="accent"
-            width={{ custom: NFT_SIZE }}
-            height={{ custom: NFT_SIZE }}
-            borderRadius={12}
+            background={
+              isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+            }
+            width={{ custom: 70 }}
+            height={{ custom: 12 }}
+            borderRadius={6}
           />
-        </Column>
-        <Column>
-          <Stack space="10px">
+          <Box
+            background={
+              isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+            }
+            width={{ custom: 100 }}
+            height={{ custom: 9.3333 }}
+            borderRadius={9.3333 / 2}
+          />
+        </Stack>
+      </Column>
+      <Column width="content">
+        <Stack space="10px" alignHorizontal="right">
+          <Inline space="6px" alignVertical="center">
+            <Bleed vertical="2px">
+              <Box
+                background={
+                  isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+                }
+                width={{ custom: COIN_ICON_SIZE }}
+                height={{ custom: COIN_ICON_SIZE }}
+                borderRadius={99}
+              />
+            </Bleed>
             <Box
-              background="accent"
-              width={{ custom: 70 }}
+              background={
+                isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+              }
+              width={{ custom: 90 }}
               height={{ custom: 12 }}
               borderRadius={6}
             />
-            <Box
-              background="accent"
-              width={{ custom: 100 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
-            />
-          </Stack>
-        </Column>
-        <Column width="content">
-          <Stack space="10px" alignHorizontal="right">
-            <Inline space="6px" alignVertical="center">
-              <Bleed vertical="2px">
-                <Box
-                  background="accent"
-                  width={{ custom: COIN_ICON_SIZE }}
-                  height={{ custom: COIN_ICON_SIZE }}
-                  borderRadius={99}
-                />
-              </Bleed>
-              <Box
-                background="accent"
-                width={{ custom: 90 }}
-                height={{ custom: 12 }}
-                borderRadius={6}
-              />
-            </Inline>
-            <Box
-              background="accent"
-              width={{ custom: 100 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
-            />
-          </Stack>
-        </Column>
-      </Columns>
-    </AccentColorProvider>
+          </Inline>
+          <Box
+            background={
+              isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+            }
+            width={{ custom: 100 }}
+            height={{ custom: 9.3333 }}
+            borderRadius={9.3333 / 2}
+          />
+        </Stack>
+      </Column>
+    </Columns>
   );
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
-  const { accountAddress } = useAccountSettings();
-
-
+  const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
+  const dollarAmount = convertAmountToNativeDisplay(
+    offer.grossAmount.usd,
+    'USD',
+    undefined,
+    // don't show decimals
+    true,
+    // abbreviate if amount is >= 10,000
+    offer.grossAmount.decimal >= 10_000
+  );
+  const cryptoAmount = handleSignificantDecimals(
+    offer.grossAmount.decimal,
+    18,
+    // don't show more than 3 decimals
+    3,
+    undefined,
+    // abbreviate if amount is >= 10,000
+    offer.grossAmount.decimal >= 10_000
+  );
+
   return (
     <ButtonPressAnimation
-      onPress={async () => {
-        const provider = await getProviderForNetwork(Network.mainnet);
-        const signer = await loadWallet(accountAddress, true, provider);
-        if (!provider) return;
-        const acc = adaptEthersSigner(signer as Wallet);
-
-          console.log('accepting offer');
-          console.log(getClient().actions);
-          getClient()?.actions.acceptOffer({
-            items: [
-              {
-                token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
-                quantity: 1,
-              },
-            ],
-            wallet: acc,
-            onProgress: (steps: Execute['steps'], path: Execute['path']) => {
-              console.log(steps);
-            },
-          });
-          console.log('TEST');
+      onPress={() => {
+        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+          entryPoint: 'NFTOffersSheet',
+          offerPriceUSD: offer.grossAmount.usd,
+          nft: {
+            collectionAddress: offer.nft.contractAddress,
+            tokenId: offer.nft.tokenId,
+            network: offer.network,
+          },
+        });
+        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
       }}
     >
       <Columns space="16px" alignVertical="center">
@@ -196,8 +185,10 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 as={ImgixImage}
                 width={{ custom: MARKETPLACE_ORB_SIZE }}
                 height={{ custom: MARKETPLACE_ORB_SIZE }}
+                background="surfaceSecondaryElevated"
                 source={{ uri: offer.marketplace.imageUrl }}
                 size={MARKETPLACE_ORB_SIZE}
+                borderRadius={MARKETPLACE_ORB_SIZE / 2}
                 marginTop={{
                   custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
                 }}
@@ -211,12 +202,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
         <Column>
           <Stack space="10px">
             <Text size="17pt" weight="bold" color="label">
-              {convertAmountToNativeDisplay(
-                offer.grossAmount.usd,
-                'USD',
-                undefined,
-                true
-              )}
+              {dollarAmount}
             </Text>
             <Text
               size="13pt"
@@ -240,13 +226,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 />
               </Bleed>
               <Text size="17pt" weight="bold" color="label">
-                {handleSignificantDecimals(
-                  offer.grossAmount.decimal,
-                  18,
-                  3,
-                  undefined,
-                  true
-                )}
+                {cryptoAmount}
               </Text>
             </Inline>
             <Inline>
