@@ -48,7 +48,7 @@ function CoinIconStack({
           >
             <CoinIcon
               address={token.address}
-              size={20}
+              size={16}
               symbol={token.symbol}
               type={token.type}
             />

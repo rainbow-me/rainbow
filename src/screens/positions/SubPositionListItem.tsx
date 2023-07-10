@@ -60,14 +60,15 @@ export const SubPositionListItem: React.FC<Props> = ({
               )} ${asset.symbol}`}
             </Text>
             {apy && (
-              <Bleed vertical={{ custom: 2 }}>
+              <Bleed vertical={{ custom: 3 }}>
                 <Box
                   style={{
                     backgroundColor: colors.alpha(positionColor, 0.08),
-                    borderRadius: 20,
+                    borderRadius: 7,
+                    height: 18,
                   }}
+                  paddingHorizontal={'5px (Deprecated)'}
                   justifyContent="center"
-                  padding="6px"
                 >
                   <Text
                     size="13pt"
