@@ -83,7 +83,7 @@ export default function FeesPanel({
     updateToCustomGasFee,
   } = useGas();
 
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const { navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
   const {
@@ -463,7 +463,6 @@ export default function FeesPanel({
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
     const lastRouteType =
-      // @ts-expect-error
       navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
     if (
       lastRouteName === 'ExplainSheet' &&

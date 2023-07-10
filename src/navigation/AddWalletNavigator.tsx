@@ -49,6 +49,7 @@ export const AddWalletNavigator = () => {
             <Swipe.Navigator
               initialLayout={deviceUtils.dimensions}
               initialRouteName={Routes.ADD_WALLET_SHEET}
+              // @ts-expect-error types are incomplete?
               swipeEnabled={false}
               tabBar={() => null}
             >

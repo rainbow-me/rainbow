@@ -85,7 +85,20 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
-};
+
+  SETTINGS_SECTION: 'SettingsSection',
+  SETTINGS_WALLET_NOTIFICATIONS: 'WalletNotificationsSettings',
+  SETTINGS_BACKUP_VIEW: 'SettingsBackupView',
+  SETTINGS_SHOW_SECRET_VIEW: 'ShowSecretView',
+  SETTINGS_SECTION_APP_ICON: 'AppIconSection',
+  SETTINGS_SECTION_BACKUP: 'BackupSection',
+  SETTINGS_SECTION_CURRENCY: 'CurrencySection',
+  SETTINGS_SECTION_DEV: 'DevSection',
+  SETTINGS_SECTION_LANGUAGE: 'LanguageSection',
+  SETTINGS_SECTION_NETWORK: 'NetworkSection',
+  SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
+  SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+} as const;
 
 export const NATIVE_ROUTES = [
   Routes.RECEIVE_MODAL,

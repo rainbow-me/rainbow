@@ -35,7 +35,7 @@ export function PairHardwareWalletNavigator() {
   >();
   const { height, width } = useDimensions();
 
-  const [currentRouteName, setCurrentRouteName] = useState(
+  const [currentRouteName, setCurrentRouteName] = useState<string>(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
 
@@ -72,6 +72,7 @@ export function PairHardwareWalletNavigator() {
             initialLayout={{ height, width }}
             initialRouteName={currentRouteName}
             sceneContainerStyle={{ backgroundColor }}
+            // @ts-expect-error types are incomplete?
             swipeEnabled={false}
             tabBar={() => null}
             lazy

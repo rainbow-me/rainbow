@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { useRoute } from '@react-navigation/native';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import { EmojiSelector } from '../components/avatar-builder/EmojiSelector';
@@ -62,7 +63,8 @@ const springConfig = {
   stiffness: 600,
 };
 
-const AvatarBuilder = ({ route: { params } }) => {
+const AvatarBuilder = () => {
+  const { params } = useRoute();
   const { height, width } = useDimensions();
   const { colors } = useTheme();
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);

@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -38,7 +38,6 @@ import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
-  addTokenSheetConfig,
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   restoreSheetConfig,
@@ -87,7 +86,7 @@ const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext);
+  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
@@ -369,12 +368,13 @@ function BSNavigator() {
           height:
             deviceUtils.dimensions.height +
             CUSTOM_MARGIN_TOP_ANDROID -
-            StatusBar.currentHeight,
+            (StatusBar?.currentHeight || 0),
         }}
       />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
+        // @ts-ignore
         options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
       <BSStack.Screen
@@ -411,15 +411,23 @@ function AuthNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
-  <NavigationContainer
-    onReady={props.onReady}
-    onStateChange={onNavigationStateChange}
-    ref={ref}
-  >
-    <AuthNavigator />
-  </NavigationContainer>
-));
+const AppContainerWithAnalytics = React.forwardRef(
+  (
+    props: {
+      onReady: () => void;
+    },
+    ref
+  ) => (
+    <NavigationContainer
+      onReady={props.onReady}
+      onStateChange={onNavigationStateChange}
+      // @ts-ignore
+      ref={ref}
+    >
+      <AuthNavigator />
+    </NavigationContainer>
+  )
+);
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 

@@ -122,7 +122,7 @@ type ParamList = {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { goBack, navigate, dangerouslyGetState } = useNavigation();
+  const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -394,7 +394,7 @@ export default function CurrencySelectModal() {
   const handleNavigate = useCallback(
     (item: any) => {
       delayNext();
-      // @ts-expect-error – updating read-only property
+      // @ts-expect-error read only property
       dangerouslyGetState().index = 1;
       if (fromDiscover) {
         goBack();

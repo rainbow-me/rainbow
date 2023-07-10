@@ -83,7 +83,7 @@ export default function useSelectImageMenu({
   uploadToIPFS?: boolean;
   testID?: string;
 } = {}) {
-  const { navigate, dangerouslyGetParent } = useNavigation();
+  const { navigate, getParent: dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
   const { isLoading: isUploading, mutateAsync: upload } = useMutation(
     ['ensImageUpload'],
