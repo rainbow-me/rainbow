@@ -3,6 +3,8 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_DEV } from '@/env';
 
+export type PoapMintError = 'LIMIT_EXCEEDED' | 'EVENT_EXPIRED' | 'UNKNOWN';
+
 const POAP_REGEX = /(?:[A-Za-z]+-){2}[A-Za-z]+$/;
 
 export const checkValidSecretWord = (secretWord: string) => {

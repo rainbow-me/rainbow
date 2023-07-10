@@ -59,7 +59,7 @@ query getPoapEventBySecretWord($secretWord: String!) {
     imageUrl
     createdAt
     qrHash
-    secret
+    secretWord
   }
 }
 
@@ -69,5 +69,6 @@ query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
     secretWord: $secretWord
   ) {
     success
+    error
   }
 }

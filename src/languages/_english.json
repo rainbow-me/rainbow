@@ -1353,6 +1353,19 @@
         "yes": "Yes"
       }
     },
+    "poaps":{
+      "title": "You found a POAP!",
+      "view_on_poap": "View on POAP 􀮶",
+      "mint_poap": "􀑒 Mint POAP",
+      "minting": "Minting...",
+      "minted": "Poap Minted!",
+      "error": "Error Minting",
+      "error_messages": {
+        "limit_exceeded": "This POAP is fully minted out!",
+        "event_expired":  "This POAP mint is expired!",
+        "unknown": "Unknown Error"
+      }
+    },
     "rewards": {
       "total_earnings": "Total Earnings",
       "you_earned": "You've earned ",

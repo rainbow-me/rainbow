@@ -34,12 +34,14 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useRoute } from '@react-navigation/native';
 import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { arcDevClient } from '@/graphql';
+import { arcClient, arcDevClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
+import * as i18n from '@/languages';
+import { PoapMintError } from '@/utils/poaps';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -80,7 +82,7 @@ const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, goBack } = useNavigation();
-  const { colors, isDarkMode } = useTheme();
+  const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
   const { data: uniqueTokens } = useLegacyNFTs({
@@ -88,6 +90,9 @@ const PoapSheet = () => {
   });
 
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
+  const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(
+    undefined
+  );
   const [nft, setNft] = useState<UniqueAsset | null>(null);
 
   const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
@@ -111,29 +116,38 @@ const PoapSheet = () => {
       watchingAlert();
       return;
     }
+    if (!poapEvent.secretWord) return;
     setClaimStatus('claiming');
-    const response = await arcDevClient.claimPoapBySecretWord({
+    const client = IS_DEV ? arcDevClient : arcClient;
+
+    const response = await client.claimPoapBySecretWord({
       walletAddress: accountAddress,
-      secretWord: 'note-remove-couple',
+      secretWord: poapEvent.secretWord,
     });
     await delay(1000);
     const isSuccess = response.claimPoapBySecretWord?.success;
-    console.log({ isSuccess });
+    const errorCode = response.claimPoapBySecretWord?.error;
+
     if (isSuccess) {
       setClaimStatus('claimed');
       await delay(3000);
       goBack();
     } else {
       setClaimStatus('error');
+      if (errorCode === 'LIMIT_EXCEEDED' || errorCode === 'EVENT_EXPIRED') {
+        setErrorCode(errorCode);
+      } else {
+        setErrorCode('UNKNOWN');
+      }
     }
-  }, [accountAddress, goBack, isReadOnlyWallet]);
+  }, [accountAddress, goBack, isReadOnlyWallet, poapEvent]);
 
   const isClaiming = claimStatus === 'claiming';
   const isClaimed = claimStatus === 'claimed';
   const isError = claimStatus === 'error';
 
   const actionOnPress = useCallback(async () => {
-    if (isClaimed) {
+    if (isClaimed && nft) {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: nft,
         backgroundOpacity: 1,
@@ -159,14 +173,26 @@ const PoapSheet = () => {
     }
   }, [imageUrl, poapEvent.imageUrl, uniqueTokens]);
 
-  /* 
-    POAPS:
-    error states: already minted - mint window is closed
+  const getErrorMessage = () => {
+    if (errorCode === 'LIMIT_EXCEEDED') {
+      return i18n.t(i18n.l.poaps.error_messages.limit_exceeded);
+    } else if (errorCode === 'EVENT_EXPIRED') {
+      return i18n.t(i18n.l.poaps.error_messages.event_expired);
+    }
+    return i18n.t(i18n.l.poaps.error_messages.event_expired);
+  };
 
+  const getButtonText = () => {
+    if (isError) {
+      return i18n.t(i18n.l.poaps.error);
+    } else if (isClaiming) {
+      return i18n.t(i18n.l.poaps.minting);
+    } else if (isClaimed) {
+      i18n.t(i18n.l.poaps.minted);
+    }
+    return i18n.t(i18n.l.poaps.mint_poap);
+  };
 
-    open qs:
-    should there be an account switcher? this would require us to rehit endpoints tho 🤔
-  */
   return (
     <>
       {ios && (
@@ -198,7 +224,9 @@ const PoapSheet = () => {
         <ColorModeProvider value="darkTinted">
           <Box
             width="full"
-            height={{ custom: deviceHeight - (IS_IOS ? 100 : 50) }}
+            height={{
+              custom: deviceHeight - (IS_IOS ? 100 : 50) - (errorCode ? 24 : 0),
+            }}
             justifyContent="center"
             alignItems="center"
           >
@@ -207,7 +235,7 @@ const PoapSheet = () => {
                 <Box paddingTop={'104px'}>
                   <Stack space={'28px'} alignHorizontal="center">
                     <Text size="26pt" color="label" weight="bold">
-                      You found a POAP!
+                      {i18n.t(i18n.l.poaps.title)}
                     </Text>
                     <ImgixImage
                       source={{ uri: imageUrl }}
@@ -228,6 +256,11 @@ const PoapSheet = () => {
                 </Text>
               </Stack>
               <Stack alignHorizontal="center">
+                {errorCode && (
+                  <Text size="17pt" weight="medium" color="labelSecondary">
+                    {getErrorMessage()}
+                  </Text>
+                )}
                 <SheetActionButtonRow>
                   <SheetActionButton
                     color={isError ? colors.red : imageColor}
@@ -235,19 +268,13 @@ const PoapSheet = () => {
                   >
                     {isClaiming && (
                       <Spinner
-                        color={colors.white}
+                        color={lightScheme.white}
                         size={'small'}
                         style={{ paddingRight: 6 }}
                       />
                     )}
                     <Text size="17pt" color="label" weight="bold">
-                      {isError
-                        ? 'Error Claiming'
-                        : isClaimed
-                        ? 'Poap Claimed!'
-                        : isClaiming
-                        ? 'Claiming...'
-                        : '􀑒 Claim POAP'}
+                      {getButtonText()}
                     </Text>
                   </SheetActionButton>
                 </SheetActionButtonRow>
@@ -255,7 +282,7 @@ const PoapSheet = () => {
                   onPress={() => Linking.openURL(poapGalleryUrl)}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">
-                    View on POAP 􀮶
+                    {i18n.t(i18n.l.poaps.view_on_poap)}
                   </Text>
                 </ButtonPressAnimation>
               </Stack>
