@@ -1357,7 +1357,7 @@
         "yes": "Yes :)"
       }
     },
-    "poaps":{
+    "poaps": {
       "title": "You found a POAP! :)",
       "view_on_poap": "View on POAP 􀮶 :)",
       "mint_poap": "􀑒 Mint POAP :)",
@@ -1366,7 +1366,7 @@
       "error": "Error Minting :)",
       "error_messages": {
         "limit_exceeded": "This POAP is fully minted out! :)",
-        "event_expired":  "This POAP mint is expired! :)",
+        "event_expired": "This POAP mint is expired! :)",
         "unknown": "Unknown Error :)"
       }
     },
