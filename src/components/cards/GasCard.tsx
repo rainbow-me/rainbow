@@ -20,10 +20,9 @@ import {
   Text,
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import { useAccountSettings, useGas } from '@/hooks';
+import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
-import { useNavigation } from '@/navigation';
 
 type AnimationConfigOptions = {
   duration: number;
@@ -56,8 +55,6 @@ export const GasCard = () => {
   } = useGas();
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
-  const { navigate } = useNavigation();
-  const { accountAddress: walletAddress } = useAccountSettings();
 
   const container = useSharedValue(1);
   const opacity = useSharedValue(0);
@@ -111,7 +108,7 @@ export const GasCard = () => {
     }
   }, []);
 
-  const handlePress = useCallback(async () => {
+  const handlePress = useCallback(() => {
     opacity.value = 0;
     scale.value = 0;
     container.value = withSequence(
