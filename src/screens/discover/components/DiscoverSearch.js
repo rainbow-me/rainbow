@@ -32,6 +32,8 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
+import { checkValidSecretWord, getPoapAndOpenSheet } from '@/utils/poaps';
+import { logger } from '@/logger';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -127,6 +129,13 @@ export default function DiscoverSearch() {
     // prevent other back handlers from firing
     return true;
   });
+
+  useEffect(() => {
+    if (checkValidSecretWord(searchQueryForSearch)) {
+      logger.debug('DiscoverSearch: valid POAP secret word');
+      getPoapAndOpenSheet(searchQueryForSearch);
+    }
+  }, [searchQueryForSearch]);
 
   const handlePress = useCallback(
     item => {
