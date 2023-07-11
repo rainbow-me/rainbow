@@ -29,9 +29,20 @@ import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import { UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
+import { SheetActionButtonRow } from '@/components/sheet/sheet-action-buttons';
+import { HoldToAuthorizeButton } from '@/components/buttons';
+import { GasSpeedButton } from '@/components/gas';
+import { loadWallet } from '@/model/wallet';
+import { Network } from '@/helpers';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
+import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
+import { Wallet } from '@ethersproject/wallet';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
+import { BigNumber } from '@ethersproject/bignumber';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -132,6 +143,7 @@ export function NFTSingleOfferSheet() {
     offer.netAmount.decimal >= 10_000
   );
 
+  useGas();
   useEffect(() => {
     if (offer.validUntil) {
       const interval = setInterval(() => {
@@ -470,7 +482,7 @@ export function NFTSingleOfferSheet() {
                 color={offer.nft.predominantColor || buttonColorFallback}
               >
                 {/* @ts-ignore js component */}
-                <Box
+                {/* <Box
                   as={ButtonPressAnimation}
                   background="accent"
                   height="46px"
@@ -504,7 +516,94 @@ export function NFTSingleOfferSheet() {
                         : i18n.l.nft_offers.single_offer_sheet.view_offer
                     )}
                   </Text>
-                </Box>
+                </Box> */}
+                {/* <> */}
+                {/* <Box> */}
+                {/* @ts-expect-error JavaScript component */}
+                {/* <SheetActionButtonRow paddingBottom={5}> */}
+                {/* @ts-expect-error JavaScript component */}
+                <HoldToAuthorizeButton
+                  backgroundColor={
+                    offer.nft.predominantColor || buttonColorFallback
+                  }
+                  // disabled={!isSufficientGas || !isValidGas}
+                  hideInnerBorder
+                  // label={
+                  //   insufficientEth
+                  //     ? lang.t('profiles.confirm.insufficient_eth')
+                  //     : label
+                  // }
+                  label="Hold to sell"
+                  onLongPress={async () => {
+                    const provider = await getProviderForNetwork(
+                      offer.network as Network
+                    );
+                    const ethersSigner = await loadWallet(
+                      accountAddress,
+                      true,
+                      provider
+                    );
+                    const reservoirSigner = adaptEthersSigner(
+                      ethersSigner as Wallet
+                    );
+                    console.log('HELLO???');
+                    console.log('test');
+                    console.log(
+                      BigNumber.from(offer.grossAmount.raw).div(100).toString()
+                    );
+                    console.log(
+                      `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+                        offer.grossAmount.raw
+                      )
+                        .div(100)
+                        .toString()}`
+                    );
+                    getClient()?.actions.acceptOffer({
+                      items: [
+                        {
+                          token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+                          quantity: 1,
+                        },
+                      ],
+                      options: {
+                        feesOnTop: [
+                          `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+                            offer.grossAmount.raw
+                          )
+                            .div(100)
+                            .toString()}`,
+                        ],
+                      },
+                      wallet: reservoirSigner,
+                      onProgress: (
+                        steps: Execute['steps'],
+                        path: Execute['path']
+                      ) => {
+                        console.log('WHYY');
+                        console.log('STEPS', steps);
+                        console.log('PATH', path);
+                      },
+                    });
+                    console.log('pls');
+                  }}
+                  parentHorizontalPadding={28}
+                  // showBiometryIcon={!insufficientEth}
+                  showBiometryIcon
+                  // testID={`ens-transaction-action-${testID}`}
+                />
+                {/* </SheetActionButtonRow> */}
+                {/* </Box> */}
+                {/* <Box alignItems="center" justifyContent="center"> */}
+                {/* @ts-expect-error JavaScript component */}
+                {/* <GasSpeedButton
+                  // asset={{ color: accentColor }}
+                  horizontalPadding={0}
+                  currentNetwork="mainnet"
+                  // marginBottom={DeviceInfo.hasNotch() ? 0 : undefined}
+                  theme="light"
+                /> */}
+                {/* </Box> */}
+                {/* </> */}
               </AccentColorProvider>
             </Inset>
           </View>
