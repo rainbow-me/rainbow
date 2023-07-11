@@ -225,7 +225,7 @@ const PoapSheet = () => {
         height={'100%'}
         ref={sheetRef}
         scrollEnabled
-        testID="unique-token-expanded-state"
+        testID="poap-mint-sheet"
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
