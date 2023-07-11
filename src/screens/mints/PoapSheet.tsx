@@ -31,7 +31,7 @@ import { magicMemo, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
 import { arcClient, arcDevClient } from '@/graphql';
@@ -42,6 +42,8 @@ import { UniqueAsset } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
+import { analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -129,6 +131,7 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapBySecretWord?.error;
 
     if (isSuccess) {
+      analyticsV2.track(event.poapsMintedPoap, { eventId: poapEvent.id });
       setClaimStatus('claimed');
       await delay(3000);
       goBack();
@@ -192,6 +195,10 @@ const PoapSheet = () => {
     }
     return i18n.t(i18n.l.poaps.mint_poap);
   };
+
+  useFocusEffect(() => {
+    analyticsV2.track(event.poapsOpenedMintSheet, { eventId: poapEvent.id });
+  });
 
   return (
     <>
@@ -279,7 +286,12 @@ const PoapSheet = () => {
                   </SheetActionButton>
                 </SheetActionButtonRow>
                 <ButtonPressAnimation
-                  onPress={() => Linking.openURL(poapGalleryUrl)}
+                  onPress={() => {
+                    analyticsV2.track(event.poapsViewedOnPoap, {
+                      eventId: poapEvent.id,
+                    });
+                    Linking.openURL(poapGalleryUrl);
+                  }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">
                     {i18n.t(i18n.l.poaps.view_on_poap)}
