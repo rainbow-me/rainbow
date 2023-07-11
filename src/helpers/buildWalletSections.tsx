@@ -106,6 +106,10 @@ const withPositionsSection = () => {
   if (result.length && !isLoadingAssets) {
     const res = [
       {
+        type: 'POSITIONS_SPACE_BEFORE',
+        uid: 'positions-header-soaa',
+      },
+      {
         type: 'POSITIONS_HEADER',
         uid: 'positions-header',
         total: positionsObj?.totals.total.display,

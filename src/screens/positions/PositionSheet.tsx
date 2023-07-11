@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { Linking, StatusBar } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 import { RainbowPosition } from '@/resources/defi/PositionsQuery';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
@@ -20,6 +20,7 @@ import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from './SubPositionListItem';
+import { event } from '@/analytics/event';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -68,30 +69,16 @@ export const PositionSheet: React.FC = () => {
 
   const { position } = params as { position: RainbowPosition };
 
-  // TODO: For now we are disabling using the asset price in native currency
-  //  we will use the fallback which is price in USD provided by backend
-  // const assetPriceInNativeCurrency = useMemo(() => {
-  //   const assetCode = data?.rewards?.meta.token.asset.assetCode;
-  //
-  //   if (!assetCode) {
-  //     return undefined;
-  //   }
-  //
-  //   return ethereumUtils.getAssetPrice(assetCode);
-  // }, [data?.rewards?.meta.token.asset]);
-
-  useFocusEffect(
-    useCallback(() => {
-      //analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
-    }, [])
-  );
-
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback;
 
   const openDapp = useCallback(() => {
+    analyticsV2.track(event.positionsOpenedExternalDapp, {
+      dapp: position.type,
+      url: position.dapp.url,
+    });
     Linking.openURL(position.dapp.url);
-  }, [position.dapp.url]);
+  }, [position.dapp.url, position.type]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

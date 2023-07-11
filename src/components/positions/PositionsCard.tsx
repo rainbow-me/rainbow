@@ -9,10 +9,11 @@ import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
 import { AssetType, EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 
 type PositionCardProps = {
   position: RainbowPosition;
-  onPress: (position: RainbowPosition) => void;
 };
 
 type CoinStackToken = {
@@ -59,14 +60,17 @@ function CoinIconStack({
   );
 }
 
-export const PositionCard = ({ position, onPress }: PositionCardProps) => {
+export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors } = useTheme();
   const totalPositions =
     (position.borrows?.length || 0) + (position.deposits?.length || 0);
   const { navigate } = useNavigation();
+
   const onPressHandler = useCallback(() => {
+    analyticsV2.track(event.positionsOpenedSheet, { dapp: position.type });
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
+
   const depositTokens: CoinStackToken[] = useMemo(() => {
     let tokens: CoinStackToken[] = [];
     position.deposits.forEach((deposit: any) => {
@@ -86,7 +90,7 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
     position.dapp.colors.primary || position.dapp.colors.fallback;
 
   return (
-    <Box width="full" height="126px">
+    <Box width="full" height={{ custom: 117 }}>
       <GenericCard
         type={'stretch'}
         onPress={onPressHandler}
@@ -94,7 +98,7 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
         borderColor={colors.alpha(positionColor, 0.02)}
         padding={'16px'}
       >
-        <Stack space="12px">
+        <Stack space="16px">
           <Box>
             <Columns space="20px" alignHorizontal="justify">
               <Column width="content">
@@ -119,36 +123,41 @@ export const PositionCard = ({ position, onPress }: PositionCardProps) => {
               </Column>
             </Columns>
           </Box>
+          <Stack space="12px">
+            <Inline alignVertical="center" horizontalSpace={'4px'}>
+              <Text color={{ custom: positionColor }} size="15pt" weight="bold">
+                {startCase(position.type.split('-')[0])}
+              </Text>
 
-          <Inline alignVertical="center" horizontalSpace={'4px'}>
-            <Text color={{ custom: positionColor }} size="15pt" weight="bold">
-              {startCase(position.type.split('-')[0])}
-            </Text>
-
-            {totalPositions > 1 && (
-              <Box
-                borderRadius={9}
-                padding={{ custom: 5.5 }}
-                style={{
-                  borderColor: colors.alpha(positionColor, 0.05),
-                  borderWidth: 2,
-                  // offset vertical padding
-                  marginVertical: -11,
-                }}
-              >
-                <Text
-                  color={{ custom: positionColor }}
-                  size="15pt"
-                  weight="semibold"
+              {totalPositions > 1 && (
+                <Box
+                  borderRadius={9}
+                  padding={{ custom: 5.5 }}
+                  style={{
+                    borderColor: colors.alpha(positionColor, 0.05),
+                    borderWidth: 2,
+                    // offset vertical padding
+                    marginVertical: -11,
+                  }}
                 >
-                  {totalPositions}
-                </Text>
-              </Box>
-            )}
-          </Inline>
-          <Text color={{ custom: colors.black }} size="17pt" weight="semibold">
-            {position.totals.totals.display}
-          </Text>
+                  <Text
+                    color={{ custom: positionColor }}
+                    size="15pt"
+                    weight="semibold"
+                  >
+                    {totalPositions}
+                  </Text>
+                </Box>
+              )}
+            </Inline>
+            <Text
+              color={{ custom: colors.black }}
+              size="17pt"
+              weight="semibold"
+            >
+              {position.totals.totals.display}
+            </Text>
+          </Stack>
         </Stack>
       </GenericCard>
     </Box>

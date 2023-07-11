@@ -291,7 +291,6 @@ export const buildBriefUniqueTokenList = (
     row.replace(regex, '').toLowerCase()
   );
   const result = [
-    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
