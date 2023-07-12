@@ -29,10 +29,10 @@ export const ZoraNetworkObject: NetworkProperties = {
 
   // features
   features: {
-    txHistory: false,
+    txHistory: true,
     flashbots: false,
     walletconnect: true,
-    swaps: false,
+    swaps: true,
     nfts: true,
     savings: false,
     pools: false,
