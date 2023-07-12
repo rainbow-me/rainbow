@@ -33,12 +33,10 @@ export function getPositionSheetHeight({
 }: {
   position: RainbowPosition;
 }) {
-  console.log('inside: ', { position });
   let height = android ? 120 : 100;
   const numberOfDeposits = position?.deposits?.length || 0;
   const numberOfBorrows = position?.borrows?.length || 0;
   const numberOfClaimables = position?.claimables?.length || 0;
-  console.log(position?.claimables[0]);
 
   height +=
     numberOfDeposits > 0
@@ -56,8 +54,6 @@ export function getPositionSheetHeight({
         numberOfClaimables * (CLAIMABLE_ITEM_HEIGHT + ITEM_PADDING)
       : 0;
 
-  console.log({ numberOfBorrows, numberOfDeposits, numberOfClaimables });
-  console.log('height for ', position?.type, ' is ', height);
   return height;
 }
 

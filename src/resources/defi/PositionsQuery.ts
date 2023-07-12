@@ -164,7 +164,10 @@ type AddysPositionsResponse =
     }
   | Record<string, never>;
 
-const parsePosition = (position: Position): RainbowPosition => {
+const parsePosition = (
+  position: Position,
+  currency: NativeCurrencyKey
+): RainbowPosition => {
   let totalDeposits = '0';
   const parsedDeposits = position.deposits?.map(
     (deposit: Deposit): RainbowDeposit => {
@@ -177,7 +180,7 @@ const parsePosition = (position: Position): RainbowPosition => {
             underlying.quantity,
             underlying.asset.decimals,
             underlying.asset.price?.value!,
-            'USD'
+            currency
           );
           totalDeposits = add(totalDeposits, nativeDisplay.amount);
 
@@ -204,7 +207,7 @@ const parsePosition = (position: Position): RainbowPosition => {
             underlying.quantity,
             underlying.asset.decimals,
             underlying.asset.price?.value!,
-            'USD'
+            currency
           );
           totalBorrows = add(totalBorrows, nativeDisplay.amount);
 
@@ -225,7 +228,7 @@ const parsePosition = (position: Position): RainbowPosition => {
         claim.quantity,
         claim.asset.decimals,
         claim.asset.price?.value!,
-        'USD'
+        currency
       );
       totalClaimables = add(totalClaimables, nativeDisplay.amount);
       return {
@@ -241,20 +244,20 @@ const parsePosition = (position: Position): RainbowPosition => {
       amount: subtract(add(totalDeposits, totalClaimables), totalBorrows),
       display: convertAmountToNativeDisplay(
         subtract(add(totalDeposits, totalClaimables), totalBorrows),
-        'USD'
+        currency
       ),
     },
     borrows: {
       amount: totalBorrows,
-      display: convertAmountToNativeDisplay(totalBorrows, 'USD'),
+      display: convertAmountToNativeDisplay(totalBorrows, currency),
     },
     claimables: {
       amount: totalClaimables,
-      display: convertAmountToNativeDisplay(totalClaimables, 'USD'),
+      display: convertAmountToNativeDisplay(totalClaimables, currency),
     },
     deposits: {
       amount: totalDeposits,
-      display: convertAmountToNativeDisplay(totalDeposits, 'USD'),
+      display: convertAmountToNativeDisplay(totalDeposits, currency),
     },
   };
 
@@ -272,7 +275,10 @@ const parsePosition = (position: Position): RainbowPosition => {
     },
   };
 };
-const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
+const parsePositions = (
+  data: AddysPositionsResponse,
+  currency: NativeCurrencyKey
+): RainbowPositions => {
   console.log('PARSING POSITIONS');
 
   const networkAgnosticPositions = data.payload?.positions.reduce(
@@ -304,7 +310,9 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
     ...networkAgnosticPositions[key],
   }));
 
-  const parsedPositions = positions.map(position => parsePosition(position));
+  const parsedPositions = positions.map(position =>
+    parsePosition(position, currency)
+  );
 
   const positionTokens: string[] = [];
 
@@ -323,21 +331,21 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
         amount: add(acc.borrows.amount, position.totals.borrows.amount),
         display: convertAmountToNativeDisplay(
           add(acc.borrows.amount, position.totals.borrows.amount),
-          'USD'
+          currency
         ),
       },
       deposits: {
         amount: add(acc.deposits.amount, position.totals.deposits.amount),
         display: convertAmountToNativeDisplay(
           add(acc.deposits.amount, position.totals.deposits.amount),
-          'USD'
+          currency
         ),
       },
       claimables: {
         amount: add(acc.claimables.amount, position.totals.claimables.amount),
         display: convertAmountToNativeDisplay(
           add(acc.claimables.amount, position.totals.claimables.amount),
-          'USD'
+          currency
         ),
       },
     }),
@@ -355,7 +363,7 @@ const parsePositions = (data: AddysPositionsResponse): RainbowPositions => {
 
   const totalDisplay = {
     amount: totalAmount,
-    display: convertAmountToNativeDisplay(totalAmount, 'USD'),
+    display: convertAmountToNativeDisplay(totalAmount, currency),
   };
 
   return {
@@ -385,7 +393,7 @@ async function positionsQueryFunction({
 }: QueryFunctionArgs<typeof positionsQueryKey>) {
   console.log('FETCHING POSITIONS');
   const data = await getPositions(address, currency);
-  return parsePositions(data);
+  return parsePositions(data, currency);
 }
 
 type PositionsResult = QueryFunctionResult<typeof positionsQueryFunction>;
