@@ -22,7 +22,7 @@ const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
 const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
 export const nftsQueryKey = ({ address }: { address: string }) =>
-  createQueryKey('nfts', { address }, { persisterVersion: 1 });
+  createQueryKey('nfts', { address });
 
 export const nftListingQueryKey = ({
   contractAddress,

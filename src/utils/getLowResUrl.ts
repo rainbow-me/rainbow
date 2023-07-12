@@ -1,24 +1,29 @@
 import { PixelRatio } from 'react-native';
 import { CardSize } from '../components/unique-token/CardSize';
-import { imageToPng } from '@/handlers/imgix';
+import { imageToPng, maybeSignUri } from '@/handlers/imgix';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 
-const getCDNUrl = (url: string, { w }: { w: number }) => {
-  if (!url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) return null;
+export const getCDNUrl = (url: string, size: number) => {
+  if (!url.startsWith(GOOGLE_USER_CONTENT_URL)) return null;
+  return `${url.split('=')[0]}=w${size}`;
+};
 
-  const splitUrl = url?.split('/');
-  const urlTail = splitUrl[splitUrl.length - 1] || '';
+export const getLowResUrl2 = ({
+  url,
+  size,
+  convertToPng,
+}: {
+  url: string;
+  size?: number;
+  convertToPng?: boolean;
+}) => {
+  const w = size ?? Math.floor((Math.ceil(CardSize) * PixelRatio.get()) / 3);
 
-  if (!urlTail.includes('=')) {
-    // If the tail doesn't already include modifiers, we will add them.
-    return `${url}=w${w}`;
-  }
-  if (urlTail.includes('=w')) {
-    // If the tail includes a width modifier, we will modify it.
-    return url.replace(/=w\d+/, `=w${w}`);
-  }
-  return null;
+  return maybeSignUri(getCDNUrl(url, w) ?? url, {
+    w: w,
+    fm: convertToPng ? 'png' : undefined,
+  });
 };
 
 export const getLowResUrl = (
@@ -30,6 +35,6 @@ export const getLowResUrl = (
     Math.floor((Math.ceil(CardSize) * PixelRatio.get()) / 3);
 
   const lowResUrl = imageToPng(url, w);
-  const cdnUrl = getCDNUrl(url, { w });
+  const cdnUrl = getCDNUrl(url, w);
   return cdnUrl || lowResUrl;
 };
