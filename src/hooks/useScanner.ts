@@ -22,7 +22,7 @@ import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';
-import { checkValidSecretWord, getPoapAndOpenSheet } from '@/utils/poaps';
+import { getPoapAndOpenSheet } from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -185,17 +185,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         return handleScanWalletConnect(uri);
       }
 
+      if (data.startsWith(`${POAP_BASE_URL}`)) {
+        const secretWord = data.split(`${RAINBOW_PROFILES_BASE_URL}/`)?.[1];
+        logger.log('onScan: handling poap scan', { secretWord });
+        return getPoapAndOpenSheet(secretWord);
+      }
       // poap mints
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
         const secretWord = data.split(
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
-        if (checkValidSecretWord(secretWord)) {
-          logger.log('onScan: handling poap scan', { secretWord });
-          return getPoapAndOpenSheet(secretWord);
-        } else {
-          logger.warn('onScan: invalid poap secret', { data });
-        }
+        logger.log('onScan: handling poap scan', { secretWord });
+        return getPoapAndOpenSheet(secretWord);
       }
 
       // Rainbow profile QR code

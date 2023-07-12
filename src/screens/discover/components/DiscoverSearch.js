@@ -32,8 +32,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import { checkValidSecretWord, getPoapAndOpenSheet } from '@/utils/poaps';
-import { logger } from '@/logger';
+import { getPoapAndOpenSheet } from '@/utils/poaps';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -65,6 +64,10 @@ export default function DiscoverSearch() {
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
   );
+
+  // we want to debounce the poap search further
+  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 600);
+
   const currencyList = useMemo(() => {
     // order:
     // 1. favorites
@@ -131,11 +134,8 @@ export default function DiscoverSearch() {
   });
 
   useEffect(() => {
-    if (checkValidSecretWord(searchQueryForSearch)) {
-      logger.debug('DiscoverSearch: valid POAP secret word');
-      getPoapAndOpenSheet(searchQueryForSearch);
-    }
-  }, [searchQueryForSearch]);
+    getPoapAndOpenSheet(searchQueryForPoap);
+  }, [searchQueryForPoap]);
 
   const handlePress = useCallback(
     item => {
