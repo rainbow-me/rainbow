@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.23)
+
+### Added
+
+- NFT offers v1
+- bug fixes
+
 ## [1.8.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.22)
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.23-1",
+  "version": "1.8.24-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -311,7 +311,7 @@
     "@babel/plugin-transform-runtime": "7.18.10",
     "@babel/preset-env": "7.18.10",
     "@babel/runtime": "7.18.9",
-    "@lavamoat/allow-scripts": "2.0.3",
+    "@lavamoat/allow-scripts": "2.3.1",
     "@nomiclabs/hardhat-ethers": "2.0.4",
     "@nomiclabs/hardhat-waffle": "2.0.1",
     "@testing-library/react-native": "11.2.0",
@@ -338,7 +338,7 @@
     "babel-plugin-rewire": "1.2.0",
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
-    "chai": "4.2.0",
+  "chai": "4.2.0",
     "detox": "19.12.1",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
