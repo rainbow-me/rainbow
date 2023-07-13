@@ -158,6 +158,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
               color={{ custom: colors.black }}
               size="17pt"
               weight="semibold"
+              numberOfLines={1}
             >
               {position.totals.totals.display}
             </Text>
