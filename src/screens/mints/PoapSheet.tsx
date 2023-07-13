@@ -89,7 +89,7 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
@@ -203,7 +203,9 @@ const PoapSheet = () => {
   ]);
 
   const actionOnPress = useCallback(async () => {
-    if (claimStatus === 'claimed' && nft) {
+    if (claimStatus === 'claimed') {
+      if (!nft) goBack();
+
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: nft,
         backgroundOpacity: 1,
@@ -225,6 +227,7 @@ const PoapSheet = () => {
     claimPoapByQrHash,
     claimPoapBySecret,
     claimStatus,
+    goBack,
     navigate,
     nft,
     poapMintType,
