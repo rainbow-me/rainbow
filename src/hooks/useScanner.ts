@@ -22,7 +22,10 @@ import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';
-import { getPoapAndOpenSheet } from '@/utils/poaps';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -186,9 +189,17 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       }
 
       if (data.startsWith(`${POAP_BASE_URL}`)) {
-        const secretWord = data.split(`${RAINBOW_PROFILES_BASE_URL}/`)?.[1];
-        logger.log('onScan: handling poap scan', { secretWord });
-        return getPoapAndOpenSheet(secretWord);
+        const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
+        goBack();
+        return getPoapAndOpenSheetWithSecretWord(secretWord);
+      }
+
+      if (data.startsWith(`https://app.poap.xyz/claim`)) {
+        console.log('lets goooo');
+
+        const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
+        goBack();
+        return getPoapAndOpenSheetWithQRHash(qrHash);
       }
       // poap mints
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
@@ -196,23 +207,24 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWord });
-        return getPoapAndOpenSheet(secretWord);
+        goBack();
+        return getPoapAndOpenSheetWithSecretWord(secretWord);
       }
 
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
       }
-
       return handleScanInvalid(data);
     },
     [
       disableScanning,
-      onSuccess,
-      handleScanWalletConnect,
       handleScanInvalid,
+      onSuccess,
       handleScanEthereumUrl,
       handleScanAddress,
+      handleScanWalletConnect,
+      goBack,
       handleScanRainbowProfile,
     ]
   );

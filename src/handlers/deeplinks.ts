@@ -27,7 +27,7 @@ import {
 } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
-import { getPoapAndOpenSheet } from '@/utils/poaps';
+import { getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 /*
  * You can test these deeplinks with the following command:
@@ -190,7 +190,7 @@ export default async function handleDeeplink(
 
       case 'poap': {
         const secretWord = pathname?.split('/')?.[1];
-        await getPoapAndOpenSheet(secretWord);
+        await getPoapAndOpenSheetWithSecretWord(secretWord);
         break;
       }
 

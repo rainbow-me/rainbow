@@ -1,6 +1,12 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -27,7 +33,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -83,7 +89,7 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
@@ -99,6 +105,8 @@ const PoapSheet = () => {
 
   const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
 
+  const poapMintType = poapEvent.secretWord ? 'secretWord' : 'qrHash';
+
   const imageUrl = maybeSignUri(poapEvent.imageUrl);
 
   const poapGalleryUrl = `https://poap.gallery/event/${poapEvent.id}`;
@@ -112,6 +120,48 @@ const PoapSheet = () => {
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
+
+  const claimPoapByQrHash = useCallback(async () => {
+    if (isReadOnlyWallet) {
+      watchingAlert();
+      return;
+    }
+    setClaimStatus('claiming');
+    const client = IS_DEV ? arcDevClient : arcClient;
+    if (!poapEvent.secret || !poapEvent.qrHash) return;
+    const response = await client.claimPoapByQrHash({
+      walletAddress: accountAddress,
+      qrHash: poapEvent.qrHash,
+      secret: poapEvent.secret,
+    });
+    await delay(1000);
+    console.log(response.claimPoapByQrHash);
+    const isSuccess = response.claimPoapByQrHash?.success;
+    const errorCode = response.claimPoapByQrHash?.error;
+
+    if (isSuccess) {
+      analyticsV2.track(event.poapsMintedPoap, {
+        eventId: poapEvent.id,
+        type: poapMintType,
+      });
+      setClaimStatus('claimed');
+    } else {
+      setClaimStatus('error');
+      if (errorCode === 'LIMIT_EXCEEDED' || errorCode === 'EVENT_EXPIRED') {
+        setErrorCode(errorCode);
+      } else {
+        setErrorCode('UNKNOWN');
+      }
+    }
+  }, [
+    accountAddress,
+    isReadOnlyWallet,
+    poapEvent.id,
+    poapEvent.qrHash,
+    poapEvent.secret,
+    poapMintType,
+    setClaimStatus,
+  ]);
 
   const claimPoapBySecret = useCallback(async () => {
     if (isReadOnlyWallet) {
@@ -131,10 +181,11 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapBySecretWord?.error;
 
     if (isSuccess) {
-      analyticsV2.track(event.poapsMintedPoap, { eventId: poapEvent.id });
+      analyticsV2.track(event.poapsMintedPoap, {
+        eventId: poapEvent.id,
+        type: poapMintType,
+      });
       setClaimStatus('claimed');
-      await delay(3000);
-      goBack();
     } else {
       setClaimStatus('error');
       if (errorCode === 'LIMIT_EXCEEDED' || errorCode === 'EVENT_EXPIRED') {
@@ -143,14 +194,16 @@ const PoapSheet = () => {
         setErrorCode('UNKNOWN');
       }
     }
-  }, [accountAddress, goBack, isReadOnlyWallet, poapEvent]);
-
-  const isClaiming = claimStatus === 'claiming';
-  const isClaimed = claimStatus === 'claimed';
-  const isError = claimStatus === 'error';
+  }, [
+    accountAddress,
+    isReadOnlyWallet,
+    poapEvent.id,
+    poapEvent.secretWord,
+    poapMintType,
+  ]);
 
   const actionOnPress = useCallback(async () => {
-    if (isClaimed && nft) {
+    if (claimStatus === 'claimed' && nft) {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: nft,
         backgroundOpacity: 1,
@@ -162,9 +215,20 @@ const PoapSheet = () => {
         type: 'unique_token',
       });
     } else {
-      await claimPoapBySecret();
+      if (poapMintType === 'secretWord') {
+        await claimPoapBySecret();
+      } else {
+        await claimPoapByQrHash();
+      }
     }
-  }, [claimPoapBySecret, isClaimed, navigate, nft]);
+  }, [
+    claimPoapByQrHash,
+    claimPoapBySecret,
+    claimStatus,
+    navigate,
+    nft,
+    poapMintType,
+  ]);
 
   useEffect(() => {
     const nft = uniqueTokens.find(
@@ -185,19 +249,11 @@ const PoapSheet = () => {
     return i18n.t(i18n.l.poaps.error_messages.event_expired);
   };
 
-  const getButtonText = () => {
-    if (isError) {
-      return i18n.t(i18n.l.poaps.error);
-    } else if (isClaiming) {
-      return i18n.t(i18n.l.poaps.minting);
-    } else if (isClaimed) {
-      i18n.t(i18n.l.poaps.minted);
-    }
-    return i18n.t(i18n.l.poaps.mint_poap);
-  };
-
   useFocusEffect(() => {
-    analyticsV2.track(event.poapsOpenedMintSheet, { eventId: poapEvent.id });
+    analyticsV2.track(event.poapsOpenedMintSheet, {
+      eventId: poapEvent.id,
+      type: poapMintType,
+    });
   });
 
   return (
@@ -270,10 +326,10 @@ const PoapSheet = () => {
                 )}
                 <SheetActionButtonRow>
                   <SheetActionButton
-                    color={isError ? colors.red : imageColor}
+                    color={claimStatus === 'error' ? colors.red : imageColor}
                     onPress={actionOnPress}
                   >
-                    {isClaiming && (
+                    {claimStatus === 'claiming' && (
                       <Spinner
                         color={lightScheme.white}
                         size={'small'}
@@ -281,7 +337,14 @@ const PoapSheet = () => {
                       />
                     )}
                     <Text size="17pt" color="label" weight="bold">
-                      {getButtonText()}
+                      {/* eslint-disable-next-line no-nested-ternary*/}
+                      {claimStatus === 'claimed'
+                        ? i18n.t(i18n.l.poaps.minted)
+                        : claimStatus === 'claiming'
+                        ? i18n.t(i18n.l.poaps.minting)
+                        : claimStatus === 'none'
+                        ? i18n.t(i18n.l.poaps.mint_poap)
+                        : i18n.t(i18n.l.poaps.error)}
                     </Text>
                   </SheetActionButton>
                 </SheetActionButtonRow>
@@ -306,4 +369,4 @@ const PoapSheet = () => {
   );
 };
 
-export default magicMemo(PoapSheet, 'eventId');
+export default PoapSheet;

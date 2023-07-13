@@ -32,7 +32,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import { getPoapAndOpenSheet } from '@/utils/poaps';
+import { getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -134,7 +134,7 @@ export default function DiscoverSearch() {
   });
 
   useEffect(() => {
-    getPoapAndOpenSheet(searchQueryForPoap);
+    getPoapAndOpenSheetWithSecretWord(searchQueryForPoap);
   }, [searchQueryForPoap]);
 
   const handlePress = useCallback(

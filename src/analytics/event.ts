@@ -257,9 +257,11 @@ export type EventProperties = {
   };
   [event.poapsMintedPoap]: {
     eventId: number;
+    type: 'qrHash' | 'secretWord';
   };
   [event.poapsOpenedMintSheet]: {
     eventId: number;
+    type: 'qrHash' | 'secretWord';
   };
   [event.poapsViewedOnPoap]: {
     eventId: number;
