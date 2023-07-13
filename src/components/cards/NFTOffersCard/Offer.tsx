@@ -24,6 +24,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountSettings } from '@/hooks';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const NFT_IMAGE_SIZE = 78;
@@ -83,12 +85,19 @@ export const Offer = ({
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const { isDarkMode } = useTheme();
+  const { accountAddress } = useAccountSettings();
+  const {
+    data: { nftsMap },
+  } = useLegacyNFTs({ address: accountAddress });
 
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
       ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
       : undefined
   );
+
+  const nft = nftsMap[offer.nft.uniqueId];
+  const nftImage = nft?.lowResUrl ?? nft?.image_url;
 
   useEffect(() => {
     if (offer.validUntil) {
@@ -223,7 +232,7 @@ export const Offer = ({
                   ? 'surfaceSecondaryElevated'
                   : 'surfacePrimaryElevated'
               }
-              source={{ uri: offer.nft.imageUrl }}
+              source={{ uri: nftImage ?? offer.nft.imageUrl }}
               width={{ custom: NFT_IMAGE_SIZE }}
               height={{ custom: NFT_IMAGE_SIZE }}
               borderRadius={12}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -30,7 +30,6 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '@/hooks';
-import { UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -69,22 +68,16 @@ function Row({
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
+  const { offer } = params as { offer: NftOffer };
   const { accountAddress } = useAccountSettings();
   const {
-    data: { nfts },
+    data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
 
-  const { offer } = params as { offer: NftOffer };
+  const nft = nftsMap[offer.nft.uniqueId];
+  const nftImage = nft?.lowResUrl ?? nft?.image_url;
 
   const [height, setHeight] = useState(0);
-
-  const nft = useMemo(() => {
-    if (nfts) {
-      return nfts.find(
-        (nft: UniqueAsset) => nft.fullUniqueId === offer.nft.uniqueId
-      );
-    }
-  }, [nfts, offer.nft.uniqueId]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -230,7 +223,7 @@ export function NFTSingleOfferSheet() {
                     <Box
                       as={ImgixImage}
                       background="surfaceSecondaryElevated"
-                      source={{ uri: offer.nft.imageUrl }}
+                      source={{ uri: nftImage ?? offer.nft.imageUrl }}
                       width={{ custom: 160 }}
                       height={{ custom: 160 }}
                       borderRadius={16}

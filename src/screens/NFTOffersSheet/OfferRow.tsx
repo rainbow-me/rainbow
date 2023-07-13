@@ -8,6 +8,7 @@ import {
   Cover,
   globalColors,
   Inline,
+  Inset,
   Stack,
   Text,
   useColorMode,
@@ -43,74 +44,79 @@ const NFTImageMask = () => (
 export const FakeOfferRow = () => {
   const { isDarkMode } = useTheme();
   return (
-    <Columns space="16px" alignVertical="center">
-      <Column width="content">
-        <Box
-          background={isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'}
-          width={{ custom: NFT_SIZE }}
-          height={{ custom: NFT_SIZE }}
-          borderRadius={12}
-        />
-      </Column>
-      <Column>
-        <Stack space="10px">
+    <Inset vertical="10px" horizontal="20px">
+      <Columns space="16px" alignVertical="center">
+        <Column width="content">
           <Box
             background={
               isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
             }
-            width={{ custom: 70 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
+            width={{ custom: NFT_SIZE }}
+            height={{ custom: NFT_SIZE }}
+            borderRadius={12}
           />
-          <Box
-            background={
-              isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
-            }
-            width={{ custom: 100 }}
-            height={{ custom: 9.3333 }}
-            borderRadius={9.3333 / 2}
-          />
-        </Stack>
-      </Column>
-      <Column width="content">
-        <Stack space="10px" alignHorizontal="right">
-          <Inline space="6px" alignVertical="center">
-            <Bleed vertical="2px">
-              <Box
-                background={
-                  isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
-                }
-                width={{ custom: COIN_ICON_SIZE }}
-                height={{ custom: COIN_ICON_SIZE }}
-                borderRadius={99}
-              />
-            </Bleed>
+        </Column>
+        <Column>
+          <Stack space="10px">
             <Box
               background={
                 isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
               }
-              width={{ custom: 90 }}
+              width={{ custom: 70 }}
               height={{ custom: 12 }}
               borderRadius={6}
             />
-          </Inline>
-          <Box
-            background={
-              isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
-            }
-            width={{ custom: 100 }}
-            height={{ custom: 9.3333 }}
-            borderRadius={9.3333 / 2}
-          />
-        </Stack>
-      </Column>
-    </Columns>
+            <Box
+              background={
+                isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+              }
+              width={{ custom: 100 }}
+              height={{ custom: 9.3333 }}
+              borderRadius={9.3333 / 2}
+            />
+          </Stack>
+        </Column>
+        <Column width="content">
+          <Stack space="10px" alignHorizontal="right">
+            <Inline space="6px" alignVertical="center">
+              <Bleed vertical="2px">
+                <Box
+                  background={
+                    isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+                  }
+                  width={{ custom: COIN_ICON_SIZE }}
+                  height={{ custom: COIN_ICON_SIZE }}
+                  borderRadius={99}
+                />
+              </Bleed>
+              <Box
+                background={
+                  isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+                }
+                width={{ custom: 90 }}
+                height={{ custom: 12 }}
+                borderRadius={6}
+              />
+            </Inline>
+            <Box
+              background={
+                isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'
+              }
+              width={{ custom: 100 }}
+              height={{ custom: 9.3333 }}
+              borderRadius={9.3333 / 2}
+            />
+          </Stack>
+        </Column>
+      </Columns>
+    </Inset>
   );
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
+
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const dollarAmount = convertAmountToNativeDisplay(
     offer.grossAmount.usd,
@@ -132,126 +138,128 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   );
 
   return (
-    <ButtonPressAnimation
-      onPress={() => {
-        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
-          entryPoint: 'NFTOffersSheet',
-          offerPriceUSD: offer.grossAmount.usd,
-          nft: {
-            collectionAddress: offer.nft.contractAddress,
-            tokenId: offer.nft.tokenId,
-            network: offer.network,
-          },
-        });
-        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
-      }}
-    >
-      <Columns space="16px" alignVertical="center">
-        <Column width="content">
-          <Box
-            style={{
-              shadowColor: globalColors.grey100,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.02,
-              shadowRadius: 3,
-            }}
-          >
+    <Inset vertical="10px" horizontal="20px">
+      <ButtonPressAnimation
+        onPress={() => {
+          analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+            entryPoint: 'NFTOffersSheet',
+            offerPriceUSD: offer.grossAmount.usd,
+            nft: {
+              collectionAddress: offer.nft.contractAddress,
+              tokenId: offer.nft.tokenId,
+              network: offer.network,
+            },
+          });
+          navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
+        }}
+      >
+        <Columns space="16px" alignVertical="center">
+          <Column width="content">
             <Box
               style={{
-                shadowColor:
-                  colorMode === 'dark' || !offer.nft.predominantColor
-                    ? globalColors.grey100
-                    : offer.nft.predominantColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.16,
-                shadowRadius: 6,
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.02,
+                shadowRadius: 3,
               }}
             >
-              <MaskedView maskElement={<NFTImageMask />}>
+              <Box
+                style={{
+                  shadowColor:
+                    colorMode === 'dark' || !offer.nft.predominantColor
+                      ? globalColors.grey100
+                      : offer.nft.predominantColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.16,
+                  shadowRadius: 6,
+                }}
+              >
+                <MaskedView maskElement={<NFTImageMask />}>
+                  <Box
+                    as={ImgixImage}
+                    width={{ custom: NFT_SIZE }}
+                    height={{ custom: NFT_SIZE }}
+                    size={NFT_SIZE}
+                    background="surfaceSecondaryElevated"
+                    source={{ uri: offer.nft.imageUrl }}
+                  />
+                </MaskedView>
+              </Box>
+            </Box>
+            <Cover>
+              <Bleed left={{ custom: 5 }}>
                 <Box
                   as={ImgixImage}
-                  width={{ custom: NFT_SIZE }}
-                  height={{ custom: NFT_SIZE }}
-                  size={NFT_SIZE}
-                  background="surfaceSecondary"
-                  source={{ uri: offer.nft.imageUrl }}
-                />
-              </MaskedView>
-            </Box>
-          </Box>
-          <Cover>
-            <Bleed left={{ custom: 5 }}>
-              <Box
-                as={ImgixImage}
-                width={{ custom: MARKETPLACE_ORB_SIZE }}
-                height={{ custom: MARKETPLACE_ORB_SIZE }}
-                background="surfaceSecondaryElevated"
-                source={{ uri: offer.marketplace.imageUrl }}
-                size={MARKETPLACE_ORB_SIZE}
-                borderRadius={MARKETPLACE_ORB_SIZE / 2}
-                marginTop={{
-                  custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
-                }}
-                marginRight={{
-                  custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
-                }}
-              />
-            </Bleed>
-          </Cover>
-        </Column>
-        <Column>
-          <Stack space="10px">
-            <Text size="17pt" weight="bold" color="label">
-              {dollarAmount}
-            </Text>
-            <Text
-              size="13pt"
-              weight="medium"
-              color="labelTertiary"
-              ellipsizeMode="tail"
-              numberOfLines={1}
-            >
-              {offer.nft.name}
-            </Text>
-          </Stack>
-        </Column>
-        <Column width="content">
-          <Stack space="10px" alignHorizontal="right">
-            <Inline space="6px" alignVertical="center">
-              <Bleed vertical="2px">
-                <CoinIcon
-                  address={offer.paymentToken.address}
-                  size={COIN_ICON_SIZE}
-                  symbol={offer.paymentToken.symbol}
+                  width={{ custom: MARKETPLACE_ORB_SIZE }}
+                  height={{ custom: MARKETPLACE_ORB_SIZE }}
+                  background="surfaceSecondaryElevated"
+                  source={{ uri: offer.marketplace.imageUrl }}
+                  size={MARKETPLACE_ORB_SIZE}
+                  borderRadius={MARKETPLACE_ORB_SIZE / 2}
+                  marginTop={{
+                    custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
+                  }}
+                  marginRight={{
+                    custom: NFT_SIZE - MARKETPLACE_ORB_SIZE + 5,
+                  }}
                 />
               </Bleed>
+            </Cover>
+          </Column>
+          <Column>
+            <Stack space="10px">
               <Text size="17pt" weight="bold" color="label">
-                {cryptoAmount}
+                {dollarAmount}
               </Text>
-            </Inline>
-            <Inline>
               <Text
                 size="13pt"
                 weight="medium"
-                color={
-                  isFloorDiffPercentagePositive ? 'green' : 'labelTertiary'
-                }
+                color="labelTertiary"
+                ellipsizeMode="tail"
+                numberOfLines={1}
               >
-                {`${isFloorDiffPercentagePositive ? '+' : ''}${
-                  offer.floorDifferencePercentage
-                }% `}
+                {offer.nft.name}
               </Text>
-              <Text size="13pt" weight="medium" color="labelTertiary">
-                {i18n.t(
-                  isFloorDiffPercentagePositive
-                    ? i18n.l.nft_offers.sheet.above_floor
-                    : i18n.l.nft_offers.sheet.below_floor
-                )}
-              </Text>
-            </Inline>
-          </Stack>
-        </Column>
-      </Columns>
-    </ButtonPressAnimation>
+            </Stack>
+          </Column>
+          <Column width="content">
+            <Stack space="10px" alignHorizontal="right">
+              <Inline space="6px" alignVertical="center">
+                <Bleed vertical="2px">
+                  <CoinIcon
+                    address={offer.paymentToken.address}
+                    size={COIN_ICON_SIZE}
+                    symbol={offer.paymentToken.symbol}
+                  />
+                </Bleed>
+                <Text size="17pt" weight="bold" color="label">
+                  {cryptoAmount}
+                </Text>
+              </Inline>
+              <Inline>
+                <Text
+                  size="13pt"
+                  weight="medium"
+                  color={
+                    isFloorDiffPercentagePositive ? 'green' : 'labelTertiary'
+                  }
+                >
+                  {`${isFloorDiffPercentagePositive ? '+' : ''}${
+                    offer.floorDifferencePercentage
+                  }% `}
+                </Text>
+                <Text size="13pt" weight="medium" color="labelTertiary">
+                  {i18n.t(
+                    isFloorDiffPercentagePositive
+                      ? i18n.l.nft_offers.sheet.above_floor
+                      : i18n.l.nft_offers.sheet.below_floor
+                  )}
+                </Text>
+              </Inline>
+            </Stack>
+          </Column>
+        </Columns>
+      </ButtonPressAnimation>
+    </Inset>
   );
 };
