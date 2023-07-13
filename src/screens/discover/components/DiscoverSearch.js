@@ -32,7 +32,10 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import { getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -66,7 +69,7 @@ export default function DiscoverSearch() {
   );
 
   // we want to debounce the poap search further
-  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 600);
+  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
   const currencyList = useMemo(() => {
     // order:
@@ -134,7 +137,11 @@ export default function DiscoverSearch() {
   });
 
   useEffect(() => {
-    getPoapAndOpenSheetWithSecretWord(searchQueryForPoap);
+    const checkAndHandlePoaps = async secretWordOrHash => {
+      await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
+      await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
+    };
+    checkAndHandlePoaps(searchQueryForPoap);
   }, [searchQueryForPoap]);
 
   const handlePress = useCallback(
