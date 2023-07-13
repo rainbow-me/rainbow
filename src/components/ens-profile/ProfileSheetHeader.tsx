@@ -69,7 +69,9 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const { data: uniqueTokens } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokens },
+  } = useLegacyNFTs({
     address: profileAddress ?? '',
   });
 

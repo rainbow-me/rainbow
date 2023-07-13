@@ -70,7 +70,9 @@ export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
   const { accountAddress } = useAccountSettings();
-  const { data: nfts } = useLegacyNFTs({ address: accountAddress });
+  const {
+    data: { nfts },
+  } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
 
