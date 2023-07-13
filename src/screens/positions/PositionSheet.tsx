@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { useDimensions } from '@/hooks';
 import {
   BackgroundProvider,
   Box,
@@ -9,9 +8,8 @@ import {
   Stack,
   Text,
 } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { Linking, StatusBar } from 'react-native';
+import { IS_IOS } from '@/env';
+import { Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 import { RainbowPosition } from '@/resources/defi/PositionsQuery';
@@ -21,6 +19,8 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from './SubPositionListItem';
 import { event } from '@/analytics/event';
+import * as i18n from '@/languages';
+import { capitalize } from 'lodash';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -60,8 +60,6 @@ export function getPositionSheetHeight({
 export const PositionSheet: React.FC = () => {
   const { params } = useRoute();
   const { colors } = useTheme();
-  const { height } = useDimensions();
-  const { top } = useSafeAreaInsets();
 
   const { position } = params as { position: RainbowPosition };
 
@@ -82,38 +80,57 @@ export const PositionSheet: React.FC = () => {
         // @ts-expect-error JS component
         <SlackSheet
           backgroundColor={backgroundColor}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-          {...(IS_IOS && { height: '100%' })}
-          contentHeight={height - top - 100}
+          {...(IS_IOS
+            ? { height: '100%' }
+            : {
+                additionalTopPadding: true,
+                contentHeight: getPositionSheetHeight({ position }),
+              })}
           scrollEnabled
         >
-          <Box padding="20px" width="full">
+          <Box padding="20px" width="full" paddingBottom={{ custom: 50 }}>
             <Stack
               space="24px"
               separator={<Separator color="separatorTertiary" thickness={1} />}
             >
-              <Inline alignHorizontal="justify" alignVertical="center">
-                <Inline horizontalSpace={'10px'} alignVertical="center">
-                  {/* @ts-ignore js component*/}
-                  <RequestVendorLogoIcon
-                    backgroundColor={positionColor}
-                    dappName={startCase(position.type.split('-')[0])}
-                    size={48}
-                    imageUrl={position.dapp.icon_url}
-                  />
-                  <Stack space={'10px'}>
-                    <Text
-                      size="15pt"
-                      weight="heavy"
-                      color={{ custom: positionColor }}
-                    >
-                      {startCase(position.type.split('-')[0])}
-                    </Text>
-                    <Text size="26pt" weight="heavy" color="label">
-                      {position.totals.totals.display}
-                    </Text>
-                  </Stack>
-                </Inline>
+              <Inline
+                alignHorizontal="justify"
+                alignVertical="center"
+                wrap={false}
+              >
+                <Box style={{ maxWidth: '58%' }}>
+                  <Inline
+                    horizontalSpace={'10px'}
+                    alignVertical="center"
+                    wrap={false}
+                  >
+                    {/* @ts-ignore js component*/}
+                    <RequestVendorLogoIcon
+                      backgroundColor={positionColor}
+                      dappName={startCase(position.type.split('-')[0])}
+                      size={48}
+                      imageUrl={position.dapp.icon_url}
+                    />
+                    <Stack space={'10px'}>
+                      <Text
+                        size="15pt"
+                        weight="heavy"
+                        color={{ custom: positionColor }}
+                        numberOfLines={1}
+                      >
+                        {capitalize(position.dapp.name.replaceAll('-', ' '))}
+                      </Text>
+                      <Text
+                        size="26pt"
+                        weight="heavy"
+                        color="label"
+                        numberOfLines={1}
+                      >
+                        {position.totals.totals.display}
+                      </Text>
+                    </Stack>
+                  </Inline>
+                </Box>
                 <ButtonPressAnimation onPress={openDapp}>
                   <Box
                     style={{
@@ -129,7 +146,7 @@ export const PositionSheet: React.FC = () => {
                       weight="heavy"
                       color={{ custom: positionColor }}
                     >
-                      Open 􀮶
+                      {i18n.t(i18n.l.positions.open_dapp)}
                     </Text>
                   </Box>
                 </ButtonPressAnimation>
@@ -138,7 +155,7 @@ export const PositionSheet: React.FC = () => {
               <Stack space={'20px'}>
                 {(position?.deposits?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    Deposits
+                    {i18n.t(i18n.l.positions.deposits)}
                   </Text>
                 )}
                 {position?.deposits?.map(deposit => (
@@ -154,7 +171,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(position?.borrows?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    Borrows
+                    {i18n.t(i18n.l.positions.borrows)}
                   </Text>
                 )}
                 {position?.borrows?.map(borrow => (
@@ -170,7 +187,7 @@ export const PositionSheet: React.FC = () => {
 
                 {(position?.claimables?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
-                    Rewards
+                    {i18n.t(i18n.l.positions.rewards)}
                   </Text>
                 )}
                 {position?.claimables?.map(claim => (

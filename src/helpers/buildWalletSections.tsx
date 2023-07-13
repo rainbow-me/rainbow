@@ -107,7 +107,7 @@ const withPositionsSection = () => {
     const res = [
       {
         type: 'POSITIONS_SPACE_BEFORE',
-        uid: 'positions-header-soaa',
+        uid: 'positions-header-space-before',
       },
       {
         type: 'POSITIONS_HEADER',

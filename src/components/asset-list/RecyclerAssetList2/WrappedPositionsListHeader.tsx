@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Text } from '@/design-system';
 import { StickyHeader } from './core/StickyHeaders';
+import * as i18n from '@/languages';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 
@@ -79,7 +80,7 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
           >
             <Inline alignHorizontal="justify" alignVertical="center">
               <Text size="22pt" color={'label'} weight="heavy">
-                Positions
+                {i18n.t(i18n.l.account.tab_positions)}
               </Text>
               <Inline horizontalSpace={'8px'} alignVertical="center">
                 {!isPositionCardsOpen && (

@@ -11,6 +11,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
+import { IS_ANDROID } from '@/env';
+import { capitalize } from 'lodash';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -22,13 +24,7 @@ type CoinStackToken = {
   symbol: string;
 };
 
-function CoinIconStack({
-  tokens,
-  positionColor,
-}: {
-  tokens: CoinStackToken[];
-  positionColor: string;
-}) {
+function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
   const { colors } = useTheme();
 
   return (
@@ -61,9 +57,11 @@ function CoinIconStack({
 }
 
 export const PositionCard = ({ position }: PositionCardProps) => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const totalPositions =
-    (position.borrows?.length || 0) + (position.deposits?.length || 0);
+    (position.borrows?.length || 0) +
+    (position.deposits?.length || 0) +
+    (position.claimables?.length || 0);
   const { navigate } = useNavigation();
 
   const onPressHandler = useCallback(() => {
@@ -96,6 +94,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         onPress={onPressHandler}
         color={colors.alpha(positionColor, 0.04)}
         borderColor={colors.alpha(positionColor, 0.02)}
+        ignoreShadow={IS_ANDROID && isDarkMode}
         padding={'16px'}
       >
         <Stack space="16px">
@@ -104,52 +103,57 @@ export const PositionCard = ({ position }: PositionCardProps) => {
               <Column width="content">
                 {/* @ts-ignore js component*/}
                 <RequestVendorLogoIcon
-                  backgroundColor={
-                    position.type === 'compound'
-                      ? colors.transparent
-                      : positionColor
-                  }
+                  backgroundColor={positionColor}
                   dappName={startCase(position.type.split('-')[0])}
                   size={32}
                   borderRadius={10}
                   imageUrl={position.dapp.icon_url}
+                  noShadow={IS_ANDROID}
                 />
               </Column>
               <Column width="content">
-                <CoinIconStack
-                  tokens={depositTokens}
-                  positionColor={positionColor}
-                />
+                <CoinIconStack tokens={depositTokens} />
               </Column>
             </Columns>
           </Box>
           <Stack space="12px">
-            <Inline alignVertical="center" horizontalSpace={'4px'}>
-              <Text color={{ custom: positionColor }} size="15pt" weight="bold">
-                {startCase(position.type.split('-')[0])}
-              </Text>
-
-              {totalPositions > 1 && (
-                <Box
-                  borderRadius={9}
-                  padding={{ custom: 5.5 }}
-                  style={{
-                    borderColor: colors.alpha(positionColor, 0.05),
-                    borderWidth: 2,
-                    // offset vertical padding
-                    marginVertical: -11,
-                  }}
+            <Box style={{ width: '90%' }}>
+              <Inline
+                alignVertical="center"
+                horizontalSpace={'4px'}
+                wrap={false}
+              >
+                <Text
+                  color={{ custom: positionColor }}
+                  size="15pt"
+                  weight="bold"
+                  numberOfLines={1}
                 >
-                  <Text
-                    color={{ custom: positionColor }}
-                    size="15pt"
-                    weight="semibold"
+                  {capitalize(position.dapp.name.replaceAll('-', ' '))}
+                </Text>
+
+                {totalPositions > 1 && (
+                  <Box
+                    borderRadius={9}
+                    padding={{ custom: 5.5 }}
+                    style={{
+                      borderColor: colors.alpha(positionColor, 0.05),
+                      borderWidth: 2,
+                      // offset vertical padding
+                      marginVertical: -11,
+                    }}
                   >
-                    {totalPositions}
-                  </Text>
-                </Box>
-              )}
-            </Inline>
+                    <Text
+                      color={{ custom: positionColor }}
+                      size="15pt"
+                      weight="semibold"
+                    >
+                      {totalPositions}
+                    </Text>
+                  </Box>
+                )}
+              </Inline>
+            </Box>
             <Text
               color={{ custom: colors.black }}
               size="17pt"

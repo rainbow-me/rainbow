@@ -1410,6 +1410,12 @@
         }
       }
     },
+    "positions": {
+      "open_dapp": "Open 􀮶 :)",
+      "deposits": "Deposits :)",
+      "borrows": "Borrows :)",
+      "rewards": "Rewards :)"
+    },
     "savings": {
       "deposit": "Dépôt",
       "deposit_from_wallet": "Deposit from Wallet :)",

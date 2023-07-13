@@ -82,6 +82,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 /* eslint-disable import/no-unresolved */
 // @ts-ignore .android and .ios exports cause errors
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import { PositionSheet } from '@/screens/positions/PositionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -115,6 +116,11 @@ function MainNavigator() {
       <Stack.Screen
         component={Portal}
         name={Routes.PORTAL}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={PositionSheet}
+        name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
