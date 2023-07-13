@@ -191,7 +191,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       // poap mints
       if (data.startsWith(`${POAP_BASE_URL}`)) {
         const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
-        getPoapAndOpenSheetWithSecretWord(secretWord);
+        await getPoapAndOpenSheetWithSecretWord(secretWord);
         goBack();
       }
 
@@ -206,7 +206,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
         const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
         goBack();
-        getPoapAndOpenSheetWithQRHash(qrHash);
+        await getPoapAndOpenSheetWithQRHash(qrHash);
         goBack();
       }
 
@@ -215,8 +215,8 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
-        getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash);
-        getPoapAndOpenSheetWithQRHash(secretWordOrQrHash);
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash);
+        await getPoapAndOpenSheetWithQRHash(secretWordOrQrHash);
         goBack();
       }
 
