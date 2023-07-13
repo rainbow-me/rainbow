@@ -13,10 +13,11 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress, network, nativeCurrency } = useAccountSettings();
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -30,6 +31,12 @@ export default function useRefreshAccountData() {
 
     queryClient.invalidateQueries({
       queryKey: nftsQueryKey({ address: accountAddress }),
+    });
+    queryClient.invalidateQueries({
+      queryKey: positionsQueryKey({
+        address: accountAddress,
+        currency: nativeCurrency,
+      }),
     });
 
     try {
@@ -55,7 +62,14 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [accountAddress, dispatch, network, profilesEnabled, refetchSavings]);
+  }, [
+    accountAddress,
+    dispatch,
+    nativeCurrency,
+    network,
+    profilesEnabled,
+    refetchSavings,
+  ]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
