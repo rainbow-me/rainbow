@@ -279,8 +279,6 @@ const parsePositions = (
   data: AddysPositionsResponse,
   currency: NativeCurrencyKey
 ): RainbowPositions => {
-  console.log('PARSING POSITIONS');
-
   const networkAgnosticPositions = data.payload?.positions.reduce(
     (acc: Record<string, Position>, position: Position) => {
       return {
@@ -391,7 +389,6 @@ type PositionsQueryKey = ReturnType<typeof positionsQueryKey>;
 async function positionsQueryFunction({
   queryKey: [{ address, currency }],
 }: QueryFunctionArgs<typeof positionsQueryKey>) {
-  console.log('FETCHING POSITIONS');
   const data = await getPositions(address, currency);
   return parsePositions(data, currency);
 }
