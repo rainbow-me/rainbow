@@ -1,16 +1,12 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
-import { Network } from '.';
-import { getNetworkObj } from '@/networks';
 import { queryClient } from '@/react-query';
-import {
-  RainbowPositions,
-  positionsQueryKey,
-} from '@/resources/defi/PositionsQuery';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
+import { RainbowPositions } from '@/resources/defi/types';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },

@@ -3,20 +3,10 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  keys,
-  mapValues,
-  partition,
-  update,
-  cloneDeep,
-} from 'lodash';
+import { find, isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { gretch } from 'gretchen';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import {
   cancelDebouncedUpdateGenericAssets,
@@ -32,7 +22,6 @@ import {
   ParsedAddressAsset,
   RainbowTransaction,
   TransactionStatus,
-  TransactionTypes,
   ZerionAsset,
   ZerionTransaction,
 } from '@/entities';
@@ -82,10 +71,8 @@ import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
 import { ratioGetUserActivityItem } from '@/resources/f2c';
-import {
-  RainbowPositions,
-  positionsQueryKey,
-} from '@/resources/defi/PositionsQuery';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { RainbowPositions } from '@/resources/defi/types';
 
 const storage = new MMKV();
 

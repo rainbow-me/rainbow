@@ -10,13 +10,13 @@ import {
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { AssetType, ZerionAsset } from '@/entities';
-import { NativeDisplay } from '@/resources/defi/PositionsQuery';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
+import { NativeDisplay } from '@/resources/defi/types';
 
 type Props = {
   asset: ZerionAsset;

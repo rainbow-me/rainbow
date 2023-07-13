@@ -12,7 +12,6 @@ import { IS_IOS } from '@/env';
 import { Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
-import { RainbowPosition } from '@/resources/defi/PositionsQuery';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
@@ -21,6 +20,7 @@ import { SubPositionListItem } from './SubPositionListItem';
 import { event } from '@/analytics/event';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
+import { RainbowPosition } from '@/resources/defi/types';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;

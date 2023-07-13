@@ -2,7 +2,6 @@ import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
-import { RainbowPosition } from '@/resources/defi/PositionsQuery';
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
@@ -13,6 +12,7 @@ import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize } from 'lodash';
+import { RainbowPosition } from '@/resources/defi/types';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -39,7 +39,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               position: 'relative',
               zIndex: tokens.length + index,
               borderRadius: 30,
-              borderColor: index > 0 ? colors.transparent : colors.transparent,
+              borderColor: colors.transparent,
               borderWidth: 2,
             }}
           >
