@@ -455,12 +455,12 @@ const UniqueTokenExpandedState = ({
       {ios && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
-            {/* @ts-ignore */}
             <UniqueTokenImage
               backgroundColor={asset.background || imageColor}
               imageUrl={asset.lowResUrl}
               item={asset}
               resizeMode="cover"
+              size={CardSize}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -470,8 +470,8 @@ const UniqueTokenExpandedState = ({
       <SlackSheet
         backgroundColor={
           isDarkMode
-            ? `rgba(22, 22, 22, ${ios ? 0.25 : 1})`
-            : `rgba(26, 26, 26, ${ios ? 0.25 : 1})`
+            ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
+            : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
         bottomInset={42}
         hideHandle

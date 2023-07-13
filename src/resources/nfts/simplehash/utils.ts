@@ -10,7 +10,6 @@ import {
   SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
-import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ETH_ADDRESS,
@@ -33,8 +32,7 @@ import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
 import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
-import { getFullSizeUrl } from '@/utils/getFullSizeUrl';
-import { getLowResUrl, getLowResUrl2 } from '@/utils/getLowResUrl';
+import { handleNFTImages } from '@/utils/handleNFTImages';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -167,23 +165,13 @@ export function simpleHashNFTToUniqueAsset(
 ): UniqueAsset {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-  // const { imageUrl, lowResUrl } = handleAndSignImages(
-  //   // @ts-ignore
-  //   nft.image_url,
-  //   nft.previews.image_large_url,
-  //   nft.extra_metadata?.image_original_url
-  // );
-  const { imageUrl, lowResUrl } = testfunc(
-    nft.image_url ?? nft.extra_metadata?.image_original_url ?? '',
-    nft.previews.image_large_url,
-    false
-  );
-  if (nft.collection.name === '100 Thieves') {
-    console.log(nft.image_url);
-    console.log(nft.previews.image_large_url);
-    console.log(nft.image_properties?.mime_type);
-    console.log(lowResUrl);
-  }
+
+  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
+    originalUrl: nft.image_url ?? nft.extra_metadata?.image_original_url,
+    previewUrl: nft.previews.image_large_url,
+    mimeType: nft.image_properties?.mime_type,
+  });
+
   const marketplace = nft.collection.marketplace_pages?.[0];
 
   const floorPrice = collection?.floor_prices?.find(
@@ -274,6 +262,8 @@ export function simpleHashNFTToUniqueAsset(
 }
 
 /**
+ * DELETE ME, use `handleNFTImages` instead.
+ *
  * Reformats, resizes and signs images provided by simplehash.
  * @param original original image url
  * @param preview preview image url
@@ -317,41 +307,6 @@ function handleImages(
   const fullResUrl = isSVG && original ? original : fullResPngUrl;
 
   return { fullResPngUrl, lowResPngUrl, fullResUrl };
-}
-
-export function testfunc(
-  original: string,
-  preview: string | null | undefined,
-  isSVG: boolean
-): {
-  imageUrl?: string;
-  lowResUrl?: string;
-} {
-  if (!original && !preview) {
-    return {
-      imageUrl: undefined,
-      lowResUrl: undefined,
-    };
-  }
-
-  const imageUrl = isSVG
-    ? original
-    : getFullSizeUrl({
-        url: preview ?? original,
-        res: 'high',
-        convertToPng: false,
-      });
-
-  const lowResUrl = getFullSizeUrl({
-    url: preview ?? original,
-    res: 'low',
-    convertToPng: !preview,
-  });
-
-  return {
-    imageUrl,
-    lowResUrl,
-  };
 }
 
 /**

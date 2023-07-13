@@ -19,12 +19,7 @@ export const nftOffersQueryKey = ({
 }: {
   address: string;
   sortCriterion: SortCriterion;
-}) =>
-  createQueryKey(
-    'nftOffers',
-    { address, sortCriterion },
-    { persisterVersion: 1 }
-  );
+}) => createQueryKey('nftOffers', { address, sortCriterion });
 
 /**
  * React Query hook that returns the the most profitable `NftOffer` for each NFT owned by the given wallet address.
