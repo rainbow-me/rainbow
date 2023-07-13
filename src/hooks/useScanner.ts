@@ -188,10 +188,17 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         return handleScanWalletConnect(uri);
       }
 
+      // poap mints
       if (data.startsWith(`${POAP_BASE_URL}`)) {
         const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
+        getPoapAndOpenSheetWithSecretWord(secretWord);
         goBack();
-        return getPoapAndOpenSheetWithSecretWord(secretWord);
+      }
+
+      if (data.startsWith(`https://collectors.poap.xyz/mint/`)) {
+        const qrHash = data.split('https://collectors.poap.xyz/mint/')?.[1];
+        goBack();
+        return getPoapAndOpenSheetWithQRHash(qrHash);
       }
 
       if (data.startsWith(`https://app.poap.xyz/claim`)) {
@@ -199,16 +206,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
         const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
         goBack();
-        return getPoapAndOpenSheetWithQRHash(qrHash);
+        getPoapAndOpenSheetWithQRHash(qrHash);
+        goBack();
       }
-      // poap mints
+
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
-        const secretWord = data.split(
+        const secretWordOrQrHash = data.split(
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
-        logger.log('onScan: handling poap scan', { secretWord });
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
+        getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash);
+        getPoapAndOpenSheetWithQRHash(secretWordOrQrHash);
         goBack();
-        return getPoapAndOpenSheetWithSecretWord(secretWord);
       }
 
       // Rainbow profile QR code
