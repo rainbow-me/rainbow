@@ -43,6 +43,10 @@ const AssetIconsByTheme: {
     dark: ZoraBadgeDark,
     light: ZoraBadge,
   },
+  [AssetType.base]: {
+    dark: ZoraBadgeDark,
+    light: ZoraBadge,
+  },
 };
 
 export const FastChainBadge = React.memo(function FastChainBadge({
