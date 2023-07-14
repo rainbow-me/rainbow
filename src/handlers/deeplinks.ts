@@ -237,7 +237,7 @@ export default async function handleDeeplink(
     // Android uses normal deeplinks
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
-    handleWalletConnect(query.uri, query.connector);
+    handleWalletConnect(url, query.connector);
   }
 }
 
