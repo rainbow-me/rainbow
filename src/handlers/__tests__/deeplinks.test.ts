@@ -158,6 +158,13 @@ test(`handles rainbow:// protocol for WalletConnect v2`, async () => {
   expect(pair).toHaveBeenCalledTimes(1);
 });
 
+test(`handles rainbow:// protocol for WalletConnect v2 with &connector`, async () => {
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(`rainbow://wc?uri=${uri}&connector=rainbowkit`);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+});
+
 test(`handles https:// protocol for tokens, found asset`, async () => {
   // @ts-ignore just need a truthy value
   mocked(ethereumUtils.getAssetFromAllAssets).mockReturnValueOnce({});
