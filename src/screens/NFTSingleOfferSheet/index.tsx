@@ -31,6 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
+import { CardSize } from '@/components/unique-token/CardSize';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -75,7 +76,6 @@ export function NFTSingleOfferSheet() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const nft = nftsMap[offer.nft.uniqueId];
-  const nftImage = nft?.lowResUrl ?? nft?.image_url;
 
   const [height, setHeight] = useState(0);
 
@@ -223,11 +223,11 @@ export function NFTSingleOfferSheet() {
                     <Box
                       as={ImgixImage}
                       background="surfaceSecondaryElevated"
-                      source={{ uri: nftImage ?? offer.nft.imageUrl }}
+                      source={{ uri: offer.nft.imageUrl }}
                       width={{ custom: 160 }}
                       height={{ custom: 160 }}
                       borderRadius={16}
-                      size={160}
+                      size={CardSize}
                       shadow={
                         offer.nft.predominantColor ? '30px accent' : '30px'
                       }

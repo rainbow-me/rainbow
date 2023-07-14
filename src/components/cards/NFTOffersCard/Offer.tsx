@@ -232,7 +232,7 @@ export const Offer = ({
                   ? 'surfaceSecondaryElevated'
                   : 'surfacePrimaryElevated'
               }
-              source={{ uri: nftImage ?? offer.nft.imageUrl }}
+              source={{ uri: offer.nft.imageUrl }}
               width={{ custom: NFT_IMAGE_SIZE }}
               height={{ custom: NFT_IMAGE_SIZE }}
               borderRadius={12}

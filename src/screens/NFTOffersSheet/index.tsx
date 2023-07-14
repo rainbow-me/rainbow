@@ -182,7 +182,7 @@ export const NFTOffersSheet = () => {
                     )}
                     estimatedItemSize={70}
                     estimatedListSize={{
-                      height: deviceHeight,
+                      height: 2 * deviceHeight,
                       width: deviceWidth,
                     }}
                     renderItem={({ item }) => <OfferRow offer={item} />}

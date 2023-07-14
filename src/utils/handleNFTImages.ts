@@ -8,6 +8,7 @@ const deviceWidth = deviceUtils.dimensions.width;
 const fullSize = deviceWidth * pixelRatio;
 const MAX_IMAGE_SCALE = 3;
 export const FULL_NFT_IMAGE_SIZE = fullSize * MAX_IMAGE_SCALE;
+export const cardSize = Math.floor((Math.ceil(CardSize) * pixelRatio) / 3);
 
 // mime types provided by SimpleHash
 export enum MimeType {
@@ -36,8 +37,6 @@ export function handleNFTImages({
 
   const isSVG = mimeType === MimeType.SVG;
   const isGIF = mimeType === MimeType.GIF;
-
-  const cardSize = Math.floor((Math.ceil(CardSize) * pixelRatio) / 3);
 
   const highResUrl =
     (isSVG
