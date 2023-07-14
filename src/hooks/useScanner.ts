@@ -112,18 +112,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanWalletConnect = useCallback(
-    async (qrCodeData: string) => {
+    async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
       try {
-        const { version } = parseUri(qrCodeData);
+        const { version } = parseUri(uri);
         if (version === 1) {
-          await walletConnectOnSessionRequest(qrCodeData, () => {});
+          await walletConnectOnSessionRequest(uri, connector, () => {});
         } else if (version === 2) {
-          await pairWalletConnect({ uri: qrCodeData });
+          await pairWalletConnect({ uri, connector });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
