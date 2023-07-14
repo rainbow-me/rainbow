@@ -87,7 +87,7 @@ export default async function handleDeeplink(
        */
       case 'wc': {
         logger.info(`handleDeeplink: wc`);
-        handleWalletConnect(query.uri as string);
+        handleWalletConnect(query.uri, query.connector);
         break;
       }
 
@@ -237,7 +237,7 @@ export default async function handleDeeplink(
     // Android uses normal deeplinks
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
-    handleWalletConnect(url);
+    handleWalletConnect(query.uri, query.connector);
   }
 }
 
@@ -261,7 +261,12 @@ export default async function handleDeeplink(
  */
 const walletConnectURICache = new Set();
 
-function handleWalletConnect(uri: string) {
+function handleWalletConnect(uri?: string, connector?: string) {
+  if (!uri) {
+    logger.debug(`handleWalletConnect: skipping uri empty`, {});
+    return;
+  }
+
   const cacheKey = JSON.stringify({ uri });
 
   if (walletConnectURICache.has(cacheKey)) {
