@@ -3,6 +3,9 @@ import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
+import { usePrepareContractWrite, useContractWrite} from 'wagmi'
+import * as abi from '../../generated'
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
   Easing,
@@ -23,6 +26,17 @@ import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
+import { createPublicClient, decodeFunctionData, hexToBigInt, http, toHex, } from 'viem'
+import { mainnet } from 'viem/chains'
+import { ETHEREUM_MAINNET_RPC } from 'react-native-dotenv';
+import { simulateContract } from 'viem/dist/types/actions/public/simulateContract';
+
+const transport = http(ETHEREUM_MAINNET_RPC)
+const publicClient = createPublicClient({ 
+  chain: mainnet,
+  transport
+})
+
 
 type AnimationConfigOptions = {
   duration: number;
@@ -47,12 +61,113 @@ const fadeOutConfig: AnimationConfigOptions = {
 };
 
 export const GasCard = () => {
+  const [data, setData] = useState(0);
   const {
     currentBlockParams,
     gasFeeParamsBySpeed,
     startPollingGasFees,
     stopPollingGasFees,
   } = useGas();
+
+  //const { data, isLoading, isSuccess } =  abi.usePrepareZoraNftCreatorCreateDrop();
+
+useEffect(()=>{
+  const get = async ()=>{
+    const data = await publicClient.readContract({
+      address: abi.zoraNftCreatorAddress[1],
+      abi: abi.zoraNftCreatorABI,
+      functionName: 'contractVersion',
+    })
+    console.log('!!!!!!!!!!!!!!')
+    console.log({data})
+    setData(data)
+    console.log('!!!!!!!!!!!!!!')
+    type ZoraSalesConfig = {
+      publicSalePrice: bigint,
+      maxSalePurchasePerAddress: number,
+      publicSaleStart: bigint,
+      publicSaleEnd:  bigint,
+      presaleStart: bigint,
+      presaleEnd:  bigint,
+      presaleMerkleRoot: `0x${string}`,
+      
+    }
+    type CreateDropArgs = {
+      name: string;
+      symbol: string;
+      defaultAdmin: `0x${string}`;
+      editionSize: number;
+      royaltyBPS: number;
+      fundsRecipient: `0x${string}`;
+      metadataURIBase: string;
+      metadataContractUri: `0x${string}`;
+      salesConfig: ZoraSalesConfig;
+    }
+    const skillet = '0xe826F1C06d5ae90E4C098459D1b7464a8dC604cA'
+    type createDropArgs = [string, string, `0x${string}`, bigint, number, `0x${string}`, { publicSalePrice: bigint; maxSalePurchasePerAddress: number; publicSaleStart: bigint; publicSaleEnd: bigint; presaleStart: bigint; presaleEnd: bigint; presaleMerkleRoot: `0x${string}`; }, string, string]
+
+    const buildDropArgs = ({
+      name,
+      symbol,
+      defaultAdmin,  
+      editionSize,
+      royaltyBPS,
+      fundsRecipient,
+      metadataURIBase,
+      metadataContractUri,
+      salesConfig,
+    }: CreateDropArgs): createDropArgs => {
+      return [
+         name,
+        symbol,
+        defaultAdmin,
+        hexToBigInt(toHex(editionSize)),
+        royaltyBPS,
+        fundsRecipient,
+        salesConfig,
+        metadataURIBase,
+        metadataContractUri
+      ]
+
+    }
+
+    const args: createDropArgs = [
+        'test',
+        'tst',
+        skillet,
+        hexToBigInt('0x01'),
+        5,
+        skillet,
+        {
+          publicSalePrice: hexToBigInt('0x01'),
+          maxSalePurchasePerAddress: 5,
+          publicSaleStart: hexToBigInt('0x01'),
+          publicSaleEnd:  hexToBigInt('0x01'),
+          presaleStart: hexToBigInt('0x01'),
+          presaleEnd:  hexToBigInt('0x01'),
+          presaleMerkleRoot: '0x01',
+        },
+        'https://rainbow.me/drop/zorb/favicon.ico',
+        '0xnone'
+    ]
+    const { request } = await publicClient.simulateContract({
+      account: '0xe826F1C06d5ae90E4C098459D1b7464a8dC604cA',
+      address: abi.zoraNftCreatorAddress[1],
+      abi: abi.zoraNftCreatorABI,
+      functionName: 'createDrop',
+      args: args
+    })
+
+
+
+  
+  }
+
+  get();
+})
+ 
+
+
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
 
@@ -73,11 +188,8 @@ export const GasCard = () => {
 
   const currentGwei = useMemo(
     () =>
-      add(
-        currentBlockParams?.baseFeePerGas?.gwei,
-        gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei
-      ),
-    [NORMAL, currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed]
+      data,
+    [data]
   );
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 

@@ -13,7 +13,7 @@ import {
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import { IS_TESTING } from 'react-native-dotenv';
+import { ETHEREUM_MAINNET_RPC, ETHEREUM_MAINNET_RPC_DEV, IS_TESTING } from 'react-native-dotenv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -36,10 +36,10 @@ import {
   runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
-import { isL2Network } from './handlers/web3';
+import { getProviderForNetwork, isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
-import networkTypes from './helpers/networkTypes';
+import networkTypes, { Network } from './helpers/networkTypes';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
@@ -85,6 +85,8 @@ if (__DEV__) {
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
+
+
 
 enableScreens();
 

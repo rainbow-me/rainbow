@@ -110,12 +110,12 @@
     "@react-native-firebase/remote-config": "14.7.0",
     "@react-native-masked-view/masked-view": "0.2.8",
     "@react-native-menu/menu": "0.5.2",
-    "@reservoir0x/ethers-wallet-adapter": "0.0.0",
-    "@reservoir0x/reservoir-sdk": "1.1.10",
     "@react-navigation/core": "6.4.8",
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
+    "@reservoir0x/ethers-wallet-adapter": "0.0.0",
+    "@reservoir0x/reservoir-sdk": "1.1.10",
     "@segment/analytics-react-native": "2.7.0",
     "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
@@ -130,6 +130,7 @@
     "@types/url-join": "4.0.1",
     "@unstoppabledomains/resolution": "7.1.4",
     "@wagmi/chains": "1.1.1",
+    "@wagmi/cli": "1.3.0",
     "@walletconnect/client": "1.8.0",
     "@walletconnect/core": "2.8.0",
     "@walletconnect/legacy-utils": "2.0.0",
@@ -304,7 +305,8 @@
     "util": "0.10.4",
     "viem": "0.3.35",
     "vm-browserify": "0.0.4",
-    "w2t": "3.0.2"
+    "w2t": "3.0.2",
+    "wagmi": "1.3.8"
   },
   "devDependencies": {
     "@babel/core": "7.22.0",
@@ -518,7 +520,12 @@
       "hardhat>ethereum-cryptography>keccak": false,
       "hardhat>ethereum-cryptography>secp256k1": false,
       "react-native-storage": false,
-      "react-native-storage>opencollective>babel-polyfill>core-js": false
+      "react-native-storage>opencollective>babel-polyfill>core-js": false,
+      "@wagmi/cli>esbuild": false,
+      "viem>ws>bufferutil": false,
+      "viem>ws>utf-8-validate": false,
+      "wagmi>@wagmi/core>@wagmi/connectors>@coinbase/wallet-sdk>@solana/web3.js>bigint-buffer": false,
+      "wagmi>@wagmi/core>@wagmi/connectors>@coinbase/wallet-sdk>keccak": false
     }
   },
   "lint-staged": {
