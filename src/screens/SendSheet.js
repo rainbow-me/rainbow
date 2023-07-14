@@ -348,16 +348,11 @@ export default function SendSheet(props) {
       ) {
         let provider = web3Provider;
         const isNft = selected.type === AssetTypes.nft;
-        if (isNft) {
-          setCurrentNetwork(selected.network);
-          provider = await getProviderForNetwork(selected.network);
-        } else {
-          const selectedNetwork = ethereumUtils.getNetworkFromType(
-            selected.type
-          );
-          setCurrentNetwork(selectedNetwork);
-          provider = await getProviderForNetwork(selectedNetwork);
-        }
+        const selectedNetwork = isNft
+          ? selected.network
+          : ethereumUtils.getNetworkFromType(selected.type);
+        setCurrentNetwork(selectedNetwork);
+        provider = await getProviderForNetwork(selectedNetwork);
         setCurrentProvider(provider);
       }
     };
