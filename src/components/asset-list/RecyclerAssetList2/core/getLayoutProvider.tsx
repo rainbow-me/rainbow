@@ -61,6 +61,7 @@ const getLayoutProvider = (
       val.type === CellType.PROFILE_NAME_ROW ||
       val.type === CellType.PROFILE_STICKY_HEADER ||
       val.type === CellType.NFTS_HEADER ||
+      val.type === CellType.POSITIONS_HEADER ||
       (val.type === CellType.COIN_DIVIDER && isCoinListEdited)
     ) {
       indicesToOverride.push(i);
