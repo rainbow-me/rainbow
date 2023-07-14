@@ -46,7 +46,7 @@ import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
-import { FULL_NFT_IMAGE_SIZE } from '@/utils/getFullSizeUrl';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 
 const idsAtom = atom<string[]>({
   default: [],
