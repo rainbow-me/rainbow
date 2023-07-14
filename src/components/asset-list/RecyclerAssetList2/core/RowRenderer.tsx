@@ -17,6 +17,8 @@ import {
   NFTExtraData,
   NFTFamilyExtraData,
   PoolsHeaderExtraData,
+  PositionExtraData,
+  PositionHeaderExtraData,
   SavingExtraData,
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
@@ -33,6 +35,8 @@ import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import WrappedPosition from '../WrappedPosition';
+import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 
 function rowRenderer(
   type: CellType,
@@ -55,6 +59,8 @@ function rowRenderer(
     case CellType.EMPTY_WALLET_SPACER:
     case CellType.BIG_EMPTY_WALLET_SPACER:
     case CellType.EMPTY_ROW:
+    case CellType.POSITIONS_SPACE_AFTER:
+    case CellType.POSITIONS_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -172,6 +178,21 @@ function rowRenderer(
         />
       );
     }
+    case CellType.POSITIONS_HEADER: {
+      const { total } = data as PositionHeaderExtraData;
+      return <WrappedPositionsListHeader total={total} />;
+    }
+    case CellType.POSITION: {
+      const { uniqueId, index } = data as PositionExtraData;
+
+      return (
+        <WrappedPosition
+          placement={index % 2 === 0 ? 'left' : 'right'}
+          uniqueId={uniqueId}
+        />
+      );
+    }
+
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
     default:

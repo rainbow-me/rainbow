@@ -14,6 +14,7 @@ import { Animated as RNAnimated } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BaseScrollView } from 'recyclerlistview';
 import { useRecyclerAssetListPosition } from './Contexts';
+import { useTheme } from '@/theme';
 
 const Context = React.createContext<
   | {
@@ -47,11 +48,12 @@ function StickyHeaderInternal({
   const { setMeasures, interpolationsRanges, scrollViewRef } = context;
   const { range: range_, last } = interpolationsRanges[name] || {};
   const range = range_?.map(r => r - context.yOffset);
+  const { colors } = useTheme();
 
   const position = useRecyclerAssetListPosition();
   const animatedStyle = useMemo(
     () => ({
-      backgroundColor: 'white',
+      backgroundColor: colors.white,
       opacity: visibleAtYPosition
         ? position!.interpolate({
             inputRange: [0, visibleAtYPosition, visibleAtYPosition],
