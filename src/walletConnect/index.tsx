@@ -303,7 +303,13 @@ async function rejectProposal({
   });
 }
 
-export async function pair({ uri }: { uri: string }) {
+export async function pair({
+  uri,
+  connector,
+}: {
+  uri: string;
+  connector?: string;
+}) {
   logger.debug(`WC v2: pair`, { uri }, logger.DebugContext.walletconnect);
 
   /**
@@ -322,9 +328,21 @@ export async function pair({ uri }: { uri: string }) {
   ) {
     logger.debug(`WC v2: pair: handler`, { proposal });
 
+    const { metadata } =
+      (proposal as Web3WalletTypes.SessionProposal).params.proposer ||
+      (proposal as Web3WalletTypes.AuthRequest).params.requester;
+    analytics.track(analytics.event.wcNewPairing, {
+      dappName: metadata.name,
+      dappUrl: metadata.url,
+      connector,
+    });
+
     // @ts-expect-error We can't differentiate between these two unless we have separate handlers
     if (proposal.topic === topic || proposal.params.pairingTopic === topic) {
-      if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
+      if (PAIRING_TIMEOUT) {
+        clearTimeout(PAIRING_TIMEOUT);
+        analytics.track(analytics.event.wcNewPairingTimeout);
+      }
     }
   }
 
