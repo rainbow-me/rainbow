@@ -290,19 +290,25 @@ function handleWalletConnect(uri?: string, connector?: string) {
     if (parsedUri.version === 1) {
       store.dispatch(walletConnectSetPendingRedirect());
       store.dispatch(
-        walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
-          logger.debug(`walletConnectOnSessionRequest callback`, {
-            status,
-            dappScheme,
-          });
-          const type = status === 'approved' ? 'connect' : status;
-          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-        })
+        walletConnectOnSessionRequest(
+          uri,
+          connector,
+          (status: any, dappScheme: any) => {
+            logger.debug(`walletConnectOnSessionRequest callback`, {
+              status,
+              dappScheme,
+            });
+            const type = status === 'approved' ? 'connect' : status;
+            store.dispatch(
+              walletConnectRemovePendingRedirect(type, dappScheme)
+            );
+          }
+        )
       );
     } else if (parsedUri.version === 2) {
       logger.debug(`handleWalletConnect: handling v2`, { uri });
       setHasPendingDeeplinkPendingRedirect(true);
-      pairWalletConnect({ uri });
+      pairWalletConnect({ uri, connector });
     }
   } else {
     logger.debug(`handleWalletConnect: handling fallback`, { uri });

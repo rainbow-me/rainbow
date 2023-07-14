@@ -178,10 +178,10 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri, connector } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
-        return handleScanWalletConnect(uri);
+        return handleScanWalletConnect(uri, connector);
       }
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
