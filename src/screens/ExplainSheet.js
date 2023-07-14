@@ -292,7 +292,7 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
-const BASE_EXPLAINER = lang.t('explain.zora.text');
+const BASE_EXPLAINER = lang.t('explain.base.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 

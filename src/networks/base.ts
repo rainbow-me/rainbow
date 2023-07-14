@@ -9,6 +9,7 @@ import config from '@/model/config';
 export const BaseNetworkObject: NetworkProperties = {
   // wagmi chain data
   ...baseGoerli,
+  id: 8453,
 
   // network related data
   enabled: config.base_enabled && config.op_chains_enabled,
