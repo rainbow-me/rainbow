@@ -145,6 +145,15 @@ test(`handles https:// protocol for WalletConnect`, async () => {
   expect(pair).toHaveBeenCalledTimes(1);
 });
 
+test(`handles https:// protocol for WalletConnect with &connector`, async () => {
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(
+    `https://rnbwapp.com/wc?uri=${uri}&connector=rainbowkit`
+  );
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+});
+
 test(`handles rainbow:// protocol for WalletConnect`, async () => {
   const uri = encodeURIComponent(generateWCUri({ version: 1 }));
   await handleDeepLink(`rainbow://wc?uri=${uri}`);
