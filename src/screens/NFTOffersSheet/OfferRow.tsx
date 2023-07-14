@@ -27,6 +27,7 @@ import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
+import { CardSize } from '@/components/unique-token/CardSize';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -179,7 +180,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                     as={ImgixImage}
                     width={{ custom: NFT_SIZE }}
                     height={{ custom: NFT_SIZE }}
-                    size={NFT_SIZE}
+                    size={CardSize}
                     background="surfaceSecondaryElevated"
                     source={{ uri: offer.nft.imageUrl }}
                   />

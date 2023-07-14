@@ -10,12 +10,12 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
+import { FlashList } from '@shopify/flash-list';
 import {
   ButtonPressAnimation,
   ShimmerAnimation,
 } from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { ScrollView } from 'react-native';
 import { useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -24,7 +24,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { FakeOffer, Offer } from './Offer';
+import {
+  CELL_HORIZONTAL_PADDING,
+  FakeOffer,
+  NFT_IMAGE_SIZE,
+  Offer,
+} from './Offer';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import {
@@ -37,7 +42,8 @@ import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
 
 const CARD_HEIGHT = 250;
-const MAX_OFFERS = 10;
+const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
+const OFFER_CELL_WIDTH = NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2;
 
 export const NFTOffersCard = () => {
   const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
@@ -152,35 +158,35 @@ export const NFTOffersCard = () => {
                 />
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ height: 138 }}
-                >
-                  <Inset horizontal="20px" vertical="10px">
-                    <Inline space={{ custom: 14 }}>
-                      {!offers.length ? (
-                        <>
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                        </>
-                      ) : (
-                        offers
-                          .slice(0, MAX_OFFERS)
-                          .map((offer: NftOffer) => (
-                            <Offer
-                              key={offer.nft.uniqueId}
-                              offer={offer}
-                              sortCriterion={sortOption.criterion}
-                            />
-                          ))
-                      )}
-                    </Inline>
-                  </Inset>
-                </ScrollView>
+                <Box height={{ custom: OFFER_CELL_HEIGHT }}>
+                  <FlashList
+                    data={offers}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 13 }}
+                    ListEmptyComponent={() => (
+                      <>
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                      </>
+                    )}
+                    estimatedItemSize={OFFER_CELL_WIDTH}
+                    horizontal
+                    estimatedListSize={{
+                      height: OFFER_CELL_HEIGHT,
+                      width: deviceWidth * 2,
+                    }}
+                    renderItem={({ item }) => (
+                      <Offer
+                        offer={item}
+                        sortCriterion={sortOption.criterion}
+                      />
+                    )}
+                    keyExtractor={offer => offer.nft.uniqueId}
+                  />
+                </Box>
               </Bleed>
               {/* @ts-ignore js component */}
               <Box

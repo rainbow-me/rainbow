@@ -16,6 +16,7 @@ import {
   AccentColorProvider,
   Box,
   Inline,
+  Inset,
   Text,
   useColorMode,
 } from '@/design-system';
@@ -24,11 +25,17 @@ import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings } from '@/hooks';
+import { CardSize } from '@/components/unique-token/CardSize';
+import { deviceUtils } from '@/utils';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-const NFT_IMAGE_SIZE = 78;
+export const CELL_HORIZONTAL_PADDING = 7;
+const CONTAINER_HORIZONTAL_PADDING = 20;
+export const NFT_IMAGE_SIZE =
+  (deviceUtils.dimensions.width -
+    CONTAINER_HORIZONTAL_PADDING * 2 -
+    2 * CELL_HORIZONTAL_PADDING * 3) /
+  4;
 
 const NFTImageMask = () => (
   <Svg width="78" height="78" viewBox="0 0 78 78">
@@ -43,34 +50,36 @@ export const FakeOffer = () => {
   const { colors } = useTheme();
   return (
     <AccentColorProvider color={colors.skeleton}>
-      <Box
-        background="accent"
-        width={{ custom: NFT_IMAGE_SIZE }}
-        height={{ custom: NFT_IMAGE_SIZE }}
-        borderRadius={12}
-      />
-      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
-        <Inline space="4px" alignVertical="center">
-          <Box
-            background="accent"
-            width={{ custom: 12 }}
-            height={{ custom: 12 }}
-            borderRadius={6}
-          />
-          <Box
-            background="accent"
-            width={{ custom: 50 }}
-            height={{ custom: 9.3333 }}
-            borderRadius={9.3333 / 2}
-          />
-        </Inline>
-      </Box>
-      <Box
-        background="accent"
-        width={{ custom: 50 }}
-        height={{ custom: 9.3333 }}
-        borderRadius={9.3333 / 2}
-      />
+      <Inset vertical="10px" horizontal={{ custom: 7 }}>
+        <Box
+          background="accent"
+          width={{ custom: NFT_IMAGE_SIZE }}
+          height={{ custom: NFT_IMAGE_SIZE }}
+          borderRadius={12}
+        />
+        <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
+          <Inline space="4px" alignVertical="center">
+            <Box
+              background="accent"
+              width={{ custom: 12 }}
+              height={{ custom: 12 }}
+              borderRadius={6}
+            />
+            <Box
+              background="accent"
+              width={{ custom: 50 }}
+              height={{ custom: 9.3333 }}
+              borderRadius={9.3333 / 2}
+            />
+          </Inline>
+        </Box>
+        <Box
+          background="accent"
+          width={{ custom: 50 }}
+          height={{ custom: 9.3333 }}
+          borderRadius={9.3333 / 2}
+        />
+      </Inset>
     </AccentColorProvider>
   );
 };
@@ -85,19 +94,12 @@ export const Offer = ({
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const { isDarkMode } = useTheme();
-  const { accountAddress } = useAccountSettings();
-  const {
-    data: { nftsMap },
-  } = useLegacyNFTs({ address: accountAddress });
 
   const [timeRemaining, setTimeRemaining] = useState(
     offer.validUntil
       ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
       : undefined
   );
-
-  const nft = nftsMap[offer.nft.uniqueId];
-  const nftImage = nft?.lowResUrl ?? nft?.image_url;
 
   useEffect(() => {
     if (offer.validUntil) {
@@ -162,100 +164,102 @@ export const Offer = ({
   }
 
   return (
-    <ButtonPressAnimation
-      onPress={() => {
-        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
-          entryPoint: 'NFTOffersCard',
-          offerPriceUSD: offer.grossAmount.usd,
-          nft: {
-            collectionAddress: offer.nft.contractAddress,
-            tokenId: offer.nft.tokenId,
-            network: offer.network,
-          },
-        });
-        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
-      }}
-    >
-      {isExpiring && (
-        <Box
-          width={{ custom: 19 }}
-          height={{ custom: 19 }}
-          right={{ custom: -6.25 }}
-          top={{ custom: -5.75 }}
-          style={{ zIndex: 1 }}
-          position="absolute"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text size="15pt" weight="bold" align="center" color="red">
-            􀐬
-          </Text>
-        </Box>
-      )}
-      <Box
-        style={{
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.02,
-          shadowRadius: 3,
+    <Inset vertical="10px" horizontal={{ custom: CELL_HORIZONTAL_PADDING }}>
+      <ButtonPressAnimation
+        onPress={() => {
+          analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+            entryPoint: 'NFTOffersCard',
+            offerPriceUSD: offer.grossAmount.usd,
+            nft: {
+              collectionAddress: offer.nft.contractAddress,
+              tokenId: offer.nft.tokenId,
+              network: offer.network,
+            },
+          });
+          navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
         }}
       >
+        {isExpiring && (
+          <Box
+            width={{ custom: 19 }}
+            height={{ custom: 19 }}
+            right={{ custom: -6.25 }}
+            top={{ custom: -5.75 }}
+            style={{ zIndex: 1 }}
+            position="absolute"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text size="15pt" weight="bold" align="center" color="red">
+              􀐬
+            </Text>
+          </Box>
+        )}
         <Box
           style={{
-            shadowColor:
-              colorMode === 'dark' || !offer.nft.predominantColor
-                ? globalColors.grey100
-                : offer.nft.predominantColor,
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.24,
-            shadowRadius: 9,
+            shadowColor: globalColors.grey100,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.02,
+            shadowRadius: 3,
           }}
         >
-          <ConditionalWrap
-            condition={isExpiring}
-            wrap={(children: React.ReactNode) => (
-              <MaskedView
-                style={{
-                  width: NFT_IMAGE_SIZE,
-                  height: NFT_IMAGE_SIZE,
-                }}
-                maskElement={<NFTImageMask />}
-              >
-                {children}
-              </MaskedView>
-            )}
+          <Box
+            style={{
+              shadowColor:
+                colorMode === 'dark' || !offer.nft.predominantColor
+                  ? globalColors.grey100
+                  : offer.nft.predominantColor,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.24,
+              shadowRadius: 9,
+            }}
           >
-            <Box
-              as={ImgixImage}
-              background={
-                isDarkMode
-                  ? 'surfaceSecondaryElevated'
-                  : 'surfacePrimaryElevated'
-              }
-              source={{ uri: offer.nft.imageUrl }}
-              width={{ custom: NFT_IMAGE_SIZE }}
-              height={{ custom: NFT_IMAGE_SIZE }}
-              borderRadius={12}
-              size={NFT_IMAGE_SIZE}
-            />
-          </ConditionalWrap>
+            <ConditionalWrap
+              condition={isExpiring}
+              wrap={(children: React.ReactNode) => (
+                <MaskedView
+                  style={{
+                    width: NFT_IMAGE_SIZE,
+                    height: NFT_IMAGE_SIZE,
+                  }}
+                  maskElement={<NFTImageMask />}
+                >
+                  {children}
+                </MaskedView>
+              )}
+            >
+              <Box
+                as={ImgixImage}
+                background={
+                  isDarkMode
+                    ? 'surfaceSecondaryElevated'
+                    : 'surfacePrimaryElevated'
+                }
+                source={{ uri: offer.nft.imageUrl }}
+                width={{ custom: NFT_IMAGE_SIZE }}
+                height={{ custom: NFT_IMAGE_SIZE }}
+                borderRadius={12}
+                size={CardSize}
+              />
+            </ConditionalWrap>
+          </Box>
         </Box>
-      </Box>
-      <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
-        <Inline space="4px" alignVertical="center">
-          <CoinIcon
-            address={offer.paymentToken.address}
-            size={12}
-            symbol={offer.paymentToken.symbol}
-          />
-          <Text color="label" size="13pt" weight="heavy">
-            {cryptoAmount}
-          </Text>
-        </Inline>
-      </Box>
-      <Text color={secondaryTextColor} size="13pt" weight="semibold">
-        {secondaryText}
-      </Text>
-    </ButtonPressAnimation>
+        <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
+          <Inline space="4px" alignVertical="center">
+            <CoinIcon
+              address={offer.paymentToken.address}
+              size={12}
+              symbol={offer.paymentToken.symbol}
+            />
+            <Text color="label" size="13pt" weight="heavy">
+              {cryptoAmount}
+            </Text>
+          </Inline>
+        </Box>
+        <Text color={secondaryTextColor} size="13pt" weight="semibold">
+          {secondaryText}
+        </Text>
+      </ButtonPressAnimation>
+    </Inset>
   );
 };

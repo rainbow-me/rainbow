@@ -29,7 +29,6 @@ import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
 import { queryClient } from '@/react-query';
 import { useTheme } from '@/theme';
-import { FlatList } from 'react-native';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -95,7 +94,12 @@ export const NFTOffersSheet = () => {
                     {i18n.t(i18n.l.nft_offers.sheet.title)}
                   </Text>
                   <Box
-                    width={{ custom: PROFILE_AVATAR_SIZE }}
+                    paddingHorizontal={{ custom: 6.5 }}
+                    width={
+                      offers.length < 10
+                        ? { custom: PROFILE_AVATAR_SIZE }
+                        : undefined
+                    }
                     height={{ custom: PROFILE_AVATAR_SIZE }}
                     borderRadius={PROFILE_AVATAR_SIZE / 2}
                     background="surfaceSecondary"

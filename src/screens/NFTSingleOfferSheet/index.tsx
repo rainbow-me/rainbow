@@ -34,6 +34,7 @@ import { analyticsV2 } from '@/analytics';
 import { CardSize } from '@/components/unique-token/CardSize';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const NFT_IMAGE_HEIGHT = 160;
 
 function Row({
   symbol,
@@ -45,7 +46,7 @@ function Row({
   value: React.ReactNode;
 }) {
   return (
-    <Box height={{ custom: 36 }} alignItems="center">
+    <Box height="36px" alignItems="center">
       <Columns>
         <Column>
           <Inline space="4px" alignVertical="center">
@@ -143,6 +144,8 @@ export function NFTSingleOfferSheet() {
     : undefined;
   const buttonColorFallback = useForegroundColor('accent');
 
+  console.log(offer.nft);
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
@@ -152,7 +155,7 @@ export function NFTSingleOfferSheet() {
         >
           <View onLayout={e => setHeight(e.nativeEvent.layout.height)}>
             <Inset top="32px" horizontal="28px" bottom="52px">
-              <Inset bottom={{ custom: 36 }}>
+              <Inset bottom="36px">
                 <Text color="label" align="center" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
                 </Text>
@@ -194,7 +197,6 @@ export function NFTSingleOfferSheet() {
                   )}
                 </Inset>
               </Inset>
-
               <Box alignItems="center">
                 <ButtonPressAnimation
                   disabled={!nft}
@@ -224,8 +226,10 @@ export function NFTSingleOfferSheet() {
                       as={ImgixImage}
                       background="surfaceSecondaryElevated"
                       source={{ uri: offer.nft.imageUrl }}
-                      width={{ custom: 160 }}
-                      height={{ custom: 160 }}
+                      width={{
+                        custom: NFT_IMAGE_HEIGHT,
+                      }}
+                      height={{ custom: NFT_IMAGE_HEIGHT }}
                       borderRadius={16}
                       size={CardSize}
                       shadow={
@@ -352,7 +356,6 @@ export function NFTSingleOfferSheet() {
                         // shadow is way off on android idk why
                         shadow={IS_ANDROID ? undefined : '30px accent'}
                       />
-
                       <Text
                         color="labelSecondary"
                         align="right"
@@ -449,10 +452,10 @@ export function NFTSingleOfferSheet() {
 
                     <Inset top="10px">
                       <Text
-                        color="labelTertiary"
+                        color="labelSecondary"
                         align="right"
                         size="13pt"
-                        weight="medium"
+                        weight="semibold"
                       >
                         {netCurrency}
                       </Text>
