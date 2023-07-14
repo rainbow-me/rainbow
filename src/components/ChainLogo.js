@@ -70,6 +70,12 @@ export default function ChainLogo({
           ? ZoraBadgeDark
           : ZoraBadge
         : ZoraBadgeNoShadow;
+    } else if (network === networkTypes.base) {
+      val = withShadows
+        ? isDarkMode
+          ? ZoraBadgeDark
+          : ZoraBadge
+        : ZoraBadgeNoShadow;
     }
     return val;
   }, [isDarkMode, network, withShadows]);

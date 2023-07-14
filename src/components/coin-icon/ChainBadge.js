@@ -69,6 +69,8 @@ export default function ChainBadge({
         val = isDarkMode ? BscBadgeLargeDark : BscBadgeLarge;
       } else if (assetType === AssetType.zora) {
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
+      } else if (assetType === AssetType.base) {
+        val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
       }
     } else {
       if (assetType === AssetType.arbitrum) {
@@ -80,6 +82,8 @@ export default function ChainBadge({
       } else if (assetType === AssetType.bsc) {
         val = isDarkMode ? BscBadgeDark : BscBadge;
       } else if (assetType === AssetType.zora) {
+        val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
+      } else if (assetType === AssetType.base) {
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
       }
     }

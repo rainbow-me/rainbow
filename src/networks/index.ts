@@ -7,6 +7,7 @@ import { PolygonNetworkObject } from './polygon';
 import { Network, NetworkProperties } from './types';
 import { ZoraNetworkObject } from './zora';
 import { GnosisNetworkObject } from './gnosis';
+import { BaseNetworkObject } from './base';
 
 /**
  * Array of all Rainbow Networks
@@ -14,6 +15,7 @@ import { GnosisNetworkObject } from './gnosis';
 export const RainbowNetworks = [
   // L2s
   ArbitrumNetworkObject,
+  BaseNetworkObject,
   BSCNetworkObject,
   OptimismNetworkObject,
   PolygonNetworkObject,
@@ -35,6 +37,8 @@ export function getNetworkObj(network: Network): NetworkProperties {
     // L2s
     case Network.arbitrum:
       return ArbitrumNetworkObject;
+    case Network.base:
+      return BaseNetworkObject;
     case Network.bsc:
       return BSCNetworkObject;
     case Network.optimism:
