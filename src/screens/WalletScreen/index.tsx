@@ -39,6 +39,7 @@ import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { usePositions } from '@/resources/defi/PositionsQuery';
 
 type RouteParams = {
   WalletScreen: {
@@ -62,8 +63,10 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
     network: currentNetwork,
     accountAddress,
     appIcon,
+    nativeCurrency,
   } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
+  usePositions({ address: accountAddress, currency: nativeCurrency });
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
