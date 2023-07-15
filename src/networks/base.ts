@@ -37,7 +37,7 @@ export const BaseNetworkObject: NetworkProperties = {
     nfts: true,
     savings: false,
     pools: false,
-    txs: config.zora_tx_enabled && config.op_chains_tx_enabled,
+    txs: config.base_tx_enabled && config.op_chains_tx_enabled,
   },
 
   gas: {
