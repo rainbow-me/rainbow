@@ -169,7 +169,7 @@ export const NFTOffersSheet = () => {
                 <Bleed horizontal="20px">
                   <FlashList
                     data={offers}
-                    ListEmptyComponent={() => (
+                    ListEmptyComponent={
                       <>
                         <FakeOfferRow />
                         <FakeOfferRow />
@@ -183,10 +183,10 @@ export const NFTOffersSheet = () => {
                         <FakeOfferRow />
                         <FakeOfferRow />
                       </>
-                    )}
+                    }
                     estimatedItemSize={70}
                     estimatedListSize={{
-                      height: 2 * deviceHeight,
+                      height: deviceHeight,
                       width: deviceWidth,
                     }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
