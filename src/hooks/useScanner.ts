@@ -191,23 +191,22 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       // poap mints
       if (data.startsWith(`${POAP_BASE_URL}`)) {
         const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
-        await getPoapAndOpenSheetWithSecretWord(secretWord);
-        goBack();
+        await getPoapAndOpenSheetWithSecretWord(secretWord, true);
       }
 
       if (data.startsWith(`https://collectors.poap.xyz/mint/`)) {
         const qrHash = data.split('https://collectors.poap.xyz/mint/')?.[1];
-        goBack();
-        return getPoapAndOpenSheetWithQRHash(qrHash);
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
-      if (data.startsWith(`https://app.poap.xyz/claim`)) {
-        console.log('lets goooo');
+      if (data.startsWith(`https://poap.xyz/claim/`)) {
+        const qrHash = data.split('https://poap.xyz/claim/')?.[1];
+        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
+      }
 
+      if (data.startsWith(`https://app.poap.xyz/claim/`)) {
         const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
-        goBack();
-        await getPoapAndOpenSheetWithQRHash(qrHash);
-        goBack();
+        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
@@ -215,9 +214,8 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
-        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash);
-        await getPoapAndOpenSheetWithQRHash(secretWordOrQrHash);
-        goBack();
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
+        await getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
       // Rainbow profile QR code
@@ -233,7 +231,6 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       handleScanEthereumUrl,
       handleScanAddress,
       handleScanWalletConnect,
-      goBack,
       handleScanRainbowProfile,
     ]
   );

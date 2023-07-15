@@ -193,8 +193,8 @@ export default async function handleDeeplink(
 
       case 'poap': {
         const secretWordOrHash = pathname?.split('/')?.[1];
-        await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
-        await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrHash, false);
+        await getPoapAndOpenSheetWithQRHash(secretWordOrHash, false);
         break;
       }
 
