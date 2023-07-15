@@ -20,6 +20,10 @@ import ZoraBadge from '../../assets/badges/zoraBadge.png';
 import ZoraBadgeDark from '../../assets/badges/zoraBadgeDark.png';
 import ZoraBadgeLarge from '../../assets/badges/zoraBadgeLarge.png';
 import ZoraBadgeLargeDark from '../../assets/badges/zoraBadgeLargeDark.png';
+import BaseBadge from '../../assets/badges/baseBadge.png';
+import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
+import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
+import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
@@ -70,7 +74,7 @@ export default function ChainBadge({
       } else if (assetType === AssetType.zora) {
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
       } else if (assetType === AssetType.base) {
-        val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
+        val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
       }
     } else {
       if (assetType === AssetType.arbitrum) {
@@ -84,7 +88,7 @@ export default function ChainBadge({
       } else if (assetType === AssetType.zora) {
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
       } else if (assetType === AssetType.base) {
-        val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
+        val = isDarkMode ? BaseBadgeDark : BaseBadge;
       }
     }
     return val;

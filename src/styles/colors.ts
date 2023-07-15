@@ -198,7 +198,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
   let networkColors = {
     arbitrum: '#2D374B',
-    base: '#1652f0',
+    base: '#0052FF',
     goerli: '#f6c343',
     gnosis: '#479E9C',
     mainnet: '#25292E',
@@ -383,7 +383,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
     networkColors = {
       arbitrum: '#ADBFE3',
-      base: '#1652f0',
+      base: '#3979FF',
       goerli: '#f6c343',
       gnosis: '#479E9C',
       mainnet: '#E0E8FF',

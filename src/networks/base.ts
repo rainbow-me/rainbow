@@ -61,7 +61,7 @@ export const BaseNetworkObject: NetworkProperties = {
 
   // design tings
   colors: {
-    light: '#1652f0',
-    dark: '#1652f0',
+    light: '#0052FF',
+    dark: '#3979FF',
   },
 };
