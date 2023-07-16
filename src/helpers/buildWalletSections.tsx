@@ -1,9 +1,12 @@
-import React from 'react';
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
-import { Network } from '.';
-import { getNetworkObj } from '@/networks';
+import { queryClient } from '@/react-query';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import store from '@/redux/store';
+import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
+import { RainbowPositions } from '@/resources/defi/types';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -39,29 +42,23 @@ const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
 const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
-const networkSelector = (state: any) => state.network;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
-const savingsSelector = (state: any) => state.savings;
 const sellingTokensSelector = (state: any) => state.sellingTokens;
 const showcaseTokensSelector = (state: any) => state.showcaseTokens;
 const hiddenTokensSelector = (state: any) => state.hiddenTokens;
 const uniqueTokensSelector = (state: any) => state.uniqueTokens;
-const uniswapSelector = (state: any) => state.uniswap;
-const uniswapTotalSelector = (state: any) => state.uniswapTotal;
 const listTypeSelector = (state: any) => state.listType;
 
 const buildBriefWalletSections = (
   balanceSectionData: any,
-  savings: any,
-  uniqueTokenFamiliesSection: any,
-  uniswapSection: any
+  uniqueTokenFamiliesSection: any
 ) => {
   const { balanceSection, isEmpty } = balanceSectionData;
+  const positionSection = withPositionsSection();
   const sections = [
     balanceSection,
-    savings,
-    uniswapSection,
+    positionSection,
     uniqueTokenFamiliesSection,
   ];
 
@@ -75,72 +72,50 @@ const buildBriefWalletSections = (
   };
 };
 
-const withBriefUniswapSection = (
-  uniswap: any,
-  uniswapTotal: any,
-  nativeCurrency: any,
-  network: any,
-  isLoadingAssets: any
-) => {
-  const pools = uniswap.map((pool: any) => ({
-    address: pool.address,
-    type: 'UNISWAP_POOL',
-    uid: 'pool-' + pool.address,
-  }));
+const withPositionsSection = () => {
+  // check if the feature is enabled
+  const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
+  if (!positionsEnabled) return [];
 
-  if (
-    pools.length > 0 &&
-    getNetworkObj(network).features.pools &&
-    !isLoadingAssets
-  ) {
-    return [
+  const {
+    accountAddress: address,
+    nativeCurrency: currency,
+  } = store.getState().settings;
+  const { isLoadingAssets } = store.getState().data;
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address, currency })
+  );
+
+  const result: PositionExtraData[] = [];
+  const sortedPositions = positionsObj?.positions?.sort((a, b) =>
+    a.dapp.name.localeCompare(b.dapp.name)
+  );
+  sortedPositions?.forEach((position, index) => {
+    const listData = {
+      type: 'POSITION',
+      uniqueId: position.type,
+      uid: `position-${position.type}`,
+      index,
+    };
+    result.push(listData);
+  });
+  if (result.length && !isLoadingAssets) {
+    const res = [
       {
-        type: 'POOLS_HEADER',
-        uid: 'pools-header',
-        value: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
+        type: 'POSITIONS_SPACE_BEFORE',
+        uid: 'positions-header-space-before',
       },
-      ...pools,
+      {
+        type: 'POSITIONS_HEADER',
+        uid: 'positions-header',
+        total: positionsObj?.totals.total.display,
+      },
+      ...result,
     ];
+
+    return res;
   }
   return [];
-};
-
-const withBriefBalanceSavingsSection = (
-  savings: any,
-  isLoadingAssets: any,
-  network: any
-) => {
-  let totalUnderlyingNativeValue = '0';
-  for (const saving of savings) {
-    const { underlyingBalanceNativeValue } = saving;
-    totalUnderlyingNativeValue = add(
-      totalUnderlyingNativeValue,
-      underlyingBalanceNativeValue || 0
-    );
-  }
-  const addresses = savings?.map((asset: any) => asset.cToken.address);
-
-  if (network !== Network.mainnet) {
-    return [];
-  }
-
-  if (isLoadingAssets || totalUnderlyingNativeValue === '0') return [];
-  return [
-    {
-      type: 'SAVINGS_HEADER_SPACE_BEFORE',
-      uid: 'savings-header-space-before',
-    },
-    {
-      type: 'SAVINGS_HEADER',
-      uid: 'savings-header',
-      value: totalUnderlyingNativeValue,
-    },
-    ...addresses.map((address: any) => ({
-      address,
-      type: 'SAVINGS',
-      uid: 'savings-' + address,
-    })),
-  ];
 };
 
 const withBriefBalanceSection = (
@@ -150,10 +125,7 @@ const withBriefBalanceSection = (
   isCoinListEdited: any,
   pinnedCoins: any,
   hiddenCoins: any,
-  collectibles: any,
-  savingsSection: any,
-  uniswapTotal: any,
-  uniqueTokens: any
+  collectibles: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -163,22 +135,20 @@ const withBriefBalanceSection = (
     hiddenCoins
   );
 
-  const savingsTotalValue = savingsSection?.find(
-    (item: any) => item.uid === 'savings-header'
+  const { accountAddress: address } = store.getState().settings;
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address, currency: nativeCurrency })
   );
 
-  const totalBalanceWithSavingsValue = add(
+  const positionsTotal = positionsObj?.totals?.total?.amount || '0';
+
+  const totalBalanceWithPositionsValue = add(
     totalBalancesValue,
-    savingsTotalValue?.value ?? 0
-  );
-
-  const totalBalanceWithAllSectionValues = add(
-    totalBalanceWithSavingsValue,
-    uniswapTotal
+    positionsTotal
   );
 
   const totalValue = convertAmountToNativeDisplay(
-    totalBalanceWithAllSectionValues,
+    totalBalanceWithPositionsValue,
     nativeCurrency
   );
 
@@ -271,27 +241,6 @@ const briefUniqueTokenDataSelector = createSelector(
   buildBriefUniqueTokenList
 );
 
-const briefBalanceSavingsSectionSelector = createSelector(
-  [
-    savingsSelector,
-    isLoadingAssetsSelector,
-    networkSelector,
-    uniqueTokensSelector,
-  ],
-  withBriefBalanceSavingsSection
-);
-
-const briefUniswapSectionSelector = createSelector(
-  [
-    uniswapSelector,
-    uniswapTotalSelector,
-    nativeCurrencySelector,
-    networkSelector,
-    isLoadingAssetsSelector,
-  ],
-  withBriefUniswapSection
-);
-
 const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
@@ -301,18 +250,11 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     uniqueTokensSelector,
-    briefBalanceSavingsSectionSelector,
-    uniswapTotalSelector,
   ],
   withBriefBalanceSection
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [
-    briefBalanceSectionSelector,
-    briefBalanceSavingsSectionSelector,
-    briefUniqueTokenDataSelector,
-    briefUniswapSectionSelector,
-  ],
+  [briefBalanceSectionSelector, briefUniqueTokenDataSelector],
   buildBriefWalletSections
 );

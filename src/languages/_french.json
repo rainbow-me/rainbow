@@ -20,6 +20,7 @@
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Interactions de smart-contracts",
       "tab_investments": "Investissements",
+      "tab_positions": "Positions :)",
       "tab_savings": "Epargnes",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de tokens",
@@ -1422,6 +1423,12 @@
           "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP. :)"
         }
       }
+    },
+    "positions": {
+      "open_dapp": "Open 􀮶 :)",
+      "deposits": "Deposits :)",
+      "borrows": "Borrows :)",
+      "rewards": "Rewards :)"
     },
     "savings": {
       "deposit": "Dépôt",

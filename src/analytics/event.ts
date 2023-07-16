@@ -78,6 +78,8 @@ export const event = {
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
   poapsMintedPoap: 'Minted POAP',
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
+  positionsOpenedSheet: 'Opened position Sheet',
+  positionsOpenedExternalDapp: 'Viewed external dapp',
 } as const;
 
 /**
@@ -265,5 +267,12 @@ export type EventProperties = {
   };
   [event.poapsViewedOnPoap]: {
     eventId: number;
+  };
+  [event.positionsOpenedExternalDapp]: {
+    dapp: string;
+    url: string;
+  };
+  [event.positionsOpenedSheet]: {
+    dapp: string;
   };
 };
