@@ -72,6 +72,8 @@ import {
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Account, privateKeyToAccount } from 'viem/accounts';
+import { getLedgerAccount } from '@/viem/LedgerAccount';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -314,6 +316,42 @@ export const loadWallet = async (
     showWalletErrorAlert();
   }
   return null;
+};
+
+export const loadViemAccount = async (
+  address?: `0x${string}` | undefined,
+  showErrorIfNotLoaded = true
+): Promise<Account | undefined> => {
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return undefined;
+  }
+
+  // checks if the address is a hardware wallet for proper handling
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+
+  const privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
+  if (privateKey === -1 || privateKey === -2) {
+    return undefined;
+  }
+  if (isHardwareWalletKey(privateKey)) {
+    const index = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[0];
+    if (typeof index !== undefined && deviceId) {
+      return await getLedgerAccount(
+        getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }),
+        deviceId
+      );
+    }
+  } else if (privateKey) {
+    return privateKeyToAccount(privateKey as `0x${string}`);
+  }
+  if (ios && showErrorIfNotLoaded) {
+    showWalletErrorAlert();
+  }
+  return undefined;
 };
 
 export const sendTransaction = async ({
