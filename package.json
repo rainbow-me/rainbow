@@ -303,10 +303,10 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
-    "viem": "0.3.35",
+    "viem": "1.3.0",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
-    "wagmi": "1.3.8"
+    "wagmi": "1.3.9"
   },
   "devDependencies": {
     "@babel/core": "7.22.0",
@@ -355,7 +355,7 @@
     "image-size": "1.0.0",
     "jest": "28",
     "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
-    "metro-react-native-babel-preset": "0.72.3",
+    "metro-react-native-babel-preset": "0.73",
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
     "react-native-flipper": "0.187.1",
