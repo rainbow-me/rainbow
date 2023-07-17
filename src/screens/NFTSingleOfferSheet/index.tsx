@@ -107,7 +107,7 @@ export function NFTSingleOfferSheet() {
     3,
     undefined,
     // abbreviate if amount is >= 10,000
-    offer.grossAmount.decimal >= 10_000
+    offer.floorPrice.amount.decimal >= 10_000
   );
   const netCurrency = convertAmountToNativeDisplay(
     offer.netAmount.usd,
@@ -143,8 +143,6 @@ export function NFTSingleOfferSheet() {
     ? getFormattedTimeQuantity(timeRemaining)
     : undefined;
   const buttonColorFallback = useForegroundColor('accent');
-
-  console.log(offer.nft);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -317,9 +315,9 @@ export function NFTSingleOfferSheet() {
                       alignHorizontal="right"
                     >
                       <CoinIcon
-                        address={offer.paymentToken.address}
+                        address={offer.floorPrice.paymentToken.address}
                         size={16}
-                        symbol={offer.paymentToken.symbol}
+                        symbol={offer.floorPrice.paymentToken.symbol}
                       />
 
                       <Text
@@ -328,7 +326,7 @@ export function NFTSingleOfferSheet() {
                         size="17pt"
                         weight="medium"
                       >
-                        {floorPrice} {offer.paymentToken.symbol}
+                        {floorPrice} {offer.floorPrice.paymentToken.symbol}
                       </Text>
                     </Inline>
                   }

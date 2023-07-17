@@ -5,7 +5,6 @@ import {
   Box,
   Column,
   Columns,
-  Cover,
   globalColors,
   Inline,
   Inset,

@@ -130,7 +130,9 @@ export const Offer = ({
     case SortCriterion.DateCreated:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = getFormattedTimeQuantity(timeRemaining);
+        secondaryText = timeRemaining
+          ? getFormattedTimeQuantity(timeRemaining)
+          : 'Expired';
       } else {
         secondaryTextColor = 'labelTertiary';
         secondaryText = convertAmountToNativeDisplay(
@@ -147,7 +149,9 @@ export const Offer = ({
     case SortCriterion.FloorDifferencePercentage:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = getFormattedTimeQuantity(timeRemaining);
+        secondaryText = timeRemaining
+          ? getFormattedTimeQuantity(timeRemaining)
+          : 'Expired';
       } else if (isFloorDiffPercentagePositive) {
         secondaryTextColor = 'green';
         secondaryText = `+${offer.floorDifferencePercentage}%`;
