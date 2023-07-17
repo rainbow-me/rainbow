@@ -27,6 +27,7 @@ import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { deviceUtils } from '@/utils';
+import * as i18n from '@/languages';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -132,7 +133,7 @@ export const Offer = ({
         secondaryTextColor = 'red';
         secondaryText = timeRemaining
           ? getFormattedTimeQuantity(timeRemaining)
-          : 'Expired';
+          : i18n.t(i18n.l.nft_offers.card.expired);
       } else {
         secondaryTextColor = 'labelTertiary';
         secondaryText = convertAmountToNativeDisplay(
@@ -151,7 +152,7 @@ export const Offer = ({
         secondaryTextColor = 'red';
         secondaryText = timeRemaining
           ? getFormattedTimeQuantity(timeRemaining)
-          : 'Expired';
+          : i18n.t(i18n.l.nft_offers.card.expired);
       } else if (isFloorDiffPercentagePositive) {
         secondaryTextColor = 'green';
         secondaryText = `+${offer.floorDifferencePercentage}%`;
