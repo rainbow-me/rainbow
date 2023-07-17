@@ -75,6 +75,9 @@ export const event = {
   nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
   nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
 
+  poapsOpenedMintSheet: 'Opened POAP mint sheet',
+  poapsMintedPoap: 'Minted POAP',
+  poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
 } as const;
@@ -253,6 +256,17 @@ export type EventProperties = {
   };
   [event.nftOffersSelectedSortCriterion]: {
     sortCriterion: string;
+  };
+  [event.poapsMintedPoap]: {
+    eventId: number;
+    type: 'qrHash' | 'secretWord';
+  };
+  [event.poapsOpenedMintSheet]: {
+    eventId: number;
+    type: 'qrHash' | 'secretWord';
+  };
+  [event.poapsViewedOnPoap]: {
+    eventId: number;
   };
   [event.positionsOpenedExternalDapp]: {
     dapp: string;

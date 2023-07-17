@@ -27,6 +27,10 @@ import {
 } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 /*
  * You can test these deeplinks with the following command:
@@ -184,6 +188,13 @@ export default async function handleDeeplink(
        */
       case 'plaid': {
         logger.log('handleDeeplink: handling Plaid redirect', { url });
+        break;
+      }
+
+      case 'poap': {
+        const secretWordOrHash = pathname?.split('/')?.[1];
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrHash, false);
+        await getPoapAndOpenSheetWithQRHash(secretWordOrHash, false);
         break;
       }
 

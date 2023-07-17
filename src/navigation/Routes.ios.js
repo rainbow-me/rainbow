@@ -93,6 +93,7 @@ import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
+import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
@@ -203,6 +204,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={PoapSheet}
+        name={Routes.POAP_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen

@@ -82,6 +82,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 /* eslint-disable import/no-unresolved */
 // @ts-ignore .android and .ios exports cause errors
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 
 const Stack = createStackNavigator();
@@ -263,6 +264,7 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
+      <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
