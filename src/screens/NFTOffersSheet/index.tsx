@@ -29,6 +29,7 @@ import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
 import { queryClient } from '@/react-query';
 import { useTheme } from '@/theme';
+import { FlatList } from 'react-native';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -167,8 +168,9 @@ export const NFTOffersSheet = () => {
             {isLoading || offers.length ? (
               <Inset vertical="10px">
                 <Bleed horizontal="20px">
-                  <FlashList
+                  <FlatList
                     data={offers}
+                    initialNumToRender={20}
                     ListEmptyComponent={
                       <>
                         <FakeOfferRow />
@@ -184,11 +186,11 @@ export const NFTOffersSheet = () => {
                         <FakeOfferRow />
                       </>
                     }
-                    estimatedItemSize={70}
-                    estimatedListSize={{
-                      height: 2 * deviceHeight,
-                      width: deviceWidth,
-                    }}
+                    // estimatedItemSize={70}
+                    // estimatedListSize={{
+                    //   height: 2 * deviceHeight,
+                    //   width: deviceWidth,
+                    // }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
                     keyExtractor={offer => offer.nft.uniqueId}
                   />

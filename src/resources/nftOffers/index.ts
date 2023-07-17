@@ -22,8 +22,8 @@ export const nftOffersQueryKey = ({
 }) =>
   createQueryKey(
     'nftOffers',
-    { address, sortCriterion },
-    { persisterVersion: 1 }
+    { address, sortCriterion }
+    // { persisterVersion: 1 }
   );
 
 /**
