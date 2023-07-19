@@ -1359,7 +1359,7 @@
       "view_on_poap": "View on POAP 􀮶",
       "mint_poap": "􀑒 Mint POAP",
       "minting": "Minting...",
-      "minted": "Poap Minted!",
+      "minted": "POAP Minted!",
       "error": "Error Minting",
       "error_messages": {
         "limit_exceeded": "This POAP is fully minted out!",
