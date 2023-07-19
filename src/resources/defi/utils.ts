@@ -6,6 +6,7 @@ import {
   Deposit,
   NativeDisplay,
   Position,
+  PositionAsset,
   PositionsTotals,
   RainbowBorrow,
   RainbowClaimable,
@@ -32,9 +33,13 @@ export const parsePosition = (
     (deposit: Deposit): RainbowDeposit => {
       deposit.underlying = deposit.underlying?.map(
         (underlying: {
-          asset: ZerionAsset;
+          asset: PositionAsset;
           quantity: string;
-        }): { asset: ZerionAsset; quantity: string; native: NativeDisplay } => {
+        }): {
+          asset: PositionAsset;
+          quantity: string;
+          native: NativeDisplay;
+        } => {
           const nativeDisplay = convertRawAmountToNativeDisplay(
             underlying.quantity,
             underlying.asset.decimals,
@@ -59,9 +64,13 @@ export const parsePosition = (
     (borrow: Borrow): RainbowBorrow => {
       borrow.underlying = borrow.underlying.map(
         (underlying: {
-          asset: ZerionAsset;
+          asset: PositionAsset;
           quantity: string;
-        }): { asset: ZerionAsset; quantity: string; native: NativeDisplay } => {
+        }): {
+          asset: PositionAsset;
+          quantity: string;
+          native: NativeDisplay;
+        } => {
           const nativeDisplay = convertRawAmountToNativeDisplay(
             underlying.quantity,
             underlying.asset.decimals,
@@ -176,9 +185,10 @@ export const parsePositions = (
 
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const assetType = ethereumUtils.getAssetTypeFromNetwork(Network.mainnet);
-      const uniqueId = `${asset.asset_code}_${assetType}`;
-
+      const uniqueId = ethereumUtils.getUniqueId(
+        asset.asset_code.toLowerCase(),
+        asset.network
+      );
       positionTokens.push(uniqueId);
     });
   });

@@ -191,7 +191,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       // poap mints
       if (data.startsWith(`${POAP_BASE_URL}`)) {
         const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
-        await getPoapAndOpenSheetWithSecretWord(secretWord, true);
+        return getPoapAndOpenSheetWithSecretWord(secretWord, true);
       }
 
       if (data.startsWith(`https://collectors.poap.xyz/mint/`)) {
@@ -201,12 +201,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       if (data.startsWith(`https://poap.xyz/claim/`)) {
         const qrHash = data.split('https://poap.xyz/claim/')?.[1];
-        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
       if (data.startsWith(`https://app.poap.xyz/claim/`)) {
         const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
-        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
@@ -215,7 +215,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
         await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
-        await getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+      }
+
+      if (data.startsWith(`rainbow://poap`)) {
+        const secretWordOrQrHash = data.split(`rainbow://poap/`)?.[1];
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
       // Rainbow profile QR code

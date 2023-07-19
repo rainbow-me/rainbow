@@ -9,17 +9,17 @@ import {
   Text,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { AssetType, ZerionAsset } from '@/entities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
-import { NativeDisplay } from '@/resources/defi/types';
+import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
+import ethereumUtils from '@/utils/ethereumUtils';
 
 type Props = {
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   apy: string | undefined;
   native: NativeDisplay;
@@ -45,7 +45,7 @@ export const SubPositionListItem: React.FC<Props> = ({
       <Column width={'content'}>
         <CoinIcon
           address={asset.asset_code}
-          type={AssetType.token}
+          type={ethereumUtils.getAssetTypeFromNetwork(asset.network)}
           symbol={asset.symbol}
         />
       </Column>
