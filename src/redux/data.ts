@@ -3,7 +3,15 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import { find, isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
+import {
+  find,
+  isEmpty,
+  isNil,
+  mapValues,
+  partition,
+  cloneDeep,
+  filter,
+} from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -905,7 +913,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  assetsNetwork: Network | null = null
+  assetsNetwork: Network
 ) => (
   dispatch: ThunkDispatch<
     AppState,
@@ -924,23 +932,7 @@ export const addressAssetsReceived = (
 
   const newAssets = message?.payload?.assets ?? {};
 
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
-  );
-
-  const positionTokens = positionsObj?.positionTokens || [];
-
-  let updatedAssets = pickBy(
-    newAssets,
-    asset =>
-      !positionTokens.find(
-        positionToken => positionToken === `${asset.asset.asset_code}_token`
-      ) &&
-      asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
-  );
-
-  let parsedAssets = parseAccountAssets(updatedAssets) as {
+  let parsedAssets = parseAccountAssets(newAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 
@@ -961,7 +953,7 @@ export const addressAssetsReceived = (
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
 
-  if (!assetsNetwork) {
+  if (assetsNetwork === Network.mainnet) {
     const existingL2DataOnly = pickBy(
       existingAccountAssetsData,
       (value: ParsedAddressAsset, index: string) => {
@@ -978,6 +970,18 @@ export const addressAssetsReceived = (
       ...parsedAssets,
     };
   }
+
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
+  );
+
+  const positionTokens = positionsObj?.positionTokens || [];
+
+  parsedAssets = pickBy(
+    parsedAssets,
+    asset =>
+      !positionTokens.find(positionToken => positionToken === asset.uniqueId)
+  );
 
   parsedAssets = pickBy(
     parsedAssets,
