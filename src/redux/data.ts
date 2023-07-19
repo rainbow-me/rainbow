@@ -934,7 +934,12 @@ export const addressAssetsReceived = (
     newAssets,
     asset =>
       !positionTokens.find(
-        positionToken => positionToken === `${asset.asset.asset_code}_token`
+        positionToken =>
+          positionToken ===
+          ethereumUtils.getUniqueId(
+            asset.asset.asset_code.toLowerCase(),
+            assetsNetwork || Network.mainnet
+          )
       ) &&
       asset?.asset?.type !== AssetTypes.trash &&
       !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
@@ -961,7 +966,7 @@ export const addressAssetsReceived = (
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
 
-  if (!assetsNetwork) {
+  if (assetsNetwork === Network.mainnet) {
     const existingL2DataOnly = pickBy(
       existingAccountAssetsData,
       (value: ParsedAddressAsset, index: string) => {
