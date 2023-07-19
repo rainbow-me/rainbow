@@ -3,7 +3,15 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import isValidDomain from 'is-valid-domain';
-import { find, isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
+import {
+  find,
+  isEmpty,
+  isNil,
+  mapValues,
+  partition,
+  cloneDeep,
+  filter,
+} from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -924,28 +932,7 @@ export const addressAssetsReceived = (
 
   const newAssets = message?.payload?.assets ?? {};
 
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
-  );
-
-  const positionTokens = positionsObj?.positionTokens || [];
-
-  let updatedAssets = pickBy(
-    newAssets,
-    asset =>
-      !positionTokens.find(
-        positionToken =>
-          positionToken ===
-          ethereumUtils.getUniqueId(
-            asset.asset.asset_code.toLowerCase(),
-            assetsNetwork || Network.mainnet
-          )
-      ) &&
-      asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
-  );
-
-  let parsedAssets = parseAccountAssets(updatedAssets) as {
+  let parsedAssets = parseAccountAssets(newAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 
@@ -983,6 +970,18 @@ export const addressAssetsReceived = (
       ...parsedAssets,
     };
   }
+
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
+  );
+
+  const positionTokens = positionsObj?.positionTokens || [];
+
+  parsedAssets = pickBy(
+    parsedAssets,
+    asset =>
+      !positionTokens.find(positionToken => positionToken === asset.uniqueId)
+  );
 
   parsedAssets = pickBy(
     parsedAssets,
