@@ -336,7 +336,6 @@ export async function estimateGasWithPadding(
   provider: StaticJsonRpcProvider | null = null,
   paddingFactor: number = 1.1
 ): Promise<string | null> {
-  let estimatedGasLimit = ethUnits.basic_tx.toString();
   try {
     const p = provider || web3Provider;
     if (!p) {
@@ -368,8 +367,6 @@ export async function estimateGasWithPadding(
 
     logger.info('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
-    const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
-    estimatedGasLimit = lastBlockGasLimit.toString();
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
     logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
@@ -381,6 +378,7 @@ export async function estimateGasWithPadding(
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
 
+    const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
       paddingFactor.toString()
@@ -397,16 +395,16 @@ export async function estimateGasWithPadding(
       logger.info('⛽ returning orginal gas estimation', {
         esimatedGas: estimatedGas.toString(),
       });
-      estimatedGasLimit = estimatedGas.toString();
+      return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
       logger.info('⛽ returning padded gas estimation', { paddedGas });
-      estimatedGasLimit = paddedGas;
+      return paddedGas;
     }
     // otherwise default to the last block gas limit
     logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
-    return estimatedGasLimit;
+    return lastBlockGasLimit;
   } catch (e: any) {
     /*
      * Reported ~400x per day, but if it's not actionable it might as well be a warning.
@@ -414,7 +412,7 @@ export async function estimateGasWithPadding(
     logger.warn('Error calculating gas limit with padding', {
       message: e.message,
     });
-    return estimatedGasLimit;
+    return null;
   }
 }
 
