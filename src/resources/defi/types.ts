@@ -1,4 +1,5 @@
 import { NativeCurrencyKey, ZerionAsset } from '@/entities';
+import { Network } from '@/networks/types';
 
 export type AddysPositionsResponse =
   | {
@@ -16,6 +17,8 @@ export type NativeDisplay = {
   amount: string;
   display: string;
 };
+
+export type PositionAsset = ZerionAsset & { network: Network };
 
 export type PositionDapp = {
   name: string;
@@ -35,46 +38,54 @@ export type PositionsTotals = {
   deposits: NativeDisplay;
 };
 export type Claimable = {
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
 };
 export type Deposit = {
   apr: string;
   apy: string;
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: { asset: ZerionAsset; quantity: string }[];
+  underlying: { asset: PositionAsset; quantity: string }[];
 };
 export type Borrow = {
   apr: string;
   apy: string;
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: { asset: ZerionAsset; quantity: string }[];
+  underlying: { asset: PositionAsset; quantity: string }[];
 };
 
 export type RainbowClaimable = {
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   native: NativeDisplay;
 };
 export type RainbowDeposit = {
   apr: string;
   apy: string;
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: { asset: ZerionAsset; quantity: string; native: NativeDisplay }[];
+  underlying: {
+    asset: PositionAsset;
+    quantity: string;
+    native: NativeDisplay;
+  }[];
 };
 export type RainbowBorrow = {
   apr: string;
   apy: string;
-  asset: ZerionAsset;
+  asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
-  underlying: { asset: ZerionAsset; quantity: string; native: NativeDisplay }[];
+  underlying: {
+    asset: PositionAsset;
+    quantity: string;
+    native: NativeDisplay;
+  }[];
 };
 
 // TODO: need to add dapp metadata once its added via BE

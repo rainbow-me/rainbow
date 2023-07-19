@@ -11,8 +11,9 @@ import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
-import { capitalize } from 'lodash';
-import { RainbowPosition } from '@/resources/defi/types';
+import { capitalize, uniqBy } from 'lodash';
+import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
+import { ethereumUtils } from '@/utils';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -48,6 +49,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               size={16}
               symbol={token.symbol}
               type={token.type}
+              ignoreBadge
             />
           </Box>
         );
@@ -71,17 +73,45 @@ export const PositionCard = ({ position }: PositionCardProps) => {
 
   const depositTokens: CoinStackToken[] = useMemo(() => {
     let tokens: CoinStackToken[] = [];
-    position.deposits.forEach((deposit: any) => {
-      deposit.underlying.forEach((item: any) => {
+    position.deposits.forEach((deposit: RainbowDeposit) => {
+      deposit.underlying.forEach(({ asset }) => {
         tokens.push({
-          address: item.asset.asset_code,
-          type: AssetType.token,
-          symbol: item.asset.symbol,
+          address: asset.asset_code,
+          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          symbol: asset.symbol,
+        });
+      });
+    });
+    position.borrows.forEach((deposit: RainbowDeposit) => {
+      deposit.underlying.forEach(({ asset }) => {
+        tokens.push({
+          address: asset.asset_code,
+          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          symbol: asset.symbol,
+        });
+      });
+    });
+    position.borrows.forEach((deposit: RainbowDeposit) => {
+      deposit.underlying.forEach(({ asset }) => {
+        tokens.push({
+          address: asset.asset_code,
+          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          symbol: asset.symbol,
+        });
+      });
+    });
+    position.borrows.forEach((deposit: RainbowDeposit) => {
+      deposit.underlying.forEach(({ asset }) => {
+        tokens.push({
+          address: asset.asset_code,
+          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          symbol: asset.symbol,
         });
       });
     });
 
-    return tokens;
+    const dedupedTokens = uniqBy(tokens, 'symbol');
+    return dedupedTokens?.slice(0, 5);
   }, [position]);
 
   const positionColor =
