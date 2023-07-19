@@ -913,7 +913,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  assetsNetwork: Network | null = null
+  assetsNetwork: Network
 ) => (
   dispatch: ThunkDispatch<
     AppState,
