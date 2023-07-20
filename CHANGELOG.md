@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.24)
+
+### Added
+
+- Zora Swaps/Bridging
+- Defi positions
+- Mint: POAPs
+
 ## [1.8.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.23)
 
 ### Added
