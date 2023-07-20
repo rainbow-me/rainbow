@@ -1,9 +1,10 @@
 import React, { ReactNode } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { Box, Stack } from '@/design-system';
 
 interface ExchangeFloatingPanelsProps {
   children: ReactNode;
+  style: StyleProp<ViewStyle>;
 }
 
 const ExchangeFloatingPanels = React.forwardRef<
@@ -12,7 +13,10 @@ const ExchangeFloatingPanels = React.forwardRef<
 >((props, ref) => {
   const children = props.children;
   return (
-    <Box ref={ref}>
+    <Box
+      ref={ref}
+      style={{ justifyContent: 'center', flexGrow: 1, width: '100%' }}
+    >
       <Stack>{children}</Stack>
     </Box>
   );
