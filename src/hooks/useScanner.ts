@@ -116,18 +116,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanWalletConnect = useCallback(
-    async (qrCodeData: string) => {
+    async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
       try {
-        const { version } = parseUri(qrCodeData);
+        const { version } = parseUri(uri);
         if (version === 1) {
-          await walletConnectOnSessionRequest(qrCodeData, () => {});
+          await walletConnectOnSessionRequest(uri, connector, () => {});
         } else if (version === 2) {
-          await pairWalletConnect({ uri: qrCodeData });
+          await pairWalletConnect({ uri, connector });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
@@ -182,10 +182,10 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri, connector } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
-        return handleScanWalletConnect(uri);
+        return handleScanWalletConnect(uri, connector);
       }
 
       // poap mints

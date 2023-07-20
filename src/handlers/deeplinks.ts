@@ -91,7 +91,7 @@ export default async function handleDeeplink(
        */
       case 'wc': {
         logger.info(`handleDeeplink: wc`);
-        handleWalletConnect(query.uri as string);
+        handleWalletConnect(query.uri, query.connector);
         break;
       }
 
@@ -248,7 +248,7 @@ export default async function handleDeeplink(
     // Android uses normal deeplinks
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
-    handleWalletConnect(url);
+    handleWalletConnect(url, query.connector);
   }
 }
 
@@ -272,7 +272,12 @@ export default async function handleDeeplink(
  */
 const walletConnectURICache = new Set();
 
-function handleWalletConnect(uri: string) {
+function handleWalletConnect(uri?: string, connector?: string) {
+  if (!uri) {
+    logger.debug(`handleWalletConnect: skipping uri empty`, {});
+    return;
+  }
+
   const cacheKey = JSON.stringify({ uri });
 
   if (walletConnectURICache.has(cacheKey)) {
@@ -296,19 +301,25 @@ function handleWalletConnect(uri: string) {
     if (parsedUri.version === 1) {
       store.dispatch(walletConnectSetPendingRedirect());
       store.dispatch(
-        walletConnectOnSessionRequest(uri, (status: any, dappScheme: any) => {
-          logger.debug(`walletConnectOnSessionRequest callback`, {
-            status,
-            dappScheme,
-          });
-          const type = status === 'approved' ? 'connect' : status;
-          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-        })
+        walletConnectOnSessionRequest(
+          uri,
+          connector,
+          (status: any, dappScheme: any) => {
+            logger.debug(`walletConnectOnSessionRequest callback`, {
+              status,
+              dappScheme,
+            });
+            const type = status === 'approved' ? 'connect' : status;
+            store.dispatch(
+              walletConnectRemovePendingRedirect(type, dappScheme)
+            );
+          }
+        )
       );
     } else if (parsedUri.version === 2) {
       logger.debug(`handleWalletConnect: handling v2`, { uri });
       setHasPendingDeeplinkPendingRedirect(true);
-      pairWalletConnect({ uri });
+      pairWalletConnect({ uri, connector });
     }
   } else {
     logger.debug(`handleWalletConnect: handling fallback`, { uri });
