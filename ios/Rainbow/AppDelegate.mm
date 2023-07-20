@@ -7,11 +7,8 @@
 #import "AppDelegate.h"
 #import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
-#import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
-#import <React/RCTRootView.h>
-#import <React/RCTAppSetupUtils.h>
 #import <React/RCTReloadCommand.h>
 #import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
@@ -63,36 +60,28 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+ self.moduleName = @"Rainbow";
+  // You can add your custom initial props in the dictionary below.
+  // They will be passed down to the ViewController used by React Native.
+  self.initialProps = @{};
+
 // Additional Flipper Plugin Setup
 #ifdef FB_SONARKIT_ENABLED
   FlipperClient *client = [FlipperClient sharedClient];
   [client addPlugin:[FlipperPerformancePlugin new]];
 #endif
-  RCTAppSetupPrepareApp(application);
-  // Developer support; define whether internal support has been declared for this build.
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
 
+  // Firebase Init
   [FIRApp configure];
-  // Define UNUserNotificationCenter
-  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  center.delegate = self;
 
+  // Branch Init
   [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
 
-  // React Native - Defaults
-  self.bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = RCTAppSetupDefaultRootView(self.bridge, @"Rainbow", initProps);
-
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
+  // Define UNUserNotificationCenter
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  
+    [[NSNotificationCenter defaultCenter] addObserver:self
   selector:@selector(handleRapInProgress:)
       name:@"rapInProgress"
     object:nil];
@@ -107,29 +96,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                                  name:@"rsEscape"
                                                object:nil];
 
-  // Splashscreen - react-native-splash-screen
-  [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
-
-
-  return YES;
-}
-
-/// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
-///
-/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
-/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
-/// @return: `true` if the `concurrentRoot` feture is enabled. Otherwise, it returns `false`.
-- (BOOL)concurrentRootEnabled {
-  // Switch this bool to turn on and off the concurrent root
-  return false;
-}
-- (NSDictionary *)prepareInitialProps
-{
-  NSMutableDictionary *initProps = [NSMutableDictionary new];
-#ifdef RCT_NEW_ARCH_ENABLED
-  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
-#endif
-  return initProps;
+   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 
