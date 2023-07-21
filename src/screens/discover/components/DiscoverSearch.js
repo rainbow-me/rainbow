@@ -32,6 +32,10 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -63,6 +67,10 @@ export default function DiscoverSearch() {
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
   );
+
+  // we want to debounce the poap search further
+  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
+
   const currencyList = useMemo(() => {
     // order:
     // 1. favorites
@@ -127,6 +135,14 @@ export default function DiscoverSearch() {
     // prevent other back handlers from firing
     return true;
   });
+
+  useEffect(() => {
+    const checkAndHandlePoaps = async secretWordOrHash => {
+      await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
+      await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
+    };
+    checkAndHandlePoaps(searchQueryForPoap);
+  }, [searchQueryForPoap]);
 
   const handlePress = useCallback(
     item => {

@@ -1042,7 +1042,7 @@ const listenOnAddressMessages = (socket: Socket) => (
   socket.on(
     messages.ADDRESS_ASSETS.RECEIVED,
     (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message));
+      dispatch(addressAssetsReceived(message, Network.mainnet));
       if (isValidAssetsResponseFromZerion(message)) {
         logger.log(
           '😬 Cancelling fallback data provider listener. Zerion is good!'

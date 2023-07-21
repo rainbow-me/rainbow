@@ -1,4 +1,4 @@
-import { Box, AccentColorProvider } from '@/design-system';
+import { Box, AccentColorProvider, Space, DebugLayout } from '@/design-system';
 import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,9 +28,12 @@ type GenericCardProps = {
   type: CardType;
   gradient?: Gradient;
   disabled?: boolean;
-  onPress?: () => void;
+  onPress?: (any: any) => void;
+  borderColor?: string;
   color?: string;
+  ignoreShadow?: boolean;
   testID?: string;
+  padding?: Space;
 };
 
 export const GenericCard = ({
@@ -39,7 +42,10 @@ export const GenericCard = ({
   type,
   gradient = transparentGradient,
   onPress,
+  borderColor,
   color,
+  padding = '20px',
+  ignoreShadow = false,
   testID,
 }: PropsWithChildren<GenericCardProps>) => (
   <ConditionalWrap
@@ -77,10 +83,16 @@ export const GenericCard = ({
               }
             : undefined
         }
-        borderRadius={20}
-        shadow={color ? '18px accent' : '18px'}
-        style={{ flex: IS_IOS ? 0 : undefined }}
-        padding="20px"
+        borderRadius={24}
+        {...(!ignoreShadow && {
+          shadow: color ? '18px accent' : '18px',
+        })}
+        style={{
+          flex: IS_IOS ? 0 : undefined,
+          borderColor: borderColor ?? undefined,
+          borderWidth: borderColor ? 1 : undefined,
+        }}
+        padding={padding}
         testID={testID}
       >
         {children}

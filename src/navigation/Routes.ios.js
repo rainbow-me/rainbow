@@ -69,6 +69,7 @@ import {
   opRewardsSheetConfig,
   portalSheetConfig,
   walletDiagnosticsSheetConfig,
+  positionSheetConfig,
 } from './config';
 import {
   addCashSheet,
@@ -92,6 +93,8 @@ import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
+import PoapSheet from '@/screens/mints/PoapSheet';
+import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 
@@ -202,6 +205,16 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={PoapSheet}
+        name={Routes.POAP_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={PositionSheet}
+        name={Routes.POSITION_SHEET}
+        {...positionSheetConfig}
       />
       <NativeStack.Screen
         component={ShowcaseScreen}

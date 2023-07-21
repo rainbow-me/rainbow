@@ -7,16 +7,14 @@ import {
   find,
   isEmpty,
   isNil,
-  keys,
   mapValues,
   partition,
-  update,
   cloneDeep,
+  filter,
 } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { gretch } from 'gretchen';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import {
   cancelDebouncedUpdateGenericAssets,
@@ -32,7 +30,6 @@ import {
   ParsedAddressAsset,
   RainbowTransaction,
   TransactionStatus,
-  TransactionTypes,
   ZerionAsset,
   ZerionTransaction,
 } from '@/entities';
@@ -82,6 +79,8 @@ import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
 import { ratioGetUserActivityItem } from '@/resources/f2c';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { RainbowPositions } from '@/resources/defi/types';
 
 const storage = new MMKV();
 
@@ -914,7 +913,7 @@ export const maybeFetchF2CHashForPendingTransactions = async (
  */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
-  assetsNetwork: Network | null = null
+  assetsNetwork: Network
 ) => (
   dispatch: ThunkDispatch<
     AppState,
@@ -925,22 +924,15 @@ export const addressAssetsReceived = (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, network, nativeCurrency } = getState().settings;
   const responseAddress = message?.meta?.address;
   const addressMatch =
     accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
   if (!addressMatch) return;
 
   const newAssets = message?.payload?.assets ?? {};
-  let updatedAssets = pickBy(
-    newAssets,
-    asset =>
-      asset?.asset?.type !== AssetTypes.compound &&
-      asset?.asset?.type !== AssetTypes.trash &&
-      !shitcoins.includes(asset?.asset?.asset_code?.toLowerCase())
-  );
 
-  let parsedAssets = parseAccountAssets(updatedAssets) as {
+  let parsedAssets = parseAccountAssets(newAssets) as {
     [id: string]: ParsedAddressAsset;
   };
 
@@ -961,7 +953,7 @@ export const addressAssetsReceived = (
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
 
-  if (!assetsNetwork) {
+  if (assetsNetwork === Network.mainnet) {
     const existingL2DataOnly = pickBy(
       existingAccountAssetsData,
       (value: ParsedAddressAsset, index: string) => {
@@ -978,6 +970,18 @@ export const addressAssetsReceived = (
       ...parsedAssets,
     };
   }
+
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
+  );
+
+  const positionTokens = positionsObj?.positionTokens || [];
+
+  parsedAssets = pickBy(
+    parsedAssets,
+    asset =>
+      !positionTokens.find(positionToken => positionToken === asset.uniqueId)
+  );
 
   parsedAssets = pickBy(
     parsedAssets,

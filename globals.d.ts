@@ -28,6 +28,7 @@ declare module 'react-native-dotenv' {
   export const DATA_API_KEY: string;
   export const DATA_ENDPOINT: string;
   export const DATA_ORIGIN: string;
+  export const ADDYS_API_KEY: string;
   export const ETHEREUM_GOERLI_RPC: string;
   export const ETHEREUM_GOERLI_RPC_DEV: string;
   export const ETHEREUM_KOVAN_RPC: string;

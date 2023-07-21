@@ -65,6 +65,8 @@ export const event = {
   rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
   rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 
+  wcNewPairing: 'New WalletConnect pairing',
+  wcNewPairingTimeout: 'New WalletConnect pairing time out',
   wcNewSessionTimeout: 'New WalletConnect session time out',
   wcNewSessionRejected: 'Rejected new WalletConnect session',
   wcNewSessionApproved: 'Approved new WalletConnect session',
@@ -74,6 +76,12 @@ export const event = {
   nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
   nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
   nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
+
+  poapsOpenedMintSheet: 'Opened POAP mint sheet',
+  poapsMintedPoap: 'Minted POAP',
+  poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
+  positionsOpenedSheet: 'Opened position Sheet',
+  positionsOpenedExternalDapp: 'Viewed external dapp',
 } as const;
 
 /**
@@ -214,6 +222,12 @@ export type EventProperties = {
   [event.rewardsPressedBridgedCard]: undefined;
   [event.rewardsPressedLeaderboardItem]: { ens?: string };
 
+  [event.wcNewPairing]: {
+    dappName: string;
+    dappUrl: string;
+    connector?: string;
+  };
+  [event.wcNewPairingTimeout]: undefined;
   [event.wcNewSessionApproved]: {
     dappName: string;
     dappUrl: string;
@@ -250,5 +264,23 @@ export type EventProperties = {
   };
   [event.nftOffersSelectedSortCriterion]: {
     sortCriterion: string;
+  };
+  [event.poapsMintedPoap]: {
+    eventId: number;
+    type: 'qrHash' | 'secretWord';
+  };
+  [event.poapsOpenedMintSheet]: {
+    eventId: number;
+    type: 'qrHash' | 'secretWord';
+  };
+  [event.poapsViewedOnPoap]: {
+    eventId: number;
+  };
+  [event.positionsOpenedExternalDapp]: {
+    dapp: string;
+    url: string;
+  };
+  [event.positionsOpenedSheet]: {
+    dapp: string;
   };
 };
