@@ -1,15 +1,14 @@
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
-import { baseGoerli } from '@wagmi/chains';
+import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
 import config from '@/model/config';
 
 export const BaseNetworkObject: NetworkProperties = {
   // wagmi chain data
-  ...baseGoerli,
-  id: 8453,
+  ...base,
 
   // network related data
   enabled: config.base_enabled && config.op_chains_enabled,
@@ -20,7 +19,7 @@ export const BaseNetworkObject: NetworkProperties = {
   blockTimeInMs: 5_000,
 
   nativeCurrency: {
-    ...baseGoerli.nativeCurrency,
+    ...base.nativeCurrency,
     address: BASE_ETH_ADDRESS,
   },
 
@@ -33,7 +32,7 @@ export const BaseNetworkObject: NetworkProperties = {
     txHistory: true,
     flashbots: false,
     walletconnect: true,
-    swaps: true,
+    swaps: false,
     nfts: true,
     savings: false,
     pools: false,

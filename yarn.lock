@@ -4828,10 +4828,10 @@
   dependencies:
     "@vibrant/types" "^3.2.1-alpha.1"
 
-"@wagmi/chains@1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.5.0.tgz#0b23a1505704b4b07a46f41e1ec65a486aceb16b"
-  integrity sha512-JO5iqh7Km4GW/6XKKDYMq3YQ9wlOSGzzaTUQhALQ58KANxEZ70tZWhfTZAPD3fdgv4wheai7kyHDNgTW6X7fnw==
+"@wagmi/chains@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-1.6.0.tgz#eb992ad28dbaaab729b5bcab3e5b461e8a035656"
+  integrity sha512-5FRlVxse5P4ZaHG3GTvxwVANSmYJas1eQrTBHhjxVtqXoorm0aLmCHbhmN8Xo1yu09PaWKlleEvfE98yH4AgIw==
 
 "@walletconnect/auth-client@2.1.0":
   version "2.1.0"
