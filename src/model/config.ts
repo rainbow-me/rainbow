@@ -65,6 +65,8 @@ export interface RainbowConfig
   op_chains_tx_enabled: boolean;
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
+
+  base_swaps_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -121,6 +123,8 @@ const DEFAULT_CONFIG: RainbowConfig = {
   mainnet_tx_enabled: true,
 
   goerli_tx_enabled: true,
+
+  base_swaps_enabled: false,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -172,8 +176,12 @@ const init = async () => {
         key === 'zora_enabled' ||
         key === 'base_enabled' ||
         key === 'op_chains_enabled' ||
-        key === 'goerli_enabled'
+        key === 'goerli_enabled' ||
+        key === 'base_swaps_enabled'
       ) {
+        if (key === 'base_swaps_enabled') {
+          console.log('oh fuck yeah BASSSSSEEDDDD: ', entry);
+        }
         config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();

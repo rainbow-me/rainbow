@@ -1,32 +1,32 @@
-import { ArbitrumNetworkObject } from './arbitrum';
-import { BSCNetworkObject } from './bsc';
-import { MainnetNetworkObject } from './mainnet';
-import { GoerliNetworkObject } from './goerli';
-import { OptimismNetworkObject } from './optimism';
-import { PolygonNetworkObject } from './polygon';
+import { getArbitrumNetworkObject } from './arbitrum';
+import { getBSCNetworkObject } from './bsc';
+import { getMainnetNetworkObject } from './mainnet';
+import { getGoerliNetworkObject } from './goerli';
+import { getOptimismNetworkObject } from './optimism';
+import { getPolygonNetworkObject } from './polygon';
 import { Network, NetworkProperties } from './types';
-import { ZoraNetworkObject } from './zora';
-import { GnosisNetworkObject } from './gnosis';
-import { BaseNetworkObject } from './base';
+import { getZoraNetworkObject } from './zora';
+import { getGnosisNetworkObject } from './gnosis';
+import { getBaseNetworkObject } from './base';
 
 /**
  * Array of all Rainbow Networks
  */
 export const RainbowNetworks = [
   // L2s
-  ArbitrumNetworkObject,
-  BaseNetworkObject,
-  BSCNetworkObject,
-  OptimismNetworkObject,
-  PolygonNetworkObject,
-  ZoraNetworkObject,
-  GnosisNetworkObject,
+  getArbitrumNetworkObject(),
+  getBaseNetworkObject(),
+  getBSCNetworkObject(),
+  getOptimismNetworkObject(),
+  getPolygonNetworkObject(),
+  getZoraNetworkObject(),
+  getGnosisNetworkObject(),
 
   // Testnets
-  GoerliNetworkObject,
+  getGoerliNetworkObject(),
 
   // Mainnet
-  MainnetNetworkObject,
+  getMainnetNetworkObject(),
 ];
 
 /**
@@ -36,26 +36,26 @@ export function getNetworkObj(network: Network): NetworkProperties {
   switch (network) {
     // L2s
     case Network.arbitrum:
-      return ArbitrumNetworkObject;
+      return getArbitrumNetworkObject();
     case Network.base:
-      return BaseNetworkObject;
+      return getBaseNetworkObject();
     case Network.bsc:
-      return BSCNetworkObject;
+      return getBSCNetworkObject();
     case Network.optimism:
-      return OptimismNetworkObject;
+      return getOptimismNetworkObject();
     case Network.polygon:
-      return PolygonNetworkObject;
+      return getPolygonNetworkObject();
     case Network.zora:
-      return ZoraNetworkObject;
+      return getZoraNetworkObject();
     case Network.gnosis:
-      return GnosisNetworkObject;
+      return getGnosisNetworkObject();
 
     // Testnets
     case Network.goerli:
-      return GoerliNetworkObject;
+      return getGoerliNetworkObject();
 
     // Mainnet
     default:
-      return MainnetNetworkObject;
+      return getMainnetNetworkObject();
   }
 }
