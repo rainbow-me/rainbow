@@ -125,9 +125,31 @@ test(`handles wc:// protocol`, async () => {
   expect(pair).toHaveBeenCalledTimes(1);
 });
 
+test(`handles wc:// protocol with &connector`, async () => {
+  const uri = generateWCUri({ version: 2 }) + '&connector=rainbowkit';
+
+  await handleDeepLink(uri);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+
+  // call again with same URI, still only called once
+  await handleDeepLink(uri);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+});
+
 test(`handles https:// protocol for WalletConnect`, async () => {
   const uri = encodeURIComponent(generateWCUri({ version: 2 }));
   await handleDeepLink(`https://rnbwapp.com/wc?uri=${uri}`);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+});
+
+test(`handles https:// protocol for WalletConnect with &connector`, async () => {
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(
+    `https://rnbwapp.com/wc?uri=${uri}&connector=rainbowkit`
+  );
   expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
   expect(pair).toHaveBeenCalledTimes(1);
 });
@@ -141,6 +163,13 @@ test(`handles rainbow:// protocol for WalletConnect`, async () => {
 test(`handles rainbow:// protocol for WalletConnect v2`, async () => {
   const uri = encodeURIComponent(generateWCUri({ version: 2 }));
   await handleDeepLink(`rainbow://wc?uri=${uri}`);
+  expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
+  expect(pair).toHaveBeenCalledTimes(1);
+});
+
+test(`handles rainbow:// protocol for WalletConnect v2 with &connector`, async () => {
+  const uri = encodeURIComponent(generateWCUri({ version: 2 }));
+  await handleDeepLink(`rainbow://wc?uri=${uri}&connector=rainbowkit`);
   expect(setHasPendingDeeplinkPendingRedirect).toHaveBeenCalledTimes(1);
   expect(pair).toHaveBeenCalledTimes(1);
 });
