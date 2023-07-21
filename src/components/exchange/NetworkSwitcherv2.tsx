@@ -16,12 +16,27 @@ import { RainbowNetworks } from '@/networks';
 
 const networkMenuItems = RainbowNetworks.filter(
   network => network.features.swaps
-).map(network => ({
-  chainId: network.id,
-  network: network.value,
-  title: network.name,
-  type: network.value !== Network.mainnet ? network.value : AssetType.token,
-}));
+)
+  .sort((network1, network2) => {
+    // mainnet should come first
+    if (network2.networkType === 'layer1') {
+      return 1;
+    }
+    if (network1.networkType === 'layer1') {
+      return -1;
+    }
+    // then we should do alphabetical
+    if (network1.value > network2.value) {
+      return 1;
+    }
+    return -1;
+  })
+  .map(network => ({
+    chainId: network.id,
+    network: network.value,
+    title: network.name,
+    type: network.value !== Network.mainnet ? network.value : AssetType.token,
+  }));
 
 const NetworkSwitcherv2 = ({
   currentChainId,
