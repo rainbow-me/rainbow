@@ -56,11 +56,11 @@ hardhat.config.js  @skylarbarrera @jinchung
 
 # APP INFRA
 globalVariables.js @benisgold @skylarbarrera
-shim.js   @skylarbarrera @jkadamczyk
+shim.js  @skylarbarrera 
 index.js  @benisgold @skylarbarrera
 src/App.js  @benisgold @skylarbarrera @jinchung
 
 # SECURITY / APP INFRA
-metro.config.js @skylarbarrera @benisgold @jkadamczyk
-metro.transform.js @skylarbarrera @benisgold @jkadamczyk
+metro.config.js @skylarbarrera @benisgold 
+metro.transform.js @skylarbarrera @benisgold 
 react-native.config.js  @skylarbarrera @benisgold
