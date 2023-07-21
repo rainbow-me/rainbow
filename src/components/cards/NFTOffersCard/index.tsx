@@ -2,6 +2,8 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  Column,
+  Columns,
   Inline,
   Inset,
   Separator,
@@ -16,7 +18,7 @@ import {
   ShimmerAnimation,
 } from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { useNFTOffers } from '@/resources/nftOffers';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Animated, {
@@ -32,29 +34,29 @@ import {
 } from './Offer';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import {
-  SortMenu,
-  SortOption,
-  SortOptions,
-} from '@/components/nft-offers/SortMenu';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
+import { queryClient } from '@/react-query';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { IS_ANDROID } from '@/env';
+import Spinner from '@/components/Spinner';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
 const OFFER_CELL_WIDTH = NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2;
 
+const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+
 export const NFTOffersCard = () => {
-  const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
-  const { data, isLoading } = useNFTOffers({
+  const { data, isLoading, isFetching } = useNFTOffers({
     walletAddress: accountAddress,
-    sortBy: sortOption.criterion,
   });
   const { navigate } = useNavigation();
 
@@ -71,6 +73,16 @@ export const NFTOffersCard = () => {
     };
   });
 
+  const [canRefresh, setCanRefresh] = useState(true);
+
+  useEffect(() => {
+    if (!canRefresh) {
+      setTimeout(() => {
+        setCanRefresh(true);
+      }, 30_000);
+    }
+  }, [canRefresh]);
+
   // animate in/out card depending on if there are offers
   useEffect(() => {
     if (!hasOffers) {
@@ -80,12 +92,12 @@ export const NFTOffersCard = () => {
         heightValue.value = withTiming(CARD_HEIGHT - 1);
       }
     } else {
-      if (!offers.length && !isLoading) {
+      if (!offers.length && !isLoading && !isFetching) {
         setHasOffers(false);
         heightValue.value = withTiming(1);
       }
     }
-  }, [hasOffers, heightValue, isLoading, offers.length]);
+  }, [hasOffers, heightValue, isFetching, isLoading, offers.length]);
 
   const totalUSDValue = offers.reduce(
     (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
@@ -151,11 +163,7 @@ export const NFTOffersCard = () => {
                     </>
                   )}
                 </Inline>
-                <SortMenu
-                  sortOption={sortOption}
-                  setSortOption={setSortOption}
-                  type="card"
-                />
+                <SortMenu type="card" />
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
                 <Box height={{ custom: OFFER_CELL_HEIGHT }}>
@@ -178,43 +186,84 @@ export const NFTOffersCard = () => {
                       height: OFFER_CELL_HEIGHT,
                       width: deviceWidth * 2,
                     }}
-                    renderItem={({ item }) => (
-                      <Offer
-                        offer={item}
-                        sortCriterion={sortOption.criterion}
-                      />
-                    )}
+                    renderItem={({ item }) => <Offer offer={item} />}
                     keyExtractor={offer => offer.nft.uniqueId}
                   />
                 </Box>
               </Bleed>
-              {/* @ts-ignore js component */}
-              <Box
-                as={ButtonPressAnimation}
-                background="fillSecondary"
-                height="36px"
-                width="full"
-                borderRadius={99}
-                justifyContent="center"
-                alignItems="center"
-                style={{ overflow: 'hidden' }}
-                onPress={() => {
-                  analyticsV2.track(
-                    analyticsV2.event.nftOffersOpenedOffersSheet,
-                    { entryPoint: 'NFTOffersCard' }
-                  );
-                  navigate(Routes.NFT_OFFERS_SHEET);
-                }}
-              >
-                {/* unfortunately shimmer width must be hardcoded */}
-                <ShimmerAnimation
-                  color={buttonColor}
-                  width={deviceWidth - 40}
-                />
-                <Text color="label" align="center" size="15pt" weight="bold">
-                  {i18n.t(i18n.l.nft_offers.card.button)}
-                </Text>
-              </Box>
+              <Columns space="10px">
+                <Column>
+                  {/* @ts-ignore js component */}
+                  <Box
+                    as={ButtonPressAnimation}
+                    background="fillSecondary"
+                    height="36px"
+                    width="full"
+                    borderRadius={99}
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ overflow: 'hidden' }}
+                    onPress={() => {
+                      analyticsV2.track(
+                        analyticsV2.event.nftOffersOpenedOffersSheet,
+                        { entryPoint: 'NFTOffersCard' }
+                      );
+                      navigate(Routes.NFT_OFFERS_SHEET);
+                    }}
+                  >
+                    {/* unfortunately shimmer width must be hardcoded */}
+                    <ShimmerAnimation
+                      color={buttonColor}
+                      // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
+                      width={deviceWidth - 86}
+                    />
+                    <Text
+                      color="label"
+                      align="center"
+                      size="15pt"
+                      weight="bold"
+                    >
+                      {i18n.t(i18n.l.nft_offers.card.button)}
+                    </Text>
+                  </Box>
+                </Column>
+                <Column width="content">
+                  <Box
+                    as={ButtonPressAnimation}
+                    disabled={!canRefresh}
+                    onPress={() => {
+                      setCanRefresh(false);
+                      queryClient.invalidateQueries(
+                        nftOffersQueryKey({
+                          address: accountAddress,
+                        })
+                      );
+                    }}
+                    justifyContent="center"
+                    alignItems="center"
+                    borderRadius={18}
+                    style={{
+                      borderWidth: isFetching ? 0 : 1,
+                      borderColor: borderColor,
+                      width: 36,
+                      height: 36,
+                    }}
+                  >
+                    {isFetching ? (
+                      <LoadingSpinner color="black" size={20} />
+                    ) : (
+                      <Text
+                        align="center"
+                        color="label"
+                        size="17pt"
+                        weight="bold"
+                      >
+                        􀅈
+                      </Text>
+                    )}
+                  </Box>
+                </Column>
+              </Columns>
               <Separator color="separator" thickness={1} />
             </Stack>
           </Box>

@@ -13,8 +13,10 @@ fragment amount on AssetAmount {
 
 query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
   nftOffers(walletAddress: $walletAddress, sortBy: $sortBy) {
+    createdAt
     url
     nft {
+      aspectRatio
       name
       contractAddress
       tokenId

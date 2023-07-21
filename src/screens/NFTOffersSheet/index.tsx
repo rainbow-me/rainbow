@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
@@ -19,17 +19,12 @@ import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import {
-  SortMenu,
-  SortOption,
-  SortOptions,
-} from '@/components/nft-offers/SortMenu';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
 import { queryClient } from '@/react-query';
 import { useTheme } from '@/theme';
-import { FlatList } from 'react-native';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -44,11 +39,8 @@ export const NFTOffersSheet = () => {
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
-  const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
-
   const { data, dataUpdatedAt, isLoading } = useNFTOffers({
     walletAddress: accountAddress,
-    sortBy: sortOption.criterion,
   });
 
   const offers = data?.nftOffers ?? [];
@@ -156,11 +148,7 @@ export const NFTOffersSheet = () => {
                       </Text>
                     )}
                   </Stack>
-                  <SortMenu
-                    sortOption={sortOption}
-                    setSortOption={setSortOption}
-                    type="sheet"
-                  />
+                  <SortMenu type="sheet" />
                 </Inline>
               </Stack>
             </Inset>
@@ -168,9 +156,8 @@ export const NFTOffersSheet = () => {
             {isLoading || offers.length ? (
               <Inset vertical="10px">
                 <Bleed horizontal="20px">
-                  <FlatList
+                  <FlashList
                     data={offers}
-                    initialNumToRender={20}
                     ListEmptyComponent={
                       <>
                         <FakeOfferRow />
@@ -186,11 +173,11 @@ export const NFTOffersSheet = () => {
                         <FakeOfferRow />
                       </>
                     }
-                    // estimatedItemSize={70}
-                    // estimatedListSize={{
-                    //   height: 2 * deviceHeight,
-                    //   width: deviceWidth,
-                    // }}
+                    estimatedItemSize={70}
+                    estimatedListSize={{
+                      height: 2 * deviceHeight,
+                      width: deviceWidth,
+                    }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
                     keyExtractor={offer => offer.nft.uniqueId}
                   />
@@ -221,7 +208,6 @@ export const NFTOffersSheet = () => {
                         queryClient.invalidateQueries({
                           queryKey: nftOffersQueryKey({
                             address: accountAddress,
-                            sortCriterion: sortOption.criterion,
                           }),
                         });
                       }

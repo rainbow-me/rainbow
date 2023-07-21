@@ -144,13 +144,13 @@ export function NFTSingleOfferSheet() {
     : undefined;
   const buttonColorFallback = useForegroundColor('accent');
 
+  const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
+  const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          backgroundColor={backgroundColor as string}
-          scrollEnabled={false}
-        >
+        <SimpleSheet backgroundColor={backgroundColor as string}>
           <View onLayout={e => setHeight(e.nativeEvent.layout.height)}>
             <Inset top="32px" horizontal="28px" bottom="52px">
               <Inset bottom="36px">
@@ -227,7 +227,11 @@ export function NFTSingleOfferSheet() {
                       width={{
                         custom: NFT_IMAGE_HEIGHT,
                       }}
-                      height={{ custom: NFT_IMAGE_HEIGHT }}
+                      height={{
+                        custom: offer.nft.aspectRatio
+                          ? NFT_IMAGE_HEIGHT / offer.nft.aspectRatio
+                          : NFT_IMAGE_HEIGHT,
+                      }}
                       borderRadius={16}
                       size={CardSize}
                       shadow={
@@ -365,42 +369,43 @@ export function NFTSingleOfferSheet() {
                     </Inline>
                   }
                 />
-
-                <Row
-                  symbol="􀘾"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
-                    { marketplace: offer.marketplace.name }
-                  )}
-                  value={
-                    <Text
-                      color="labelSecondary"
-                      align="right"
-                      size="17pt"
-                      weight="medium"
-                    >
-                      {Math.floor(offer.feesPercentage * 10) / 10}%
-                    </Text>
-                  }
-                />
-
-                <Row
-                  symbol="􀣶"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.creator_royalties
-                  )}
-                  value={
-                    <Text
-                      color="labelSecondary"
-                      align="right"
-                      size="17pt"
-                      weight="medium"
-                    >
-                      {Math.floor(offer.royaltiesPercentage * 10) / 10}%
-                    </Text>
-                  }
-                />
-
+                {!!feesPercentage && (
+                  <Row
+                    symbol="􀘾"
+                    label={i18n.t(
+                      i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
+                      { marketplace: offer.marketplace.name }
+                    )}
+                    value={
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {feesPercentage}%
+                      </Text>
+                    }
+                  />
+                )}
+                {!!royaltiesPercentage && (
+                  <Row
+                    symbol="􀣶"
+                    label={i18n.t(
+                      i18n.l.nft_offers.single_offer_sheet.creator_royalties
+                    )}
+                    value={
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {royaltiesPercentage}%
+                      </Text>
+                    }
+                  />
+                )}
                 {/* <Row
                 symbol="􀖅"
                 label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
