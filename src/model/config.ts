@@ -179,9 +179,6 @@ const init = async () => {
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled'
       ) {
-        if (key === 'base_swaps_enabled') {
-          console.log('oh fuck yeah BASSSSSEEDDDD: ', entry);
-        }
         config[key] = entry.asBoolean();
       } else {
         config[key] = entry.asString();
