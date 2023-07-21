@@ -9,6 +9,7 @@ import {
   Separator,
   Stack,
   Text,
+  useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
@@ -42,6 +43,7 @@ import { queryClient } from '@/react-query';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
+import { ScrollView } from 'react-native';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
@@ -55,15 +57,18 @@ export const NFTOffersCard = () => {
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
-  const { data, isLoading, isFetching } = useNFTOffers({
+  const {
+    data: { nftOffers },
+    isLoading,
+    isFetching,
+  } = useNFTOffers({
     walletAddress: accountAddress,
   });
   const { navigate } = useNavigation();
+  const { colorMode } = useColorMode();
 
+  const offers = nftOffers ?? [];
   const [hasOffers, setHasOffers] = useState(false);
-
-  // only show the first MAX_OFFERS offers
-  const offers = data?.nftOffers ?? [];
 
   const heightValue = useSharedValue(0);
 
@@ -118,7 +123,7 @@ export const NFTOffersCard = () => {
         <Inset horizontal="20px">
           <Box as={Animated.View} width="full" style={[animatedStyle]}>
             <Stack space="20px">
-              <Separator color="separator" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
@@ -167,28 +172,37 @@ export const NFTOffersCard = () => {
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
                 <Box height={{ custom: OFFER_CELL_HEIGHT }}>
-                  <FlashList
-                    data={offers}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 13 }}
-                    ListEmptyComponent={() => (
-                      <>
-                        <FakeOffer />
-                        <FakeOffer />
-                        <FakeOffer />
-                        <FakeOffer />
-                        <FakeOffer />
-                      </>
-                    )}
-                    estimatedItemSize={OFFER_CELL_WIDTH}
-                    horizontal
-                    estimatedListSize={{
-                      height: OFFER_CELL_HEIGHT,
-                      width: deviceWidth * 2,
-                    }}
-                    renderItem={({ item }) => <Offer offer={item} />}
-                    keyExtractor={offer => offer.nft.uniqueId}
-                  />
+                  {offers.length ? (
+                    <FlashList
+                      data={offers}
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingHorizontal: 13 }}
+                      estimatedItemSize={OFFER_CELL_WIDTH}
+                      horizontal
+                      estimatedListSize={{
+                        height: OFFER_CELL_HEIGHT,
+                        width: deviceWidth * 2,
+                      }}
+                      style={{ flex: 1 }}
+                      renderItem={({ item }) => <Offer offer={item} />}
+                      keyExtractor={offer =>
+                        offer.nft.uniqueId + offer.createdAt
+                      }
+                    />
+                  ) : (
+                    // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingHorizontal: 13 }}
+                    >
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                    </ScrollView>
+                  )}
                 </Box>
               </Bleed>
               <Columns space="10px">
@@ -250,7 +264,10 @@ export const NFTOffersCard = () => {
                     }}
                   >
                     {isFetching ? (
-                      <LoadingSpinner color="black" size={20} />
+                      <LoadingSpinner
+                        color={colorMode === 'light' ? 'black' : 'white'}
+                        size={20}
+                      />
                     ) : (
                       <Text
                         align="center"
@@ -264,7 +281,7 @@ export const NFTOffersCard = () => {
                   </Box>
                 </Column>
               </Columns>
-              <Separator color="separator" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
             </Stack>
           </Box>
         </Inset>

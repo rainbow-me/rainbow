@@ -39,11 +39,15 @@ export const NFTOffersSheet = () => {
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
-  const { data, dataUpdatedAt, isLoading } = useNFTOffers({
+  const {
+    data: { nftOffers },
+    dataUpdatedAt,
+    isLoading,
+  } = useNFTOffers({
     walletAddress: accountAddress,
   });
 
-  const offers = data?.nftOffers ?? [];
+  const offers = nftOffers ?? [];
 
   const totalUSDValue = offers.reduce(
     (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
@@ -88,17 +92,13 @@ export const NFTOffersSheet = () => {
                   </Text>
                   <Box
                     paddingHorizontal={{ custom: 6.5 }}
-                    width={
-                      offers.length < 10
-                        ? { custom: PROFILE_AVATAR_SIZE }
-                        : undefined
-                    }
                     height={{ custom: PROFILE_AVATAR_SIZE }}
                     borderRadius={PROFILE_AVATAR_SIZE / 2}
                     background="surfaceSecondary"
                     style={{
                       borderWidth: 1.5,
                       borderColor: separatorSecondary,
+                      minWidth: 36,
                     }}
                     alignItems="center"
                     justifyContent="center"
@@ -179,7 +179,7 @@ export const NFTOffersSheet = () => {
                       width: deviceWidth,
                     }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
-                    keyExtractor={offer => offer.nft.uniqueId}
+                    keyExtractor={offer => offer.nft.uniqueId + offer.createdAt}
                   />
                 </Bleed>
               </Inset>

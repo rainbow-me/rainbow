@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
-import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 import {
   convertAmountToNativeDisplay,
@@ -32,6 +31,8 @@ import * as i18n from '@/languages';
 import { useRecoilValue } from 'recoil';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { View } from 'react-native';
+import OfferMask from '@/assets/offerMask.png';
+import { Source } from 'react-native-fast-image';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -42,13 +43,15 @@ export const NFT_IMAGE_SIZE =
     2 * CELL_HORIZONTAL_PADDING * 3) /
   4;
 
-const NFTImageMask = () => (
-  <Svg width="78" height="78" viewBox="0 0 78 78">
-    <Path
-      d="M77.9991 17.5233C77.9978 16.7078 77.9972 16.3001 77.9385 16.0639C77.7232 15.1985 77.3429 14.8188 76.4771 14.605C76.2409 14.5466 75.6569 14.5466 74.4887 14.5466V14.5466C68.3941 14.5466 63.4534 9.60592 63.4534 3.51125V3.51125C63.4534 2.34314 63.4534 1.75909 63.395 1.52285C63.1812 0.657103 62.8015 0.276763 61.936 0.0615435C61.6999 0.00281707 61.2922 0.00216367 60.4767 0.000856855C59.942 0 59.3837 0 58.8 0H19.2C12.4794 0 9.11905 0 6.55211 1.30792C4.29417 2.4584 2.4584 4.29417 1.30792 6.55211C0 9.11905 0 12.4794 0 19.2V58.8C0 65.5206 0 68.8809 1.30792 71.4479C2.4584 73.7058 4.29417 75.5416 6.55211 76.6921C9.11905 78 12.4794 78 19.2 78H58.8C65.5206 78 68.8809 78 71.4479 76.6921C73.7058 75.5416 75.5416 73.7058 76.6921 71.4479C78 68.8809 78 65.5206 78 58.8V19.2C78 18.6163 78 18.058 77.9991 17.5233Z"
-      fill="black"
-    />
-  </Svg>
+const Mask = () => (
+  <ImgixImage
+    size={NFT_IMAGE_SIZE}
+    source={OfferMask as Source}
+    style={{
+      width: NFT_IMAGE_SIZE,
+      height: NFT_IMAGE_SIZE,
+    }}
+  />
 );
 
 export const FakeOffer = () => {
@@ -194,8 +197,8 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           style={{
             width: 19,
             height: 19,
-            right: -6.25,
-            top: -5.75,
+            right: -6,
+            top: -6,
             zIndex: 1,
             position: 'absolute',
             alignItems: 'center',
@@ -234,7 +237,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
                   width: NFT_IMAGE_SIZE,
                   height: NFT_IMAGE_SIZE,
                 }}
-                maskElement={<NFTImageMask />}
+                maskElement={<Mask />}
               >
                 {children}
               </MaskedView>
