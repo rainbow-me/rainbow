@@ -93,7 +93,9 @@ const PoapSheet = () => {
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
-  const { data: uniqueTokens } = useLegacyNFTs({
+  const {
+    data: { nfts },
+  } = useLegacyNFTs({
     address: accountAddress,
   });
 
@@ -234,14 +236,14 @@ const PoapSheet = () => {
   ]);
 
   useEffect(() => {
-    const nft = uniqueTokens.find(
+    const nft = nfts.find(
       item => item.image_original_url === poapEvent.imageUrl
     );
     if (nft) {
       setClaimStatus('claimed');
       setNft(nft);
     }
-  }, [imageUrl, poapEvent.imageUrl, uniqueTokens]);
+  }, [imageUrl, nfts, poapEvent.imageUrl]);
 
   const getErrorMessage = () => {
     if (errorCode === 'LIMIT_EXCEEDED') {
