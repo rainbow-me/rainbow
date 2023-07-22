@@ -204,18 +204,18 @@ const PoapSheet = () => {
 
   const actionOnPress = useCallback(async () => {
     if (claimStatus === 'claimed') {
-      if (!nft) goBack();
-
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: nft,
-        backgroundOpacity: 1,
-        cornerRadius: 'device',
-        external: false,
-        springDamping: 1,
-        topOffset: 0,
-        transitionDuration: 0.25,
-        type: 'unique_token',
-      });
+      if (nft) {
+        navigate(Routes.EXPANDED_ASSET_SHEET, {
+          asset: nft,
+          backgroundOpacity: 1,
+          cornerRadius: 'device',
+          external: false,
+          springDamping: 1,
+          topOffset: 0,
+          transitionDuration: 0.25,
+          type: 'unique_token',
+        });
+      }
     } else {
       if (poapMintType === 'secretWord') {
         await claimPoapBySecret();

@@ -116,18 +116,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanWalletConnect = useCallback(
-    async (qrCodeData: string) => {
+    async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
       try {
-        const { version } = parseUri(qrCodeData);
+        const { version } = parseUri(uri);
         if (version === 1) {
-          await walletConnectOnSessionRequest(qrCodeData, () => {});
+          await walletConnectOnSessionRequest(uri, connector, () => {});
         } else if (version === 2) {
-          await pairWalletConnect({ uri: qrCodeData });
+          await pairWalletConnect({ uri, connector });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
@@ -182,16 +182,16 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri, connector } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
-        return handleScanWalletConnect(uri);
+        return handleScanWalletConnect(uri, connector);
       }
 
       // poap mints
       if (data.startsWith(`${POAP_BASE_URL}`)) {
         const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
-        await getPoapAndOpenSheetWithSecretWord(secretWord, true);
+        return getPoapAndOpenSheetWithSecretWord(secretWord, true);
       }
 
       if (data.startsWith(`https://collectors.poap.xyz/mint/`)) {
@@ -201,12 +201,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       if (data.startsWith(`https://poap.xyz/claim/`)) {
         const qrHash = data.split('https://poap.xyz/claim/')?.[1];
-        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
       if (data.startsWith(`https://app.poap.xyz/claim/`)) {
         const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
-        return await getPoapAndOpenSheetWithQRHash(qrHash, true);
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
       if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
@@ -215,7 +215,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
         await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
-        await getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+      }
+
+      if (data.startsWith(`rainbow://poap`)) {
+        const secretWordOrQrHash = data.split(`rainbow://poap/`)?.[1];
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
       // Rainbow profile QR code
