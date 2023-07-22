@@ -244,6 +244,7 @@ export const NFTOffersCard = () => {
                 <Column width="content">
                   <Box
                     as={ButtonPressAnimation}
+                    // @ts-ignore
                     disabled={!canRefresh}
                     onPress={() => {
                       setCanRefresh(false);
