@@ -88,6 +88,13 @@ export const NFTOffersCard = () => {
     }
   }, [canRefresh]);
 
+  // hide nft offers card upon switching wallets
+  // it will reappear if offers are retrieved from api
+  useEffect(() => {
+    heightValue.value = withTiming(0);
+    setHasOffers(false);
+  }, [accountAddress, heightValue]);
+
   // animate in/out card depending on if there are offers
   useEffect(() => {
     if (!hasOffers) {
@@ -185,9 +192,7 @@ export const NFTOffersCard = () => {
                       }}
                       style={{ flex: 1 }}
                       renderItem={({ item }) => <Offer offer={item} />}
-                      keyExtractor={offer =>
-                        offer.nft.uniqueId + offer.createdAt
-                      }
+                      keyExtractor={offer => offer.nft.uniqueId}
                     />
                   ) : (
                     // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757

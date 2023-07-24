@@ -179,7 +179,7 @@ export const NFTOffersSheet = () => {
                       width: deviceWidth,
                     }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
-                    keyExtractor={offer => offer.nft.uniqueId + offer.createdAt}
+                    keyExtractor={offer => offer.nft.uniqueId}
                   />
                 </Bleed>
               </Inset>
