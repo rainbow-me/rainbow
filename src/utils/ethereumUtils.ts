@@ -545,6 +545,11 @@ const calculateL1FeeOptimism = async (
     delete tx.from;
     // @ts-expect-error ts-migrate(100006) FIXME: Remove this comment to see the full error message
     delete tx.gas;
+
+    // contract call will fail if these are passed
+    delete tx.maxPriorityFeePerGas;
+    delete tx.maxFeePerGas;
+
     if (tx.to) {
       tx.to = toChecksumAddress(tx.to);
     }
