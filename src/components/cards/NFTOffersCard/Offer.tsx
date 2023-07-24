@@ -119,6 +119,16 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     }
   }, [offer.validUntil]);
 
+  useEffect(
+    () =>
+      setTimeRemaining(
+        offer.validUntil
+          ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
+          : undefined
+      ),
+    [offer.validUntil]
+  );
+
   const cryptoAmount = handleSignificantDecimals(
     offer.grossAmount.decimal,
     18,
