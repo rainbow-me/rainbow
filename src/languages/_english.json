@@ -1083,7 +1083,8 @@
     "nft_offers": {
       "card": {
         "title": { "singular": "1 Offer", "plural": "%{numOffers} Offers" },
-        "button": "View All Offers"
+        "button": "View All Offers",
+        "expired": "Expired"
       },
       "sheet": {
         "title": "Offers",

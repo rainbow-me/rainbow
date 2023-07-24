@@ -4,7 +4,9 @@ import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useSendableUniqueTokens() {
   const { accountAddress } = useAccountSettings();
-  const { data: uniqueTokens } = useLegacyNFTs({ address: accountAddress });
+  const {
+    data: { nfts: uniqueTokens },
+  } = useLegacyNFTs({ address: accountAddress });
 
   const sendableUniqueTokens = uniqueTokens?.filter(
     (uniqueToken: any) => uniqueToken.isSendable

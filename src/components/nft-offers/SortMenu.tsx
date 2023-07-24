@@ -3,11 +3,14 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
-import { RainbowError, logger } from '@/logger';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { analyticsV2 } from '@/analytics';
+import { atom, useRecoilState } from 'recoil';
+import { MMKV } from 'react-native-mmkv';
+
+const mmkv = new MMKV();
 
 export type SortOption = {
   name: string;
@@ -33,15 +36,32 @@ export const SortOptions: { [key: string]: SortOption } = {
   },
 } as const;
 
-export const SortMenu = ({
-  sortOption,
-  setSortOption,
-  type,
-}: {
-  sortOption: SortOption;
-  setSortOption: (sortOption: SortOption) => void;
-  type: 'card' | 'sheet';
-}) => {
+const MMKV_KEY = 'nftOffersSort';
+
+export const nftOffersSortAtom = atom<SortCriterion>({
+  default:
+    (mmkv.getString(MMKV_KEY) as SortCriterion | undefined) ??
+    SortOptions.Highest.criterion,
+  key: 'nftOffersSort',
+});
+
+const getSortOptionFromCriterion = (criterion: SortCriterion) => {
+  switch (criterion) {
+    case SortCriterion.TopBidValue:
+      return SortOptions.Highest;
+    case SortCriterion.FloorDifferencePercentage:
+      return SortOptions.FromFloor;
+    case SortCriterion.DateCreated:
+      return SortOptions.Recent;
+    default:
+      return SortOptions.Highest;
+  }
+};
+
+export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
+  const [sortCriterion, setSortCriterion] = useRecoilState(nftOffersSortAtom);
+  const sortOption = getSortOptionFromCriterion(sortCriterion);
+
   const menuConfig = {
     menuTitle: '',
     menuItems: [
@@ -81,36 +101,16 @@ export const SortMenu = ({
   };
 
   const onPressMenuItem = ({
-    nativeEvent: { actionKey },
+    nativeEvent: { actionKey: sortCriterion },
   }: {
     nativeEvent: { actionKey: SortCriterion };
   }) => {
     haptics.selection();
-    switch (actionKey) {
-      case SortOptions.Highest.criterion:
-        setSortOption(SortOptions.Highest);
-        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
-          sortCriterion: SortOptions.Highest.criterion,
-        });
-        break;
-      case SortOptions.FromFloor.criterion:
-        setSortOption(SortOptions.FromFloor);
-        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
-          sortCriterion: SortOptions.FromFloor.criterion,
-        });
-        break;
-      case SortOptions.Recent.criterion:
-        setSortOption(SortOptions.Recent);
-        analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
-          sortCriterion: SortOptions.Recent.criterion,
-        });
-        break;
-      default:
-        logger.error(
-          new RainbowError('NFTOffersCard: invalid context menu key')
-        );
-        break;
-    }
+    setSortCriterion(sortCriterion);
+    mmkv.set(MMKV_KEY, sortCriterion);
+    analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
+      sortCriterion: sortCriterion,
+    });
   };
 
   return (

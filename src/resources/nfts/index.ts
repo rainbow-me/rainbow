@@ -14,6 +14,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { Network } from '@/helpers';
+import { UniqueAsset } from '@/entities';
 
 const NFTS_LIMIT = 2000;
 const NFTS_STALE_TIME = 300000; // 5 minutes
@@ -107,7 +108,21 @@ export function useLegacyNFTs({ address }: { address: string }) {
     enabled: !!address,
   });
 
-  const nfts = data?.pages ? data.pages.flatMap(page => page.data) : [];
+  const nfts = useMemo(
+    () => (data?.pages ? data.pages.flatMap(page => page.data) : []),
+    [data?.pages]
+  );
+
+  const nftsMap = useMemo(
+    () =>
+      nfts.reduce((acc, nft) => {
+        // index by both uniqueId and fullUniqueId bc why not
+        acc[nft.uniqueId] = nft;
+        acc[nft.fullUniqueId] = nft;
+        return acc;
+      }, {} as { [key: string]: UniqueAsset }),
+    [nfts]
+  );
 
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage && nfts.length < NFTS_LIMIT) {
@@ -116,7 +131,7 @@ export function useLegacyNFTs({ address }: { address: string }) {
   }, [hasNextPage, fetchNextPage, isFetchingNextPage, nfts.length]);
 
   return {
-    data: nfts,
+    data: { nfts, nftsMap },
     error,
     isInitialLoading: !nfts.length && isFetching,
   };

@@ -37,7 +37,7 @@ export default function DiscoverHome() {
   const isProfilesEnabled =
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const { isReadOnlyWallet, wallets } = useWallets();
+  const { wallets } = useWallets();
 
   const hasHardwareWallets =
     Object.keys(wallets || {}).filter(
@@ -54,7 +54,7 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {nftOffersEnabled && !isReadOnlyWallet && <NFTOffersCard />}
+              {nftOffersEnabled && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
