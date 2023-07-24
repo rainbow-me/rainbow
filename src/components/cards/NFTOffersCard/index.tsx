@@ -2,21 +2,24 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  Column,
+  Columns,
   Inline,
   Inset,
   Separator,
   Stack,
   Text,
+  useColorMode,
   useForegroundColor,
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
+import { FlashList } from '@shopify/flash-list';
 import {
   ButtonPressAnimation,
   ShimmerAnimation,
 } from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { ScrollView } from 'react-native';
-import { useNFTOffers } from '@/resources/nftOffers';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Animated, {
@@ -24,38 +27,48 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { FakeOffer, Offer } from './Offer';
+import {
+  CELL_HORIZONTAL_PADDING,
+  FakeOffer,
+  NFT_IMAGE_SIZE,
+  Offer,
+} from './Offer';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import {
-  SortMenu,
-  SortOption,
-  SortOptions,
-} from '@/components/nft-offers/SortMenu';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
+import { queryClient } from '@/react-query';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { IS_ANDROID } from '@/env';
+import Spinner from '@/components/Spinner';
+import { ScrollView } from 'react-native';
 
 const CARD_HEIGHT = 250;
-const MAX_OFFERS = 10;
+const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
+const OFFER_CELL_WIDTH = NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2;
+
+const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export const NFTOffersCard = () => {
-  const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
-  const { data, isLoading } = useNFTOffers({
+  const {
+    data: { nftOffers },
+    isLoading,
+    isFetching,
+  } = useNFTOffers({
     walletAddress: accountAddress,
-    sortBy: sortOption.criterion,
   });
   const { navigate } = useNavigation();
+  const { colorMode } = useColorMode();
 
+  const offers = nftOffers ?? [];
   const [hasOffers, setHasOffers] = useState(false);
-
-  // only show the first MAX_OFFERS offers
-  const offers = data?.nftOffers ?? [];
 
   const heightValue = useSharedValue(0);
 
@@ -64,6 +77,16 @@ export const NFTOffersCard = () => {
       height: heightValue.value + 1,
     };
   });
+
+  const [canRefresh, setCanRefresh] = useState(true);
+
+  useEffect(() => {
+    if (!canRefresh) {
+      setTimeout(() => {
+        setCanRefresh(true);
+      }, 30_000);
+    }
+  }, [canRefresh]);
 
   // animate in/out card depending on if there are offers
   useEffect(() => {
@@ -74,12 +97,12 @@ export const NFTOffersCard = () => {
         heightValue.value = withTiming(CARD_HEIGHT - 1);
       }
     } else {
-      if (!offers.length && !isLoading) {
+      if (!offers.length && !isLoading && !isFetching) {
         setHasOffers(false);
         heightValue.value = withTiming(1);
       }
     }
-  }, [hasOffers, heightValue, isLoading, offers.length]);
+  }, [hasOffers, heightValue, isFetching, isLoading, offers.length]);
 
   const totalUSDValue = offers.reduce(
     (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
@@ -100,7 +123,7 @@ export const NFTOffersCard = () => {
         <Inset horizontal="20px">
           <Box as={Animated.View} width="full" style={[animatedStyle]}>
             <Stack space="20px">
-              <Separator color="separator" thickness={1} />
+              <Separator color="separatorTertiary" thickness={1} />
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
@@ -145,71 +168,121 @@ export const NFTOffersCard = () => {
                     </>
                   )}
                 </Inline>
-                <SortMenu
-                  sortOption={sortOption}
-                  setSortOption={setSortOption}
-                  type="card"
-                />
+                <SortMenu type="card" />
               </Inline>
               <Bleed horizontal="20px" vertical="10px">
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ height: 138 }}
-                >
-                  <Inset horizontal="20px" vertical="10px">
-                    <Inline space={{ custom: 14 }}>
-                      {!offers.length ? (
-                        <>
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                          <FakeOffer />
-                        </>
-                      ) : (
-                        offers
-                          .slice(0, MAX_OFFERS)
-                          .map((offer: NftOffer) => (
-                            <Offer
-                              key={offer.nft.uniqueId}
-                              offer={offer}
-                              sortCriterion={sortOption.criterion}
-                            />
-                          ))
-                      )}
-                    </Inline>
-                  </Inset>
-                </ScrollView>
+                <Box height={{ custom: OFFER_CELL_HEIGHT }}>
+                  {offers.length ? (
+                    <FlashList
+                      data={offers}
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingHorizontal: 13 }}
+                      estimatedItemSize={OFFER_CELL_WIDTH}
+                      horizontal
+                      estimatedListSize={{
+                        height: OFFER_CELL_HEIGHT,
+                        width: deviceWidth * 2,
+                      }}
+                      style={{ flex: 1 }}
+                      renderItem={({ item }) => <Offer offer={item} />}
+                      keyExtractor={offer =>
+                        offer.nft.uniqueId + offer.createdAt
+                      }
+                    />
+                  ) : (
+                    // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingHorizontal: 13 }}
+                    >
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                      <FakeOffer />
+                    </ScrollView>
+                  )}
+                </Box>
               </Bleed>
-              {/* @ts-ignore js component */}
-              <Box
-                as={ButtonPressAnimation}
-                background="fillSecondary"
-                height="36px"
-                width="full"
-                borderRadius={99}
-                justifyContent="center"
-                alignItems="center"
-                style={{ overflow: 'hidden' }}
-                onPress={() => {
-                  analyticsV2.track(
-                    analyticsV2.event.nftOffersOpenedOffersSheet,
-                    { entryPoint: 'NFTOffersCard' }
-                  );
-                  navigate(Routes.NFT_OFFERS_SHEET);
-                }}
-              >
-                {/* unfortunately shimmer width must be hardcoded */}
-                <ShimmerAnimation
-                  color={buttonColor}
-                  width={deviceWidth - 40}
-                />
-                <Text color="label" align="center" size="15pt" weight="bold">
-                  {i18n.t(i18n.l.nft_offers.card.button)}
-                </Text>
-              </Box>
-              <Separator color="separator" thickness={1} />
+              <Columns space="10px">
+                <Column>
+                  {/* @ts-ignore js component */}
+                  <Box
+                    as={ButtonPressAnimation}
+                    background="fillSecondary"
+                    height="36px"
+                    width="full"
+                    borderRadius={99}
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ overflow: 'hidden' }}
+                    onPress={() => {
+                      analyticsV2.track(
+                        analyticsV2.event.nftOffersOpenedOffersSheet,
+                        { entryPoint: 'NFTOffersCard' }
+                      );
+                      navigate(Routes.NFT_OFFERS_SHEET);
+                    }}
+                  >
+                    {/* unfortunately shimmer width must be hardcoded */}
+                    <ShimmerAnimation
+                      color={buttonColor}
+                      // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
+                      width={deviceWidth - 86}
+                    />
+                    <Text
+                      color="label"
+                      align="center"
+                      size="15pt"
+                      weight="bold"
+                    >
+                      {i18n.t(i18n.l.nft_offers.card.button)}
+                    </Text>
+                  </Box>
+                </Column>
+                <Column width="content">
+                  <Box
+                    as={ButtonPressAnimation}
+                    // @ts-ignore
+                    disabled={!canRefresh}
+                    onPress={() => {
+                      setCanRefresh(false);
+                      queryClient.invalidateQueries(
+                        nftOffersQueryKey({
+                          address: accountAddress,
+                        })
+                      );
+                    }}
+                    justifyContent="center"
+                    alignItems="center"
+                    borderRadius={18}
+                    style={{
+                      borderWidth: isFetching ? 0 : 1,
+                      borderColor: borderColor,
+                      width: 36,
+                      height: 36,
+                    }}
+                  >
+                    {isFetching ? (
+                      <LoadingSpinner
+                        color={colorMode === 'light' ? 'black' : 'white'}
+                        size={20}
+                      />
+                    ) : (
+                      <Text
+                        align="center"
+                        color="label"
+                        size="17pt"
+                        weight="bold"
+                      >
+                        􀅈
+                      </Text>
+                    )}
+                  </Box>
+                </Column>
+              </Columns>
+              <Separator color="separatorTertiary" thickness={1} />
             </Stack>
           </Box>
         </Inset>

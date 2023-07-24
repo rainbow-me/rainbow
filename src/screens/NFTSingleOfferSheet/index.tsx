@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -30,10 +30,11 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '@/hooks';
-import { UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
+import { CardSize } from '@/components/unique-token/CardSize';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const NFT_IMAGE_HEIGHT = 160;
 
 function Row({
   symbol,
@@ -45,7 +46,7 @@ function Row({
   value: React.ReactNode;
 }) {
   return (
-    <Box height={{ custom: 36 }} alignItems="center">
+    <Box height="36px" alignItems="center">
       <Columns>
         <Column>
           <Inline space="4px" alignVertical="center">
@@ -69,22 +70,15 @@ function Row({
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
+  const { offer } = params as { offer: NftOffer };
   const { accountAddress } = useAccountSettings();
   const {
-    data: { nfts },
+    data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
 
-  const { offer } = params as { offer: NftOffer };
+  const nft = nftsMap[offer.nft.uniqueId];
 
   const [height, setHeight] = useState(0);
-
-  const nft = useMemo(() => {
-    if (nfts) {
-      return nfts.find(
-        (nft: UniqueAsset) => nft.fullUniqueId === offer.nft.uniqueId
-      );
-    }
-  }, [nfts, offer.nft.uniqueId]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -113,7 +107,7 @@ export function NFTSingleOfferSheet() {
     3,
     undefined,
     // abbreviate if amount is >= 10,000
-    offer.grossAmount.decimal >= 10_000
+    offer.floorPrice.amount.decimal >= 10_000
   );
   const netCurrency = convertAmountToNativeDisplay(
     offer.netAmount.usd,
@@ -150,16 +144,16 @@ export function NFTSingleOfferSheet() {
     : undefined;
   const buttonColorFallback = useForegroundColor('accent');
 
+  const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
+  const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
+
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          backgroundColor={backgroundColor as string}
-          scrollEnabled={false}
-        >
+        <SimpleSheet backgroundColor={backgroundColor as string}>
           <View onLayout={e => setHeight(e.nativeEvent.layout.height)}>
             <Inset top="32px" horizontal="28px" bottom="52px">
-              <Inset bottom={{ custom: 36 }}>
+              <Inset bottom="36px">
                 <Text color="label" align="center" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.nft_offers.single_offer_sheet.title)}
                 </Text>
@@ -201,7 +195,6 @@ export function NFTSingleOfferSheet() {
                   )}
                 </Inset>
               </Inset>
-
               <Box alignItems="center">
                 <ButtonPressAnimation
                   disabled={!nft}
@@ -231,10 +224,16 @@ export function NFTSingleOfferSheet() {
                       as={ImgixImage}
                       background="surfaceSecondaryElevated"
                       source={{ uri: offer.nft.imageUrl }}
-                      width={{ custom: 160 }}
-                      height={{ custom: 160 }}
+                      width={{
+                        custom: NFT_IMAGE_HEIGHT,
+                      }}
+                      height={{
+                        custom: offer.nft.aspectRatio
+                          ? NFT_IMAGE_HEIGHT / offer.nft.aspectRatio
+                          : NFT_IMAGE_HEIGHT,
+                      }}
                       borderRadius={16}
-                      size={160}
+                      size={CardSize}
                       shadow={
                         offer.nft.predominantColor ? '30px accent' : '30px'
                       }
@@ -320,9 +319,9 @@ export function NFTSingleOfferSheet() {
                       alignHorizontal="right"
                     >
                       <CoinIcon
-                        address={offer.paymentToken.address}
+                        address={offer.floorPrice.paymentToken.address}
                         size={16}
-                        symbol={offer.paymentToken.symbol}
+                        symbol={offer.floorPrice.paymentToken.symbol}
                       />
 
                       <Text
@@ -331,7 +330,7 @@ export function NFTSingleOfferSheet() {
                         size="17pt"
                         weight="medium"
                       >
-                        {floorPrice} {offer.paymentToken.symbol}
+                        {floorPrice} {offer.floorPrice.paymentToken.symbol}
                       </Text>
                     </Inline>
                   }
@@ -359,7 +358,6 @@ export function NFTSingleOfferSheet() {
                         // shadow is way off on android idk why
                         shadow={IS_ANDROID ? undefined : '30px accent'}
                       />
-
                       <Text
                         color="labelSecondary"
                         align="right"
@@ -371,42 +369,43 @@ export function NFTSingleOfferSheet() {
                     </Inline>
                   }
                 />
-
-                <Row
-                  symbol="􀘾"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
-                    { marketplace: offer.marketplace.name }
-                  )}
-                  value={
-                    <Text
-                      color="labelSecondary"
-                      align="right"
-                      size="17pt"
-                      weight="medium"
-                    >
-                      {Math.floor(offer.feesPercentage * 10) / 10}%
-                    </Text>
-                  }
-                />
-
-                <Row
-                  symbol="􀣶"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.creator_royalties
-                  )}
-                  value={
-                    <Text
-                      color="labelSecondary"
-                      align="right"
-                      size="17pt"
-                      weight="medium"
-                    >
-                      {Math.floor(offer.royaltiesPercentage * 10) / 10}%
-                    </Text>
-                  }
-                />
-
+                {!!feesPercentage && (
+                  <Row
+                    symbol="􀘾"
+                    label={i18n.t(
+                      i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
+                      { marketplace: offer.marketplace.name }
+                    )}
+                    value={
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {feesPercentage}%
+                      </Text>
+                    }
+                  />
+                )}
+                {!!royaltiesPercentage && (
+                  <Row
+                    symbol="􀣶"
+                    label={i18n.t(
+                      i18n.l.nft_offers.single_offer_sheet.creator_royalties
+                    )}
+                    value={
+                      <Text
+                        color="labelSecondary"
+                        align="right"
+                        size="17pt"
+                        weight="medium"
+                      >
+                        {royaltiesPercentage}%
+                      </Text>
+                    }
+                  />
+                )}
                 {/* <Row
                 symbol="􀖅"
                 label={i18n.t(i18n.l.nft_offers.single_offer_sheet.receive)}
@@ -456,10 +455,10 @@ export function NFTSingleOfferSheet() {
 
                     <Inset top="10px">
                       <Text
-                        color="labelTertiary"
+                        color="labelSecondary"
                         align="right"
                         size="13pt"
-                        weight="medium"
+                        weight="semibold"
                       >
                         {netCurrency}
                       </Text>
