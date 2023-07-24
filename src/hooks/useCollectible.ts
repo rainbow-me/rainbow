@@ -24,7 +24,7 @@ export default function useCollectible(
     [externalNFTsMap, isExternal, selfNFTsMap]
   );
 
-  const asset = initialAsset.uniqueId
+  const asset = initialAsset?.uniqueId
     ? uniqueTokensMap[initialAsset.uniqueId] || initialAsset
     : initialAsset;
 
