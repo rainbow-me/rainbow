@@ -137,7 +137,7 @@ const PoapSheet = () => {
       secret: poapEvent.secret,
     });
     await delay(1000);
-    console.log(response.claimPoapByQrHash);
+
     const isSuccess = response.claimPoapByQrHash?.success;
     const errorCode = response.claimPoapByQrHash?.error;
 
