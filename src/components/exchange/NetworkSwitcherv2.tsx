@@ -25,6 +25,14 @@ const networkMenuItems = RainbowNetworks.filter(
     if (network1.networkType === 'layer1') {
       return -1;
     }
+
+    // put base at the end
+    if (network2.value === Network.bsc) {
+      return -1;
+    }
+    if (network1.value === Network.bsc) {
+      return 1;
+    }
     // then we should do alphabetical
     if (network1.value > network2.value) {
       return 1;
