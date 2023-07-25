@@ -642,6 +642,7 @@ const UniqueTokenExpandedState = ({
                         marginHorizontal={0}
                         onPress={handleL2DisclaimerPress}
                         symbol="NFT"
+                        forceDarkMode
                       />
                     ) : null}
                     <Stack
