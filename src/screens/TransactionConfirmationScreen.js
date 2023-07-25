@@ -538,12 +538,7 @@ export default function TransactionConfirmationScreen() {
         { gas },
         logger.DebugContext.walletconnect
       );
-      const rawGasLimit = await estimateGasWithPadding(
-        txPayload,
-        null,
-        null,
-        provider
-      );
+      const rawGasLimit = await estimateGas(txPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
@@ -593,7 +588,6 @@ export default function TransactionConfirmationScreen() {
     params,
     provider,
     updateTxFee,
-    currentNetwork,
   ]);
 
   const walletBalance = useMemo(() => {
@@ -677,28 +671,30 @@ export default function TransactionConfirmationScreen() {
         logger.DebugContext.walletconnect
       );
 
-      // Estimate the tx with gas limit padding before sending
-      const rawGasLimit = await estimateGasWithPadding(
-        txPayload,
-        null,
-        null,
-        provider
-      );
-
-      // If the estimation with padding is higher or gas limit was missing,
-      // let's use the higher value
-      if (
-        (isNil(gas) && isNil(gasLimitFromPayload)) ||
-        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-        (!isNil(gasLimitFromPayload) &&
-          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-      ) {
-        logger.debug(
-          'WC: using padded estimation!',
-          { gas: rawGasLimit.toString() },
-          logger.DebugContext.walletconnect
+      if (currentNetwork === networkTypes.mainnet) {
+        // Estimate the tx with gas limit padding before sending
+        const rawGasLimit = await estimateGasWithPadding(
+          txPayload,
+          null,
+          null,
+          provider
         );
-        gas = toHex(rawGasLimit);
+
+        // If the estimation with padding is higher or gas limit was missing,
+        // let's use the higher value
+        if (
+          (isNil(gas) && isNil(gasLimitFromPayload)) ||
+          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+          (!isNil(gasLimitFromPayload) &&
+            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+        ) {
+          logger.debug(
+            'WC: using padded estimation!',
+            { gas: rawGasLimit.toString() },
+            logger.DebugContext.walletconnect
+          );
+          gas = toHex(rawGasLimit);
+        }
       }
     } catch (error) {
       logger.error(new RainbowError('WC: error estimating gas'), { error });
@@ -710,16 +706,7 @@ export default function TransactionConfirmationScreen() {
       'maxPriorityFeePerGas',
     ]);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
-
-    // we us whichever gasLimit is larger so we dont have any failed txs
-    let calculatedGasLimit = gas || 0;
-    if (greaterThan(gasLimit, calculatedGasLimit)) {
-      calculatedGasLimit = gasLimit;
-    }
-    if (greaterThan(gasLimitFromPayload, calculateGasLimit)) {
-      calculatedGasLimit = gasLimitFromPayload;
-    }
-
+    const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     const nonce = await getNextNonce();
     let txPayloadUpdated = {
       ...cleanTxPayload,
