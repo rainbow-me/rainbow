@@ -40,6 +40,7 @@ import {
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { PROFILES, useExperimentalFlag } from '@/config';
+import partyLogo from '../../assets/partyLogo.png';
 import {
   AccentColorProvider,
   Bleed,
@@ -386,6 +387,10 @@ const UniqueTokenExpandedState = ({
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
   );
+  const handlePressParty = useCallback(
+    () => Linking.openURL(asset.external_link!),
+    [asset.external_link]
+  );
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -435,7 +440,8 @@ const UniqueTokenExpandedState = ({
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
-  const hasSendButton = isActionsEnabled && isSendable;
+  const hasSendButton = isSendable;
+  const isParty = asset?.external_link?.includes('party.app');
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
@@ -562,6 +568,29 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
+                        ) : isParty ? (
+                          <SheetActionButton
+                            color={imageColor}
+                            nftShadows
+                            onPress={handlePressParty}
+                            testID="unique-expanded-state-party-button"
+                            textColor={textColor}
+                            weight="heavy"
+                          >
+                            <ImgixImage
+                              resizeMode="contain"
+                              source={partyLogo as any}
+                              size={20}
+                              style={{ height: 25, width: 25 }}
+                            />
+                            <Text
+                              weight="heavy"
+                              size="20pt"
+                              color={{ custom: textColor }}
+                            >
+                              Party
+                            </Text>
+                          </SheetActionButton>
                         ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
