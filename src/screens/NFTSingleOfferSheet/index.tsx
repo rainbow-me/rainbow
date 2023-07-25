@@ -592,11 +592,13 @@ export function NFTSingleOfferSheet() {
                               .toString()}`,
                           ],
                         },
+                        // precheck: true,
                         wallet: reservoirSigner,
                         onProgress: (
                           steps: Execute['steps'],
                           path: Execute['path']
                         ) => {
+                          navigate(Routes.PROFILE_SCREEN);
                           console.log('WHYY');
                           console.log('STEPS', steps);
                           console.log('PATH', path);
