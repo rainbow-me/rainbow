@@ -80,6 +80,7 @@ import { useTheme } from '@/theme';
 import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import isHttpUrl from '@/helpers/isHttpUrl';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -290,6 +291,15 @@ const UniqueTokenExpandedState = ({
     uniqueId,
     fullUniqueId,
   } = asset;
+
+  const filteredTraits = traits.filter(
+    trait =>
+      trait.value !== undefined &&
+      trait.value !== null &&
+      trait.value !== '' &&
+      trait.trait_type &&
+      !isHttpUrl(trait.value)
+  );
 
   const uniqueTokenType = getUniqueTokenType(asset);
 
@@ -670,7 +680,7 @@ const UniqueTokenExpandedState = ({
                               <Markdown>{description}</Markdown>
                             </Section>
                           ) : null}
-                          {traits.length ? (
+                          {filteredTraits.length ? (
                             <Section
                               title={`${lang.t(
                                 'expanded_state.unique_expanded.properties'
