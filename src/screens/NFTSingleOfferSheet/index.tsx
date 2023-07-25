@@ -29,9 +29,23 @@ import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
 import { UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
+import { BigNumber } from '@ethersproject/bignumber';
+import { SheetActionButtonRow } from '@/components/sheet/sheet-action-buttons';
+import { HoldToAuthorizeButton } from '@/components/buttons';
+import { GasSpeedButton } from '@/components/gas';
+import { loadPrivateKey, loadWallet } from '@/model/wallet';
+import { Network } from '@/helpers';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
+// import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
+import { Wallet } from '@ethersproject/wallet';
+import { mainnet } from 'viem/chains';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createWalletClient, http } from 'viem';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -70,6 +84,7 @@ export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { isReadOnlyWallet } = useWallets();
   const { data: nfts } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
@@ -465,47 +480,144 @@ export function NFTSingleOfferSheet() {
                   </Column>
                 </Columns>
               </Inset>
-
-              <AccentColorProvider
-                color={offer.nft.predominantColor || buttonColorFallback}
-              >
-                {/* @ts-ignore js component */}
-                <Box
-                  as={ButtonPressAnimation}
-                  background="accent"
-                  height="46px"
-                  // @ts-ignore
-                  disabled={isExpired}
-                  width="full"
-                  borderRadius={99}
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ overflow: 'hidden' }}
-                  onPress={() => {
-                    analyticsV2.track(
-                      analyticsV2.event.nftOffersViewedExternalOffer,
-                      {
-                        marketplace: offer.marketplace.name,
-                        offerPriceUSD: offer.grossAmount.usd,
-                        nft: {
-                          collectionAddress: offer.nft.contractAddress,
-                          tokenId: offer.nft.tokenId,
-                          network: offer.network,
-                        },
-                      }
-                    );
-                    Linking.openURL(offer.url);
-                  }}
+              {isReadOnlyWallet ? (
+                <AccentColorProvider
+                  color={offer.nft.predominantColor || buttonColorFallback}
                 >
-                  <Text color="label" align="center" size="17pt" weight="heavy">
-                    {i18n.t(
-                      isExpired
-                        ? i18n.l.nft_offers.single_offer_sheet.offer_expired
-                        : i18n.l.nft_offers.single_offer_sheet.view_offer
-                    )}
-                  </Text>
-                </Box>
-              </AccentColorProvider>
+                  {/* @ts-ignore js component */}
+                  <Box
+                    as={ButtonPressAnimation}
+                    background="accent"
+                    height="46px"
+                    // @ts-ignore
+                    disabled={isExpired}
+                    width="full"
+                    borderRadius={99}
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ overflow: 'hidden' }}
+                    onPress={() => {
+                      analyticsV2.track(
+                        analyticsV2.event.nftOffersViewedExternalOffer,
+                        {
+                          marketplace: offer.marketplace.name,
+                          offerPriceUSD: offer.grossAmount.usd,
+                          nft: {
+                            collectionAddress: offer.nft.contractAddress,
+                            tokenId: offer.nft.tokenId,
+                            network: offer.network,
+                          },
+                        }
+                      );
+                      Linking.openURL(offer.url);
+                    }}
+                  >
+                    <Text
+                      color="label"
+                      align="center"
+                      size="17pt"
+                      weight="heavy"
+                    >
+                      {i18n.t(
+                        isExpired
+                          ? i18n.l.nft_offers.single_offer_sheet.offer_expired
+                          : i18n.l.nft_offers.single_offer_sheet.view_offer
+                      )}
+                    </Text>
+                  </Box>
+                </AccentColorProvider>
+              ) : (
+                <>
+                  <HoldToAuthorizeButton
+                    backgroundColor={
+                      offer.nft.predominantColor || buttonColorFallback
+                    }
+                    // disabled={!isSufficientGas || !isValidGas}
+                    hideInnerBorder
+                    // label={
+                    //   insufficientEth
+                    //     ? lang.t('profiles.confirm.insufficient_eth')
+                    //     : label
+                    // }
+                    label="Hold to sell"
+                    onLongPress={async () => {
+                      const provider = await getProviderForNetwork(
+                        offer.network as Network
+                      );
+                      // const ethersSigner = await loadWallet(
+                      //   accountAddress,
+                      //   true,
+                      //   provider
+                      // );
+                      const privateKey = await loadPrivateKey(
+                        accountAddress,
+                        false
+                      );
+                      const account = privateKeyToAccount(privateKey);
+                      // const reservoirSigner = adaptEthersSigner(
+                      //   ethersSigner as Wallet
+                      // );
+                      const reservoirSigner = createWalletClient({
+                        account,
+                        chain: mainnet,
+                        transport: http(),
+                      });
+                      console.log('HELLO???');
+                      console.log('test');
+                      console.log(
+                        BigNumber.from(offer.grossAmount.raw)
+                          .div(100)
+                          .toString()
+                      );
+                      console.log(
+                        `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+                          offer.grossAmount.raw
+                        )
+                          .div(100)
+                          .toString()}`
+                      );
+                      getClient()?.actions.acceptOffer({
+                        items: [
+                          {
+                            token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+                            quantity: 1,
+                          },
+                        ],
+                        options: {
+                          feesOnTop: [
+                            `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+                              offer.grossAmount.raw
+                            )
+                              .div(100)
+                              .toString()}`,
+                          ],
+                        },
+                        wallet: reservoirSigner,
+                        onProgress: (
+                          steps: Execute['steps'],
+                          path: Execute['path']
+                        ) => {
+                          console.log('WHYY');
+                          console.log('STEPS', steps);
+                          console.log('PATH', path);
+                        },
+                      });
+                      console.log('pls');
+                    }}
+                    parentHorizontalPadding={28}
+                    // showBiometryIcon={!insufficientEth}
+                    showBiometryIcon
+                    // testID={`ens-transaction-action-${testID}`}
+                  />
+                  <GasSpeedButton
+                    asset={{
+                      color: offer.nft.predominantColor || buttonColorFallback,
+                    }}
+                    currentNetwork="mainnet"
+                    theme="light"
+                  />
+                </>
+              )}
             </Inset>
           </View>
         </SimpleSheet>

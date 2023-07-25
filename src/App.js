@@ -80,6 +80,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
+import { createClient } from '@reservoir0x/reservoir-sdk';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -276,6 +277,25 @@ function App() {
 
 function Root() {
   const [initializing, setInitializing] = React.useState(true);
+
+  // create reservoir client
+  createClient({
+    chains: [
+      {
+        id: 1,
+        baseApiUrl: 'https://api.reservoir.tools',
+        active: true,
+        apiKey: 'demo-api-key',
+      },
+      {
+        id: 137,
+        baseApiUrl: 'https://api-polygon.reservoir.tools',
+        active: true,
+        apiKey: 'demo-api-key',
+      },
+    ],
+    logLevel: 4,
+  });
 
   React.useEffect(() => {
     async function initializeApplication() {

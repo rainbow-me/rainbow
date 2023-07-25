@@ -115,6 +115,7 @@
     "@react-navigation/material-top-tabs": "5.2.19",
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
+    "@reservoir0x/reservoir-sdk": "1.1.20",
     "@segment/analytics-react-native": "2.7.0",
     "@segment/sovran-react-native": "0.4.3",
     "@sentry/react-native": "3.4.1",
@@ -300,6 +301,7 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
+    "viem": "1.4.1",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2"
   },
