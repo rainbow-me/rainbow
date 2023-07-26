@@ -1,6 +1,8 @@
 import { MMKV } from 'react-native-mmkv';
 
-import { Device } from '@/storage/schema';
+import { Account, Device } from '@/storage/schema';
+import { EthereumAddress } from '@/entities';
+import { Network } from '@/networks/types';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported
@@ -70,3 +72,7 @@ export class Storage<Scopes extends unknown[], Schema> {
  *   `global.set(['doNotTrack'], true)`
  */
 export const device = new Storage<[], Device>({ id: 'global' });
+
+export const assets = new Storage<[EthereumAddress, Network], Account>({
+  id: 'assets',
+});
