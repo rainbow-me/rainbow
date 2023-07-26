@@ -115,7 +115,6 @@ import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 const springConfig = {
   damping: 500,
@@ -269,14 +268,6 @@ export default function TransactionConfirmationScreen() {
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
   useEffect(() => {
-    console.log('wc2v: ', walletConnectV2RequestValues?.chainId);
-    console.log(
-      ethereumUtils.getNetworkFromChainId(
-        Number(
-          walletConnectV2RequestValues?.chainId || walletConnector?._chainId
-        )
-      )
-    );
     setCurrentNetwork(
       ethereumUtils.getNetworkFromChainId(
         Number(
@@ -284,7 +275,7 @@ export default function TransactionConfirmationScreen() {
         )
       )
     );
-  }, []);
+  }, [walletConnectV2RequestValues?.chainId, walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -736,11 +727,11 @@ export default function TransactionConfirmationScreen() {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     const nonce = await getNextNonce();
-    let txPayloadUpdated = Object.assign(
+    let txPayloadUpdated = {
       ...cleanTxPayload,
       ...gasParams,
-      nonce
-    );
+      nonce,
+    };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }

@@ -12,7 +12,7 @@ import {
 } from 'ethereumjs-util';
 import { Contract } from '@ethersproject/contracts';
 import lang from 'i18n-js';
-import { isEmpty, isString, replace } from 'lodash';
+import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
@@ -534,7 +534,7 @@ const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
   provider: Provider
 ): Promise<BigNumberish | undefined> => {
-  const newTx = Object.assign(tx);
+  const newTx = cloneDeep(tx);
   try {
     if (newTx.value) {
       newTx.value = toHex(newTx.value);
@@ -543,8 +543,10 @@ const calculateL1FeeOptimism = async (
       newTx.nonce = Number(await provider.getTransactionCount(newTx.from));
     }
 
-    delete newTx.from;
-    delete newTx.gas;
+    // @ts-expect-error operand should be optional
+    delete newTx?.from;
+    // @ts-expect-error gas is not in type RainbowTransaction
+    delete newTx?.gas;
 
     // contract call will fail if these are passed
     delete newTx.maxPriorityFeePerGas;
@@ -565,7 +567,7 @@ const calculateL1FeeOptimism = async (
       ?.amount;
     if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
-    const serializedTx = serialize(tx);
+    const serializedTx = serialize(newTx);
 
     const OVM_GasPriceOracle = new Contract(
       OVM_GAS_PRICE_ORACLE,
