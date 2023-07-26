@@ -37,6 +37,7 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
+  omitFlatten,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
@@ -375,9 +376,17 @@ export async function estimateGasWithPadding(
       saferGasLimit
     );
 
+    // safety precaution: we want to ensure these properties are not used for gas estimation
+    const cleanTxPayload = omitFlatten(txPayloadToEstimate, [
+      'gas',
+      'gasLimit',
+      'gasPrice',
+      'maxFeePerGas',
+      'maxPriorityFeePerGas',
+    ]);
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
-      : p.estimateGas(txPayloadToEstimate));
+      : p.estimateGas(cleanTxPayload));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(

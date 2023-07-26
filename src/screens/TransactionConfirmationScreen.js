@@ -275,7 +275,7 @@ export default function TransactionConfirmationScreen() {
         )
       )
     );
-  }, [walletConnector?._chainId, walletConnectV2RequestValues]);
+  }, [walletConnectV2RequestValues?.chainId, walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -289,7 +289,7 @@ export default function TransactionConfirmationScreen() {
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [currentNetwork, flashbotsEnabled]);
+  }, [currentNetwork, flashbotsEnabled, setProvider]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -531,6 +531,12 @@ export default function TransactionConfirmationScreen() {
     const txPayload = params?.[0];
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
+
+    // sometimes provider is undefined, this is hack to ensure its defined
+    const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
+      Number(walletConnectV2RequestValues?.chainId || walletConnector?._chainId)
+    );
+    const provider = await getProviderForNetwork(localCurrentNetwork);
     try {
       // attempt to re-run estimation
       logger.debug(
@@ -538,7 +544,16 @@ export default function TransactionConfirmationScreen() {
         { gas },
         logger.DebugContext.walletconnect
       );
-      const rawGasLimit = await estimateGas(txPayload, provider);
+
+      // safety precaution: we want to ensure these properties are not used for gas estimation
+      const cleanTxPayload = omitFlatten(txPayload, [
+        'gas',
+        'gasLimit',
+        'gasPrice',
+        'maxFeePerGas',
+        'maxPriorityFeePerGas',
+      ]);
+      let rawGasLimit = await estimateGas(cleanTxPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
@@ -566,7 +581,13 @@ export default function TransactionConfirmationScreen() {
         updateTxFee(gas, null);
       }
     }
-  }, [currentNetwork, params, provider, updateTxFee]);
+  }, [
+    currentNetwork,
+    params,
+    updateTxFee,
+    walletConnectV2RequestValues?.chainId,
+    walletConnector?._chainId,
+  ]);
 
   useEffect(() => {
     if (
@@ -725,7 +746,6 @@ export default function TransactionConfirmationScreen() {
     logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
 
     let response = null;
-
     try {
       const existingWallet = await loadWallet(
         accountInfo.address,
