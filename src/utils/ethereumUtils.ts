@@ -44,6 +44,7 @@ import {
   greaterThan,
   isZero,
   subtract,
+  add,
 } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
@@ -201,17 +202,21 @@ const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
-  selected: ParsedAddressAsset
+  selected: ParsedAddressAsset,
+  l1GasFeeOptimism?: BigNumberish
 ) => {
   const accountAsset = getAccountAsset(selected?.uniqueId);
   let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
-
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const gasFee = selectedGasFee?.gasFee as GasFee;
-      const txFeeRaw =
+      let txFeeRaw =
         gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
+      if (l1GasFeeOptimism) {
+        txFeeRaw = add(l1GasFeeOptimism.toString(), txFeeRaw);
+      }
       const txFeeAmount = fromWei(txFeeRaw);
+
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';
     }
