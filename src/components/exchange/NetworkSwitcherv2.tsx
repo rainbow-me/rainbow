@@ -41,20 +41,14 @@ const NetworkSwitcherv2 = ({
       },
     };
   };
-  const networkMenuItems = useMemo(
-    () =>
-      RainbowNetworks.filter(
-        network =>
-          network.features.swaps && checkIfNetworkIsEnabled(network.value)
-      ).map(network => ({
-        chainId: network.id,
-        network: network.value,
-        title: network.name,
-        type:
-          network.value !== Network.mainnet ? network.value : AssetType.token,
-      })),
-    []
-  );
+  const networkMenuItems = RainbowNetworks.filter(
+    network => network.features.swaps && checkIfNetworkIsEnabled(network.value)
+  ).map(network => ({
+    chainId: network.id,
+    network: network.value,
+    title: network.name,
+    type: network.value !== Network.mainnet ? network.value : AssetType.token,
+  }));
 
   // if polygon or optimism are selected initially we should scroll into view
   useEffect(() => {
