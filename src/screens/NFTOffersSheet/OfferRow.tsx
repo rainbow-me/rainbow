@@ -28,23 +28,21 @@ import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
-import OfferRowMask from '@/assets/offerRowMask.png';
-import { Source } from 'react-native-fast-image';
+import Svg, { Path } from 'react-native-svg';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
 const COIN_ICON_SIZE = 16;
 
 const Mask = () => (
-  <ImgixImage
-    size={NFT_SIZE}
-    source={OfferRowMask as Source}
-    style={{
-      width: NFT_SIZE,
-      height: NFT_SIZE,
-    }}
-  />
+  <Svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <Path
+      d="M4 34C10.6274 34 16 39.3726 16 46C16 46.062 15.9995 46.1238 15.9986 46.1856C15.9774 47.5824 15.9668 48.2808 16.0568 48.5786C16.2869 49.3399 16.606 49.6639 17.3638 49.9055C17.6602 50 18.1735 50 19.2 50H30.8C37.5206 50 40.8809 50 43.4479 48.6921C45.7058 47.5416 47.5416 45.7058 48.6921 43.4479C50 40.8809 50 37.5206 50 30.8V19.2C50 12.4794 50 9.11905 48.6921 6.55211C47.5416 4.29417 45.7058 2.4584 43.4479 1.30792C40.8809 0 37.5206 0 30.8 0H19.2C12.4794 0 9.11905 0 6.55211 1.30792C4.29417 2.4584 2.4584 4.29417 1.30792 6.55211C0 9.11905 0 12.4794 0 19.2V30.8C0 31.8265 0 32.3398 0.0945007 32.6362C0.336104 33.394 0.660065 33.7131 1.42144 33.9432C1.71925 34.0332 2.41764 34.0226 3.81443 34.0014C3.87617 34.0005 3.93803 34 4 34Z"
+      fill="black"
+    />
+  </Svg>
 );
+
 export const FakeOfferRow = () => {
   const { isDarkMode } = useTheme();
   return (
@@ -200,8 +198,8 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
               width: MARKETPLACE_ORB_SIZE,
               height: MARKETPLACE_ORB_SIZE,
               borderRadius: MARKETPLACE_ORB_SIZE / 2,
-              left: -4,
-              bottom: -4,
+              left: -5,
+              bottom: -5,
               backgroundColor: bgColor,
               position: 'absolute',
             }}
