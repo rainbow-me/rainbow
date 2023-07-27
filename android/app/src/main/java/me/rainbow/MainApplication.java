@@ -4,18 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.oblador.keychain.KeychainModuleBuilder;
 import com.oblador.keychain.KeychainPackage;
-import com.swmansion.reanimated.ReanimatedJSIModulePackage;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import io.branch.rnbranch.RNBranchModule;
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage;
@@ -28,21 +22,18 @@ import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 import com.microsoft.codepush.react.CodePush;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactNativeHost;
+import me.rainbow.BuildConfig;
 
-class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
-    @Override
-    public List<JSIModuleSpec> getJSIModules(ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext) {
-        return super.getJSIModules(reactApplicationContext, jsContext);
-    }
-}
 
 
 public class MainApplication extends Application implements ReactApplication {
     private static final long START_MARK = System.currentTimeMillis();
-    private static Context context;
+      private static Context context;
+
     private final ReactNativeHost mReactNativeHost =
-      new ReactNativeHost(this) {
+      new DefaultReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
@@ -77,12 +68,16 @@ public class MainApplication extends Application implements ReactApplication {
           return "index";
         }
 
-         //_REA /* REA
-         @Override
-         protected JSIModulePackage getJSIModulePackage() {
-           return new RainbowJSIModulePackage();
-         }
-         // */
+
+        @Override
+        protected boolean isNewArchEnabled() {
+	          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+	        }
+	
+	        @Override
+	        protected Boolean isHermesEnabled() {
+	          return BuildConfig.IS_HERMES_ENABLED;
+	        }
       };
 
   @Override
@@ -93,45 +88,16 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    // If you opted-in for the New Architecture, we enable the TurboModule system
-    ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     context = this;
     SoLoader.init(this, /* native exopackage */ false);
-    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // If you opted-in for the New Architecture, we load the native entry point for this app.
+      DefaultNewArchitectureEntryPoint.load();
+    }	
     RNBranchModule.getAutoInstance(this);
   }
 
-  /**
-   * Loads Flipper in React Native templates. Call this in the onCreate method with something like
-   * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-   *
-   * @param context
-   * @param reactInstanceManager
-   */
-  private static void initializeFlipper(
-      Context context, ReactInstanceManager reactInstanceManager) {
-    if (BuildConfig.DEBUG) {
-      try {
-        /*
-         We use reflection here to pick up the class that initializes Flipper,
-        since Flipper library is not available in release mode
-        */
-        Class<?> aClass = Class.forName("me.rainbow.ReactNativeFlipper");
-        aClass
-            .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-            .invoke(null, context, reactInstanceManager);
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-    public static Context getAppContext() {
+   public static Context getAppContext() {
         return MainApplication.context;
     }
 }

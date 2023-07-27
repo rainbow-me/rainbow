@@ -1,6 +1,4 @@
 import { NativeModules } from 'react-native';
-// eslint-disable-next-line import/default
-import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
@@ -96,32 +94,6 @@ export function onNavigationStateChange(currentState) {
 
   memPrevRouteName = memRouteName;
   memRouteName = routeName;
-
-  if (android) {
-    if (
-      routeName === Routes.MAIN_EXCHANGE_SCREEN ||
-      routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
-      routeName === Routes.SEND_SHEET ||
-      routeName === Routes.SEND_SHEET_NAVIGATOR ||
-      routeName === Routes.SWAP_DETAILS_SCREEN ||
-      routeName === Routes.SWAP_DETAILS_SHEET ||
-      routeName === Routes.QR_SCANNER_SCREEN ||
-      routeName === Routes.CUSTOM_GAS_SHEET ||
-      routeName === Routes.ENS_INTRO_SHEET ||
-      routeName === Routes.SWAPS_PROMO_SHEET ||
-      routeName === Routes.NOTIFICATIONS_PROMO_SHEET ||
-      routeName === Routes.WALLET_SCREEN ||
-      routeName === Routes.ENS_SEARCH_SHEET ||
-      routeName === Routes.ENS_ASSIGN_RECORDS_SHEET ||
-      (routeName === Routes.MODAL_SCREEN &&
-        (Navigation.getActiveRoute().params?.type === 'contact_profile' ||
-          Navigation.getActiveRoute().params?.type === 'wallet_profile'))
-    ) {
-      AndroidKeyboardAdjust.setAdjustPan();
-    } else {
-      AndroidKeyboardAdjust.setAdjustResize();
-    }
-  }
 
   if (routeName !== memPrevRouteName) {
     let paramsToTrack = null;

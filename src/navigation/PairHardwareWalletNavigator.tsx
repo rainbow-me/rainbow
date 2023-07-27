@@ -11,8 +11,19 @@ import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { analyticsV2 } from '@/analytics';
+import { Dimensions } from 'react-native';
+import ScrollPagerWrapper from './ScrollPagerWrapper';
 
 const Swipe = createMaterialTopTabNavigator();
+
+const renderPager = (props: any) => (
+  <ScrollPagerWrapper
+    {...props}
+    {...(android && {
+      style: { height: Dimensions.get('window').height },
+    })}
+  />
+);
 
 type PairHardwareWalletNavigatorParams = {
   entryPoint: string;
@@ -75,6 +86,7 @@ export function PairHardwareWalletNavigator() {
             swipeEnabled={false}
             tabBar={() => null}
             lazy
+            pager={renderPager}
           >
             <Swipe.Screen
               component={PairHardwareWalletIntroSheet}

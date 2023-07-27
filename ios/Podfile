@@ -1,4 +1,5 @@
 platform :ios, '13.0'
+use_modular_headers!
 install! 'cocoapods', :deterministic_uuids => false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -15,7 +16,7 @@ target 'SelectTokenIntent' do
 end
 
 target 'ImageNotification' do
-  pod 'Firebase/Messaging', '~> 8.14.0'
+  pod 'Firebase/Messaging', '~> 10.12.0'
 end
 
 target 'Rainbow' do
@@ -57,7 +58,7 @@ target 'Rainbow' do
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
-  pod 'Plaid', '~> 4.1.0'
+  pod 'Plaid', '~> 4.4.0'
 
   use_native_modules!
 
