@@ -1,5 +1,5 @@
 import { values } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Menu from './Menu';
@@ -11,14 +11,21 @@ import {
   useAccountSettings,
   useInitializeAccountData,
   useLoadAccountData,
+  useRefreshAccountData,
   useResetAccountState,
 } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { Network } from '@/helpers';
 import { RainbowNetworks } from '@/networks';
+import { Switch } from 'react-native-gesture-handler';
+import * as ls from '@/storage';
+
+const testnets = values(RainbowNetworks).filter(
+  ({ networkType }) => networkType !== 'layer2'
+);
 
 const networks = values(RainbowNetworks).filter(
-  ({ networkType }) => networkType !== 'layer2'
+  ({ networkType, enabled }) => networkType !== 'testnet' && enabled
 );
 
 interface NetworkSectionProps {
@@ -31,6 +38,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
   const dispatch = useDispatch();
+  const { refresh } = useRefreshAccountData();
 
   const onNetworkChange = useCallback(
     async (network: Network) => {
@@ -45,8 +53,27 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
-  const renderNetworkList = useCallback(() => {
-    return networks.map(({ name, value, networkType }) => (
+  const [enabledNetworks, setEnabledNetworks] = useState(
+    ls.device.get(['enabledNetworks']) || {}
+  );
+
+  const toggleStateForNetwork = (topic: Network) =>
+    setEnabledNetworks(prev => ({ ...prev, [topic]: !prev[topic] }));
+
+  const onToggleNetwork = useCallback(
+    (network: Network) => {
+      toggleStateForNetwork(network);
+      ls.device.set(['enabledNetworks'], {
+        ...enabledNetworks,
+        [network]: !enabledNetworks[network],
+      });
+      refresh();
+    },
+    [enabledNetworks, refresh]
+  );
+
+  const renderTestnetList = useCallback(() => {
+    return testnets.map(({ name, value, networkType }) => (
       <MenuItem
         disabled={!testnetsEnabled && networkType === 'testnet'}
         key={value}
@@ -67,13 +94,38 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
     ));
   }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
+  const renderNetworkList = useCallback(() => {
+    return networks.map(({ name, value, networkType }) => (
+      <MenuItem
+        disabled={!testnetsEnabled && networkType === 'testnet'}
+        key={value}
+        onPress={() => ls.device.set(['enabledNetworks'], { optimism: true })}
+        rightComponent={
+          <Switch
+            value={enabledNetworks[value]}
+            onValueChange={() => onToggleNetwork(value)}
+          />
+        }
+        size={52}
+        testID={`${value}-network`}
+        titleComponent={
+          <MenuItem.Title
+            text={name}
+            weight={inDevSection ? 'medium' : 'semibold'}
+          />
+        }
+      />
+    ));
+  }, [enabledNetworks, inDevSection, onToggleNetwork, testnetsEnabled]);
+
   return inDevSection ? (
     <Stack separator={<Separator color="divider60 (Deprecated)" />}>
-      {renderNetworkList()}
+      {renderTestnetList()}
     </Stack>
   ) : (
     <MenuContainer>
       <Menu>{renderNetworkList()}</Menu>
+      <Menu>{renderTestnetList()}</Menu>
     </MenuContainer>
   );
 };

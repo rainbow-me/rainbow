@@ -16,7 +16,7 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
     name: 'Gnosis',
     longName: 'Gnosis',
     value: Network.gnosis,
-    networkType: 'layer1',
+    networkType: 'layer2',
     blockTimeInMs: 5_000,
 
     nativeCurrency: {

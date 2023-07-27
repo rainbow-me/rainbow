@@ -41,7 +41,7 @@ export const SettingsPages = {
   },
   network: {
     component: NetworkSection,
-    getTitle: () => lang.t('settings.network'),
+    getTitle: () => lang.t('settings.networks'),
     key: 'NetworkSection',
   },
   notifications: {

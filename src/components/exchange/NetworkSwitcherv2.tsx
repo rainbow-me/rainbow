@@ -12,10 +12,10 @@ import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworks, checkIfNetworkIsEnabled } from '@/networks';
 
 const networkMenuItems = RainbowNetworks.filter(
-  network => network.features.swaps
+  network => network.features.swaps && checkIfNetworkIsEnabled(network.value)
 ).map(network => ({
   chainId: network.id,
   network: network.value,

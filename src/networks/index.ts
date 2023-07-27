@@ -8,6 +8,7 @@ import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 import { getGnosisNetworkObject } from './gnosis';
 import { getBaseNetworkObject } from './base';
+import * as ls from '@/storage';
 
 /**
  * Array of all Rainbow Networks
@@ -58,4 +59,11 @@ export function getNetworkObj(network: Network): NetworkProperties {
     default:
       return getMainnetNetworkObject();
   }
+}
+
+export function checkIfNetworkIsEnabled(network: Network): boolean {
+  return (
+    !!ls.device.get(['enabledNetworks'])?.[network] &&
+    getNetworkObj(network).enabled
+  );
 }

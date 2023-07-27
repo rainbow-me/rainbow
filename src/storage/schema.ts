@@ -17,6 +17,13 @@ export type Device = {
    * the past. We set this to `true` immediately after checking.
    */
   branchFirstReferringParamsSet: boolean;
+
+  /**
+   * Array of enabled networks
+   */
+  enabledNetworks: {
+    [key: string]: boolean;
+  };
 };
 
 /**

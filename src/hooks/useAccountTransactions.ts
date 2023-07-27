@@ -8,6 +8,7 @@ import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
+import { checkIfNetworkIsEnabled } from '@/networks';
 
 export const NOE_PAGE = 30;
 
@@ -40,7 +41,10 @@ export default function useAccountTransactions(
   );
 
   const allTransactions = useMemo(
-    () => pendingTransactions.concat(transactions),
+    () =>
+      pendingTransactions
+        .concat(transactions)
+        .filter(tx => checkIfNetworkIsEnabled(tx.network)),
     [pendingTransactions, transactions]
   );
 

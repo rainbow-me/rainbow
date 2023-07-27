@@ -1484,7 +1484,7 @@
       "label": "Settings",
       "language": "Language",
       "learn": "Learn about Ethereum",
-      "network": "Network",
+      "networks": "Networks",
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "My Wallets",

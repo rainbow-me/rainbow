@@ -17,7 +17,11 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import {
+  RainbowNetworks,
+  checkIfNetworkIsEnabled,
+  getNetworkObj,
+} from '@/networks';
 
 const NOOP = () => null;
 
@@ -103,7 +107,10 @@ const AvailableNetworksv2 = ({
   const networkMenuItems = useMemo(() => {
     return RainbowNetworks.filter(
       ({ features, value, id }) =>
-        features.swaps && value !== Network.mainnet && !!networks[id]
+        features.swaps &&
+        checkIfNetworkIsEnabled(value) &&
+        value !== Network.mainnet &&
+        !!networks[id]
     ).map(network => ({
       actionKey: network.value,
       actionTitle: network.name,

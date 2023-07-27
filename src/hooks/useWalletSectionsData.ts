@@ -13,6 +13,7 @@ import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { checkIfNetworkIsEnabled } from '@/networks';
 
 export default function useWalletSectionsData({
   type,
@@ -48,6 +49,10 @@ export default function useWalletSectionsData({
     true
   );
 
+  const filteredUniqueTokens = allUniqueTokens.filter(nft =>
+    checkIfNetworkIsEnabled(nft.network)
+  );
+
   const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
@@ -68,13 +73,13 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens: allUniqueTokens,
+      uniqueTokens: filteredUniqueTokens,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
       accountInfo
     );
-    const hasNFTs = allUniqueTokens.length > 0;
+    const hasNFTs = filteredUniqueTokens.length > 0;
 
     return {
       hasNFTs,
@@ -85,24 +90,24 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    allUniqueTokens,
     hiddenCoins,
-    hiddenTokens,
     isCoinListEdited,
-    isReadOnlyWallet,
-    isWalletEthZero,
     language,
     nativeCurrency,
     network,
     pinnedCoins,
-    refetchSavings,
     savings,
-    shouldRefetchSavings,
-    showcaseTokens,
-    sortedAccountData,
-    type,
     sendableUniqueTokens,
+    sortedAccountData,
     uniswap,
+    isWalletEthZero,
+    hiddenTokens,
+    isReadOnlyWallet,
+    type,
+    showcaseTokens,
+    filteredUniqueTokens,
+    refetchSavings,
+    shouldRefetchSavings,
   ]);
   return walletSections;
 }

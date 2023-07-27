@@ -8,6 +8,8 @@ import {
   NftOffer,
   SortCriterion,
 } from '@/graphql/__generated__/arc';
+import { checkIfNetworkIsEnabled } from '@/networks';
+import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -115,5 +117,10 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     }
   }, [query.data?.nftOffers, queryKey]);
 
-  return { ...query, data: { ...query.data, nftOffers: sortedOffers } };
+  // only show offers for networks that are enabled
+  const filteredOffers = sortedOffers?.filter(offer =>
+    checkIfNetworkIsEnabled(offer.network as Network)
+  );
+
+  return { ...query, data: { ...query.data, nftOffers: filteredOffers } };
 }

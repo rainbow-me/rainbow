@@ -9,7 +9,11 @@ import {
 } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import {
+  RainbowNetworks,
+  checkIfNetworkIsEnabled,
+  getNetworkObj,
+} from '@/networks';
 
 type SwappableAddresses = {
   [Network.mainnet]: EthereumAddress[];
@@ -79,7 +83,7 @@ export const useSwappableUserAssets = (params: {
 
   const getSwappableAddressesInWallet = useCallback(async () => {
     const networks = RainbowNetworks.filter(
-      ({ features }) => features.swaps
+      ({ features, value }) => features.swaps && checkIfNetworkIsEnabled(value)
     ).map(({ value }) => value);
 
     const walletFilterRequests: Promise<void>[] = [];

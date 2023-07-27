@@ -40,7 +40,17 @@ import {
   buildRainbowLearnUrl,
   LearnUTMCampaign,
 } from '@/utils/buildRainbowUrl';
-import { getNetworkObj } from '@/networks';
+import {
+  RainbowNetworks,
+  checkIfNetworkIsEnabled,
+  getNetworkObj,
+} from '@/networks';
+import { Box } from '@/design-system';
+import { Network } from '@/networks/types';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
+import CoinIcon from '@/components/coin-icon/CoinIcon';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { AssetType } from '@/entities/assetTypes';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -127,7 +137,7 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { isDarkMode, setTheme, colorScheme } = useTheme();
+  const { isDarkMode, setTheme, colorScheme, colors } = useTheme();
 
   const onSendFeedback = useSendFeedback();
 
@@ -239,6 +249,10 @@ const SettingsSection = ({
     [setTheme]
   );
 
+  const enabledNetworks = RainbowNetworks.filter(({ value }) =>
+    checkIfNetworkIsEnabled(value)
+  ).map(({ value }) => value);
+
   return (
     <MenuContainer
       testID="settings-menu-container"
@@ -310,14 +324,42 @@ const SettingsSection = ({
             }
             onPress={onPressNetwork}
             rightComponent={
-              <MenuItem.Selection>
-                {getNetworkObj(network).name}
-              </MenuItem.Selection>
+              <Box style={{ flexDirection: 'row' }}>
+                {enabledNetworks?.map((network, index) => {
+                  return (
+                    <Box
+                      background="body (Deprecated)"
+                      key={`availableNetwork-${network}`}
+                      marginLeft="-4px"
+                      style={{
+                        backgroundColor: colors.transparent,
+                        zIndex: enabledNetworks?.length - index,
+                        borderRadius: 30,
+                      }}
+                    >
+                      {network !== Network.mainnet ? (
+                        <ChainBadge
+                          assetType={network}
+                          position="relative"
+                          size="small"
+                        />
+                      ) : (
+                        <CoinIcon
+                          address={ETH_ADDRESS}
+                          size={20}
+                          symbol={ETH_SYMBOL}
+                          type={AssetType.token}
+                        />
+                      )}
+                    </Box>
+                  );
+                })}
+              </Box>
             }
             size={60}
             testID="network-section"
             titleComponent={
-              <MenuItem.Title text={lang.t('settings.network')} />
+              <MenuItem.Title text={lang.t('settings.networks')} />
             }
           />
         )}

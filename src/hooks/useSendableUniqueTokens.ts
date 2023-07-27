@@ -1,6 +1,7 @@
 import { groupBy } from 'lodash';
 import { useAccountSettings } from '.';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { checkIfNetworkIsEnabled } from '@/networks';
 
 export default function useSendableUniqueTokens() {
   const { accountAddress } = useAccountSettings();
@@ -9,7 +10,8 @@ export default function useSendableUniqueTokens() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const sendableUniqueTokens = uniqueTokens?.filter(
-    (uniqueToken: any) => uniqueToken.isSendable
+    (uniqueToken: any) =>
+      uniqueToken.isSendable && checkIfNetworkIsEnabled(uniqueToken.network)
   );
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();

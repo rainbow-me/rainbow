@@ -11,14 +11,17 @@ import {
 import { NativeCurrencyKey, ZerionAsset } from '@/entities';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-import { RainbowNetworks } from '@/networks';
+import { checkIfNetworkIsEnabled, RainbowNetworks } from '@/networks';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 
 export const buildPositionsUrl = (address: string) => {
-  const networkString = RainbowNetworks.filter(network => network.enabled)
+  const networkString = RainbowNetworks.filter(({ value }) =>
+    checkIfNetworkIsEnabled(value)
+  )
     .map(network => network.id)
     .join(',');
+
   return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
 };
 
