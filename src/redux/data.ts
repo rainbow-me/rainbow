@@ -1180,6 +1180,7 @@ export const dataAddNewTransaction = (
       txDetails,
       nativeCurrency
     );
+
     const _pendingTransactions = [parsedTransaction, ...pendingTransactions];
     dispatch({
       payload: _pendingTransactions,

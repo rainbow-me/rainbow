@@ -3,11 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Text } from '@/design-system';
+import { Text, globalColors, useColorMode } from '@/design-system';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
+import { ImgixImage } from '../images';
+import { CardSize } from '../unique-token/CardSize';
 
 const BottomRow = React.memo(function BottomRow({
   description,
@@ -79,6 +81,7 @@ export default React.memo(function TransactionCoinRow({
   item: any;
   theme: ThemeContextProps;
 }) {
+  const { colorMode } = useColorMode();
   const { mainnetAddress } = item;
   const { colors } = theme;
   const navigation = useNavigation();
@@ -96,13 +99,49 @@ export default React.memo(function TransactionCoinRow({
         testID={`${item.title}-${item.description}-${item.balance?.display}`}
       >
         <View style={sx.icon}>
-          <FastCoinIcon
-            address={mainnetAddress || item.address}
-            assetType={item.network}
-            mainnetAddress={mainnetAddress}
-            symbol={item.symbol}
-            theme={theme}
-          />
+          {item.nft ? (
+            <View
+              style={{
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.02,
+                shadowRadius: 3,
+                paddingTop: 9,
+                paddingBottom: 10,
+                overflow: 'visible',
+              }}
+            >
+              <View
+                style={{
+                  shadowColor:
+                    colorMode === 'dark' || !item.nft.predominantColor
+                      ? globalColors.grey100
+                      : item.nft.predominantColor,
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.24,
+                  shadowRadius: 9,
+                }}
+              >
+                <ImgixImage
+                  size={CardSize}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                  }}
+                  source={{ uri: item.nft.lowResUrl }}
+                />
+              </View>
+            </View>
+          ) : (
+            <FastCoinIcon
+              address={mainnetAddress || item.address}
+              assetType={item.network}
+              mainnetAddress={mainnetAddress}
+              symbol={item.symbol}
+              theme={theme}
+            />
+          )}
         </View>
         <View style={sx.column}>
           <View style={sx.topRow}>
@@ -170,5 +209,6 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 19,
+    overflow: 'visible',
   },
 });

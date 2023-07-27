@@ -9,6 +9,7 @@ import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';
 import { FiatProviderName } from '@/entities/f2c';
+import { UniqueAsset } from '../uniqueAssets';
 
 export interface RainbowTransaction {
   address?: string;
@@ -32,6 +33,7 @@ export interface RainbowTransaction {
     display: string;
   };
   network?: Network;
+  nft?: UniqueAsset;
   nonce?: number | null;
   pending?: boolean;
   protocol?: ProtocolType | null;
@@ -90,6 +92,7 @@ export interface NewTransaction {
   maxPriorityFeePerGas?: BigNumberish;
   hash: string | null;
   network?: Network;
+  nft?: UniqueAsset;
   nonce: number | null;
   protocol?: ProtocolType | null;
   flashbots?: boolean;

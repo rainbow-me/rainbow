@@ -251,6 +251,7 @@ export function simpleHashNFTToUniqueAsset(
     name: nft.name,
     network: nft.chain,
     permalink: marketplace?.nft_url ?? '',
+    predominantColor: nft.previews?.predominant_color ?? undefined,
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,

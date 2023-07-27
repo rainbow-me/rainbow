@@ -28,6 +28,8 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
   transaction,
   presentToast,
 }) => {
+  // console.log(transaction);
+  console.log('HELLO');
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status } = transaction;
@@ -68,9 +70,9 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
     haptics.notificationSuccess();
     Clipboard.setString(hash);
   };
-
+  console.log(hash);
   const formattedHash = shortenTxHashString(hash);
-
+  console.log(formattedHash);
   const onViewOnBlockExplorerPress = () => {
     ethereumUtils.openTransactionInBlockExplorer(hash, network);
   };
