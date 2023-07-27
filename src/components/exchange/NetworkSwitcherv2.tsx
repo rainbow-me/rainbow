@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
@@ -13,15 +13,6 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
 import { RainbowNetworks, checkIfNetworkIsEnabled } from '@/networks';
-
-const networkMenuItems = RainbowNetworks.filter(
-  network => network.features.swaps && checkIfNetworkIsEnabled(network.value)
-).map(network => ({
-  chainId: network.id,
-  network: network.value,
-  title: network.name,
-  type: network.value !== Network.mainnet ? network.value : AssetType.token,
-}));
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -50,6 +41,20 @@ const NetworkSwitcherv2 = ({
       },
     };
   };
+  const networkMenuItems = useMemo(
+    () =>
+      RainbowNetworks.filter(
+        network =>
+          network.features.swaps && checkIfNetworkIsEnabled(network.value)
+      ).map(network => ({
+        chainId: network.id,
+        network: network.value,
+        title: network.name,
+        type:
+          network.value !== Network.mainnet ? network.value : AssetType.token,
+      })),
+    []
+  );
 
   // if polygon or optimism are selected initially we should scroll into view
   useEffect(() => {
