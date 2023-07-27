@@ -9,6 +9,7 @@ import { useNavigation } from '@/navigation';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
 import { checkIfNetworkIsEnabled } from '@/networks';
+import { Network } from '@/networks/types';
 
 export const NOE_PAGE = 30;
 
@@ -44,7 +45,7 @@ export default function useAccountTransactions(
     () =>
       pendingTransactions
         .concat(transactions)
-        .filter(tx => checkIfNetworkIsEnabled(tx.network)),
+        .filter(tx => checkIfNetworkIsEnabled(tx.network || Network.mainnet)),
     [pendingTransactions, transactions]
   );
 
