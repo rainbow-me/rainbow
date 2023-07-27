@@ -87,7 +87,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
             <Inline alignHorizontal="center" alignVertical="center">
               <Box paddingBottom="12px">
                 <Text size="22pt" weight="heavy" color="label">
-                  {i18n.t(i18n.l.settings.network)}
+                  {i18n.t(i18n.l.settings.networks)}
                 </Text>
               </Box>
             </Inline>
