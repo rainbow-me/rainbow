@@ -90,6 +90,7 @@ export default function useGas({
     selectedGasFee: SelectedGasFee;
     selectedGasFeeOption: string;
     txNetwork: Network;
+    l1GasFeeOptimism: string;
   } = useSelector(
     ({
       gas: {

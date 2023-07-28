@@ -188,29 +188,33 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         return handleScanWalletConnect(uri, connector);
       }
 
+      const lowerCaseData = data?.toLowerCase();
+
       // poap mints
-      if (data.startsWith(`${POAP_BASE_URL}`)) {
-        const secretWord = data.split(`${POAP_BASE_URL}`)?.[1];
+      if (lowerCaseData.startsWith(`${POAP_BASE_URL}`)) {
+        const secretWord = lowerCaseData.split(`${POAP_BASE_URL}`)?.[1];
         return getPoapAndOpenSheetWithSecretWord(secretWord, true);
       }
 
-      if (data.startsWith(`https://collectors.poap.xyz/mint/`)) {
-        const qrHash = data.split('https://collectors.poap.xyz/mint/')?.[1];
+      if (lowerCaseData.startsWith(`https://collectors.poap.xyz/mint/`)) {
+        const qrHash = lowerCaseData.split(
+          'https://collectors.poap.xyz/mint/'
+        )?.[1];
         return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
-      if (data.startsWith(`https://poap.xyz/claim/`)) {
-        const qrHash = data.split('https://poap.xyz/claim/')?.[1];
+      if (lowerCaseData.startsWith(`https://poap.xyz/claim/`)) {
+        const qrHash = lowerCaseData.split('https://poap.xyz/claim/')?.[1];
         return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
-      if (data.startsWith(`https://app.poap.xyz/claim/`)) {
-        const qrHash = data.split('https://app.poap.xyz/claim/')?.[1];
+      if (lowerCaseData.startsWith(`https://app.poap.xyz/claim/`)) {
+        const qrHash = lowerCaseData.split('https://app.poap.xyz/claim/')?.[1];
         return getPoapAndOpenSheetWithQRHash(qrHash, true);
       }
 
-      if (data.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
-        const secretWordOrQrHash = data.split(
+      if (lowerCaseData.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
+        const secretWordOrQrHash = lowerCaseData.split(
           `${RAINBOW_PROFILES_BASE_URL}/poap/`
         )?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
@@ -218,8 +222,8 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
-      if (data.startsWith(`rainbow://poap`)) {
-        const secretWordOrQrHash = data.split(`rainbow://poap/`)?.[1];
+      if (lowerCaseData.startsWith(`rainbow://poap`)) {
+        const secretWordOrQrHash = lowerCaseData.split(`rainbow://poap/`)?.[1];
         logger.log('onScan: handling poap scan', { secretWordOrQrHash });
         await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
         return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);

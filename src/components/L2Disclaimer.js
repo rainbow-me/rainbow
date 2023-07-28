@@ -25,6 +25,7 @@ const L2Disclaimer = ({
   sending,
   symbol,
   verb,
+  forceDarkMode,
 }) => {
   const localColors = isNft ? darkModeThemeColors : colors;
   const radialGradientProps = {
@@ -62,6 +63,7 @@ const L2Disclaimer = ({
                 assetType={assetType}
                 position="relative"
                 size="small"
+                forceDark={forceDarkMode}
               />
             ) : (
               <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />

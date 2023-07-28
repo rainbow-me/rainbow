@@ -20,6 +20,10 @@ import ZoraBadge from '../../assets/badges/zoraBadge.png';
 import ZoraBadgeDark from '../../assets/badges/zoraBadgeDark.png';
 import ZoraBadgeLarge from '../../assets/badges/zoraBadgeLarge.png';
 import ZoraBadgeLargeDark from '../../assets/badges/zoraBadgeLargeDark.png';
+import BaseBadge from '../../assets/badges/baseBadge.png';
+import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
+import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
+import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
@@ -52,9 +56,12 @@ export default function ChainBadge({
   marginBottom = 0,
   position = 'absolute',
   size = 'small',
+  forceDark = false,
 }) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode: isDarkModeGlobal } = useTheme();
   const { containerSize, iconSize } = ChainBadgeSizeConfigs[size];
+
+  const isDarkMode = forceDark ? true : isDarkModeGlobal;
 
   const source = useMemo(() => {
     let val = null;
@@ -69,6 +76,8 @@ export default function ChainBadge({
         val = isDarkMode ? BscBadgeLargeDark : BscBadgeLarge;
       } else if (assetType === AssetType.zora) {
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
+      } else if (assetType === AssetType.base) {
+        val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
       }
     } else {
       if (assetType === AssetType.arbitrum) {
@@ -81,6 +90,8 @@ export default function ChainBadge({
         val = isDarkMode ? BscBadgeDark : BscBadge;
       } else if (assetType === AssetType.zora) {
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
+      } else if (assetType === AssetType.base) {
+        val = isDarkMode ? BaseBadgeDark : BaseBadge;
       }
     }
     return val;

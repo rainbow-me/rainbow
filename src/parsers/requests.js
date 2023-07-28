@@ -29,7 +29,7 @@ export const getRequestDisplayDetails = (
     payload.method === SEND_TRANSACTION ||
     payload.method === SIGN_TRANSACTION
   ) {
-    const transaction = payload?.params?.[0] ?? null;
+    const transaction = Object.assign(payload?.params?.[0] ?? null);
 
     // Backwards compatibility with param name change
     if (transaction.gas && !transaction.gasLimit) {
