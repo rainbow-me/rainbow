@@ -3281,10 +3281,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.4.0.tgz#ba37d4dc8d3279433d411707de038620e94f844d"
-  integrity sha512-Cq5cunQNPe4F88z76UFqLe2hzKX8A7uWTkZ/M/FmEgkHAWNcFzaT4wa39L6Wls+Wbu30jX9QAtGk26lm9Uf4kQ==
+"@rainbow-me/swaps@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.5.0.tgz#7823fc9b052ce8af730c7685b6839e7da309dbda"
+  integrity sha512-MU9YnFM+KU3esjtDYW6Ts/uESN+Zb8WhkhM/o5L5/HEhsDYyNEpl5KhI6/sxkehEH8eE2POeFSzNDX76OU98Ew==
   dependencies:
     "@ethersproject/abi" "5.7.0"
     "@ethersproject/abstract-signer" "5.7.0"
