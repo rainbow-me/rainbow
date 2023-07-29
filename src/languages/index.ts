@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import english from './_english.json';
 import french from './_french.json';
+import japanese from './_japanese.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
 
@@ -13,6 +14,7 @@ export type Translation = typeof english;
 export enum Language {
   English = 'en',
   French = 'fr',
+  Japanese = 'jp',
 }
 
 export const resources: {
@@ -20,6 +22,7 @@ export const resources: {
 } = {
   en: english,
   fr: french,
+  jp: japanese,
 };
 
 export const supportedLanguages: {
@@ -27,6 +30,7 @@ export const supportedLanguages: {
 } = {
   en: 'English',
   fr: 'French',
+  jp: 'Japanese',
 };
 
 // Configure languages
