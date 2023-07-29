@@ -34,7 +34,7 @@ export const supportedLanguages: {
 };
 
 // Configure languages
-lang.defaultLocale = Language.English;
+lang.defaultLocale = Language.Japanese;
 lang.locale = Language.English;
 lang.fallbacks = true;
 lang.translations = Object.assign(
