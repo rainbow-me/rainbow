@@ -83,8 +83,11 @@ export const parseNewTransaction = async (
     type,
   });
 
+  const nftName =
+    type === TransactionType.authorize ? nft?.collection.name : nft?.name;
+
   const description = getDescription({
-    name: nft ? nft.name : asset?.name ?? null,
+    name: nftName ?? asset?.name ?? null,
     status,
     type,
   });

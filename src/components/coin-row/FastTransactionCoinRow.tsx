@@ -30,6 +30,7 @@ const BottomRow = React.memo(function BottomRow({
     status === TransactionStatusTypes.received ||
     status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
+  const isSold = status === TransactionStatusTypes.sold;
 
   const isOutgoingSwap = status === TransactionStatusTypes.swapped;
   const isIncomingSwap =
@@ -44,6 +45,7 @@ const BottomRow = React.memo(function BottomRow({
   if (isSent) balanceTextColor = colors.dark;
   if (isIncomingSwap) balanceTextColor = colors.swapPurple;
   if (isOutgoingSwap) balanceTextColor = colors.dark;
+  if (isSold) balanceTextColor = colors.green;
 
   const balanceText = nativeDisplay
     ? [isFailed || isSent ? '-' : null, nativeDisplay].filter(Boolean).join(' ')
@@ -129,7 +131,12 @@ export default React.memo(function TransactionCoinRow({
                     height: 40,
                     borderRadius: 20,
                   }}
-                  source={{ uri: item.nft.lowResUrl }}
+                  source={{
+                    uri:
+                      item.type === TransactionTypes.authorize
+                        ? item.nft.collection.image_url
+                        : item.nft.lowResUrl,
+                  }}
                 />
               </View>
             </View>

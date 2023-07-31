@@ -48,6 +48,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
+import { getNetworkObj } from '@/networks';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -92,7 +93,7 @@ export function NFTSingleOfferSheet() {
 
   const { offer } = params as { offer: NftOffer };
 
-  const [tx, setTx] = useState(null);
+  const [txs, setTxs] = useState<string[]>([]);
   const [height, setHeight] = useState(0);
 
   const nft = useMemo(() => {
@@ -103,29 +104,42 @@ export function NFTSingleOfferSheet() {
     }
   }, [nfts, offer.nft.uniqueId]);
 
-  useEffect(() => {
-    const tx = {
-      data:
-        '0xf2d12b12000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000009600000000000000000000000000000000000000000000000000000000000000a600000000000000000000000002dc92aa78358310a87276cf6f893f48e896d8fc50000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000004e000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000003a0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000061e9c01f1b0f88467b5a703bae144301c3ee99e6000000000000000000000000000000e7ec00e7b300774b00001314b8610022b80000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000022000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000064c0bdf70000000000000000000000000000000000000000000000000000000064e5a7f7000000000000000000000000000000000000000000000000000000000000000072db8c0b0000000000000000000000000000000000000000ffbdd089a6fa30e80000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000aa87bee538000000000000000000000000000000000000000000000000000000aa87bee53800000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000f91523bc0ffa151abd971f1b11d2567d4167db3e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000061e9c01f1b0f88467b5a703bae144301c3ee99e60000000000000000000000000000000000000000000000000000000000000040380b05041a73f542755de2f51c684153f3eec08bbedc8ef4f352083a7e3730dc3cee1d464c0f5d185d81c8bce04cd2005803b9af558c536cbd2f7230d7dd7294000000000000000000000000000000000000000000000000000000000000007e002dc92aa78358310a87276cf6f893f48e896d8fc50000000064c164169fc29248f509748dc8dd2f60a756ed4e0e71348816fa838b2b16eff62781cf9edf9e39c421993bef221870f38ca3d09224ceb89121f65d8fd215257ac27c7782000000000000000000000000000000000000000000000000000000000000001cb6000000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000003a000000000000000000000000000000000000000000000000000000000000003c00000000000000000000000002dc92aa78358310a87276cf6f893f48e896d8fc5000000000000000000000000000000e7ec00e7b300774b00001314b8610022b80000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000022000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000064c0bdf70000000000000000000000000000000000000000000000000000000064e5a7f700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006af8bc8beeee58e10000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000f91523bc0ffa151abd971f1b11d2567d4167db3e0000000000000000000000000000000000000000000000000000000000001cb6000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000aa87bee538000000000000000000000000000000000000000000000000000000aa87bee5380000000000000000000000000002dc92aa78358310a87276cf6f893f48e896d8fc500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001cb600000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000001d4da48b',
-      to: '0x00000000000000adc04c56bf30ac9d3c0aaf14dc',
-      from: '0x2dc92aa78358310a87276cf6f893f48e896d8fc5',
-      hash:
-        '0x077201947b05329dadc5aa62776467ca887f4753c55b1b8ef38a9c66a564c5a2',
-      network: Network.mainnet,
-      // description: `${offer.nft.name} #${offer.nft.tokenId}`,
-      amount: 1,
-      asset: {},
-      nonce: null,
-      nft,
-      type: TransactionType.sell,
-      title: 'Test 1',
-      description: 'Test 2',
-      status: TransactionStatus.selling,
-    };
-    console.log(tx);
-    // setTx(tx);
-    dispatch(dataAddNewTransaction(tx));
-  }, [dispatch, nft]);
+  // useEffect(() => {
+  //   const tx = {
+  //     to: '0x00000000000000adc04c56bf30ac9d3c0aaf14dc',
+  //     from: '0x2dc92aa78358310a87276cf6f893f48e896d8fc5',
+  //     hash:
+  //       '0x077201947b05329dadc5aa62776467ca887f4753c55b1b8ef38a9c66a564c5a2',
+  //     network: Network.mainnet,
+  //     nft,
+  //     type: TransactionType.authorize,
+  //     status: TransactionStatus.approving,
+  //   };
+  //   const tx = {
+  //     to: '0x00000000000000adc04c56bf30ac9d3c0aaf14dc', // x?.data?.to
+  //     from: '0x2dc92aa78358310a87276cf6f893f48e896d8fc5', // x?.data?.from
+  //     hash:
+  //       '0x077201947b05329dadc5aa62776467ca887f4753c55b1b8ef38a9c66a564c5a2', // x?.txHash
+  //     network: offer.network,
+  //     amount: 1,
+  //     asset: {
+  //       address: offer.paymentToken.address,
+  //       symbol: offer.paymentToken.symbol,
+  //     },
+  //     nft,
+  //     type: TransactionType.sell,
+  //     status: TransactionStatus.selling,
+  //   };
+  //   console.log(tx);
+  //   // setTx(tx);
+  //   dispatch(dataAddNewTransaction(tx));
+  // }, [
+  //   dispatch,
+  //   nft,
+  //   offer.network,
+  //   offer.paymentToken.address,
+  //   offer.paymentToken.symbol,
+  // ]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -588,7 +602,9 @@ export function NFTSingleOfferSheet() {
                       const reservoirSigner = createWalletClient({
                         account,
                         chain: mainnet,
-                        transport: http(),
+                        transport: http(
+                          getNetworkObj(offer.network as Network).rpc
+                        ),
                       });
                       console.log('HELLO???');
                       console.log('test');
@@ -658,39 +674,82 @@ export function NFTSingleOfferSheet() {
                           //     }
                           //   })
                           // );
+                          steps.forEach(step =>
+                            step.items?.forEach(item => {
+                              if (
+                                item.txHash &&
+                                !txs.includes(item.txHash) &&
+                                item.status === 'incomplete'
+                              ) {
+                                if (step.id === 'sale') {
+                                  console.log('SALE');
+                                  setTxs(prev => [...prev, item.txHash!]);
+                                  const tx = {
+                                    to: item.data?.to,
+                                    from: item.data?.from,
+                                    hash: item.txHash,
+                                    network: offer.network,
+                                    amount: offer.netAmount.decimal,
+                                    asset: {
+                                      address: offer.paymentToken.address,
+                                      symbol: offer.paymentToken.symbol,
+                                    },
+                                    nft,
+                                    type: TransactionType.sell,
+                                    status: TransactionStatus.selling,
+                                  };
+                                  dispatch(dataAddNewTransaction(tx));
+                                } else if (step.id === 'nft-approval') {
+                                  console.log('APPROVAL');
+                                  setTxs(prev => [...prev, item.txHash!]);
+                                  const tx = {
+                                    to: item.data?.to,
+                                    from: item.data?.from,
+                                    hash: item.txHash,
+                                    network: offer.network,
+                                    nft,
+                                    type: TransactionType.authorize,
+                                    status: TransactionStatus.approving,
+                                  };
+                                  dispatch(dataAddNewTransaction(tx));
+                                }
+                              }
+                            })
+                          );
                           console.log('ON PROGRESS');
-                          if (!tx) {
-                            console.log('MAKING TX');
-                            console.log('steps');
-                            console.log(steps);
-                            const step = steps.find(step => step.id === 'sale');
-                            const item = step?.items?.find(
-                              item =>
-                                item.txHash && item.status === 'incomplete'
-                            );
-                            console.log('item');
-                            console.log(item);
-                            console.log('order id');
-                            console.log(item?.orderIds);
-                            if (item) {
-                              console.log('hello');
-                              const tx = {
-                                data: item.data.data,
-                                to: item.data.to,
-                                from: item.data.from,
-                                hash: item.txHash!,
-                                network: Network.mainnet,
-                                // description: `${offer.nft.name} #${offer.nft.tokenId}`,
-                                amount: null,
-                                asset: nft,
-                                nonce: null,
-                                status: TransactionStatus.selling,
-                              };
-                              console.log(tx);
-                              setTx(tx);
-                              dispatch(dataAddNewTransaction(tx));
-                            }
-                          }
+                          // if (!tx) {
+                          //   console.log('MAKING TX');
+                          //   console.log('steps');
+                          //   console.log(steps);
+                          //   const step = steps.find(step => step.id === 'sale');
+                          //   const item = step?.items?.find(
+                          //     item =>
+                          //       item.txHash && item.status === 'incomplete'
+                          //   );
+                          //   console.log('item');
+                          //   console.log(item);
+                          //   console.log('order id');
+                          //   console.log(item?.orderIds);
+                          //   if (item) {
+                          //     console.log('hello');
+                          //     console.log(item.transfersData);
+                          //     const tx = {
+                          //       data: item.data.data,
+                          //       to: item.data.to,
+                          //       from: item.data.from,
+                          //       hash: item.txHash!,
+                          //       network: Network.mainnet,
+                          //       // description: `${offer.nft.name} #${offer.nft.tokenId}`,
+                          //       amount: null,
+                          //       asset: nft,
+                          //       nonce: null,
+                          //       status: TransactionStatus.selling,
+                          //     };
+                          //     console.log(tx);
+                          //     setTx(tx);
+                          //     dispatch(dataAddNewTransaction(tx));
+                          //   }
+                          // }
                           navigate(Routes.PROFILE_SCREEN);
                           // console.log('WHYY');
                           // console.log('STEPS', steps);
