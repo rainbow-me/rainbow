@@ -5,15 +5,16 @@ import { Text } from '../text';
 import styled from '@/styled-thing';
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
+  align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
-  letterSpacing: 'roundedTight',
+  letterSpacing: shareButton ? 'zero' : 'roundedTight',
   lineHeight: 30,
-  size: 'lmedium',
+  size: shareButton ? 'smedium' : 'lmedium',
   weight: shareButton ? 'heavy' : 'bold',
 }))(({ shareButton }) => ({
   position: 'absolute',
   ...(shareButton ? { width: '100%' } : {}),
-  top: android ? -15 : -15.5,
+  top: -15,
 }));
 
 const CoinDividerButtonLabel = ({ align, isVisible, label, shareButton }) => (

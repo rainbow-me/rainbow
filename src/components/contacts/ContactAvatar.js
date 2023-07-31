@@ -12,11 +12,11 @@ const buildShadows = (color, size, darkMode, colors) => {
   // TODO: remove `legacySmall` size once rainbow home screen revamp is released
   if (size === 'small' || size === 'legacySmall') {
     return [
-      [0, 3, 5, colors.shadow, 0.14],
+      [0, 2, 6, colors.shadow, 0.02],
       [
         0,
-        6,
-        10,
+        4,
+        12,
         darkMode
           ? darkModeThemeColors.shadow
           : darkModeThemeColors.avatarBackgrounds[color] || color,

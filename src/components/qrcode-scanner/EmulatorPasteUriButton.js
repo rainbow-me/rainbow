@@ -1,12 +1,16 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { useIsEmulator } from 'react-native-device-info';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Prompt } from '../alerts';
 import { Button } from '../buttons';
-import { useWalletConnectConnections } from '@/hooks';
+import { Box } from '@/design-system';
+import { useDimensions, useWalletConnectConnections } from '@/hooks';
 
 export default function EmulatorPasteUriButton() {
+  const { height: deviceHeight } = useDimensions();
   const { result: isEmulator } = useIsEmulator();
+  const { top: topInset } = useSafeAreaInsets();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const { colors } = useTheme();
 
@@ -25,14 +29,24 @@ export default function EmulatorPasteUriButton() {
   }, [handlePastedUri]);
 
   return isEmulator ? (
-    <Button
-      backgroundColor={colors.white}
-      color={colors.sendScreen.brightBlue}
-      onPress={handlePressPasteSessionUri}
-      size="small"
-      type="pill"
+    <Box
+      height={{ custom: deviceHeight - topInset * 1.5 }}
+      justifyContent="center"
+      position="absolute"
+      top="0px"
+      width="full"
     >
-      {lang.t('walletconnect.paste_uri.button')}
-    </Button>
+      <Button
+        alignSelf="center"
+        backgroundColor={colors.white}
+        color={colors.sendScreen.brightBlue}
+        onPress={handlePressPasteSessionUri}
+        position="absolute"
+        size="small"
+        type="pill"
+      >
+        {lang.t('walletconnect.paste_uri.button')}
+      </Button>
+    </Box>
   ) : null;
 }

@@ -38,7 +38,7 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     width: layoutSize ?? size,
     ...position.coverAsObject,
     ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
-    backgroundColor: showImage ? colors.white : colors.transparent,
+    backgroundColor: showImage ? colors.surfacePrimary : colors.transparent,
     borderRadius: size / 2,
     overflow: 'visible',
   })

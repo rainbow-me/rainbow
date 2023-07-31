@@ -1,24 +1,30 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@/design-system';
+import { useTheme } from '@/theme';
 
 const sx = StyleSheet.create({
   activityListHeader: {
-    paddingHorizontal: 19,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+    paddingTop: 4,
   },
 });
 
-const ActivityListHeader = ({ title }: { title: string }) => (
-  <View style={sx.activityListHeader}>
-    <Text
-      numberOfLines={1}
-      color="primary (Deprecated)"
-      size="20px / 24px (Deprecated)"
-      weight="bold"
+const ActivityListHeader = ({ title }: { title: string }) => {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={[
+        sx.activityListHeader,
+        { backgroundColor: colors.surfacePrimary },
+      ]}
     >
-      {title}
-    </Text>
-  </View>
-);
+      <Text numberOfLines={1} color="label" size="20pt" weight="heavy">
+        {title}
+      </Text>
+    </View>
+  );
+};
 
 export default React.memo(ActivityListHeader);

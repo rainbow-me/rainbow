@@ -1,6 +1,14 @@
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  Column,
+  Columns,
+  Inline,
+  Stack,
+  Text,
+} from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers';
 import { useAccountAsset, useDimensions } from '@/hooks';
@@ -108,19 +116,32 @@ export default React.memo(function ExchangeTokenRow({
                 )}
               </Stack>
             </Column>
+            {showBalance && (
+              <Column width="content">
+                <Bleed right="10px">
+                  <Box
+                    background="fillTertiary"
+                    padding="8px"
+                    borderRadius={15}
+                  >
+                    <Text
+                      align="center"
+                      color="labelTertiary"
+                      size="15pt"
+                      weight="semibold"
+                    >
+                      {item?.native?.balance?.display ??
+                        `${nativeCurrencySymbol}0.00`}
+                    </Text>
+                  </Box>
+                </Bleed>
+              </Column>
+            )}
           </Columns>
         </Box>
       </Column>
       <Column width="content">
         <Box paddingRight="20px">
-          {showBalance && (
-            <Box background="fillSecondary" padding="8px" borderRadius={15}>
-              <Text size="15pt" weight="medium" color="labelSecondary">
-                {item?.native?.balance?.display ??
-                  `${nativeCurrencySymbol}0.00`}
-              </Text>
-            </Box>
-          )}
           {!showBalance && (
             <Inline alignVertical="center" space="12px">
               {isInfoButtonVisible && (

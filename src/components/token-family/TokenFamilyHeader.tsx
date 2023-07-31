@@ -31,7 +31,7 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     height: TokenFamilyHeaderHeight,
     justifyContent: 'space-between',
-    padding: 19,
+    padding: 20,
     paddingRight: 14,
     width: '100%',
   },
@@ -45,6 +45,7 @@ type Props = {
   childrenAmount?: number;
   emoji?: string;
   familyImage?: string;
+  iconStyle?: any;
   isOpen?: boolean;
   onPress?: () => void;
   testID?: string;
@@ -56,6 +57,7 @@ const TokenFamilyHeader = ({
   childrenAmount,
   emoji,
   familyImage,
+  iconStyle,
   isOpen,
   onPress,
   testID,
@@ -135,14 +137,7 @@ const TokenFamilyHeader = ({
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.05} testID={testID}>
-      <View
-        style={[
-          sx.content,
-          {
-            backgroundColor: colors.white,
-          },
-        ]}
-      >
+      <View style={sx.content}>
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
             <Text
@@ -156,6 +151,7 @@ const TokenFamilyHeader = ({
             <TokenFamilyHeaderIcon
               familyImage={familyImage}
               familyName={title}
+              style={iconStyle}
               theme={theme}
             />
           )}

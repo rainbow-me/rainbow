@@ -86,9 +86,9 @@ const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
   }));
 
   return (
-    <View width={isSmallBalancesOpen ? 116 : 90.5}>
+    <View width={isSmallBalancesOpen ? 118 : 92.5}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
-        <View paddingHorizontal={19} paddingVertical={5}>
+        <View paddingHorizontal={20} paddingVertical={5}>
           <Content style={wrapperStyle}>
             <LabelText style={allLabelStyle}>All</LabelText>
             <LabelText style={lessLabelStyle}>Less</LabelText>

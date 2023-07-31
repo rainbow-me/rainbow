@@ -72,6 +72,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
         <Centered flex={1}>
           <ExchangeAssetList
             footerSpacer={footerSpacer}
+            fromDiscover={fromDiscover}
             itemProps={itemProps}
             items={listItems}
             keyboardDismissMode={keyboardDismissMode}

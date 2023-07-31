@@ -5,7 +5,6 @@ import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ProfileNameRow } from '../asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import { useRecyclerListViewRef } from '../asset-list/RecyclerAssetList';
 
 type NavbarProps = {
@@ -14,14 +13,16 @@ type NavbarProps = {
   rightComponent?: React.ReactElement | null;
   testID?: string;
   title?: string;
+  titleComponent?: React.ReactElement | null;
 };
 
-export const navbarHeight = 48;
+export const navbarHeight = 60;
 
 export function Navbar({
   hasStatusBarInset = false,
   leftComponent = <Box />,
   rightComponent = <Box />,
+  titleComponent = <Box />,
   testID,
   title,
 }: NavbarProps) {
@@ -29,17 +30,22 @@ export function Navbar({
   const { ref } = useRecyclerListViewRef();
 
   return (
-    <Box testID={testID} style={{backgroundColor: 'transparent'}}>
-      {hasStatusBarInset && <Box style={{backgroundColor: 'transparent'}} height={{ custom: topInset }} />}
+    <Box testID={testID} style={{ backgroundColor: 'transparent' }}>
+      {hasStatusBarInset && (
+        <Box
+          style={{ backgroundColor: 'transparent' }}
+          height={{ custom: topInset }}
+        />
+      )}
       <Box
+        alignItems="center"
         height={{ custom: navbarHeight }}
         justifyContent="center"
-        alignItems="center"
-        style={{backgroundColor: 'transparent'}}
+        style={{ backgroundColor: 'transparent' }}
       >
         <Cover alignVertical="center" alignHorizontal="justify">
-          <Box width="full" style={{backgroundColor: 'transparent'}}>
-            <Inset horizontal="19px (Deprecated)">
+          <Box style={{ backgroundColor: 'transparent' }} width="full">
+            <Inset horizontal="20px">
               <Inline alignHorizontal="justify" alignVertical="center">
                 {leftComponent}
                 {rightComponent}
@@ -47,12 +53,10 @@ export function Navbar({
             </Inset>
           </Box>
         </Cover>
-        <Inset top="1px (Deprecated)">
-        <Text color="label" size="20pt" weight="heavy">
-            {title}
-          </Text>
-      
-        </Inset>
+        <Text align="center" color="label" size="20pt" weight="heavy">
+          {title}
+        </Text>
+        {titleComponent}
       </Box>
     </Box>
   );

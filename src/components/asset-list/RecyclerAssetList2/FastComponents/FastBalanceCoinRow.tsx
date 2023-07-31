@@ -38,7 +38,7 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
       0,
       4,
       12,
-      theme.isDarkMode ? colors.shadow : colors.appleBlue,
+      theme.isDarkMode ? theme.colors.shadow : theme.colors.appleBlue,
       0.4
     ),
   };
@@ -51,7 +51,9 @@ const CoinCheckButton = React.memo(function CoinCheckButton({
             <View
               style={[
                 sx.circleOutline,
-                { borderColor: colors.alpha(colors.blueGreyDark, 0.12) },
+                {
+                  borderColor: colors.alpha(theme.colors.blueGreyDark, 0.12),
+                },
               ]}
             />
           )}
@@ -153,7 +155,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 <View style={sx.textWrapper}>
                   <Text
                     numberOfLines={1}
-                    color="primary (Deprecated)"
+                    color="label"
                     size="16px / 22px (Deprecated)"
                     weight="semibold"
                   >
@@ -264,7 +266,7 @@ const sx = StyleSheet.create({
   },
   checkboxContainer: {
     alignSelf: 'center',
-    marginRight: -4,
+    marginRight: -3,
     width: 51,
   },
   checkboxInnerContainer: {
@@ -279,25 +281,25 @@ const sx = StyleSheet.create({
     ...borders.buildCircleAsObject(22),
     ...padding.object(4.5),
     backgroundColor: colors.appleBlue,
-    left: 19,
+    left: 20,
     position: 'absolute',
   },
   circleOutline: {
     ...borders.buildCircleAsObject(22),
     borderWidth: 1.5,
-    left: 19,
+    left: 20,
     position: 'absolute',
   },
   coinIconIndicator: {
-    left: 19,
+    left: 20,
     position: 'absolute',
   },
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginRight: 19,
+    marginRight: 20,
     overflow: 'visible',
-    paddingLeft: 9,
+    paddingLeft: 10,
   },
   flex: {
     flex: 1,
@@ -324,6 +326,6 @@ const sx = StyleSheet.create({
   },
   textWrapper: {
     flex: 1,
-    paddingRight: 19,
+    paddingRight: 20,
   },
 });

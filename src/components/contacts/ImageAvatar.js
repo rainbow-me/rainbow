@@ -6,13 +6,13 @@ import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
 const buildSmallShadows = (color, colors) => [
-  [0, 3, 5, colors.shadow, 0.14],
-  [0, 6, 10, colors.avatarBackgrounds[color] || color, 0.2],
+  [0, 2, 6, colors.shadow, 0.02],
+  [0, 4, 12, colors.avatarBackgrounds[color] || color, 0.2],
 ];
 
 const sizeConfigs = (colors, isDarkMode) => ({
   header: {
-    dimensions: 34,
+    dimensions: 36,
     textSize: 'large',
   },
   large: {
@@ -93,7 +93,7 @@ const ImageAvatar = ({
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.white}
+      backgroundColor={size === 'header' ? colors.surfacePrimary : colors.white}
       shadows={shadows}
     >
       <Centered flex={1}>

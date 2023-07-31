@@ -443,10 +443,7 @@ export const fetchCoinAddresses = async (
 };
 
 export const fetchContenthash = async (ensName: string) => {
-  const provider = await getProviderForNetwork();
-  const resolver = await provider.getResolver(ensName);
-  const contenthash = await resolver?.getContentHash();
-  return contenthash;
+  return undefined;
 };
 
 export const fetchOwner = async (ensName: string) => {

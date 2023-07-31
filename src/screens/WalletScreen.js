@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import lang from 'i18n-js';
 import { compact, isEmpty, keys } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { InteractionManager, PressableProps } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
@@ -12,8 +12,8 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { Box, Inline } from '@/design-system';
+import { navbarHeight } from '@/components/navbar/Navbar';
+import { Box } from '@/design-system';
 import {
   useAccountEmptyState,
   useAccountProfile,
@@ -54,7 +54,7 @@ export const addressCopiedToastAtom = atom({
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
-  pointerEvents: isVisible ? 'none' : 'auto',
+  pointerEvents: isVisible ? 'none' : 'box-none',
 }))({
   elevation: 1,
   zIndex: 1,
@@ -326,10 +326,6 @@ export default function WalletScreen() {
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
 
-  const handlePressQRScanner = useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
   const handlePressDiscover = useCallback(() => {
     navigate(Routes.DISCOVER_SCREEN);
   }, [navigate]);
@@ -359,42 +355,36 @@ export default function WalletScreen() {
   }
 
   return (
-    <WalletPage testID="wallet-screen">
-      <HeaderOpacityToggler isVisible={isCoinListEdited}>
-        <Navbar
-          hasStatusBarInset
-          leftComponent={
-            <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
-              <Navbar.TextIcon color={accentColor} icon="􀎹" />
-            </Navbar.Item>
-          }
-          rightComponent={
-            <Navbar.Item color={accentColor} onPress={handlePressQRScanner}>
-              <Navbar.TextIcon color={accentColor} icon="􀍠" />
-            </Navbar.Item>
-          }
-        />
-      </HeaderOpacityToggler>
-      <Box
-        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
-      >
-        <AssetList
-          disableRefreshControl={isLoadingAssets}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
-          isLoading={android && isLoadingAssets}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
-      </Box>
-      <ToastPositionContainer>
-        <Toast
-          isVisible={isAddressCopiedToastActive}
-          text="􀁣 Address Copied"
-          testID="address-copied-toast"
-        />
-      </ToastPositionContainer>
-    </WalletPage>
+    <View
+      style={{
+        backgroundColor: colors.trueBlack,
+        height: '100%',
+        width: '100%',
+      }}
+    >
+      <WalletPage testID="wallet-screen">
+        <Box
+          style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
+        >
+          <AssetList
+            accentColor={accentColor}
+            disableRefreshControl={isLoadingAssets}
+            isEmpty={isAccountEmpty || !!params?.emptyWallet}
+            isLoading={android && isLoadingAssets}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        </Box>
+        <ToastPositionContainer>
+          <Toast
+            isVisible={isAddressCopiedToastActive}
+            text="􀁣 Address Copied"
+            testID="address-copied-toast"
+          />
+        </ToastPositionContainer>
+      </WalletPage>
+    </View>
   );
 }
 /*

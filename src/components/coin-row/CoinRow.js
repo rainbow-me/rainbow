@@ -15,7 +15,7 @@ const Container = styled(Row).attrs({
   grow: 0,
   shrink: 1,
 })({
-  ...padding.object(CoinRowPaddingTop, 19, CoinRowPaddingBottom),
+  ...padding.object(CoinRowPaddingTop, 20, CoinRowPaddingBottom),
   width: '100%',
 });
 

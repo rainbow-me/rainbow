@@ -178,6 +178,7 @@ export type BackgroundColor =
   | 'surfaceSecondaryElevated'
   | 'fill'
   | 'fillSecondary'
+  | 'fillTertiary'
   | 'blue'
   | 'green'
   | 'red'
@@ -216,7 +217,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: '#191A1C',
       mode: 'dark',
     },
   },
@@ -226,7 +227,7 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.white10,
+      color: '#1B1C1E',
       mode: 'dark',
     },
   },
@@ -236,27 +237,37 @@ export const backgroundColors: Record<
       mode: 'light',
     },
     dark: {
-      color: globalColors.blueGrey100,
+      color: '#242529',
       mode: 'dark',
     },
   },
   'fill': {
     light: {
-      color: globalColors.grey30,
+      color: 'rgba(9, 17, 31, 0.1)',
       mode: 'light',
     },
     dark: {
-      color: globalColors.white30,
+      color: 'rgba(245, 248, 255, 0.16)',
       mode: 'dark',
     },
   },
   'fillSecondary': {
     light: {
-      color: globalColors.grey20,
+      color: 'rgba(9, 17, 31, 0.05)',
       mode: 'light',
     },
     dark: {
-      color: globalColors.white20,
+      color: 'rgba(245, 248, 255, 0.12)',
+      mode: 'dark',
+    },
+  },
+  'fillTertiary': {
+    light: {
+      color: 'rgba(9, 17, 31, 0.04)',
+      mode: 'light',
+    },
+    dark: {
+      color: 'rgba(245, 248, 255, 0.06)',
       mode: 'dark',
     },
   },
@@ -398,6 +409,7 @@ export type ForegroundColor =
   | 'yellow'
   | 'fill'
   | 'fillSecondary'
+  | 'fillTertiary'
   | 'scrim'
   | 'scrimSecondary'
   | 'scrimTertiary'
@@ -475,6 +487,7 @@ export const foregroundColors: Record<
   'yellow': selectBackgroundAsForeground('yellow'),
   'fill': selectBackgroundAsForeground('fill'),
   'fillSecondary': selectBackgroundAsForeground('fillSecondary'),
+  'fillTertiary': selectBackgroundAsForeground('fillTertiary'),
   'scrim': {
     light: 'rgba(0, 0, 0, 0.2)',
     dark: 'rgba(0, 0, 0, 0.4)',

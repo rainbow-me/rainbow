@@ -57,7 +57,6 @@ export default React.memo(function TokenFamilyWrap({
   return (
     <View
       style={{
-        backgroundColor: theme.colors.white,
         overflow: 'hidden',
         paddingTop: isFirst ? TokenFamilyWrapPaddingTop : 0,
       }}

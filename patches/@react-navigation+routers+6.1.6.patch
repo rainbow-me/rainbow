@@ -1,8 +1,8 @@
 diff --git a/node_modules/@react-navigation/routers/src/StackRouter.tsx b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-index 0174491..426cd2a 100644
+index eaa43a0..b2ed152 100644
 --- a/node_modules/@react-navigation/routers/src/StackRouter.tsx
 +++ b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-@@ -281,6 +281,33 @@ export default function StackRouter(options: StackRouterOptions) {
+@@ -314,6 +314,33 @@ export default function StackRouter(options: StackRouterOptions) {
  
            return null;
  

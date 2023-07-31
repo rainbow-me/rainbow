@@ -18,6 +18,7 @@ export default React.memo(function WrappedTokenFamilyHeader({
   theme,
   testID,
 }: Props) {
+  const { colors } = theme;
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
 
@@ -29,6 +30,7 @@ export default React.memo(function WrappedTokenFamilyHeader({
 
   return (
     <TokenFamilyHeader
+      iconStyle={{ backgroundColor: colors.surfacePrimary }}
       childrenAmount={total}
       familyImage={image}
       isOpen={isFamilyOpen}

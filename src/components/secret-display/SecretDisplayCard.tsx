@@ -79,7 +79,7 @@ export default function SecretDisplayCard({
     <Centered>
       <Inset vertical="10px">
         <Box
-          background="card (Deprecated)"
+          background="surfaceSecondaryElevated"
           borderRadius={25}
           height={{ custom: 240 }}
           paddingHorizontal="30px (Deprecated)"

@@ -27,12 +27,16 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@/utils';
+import logger from 'logger';
 
 const containerStyles = {
-  paddingLeft: 19,
+  paddingBottom: 12,
+  paddingLeft: 20,
+  paddingRight: 20,
+  paddingTop: 12,
 };
 
-export const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
+export const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 12;
 
 const contentStyles = android
   ? {
@@ -171,7 +175,6 @@ export default function TransactionCoinRow({ item, ...props }) {
               navigate(Routes.MODAL_SCREEN, {
                 address: contactAddress,
                 asset: item,
-                color: contactColor,
                 contact,
                 type: 'contact_profile',
               });
@@ -207,6 +210,8 @@ export default function TransactionCoinRow({ item, ...props }) {
       state.data.accountAssetsData?.[`${item.address}_${item.network}`]
         ?.mainnet_address
   );
+
+  logger.log('coinRowData = ' + JSON.stringify(item));
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

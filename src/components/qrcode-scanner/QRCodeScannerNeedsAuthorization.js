@@ -5,7 +5,6 @@ import { AppState, Linking } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 import { Text } from '../text';
 import { delay } from '@/helpers/utilities';
 import styled from '@/styled-thing';
@@ -13,7 +12,7 @@ import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
 
 const Button = styled(ButtonPressAnimation).attrs({
-  scaleTo: 1.1,
+  scaleTo: 1.08,
 })({
   ...padding.object(20),
   marginTop: 22,

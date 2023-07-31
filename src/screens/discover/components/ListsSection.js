@@ -30,12 +30,15 @@ import { DefaultTokenLists } from '@/references';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})(({ selected, theme: { colors } }) => ({
+})(({ selected, theme: { colors, isDarkMode } }) => ({
   marginRight: 16,
   paddingTop: ios ? 6.5 : 4.5,
 
   ...(selected && {
-    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+    backgroundColor: colors.alpha(
+      colors.blueGreyDark,
+      isDarkMode ? 0.12 : 0.06
+    ),
     borderRadius: 12,
     height: 30,
     paddingHorizontal: 8,
@@ -275,7 +278,7 @@ export default function ListSection() {
             showsHorizontalScrollIndicator={false}
             testID={`lists-section-${selectedList}`}
           />
-          {IS_TESTING !== 'true' && <EdgeFade />}
+          {IS_TESTING !== 'true' && <EdgeFade color={colors.surfacePrimary} />}
         </Column>
         <Column>
           {!ready && IS_TESTING !== 'true' ? (

@@ -1,11 +1,8 @@
 import { useRoute } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackCardInterpolationProps,
-} from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Animated, InteractionManager } from 'react-native';
+import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   AppIconSection,
@@ -29,40 +26,6 @@ import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 
 export const CUSTOM_MARGIN_TOP_ANDROID = 8;
-
-function cardStyleInterpolator({
-  current,
-  next,
-  inverted,
-  layouts: { screen },
-}: StackCardInterpolationProps) {
-  const translateFocused = Animated.multiply(
-    current.progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [screen.width, 0],
-    }),
-    inverted
-  );
-  const translateUnfocused = next
-    ? Animated.multiply(
-        next.progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -screen.width],
-        }),
-        inverted
-      )
-    : 0;
-
-  return {
-    cardStyle: {
-      transform: [
-        {
-          translateX: Animated.add(translateFocused, translateUnfocused),
-        },
-      ],
-    },
-  };
-}
 
 const SettingsPages = {
   appIcon: {
@@ -112,7 +75,7 @@ const SettingsPages = {
   },
 };
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
@@ -194,7 +157,7 @@ export default function SettingsSheet() {
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
     <Box
-      background="cardBackdrop (Deprecated)"
+      background="surfaceSecondary"
       flexGrow={1}
       testID="settings-sheet"
       {...(android && {
@@ -206,14 +169,16 @@ export default function SettingsSheet() {
         // @ts-ignore
         screenOptions={{
           ...memoSettingsOptions,
+          fullScreenGestureEnabled: true,
+          gestureDirection: 'horizontal',
           headerRight: renderHeaderRight,
           headerStyle: memoSettingsOptions.headerStyle,
+          presentation: 'card',
         }}
       >
         <Stack.Screen
           name="SettingsSection"
           options={{
-            cardStyleInterpolator,
             title: lang.t('settings.label'),
           }}
         >
@@ -239,7 +204,6 @@ export default function SettingsSheet() {
                 key={key}
                 name={key}
                 options={{
-                  cardStyleInterpolator,
                   title: getTitle(),
                 }}
                 // @ts-ignore
@@ -251,7 +215,6 @@ export default function SettingsSheet() {
           component={WalletNotificationsSettings}
           name="WalletNotificationsSettings"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
             title: route.params?.title,
           })}
         />
@@ -259,7 +222,6 @@ export default function SettingsSheet() {
           component={SettingsBackupView}
           name="SettingsBackupView"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
             headerStyle: {
               ...memoSettingsOptions.headerStyle,
@@ -273,7 +235,6 @@ export default function SettingsSheet() {
           component={ShowSecretView}
           name="ShowSecretView"
           options={({ route }: any) => ({
-            cardStyleInterpolator,
             title: route.params?.title || lang.t('settings.backup'),
           })}
         />

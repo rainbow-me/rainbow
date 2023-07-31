@@ -47,7 +47,7 @@ const ProfileButtonText = styled(Text).attrs({
 
 const ProfileDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
   borderRadius: 1,
-  color: colors.rowDividerLight,
+  color: colors.separatorTertiary,
   inset: false,
 }))({});
 

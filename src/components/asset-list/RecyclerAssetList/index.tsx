@@ -155,7 +155,7 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
 
 const StyledRecyclerListView = styled(RecyclerListView)({
   // @ts-expect-error
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }) => colors.surfacePrimary,
   display: 'flex',
   flex: 1,
   minHeight: 1,
@@ -163,7 +163,7 @@ const StyledRecyclerListView = styled(RecyclerListView)({
 
 const StyledContainer = styled(View)({
   // @ts-expect-error
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }) => colors.surfacePrimary,
   display: 'flex',
   flex: 1,
   overflow: 'hidden',
@@ -788,6 +788,7 @@ function RecyclerAssetList({
       >
         {/* @ts-ignore */}
         <StyledRecyclerListView
+          automaticallyAdjustsScrollIndicatorInsets={false}
           dataProvider={dataProvider}
           extendedState={extendedState}
           {...(isInsideBottomSheet && {
@@ -799,6 +800,7 @@ function RecyclerAssetList({
           ref={handleRef}
           renderAheadOffset={renderAheadOffset}
           rowRenderer={rowRenderer}
+          scrollIndicatorInsets={{ bottom: 200, top: 300 }}
           scrollViewProps={scrollViewProps}
           {...extras}
         />

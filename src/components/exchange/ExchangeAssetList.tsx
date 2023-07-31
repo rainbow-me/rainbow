@@ -45,8 +45,17 @@ import ExchangeTokenRow from './ExchangeTokenRow';
 const deviceWidth = deviceUtils.dimensions.width;
 
 const HeaderBackground = styled(LinearGradient).attrs(
-  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-    colors: [colors.white, colors.alpha(colors.white, 0)],
+  ({
+    theme: { colors },
+    fromDiscover,
+  }: {
+    theme: { colors: Colors };
+    fromDiscover: boolean;
+  }) => ({
+    colors: [
+      fromDiscover ? colors.surfacePrimary : colors.white,
+      colors.alpha(fromDiscover ? colors.surfacePrimary : colors.white, 0),
+    ],
     end: { x: 0.5, y: 1 },
     locations: [0.65, 1],
     start: { x: 0.5, y: 0 },
@@ -108,6 +117,7 @@ function renderExchangeItem({ item }: { item: EnrichedExchangeAsset }) {
 
 interface ExchangeAssetListProps {
   footerSpacer: boolean;
+  fromDiscover?: boolean;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   itemProps: {
     onActionAsset: (asset: any, isFavorited?: any) => void;
@@ -129,6 +139,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
 > = (
   {
     footerSpacer,
+    fromDiscover,
     keyboardDismissMode = 'none',
     itemProps,
     items,
@@ -232,7 +243,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           paddingBottom="4px"
           paddingLeft="20px"
         >
-          <HeaderBackground />
+          <HeaderBackground fromDiscover={fromDiscover} />
           <Box>
             <TitleComponent color={section.color} testID={section.key}>
               {`${section.title}${isVerified ? '  􀅵' : ' '}`}

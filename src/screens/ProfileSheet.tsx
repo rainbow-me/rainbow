@@ -166,13 +166,13 @@ function PlaceholderRow() {
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
           <Box
-            background="body (Deprecated)"
+            background="surfacePrimaryElevated"
             borderRadius={15}
             height={{ custom: 30 }}
             width={{ custom: 30 }}
           />
           <Box
-            background="body (Deprecated)"
+            background="surfacePrimaryElevated"
             borderRadius={15}
             height={{ custom: 20 }}
             width={{ custom: 200 }}

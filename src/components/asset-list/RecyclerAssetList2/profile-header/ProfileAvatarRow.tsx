@@ -87,7 +87,7 @@ export function ProfileAvatarRow({
         inputRange: [
           -insets.top,
           IS_ANDROID ? 0 : -insets.top + 1,
-          navbarHeight + insets.top,
+          navbarHeight,
         ],
         outputRange: [1, 1, 0],
       }),
@@ -97,7 +97,7 @@ export function ProfileAvatarRow({
             inputRange: [
               -insets.top,
               IS_ANDROID ? 0 : -insets.top + 1,
-              navbarHeight + insets.top,
+              navbarHeight,
             ],
             outputRange: [0, 0, 12],
           }),
@@ -105,9 +105,9 @@ export function ProfileAvatarRow({
             inputRange: [
               -insets.top,
               IS_ANDROID ? 0 : -insets.top + 1,
-              navbarHeight + insets.top,
+              navbarHeight,
             ],
-            outputRange: [1, 1, 0.8],
+            outputRange: [1, 1, 0.5],
           }),
         },
       ],
@@ -149,8 +149,8 @@ export function ProfileAvatarRow({
 
   return (
     <AccentColorProvider color={accentColor}>
-      <RNAnimated.View style={animatedStyle}>
-        <Animated.View style={[expandStyle]}>
+      <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
+        <Animated.View style={expandStyle}>
           <ContextMenuButton
             // @ts-expect-error - JS component
             menuConfig={avatarContextMenuConfig}

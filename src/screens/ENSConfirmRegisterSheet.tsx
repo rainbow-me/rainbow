@@ -398,7 +398,7 @@ export default function ENSConfirmRegisterSheet() {
     >
       <AccentColorProvider color={accentColor}>
         <Box
-          background="body (Deprecated)"
+          background="surfacePrimaryElevated"
           paddingTop="19px (Deprecated)"
           paddingVertical="30px (Deprecated)"
           style={{
@@ -413,7 +413,7 @@ export default function ENSConfirmRegisterSheet() {
                 <Stack alignHorizontal="center" space="15px (Deprecated)">
                   {avatarUrl && (
                     <Box
-                      background="body (Deprecated)"
+                      background="surfacePrimaryElevated"
                       borderRadius={avatarSize / 2}
                       height={{ custom: avatarSize }}
                       shadow="15px light (Deprecated)"

@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
+import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
@@ -23,7 +24,6 @@ import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
   useSwapCurrencyHandlers,
-  useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -32,7 +32,6 @@ import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics, analyticsV2 } from '@/analytics';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
@@ -112,7 +111,12 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} scale={0.8} testID={testID}>
+    <ButtonPressAnimation
+      onPress={onPress}
+      pointerEvents="box-only"
+      scale={0.8}
+      testID={testID}
+    >
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
@@ -290,17 +294,11 @@ export function MoreButton() {
     Clipboard.setString(accountAddress);
   }, [accountAddress, isToastActive, setToastActive]);
 
-  const handlePressQRCode = React.useCallback(() => {
-    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
-      component: 'ProfileActionButtonsRow',
-    });
-
-    navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
-
   return (
-    <ActionButton onPress={handlePressQRCode} icon="􀐅" testID="receive-button">
-      {'Copy'}
-    </ActionButton>
+    <CopyFloatingEmojis textToCopy={accountAddress}>
+      <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
+        {'Copy'}
+      </ActionButton>
+    </CopyFloatingEmojis>
   );
 }

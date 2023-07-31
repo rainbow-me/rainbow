@@ -101,7 +101,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
     // @ts-expect-error ShadowStack is not migrated to TS.
     <ShadowStack
       {...circleStyle}
-      backgroundColor={colors.white}
+      backgroundColor={style?.backgroundColor || colors.white}
       shadows={shadows}
       style={style}
     >

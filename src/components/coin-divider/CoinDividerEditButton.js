@@ -10,7 +10,7 @@ import { padding, shadow } from '@/styles';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
-})(({ isActive, theme: { colors, isDarkMode } }) => ({
+})(({ isActive, textOpacityAlwaysOn, theme: { colors, isDarkMode } }) => ({
   ...padding.object(ios ? 5 : 0, 10, 6),
   ...(isActive
     ? shadow.buildAsObject(
@@ -23,7 +23,7 @@ const ButtonContent = styled(Row).attrs({
     : {}),
   backgroundColor: isActive
     ? colors.appleBlue
-    : colors.alpha(colors.blueGreyDark, 0.06),
+    : colors.alpha(colors.blueGreyDarkLight, textOpacityAlwaysOn ? 1 : 0.6),
   borderRadius: 15,
   height: 30,
 }));
@@ -55,7 +55,11 @@ const CoinDividerEditButton = ({
         radiusAndroid={15}
         scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}
       >
-        <ButtonContent isActive={isActive} style={style}>
+        <ButtonContent
+          isActive={isActive}
+          style={style}
+          textOpacityAlwaysOn={textOpacityAlwaysOn}
+        >
           <Text
             align={ios ? 'center' : 'left'}
             color={

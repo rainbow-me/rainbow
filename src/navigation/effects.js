@@ -313,7 +313,7 @@ export const emojiPreset = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
+            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN + 50,
           }}
         >
           <AvatarCircle overlayStyles />

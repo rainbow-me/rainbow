@@ -28,22 +28,6 @@ const Container = styled(ColumnWithMargins).attrs({
   ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
 }));
 
-function useTabularNumsWhileScrubbing() {
-  const [tabularNums, enable, disable] = useBooleanState();
-  // Only enable tabularNums on the price label when the user is scrubbing
-  // because we are obnoxiously into details
-  const { isActive } = useChartData();
-
-  useAnimatedReaction(
-    () => isActive.value,
-    useTabularNums => {
-      runOnJS(useTabularNums ? enable : disable)();
-    }
-  );
-
-  return tabularNums;
-}
-
 export default function ChartExpandedStateHeader({
   asset,
   color: givenColors,
@@ -62,7 +46,6 @@ export default function ChartExpandedStateHeader({
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
-  const tabularNums = useTabularNumsWhileScrubbing();
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -152,7 +135,6 @@ export default function ChartExpandedStateHeader({
             isPool={isPool}
             priceRef={priceRef}
             priceValue={price}
-            tabularNums={tabularNums}
           />
           {showPriceChange && (
             <ChartPercentChangeLabel

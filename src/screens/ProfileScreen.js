@@ -3,10 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
-import { ProfileMasthead } from '../components/profile';
-import TransactionList from '../components/transaction-list/TransactionList';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
+import { ButtonPressAnimation } from '@/components/animations';
 import {
   useAccountProfile,
   useAccountSettings,
@@ -18,7 +17,6 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
-import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 
@@ -42,14 +40,12 @@ export default function ProfileScreen({ navigation }) {
   const {
     isLoadingTransactions: isLoading,
     sections,
-    transactions,
     transactionsCount,
   } = accountTransactions;
   const { contacts } = useContacts();
-  const { pendingRequestCount, requests } = useRequests();
+  const { pendingRequestCount } = useRequests();
   const { network } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
-
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -58,14 +54,6 @@ export default function ProfileScreen({ navigation }) {
       setActivityListInitialized(true);
     }, ACTIVITY_LIST_INITIALIZATION_DELAY);
   }, []);
-
-  const onPressBackButton = useCallback(() => navigate(Routes.WALLET_SCREEN), [
-    navigate,
-  ]);
-
-  const onPressSettings = useCallback(() => navigate(Routes.SETTINGS_SHEET), [
-    navigate,
-  ]);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -78,37 +66,39 @@ export default function ProfileScreen({ navigation }) {
   return (
     <ProfileScreenPage testID="profile-screen">
       <Navbar
-      title="Activity"
+        title="Activity"
         hasStatusBarInset
-        leftComponent=
-          {accountImage ? (
-            <ImageAvatar
-              image={accountImage}
-              marginRight={10}
-              size="small"
-            />
-          ) : (
-            <ContactAvatar
-              color={accountColor}
-              marginRight={10}
-              size="small"
-              value={accountSymbol}
-            />
-          )}
-        
+        leftComponent={
+          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
+            {accountImage ? (
+              <ImageAvatar
+                image={accountImage}
+                marginRight={10}
+                size="header"
+              />
+            ) : (
+              <ContactAvatar
+                color={accountColor}
+                marginRight={10}
+                size="small"
+                value={accountSymbol}
+              />
+            )}
+          </ButtonPressAnimation>
+        }
       />
-  
-        <ActivityList
-          addCashAvailable={addCashAvailable}
-          contacts={contacts}
-          isEmpty={isEmpty}
-          isLoading={isLoading}
-          navigation={navigation}
-          network={network}
-          recyclerListView={ios}
-          sections={sections}
-          {...accountTransactions}
-        />
+
+      <ActivityList
+        addCashAvailable={addCashAvailable}
+        contacts={contacts}
+        isEmpty={isEmpty}
+        isLoading={isLoading}
+        navigation={navigation}
+        network={network}
+        recyclerListView={ios}
+        sections={sections}
+        {...accountTransactions}
+      />
     </ProfileScreenPage>
   );
 }

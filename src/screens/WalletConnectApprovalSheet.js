@@ -171,7 +171,7 @@ const NetworkPill = ({ chainIds }) => {
               {availableNetworks?.map((network, index) => {
                 return (
                   <Box
-                    background="body (Deprecated)"
+                    background="surfacePrimaryElevated"
                     key={`availableNetwork-${network}`}
                     marginLeft={{ custom: index > 0 ? -4 : 0 }}
                     style={{

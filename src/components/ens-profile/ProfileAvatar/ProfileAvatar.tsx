@@ -36,7 +36,7 @@ export default function ProfileAvatar({
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
-        <BackgroundProvider color="body (Deprecated)">
+        <BackgroundProvider color="surfacePrimaryElevated">
           {({ backgroundColor }) => (
             <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />
           )}
@@ -44,7 +44,7 @@ export default function ProfileAvatar({
       </Cover>
       <Box
         alignItems="center"
-        background={showAccentBackground ? 'accent' : 'body (Deprecated)'}
+        background={showAccentBackground ? 'accent' : 'surfacePrimaryElevated'}
         borderRadius={size / 2}
         justifyContent="center"
         shadow="15px light (Deprecated)"
@@ -69,7 +69,7 @@ export default function ProfileAvatar({
                 <Box height={{ custom: size }} width="full">
                   <Skeleton animated>
                     <Box
-                      background="body (Deprecated)"
+                      background="surfacePrimaryElevated"
                       borderRadius={size / 2}
                       height={{ custom: size }}
                       width={{ custom: size }}

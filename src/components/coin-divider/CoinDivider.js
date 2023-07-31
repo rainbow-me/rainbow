@@ -33,9 +33,9 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })({
-  ...padding.object(4, 19, 5, 0),
+  ...padding.object(4, 20, 5, 0),
   backgroundColor: ({ isCoinListEdited, theme: { colors } }) =>
-    isCoinListEdited ? colors.white : colors.transparent,
+    isCoinListEdited ? colors.surfacePrimary : colors.transparent,
   height: CoinDividerContainerHeight,
   width: ({ deviceWidth }) => deviceWidth,
 });
@@ -43,7 +43,7 @@ const Container = styled(Row).attrs({
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(
   ({ isCoinListEdited }) => ({
     margin: 10,
-    paddingHorizontal: 19,
+    paddingHorizontal: 20,
     paddingVertical: 5,
     pointerEvents: isCoinListEdited ? 'auto' : 'none',
   })
@@ -72,7 +72,7 @@ const useInterpolationRange = isCoinListEdited => {
     ref.current?.measureLayout?.(
       nativeScrollRef,
       (_left, top) => {
-        setRanges([top - (ios ? 100 : 50), top]);
+        setRanges([top - (ios ? 119 : 69), top]);
       },
       () => {}
     );

@@ -1,23 +1,35 @@
 import * as React from 'react';
-import { ScrollView } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { Keyboard, ScrollView } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import DiscoverScreenContent from './components/DiscoverScreenContent';
 import DiscoverSheetContext from './DiscoverScreenContext';
-import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import { safeAreaInsetValues } from '@/utils';
 
 export default function DiscoverScreen() {
+  const { navigate } = useNavigation();
+  const isFocused = useIsFocused();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
-  const { navigate } = useNavigation();
-
-  const handlePressWallet = React.useCallback(() => {
-    navigate(Routes.WALLET_SCREEN);
+  const onChangeWallet = React.useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
+
+  React.useEffect(() => {
+    if (isSearchModeEnabled && !isFocused) {
+      Keyboard.dismiss();
+    }
+  }, [isFocused, isSearchModeEnabled]);
 
   return (
     <DiscoverSheetContext.Provider
@@ -28,11 +40,22 @@ export default function DiscoverScreen() {
         <Navbar
           hasStatusBarInset
           leftComponent={
-            !isSearchModeEnabled ? (
-              <Navbar.Item onPress={handlePressWallet} testID="wallet-button">
-                <Navbar.SvgIcon icon={CaretLeftIcon} />
-              </Navbar.Item>
-            ) : null
+            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
+              {accountImage ? (
+                <ImageAvatar
+                  image={accountImage}
+                  marginRight={10}
+                  size="header"
+                />
+              ) : (
+                <ContactAvatar
+                  color={accountColor}
+                  marginRight={10}
+                  size="small"
+                  value={accountSymbol}
+                />
+              )}
+            </ButtonPressAnimation>
           }
           testID={
             isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
@@ -41,10 +64,12 @@ export default function DiscoverScreen() {
         />
         <Box
           as={ScrollView}
+          automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews
+          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 197 }}
           testID="discover-sheet"
         >
           <DiscoverScreenContent />

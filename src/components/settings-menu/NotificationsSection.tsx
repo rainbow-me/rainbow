@@ -194,7 +194,7 @@ const WalletRow = ({
         </Box>
       }
       onPress={() => navigateToWalletSettings(walletName, wallet.address)}
-      size={52}
+      size={60}
       titleComponent={<MenuItem.Title text={walletName} />}
     />
   );

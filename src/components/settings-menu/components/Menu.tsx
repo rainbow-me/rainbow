@@ -22,7 +22,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
         </Box>
       )}
       <Box
-        background="card (Deprecated)"
+        background="surfaceSecondaryElevated"
         borderRadius={18}
         shadow="12px"
         width="full"

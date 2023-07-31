@@ -13,7 +13,6 @@ import {
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
 import { ProfileMasthead } from '../profile';
-import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@/entities';
@@ -94,19 +93,18 @@ export default class RecyclerActivityList extends PureComponent {
         // This values has been hardcoded for omitting imports' cycle
         dim.width = deviceUtils.dimensions.width;
         if (type === ViewTypes.ROW) {
-          dim.height = 70;
+          dim.height = 64;
         } else if (type === ViewTypes.SWAPPED_ROW) {
-          dim.height = 70;
+          dim.height = 64;
         } else if (type === ViewTypes.SHOWCASE_HEADER) {
           dim.height = 400;
         } else if (type === ViewTypes.FOOTER) {
-          dim.height = 19;
+          dim.height = 28;
         } else if (type === ViewTypes.HEADER) {
-          dim.height = 39;
+          dim.height = 42;
         } else {
-          // this handles the inital list height offset atm 
-          dim.height =  40;
-        
+          // this handles the inital list height offset atm
+          dim.height = 20;
         }
       }
     );
@@ -180,20 +178,19 @@ export default class RecyclerActivityList extends PureComponent {
 
   render = () => (
     <Wrapper>
-      <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
-        <RecyclerListView
-          dataProvider={this.state.dataProvider}
-          layoutProvider={this.layoutProvider}
-          ref={this.handleListRef}
-          renderAheadOffset={deviceUtils.dimensions.height}
-          rowRenderer={this.rowRenderer}
-          scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
-          scrollIndicatorInsets={{
-            bottom: safeAreaInsetValues.bottom,
-          }}
-          style={{ minHeight: 1 }}
-        />
-      </StickyContainer>
+      <RecyclerListView
+        automaticallyAdjustsScrollIndicatorInsets={false}
+        dataProvider={this.state.dataProvider}
+        layoutProvider={this.layoutProvider}
+        ref={this.handleListRef}
+        renderAheadOffset={deviceUtils.dimensions.height}
+        rowRenderer={this.rowRenderer}
+        scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
+        scrollIndicatorInsets={{
+          bottom: safeAreaInsetValues.bottom + 48,
+        }}
+        style={{ minHeight: 1 }}
+      />
     </Wrapper>
   );
 }

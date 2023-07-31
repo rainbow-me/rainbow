@@ -469,7 +469,7 @@ PODS:
     - React-Core
   - react-native-netinfo (5.9.7):
     - React-Core
-  - react-native-pager-view (5.4.24):
+  - react-native-pager-view (6.1.2):
     - React-Core
   - react-native-palette-full (1.2.0):
     - React
@@ -480,12 +480,14 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (4.3.1):
+  - react-native-safe-area-context (4.4.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
-    - React
+    - React-Core
     - ReactCommon/turbomodule/core
+  - react-native-screen-corner-radius (0.1.1):
+    - React
   - react-native-skia (0.1.152):
     - React
     - React-callinvoker
@@ -820,6 +822,7 @@ DEPENDENCIES:
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-screen-corner-radius (from `../node_modules/react-native-screen-corner-radius`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
@@ -1037,6 +1040,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-screen-corner-radius:
+    :path: "../node_modules/react-native-screen-corner-radius"
   react-native-skia:
     :path: "../node_modules/@shopify/react-native-skia"
   react-native-splash-screen:
@@ -1244,12 +1249,13 @@ SPEC CHECKSUMS:
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 30297e5e2a65341b36a727c1c79b0aff0132b396
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
-  react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
+  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
-  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
+  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-screen-corner-radius: 57b6dea3c024035bff8377618df6e5056e6c6f27
   react-native-skia: 1afb1ede8750b9e3534545b18a9a5086e6705f9f
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736

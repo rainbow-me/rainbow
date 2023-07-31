@@ -160,7 +160,7 @@ const RegistrationAvatar = ({
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
-        <BackgroundProvider color="body (Deprecated)">
+        <BackgroundProvider color="surfacePrimaryElevated">
           {({ backgroundColor }) => (
             <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />
           )}
@@ -169,7 +169,7 @@ const RegistrationAvatar = ({
       {isLoading ? (
         <Skeleton animated>
           <Box
-            background="body (Deprecated)"
+            background="surfacePrimaryElevated"
             borderRadius={size / 2}
             height={{ custom: size }}
             width={{ custom: size }}
@@ -197,7 +197,7 @@ const RegistrationAvatar = ({
             <AccentColorProvider color={accentColor + '10'}>
               <Box
                 alignItems="center"
-                background={avatarUrl ? 'body (Deprecated)' : 'accent'}
+                background={avatarUrl ? 'surfacePrimaryElevated' : 'accent'}
                 borderRadius={size / 2}
                 height={{ custom: size }}
                 justifyContent="center"

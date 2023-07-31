@@ -94,7 +94,7 @@ const SavingsListHeader = ({
         align="center"
         height={TokenFamilyHeaderHeight}
         justify="space-between"
-        paddingHorizontal={19}
+        paddingHorizontal={20}
         width="100%"
       >
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>

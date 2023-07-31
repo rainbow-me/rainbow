@@ -19,42 +19,35 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
-export const ListHeaderHeight = 50;
+export const ListHeaderHeight = 36;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
-  backgroundColor: ({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.06),
+  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
   borderRadius: 15,
   height: 30,
   justifyContent: 'center',
-  maxWidth: 90,
-  paddingBottom: 5,
-  paddingTop: 5,
-  width: 90,
+  paddingVertical: 5,
+  width: 30,
 });
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel
-      align="center"
-      label={`􀈂 ${lang.t('button.share')}`}
-      shareButton
-    />
+    <CoinDividerButtonLabel align="center" label="􀈂" shareButton />
   </ShareCollectiblesBPA>
 );
 
 const Content = styled(Row).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  backgroundColor: colors.white,
+  backgroundColor: colors.surfacePrimary,
   justify: 'space-between',
 }))({
-  ...padding.object(5, 19),
+  ...padding.object(5, 20),
   height: ListHeaderHeight,
   width: '100%',
 });
 
 const StickyBackgroundBlocker = styled.View({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }) => colors.surfacePrimary,
   height: ({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0),
   top: ({ isEditMode }) => (isEditMode ? -40 : 0),
   width: ({ deviceDimensions }) => deviceDimensions.width,
@@ -135,7 +128,12 @@ export default function ListHeader({
            so we won't render it till we figure it out why
           */
           showDivider && !(android && isDarkMode) && (
-            <Divider color={colors.rowDividerLight} />
+            <Divider
+              backgroundColor={colors.surfacePrimary}
+              color={
+                isDarkMode ? colors.separatorSecondary : colors.rowDividerLight
+              }
+            />
           )
         }
         <StickyBackgroundBlocker

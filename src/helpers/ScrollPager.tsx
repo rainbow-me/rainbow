@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedScrollHandler,
   Value,
 } from 'react-native-reanimated';
+import logger from 'logger';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 
@@ -28,7 +29,11 @@ class ScrollPager extends React.Component {
   componentDidUpdate(prevProps: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     const offset = this.props.navigationState.index * this.props.layout.width;
-
+    // Disable pager animation when switching tabs
+    const enableAnimation =
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
+      !(this.props.navigationState.index > 0) ||
+      prevProps.navigationState.index === 0;
     if (
       prevProps.navigationState.routes.length !==
         // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
@@ -44,7 +49,7 @@ class ScrollPager extends React.Component {
       if (this.interactionHandle === null) {
         this.interactionHandle = InteractionManager.createInteractionHandle();
       }
-      this.scrollTo(offset);
+      this.scrollTo(offset, enableAnimation);
     }
 
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message

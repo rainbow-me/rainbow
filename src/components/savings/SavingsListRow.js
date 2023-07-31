@@ -48,7 +48,7 @@ const SavingsListRowGradient = magicMemo(
 
 const SavingsListRowShadowStack = styled(ShadowStack).attrs(
   ({ deviceWidth, theme: { colors } }) => ({
-    backgroundColor: colors.white,
+    backgroundColor: colors.surfacePrimary,
     borderRadius: 49,
     height: 49,
     shadows: [

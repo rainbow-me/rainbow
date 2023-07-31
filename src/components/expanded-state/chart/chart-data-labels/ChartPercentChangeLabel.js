@@ -17,7 +17,7 @@ const PercentLabel = styled(AnimatedTextInput)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
   fontSize: fonts.size.big,
   fontVariant: ['tabular-nums'],
-  letterSpacing: fonts.letterSpacing.roundedTightest,
+  letterSpacing: fonts.letterSpacing.roundedTighter,
   textAlign: 'right',
   ...(android && { marginVertical: -19 }),
 });
