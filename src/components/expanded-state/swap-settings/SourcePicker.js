@@ -131,6 +131,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
                   width: 20,
                 }}
                 width={20}
+                size={30}
               />
               <Text
                 color="primary (Deprecated)"

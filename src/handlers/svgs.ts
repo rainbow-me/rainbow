@@ -20,7 +20,7 @@ cloudinaryConfig({
 const pixelRatio = PixelRatio.get();
 const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
-function svgToPng(url: any, big = false) {
+function svgToPng(url: string, big = false) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
   const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
@@ -41,7 +41,11 @@ function svgToPng(url: any, big = false) {
   return cloudinaryUrl;
 }
 
-export default function svgToPngIfNeeded(url: any, big: any) {
+export default function svgToPngIfNeeded(
+  url: string | null | undefined,
+  big?: boolean
+) {
+  if (!url) return undefined;
   const isSVG = isSVGImage(url);
   return isSVG ? svgToPng(url, big) : url;
 }

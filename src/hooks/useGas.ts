@@ -90,6 +90,7 @@ export default function useGas({
     selectedGasFee: SelectedGasFee;
     selectedGasFeeOption: string;
     txNetwork: Network;
+    l1GasFeeOptimism: string;
   } = useSelector(
     ({
       gas: {
@@ -98,6 +99,7 @@ export default function useGas({
         gasFeeParamsBySpeed,
         gasFeesBySpeed,
         gasLimit,
+        l1GasFeeOptimism,
         selectedGasFee,
         txNetwork,
       },
@@ -107,6 +109,7 @@ export default function useGas({
       gasFeeParamsBySpeed,
       gasFeesBySpeed,
       gasLimit,
+      l1GasFeeOptimism,
       selectedGasFee,
       selectedGasFeeOption: selectedGasFee.option,
       txNetwork,
@@ -156,17 +159,22 @@ export default function useGas({
   );
 
   const updateDefaultGasLimit = useCallback(
-    defaultGasLimit => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)),
+    (defaultGasLimit?: number) =>
+      dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)),
     [dispatch]
   );
 
   const updateGasFeeOption = useCallback(
-    option => dispatch(gasUpdateGasFeeOption(option)),
+    (option: string) => dispatch(gasUpdateGasFeeOption(option)),
     [dispatch]
   );
 
   const updateTxFee = useCallback(
-    (newGasLimit, overrideGasOption, l1GasFeeOptimism = null) => {
+    (
+      newGasLimit: any,
+      overrideGasOption: any,
+      l1GasFeeOptimism: any = null
+    ) => {
       dispatch(
         gasUpdateTxFee(newGasLimit, overrideGasOption, l1GasFeeOptimism)
       );

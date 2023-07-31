@@ -1,9 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -27,6 +24,7 @@ import {
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
+import { ENS_RECORDS } from '@/helpers/ens';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -135,7 +133,7 @@ const RegistrationAvatar = ({
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage,
     onRemoveImage: () => {
-      onRemoveField({ key: 'avatar' });
+      onRemoveField({ key: ENS_RECORDS.avatar });
       onChangeAvatarUrl('');
       setAvatarMetadata(undefined);
       setDisabled(false);
@@ -211,6 +209,7 @@ const RegistrationAvatar = ({
                     height={{ custom: size }}
                     source={{ uri: avatarUrl }}
                     width={{ custom: size }}
+                    size={100}
                   />
                 ) : (
                   <AccentColorProvider color={accentColor}>

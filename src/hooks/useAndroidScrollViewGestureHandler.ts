@@ -1,6 +1,7 @@
-import { NavigationProp } from '@react-navigation/core';
+import { NavigationProp } from '@react-navigation/native';
 import { useCallback, useRef } from 'react';
-import { useNavigation } from '../navigation';
+import { useNavigation } from '@/navigation';
+import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 /**
  * This is a pretty hacky fix for getting a `Stack` that consists of bottom
@@ -16,7 +17,7 @@ export default function useAndroidScrollViewGestureHandler({
 
   const gestureEnabled = useRef(true);
   const onScroll = useCallback(
-    ({ nativeEvent }) => {
+    ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (!android) return;
       if (nativeEvent.contentOffset.y <= 0 && !gestureEnabled.current) {
         navigation.setOptions({ gestureEnabled: true });

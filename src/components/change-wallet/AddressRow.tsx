@@ -139,6 +139,7 @@ export default function AddressRow({
     image: accountImage,
     isSelected,
     isReadOnly,
+    isLedger,
     label,
     walletId,
   } = data;
@@ -219,6 +220,7 @@ export default function AddressRow({
   };
 
   const handleSelectMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       switch (actionKey) {
         case ContextMenuKeys.Remove:
@@ -281,7 +283,7 @@ export default function AddressRow({
             {isReadOnly && (
               <LinearGradient
                 {...linearGradientProps}
-                // @ts-ignore
+                // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
@@ -289,8 +291,19 @@ export default function AddressRow({
                 </ReadOnlyText>
               </LinearGradient>
             )}
+            {isLedger && (
+              <LinearGradient
+                {...linearGradientProps}
+                // @ts-expect-error JavaScript component
+                marginRight={editMode || isSelected ? -9 : 19}
+              >
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
+                  {lang.t('wallet.change_wallet.ledger')}
+                </ReadOnlyText>
+              </LinearGradient>
+            )}
             {!editMode && isSelected && (
-              // @ts-ignore
+              // @ts-expect-error JavaScript component
               <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
             {editMode &&

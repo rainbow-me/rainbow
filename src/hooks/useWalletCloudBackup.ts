@@ -20,8 +20,11 @@ import {
 } from '@/handlers/cloudBackup';
 import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import logger from '@/utils/logger';
+import { getSupportedBiometryType } from '@/keychain';
+import { IS_ANDROID } from '@/env';
+import { authenticateWithPIN } from '@/handlers/authentication';
+import * as i18n from '@/languages';
 
 function getUserError(e: Error) {
   switch (e.message) {
@@ -34,6 +37,8 @@ function getUserError(e: Error) {
       return `We couldn't find your previous backup!`;
     case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
       return `We couldn't access your backup at this time. Please try again later.`;
+    case CLOUD_BACKUP_ERRORS.MISSING_PIN:
+      return `Something went wrong while processing your PIN code. Please try again later.`;
     default:
       return `Error while trying to backup. Error code: ${values(
         CLOUD_BACKUP_ERRORS
@@ -43,7 +48,7 @@ function getUserError(e: Error) {
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
-  const { latestBackup, setIsWalletLoading, wallets } = useWallets();
+  const { latestBackup, wallets } = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({
@@ -53,6 +58,13 @@ export default function useWalletCloudBackup() {
       onSuccess,
       password,
       walletId,
+    }: {
+      handleNoLatestBackup?: () => void;
+      handlePasswordNotFound?: () => void;
+      onError?: (error: string) => void;
+      onSuccess?: () => void;
+      password?: string;
+      walletId: string;
     }) => {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
@@ -93,16 +105,14 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      let fetchedPassword = password;
+      let fetchedPassword: string | undefined = password;
       let wasPasswordFetched = false;
       if (latestBackup && !password) {
         // We have a backup but don't have the password, try fetching password
-        setIsWalletLoading(WalletLoadingStates.FETCHING_PASSWORD);
         // We want to make it clear why are we requesting faceID twice
         // So we delayed it to make sure the user can read before seeing the auth prompt
         await delay(1500);
-        fetchedPassword = await fetchBackupPassword();
-        setIsWalletLoading(null);
+        fetchedPassword = (await fetchBackupPassword()) ?? undefined;
         await delay(300);
         wasPasswordFetched = true;
       }
@@ -113,7 +123,18 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      setIsWalletLoading(WalletLoadingStates.BACKING_UP_WALLET);
+      // For Android devices without biometrics enabled, we need to ask for PIN
+      let userPIN: string | undefined;
+      const hasBiometricsEnabled = await getSupportedBiometryType();
+      if (IS_ANDROID && !hasBiometricsEnabled) {
+        try {
+          userPIN = (await authenticateWithPIN()) ?? undefined;
+        } catch (e) {
+          onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+          return;
+        }
+      }
+
       // We want to make it clear why are we requesting faceID twice
       // So we delayed it to make sure the user can read before seeing the auth prompt
       if (wasPasswordFetched) {
@@ -127,21 +148,22 @@ export default function useWalletCloudBackup() {
       try {
         if (!latestBackup) {
           logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
-          updatedBackupFile = await backupWalletToCloud(
-            fetchedPassword,
-            wallets![walletId]
-          );
+          updatedBackupFile = await backupWalletToCloud({
+            password: fetchedPassword,
+            wallet: wallets![walletId],
+            userPIN,
+          });
         } else {
           logger.log(
             `adding wallet to ${cloudPlatform} backup`,
             wallets![walletId]
           );
-          updatedBackupFile = await addWalletToCloudBackup(
-            fetchedPassword,
-            wallets![walletId],
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
-            latestBackup
-          );
+          updatedBackupFile = await addWalletToCloudBackup({
+            password: fetchedPassword,
+            wallet: wallets![walletId],
+            filename: latestBackup,
+            userPIN,
+          });
         }
       } catch (e: any) {
         const userError = getUserError(e);
@@ -182,7 +204,7 @@ export default function useWalletCloudBackup() {
         });
       }
     },
-    [dispatch, latestBackup, setIsWalletLoading, wallets]
+    [dispatch, latestBackup, wallets]
   );
 
   return walletCloudBackup;

@@ -12,8 +12,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
-import networkTypes from '@/helpers/networkTypes';
+import networkTypes, { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import {
@@ -33,6 +32,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const {
   GAS_EMOJIS,
@@ -301,9 +301,14 @@ const GasSpeedButton = ({
     if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
     // override time estimate for cross chain swaps
     if (crossChainServiceTime) {
+      const network = currentNetwork ?? networkTypes.mainnet;
       const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
         serviceTime: crossChainServiceTime,
-        gasTimeInSeconds: selectedGasFee?.estimatedTime?.amount,
+        // mainnet gas time is in seconds, other networks are in milliseconds
+        gasTimeInSeconds:
+          network !== Network.mainnet
+            ? selectedGasFee?.estimatedTime?.amount / 1000
+            : selectedGasFee?.estimatedTime?.amount,
       });
       setIsLongWait(isLongWait);
       return timeEstimateDisplay;
@@ -322,6 +327,7 @@ const GasSpeedButton = ({
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     crossChainServiceTime,
+    currentNetwork,
     gasPriceReady,
     selectedGasFee?.estimatedTime?.amount,
     selectedGasFee?.estimatedTime?.display,
@@ -329,8 +335,8 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     Keyboard.dismiss();
-    const network = currentNetwork ?? networkTypes.mainnet;
-    const networkName = networkInfo[network]?.name;
+    const networkObj = getNetworkObj(currentNetwork);
+    const networkName = networkObj.name;
     if (crossChainServiceTime) {
       navigate(Routes.EXPLAIN_SHEET, {
         inputCurrency,
@@ -363,6 +369,8 @@ const GasSpeedButton = ({
         return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
+      case networkTypes.zora:
+      case networkTypes.base:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }
@@ -370,16 +378,7 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    switch (currentNetwork) {
-      case networkTypes.polygon:
-      case networkTypes.bsc:
-        return [NORMAL, FAST, URGENT];
-      case networkTypes.optimism:
-      case networkTypes.arbitrum:
-        return [NORMAL];
-      default:
-        return GasSpeedOrder;
-    }
+    return getNetworkObj(currentNetwork).gas.speeds;
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
@@ -392,18 +391,18 @@ const GasSpeedButton = ({
         currentBlockParams?.baseFeePerGas?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
-      const gweiDisplay =
-        currentNetwork === networkTypes.polygon ||
-        currentNetwork === networkTypes.bsc
-          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-          ? ''
-          : greaterThan(estimatedGwei, totalGwei)
-          ? `${toFixedDecimals(totalGwei, 0)} Gwei`
-          : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
-              totalGwei,
-              0
-            )} Gwei`;
+
+      const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
+      const gweiDisplay = !shouldRoundGwei
+        ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+        : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
+        ? ''
+        : greaterThan(estimatedGwei, totalGwei)
+        ? `${toFixedDecimals(totalGwei, 0)} Gwei`
+        : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
+            totalGwei,
+            0
+          )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle:

@@ -5,11 +5,11 @@ import Animated, {
   useAnimatedScrollHandler,
   Value,
 } from 'react-native-reanimated';
-import logger from 'logger';
+import { PropsWithChildren } from 'react';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 
-class ScrollPager extends React.Component {
+class ScrollPager extends React.Component<PropsWithChildren> {
   static defaultProps = {
     bounces: true,
     id: '',

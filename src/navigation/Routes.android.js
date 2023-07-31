@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
 import { StatusBar } from 'react-native';
-import AddCashSheet from '../screens/AddCashSheet';
+import { AddCashSheet } from '../screens/AddCash';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
@@ -24,9 +24,6 @@ import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
-import SettingsSheet, {
-  CUSTOM_MARGIN_TOP_ANDROID,
-} from '../screens/SettingsSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
@@ -34,10 +31,9 @@ import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
-import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
+import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
-import WyreWebview from '../screens/WyreWebview';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
@@ -48,7 +44,6 @@ import {
   restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
-  wyreWebviewOptions,
 } from './config';
 import {
   addWalletNavigatorPreset,
@@ -62,6 +57,8 @@ import {
   sheetPreset,
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
+  addCashSheet,
+  nftSingleOfferSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -76,26 +73,22 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
+import { SettingsSheet } from '@/screens/SettingsSheet';
+import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
+import { Portal } from '@/screens/Portal';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
+import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable import/no-unresolved */
+// @ts-ignore .android and .ios exports cause errors
+import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import PoapSheet from '@/screens/mints/PoapSheet';
+import { PositionSheet } from '@/screens/positions/PositionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
-
-function AddCashFlowNavigator() {
-  const { colors } = useTheme();
-  const themedWyreWebviewOptions = useMemo(() => wyreWebviewOptions(colors), [
-    colors,
-  ]);
-  return (
-    <Stack.Navigator
-      initialRouteName={Routes.WYRE_WEBVIEW}
-      screenOptions={themedWyreWebviewOptions}
-    >
-      <Stack.Screen component={WyreWebview} name={Routes.WYRE_WEBVIEW} />
-    </Stack.Navigator>
-  );
-}
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext);
@@ -119,6 +112,16 @@ function MainNavigator() {
       <Stack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={Portal}
+        name={Routes.PORTAL}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={PositionSheet}
+        name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -158,7 +161,7 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
-        options={addTokenSheetConfig}
+        options={addCashSheet}
       />
       <Stack.Screen
         component={AddTokenSheet}
@@ -192,8 +195,10 @@ function MainNavigator() {
         options={{ animationEnabled: false, gestureEnabled: false }}
       />
       <Stack.Screen
-        component={AddCashFlowNavigator}
-        name={Routes.WYRE_WEBVIEW_NAVIGATOR}
+        component={ShowSecretView}
+        name="ShowSecretView"
+        //@ts-ignore
+        options={bottomSheetPreset}
       />
     </Stack.Navigator>
   );
@@ -259,6 +264,7 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
+      <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
@@ -361,7 +367,8 @@ function BSNavigator() {
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
-        name={Routes.WALLET_DIAGNOSTICS_SHEET}
+        name={Routes.DIAGNOSTICS_SHEET}
+        options={{ ...bottomSheetPreset }}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen
@@ -384,6 +391,16 @@ function BSNavigator() {
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
         options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.NFT_OFFERS_SHEET}
+        component={NFTOffersSheet}
+        options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.NFT_SINGLE_OFFER_SHEET}
+        component={NFTSingleOfferSheet}
+        options={nftSingleOfferSheetPreset}
       />
     </BSStack.Navigator>
   );

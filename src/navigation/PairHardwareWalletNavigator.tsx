@@ -1,30 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BackgroundProvider } from '@/design-system';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHardwareWalletIntroSheet';
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
-import { PairHardwareWalletSuccessSheet } from '@/screens/hardware-wallets/PairHardwareWalletSuccessSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
-import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { atom, useRecoilState } from 'recoil';
+import Routes from '@/navigation/routesNames';
+import { RouteProp, useRoute } from '@react-navigation/core';
+import { analyticsV2 } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();
 
-export const PairHardwareWalletNavigator = () => {
+type PairHardwareWalletNavigatorParams = {
+  entryPoint: string;
+  isFirstWallet: boolean;
+};
+
+type RouteParams = {
+  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
+};
+
+// atoms used for navigator state
+export const LedgerImportDeviceIdAtom = atom({
+  default: '',
+  key: 'ledgerImportDeviceId',
+});
+
+export function PairHardwareWalletNavigator() {
+  const { params } = useRoute<
+    RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
+  >();
+  const { height, width } = useDimensions();
+
   const [currentRouteName, setCurrentRouteName] = useState(
     Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
   );
 
-  const { height, width } = useDimensions();
+  const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
+
+  // reset navigator state on unmount
+  useEffect(() => {
+    return () => {
+      setDeviceId('');
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(
+    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
+    []
+  );
+
+  const onDismiss = () =>
+    analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
+      step: currentRouteName,
+      ...params,
+    });
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
+          onDismiss={onDismiss}
           scrollEnabled={false}
         >
           <Swipe.Navigator
@@ -54,17 +95,6 @@ export const PairHardwareWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
-              component={PairHardwareWalletSuccessSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(
-                    Routes.PAIR_HARDWARE_WALLET_SUCCESS_SHEET
-                  );
-                },
-              }}
-            />
-            <Swipe.Screen
               component={PairHardwareWalletSigningSheet}
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{
@@ -72,15 +102,6 @@ export const PairHardwareWalletNavigator = () => {
                   setCurrentRouteName(
                     Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
                   );
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletErrorSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
-              listeners={{
-                focus: () => {
-                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET);
                 },
               }}
             />
@@ -93,10 +114,11 @@ export const PairHardwareWalletNavigator = () => {
                   ? 'loading'
                   : 'idle'
               }
+              isConnected={deviceId !== ''}
             />
           )}
         </SimpleSheet>
       )}
     </BackgroundProvider>
   );
-};
+}

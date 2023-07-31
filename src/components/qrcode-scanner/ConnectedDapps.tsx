@@ -42,6 +42,7 @@ function ConnectedDapps() {
                   source={rainbowIconCircle as Source}
                   height={{ custom: 28 }}
                   width={{ custom: 28 }}
+                  size={30}
                 />
                 <Text color="label" weight="bold" size="17pt">
                   {walletConnectorsByDappName.length === 1

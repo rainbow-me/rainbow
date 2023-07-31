@@ -3,7 +3,7 @@ import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import zxcvbn from 'zxcvbn';
+import { passwordStrength } from 'check-password-strength';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';
@@ -84,13 +84,15 @@ export default function BackupCloudStep() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const walletCloudBackup = useWalletCloudBackup();
-  const { selectedWallet, setIsWalletLoading, isDamaged } = useWallets();
+  const { selectedWallet, isDamaged } = useWallets();
   const [validPassword, setValidPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { navigate } = useNavigation();
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -100,16 +102,22 @@ export default function BackupCloudStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    keyboardShowListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardDidShow
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardDidHide
+    );
     if (isDamaged) {
       showWalletErrorAlert();
       captureMessage('Damaged wallet preventing cloud backup');
       goBack();
     }
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      keyboardShowListener.current?.remove();
+      keyboardHideListener.current?.remove();
     };
   }, [goBack, isDamaged]);
 
@@ -199,8 +207,8 @@ export default function BackupCloudStep() {
       password.length >= cloudBackupPasswordMinLength &&
       passwordFocused
     ) {
-      const passInfo = zxcvbn(password);
-      switch (passInfo.score) {
+      const passInfo = passwordStrength(password);
+      switch (passInfo.id) {
         case 0:
         case 1:
           newLabel = `💩 ${lang.t('back_up.cloud.password.strength.level1')}`;
@@ -239,10 +247,9 @@ export default function BackupCloudStep() {
   const onError = useCallback(
     msg => {
       setTimeout(onPasswordSubmit, 1000);
-      setIsWalletLoading(null);
       DelayedAlert({ title: msg }, 500);
     },
-    [onPasswordSubmit, setIsWalletLoading]
+    [onPasswordSubmit]
   );
 
   const onSuccess = useCallback(async () => {
@@ -278,7 +285,7 @@ export default function BackupCloudStep() {
         InteractionManager.runAfterInteractions(() => {
           setTimeout(() => {
             onConfirmBackup();
-          }, 250);
+          }, 300);
         });
       },
       type: 'backup',

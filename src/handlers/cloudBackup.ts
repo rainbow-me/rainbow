@@ -1,11 +1,11 @@
-import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
-import { logger } from '../utils';
+import { logger, RainbowError } from '@/logger';
+import { IS_ANDROID, IS_IOS } from '@/env';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -20,10 +20,30 @@ export const CLOUD_BACKUP_ERRORS = {
   SPECIFIC_BACKUP_NOT_FOUND: 'No backup found with that name',
   UKNOWN_ERROR: 'Unknown Error',
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
+  MISSING_PIN: 'The PIN code you entered is invalid',
 };
 
+export function normalizeAndroidBackupFilename(filename: string) {
+  return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
+}
+
 export function logoutFromGoogleDrive() {
-  android && RNCloudFs.logout();
+  IS_ANDROID && RNCloudFs.logout();
+}
+
+export type GoogleDriveUserData = {
+  name?: string;
+  email?: string;
+  avatarUrl?: string;
+};
+
+export async function getGoogleAccountUserData(): Promise<
+  GoogleDriveUserData | undefined
+> {
+  if (!IS_ANDROID) {
+    return;
+  }
+  return RNCloudFs.getCurrentlySignedInUserData();
 }
 
 // This is used for dev purposes only!
@@ -63,16 +83,26 @@ export async function encryptAndSaveDataToCloud(
       password,
       JSON.stringify(data)
     );
+
+    /**
+     * We need to normalize the filename on Android, because sometimes
+     * the filename is returned with the path used for Google Drive storage.
+     * That is with REMOTE_BACKUP_WALLET_DIR included.
+     */
+    const backupFilename = IS_ANDROID
+      ? normalizeAndroidBackupFilename(filename)
+      : filename;
+
     // Store it on the FS first
-    const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+    const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
     await RNFS.writeFile(path, encryptedData, 'utf8');
     const sourceUri = { path };
-    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
+    const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${backupFilename}`;
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    if (android) {
+    if (IS_ANDROID) {
       await RNCloudFs.loginIfNeeded();
     }
     const result = await RNCloudFs.copyToCloud({
@@ -83,7 +113,7 @@ export async function encryptAndSaveDataToCloud(
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      ios
+      IS_IOS
         ? {
             scope,
             targetPath: destinationPath,
@@ -95,17 +125,18 @@ export async function encryptAndSaveDataToCloud(
     );
 
     if (!exists) {
-      logger.sentry('Backup doesnt exist after completion');
+      logger.info('Backup doesnt exist after completion');
       const error = new Error(CLOUD_BACKUP_ERRORS.INTEGRITY_CHECK_FAILED);
-      captureException(error);
+      logger.error(new RainbowError(error.message));
       throw error;
     }
 
     await RNFS.unlink(path);
     return filename;
-  } catch (e) {
-    logger.sentry('Error during encryptAndSaveDataToCloud', e);
-    captureException(e);
+  } catch (e: any) {
+    logger.error(new RainbowError('Error during encryptAndSaveDataToCloud'), {
+      message: e.message,
+    });
     throw new Error(CLOUD_BACKUP_ERRORS.GENERAL_ERROR);
   }
 }
@@ -126,7 +157,7 @@ export function syncCloud() {
 }
 
 export async function getDataFromCloud(backupPassword: any, filename = null) {
-  if (android) {
+  if (IS_ANDROID) {
     await RNCloudFs.loginIfNeeded();
   }
 
@@ -136,15 +167,13 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
   });
 
   if (!backups || !backups.files || !backups.files.length) {
-    logger.sentry('No backups found');
     const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
-    captureException(error);
     throw error;
   }
 
   let document;
   if (filename) {
-    if (ios) {
+    if (IS_IOS) {
       // .icloud are files that were not yet synced
       document = backups.files.find(
         (file: any) =>
@@ -160,9 +189,10 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
     }
 
     if (!document) {
-      logger.sentry('No backup found with that name!', filename);
+      logger.error(new RainbowError('No backup found with that name!'), {
+        filename,
+      });
       const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
-      captureException(error);
       throw error;
     }
   } else {
@@ -174,7 +204,7 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
     : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
-    logger.sentry('Got cloud document ', filename);
+    logger.info('Got cloud document ', { filename });
     const backedUpDataStringified = await encryptor.decrypt(
       backupPassword,
       encryptedData
@@ -183,15 +213,14 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
       const backedUpData = JSON.parse(backedUpDataStringified);
       return backedUpData;
     } else {
-      logger.sentry('We couldnt decrypt the data');
+      logger.error(new RainbowError('We couldnt decrypt the data'));
       const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
-      captureException(error);
       throw error;
     }
   }
-  logger.sentry('We couldnt get the encrypted data');
+
+  logger.error(new RainbowError('We couldnt get the encrypted data'));
   const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
-  captureException(error);
   throw error;
 }
 

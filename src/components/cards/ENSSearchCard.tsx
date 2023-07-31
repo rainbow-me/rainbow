@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -17,13 +17,18 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSPendingRegistrations, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
-import { GenericCard } from './GenericCard';
+import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { useRoute } from '@react-navigation/native';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;
+const GRADIENT: Gradient = {
+  colors: ['#0E76FD', '#61B5FF'],
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 0 },
+};
 
 const springConfig = {
   damping: 20,
@@ -51,7 +56,7 @@ export const ENSSearchCard = () => {
     }
   }, [pendingBadgeProgress, pendingRegistrations?.length]);
 
-  const handlePress = useCallback(() => {
+  const handlePress = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSSearchCard',
@@ -65,7 +70,7 @@ export const ENSSearchCard = () => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, routeName]);
+  };
 
   const pendingBadgeStyle = useAnimatedStyle(() => {
     return {
@@ -92,7 +97,7 @@ export const ENSSearchCard = () => {
   return (
     <GenericCard
       color={globalColors.blue60}
-      gradient={[globalColors.blue60, '#61B5FF']}
+      gradient={GRADIENT}
       onPress={handlePress}
       testID="ens-register-name-banner"
       type={cardType}

@@ -1,11 +1,13 @@
 export enum AssetType {
   arbitrum = 'arbitrum',
+  base = 'base',
   bsc = 'bsc',
   compound = 'compound',
   eth = 'eth',
   nft = 'nft',
   optimism = 'optimism',
   polygon = 'polygon',
+  zora = 'zora',
   token = 'token',
   trash = 'trash',
   uniswap = 'uniswap',
@@ -14,12 +16,14 @@ export enum AssetType {
 
 export default {
   arbitrum: 'arbitrum',
+  base: 'base',
   bsc: 'bsc',
   compound: 'compound',
   eth: 'eth',
   nft: 'nft',
   optimism: 'optimism',
   polygon: 'polygon',
+  zora: 'zora',
   token: 'token',
   trash: 'trash',
   uniswap: 'uniswap',

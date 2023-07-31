@@ -6,6 +6,16 @@ query getContractFunction($chainID: Int!, $hex: String!) {
   }
 }
 
+query getEnsMarquee {
+  ensMarquee {
+    accounts {
+      name
+      address
+      avatar
+    }
+  }
+}
+
 fragment amount on RewardsAmount {
   usd
   token
@@ -90,6 +100,28 @@ query getRewardsDataForWallet($address: String!) {
         }
         rewardPercent
       }
+    }
+  }
+}
+
+query reverseResolveENSProfile(
+  $chainID: Int!
+  $address: String!
+  $fields: [String!]
+) {
+  reverseResolveENSProfile(
+    chainID: $chainID
+    address: $address
+    fields: $fields
+  ) {
+    name
+    address
+    resolverAddress
+    reverseResolverAddress
+    chainID
+    fields {
+      key
+      value
     }
   }
 }

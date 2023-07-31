@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
@@ -10,7 +10,6 @@ import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
 import { useWallets } from '@/hooks';
@@ -22,10 +21,13 @@ import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import { updateSession, disconnectSession } from '@/utils/walletConnect';
+import {
+  changeAccount,
+  disconnectSession,
+  isSupportedChain,
+} from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
@@ -87,7 +89,7 @@ export function WalletConnectV2ListItem({
     const { chains } = requiredNamespaces.eip155;
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
-    if (!eip155Account) {
+    if (!eip155Account || !chains || !chains.length) {
       const e = new RainbowError(
         `WalletConnectV2ListItem: unsupported namespace`
       );
@@ -102,7 +104,9 @@ export function WalletConnectV2ListItem({
       string,
       string
     ];
-    const chainIds = chains.map(chain => parseInt(chain.split(':')[1]));
+    const chainIds = chains
+      .map(chain => parseInt(chain.split(':')[1]))
+      .filter(isSupportedChain);
 
     if (!address) {
       const e = new RainbowError(
@@ -115,10 +119,9 @@ export function WalletConnectV2ListItem({
     }
 
     return {
-      dappName:
-        dappNameOverride(metadata.url) || metadata.name || 'Unknown Dapp',
+      dappName: metadata.name || 'Unknown Dapp',
       dappUrl: metadata.url || 'Unknown URL',
-      dappLogo: dappLogoOverride(metadata.url) || metadata.icons[0],
+      dappLogo: metadata.icons[0],
       address,
       chainIds,
     };
@@ -146,7 +149,7 @@ export function WalletConnectV2ListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: address,
       onChangeWallet: async (address: string) => {
-        await updateSession(session, { address });
+        await changeAccount(session, { address });
         reload();
         goBack();
       },
@@ -180,6 +183,7 @@ export function WalletConnectV2ListItem({
   }, [session, address, dappName, dappUrl, handlePressChangeWallet]);
 
   const handleOnPressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
         await disconnectSession(session);

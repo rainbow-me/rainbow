@@ -1,7 +1,15 @@
 import React from 'react';
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  Column,
+  Columns,
+  Inline,
+  Stack,
+  Text,
+} from '@/design-system';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { RANK_SYMBOLS } from '@/screens/rewards/constants';
+import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
@@ -16,6 +24,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
+import { analyticsV2 } from '@/analytics';
 
 const MaskedGradientText: React.FC<{
   text: string;
@@ -25,14 +34,23 @@ const MaskedGradientText: React.FC<{
     <Box>
       <MaskedView
         maskElement={
-          <Box>
+          <Box
+            paddingVertical="4px"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Text size="13pt" color="label" weight="bold">
               {text}
             </Text>
           </Box>
         }
       >
-        <Box style={{ opacity: 0 }}>
+        <Box
+          paddingVertical="4px"
+          alignItems="center"
+          justifyContent="center"
+          style={{ opacity: 0 }}
+        >
           <Text size="13pt" color="label" weight="bold">
             {text}
           </Text>
@@ -81,11 +99,14 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
     bonusEarnedInToken,
     tokenSymbol
   );
-  const additionalRewardText = `+${formattedBonusEarned} ${tokenSymbol}`;
+  const additionalRewardText = `+${formattedBonusEarned}`;
 
   const navigateToProfile = () => {
+    analyticsV2.track(analyticsV2.event.rewardsPressedLeaderboardItem, {
+      ens,
+    });
     navigate(Routes.PROFILE_SHEET, {
-      address: ens,
+      address: ens ?? address,
       // TODO: If we want to use it for other rewards we will have to make this analytics configurable
       from: Routes.OP_REWARDS_SHEET,
     });
@@ -95,7 +116,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
     <ButtonPressAnimation
       onPress={navigateToProfile}
       scaleTo={0.96}
-      disabled={!ens}
+      overflowMargin={10}
     >
       <Stack>
         <Columns space="10px" alignVertical="center">
@@ -104,12 +125,19 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
               {avatarUrl ? (
                 <ImageAvatar image={avatarUrl} size="rewards" />
               ) : (
-                <ContactAvatar color={color} size="smedium" value={emoji} />
+                <ContactAvatar color={color} size="rewards" value={emoji} />
               )}
             </Box>
           </Column>
           <Stack space="8px">
-            <Text color="label" size="15pt" weight="semibold">
+            <Text
+              color="label"
+              ellipsizeMode="middle"
+              numberOfLines={1}
+              size="15pt"
+              weight="semibold"
+              containsEmoji
+            >
               {ens ?? `${address.slice(0, 6)}...${address.slice(-4)}`}
             </Text>
             <Text size="13pt" color="labelTertiary" weight="semibold">
@@ -129,16 +157,28 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
                   {additionalRewardText}
                 </Text>
               )}
-              <Box paddingLeft="8px">
+            </Inline>
+          </Column>
+          <Column width={{ custom: 42 }}>
+            <Inline alignHorizontal="center" alignVertical="center">
+              {rank < 4 && rank > 0 ? (
                 <Text
                   color="labelTertiary"
                   size="20pt"
                   weight={rank < 4 ? 'heavy' : 'semibold'}
                   containsEmoji={rank < 4}
                 >
-                  {RANK_SYMBOLS[rank.toString()] ?? rank}
+                  {TOP_RANK_SYMBOLS[rank.toString()]}
                 </Text>
-              </Box>
+              ) : (
+                <Text
+                  size={rank >= 100 ? '11pt' : '13pt'}
+                  color="labelTertiary"
+                  weight="heavy"
+                >
+                  {`#${rank}`}
+                </Text>
+              )}
             </Inline>
           </Column>
         </Columns>

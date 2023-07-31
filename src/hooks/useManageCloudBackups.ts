@@ -1,7 +1,7 @@
+import { useCallback } from 'react';
 import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
-import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   deleteAllBackups,
@@ -9,16 +9,14 @@ import {
   fetchUserDataFromCloud,
 } from '@/handlers/cloudBackup';
 import { useNavigation } from '@/navigation/Navigation';
-import { walletsUpdate } from '@/redux/wallets';
+import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
-  const { wallets } = useWallets();
   const { navigate } = useNavigation();
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const manageCloudBackups = useCallback(() => {
     const buttons = [
       `Restore from ${cloudPlatform} Backups`,
@@ -114,16 +112,7 @@ export default function useManageCloudBackups() {
             },
             async (buttonIndex: any) => {
               if (buttonIndex === 0) {
-                const newWallets = { ...wallets };
-                Object.keys(newWallets).forEach(key => {
-                  newWallets[key].backedUp = undefined;
-                  newWallets[key].backupDate = undefined;
-                  newWallets[key].backupFile = undefined;
-                  newWallets[key].backupType = undefined;
-                });
-
-                await dispatch(walletsUpdate(newWallets));
-
+                await dispatch(clearAllWalletsBackupStatus());
                 // Delete all backups (debugging)
                 await deleteAllBackups();
 
@@ -134,7 +123,7 @@ export default function useManageCloudBackups() {
         }
       }
     );
-  }, [dispatch, navigate, wallets]);
+  }, [dispatch, navigate]);
 
   return { manageCloudBackups };
 }

@@ -33,10 +33,10 @@ import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics, analyticsV2 } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import { addressCopiedToastAtom } from '@/screens/WalletScreen';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { getAllActiveSessionsSync } from '@/utils/walletConnect';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -178,25 +178,11 @@ function BuyButton() {
       return;
     }
 
-    if (!config.wyre_enabled) {
-      navigate(Routes.EXPLAIN_SHEET, { type: 'wyre_degradation' });
-      return;
-    }
-
     analytics.track('Tapped "Add Cash"', {
       category: 'home screen',
     });
 
-    if (ios) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
-      });
-    }
+    navigate(Routes.ADD_CASH_SHEET);
   }, [accountAddress, isDamaged, navigate]);
 
   return (
@@ -280,9 +266,7 @@ export function MoreButton() {
   );
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
-  const [activeWCV2Sessions, setActiveWCV2Sessions] = React.useState(
-    getAllActiveSessionsSync()
-  );
+  const { sessions: activeWCV2Sessions } = useWalletConnectV2Sessions();
 
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {

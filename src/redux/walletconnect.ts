@@ -3,7 +3,6 @@ import { parseWalletConnectUri } from '@walletconnect/legacy-utils';
 import lang from 'i18n-js';
 import { clone, isEmpty, mapValues, values } from 'lodash';
 import { AppState, InteractionManager, Linking } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -14,7 +13,6 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
@@ -24,13 +22,14 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
 import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
+import { IS_DEV, IS_TEST } from '@/env';
+import { RainbowNetworks } from '@/networks';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -167,7 +166,7 @@ export interface WalletconnectApprovalSheetRouteParams {
 /**
  * A callback for a WalletConnect request.
  */
-type WalletconnectRequestCallback = (
+export type WalletconnectRequestCallback = (
   type: WalletconnectResultType,
   scheme?: string | null
 ) => unknown;
@@ -198,15 +197,13 @@ const WALLETCONNECT_ADD_URI = 'walletconnect/WALLETCONNECT_ADD_URI';
  */
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
-  let token = null;
-  try {
-    token = await getFCMToken();
-  } catch (error) {
+  const token = await getFCMToken();
+
+  if (!token && !IS_DEV) {
     logger.error(
       new RainbowError(
-        'WC: Error getting FCM token, ignoring token for WC connection'
-      ),
-      { error }
+        `WC: FCM token not found, push notifications will not be received`
+      )
     );
   }
 
@@ -272,7 +269,7 @@ export const walletConnectRemovePendingRedirect = (
         Minimizer.goBack();
       }, 300);
     } else {
-      IS_TESTING !== 'true' && Minimizer.goBack();
+      !IS_TEST && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect
@@ -299,6 +296,7 @@ export const walletConnectRemovePendingRedirect = (
  */
 export const walletConnectOnSessionRequest = (
   uri: string,
+  connector?: string,
   callback?: WalletconnectRequestCallback
 ) => async (
   dispatch: ThunkDispatch<StoreAppState, unknown, never>,
@@ -360,6 +358,7 @@ export const walletConnectOnSessionRequest = (
             analytics.track('Approved new WalletConnect session', {
               dappName,
               dappUrl,
+              connector,
             });
           } else if (!timedOut) {
             await dispatch(
@@ -369,6 +368,7 @@ export const walletConnectOnSessionRequest = (
             analytics.track('Rejected new WalletConnect session', {
               dappName,
               dappUrl,
+              connector,
             });
           } else {
             callback?.('timedOut', dappScheme);
@@ -379,6 +379,7 @@ export const walletConnectOnSessionRequest = (
               bridge,
               dappName,
               dappUrl,
+              connector,
             });
           }
         },
@@ -397,19 +398,19 @@ export const walletConnectOnSessionRequest = (
             error,
             payload,
           });
-          throw error;
+          return;
         }
         const { peerId, peerMeta, chainId } = payload.params[0];
 
-        const imageUrl =
-          dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
-        const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+        const imageUrl = peerMeta?.icons?.[0];
+        const dappName = peerMeta?.name;
         const dappUrl = peerMeta?.url;
         const dappScheme = peerMeta?.scheme;
 
         analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
+          connector,
         });
 
         meta = {
@@ -435,12 +436,12 @@ export const walletConnectOnSessionRequest = (
 
       let waitingFn: (callback: () => unknown, timeout: number) => unknown =
         InteractionManager.runAfterInteractions;
-      if (IS_TESTING === 'true') {
+      if (IS_TEST) {
         waitingFn = setTimeout;
       }
 
       waitingFn(async () => {
-        if (IS_TESTING !== 'true') {
+        if (IS_TEST) {
           // Wait until the app is idle so we can navigate
           // This usually happens only when coming from a cold start
           while (!getState().appState.walletReady) {
@@ -512,18 +513,22 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       { error, payload },
       logger.DebugContext.walletconnect
     );
+
     if (error) {
       analytics.track('Error on wc call_request', {
         // @ts-ignore
         error,
         payload,
       });
-      logger.error(new RainbowError('WC: Error on wc call_request'));
-      throw error;
+      logger.error(new RainbowError('WC: Error on wc call_request'), {
+        message: error,
+      });
+      return;
     }
+
     const { clientId, peerId, peerMeta } = walletConnector;
-    const imageUrl = dappLogoOverride(peerMeta?.url) || peerMeta?.icons?.[0];
-    const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+    const imageUrl = peerMeta?.icons?.[0];
+    const dappName = peerMeta?.name;
     const dappUrl = peerMeta?.url;
     const requestId = payload.id;
     if (
@@ -535,14 +540,9 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         // @ts-expect-error "_chainId" is private.
         Number(walletConnector._chainId)
       );
-      const supportedChains = [
-        networkTypes.mainnet,
-        networkTypes.goerli,
-        networkTypes.polygon,
-        networkTypes.bsc,
-        networkTypes.optimism,
-        networkTypes.arbitrum,
-      ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
+      const supportedChains = RainbowNetworks.filter(
+        network => network.features.walletconnect
+      ).map(network => network.id.toString());
       const numericChainId = convertHexToString(chainId);
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
@@ -572,7 +572,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               analytics.track('Approved WalletConnect network switch', {
                 chainId,
                 dappName,
-                // @ts-ignore
                 dappUrl,
               });
               dispatch(walletConnectRemovePendingRedirect('connect'));
@@ -583,7 +582,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               });
               analytics.track('Rejected new WalletConnect chain request', {
                 dappName,
-                // @ts-ignore
                 dappUrl,
               });
             }
@@ -649,7 +647,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         InteractionManager.runAfterInteractions(() => {
           analytics.track('Showing Walletconnect signing request', {
             dappName,
-            // @ts-ignore
             dappUrl,
           });
         });
@@ -658,8 +655,14 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
   });
   walletConnector.on('disconnect', error => {
     if (error) {
-      throw error;
+      logger.error(new RainbowError('WC: Error on wc disconnect'), {
+        message: error,
+      });
+
+      // we used to throw, so for parity, return
+      return;
     }
+
     dispatch(
       walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta!.url, false)
     );
@@ -679,7 +682,7 @@ export const walletConnectLoadState = () => async (
   getState: AppGetState
 ) => {
   while (!getState().walletconnect.walletConnectors) {
-    await delay(300);
+    await delay(50);
   }
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};

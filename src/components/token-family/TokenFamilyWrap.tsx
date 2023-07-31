@@ -76,6 +76,7 @@ export default React.memo(function TokenFamilyWrap({
           paddingTop: areChildrenVisible ? TokenFamilyWrapPaddingTop : 0,
         }}
       >
+        {/* @ts-expect-error times fn returns unknown[] type which is not acceptable by React 18 */}
         {areChildrenVisible ? times(item.length, renderItem) : null}
       </View>
     </View>

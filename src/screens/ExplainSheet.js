@@ -20,10 +20,12 @@ import { AccentColorProvider, Box } from '@/design-system';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
 import AppIconRainDoge from '@/assets/appIconRainDoge.png';
 import AppIconOptimism from '@/assets/appIconOptimism.png';
+import AppIconPooly from '@/assets/appIconPooly.png';
+import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
+import AppIconZorb from '@/assets/appIconZorb.png';
 import TheMergePng from '@/assets/theMerge.png';
-import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
@@ -31,16 +33,14 @@ import { ImgixImage } from '@/components/images';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import {
-  deviceUtils,
-  ethereumUtils,
-  gasUtils,
-  getTokenMetadata,
-} from '@/utils';
+import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
+import * as i18n from '@/languages';
+import { getNetworkObj } from '@/networks';
 
 const { GAS_TRENDS } = gasUtils;
 const APP_ICON_SIZE = 64;
@@ -99,6 +99,23 @@ const OptimismAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconOptimism}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const FiniliarAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.finiliarPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconFiniliar}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -114,6 +131,7 @@ const GoldDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconGoldDoge}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -129,6 +147,23 @@ const RainDogeAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconRainDoge}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const PoolyAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.poolyPurple}>
+      <Box
+        as={ImgixImage}
+        source={AppIconPooly}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -144,6 +179,7 @@ const SmolAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconSmol}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
@@ -159,9 +195,27 @@ const ZoraAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconZora}
+        size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
         shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
+const ZorbAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.zorbPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZorb}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
       />
     </AccentColorProvider>
   );
@@ -175,6 +229,7 @@ const TheMergeIcon = () => {
       }}
     >
       <ImgixImage
+        size={50}
         source={TheMergePng}
         style={{
           width: 53,
@@ -194,7 +249,7 @@ const gasExplainer = network =>
 
 const availableNetworksExplainer = (tokenSymbol, networks) => {
   const readableNetworks = networks
-    ?.map(network => networkInfo[network]?.name)
+    ?.map(network => getNetworkObj(network).name)
     ?.join(', ');
 
   return lang.t('explain.available_networks.text', {
@@ -236,6 +291,10 @@ const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
 const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
+
+const BASE_EXPLAINER = lang.t('explain.base.text');
+
+const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
@@ -280,6 +339,18 @@ const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
 
+const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
+
+const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
+
+const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.finiliar_text');
+
+const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.finiliar_title');
+
+const ZORB_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
+
+const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -288,6 +359,42 @@ const navigateToAppIconSettings = async (navigate, goBack) => {
 };
 
 export const explainers = (params, colors) => ({
+  op_rewards_airdrop_timing: {
+    emoji: '📦',
+    title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
+    text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+  },
+  op_rewards_amount_distributed: {
+    emoji: '💰',
+    title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
+    text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
+    extraHeight: IS_ANDROID ? -110 : -65,
+  },
+  op_rewards_bridge: {
+    emoji: '🌉',
+    title: i18n.t(i18n.l.rewards.op.bridge.title),
+    text: i18n.t(i18n.l.rewards.op.bridge.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+  },
+  op_rewards_swap: {
+    emoji: '🔀',
+    title: i18n.t(i18n.l.rewards.op.swap.title),
+    text: i18n.t(i18n.l.rewards.op.swap.text),
+    extraHeight: IS_ANDROID ? -65 : 10,
+  },
+  op_rewards_position: {
+    emoji: '🏆',
+    title: i18n.t(i18n.l.rewards.op.position.title),
+    text: i18n.t(i18n.l.rewards.op.position.text),
+    extraHeight: IS_ANDROID ? -110 : -65,
+  },
   optimism_app_icon: {
     logo: <OptimismAppIcon />,
     extraHeight: -35,
@@ -298,6 +405,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.optimismRed,
       bgColor: colors?.optimismRed06,
+    },
+  },
+  finiliar_app_icon: {
+    logo: <FiniliarAppIcon />,
+    extraHeight: -90,
+    text: FINILIAR_APP_ICON_EXPLAINER,
+    title: FINILIAR_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.finiliarPink,
+      bgColor: colors?.finiliarPink06,
     },
   },
   golddoge_app_icon: {
@@ -324,6 +443,18 @@ export const explainers = (params, colors) => ({
       bgColor: colors?.dogeGold06,
     },
   },
+  pooly_app_icon: {
+    logo: <PoolyAppIcon />,
+    extraHeight: -90,
+    text: POOLY_APP_ICON_EXPLAINER,
+    title: POOLY_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.poolyPurple,
+      bgColor: colors?.poolyPurple06,
+    },
+  },
   smol_app_icon: {
     logo: <SmolAppIcon />,
     extraHeight: -65,
@@ -348,6 +479,18 @@ export const explainers = (params, colors) => ({
       bgColor: colors?.appleBlue06,
     },
   },
+  zorb_app_icon: {
+    logo: <ZorbAppIcon />,
+    extraHeight: -65,
+    text: ZORB_APP_ICON_EXPLAINER,
+    title: ZORB_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.zorbPink,
+      bgColor: colors?.zorbPink06,
+    },
+  },
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
@@ -357,7 +500,7 @@ export const explainers = (params, colors) => ({
           }`,
           {
             inputToken: params?.inputToken,
-            fromNetwork: networkInfo[params?.fromNetwork]?.name,
+            fromNetwork: getNetworkObj(params?.fromNetwork).name,
           }
         )
       : lang.t('explain.output_disabled.title_empty'),
@@ -370,12 +513,12 @@ export const explainers = (params, colors) => ({
           {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
-            fromNetwork: networkInfo[params?.fromNetwork]?.name,
-            toNetwork: networkInfo[params?.toNetwork]?.name,
+            fromNetwork: getNetworkObj(params?.fromNetwork).name,
+            toNetwork: getNetworkObj(params?.toNetwork).name,
           }
         )
       : lang.t('explain.output_disabled.text', {
-          fromNetwork: networkInfo[params?.fromNetwork]?.name,
+          fromNetwork: getNetworkObj(params?.fromNetwork)?.name,
           inputToken: params?.inputToken,
           outputToken: params?.outputToken,
         }),
@@ -541,8 +684,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: OPTIMISM_EXPLAINER,
     title: lang.t('explain.optimism.title'),
   },
@@ -557,8 +704,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: ARBITRUM_EXPLAINER,
     title: lang.t('explain.arbitrum.title'),
   },
@@ -573,8 +724,12 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: POLYGON_EXPLAINER,
     title: lang.t('explain.polygon.title'),
   },
@@ -589,10 +744,54 @@ export const explainers = (params, colors) => ({
         size="large"
       />
     ),
-    readMoreLink:
-      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
     text: BSC_EXPLAINER,
     title: lang.t('explain.bsc.title'),
+  },
+  zora: {
+    emoji: '⛽️',
+    extraHeight: 144,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.zora}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+    text: ZORA_EXPLAINER,
+    title: lang.t('explain.zora.title'),
+  },
+  base: {
+    emoji: '⛽️',
+    extraHeight: 144,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.base}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+    text: BASE_EXPLAINER,
+    title: lang.t('explain.base.title'),
   },
   failed_wc_connection: {
     emoji: '😵',
@@ -602,9 +801,21 @@ export const explainers = (params, colors) => ({
   },
   failed_wc_invalid_methods: {
     emoji: '😵',
-    extraHeight: -50,
+    extraHeight: -100,
     text: lang.t('explain.failed_wc_invalid_methods.text'),
     title: lang.t('explain.failed_wc_invalid_methods.title'),
+  },
+  failed_wc_invalid_chains: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chains.text'),
+    title: lang.t('explain.failed_wc_invalid_chains.title'),
+  },
+  failed_wc_invalid_chain: {
+    emoji: '😵',
+    extraHeight: -100,
+    text: lang.t('explain.failed_wc_invalid_chain.text'),
+    title: lang.t('explain.failed_wc_invalid_chain.title'),
   },
   backup: {
     emoji: '🔐',
@@ -622,7 +833,7 @@ export const explainers = (params, colors) => ({
   },
   swapResetInputs: {
     button: {
-      label: `Continue with ${networkInfo[params?.network]?.name}`,
+      label: `Continue with ${getNetworkObj(params?.network)?.name}`,
       bgColor:
         colors?.networkColors[params?.network] &&
         colors?.alpha(colors?.networkColors[params?.network], 0.06),
@@ -633,7 +844,7 @@ export const explainers = (params, colors) => ({
     emoji: '🔐',
     extraHeight: -90,
     text: SWAP_RESET_EXPLAINER,
-    title: `Switching to ${networkInfo[params?.network]?.name}`,
+    title: `Switching to ${getNetworkObj(params?.network)?.name}`,
     logo:
       params?.network !== 'mainnet' ? (
         <ChainBadge
@@ -646,6 +857,12 @@ export const explainers = (params, colors) => ({
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
   },
+  f2cSemiSupportedAssetPurchased: {
+    emoji: '🎉',
+    title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+    extraHeight: -80,
+  },
   insufficientLiquidity: {
     extraHeight: -20,
     emoji: '🏦',
@@ -657,7 +874,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -788,7 +1011,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -824,7 +1053,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/protecting-transactions-with-flashbots'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -849,7 +1084,13 @@ export const explainers = (params, colors) => ({
           color={colors?.appleBlue}
           onPress={() =>
             Linking.openURL(
-              'https://learn.rainbow.me/swap-with-confidence-with-rainbow'
+              buildRainbowLearnUrl({
+                url:
+                  'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                query: {
+                  campaign: 'explain',
+                },
+              })
             )
           }
           size="large"
@@ -888,31 +1129,6 @@ export const explainers = (params, colors) => ({
     ),
     text: lang.t('explain.slippage.text'),
     title: lang.t('explain.slippage.title'),
-  },
-  wyre_degradation: {
-    logo: <TheMergeIcon />,
-    extraHeight: deviceUtils.isSmallPhone ? 121 : 76,
-    text: lang.t('explain.wyre_degradation.text'),
-    title: lang.t('explain.wyre_degradation.title'),
-    stillCurious: (
-      <Text {...getBodyTextPropsWithColor(colors)}>
-        {lang.t('explain.wyre_degradation.still_curious.fragment1')}
-        <Text
-          color={colors?.appleBlue}
-          onPress={() =>
-            Linking.openURL(
-              'https://support.sendwyre.com/hc/en-us/articles/8611451495319-Ethereum-Merge-101'
-            )
-          }
-          size="large"
-          suppressHighlighting
-          weight="semibold"
-        >
-          {lang.t('explain.wyre_degradation.still_curious.fragment2')}
-        </Text>
-        {lang.t('explain.wyre_degradation.still_curious.fragment3')}
-      </Text>
-    ),
   },
   swap_refuel_add: {
     logo: (
@@ -1173,9 +1389,6 @@ const ExplainSheet = () => {
     explainSheetConfig.button,
     explainSheetConfig.secondaryButton,
     explainSheetConfig?.readMoreLink,
-    explainSheetConfig.secondaryButton?.bgColor,
-    explainSheetConfig.secondaryButton?.label,
-    explainSheetConfig.secondaryButton?.textColor,
     goBack,
     handleClose,
     handleReadMore,

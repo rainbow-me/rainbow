@@ -24,8 +24,7 @@ export const estimateUnlockAndCrosschainSwap = async (
   }
   const { accountAddress } = store.getState().settings;
 
-  const routeAllowanceTargetAddress =
-    tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
+  const routeAllowanceTargetAddress = tradeDetails?.allowanceTarget;
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
@@ -79,8 +78,7 @@ export const createUnlockAndCrosschainSwapRap = async (
   const { accountAddress } = store.getState().settings;
 
   // this will probably need refactor
-  const routeAllowanceTargetAddress =
-    tradeDetails?.routes?.[0]?.userTxs?.[0]?.approvalData?.allowanceTarget;
+  const routeAllowanceTargetAddress = tradeDetails?.allowanceTarget;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset =

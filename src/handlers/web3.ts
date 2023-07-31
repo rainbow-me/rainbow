@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -7,7 +6,6 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import {
   Block,
   Network as EthersNetwork,
-  JsonRpcProvider,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -15,10 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
-import { MMKV } from 'react-native-mmkv';
 import { RainbowConfig } from '../model/config';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
@@ -31,6 +26,8 @@ import {
   BNB_BSC_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
+  CRYPTO_KITTIES_NFT_ADDRESS,
+  CRYPTO_PUNKS_NFT_ADDRESS,
 } from '@/references';
 import {
   addBuffer,
@@ -40,10 +37,17 @@ import {
   greaterThan,
   handleSignificantDecimals,
   multiply,
+  omitFlatten,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { fetchContractABI } from '@/utils/ethereumUtils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
+import { IS_IOS } from '@/env';
+import { getNetworkObj } from '@/networks';
+
+export enum TokenStandard {
+  ERC1155 = 'ERC1155',
+  ERC721 = 'ERC721',
+}
 
 export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
@@ -109,6 +113,8 @@ export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
   rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
   rpcEndpoints[Network.bsc] = config.bsc_mainnet_rpc;
+  rpcEndpoints[Network.zora] = config.zora_mainnet_rpc;
+  rpcEndpoints[Network.base] = config.base_mainnet_rpc;
 };
 
 /**
@@ -144,15 +150,7 @@ export const web3SetHttpProvider = async (
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Network = (network: Network | string): boolean => {
-  switch (network) {
-    case Network.arbitrum:
-    case Network.optimism:
-    case Network.polygon:
-    case Network.bsc:
-      return true;
-    default:
-      return false;
-  }
+  return getNetworkObj(network as Network).networkType === 'layer2';
 };
 
 /**
@@ -170,14 +168,10 @@ export const isHardHat = (providerUrl: string): boolean => {
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetNetwork = (network: Network): boolean => {
-  switch (network) {
-    case Network.goerli:
-      return true;
-    default:
-      return false;
-  }
+  return getNetworkObj(network as Network).networkType === 'testnet';
 };
 
+// shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
     'https://rpc.flashbots.net',
@@ -202,7 +196,7 @@ export const getProviderForNetwork = async (
     networkProviders[Network.mainnet] = provider;
     return provider;
   } else {
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    const chainId = getNetworkObj(network).id;
     const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
     if (!networkProviders[network]) {
       networkProviders[network] = provider;
@@ -287,9 +281,9 @@ export const isValidMnemonic = (value: string): boolean =>
  * @return Whether or not the string was a valid bluetooth device id
  */
 export const isValidBluetoothDeviceId = (value: string): boolean => {
-  return (
-    value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
-  );
+  return IS_IOS
+    ? value.length === 36 && isHexStringIgnorePrefix(value.replaceAll('-', ''))
+    : value.length === 17 && isHexStringIgnorePrefix(value.replaceAll(':', ''));
 };
 
 /**
@@ -367,32 +361,39 @@ export async function estimateGasWithPadding(
       (!contractCallEstimateGas && !to) ||
       (to && !data && (!code || code === '0x'))
     ) {
-      logger.sentry(
-        '⛽ Skipping estimates, using default',
-        ethUnits.basic_tx.toString()
-      );
+      logger.info('⛽ Skipping estimates, using default', {
+        ethUnits: ethUnits.basic_tx.toString(),
+      });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.sentry('⛽ Calculating safer gas limit for last block');
+    logger.info('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.sentry('⛽ safer gas limit for last block is', saferGasLimit);
+    logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
     );
 
+    // safety precaution: we want to ensure these properties are not used for gas estimation
+    const cleanTxPayload = omitFlatten(txPayloadToEstimate, [
+      'gas',
+      'gasLimit',
+      'gasPrice',
+      'maxFeePerGas',
+      'maxPriorityFeePerGas',
+    ]);
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
-      : p.estimateGas(txPayloadToEstimate));
+      : p.estimateGas(cleanTxPayload));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
       paddingFactor.toString()
     );
-    logger.sentry('⛽ GAS CALCULATIONS!', {
+    logger.info('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -401,22 +402,26 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.sentry(
-        '⛽ returning orginal gas estimation',
-        estimatedGas.toString()
-      );
+      logger.info('⛽ returning orginal gas estimation', {
+        esimatedGas: estimatedGas.toString(),
+      });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.sentry('⛽ returning padded gas estimation', paddedGas);
+      logger.info('⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.sentry('⛽ returning last block gas limit', lastBlockGasLimit);
+    logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
-  } catch (error) {
-    logger.debug('Error calculating gas limit with padding', error);
+  } catch (e: any) {
+    /*
+     * Reported ~400x per day, but if it's not actionable it might as well be a warning.
+     */
+    logger.warn('Error calculating gas limit with padding', {
+      message: e.message,
+    });
     return null;
   }
 }
@@ -519,7 +524,11 @@ export const resolveUnstoppableDomain = async (
     .then((address: string) => {
       return address;
     })
-    .catch((error: any) => logger.error(error));
+    .catch((error: any) => {
+      logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
+        message: error.message,
+      });
+    });
   return res;
 };
 
@@ -572,7 +581,7 @@ export const getTransferNftTransaction = async (
 
   const { from, nonce } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
-  const data = await getDataForNftTransfer(from, recipient, transaction.asset);
+  const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
     data,
@@ -689,27 +698,38 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param from The sender's address.
  * @param to The recipient's address.
  * @param asset The asset to transfer.
- * @return The data string.
+ * @return The data string if the transfer can be attempted, otherwise undefined.
  */
-export const getDataForNftTransfer = async (
+export const getDataForNftTransfer = (
   from: string,
   to: string,
   asset: ParsedAddressAsset
-): Promise<string> => {
-  const nftVersion = asset.asset_contract?.nft_version;
-  const schema_name = asset.asset_contract?.schema_name;
-  if (nftVersion === '3.0') {
-    const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
-      ethereumUtils.removeHexPrefix(from),
+): string | undefined => {
+  if (!asset.id || !asset.asset_contract?.address) return;
+  const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
+  const standard = asset.asset_contract?.schema_name;
+  let data: string | undefined;
+  if (
+    lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.token_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-    return data;
-  } else if (schema_name === 'ERC1155') {
-    const transferMethodHash =
-      smartContractMethods.erc1155_safe_transfer_from.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
+  } else if (
+    lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS &&
+    asset.network === Network.mainnet
+  ) {
+    const transferMethod = smartContractMethods.punk_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(to),
+      convertStringToHex(asset.id),
+    ]);
+  } else if (standard === TokenStandard.ERC1155) {
+    const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
+    data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
@@ -717,31 +737,14 @@ export const getDataForNftTransfer = async (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-    return data;
-  } else if (IS_TESTING === 'true') {
-    const transferMethodHash = smartContractMethods.nft_transfer.hash;
-    const data = ethereumUtils.getDataString(transferMethodHash, [
+  } else if (standard === TokenStandard.ERC721) {
+    const transferMethod = smartContractMethods.erc721_transfer;
+    data = ethereumUtils.getDataString(transferMethod.hash, [
+      ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
       convertStringToHex(asset.id),
     ]);
-    return data;
   }
-
-  const address = asset.asset_contract?.address!;
-  const abi = await fetchContractABI(address);
-  const iface = new Interface(abi);
-
-  const isTransferFrom =
-    iface.functions?.[smartContractMethods.nft_transfer_from.method];
-  const transferMethodHash = isTransferFrom
-    ? smartContractMethods.nft_transfer_from.hash
-    : smartContractMethods.nft_transfer.hash;
-
-  const data = ethereumUtils.getDataString(transferMethodHash, [
-    ...(isTransferFrom ? [ethereumUtils.removeHexPrefix(from)] : []),
-    ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(asset.id),
-  ]);
   return data;
 };
 
@@ -784,7 +787,7 @@ export const buildTransaction = async (
   };
   if (asset.type === AssetType.nft) {
     const contractAddress = asset.asset_contract?.address;
-    const data = await getDataForNftTransfer(address, _recipient, asset);
+    const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,
@@ -839,57 +842,5 @@ export const estimateGasLimit = async (
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {
     return estimateGas(estimateGasData, provider);
-  }
-};
-
-const HAS_MERGED_DEFAULTS: { [key: string]: boolean } = {
-  [Network.mainnet]: false,
-  [Network.goerli]: false,
-};
-const hasMergedStorage = new MMKV();
-export const getHasMerged = (network: Network) => {
-  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
-  if (storage) {
-    const data = JSON.parse(storage);
-    const hasMerged = data[network];
-    if (hasMerged === undefined) {
-      data[network] = HAS_MERGED_DEFAULTS[network];
-      hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
-    }
-    return data[network];
-  } else {
-    hasMergedStorage.set(
-      STORAGE_IDS.HAS_MERGED,
-      JSON.stringify(HAS_MERGED_DEFAULTS)
-    );
-  }
-};
-const getSetMergeStorageKey = (setting: boolean) => (network: Network) => {
-  const storage = hasMergedStorage.getString(STORAGE_IDS.HAS_MERGED);
-  if (storage) {
-    const data = JSON.parse(storage);
-    data[network] = setting;
-    hasMergedStorage.set(STORAGE_IDS.HAS_MERGED, JSON.stringify(data));
-  }
-};
-export const setHasMerged = (network: Network) => {
-  getSetMergeStorageKey(true)(network);
-};
-export const setHasNotMerged = (network: Network) => {
-  getSetMergeStorageKey(false)(network);
-};
-export const checkForTheMerge = async (
-  provider: JsonRpcProvider,
-  network: Network
-) => {
-  const currentHasMerged = getHasMerged(network);
-  if (currentHasMerged !== true) {
-    const block = await provider.getBlock('latest');
-    const { _difficulty } = block;
-    if (_difficulty.toString() === '0') {
-      setHasMerged(network);
-    } else if (currentHasMerged) {
-      setHasNotMerged(network);
-    }
   }
 };

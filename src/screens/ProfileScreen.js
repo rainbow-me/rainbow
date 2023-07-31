@@ -3,11 +3,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
+import { ProfileMasthead } from '../components/profile';
 import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
-  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,
@@ -95,7 +95,6 @@ export default function ProfileScreen({ navigation }) {
         isLoading={isLoading}
         navigation={navigation}
         network={network}
-        recyclerListView={ios}
         sections={sections}
         {...accountTransactions}
       />

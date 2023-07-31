@@ -165,9 +165,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('network-switcher-10');
     await Helpers.waitAndTap('network-switcher-item-arbitrum');
     await Helpers.checkIfVisible('network-switcher-42161');
-    await Helpers.swipe('network-switcher-scroll-view', 'left', 'fast');
-    await Helpers.waitAndTap('network-switcher-item-polygon');
-    await Helpers.checkIfVisible('network-switcher-137');
     await Helpers.waitAndTap('currency-select-header-back-button');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
@@ -339,14 +336,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.clearField('exchange-modal-input-native-24');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.checkIfVisible('exchange-modal-output');
-  });
-
-  it('Should not show settings routes picker flashbots on Arbitrum', async () => {
-    await Helpers.waitAndTap('exchange-settings-button');
-    await Helpers.checkIfVisible('swap-settings-header');
-    await Helpers.checkIfNotVisible('swap-settings-routes-label');
-    await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
-    await Helpers.swipe('swap-settings-header', 'down', 'fast');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
   });
 

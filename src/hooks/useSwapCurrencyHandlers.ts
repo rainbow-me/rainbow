@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
@@ -124,7 +124,11 @@ export default function useSwapCurrencyHandlers({
   ]);
 
   const flipSwapCurrenciesWithTimeout = useCallback(
-    (focusToRef, outputIndependentField = false, independentValue = null) => {
+    (
+      focusToRef: React.RefObject<any>,
+      outputIndependentField = false,
+      independentValue: string | null = null
+    ) => {
       InteractionManager.runAfterInteractions(() => {
         dispatch(
           flipSwapCurrencies(
@@ -141,7 +145,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const flipCurrencies = useCallback(() => {
-    if (currentNetwork === Network.arbitrum || inputNetwork !== outputNetwork) {
+    if (inputNetwork !== outputNetwork) {
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
         nativeFieldRef.current === currentlyFocusedInput()
@@ -190,7 +194,7 @@ export default function useSwapCurrencyHandlers({
   ]);
 
   const updateInputCurrency = useCallback(
-    (inputCurrency, handleNavigate) => {
+    (inputCurrency: any, handleNavigate: any) => {
       const newInputCurrency = inputCurrency
         ? {
             ...inputCurrency,
@@ -209,7 +213,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const updateOutputCurrency = useCallback(
-    (outputCurrency, handleNavigate) => {
+    (outputCurrency: any, handleNavigate?: (outputCurrency: any) => void) => {
       const newOutputCurrency = outputCurrency
         ? {
             ...outputCurrency,
@@ -228,7 +232,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const navigateToSelectInputCurrency = useCallback(
-    chainId => {
+    (chainId: number) => {
       InteractionManager.runAfterInteractions(() => {
         // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
         dangerouslyGetParent().dangerouslyGetState().index = 0;
@@ -255,7 +259,7 @@ export default function useSwapCurrencyHandlers({
   );
 
   const navigateToSelectOutputCurrency = useCallback(
-    chainId => {
+    (chainId: number) => {
       InteractionManager.runAfterInteractions(() => {
         setParams({ focused: false });
         navigate(Routes.CURRENCY_SELECT_SCREEN, {

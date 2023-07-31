@@ -3,7 +3,7 @@ import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 
-export const CancelButton = () => (
+export const CancelButton = ({ onPress }: { onPress: () => void }) => (
   <Box width="full" alignItems="center" paddingBottom={{ custom: 5 }}>
     <Box
       as={ButtonPressAnimation}
@@ -14,7 +14,7 @@ export const CancelButton = () => (
       width={{ custom: 91 }}
       height={{ custom: 46 }}
       // @ts-expect-error js component
-      onPress={() => null}
+      onPress={onPress}
     >
       <Text size="17pt" weight="heavy" color="labelSecondary" align="center">
         {i18n.t(i18n.l.button.cancel)}

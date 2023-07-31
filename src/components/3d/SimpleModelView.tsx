@@ -6,10 +6,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;
@@ -87,7 +88,7 @@ export default function ModelViewer({
   const [progress, setProgress] = useState<number>(0);
   const originWhiteList = useMemo(() => ['*'], []);
   const onMessage = useCallback(
-    ({ nativeEvent: { data } }) => {
+    ({ nativeEvent: { data } }: WebViewMessageEvent) => {
       const { type, payload } = JSON.parse(data);
       if (type === 'progress') {
         setProgress(payload as number);
@@ -136,6 +137,7 @@ export default function ModelViewer({
         <ImgixImage
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}
+          size={FULL_NFT_IMAGE_SIZE}
         />
       </ProgressIndicatorContainer>
     </View>

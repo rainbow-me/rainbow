@@ -1,5 +1,5 @@
 import { useQueries } from '@tanstack/react-query';
-import { BigNumberish } from 'ethers';
+import { BigNumberish } from '@ethersproject/bignumber';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useENSRegistration from './useENSRegistration';

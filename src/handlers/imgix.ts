@@ -7,8 +7,11 @@ import {
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
-import { isCloudinaryStorageLink, signUrl } from '@/handlers/cloudinary';
-import logger from '@/utils/logger';
+import {
+  isCloudinaryStorageIconLink,
+  signCloudinaryIconUrl,
+} from '@/handlers/cloudinary';
+import { logger, RainbowError } from '@/logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (
@@ -23,8 +26,10 @@ const shouldCreateImgixClient = (): ImgixClient | null => {
       secureURLToken,
     });
   }
-  logger.log(
-    '[Imgix] Image signing disabled. Please ensure you have specified both IMGIX_DOMAIN and IMGIX_TOKEN inside your .env.'
+  logger.error(
+    new RainbowError(
+      '[Imgix] Image signing disabled. Please ensure you have specified both IMGIX_DOMAIN and IMGIX_TOKEN inside your .env.'
+    )
   );
   return null;
 };
@@ -68,8 +73,8 @@ const shouldSignUri = (
 
     // Firstly, we check if the url is a Cloudinary link.
     // Then, obviously, we use Cloudinary to transform the size and format.
-    if (isCloudinaryStorageLink(externalImageUri)) {
-      const signedExternalImageUri = signUrl(externalImageUri, {
+    if (isCloudinaryStorageIconLink(externalImageUri)) {
+      const signedExternalImageUri = signCloudinaryIconUrl(externalImageUri, {
         format: updatedOptions.fm,
         height: updatedOptions.h,
         width: updatedOptions.w,
@@ -103,7 +108,10 @@ const shouldSignUri = (
       );
     }
   } catch (e: any) {
-    logger.log(`[Imgix]: Failed to sign "${externalImageUri}"! (${e.message})`);
+    logger.error(new RainbowError(`[Imgix]: Failed to sign`), {
+      externalImageUri,
+      message: e.message,
+    });
     // If something goes wrong, it is not safe to assume the image is valid.
     return undefined;
   }
@@ -120,9 +128,10 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
     } catch (e: any) {
-      logger.log(
-        `[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`
-      );
+      logger.error(new RainbowError(`[Imgix]: Failed to parse`), {
+        externalImageUri,
+        message: e.message,
+      });
       return false;
     }
   }

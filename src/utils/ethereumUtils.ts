@@ -3,7 +3,6 @@ import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { captureException } from '@sentry/react-native';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import {
@@ -11,19 +10,19 @@ import {
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
-import { Contract } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 import lang from 'i18n-js';
-import { isEmpty, isString, replace } from 'lodash';
+import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
-import URL from 'url-parse';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   AssetType,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -36,63 +35,47 @@ import {
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
-  delay,
   fromWei,
   greaterThan,
   isZero,
   subtract,
+  add,
 } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import {
-  ARBITRUM_BLOCK_EXPLORER_URL,
   ARBITRUM_ETH_ADDRESS,
-  chains,
   ETH_ADDRESS,
   ethUnits,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   BNB_BSC_ADDRESS,
-  OPTIMISM_BLOCK_EXPLORER_URL,
   OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
-  POLYGON_BLOCK_EXPLORER_URL,
-  BSC_BLOCK_EXPLORER_URL,
-  supportedNativeCurrencies,
   BNB_MAINNET_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 
+// TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
-  let nativeAssetUniqueId;
-  switch (network) {
-    case Network.arbitrum:
-      nativeAssetUniqueId = `${ARBITRUM_ETH_ADDRESS}_${network}`;
-      break;
-    case Network.optimism:
-      nativeAssetUniqueId = `${OPTIMISM_ETH_ADDRESS}_${network}`;
-      break;
-    case Network.polygon:
-      nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
-      break;
-    case Network.bsc:
-      nativeAssetUniqueId = `${BNB_BSC_ADDRESS}_${network}`;
-      break;
-    default:
-      nativeAssetUniqueId = ETH_ADDRESS;
-  }
+  const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
+  const nativeAssetUniqueId =
+    network === Network.mainnet
+      ? nativeAssetAddress
+      : `${nativeAssetAddress}_${network}`;
+
   return getAccountAsset(nativeAssetUniqueId);
 };
 
@@ -104,46 +87,20 @@ const getNativeAssetForNetwork = async (
   const { accountAddress } = store.getState().settings;
   const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
-  let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
+  let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
   // If the asset is on a different wallet, or not available in this wallet
-  if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
-    let mainnetAddress = ETH_ADDRESS;
-
-    switch (network) {
-      case Network.polygon:
-        mainnetAddress = MATIC_MAINNET_ADDRESS;
-        break;
-      case Network.bsc:
-        mainnetAddress = BNB_MAINNET_ADDRESS;
-        break;
-      default:
-        mainnetAddress = ETH_ADDRESS;
-        break;
-    }
+  if (differentWallet || !nativeAsset) {
+    const mainnetAddress =
+      getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
     nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
-      switch (network) {
-        case Network.bsc:
-          nativeAsset.mainnet_address = mainnetAddress;
-          nativeAsset.address = BNB_BSC_ADDRESS;
-          break;
-        case Network.polygon:
-          nativeAsset.mainnet_address = mainnetAddress;
-          nativeAsset.address = MATIC_POLYGON_ADDRESS;
-          break;
-        case Network.optimism:
-          nativeAsset.mainnet_address = ETH_ADDRESS;
-          nativeAsset.address = OPTIMISM_ETH_ADDRESS;
-          break;
-        case Network.arbitrum:
-          nativeAsset.mainnet_address = ETH_ADDRESS;
-          nativeAsset.address = ARBITRUM_ETH_ADDRESS;
-          break;
-      }
+      nativeAsset.mainnet_address = mainnetAddress;
+      nativeAsset.address = getNetworkObj(network).nativeCurrency.address;
+
       const balance = await getOnchainAssetBalance(
         nativeAsset,
         address,
@@ -210,19 +167,9 @@ export const useEth = (): ParsedAddressAsset => {
 export const useNativeAssetForNetwork = (
   network: Network
 ): ParsedAddressAsset => {
-  let address = ETH_ADDRESS;
+  const address =
+    getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
-  switch (network) {
-    case Network.polygon:
-      address = MATIC_MAINNET_ADDRESS;
-      break;
-    case Network.bsc:
-      address = BNB_MAINNET_ADDRESS;
-      break;
-    default:
-      address = ETH_ADDRESS;
-      break;
-  }
   return useSelector(
     ({
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
@@ -238,6 +185,7 @@ export const useEthUSDPrice = (): number => {
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
 };
 
+// anotha 1
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
   if (network === Network.polygon) {
     return getMaticPriceUnit();
@@ -254,17 +202,21 @@ const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
-  selected: ParsedAddressAsset
+  selected: ParsedAddressAsset,
+  l1GasFeeOptimism?: BigNumberish
 ) => {
   const accountAsset = getAccountAsset(selected?.uniqueId);
   let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
-
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const gasFee = selectedGasFee?.gasFee as GasFee;
-      const txFeeRaw =
+      let txFeeRaw =
         gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
+      if (l1GasFeeOptimism) {
+        txFeeRaw = add(l1GasFeeOptimism.toString(), txFeeRaw);
+      }
       const txFeeAmount = fromWei(txFeeRaw);
+
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';
     }
@@ -276,7 +228,7 @@ const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,
-  nativeCurrency: keyof typeof supportedNativeCurrencies
+  nativeCurrency: NativeCurrencyKey
 ) => {
   return {
     ...asset,
@@ -366,20 +318,22 @@ const getChainIdFromType = (type: string) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkFromChainId = (chainId: number): Network => {
-  const networkData = chains.find(chain => chain.chain_id === chainId);
-  return (networkData?.network as Network) ?? Network.mainnet;
+export const getNetworkFromChainId = (chainId: number): Network => {
+  return (
+    RainbowNetworks.find(network => network.id === chainId)?.value ||
+    getNetworkObj(Network.mainnet).value
+  );
 };
 
 /**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkNameFromChainId = (chainId: number): string | undefined => {
-  const networkData = chains.find(chain => chain.chain_id === chainId);
-  const networkName =
-    networkInfo[networkData?.network ?? Network.mainnet]?.name;
-  return networkName;
+const getNetworkNameFromChainId = (chainId: number): string => {
+  return (
+    RainbowNetworks.find(network => network.id === chainId)?.name ||
+    getNetworkObj(Network.mainnet).name
+  );
 };
 
 /**
@@ -387,10 +341,7 @@ const getNetworkNameFromChainId = (chainId: number): string | undefined => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network: Network): number => {
-  const chainData = chains.find(
-    chain => chain.network === network?.toLowerCase()
-  );
-  return chainData?.chain_id ?? 1;
+  return getNetworkObj(network).id;
 };
 
 /**
@@ -399,18 +350,13 @@ const getChainIdFromNetwork = (network: Network): number => {
  */
 function getEtherscanHostForNetwork(network?: Network): string {
   const base_host = 'etherscan.io';
-  if (network === Network.optimism) {
-    return OPTIMISM_BLOCK_EXPLORER_URL;
-  } else if (network === Network.polygon) {
-    return POLYGON_BLOCK_EXPLORER_URL;
-  } else if (network === Network.bsc) {
-    return BSC_BLOCK_EXPLORER_URL;
-  } else if (network === Network.arbitrum) {
-    return ARBITRUM_BLOCK_EXPLORER_URL;
-  } else if (network && isTestnetNetwork(network)) {
+  const blockExplorer = getNetworkObj(network || Network.mainnet).blockExplorers
+    ?.default?.url;
+
+  if (network && isTestnetNetwork(network)) {
     return `${network}.${base_host}`;
   } else {
-    return base_host;
+    return blockExplorer || base_host;
   }
 }
 
@@ -483,57 +429,22 @@ export const getFirstTransactionTimestamp = async (
   return timestamp ? timestamp * 1000 : undefined;
 };
 
-const checkIfUrlIsAScam = async (url: string) => {
-  try {
-    const { hostname } = new URL(url);
-    const exceptions = ['twitter.com'];
-    if (exceptions.includes(hostname?.toLowerCase())) {
-      return false;
-    }
-    const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
-    const { result } = await request.json();
-    const found = result.find(
-      (s: any) => s?.name?.toLowerCase() === hostname?.toLowerCase()
-    );
-    if (found) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    logger.sentry('Error fetching cryptoscamdb.org list');
-    captureException(e);
-  }
-};
-
 function getBlockExplorer(network: Network) {
-  switch (network) {
-    case Network.mainnet:
-      return 'etherscan';
-    case Network.polygon:
-      return 'polygonscan';
-    case Network.bsc:
-      return 'bscscan';
-    case Network.optimism:
-      return 'etherscan';
-    case Network.arbitrum:
-      return 'arbiscan';
-    default:
-      return 'etherscan';
-  }
+  return getNetworkObj(network).blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer(
   address: EthereumAddress,
-  network?: Network
+  network: Network
 ) {
-  const etherscanHost = getEtherscanHostForNetwork(network);
-  Linking.openURL(`https://${etherscanHost}/address/${address}`);
+  const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
+  Linking.openURL(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   if (!isString(address)) return;
-  const etherscanHost = getEtherscanHostForNetwork(network);
-  Linking.openURL(`https://${etherscanHost}/token/${address}`);
+  const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
+  Linking.openURL(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer(
@@ -541,17 +452,15 @@ function openNftInBlockExplorer(
   tokenId: string,
   network: Network
 ) {
-  const etherscanHost = getEtherscanHostForNetwork(network);
-  Linking.openURL(
-    `https://${etherscanHost}/token/${contractAddress}?a=${tokenId}`
-  );
+  const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
+  Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
 function openTransactionInBlockExplorer(hash: string, network: Network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
-  const etherscanHost = getEtherscanHostForNetwork(network);
-  Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+  const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
+  Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 
 async function parseEthereumUrl(data: string) {
@@ -569,10 +478,6 @@ async function parseEthereumUrl(data: string) {
   let address: any = null;
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
-
-  while (store.getState().data.isLoadingAssets) {
-    await delay(300);
-  }
 
   if (!functionName) {
     // Send native asset
@@ -634,33 +539,40 @@ const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
   provider: Provider
 ): Promise<BigNumberish | undefined> => {
+  const newTx = cloneDeep(tx);
   try {
-    if (tx.value) {
-      tx.value = toHex(tx.value);
+    if (newTx.value) {
+      newTx.value = toHex(newTx.value);
     }
-    if (tx.from) {
-      tx.nonce = Number(await provider.getTransactionCount(tx.from));
+    if (newTx.from) {
+      newTx.nonce = Number(await provider.getTransactionCount(newTx.from));
     }
-    // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
-    delete tx.from;
-    // @ts-expect-error ts-migrate(100006) FIXME: Remove this comment to see the full error message
-    delete tx.gas;
-    if (tx.to) {
-      tx.to = toChecksumAddress(tx.to);
+
+    // @ts-expect-error operand should be optional
+    delete newTx?.from;
+    // @ts-expect-error gas is not in type RainbowTransaction
+    delete newTx?.gas;
+
+    // contract call will fail if these are passed
+    delete newTx.maxPriorityFeePerGas;
+    delete newTx.maxFeePerGas;
+
+    if (newTx.to) {
+      newTx.to = toChecksumAddress(newTx.to);
     }
-    if (tx.gasLimit) {
-      tx.gasLimit = toHex(tx.gasLimit);
+    if (newTx.gasLimit) {
+      newTx.gasLimit = toHex(newTx.gasLimit);
     } else {
-      tx.gasLimit = toHex(
-        tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
+      newTx.gasLimit = toHex(
+        newTx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
       );
     }
     // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value
       ?.amount;
-    if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);
+    if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
-    const serializedTx = serialize(tx);
+    const serializedTx = serialize(newTx);
 
     const OVM_GasPriceOracle = new Contract(
       OVM_GAS_PRICE_ORACLE,
@@ -669,8 +581,10 @@ const calculateL1FeeOptimism = async (
     );
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
     return l1FeeInWei;
-  } catch (e) {
-    logger.log('error calculating l1 fee', e);
+  } catch (e: any) {
+    logger.error(new RainbowError('error calculating l1 fee'), {
+      message: e.message,
+    });
   }
 };
 
@@ -726,7 +640,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
 
 export default {
   calculateL1FeeOptimism,
-  checkIfUrlIsAScam,
   formatGenericAsset,
   getAssetFromAllAssets,
   getAccountAsset,

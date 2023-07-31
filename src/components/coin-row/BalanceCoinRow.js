@@ -4,7 +4,6 @@ import { View } from 'react-primitives';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -125,7 +124,6 @@ const BalanceCoinRow = ({
     } else {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
-        longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });
     }

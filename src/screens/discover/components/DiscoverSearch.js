@@ -16,7 +16,6 @@ import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 import { emitAssetRequest } from '@/redux/explorer';
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
-import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
 import { Row } from '@/components/layout';
 import DiscoverSheetContext from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
@@ -33,6 +32,10 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -64,6 +67,10 @@ export default function DiscoverSearch() {
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
   );
+
+  // we want to debounce the poap search further
+  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
+
   const currencyList = useMemo(() => {
     // order:
     // 1. favorites
@@ -129,6 +136,14 @@ export default function DiscoverSearch() {
     return true;
   });
 
+  useEffect(() => {
+    const checkAndHandlePoaps = async secretWordOrHash => {
+      await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
+      await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
+    };
+    checkAndHandlePoaps(searchQueryForPoap);
+  }, [searchQueryForPoap]);
+
   const handlePress = useCallback(
     item => {
       if (item.ens) {
@@ -157,7 +172,6 @@ export default function DiscoverSearch() {
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
           fromDiscover: true,
-          longFormHeight: initialChartExpandedStateSheetHeight,
           type: 'token',
         });
       }

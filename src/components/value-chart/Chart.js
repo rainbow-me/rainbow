@@ -46,6 +46,7 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
+  size: 30,
 }))({
   height: 28,
   width: 28,
@@ -72,6 +73,7 @@ const InnerDot = styled.View({
 const DogeDot = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: dogSunglasses,
+  size: 30,
 })({
   ...position.sizeAsObject(35),
 });

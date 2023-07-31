@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import equal from 'react-fast-compare';
 import {
+  EmitterSubscription,
   InteractionManager,
   Keyboard,
   NativeModules,
@@ -50,20 +51,11 @@ import {
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import {
-  getProviderForNetwork,
-  getHasMerged,
-  getFlashbotsProvider,
-} from '@/handlers/web3';
-import {
-  divide,
-  fromWei,
-  greaterThan,
-  multiply,
-  subtract,
-} from '@/helpers/utilities';
+import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
+import { delay, divide, greaterThan, multiply } from '@/helpers/utilities';
 import {
   useAccountSettings,
+  useColorForAsset,
   useCurrentNonce,
   useGas,
   usePrevious,
@@ -75,6 +67,7 @@ import {
   useSwapInputRefs,
   useSwapIsSufficientBalance,
   useSwapSettings,
+  useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
@@ -94,7 +87,7 @@ import { ETH_ADDRESS, ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { useEthUSDPrice } from '@/utils/ethereumUtils';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import {
   CrosschainSwapActionParameters,
@@ -105,15 +98,22 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
-import { Wallet } from 'ethers';
+import { Wallet } from '@ethersproject/wallet';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { useTheme } from '@/theme';
+import { logger as loggr } from '@/logger';
+import { getNetworkObj } from '@/networks';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
   [Network.polygon]: 200,
+  [Network.base]: 200,
   [Network.bsc]: 200,
   [Network.optimism]: 200,
   [Network.arbitrum]: 200,
   [Network.goerli]: 100,
+  [Network.gnosis]: 200,
+  [Network.zora]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -171,6 +171,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }: ExchangeModalProps) {
+  const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const {
     slippageInBips,
@@ -203,6 +204,7 @@ export default function ExchangeModal({
     { [address: string]: SwappableAsset }
   >(({ data: { genericAssets } }) => genericAssets);
   const {
+    goBack,
     navigate,
     setParams,
     dangerouslyGetParent,
@@ -233,12 +235,21 @@ export default function ExchangeModal({
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
   const prevTxNetwork = usePrevious(txNetwork);
 
+  const keyboardListenerSubscription = useRef<EmitterSubscription>();
+
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
     return true;
   });
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const { colors } = useTheme();
+  const inputCurrencyColor = useColorForAsset(inputCurrency, colors.appleBlue);
+  const outputCurrencyColor = useColorForAsset(
+    outputCurrency,
+    colors.appleBlue
+  );
 
   const {
     handleFocus,
@@ -362,7 +373,7 @@ export default function ExchangeModal({
     if (
       !speedUrgentSelected.current &&
       !isEmpty(gasFeeParamsBySpeed) &&
-      (currentNetwork === Network.mainnet || currentNetwork === Network.polygon)
+      getNetworkObj(currentNetwork).swaps?.defaultToFastGas
     ) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
@@ -437,10 +448,8 @@ export default function ExchangeModal({
   const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const hideFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
-  const swapSupportsFlashbots =
-    currentNetwork === Network.mainnet && !hideFlashbotsPostMerge;
+  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
+    .flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -506,7 +515,7 @@ export default function ExchangeModal({
       const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
-        if (currentNetwork === Network.optimism) {
+        if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // @ts-ignore
@@ -641,7 +650,7 @@ export default function ExchangeModal({
   });
 
   const submit = useCallback(
-    async amountInUSD => {
+    async (amountInUSD: any) => {
       setIsAuthorizing(true);
       const NotificationManager = ios
         ? NativeModules.NotificationManager
@@ -660,7 +669,7 @@ export default function ExchangeModal({
         // TODO(skylarbarrera): need to check if ledger and handle differently here
         if (
           flashbots &&
-          currentNetwork === Network.mainnet &&
+          getNetworkObj(currentNetwork).features?.flashbots &&
           wallet instanceof Wallet
         ) {
           logger.debug('flashbots provider being set on mainnet');
@@ -668,16 +677,22 @@ export default function ExchangeModal({
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
+        let isSucessful = false;
         const callback = (
           success = false,
           errorMessage: string | null = null
         ) => {
+          isSucessful = success;
           setIsAuthorizing(false);
           if (success) {
             setParams({ focused: false });
             navigate(Routes.PROFILE_SCREEN);
           } else if (errorMessage) {
-            Alert.alert(errorMessage);
+            if (wallet instanceof Wallet) {
+              Alert.alert(errorMessage);
+            } else {
+              setHardwareTXError(true);
+            }
           }
         };
         logger.log('[exchange - handle submit] rap');
@@ -712,6 +727,13 @@ export default function ExchangeModal({
 
         const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
+
+        // if the transaction was not successful, we need to bubble that up to the caller
+        if (!isSucessful) {
+          loggr.debug('[ExchangeModal] transaction was not successful');
+          return false;
+        }
+
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
@@ -721,6 +743,7 @@ export default function ExchangeModal({
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',
+          isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice:
             ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
@@ -744,19 +767,27 @@ export default function ExchangeModal({
         setIsAuthorizing(false);
         logger.log('[exchange - handle submit] error submitting swap', error);
         setParams({ focused: false });
+        // close the hardware wallet modal before navigating
+        if (isHardwareWallet) {
+          goBack();
+          await delay(100);
+        }
         navigate(Routes.WALLET_SCREEN);
         return false;
       }
     },
     [
+      accountAddress,
       chainId,
       currentNetwork,
       debouncedIsHighPriceImpact,
       flashbots,
       getNextNonce,
+      goBack,
       inputAmount,
       inputCurrency,
       isCrosschainSwap,
+      isHardwareWallet,
       navigate,
       outputAmount,
       outputCurrency,
@@ -815,6 +846,7 @@ export default function ExchangeModal({
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
         inputTokenSymbol: inputCurrency?.symbol || '',
+        isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice:
           ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
@@ -884,6 +916,7 @@ export default function ExchangeModal({
       isSufficientBalance,
       loading,
       onSubmit: handleSubmit,
+      isHardwareWallet,
       quoteError,
       tradeDetails,
       type,
@@ -914,7 +947,7 @@ export default function ExchangeModal({
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
       delayNext();
-      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      IS_ANDROID && keyboardListenerSubscription.current?.remove();
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
@@ -929,9 +962,14 @@ export default function ExchangeModal({
       });
       analytics.track('Opened Swap Settings');
     };
-    ios || !isKeyboardOpen()
-      ? internalNavigate()
-      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+    if (IS_IOS || !isKeyboardOpen()) {
+      internalNavigate();
+    } else {
+      keyboardListenerSubscription.current = Keyboard.addListener(
+        'keyboardDidHide',
+        internalNavigate
+      );
+    }
   }, [
     lastFocusedInputHandle,
     inputFieldRef,
@@ -953,7 +991,7 @@ export default function ExchangeModal({
       outputFieldRef?.current?.blur();
       nativeFieldRef?.current?.blur();
       const internalNavigate = () => {
-        android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+        IS_ANDROID && keyboardListenerSubscription.current?.remove();
         setParams({ focused: false });
         navigate(Routes.SWAP_DETAILS_SHEET, {
           confirmButtonProps,
@@ -977,9 +1015,14 @@ export default function ExchangeModal({
           type,
         });
       };
-      ios || !isKeyboardOpen()
-        ? internalNavigate()
-        : Keyboard.addListener('keyboardDidHide', internalNavigate);
+      if (IS_IOS || !isKeyboardOpen()) {
+        internalNavigate();
+      } else {
+        keyboardListenerSubscription.current = Keyboard.addListener(
+          'keyboardDidHide',
+          internalNavigate
+        );
+      }
     },
     [
       confirmButtonProps,
@@ -1060,6 +1103,7 @@ export default function ExchangeModal({
               {showOutputField && <ExchangeNotch testID={testID} />}
               <ExchangeHeader testID={testID} title={title} />
               <ExchangeInputField
+                color={inputCurrencyColor}
                 disableInputCurrencySelection={isWithdrawal}
                 editable={!!inputCurrency}
                 inputAmount={inputAmountDisplay}
@@ -1087,18 +1131,14 @@ export default function ExchangeModal({
               />
               {showOutputField && (
                 <ExchangeOutputField
-                  editable={
-                    !!outputCurrency &&
-                    currentNetwork !== Network.arbitrum &&
-                    !isCrosschainSwap
-                  }
+                  color={outputCurrencyColor}
+                  editable={!!outputCurrency && !isCrosschainSwap}
                   network={outputNetwork}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
                     navigateToSelectOutputCurrency(chainId);
                   }}
-                  {...((currentNetwork === Network.arbitrum ||
-                    isCrosschainSwap) &&
+                  {...(isCrosschainSwap &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
                     })}

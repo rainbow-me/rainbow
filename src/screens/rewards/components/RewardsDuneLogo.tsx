@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 export const RewardsDuneLogo: React.FC = () => {
   const { isDarkMode } = useTheme();
   return (
-    <Box paddingBottom="36px" justifyContent="center" alignItems="center">
+    <Box paddingBottom="28px" justifyContent="center" alignItems="center">
       <Inline space="8px" alignVertical="center">
         <Text size="13pt" color="labelQuaternary" weight="semibold">
           {i18n.t(i18n.l.rewards.data_powered_by)}

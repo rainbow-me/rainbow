@@ -6,7 +6,6 @@ import {
   GenericCampaignCheckResponse,
 } from './campaignChecks';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
-import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers/networkTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
@@ -15,6 +14,7 @@ import { ethereumUtils, logger } from '@/utils';
 import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { RainbowNetworks } from '@/networks';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress =
@@ -92,9 +92,9 @@ export const swapsCampaignCheck = async (): Promise<
   // transactions are loaded from the current wallet
   const { transactions } = store.getState().data;
 
-  const networks: Network[] = (Object.keys(networkInfo) as Network[]).filter(
-    (network: any): boolean => networkInfo[network].exchange_enabled
-  );
+  const networks: Network[] = RainbowNetworks.filter(
+    network => network.features.swaps
+  ).map(network => network.value);
 
   // check native asset balances on networks that support swaps
   let hasBalance = false;

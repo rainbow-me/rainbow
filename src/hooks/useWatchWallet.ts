@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -40,7 +40,7 @@ export default function useWatchWallet({
 
   const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
-    async (walletId, address) => {
+    async (walletId: string, address: string) => {
       const wallet = wallets![walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
@@ -66,10 +66,10 @@ export default function useWatchWallet({
   });
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
-      handleSetSeedPhrase(ensName);
+      handleSetSeedPhrase(ensName ?? '');
       handlePressImportButton(null, ensName, null, avatarUrl);
     } else {
-      // If there's more than 1 account
+      // If there's more than 1 account,
       // it's deletable
       const isLastAvailableWallet = Object.keys(wallets!).find(key => {
         const someWallet = wallets![key];
@@ -89,7 +89,7 @@ export default function useWatchWallet({
         goBack();
         navigate(Routes.WELCOME_SCREEN);
       } else {
-        // If we're deleting the selected wallet
+        // If we're deleting the selected wallet,
         // we need to switch to another one
         if (primaryAddress && primaryAddress === accountAddress) {
           const { wallet: foundWallet, key } =
@@ -97,7 +97,7 @@ export default function useWatchWallet({
               address: primaryAddress,
               wallets: wallets!,
             }) || {};
-          if (foundWallet) {
+          if (foundWallet && key) {
             await changeAccount(key, foundWallet.address);
           }
         }

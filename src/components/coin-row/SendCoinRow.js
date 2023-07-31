@@ -74,10 +74,7 @@ const BottomRow = ({
 
 const TopRow = ({ item, name, selected }) => {
   const { colors } = useTheme();
-  const address = item?.mainnet_address || item?.address;
-  const type = item?.mainnet_address ? AssetTypes.token : item?.type;
-
-  const colorForAsset = useColorForAsset({ address, type });
+  const colorForAsset = useColorForAsset(item);
 
   return (
     <CoinName

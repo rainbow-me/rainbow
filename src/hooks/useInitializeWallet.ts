@@ -53,13 +53,16 @@ export default function useInitializeWallet() {
 
   const initializeWallet = useCallback(
     async (
+      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       seedPhrase,
       color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
+      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       switching,
+      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       image,
       silent = false
     ) => {

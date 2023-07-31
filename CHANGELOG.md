@@ -13,6 +13,139 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.24)
+
+### Added
+
+- Zora Swaps/Bridging
+- Defi positions
+- Mint: POAPs
+
+## [1.8.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.23)
+
+### Added
+
+- NFT offers v1
+- bug fixes
+
+## [1.8.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.22)
+
+### Added
+
+- Some NFT offers work (behind flag)
+- RN upgrade to 0.70.9
+- Zorb app icon
+
+## [1.8.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.21)
+
+### Added
+
+- WCv2 Updates
+- Zora Support
+
+## [1.8.20] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.19)
+
+### Added
+
+- WCv2 updates
+- PIN keychain updates (droid)
+- Diagnostic Sheet updates
+
+## [1.8.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.19)
+
+### Added
+
+- Keychain updates
+- Sentry updates
+- Output based swaps on Arbitrum
+- F2C: added Moonpay & Coinbase
+- NFT metadata refresh
+
+## [1.8.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.18)
+
+### Added
+
+- Deeplinks fix (WC Connections)
+- WC v2 auth handling
+
+## [1.8.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.17)
+
+### Added
+
+- Android Backup Improvements
+- iPhone 14 Safe area fixes on sheets
+
+## [1.8.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.16)
+
+### Added
+
+- Ledger support
+- Finiliar NFT app icon
+- Ratio fees fix
+
+## [1.8.15] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.15)
+
+### Added
+
+- NFT Refactor
+- WC improvements
+- Google Account Switching for Backups
+
+## [1.8.14] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.14)
+
+### Added
+
+- Ratio to our f2c flow
+- Fixed colors on send sheet
+- Wallet connect V2
+- Performance improvements
+
+## [1.8.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.13)
+
+### Added
+
+- BSC release
+
+### Changed
+
+- Other bug fixes and performance improvements
+
+## [1.8.12] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.12)
+
+### Changed
+
+- F2C Ramp
+- OP Improvements
+- L2 Transactions
+- Pool Together App Icon
+- other bug fixes and improvements
+
+## [1.8.11] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.11)
+
+### Changed
+
+- more OP fixes
+- performance improvements
+
+## [1.8.10] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.10)
+
+### Added
+
+- OP rewards
+
+### Changed
+
+- OP reward fixes
+
+## [1.8.9] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.9)
+
+### Changed
+
+- ledger prep items
+- OP rewards prep items
+- version bumps and other improvements
+- bug fix for stale pricing
+
 ## [1.8.8] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
 
 ### Changed
@@ -20,7 +153,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - 1.8.7 hotfix
 - fix balance updates on L1 sends
 
-## [1.8.7] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.6)
+## [1.8.7] (https://github.com/rainbow-me/rainbow/releases/tag/rc-v1.8.7)
 
 ### Changed
 
@@ -37,7 +170,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - ledger prep work (behind feature flag)
 - non customer facing improvements & bug fixes
 
-## [1.8.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.4)
+## [1.8.5](https://github.com/rainbow-me/rainbow/releases/tag/v1.8.5)
 
 ### Changed
 

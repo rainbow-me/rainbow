@@ -180,7 +180,7 @@ export const getTransactionFlashbotStatus = async (
   txHash: string
 ) => {
   try {
-    const fbStatus = await flashbotsApi.get(`/${txHash}`);
+    const fbStatus = await flashbotsApi.get(`/tx/${txHash}`);
     const flashbotStatus = fbStatus.data.status;
     // Make sure it wasn't dropped after 25 blocks or never made it
     if (flashbotStatus === 'FAILED' || flashbotStatus === 'CANCELLED') {

@@ -82,7 +82,9 @@ export default function BackupConfirmPasswordStep() {
     `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
   );
   const passwordRef = useRef();
-  const { selectedWallet, setIsWalletLoading } = useWallets();
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
+  const { selectedWallet } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
 
   const isSettingsRoute = useRouteExistsInNavigationState(
@@ -97,11 +99,17 @@ export default function BackupConfirmPasswordStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    keyboardShowListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardDidShow
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardDidHide
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      keyboardShowListener.current?.remove();
+      keyboardHideListener.current?.remove();
     };
   }, []);
 
@@ -133,14 +141,10 @@ export default function BackupConfirmPasswordStep() {
     []
   );
 
-  const onError = useCallback(
-    msg => {
-      passwordRef.current?.focus();
-      setIsWalletLoading(null);
-      DelayedAlert({ title: msg }, 500);
-    },
-    [setIsWalletLoading]
-  );
+  const onError = useCallback(msg => {
+    passwordRef.current?.focus();
+    DelayedAlert({ title: msg }, 500);
+  }, []);
 
   const onSuccess = useCallback(async () => {
     logger.log('BackupConfirmPasswordStep:: saving backup password');

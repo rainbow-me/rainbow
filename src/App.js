@@ -1,6 +1,6 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
@@ -21,7 +21,7 @@ import { RecoilRoot } from 'recoil';
 import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { FedoraToast, OfflineToast } from './components/toasts';
+import { OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
@@ -63,11 +63,9 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
 import { addressKey } from './utils/keychainConstants';
-import { CODE_PUSH_DEPLOYMENT_KEY, isCustomBuild } from '@/handlers/fedora';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
-import logger from '@/utils/logger';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
@@ -76,39 +74,17 @@ import {
   getOrCreateDeviceId,
   securelyHashWalletAddress,
 } from '@/analytics/utils';
-import { logger as loggr, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
-import { initListeners as initWalletConnectListeners } from '@/utils/walletConnect';
-import { getExperimetalFlag, WC_V2 } from '@/config/experimental';
+import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
-
-const FedoraToastRef = createRef();
+import branch from 'react-native-branch';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
     monitorNetwork(showNetworkRequests, showNetworkResponses);
-} else {
-  // eslint-disable-next-line no-inner-declarations
-  async function checkForFedoraMode() {
-    try {
-      const config = await codePush.getCurrentPackage();
-      if (!config || config.deploymentKey === CODE_PUSH_DEPLOYMENT_KEY) {
-        codePush.sync({
-          deploymentKey: CODE_PUSH_DEPLOYMENT_KEY,
-          installMode: codePush.InstallMode.ON_NEXT_RESTART,
-        });
-      } else {
-        isCustomBuild.value = true;
-        setTimeout(() => FedoraToastRef?.current?.show(), 300);
-      }
-    } catch (e) {
-      logger.log('error initiating codepush settings', e);
-    }
-  }
-
-  checkForFedoraMode();
 }
 
 enableScreens();
@@ -118,9 +94,44 @@ const containerStyle = { flex: 1 };
 class OldApp extends Component {
   state = { appState: AppState.currentState, initialRoute: null };
 
+  /**
+   * There's a race condition in Branch's RN SDK. From a cold start, Branch
+   * doesn't always handle an initial URL, so we need to check for it here and
+   * then pass it to Branch to do its thing.
+   *
+   * @see https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution/issues/673#issuecomment-1220974483
+   */
+  async setupDeeplinking() {
+    const initialUrl = await Linking.getInitialURL();
+
+    // main Branch handler
+    this.branchListener = await branchListener(url => {
+      logger.debug(
+        `Branch: listener called`,
+        {},
+        logger.DebugContext.deeplinks
+      );
+
+      try {
+        handleDeeplink(url, this.state.initialRoute);
+      } catch (e) {
+        logger.error(new RainbowError('Error opening deeplink'), {
+          message: e.message,
+          url,
+        });
+      }
+    });
+
+    // if we have an initial URL, pass it to Branch
+    if (initialUrl) {
+      logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
+      branch.openURL(initialUrl);
+    }
+  }
+
   async componentDidMount() {
     if (!__DEV__ && isTestFlight) {
-      logger.sentry(`Test flight usage - ${isTestFlight}`);
+      logger.info(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
     InteractionManager.runAfterInteractions(() => {
@@ -129,21 +140,8 @@ class OldApp extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
-    this.branchListener = branchListener(this.handleOpenLinkingURL);
-    // Walletconnect uses direct deeplinks
-    if (android) {
-      try {
-        const initialUrl = await Linking.getInitialURL();
-        if (initialUrl) {
-          this.handleOpenLinkingURL(initialUrl);
-        }
-      } catch (e) {
-        logger.log('Error opening deeplink', e);
-      }
-      Linking.addEventListener('url', ({ url }) => {
-        this.handleOpenLinkingURL(url);
-      });
-    }
+
+    await this.setupDeeplinking();
 
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
@@ -158,15 +156,13 @@ class OldApp extends Component {
     /**
      * Needs to be called AFTER FCM token is loaded
      */
-    if (getExperimetalFlag(WC_V2)) {
-      initWalletConnectListeners();
-    }
+    initWalletConnectListeners();
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.walletReady && this.props.walletReady) {
       // Everything we need to do after the wallet is ready goes here
-      logger.sentry('✅ Wallet ready!');
+      logger.info('✅ Wallet ready!');
       runWalletBackupStatusChecks();
 
       InteractionManager.runAfterInteractions(() => {
@@ -197,10 +193,6 @@ class OldApp extends Component {
     store.dispatch(uniswapPairsInit());
   }
 
-  handleOpenLinkingURL = url => {
-    handleDeeplink(url, this.state.initialRoute);
-  };
-
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
@@ -229,7 +221,7 @@ class OldApp extends Component {
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
-        logger.log('Reloading balances for network', network);
+        logger.debug('Reloading balances for network', network);
         if (isL2) {
           if (tx.internalType === TransactionType.trade) {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
@@ -242,7 +234,7 @@ class OldApp extends Component {
         }
       }, timeout);
     };
-    logger.log('reloading balances soon...');
+    logger.debug('reloading balances soon...');
     updateBalancesAfter(2000, isL2, network);
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
@@ -253,24 +245,25 @@ class OldApp extends Component {
     );
   };
 
-  render = () => (
-    <Portal>
-      <View style={containerStyle}>
-        {this.state.initialRoute && (
-          <InitialRouteContext.Provider value={this.state.initialRoute}>
-            <RoutesComponent
-              onReady={this.handleSentryNavigationIntegration}
-              ref={this.handleNavigatorRef}
-            />
-            <PortalConsumer />
-          </InitialRouteContext.Provider>
-        )}
-        <OfflineToast />
-        <FedoraToast ref={FedoraToastRef} />
-      </View>
-      <NotificationsHandler walletReady={this.props.walletReady} />
-    </Portal>
-  );
+  render() {
+    return (
+      <Portal>
+        <View style={containerStyle}>
+          {this.state.initialRoute && (
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent
+                onReady={this.handleSentryNavigationIntegration}
+                ref={this.handleNavigatorRef}
+              />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
+          )}
+          <OfflineToast />
+        </View>
+        <NotificationsHandler walletReady={this.props.walletReady} />
+      </Portal>
+    );
+  }
 }
 
 const OldAppWithRedux = connect(state => ({
@@ -328,7 +321,7 @@ function Root() {
        */
       if (deviceIdWasJustCreated && !isReturningUser) {
         // on very first open, set some default data and fire event
-        loggr.info(`User opened application for the first time`);
+        logger.info(`User opened application for the first time`);
 
         const {
           width: screenWidth,
@@ -354,13 +347,13 @@ function Root() {
 
     initializeApplication()
       .then(() => {
-        loggr.debug(`Application initialized with Sentry and Segment`);
+        logger.debug(`Application initialized with Sentry and Segment`);
 
         // init complete, load the rest of the app
         setInitializing(false);
       })
       .catch(e => {
-        loggr.error(new RainbowError(`initializeApplication failed`));
+        logger.error(new RainbowError(`initializeApplication failed`));
 
         // for failure, continue to rest of the app for now
         setInitializing(false);
@@ -392,9 +385,7 @@ function Root() {
 }
 
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush({
-  checkFrequency: codePush.CheckFrequency.MANUAL,
-})(RootWithSentry);
+const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>

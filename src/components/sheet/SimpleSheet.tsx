@@ -9,6 +9,7 @@ type SimpleSheetProps = {
   children: React.ReactNode;
   backgroundColor: string;
   customHeight?: number;
+  onDismiss?: () => void;
   scrollEnabled?: boolean;
 };
 
@@ -16,6 +17,7 @@ export const SimpleSheet = ({
   children,
   backgroundColor,
   customHeight,
+  onDismiss,
   scrollEnabled = true,
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
@@ -32,6 +34,7 @@ export const SimpleSheet = ({
       removeTopPadding
       scrollEnabled={scrollEnabled}
       backgroundColor={backgroundColor}
+      onDismiss={onDismiss}
     >
       <ScrollView
         scrollEnabled={scrollEnabled}

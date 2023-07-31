@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import { isAddress } from '@ethersproject/address';
+import { getAddress, isAddress } from '@ethersproject/address';
 import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
-import { Contract, ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -228,7 +228,7 @@ const useSwapCurrencyList = (
   }, [searchChainId, searchQuery, searching, unfilteredFavorites]);
 
   const getImportedAsset = useCallback(
-    async (searchQuery, chainId): Promise<RT[] | null> => {
+    async (searchQuery: string, chainId: number): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
           const tokenListEntry =
@@ -244,7 +244,7 @@ const useSwapCurrencyList = (
               tokenContract.name(),
               tokenContract.symbol(),
               tokenContract.decimals(),
-              ethers.utils.getAddress(searchQuery),
+              getAddress(searchQuery),
             ]);
             const uniqueId =
               chainId === ChainId.mainnet ? address : `${address}_${network}`;

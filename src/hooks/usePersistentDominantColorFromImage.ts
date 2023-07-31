@@ -1,61 +1,42 @@
-import { useEffect, useState } from 'react';
-import { MMKV, useMMKVString } from 'react-native-mmkv';
+import { useEffect, useMemo, useState } from 'react';
+import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { getDominantColorFromImage } from '@/utils';
-
-enum State {
-  init,
-  loading,
-  loaded,
-  failed,
-}
+import { maybeSignUri } from '@/handlers/imgix';
 
 const storage = new MMKV({
   id: STORAGE_IDS.DOMINANT_COLOR,
 });
 
-type Result = {
-  state: State;
-  result: string | undefined;
-};
+const COLOR_TO_MEASURE_AGAINST = '#333333';
+const SIZE_FOR_COLOR_CALCULATION = 40;
 
-export default function usePersistentDominantColorFromImage(
-  url: string,
-  colorToMeasureAgainst: string = '#333333'
-): Result {
-  const [dominantColor, setPersistentDominantColor] = useMMKVString(
-    (url || '') as string,
-    storage
+export function usePersistentDominantColorFromImage(url?: string | null) {
+  const cachedColor = useMemo(
+    () => (url ? storage.getString(url) : undefined),
+    [url]
+  );
+  const [color, setColor] = useState(cachedColor);
+  const externalUrl = useMemo(
+    () =>
+      url ? maybeSignUri(url, { w: SIZE_FOR_COLOR_CALCULATION }) || url : url,
+    [url]
   );
 
-  const [state, setState] = useState<State>(
-    dominantColor ? State.loaded : url ? State.loading : State.init
-  );
   useEffect(() => {
-    if (!dominantColor) {
-      if (url) {
-        setState(State.loading);
-      } else {
-        setState(State.init);
-      }
-    }
-  }, [dominantColor, url]);
-
-  useEffect(() => {
-    if ((state === State.loading || state === State.init) && url) {
-      setState(State.loading);
-      getDominantColorFromImage(url, colorToMeasureAgainst)
+    if (!cachedColor && externalUrl && url) {
+      getDominantColorFromImage(externalUrl, COLOR_TO_MEASURE_AGAINST)
         .then(color => {
-          setPersistentDominantColor(color);
+          setColor(color);
+          storage.set(url, color);
         })
-        .finally(() => {
-          setState(State.loaded);
+        .catch(() => {
+          setColor(undefined);
         });
+    } else {
+      setColor(cachedColor);
     }
-  }, [colorToMeasureAgainst, setPersistentDominantColor, state, url]);
+  }, [setColor, cachedColor, externalUrl, url]);
 
-  return {
-    result: dominantColor,
-    state,
-  };
+  return color;
 }

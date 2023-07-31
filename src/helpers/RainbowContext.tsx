@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -12,6 +13,7 @@ import Emoji from '../components/text/Emoji';
 import {
   showReloadButton,
   showSwitchModeButton,
+  // @ts-ignore
   showConnectToHardhatButton,
 } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
@@ -28,7 +30,7 @@ import {
   IS_TESTING,
 } from 'react-native-dotenv';
 import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
-import logger from 'logger';
+import { logger, RainbowError } from '@/logger';
 import networkTypes, { Network } from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { ethereumUtils } from '@/utils';
@@ -45,11 +47,11 @@ const storage = new MMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
-export default function RainbowContextWrapper({ children }: any) {
+export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const [config, setConfig] = useState(
+  const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce(
       (acc, [key, { value }]) => ({ ...acc, [key]: value }),
       {}
@@ -64,13 +66,17 @@ export default function RainbowContextWrapper({ children }: any) {
     }
   }, []);
 
-  const setConfigWithStorage = useCallback(newConfig => {
-    storage.set(storageKey, JSON.stringify(newConfig));
-    setConfig(newConfig);
-  }, []);
+  const setConfigWithStorage = useCallback(
+    (newConfig: Record<string, boolean>) => {
+      storage.set(storageKey, JSON.stringify(newConfig));
+      setConfig(newConfig);
+    },
+    []
+  );
 
   const setGlobalState = useCallback(
-    newState => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
+    (newState: any) =>
+      updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
     [updateGlobalState]
   );
 
@@ -96,10 +102,12 @@ export default function RainbowContextWrapper({ children }: any) {
           (android && HARDHAT_URL_ANDROID) ||
           'http://127.0.0.1:8545'
       );
-      logger.log('connected to hardhat', ready);
-    } catch (e) {
+      logger.debug('connected to hardhat', { ready });
+    } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat', e);
+      logger.error(new RainbowError('error connecting to hardhat'), {
+        message: e.message,
+      });
     }
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});

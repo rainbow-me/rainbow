@@ -5,7 +5,6 @@ import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -18,6 +17,7 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 
 const NOOP = () => null;
 
@@ -89,6 +89,7 @@ const AvailableNetworksv2 = ({
   );
 
   const handlePressContextMenu = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey: network } }) => {
       convertAssetAndNavigate(network);
     },
@@ -100,23 +101,21 @@ const AvailableNetworksv2 = ({
   }, [availableNetworks, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
-    return Object.values(networkInfo)
-      .filter(
-        ({ exchange_enabled, value }) =>
-          exchange_enabled &&
-          value !== Network.mainnet &&
-          !!networks[ethereumUtils.getChainIdFromNetwork(value)]
-      )
-      .map(netInfo => ({
-        actionKey: netInfo.value,
-        actionTitle: netInfo.name,
-        icon: {
-          iconType: 'ASSET',
-          iconValue: `${
-            netInfo.layer2 ? `${netInfo.value}BadgeNoShadow` : 'ethereumBadge'
-          }`,
-        },
-      }));
+    return RainbowNetworks.filter(
+      ({ features, value, id }) =>
+        features.swaps && value !== Network.mainnet && !!networks[id]
+    ).map(network => ({
+      actionKey: network.value,
+      actionTitle: network.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${
+          network.networkType === 'layer2'
+            ? `${network.value}BadgeNoShadow`
+            : 'ethereumBadge'
+        }`,
+      },
+    }));
   }, [networks]);
 
   const MenuWrapper = availableNetworks.length > 1 ? ContextMenuButton : Box;
@@ -197,8 +196,9 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableNetworks?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork:
-                            networkInfo[availableNetworks?.[0]]?.name,
+                          availableNetwork: getNetworkObj(
+                            availableNetworks?.[0]
+                          )?.name,
                         })}
                   </Text>
                 </Box>

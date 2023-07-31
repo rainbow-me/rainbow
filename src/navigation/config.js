@@ -12,13 +12,14 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '../screens/Sen
 import { useTheme } from '../theme/ThemeContext';
 import colors from '../theme/currentColors';
 import { onWillPop } from './Navigation';
-import networkInfo from '@/helpers/networkInfo';
 import networkTypes from '@/helpers/networkTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
+import { getNetworkObj } from '@/networks';
+import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -129,6 +130,40 @@ export const opRewardsSheetConfig = {
   },
 };
 
+export const nftOffersSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+    }),
+  }),
+};
+
+export const nftSingleOfferSheetConfig = {
+  options: ({
+    route: {
+      params: { longFormHeight, ...params },
+    },
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || 0,
+    }),
+  }),
+};
+
+export const walletDiagnosticsSheetConfig = {
+  options: ({ route }) => {
+    return buildCoolModalConfig({
+      ...route.params,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.3,
+    });
+  },
+};
+
 export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -147,6 +182,18 @@ export const addTokenSheetConfig = {
       longFormHeight: 394,
     }),
   }),
+};
+
+export const positionSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    const height = getPositionSheetHeight(params);
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
 };
 
 export const sendConfirmationSheetConfig = {
@@ -306,7 +353,7 @@ export const ensAdditionalRecordsSheetConfig = {
 
 export const explainSheetConfig = {
   options: ({
-    route: { params = { network: networkInfo[networkTypes.mainnet].name } },
+    route: { params = { network: getNetworkObj(networkTypes.mainnet).name } },
   }) => {
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
@@ -361,6 +408,15 @@ export const basicSheetConfig = {
       ...params,
       headerHeight: 0,
       topOffset: 0,
+    }),
+  }),
+};
+
+export const portalSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: params.sheetHeight,
     }),
   }),
 };
@@ -482,22 +538,6 @@ const SettingsTitle = ({ children }) => {
     </Text>
   );
 };
-
-export const wyreWebviewOptions = colors => ({
-  ...headerConfigOptions,
-  headerLeft: props => <BackButton {...props} textChevron />,
-  headerStatusBarHeight: 24,
-  headerStyle: {
-    backgroundColor: colors.white,
-    elevation: 24,
-    shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    ...headerConfigOptions.headerTitleStyle,
-    color: colors.dark,
-  },
-  title: 'Add Cash',
-});
 
 export const settingsOptions = colors => ({
   ...headerConfigOptions,

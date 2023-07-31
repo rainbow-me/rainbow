@@ -10,9 +10,7 @@ import { Centered, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { dappLogoOverride, dappNameOverride } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkInfo from '@/helpers/networkInfo';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
@@ -25,6 +23,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -80,16 +79,8 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { wallets, walletNames } = useWallets();
-
-  const overrideLogo = useMemo(() => {
-    return dappLogoOverride(dappUrl);
-  }, [dappUrl]);
-
-  const overrideName = useMemo(() => {
-    return dappNameOverride(dappUrl);
-  }, [dappUrl]);
 
   const approvalAccountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, account);
@@ -104,14 +95,16 @@ export default function WalletConnectListItem({
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
+    const networkObj = getNetworkObj(
+      ethereumUtils.getNetworkFromChainId(Number(chainId))
+    );
     return {
       chainId,
-      color: colors.networkColors[network],
-      name: networkInfo[network]?.name,
-      value: network,
+      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
+      name: networkObj.name,
+      value: networkObj.value,
     };
-  }, [chainId, colors]);
+  }, [chainId, isDarkMode]);
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
@@ -135,7 +128,7 @@ export default function WalletConnectListItem({
       {
         options: androidContextMenuActions,
         showSeparators: true,
-        title: overrideName || dappName,
+        title: dappName,
       },
       idx => {
         if (idx === 0 && networksAvailable.length > 1) {
@@ -165,7 +158,6 @@ export default function WalletConnectListItem({
     dappName,
     dappUrl,
     handlePressChangeWallet,
-    overrideName,
     walletConnectUpdateSessionConnectorByDappUrl,
     walletConnectDisconnectAllByDappUrl,
   ]);
@@ -202,7 +194,7 @@ export default function WalletConnectListItem({
   return (
     <ContextMenuButton
       menuItems={changeConnectionMenuItems()}
-      menuTitle={overrideName || dappName}
+      menuTitle={dappName}
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
@@ -211,7 +203,7 @@ export default function WalletConnectListItem({
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
-            imageUrl={overrideLogo || dappIcon}
+            imageUrl={dappIcon}
             size={VendorLogoIconSize}
           />
           <ColumnWithMargins
@@ -221,9 +213,7 @@ export default function WalletConnectListItem({
           >
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
-                {overrideName ||
-                  dappName ||
-                  lang.t('walletconnect.unknown_application')}
+                {dappName || lang.t('walletconnect.unknown_application')}
               </TruncatedText>
             </Row>
 

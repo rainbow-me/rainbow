@@ -117,6 +117,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
     exchangeFallback: '#F4F4F5', // '244, 244, 245'
+    finiliarPink: '#F89C9C', // '248, 156, 156'
+    finiliarPink06: 'rgba(248, 156, 156, 0.06)',
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#2CCC00', // '58, 166, 134'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -137,6 +139,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     paleBlue: '#579DFF', // 87, 157, 255
     pink: '#FF54BB', // 255, 84, 187
     pinkLight: '#FF75E8', // '255, 117, 232'
+    poolyPurple: '#6434C4', // '100, 52, 196'
+    poolyPurple06: 'rgba(100, 52, 196, 0.06)',
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
@@ -171,7 +175,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     whiteLabel: '#FFFFFF', // '255, 255, 255'
     yellow: '#FFD657', // '255, 214, 87'
     yellowFavorite: '#FFB200', // '255, 178, 0'
-    yellowOrange: '#FFC400', // '255, 196, 0'
+    yellowOrange: '#FFC400', // '255, 196, 0',
+    zorbPink: '#FC4C74', // '252, 76, 116'
+    zorbPink06: 'rgba(252, 76, 116, 0.06)',
   };
 
   const avatarColor = [
@@ -205,11 +211,14 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
   let networkColors = {
     arbitrum: '#2D374B',
+    base: '#0052FF',
     goerli: '#f6c343',
+    gnosis: '#479E9C',
     mainnet: '#25292E',
     optimism: '#FF4040',
     polygon: '#8247E5',
     bsc: '#F0B90B',
+    zora: '#2B5DF0',
   };
 
   let gradients = {
@@ -393,11 +402,14 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
     networkColors = {
       arbitrum: '#ADBFE3',
+      base: '#3979FF',
       goerli: '#f6c343',
+      gnosis: '#479E9C',
       mainnet: '#E0E8FF',
       optimism: '#FF6A6A',
       polygon: '#A275EE',
       bsc: '#F0B90B',
+      zora: '#6183F0',
     };
   }
 

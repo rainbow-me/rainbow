@@ -13,15 +13,8 @@ import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
 } from '@/helpers/utilities';
-
-const nativeAssetsPerNetwork = {
-  [networkTypes.arbitrum]: ARBITRUM_ETH_ADDRESS,
-  [networkTypes.goerli]: ETH_ADDRESS,
-  [networkTypes.mainnet]: ETH_ADDRESS,
-  [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
-  [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
-  [networkTypes.bsc]: BNB_BSC_ADDRESS,
-};
+import { getNetworkObj } from '@/networks';
+import { Network } from '@/networks/types';
 
 export function isL2Asset(type: any) {
   switch (type) {
@@ -29,6 +22,8 @@ export function isL2Asset(type: any) {
     case AssetTypes.optimism:
     case AssetTypes.polygon:
     case AssetTypes.bsc:
+    case AssetTypes.zora:
+    case AssetTypes.base:
       return true;
     default:
       return false;
@@ -37,7 +32,8 @@ export function isL2Asset(type: any) {
 
 export function isNativeAsset(address: any, network: any) {
   return (
-    nativeAssetsPerNetwork[network]?.toLowerCase() === address?.toLowerCase()
+    getNetworkObj(network as Network).nativeCurrency.address.toLowerCase() ===
+    address?.toLowerCase()
   );
 }
 

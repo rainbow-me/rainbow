@@ -13,7 +13,6 @@ import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AssetListItemSkeleton } from '@/components/asset-list';
 import { ListCoinRow } from '@/components/coin-row';
-import { initialChartExpandedStateSheetHeight } from '@/components/expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Emoji, Text } from '@/components/text';
 import EdgeFade from '@/components/EdgeFade';
@@ -210,7 +209,6 @@ export default function ListSection() {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         fromDiscover: true,
-        longFormHeight: initialChartExpandedStateSheetHeight,
         type: 'token',
       });
     },

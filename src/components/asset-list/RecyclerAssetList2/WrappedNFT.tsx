@@ -21,11 +21,7 @@ export default React.memo(function WrappedNFT({
   placement: 'left' | 'right';
   externalAddress?: string;
 }) {
-  const assetCollectible = useCollectible(
-    { uniqueId },
-    undefined,
-    externalAddress
-  );
+  const assetCollectible = useCollectible({ uniqueId }, externalAddress);
 
   const asset = useMemo(
     () => ({
@@ -40,6 +36,7 @@ export default React.memo(function WrappedNFT({
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
+    // @ts-expect-error passed to an untyped JS component
     asset =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,

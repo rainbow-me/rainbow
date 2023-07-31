@@ -27,9 +27,10 @@ export default function useContacts() {
     [dispatch]
   );
 
-  const onRemoveContact = useCallback(data => dispatch(removeContact(data)), [
-    dispatch,
-  ]);
+  const onRemoveContact = useCallback(
+    (data: string) => dispatch(removeContact(data)),
+    [dispatch]
+  );
 
   const filteredContacts = sortedContacts.filter(contact =>
     contact.network === network ||

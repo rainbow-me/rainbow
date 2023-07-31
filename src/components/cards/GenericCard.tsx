@@ -1,4 +1,4 @@
-import { Box, AccentColorProvider } from '@/design-system';
+import { Box, AccentColorProvider, Space, DebugLayout } from '@/design-system';
 import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,22 +12,40 @@ export const SQUARE_CARD_SIZE = (deviceUtils.dimensions.width - 60) / 2;
 
 export type CardType = 'square' | 'stretch';
 
+export type Gradient = {
+  colors: string[];
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+};
+
+const transparentGradient = {
+  colors: ['transparent', 'transparent'],
+  start: { x: 0, y: 0 },
+  end: { x: 0, y: 0 },
+};
+
 type GenericCardProps = {
   type: CardType;
-  gradient?: string[];
+  gradient?: Gradient;
   disabled?: boolean;
-  onPress?: () => void;
+  onPress?: (any: any) => void;
+  borderColor?: string;
   color?: string;
+  ignoreShadow?: boolean;
   testID?: string;
+  padding?: Space;
 };
 
 export const GenericCard = ({
   children,
   disabled = false,
   type,
-  gradient = ['transparent', 'transparent'],
+  gradient = transparentGradient,
   onPress,
+  borderColor,
   color,
+  padding = '20px',
+  ignoreShadow = false,
   testID,
 }: PropsWithChildren<GenericCardProps>) => (
   <ConditionalWrap
@@ -44,13 +62,19 @@ export const GenericCard = ({
       </ButtonPressAnimation>
     )}
   >
-    <AccentColorProvider color={color ?? globalColors.grey100}>
+    <ConditionalWrap
+      condition={color !== undefined && color !== 'accent'}
+      wrap={(children: React.ReactNode) => (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <AccentColorProvider color={color!}>{children}</AccentColorProvider>
+      )}
+    >
       <Box
         background={color ? 'accent' : 'surfacePrimaryElevated'}
         as={LinearGradient}
-        colors={gradient}
-        end={{ x: 1, y: 0 }}
-        start={{ x: 0, y: 0.5 }}
+        colors={gradient.colors}
+        end={gradient.end}
+        start={gradient.start}
         width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
         height={
           type === 'square'
@@ -59,14 +83,20 @@ export const GenericCard = ({
               }
             : undefined
         }
-        borderRadius={20}
-        shadow={color ? '18px accent' : '18px'}
-        style={{ flex: IS_IOS ? 0 : undefined }}
-        padding="20px"
+        borderRadius={24}
+        {...(!ignoreShadow && {
+          shadow: color ? '18px accent' : '18px',
+        })}
+        style={{
+          flex: IS_IOS ? 0 : undefined,
+          borderColor: borderColor ?? undefined,
+          borderWidth: borderColor ? 1 : undefined,
+        }}
+        padding={padding}
         testID={testID}
       >
         {children}
       </Box>
-    </AccentColorProvider>
+    </ConditionalWrap>
   </ConditionalWrap>
 );

@@ -56,14 +56,13 @@ import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
+import { getNetworkObj } from '@/networks';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
   386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
-
-export const initialChartExpandedStateSheetHeight = undefined;
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
@@ -329,7 +328,9 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
-  const swapEnabled = config.swagg_enabled;
+  const assetNetwork = ethereumUtils.getNetworkFromType(assetWithPrice.type);
+  const swapEnabled =
+    config.swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = config.f2c_enabled;
 
   const isDOG =

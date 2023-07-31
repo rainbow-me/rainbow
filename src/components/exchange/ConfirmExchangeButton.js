@@ -7,13 +7,19 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
 import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
-import { useColorForAsset, useGas, useSwapCurrencies } from '@/hooks';
+import {
+  useColorForAsset,
+  useGas,
+  useSwapCurrencies,
+  useWallets,
+} from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
+import { getNetworkObj } from '@/networks';
 
 const NOOP = () => null;
 
@@ -38,6 +44,7 @@ export default function ConfirmExchangeButton({
   const { name: routeName } = useRoute();
   const { navigate } = useNavigation();
   const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
+  const { isHardwareWallet } = useWallets();
 
   const isSavings =
     type === ExchangeModalTypes.withdrawal ||
@@ -117,13 +124,9 @@ export default function ConfirmExchangeButton({
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
-    if (currentNetwork === NetworkTypes.polygon) {
-      label = lang.t('button.confirm_exchange.insufficient_matic');
-    } else if (currentNetwork === NetworkTypes.bsc) {
-      label = lang.t('button.confirm_exchange.insufficient_bnb');
-    } else {
-      label = lang.t('button.confirm_exchange.insufficient_eth');
-    }
+    label = lang.t('button.confirm_exchange.insufficient_token', {
+      tokenName: getNetworkObj(currentNetwork).nativeCurrency.symbol,
+    });
   } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isSwapDetailsRoute) {
@@ -188,6 +191,12 @@ export default function ConfirmExchangeButton({
             isAuthorizing={isSwapSubmitting}
             label={label}
             loading={loading || isSwapSubmitting}
+            ignoreHardwareWallet={
+              loading ||
+              isSwapSubmitting ||
+              shouldOpenSwapDetails ||
+              !!explainerType
+            }
             onLongPress={
               loading || isSwapSubmitting
                 ? NOOP
@@ -208,6 +217,7 @@ export default function ConfirmExchangeButton({
             testID={testID}
             {...props}
             parentHorizontalPadding={19}
+            isHardwareWallet={isHardwareWallet}
           />
         </Row>
       </Rows>

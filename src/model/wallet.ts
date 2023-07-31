@@ -17,7 +17,6 @@ import {
 } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -32,13 +31,13 @@ import profileUtils, {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import * as keychain from './keychain';
+import * as keychain from '@/model/keychain';
+import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
-import AesEncryptor from '@/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
@@ -55,11 +54,9 @@ import {
 } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
 import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
-import { setIsWalletLoading } from '@/redux/wallets';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import {
@@ -73,8 +70,8 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
-
-const encryptor = new AesEncryptor();
+import { IS_ANDROID } from '@/env';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -253,15 +250,15 @@ export const walletInit = async (
 
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
-    const wallet = await createWallet(
-      seedPhrase,
+    const wallet = await createWallet({
+      seed: seedPhrase,
       color,
       name,
       overwrite,
       checkedWallet,
       image,
-      silent
-    );
+      silent,
+    });
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -269,7 +266,7 @@ export const walletInit = async (
   walletAddress = await loadAddress();
 
   if (!walletAddress) {
-    const wallet = await createWallet();
+    const wallet = await createWallet({});
     walletAddress = wallet?.address;
     isNew = true;
   }
@@ -327,10 +324,15 @@ export const sendTransaction = async ({
   result?: Transaction;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: sending transaction', { transaction });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
@@ -338,11 +340,20 @@ export const sendTransaction = async ({
       return { result };
     } catch (error) {
       logger.error(new RainbowError('Failed to send transaction'), { error });
-      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      }
+
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+    }
     logger.error(new RainbowError('Failed to send transaction due to auth'), {
       error,
     });
@@ -358,21 +369,34 @@ export const signTransaction = async ({
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing transaction');
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     if (!wallet) return null;
     try {
       const result = await wallet.signTransaction(transaction);
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      }
       logger.error(new RainbowError('Failed to sign transaction'), { error });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(new RainbowError('Failed to sign transaction due to auth'), {
       error,
     });
@@ -388,21 +412,34 @@ export const signMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(arrayify(message));
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign message'), { error });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(new RainbowError('Failed to sign message due to auth'), {
       error,
     });
@@ -418,10 +455,15 @@ export const signPersonalMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing personal message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(
@@ -431,14 +473,22 @@ export const signPersonalMessage = async (
       );
       return { result };
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign personal message'), {
         error,
       });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(
       new RainbowError('Failed to sign personal message due to auth'),
       { error }
@@ -455,11 +505,16 @@ export const signTypedDataMessage = async (
   result?: string;
   error?: any;
 }> => {
+  let isHardwareWallet = false;
   try {
     logger.info('wallet: signing typed data message', { message });
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
+    // have to check inverse or we trigger unwanted BT permissions requests
+    if (!(wallet instanceof Wallet)) {
+      isHardwareWallet = true;
+    }
     try {
       let parsedData = message;
       try {
@@ -482,6 +537,7 @@ export const signTypedDataMessage = async (
       }
 
       // Hardware wallets
+      // have to check inverse or we trigger unwanted BT permissions requests
       if (!(wallet instanceof Wallet)) {
         const result = await (wallet as LedgerSigner).signTypedDataMessage(
           parsedData,
@@ -499,14 +555,22 @@ export const signTypedDataMessage = async (
         };
       }
     } catch (error) {
-      Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      if (isHardwareWallet) {
+        setHardwareTXError(true);
+      } else {
+        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
+      }
       logger.error(new RainbowError('Failed to sign typed data message'), {
         error,
       });
       return { error };
     }
   } catch (error) {
-    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (isHardwareWallet) {
+      setHardwareTXError(true);
+    } else {
+      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    }
     logger.error(
       new RainbowError('Failed to sign typed data message due to auth'),
       { error }
@@ -548,22 +612,6 @@ export const loadPrivateKey = async (
         return -1;
       }
       privateKey = privateKeyData?.privateKey ?? null;
-
-      let userPIN = null;
-      if (android) {
-        const hasBiometricsEnabled = await getSupportedBiometryType();
-        // Fallback to custom PIN
-        if (!hasBiometricsEnabled) {
-          try {
-            userPIN = await authenticateWithPIN();
-          } catch (e) {
-            return null;
-          }
-        }
-      }
-      if (privateKey && userPIN) {
-        privateKey = await encryptor.decrypt(userPIN, privateKey);
-      }
     }
 
     return privateKey;
@@ -605,16 +653,29 @@ export const identifyWalletType = (
   return EthereumWalletType.seed;
 };
 
-export const createWallet = async (
-  seed: null | EthereumSeed = null,
-  color: null | number = null,
-  name: null | string = null,
-  overwrite: boolean = false,
-  checkedWallet: null | EthereumWalletFromSeed = null,
-  image: null | string = null,
-  silent: boolean = false,
-  clearCallbackOnStartCreation = false
-): Promise<null | EthereumWallet> => {
+type CreateWalletParams = {
+  seed?: null | EthereumSeed;
+  color?: null | number;
+  name?: null | string;
+  overwrite?: boolean;
+  checkedWallet?: null | EthereumWalletFromSeed;
+  image?: null | string;
+  silent?: boolean;
+  clearCallbackOnStartCreation?: boolean;
+  userPin?: string;
+};
+
+export const createWallet = async ({
+  seed = null,
+  color = null,
+  name = null,
+  overwrite = false,
+  checkedWallet = null,
+  image = null,
+  silent = false,
+  clearCallbackOnStartCreation = false,
+  userPin,
+}: CreateWalletParams): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -625,13 +686,9 @@ export const createWallet = async (
     logger.info('Creating new wallet');
   }
   const walletSeed = seed || generateMnemonic();
-  let addresses: RainbowAccount[] = [];
+  const addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
-
-    if (!silent) {
-      dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
-    }
 
     const {
       isHDWallet,
@@ -716,51 +773,14 @@ export const createWallet = async (
     const id = existingWalletId || `wallet_${Date.now()}`;
     logger.debug('[createWallet] - wallet ID', { id }, DebugContext.wallet);
 
-    // Android users without biometrics need to secure their keys with a PIN
-    let userPIN = null;
-    if (android && !isReadOnlyType && !isHardwareWallet) {
-      const hasBiometricsEnabled = await getSupportedBiometryType();
-      // Fallback to custom PIN
-      if (!hasBiometricsEnabled) {
-        try {
-          userPIN = await getExistingPIN();
-          if (!userPIN) {
-            // We gotta dismiss the modal before showing the PIN screen
-            dispatch(setIsWalletLoading(null));
-            userPIN = await authenticateWithPINAndCreateIfNeeded();
-            dispatch(
-              setIsWalletLoading(
-                seed
-                  ? silent
-                    ? WalletLoadingStates.IMPORTING_WALLET_SILENTLY
-                    : WalletLoadingStates.IMPORTING_WALLET
-                  : WalletLoadingStates.CREATING_WALLET
-              )
-            );
-          }
-        } catch (e) {
-          return null;
-        }
-      }
-    }
+    // load this up front and pass to other keychain setters to avoid multiple
+    // auth requests
+    const androidEncryptionPin =
+      IS_ANDROID && !(await kc.getSupportedBiometryType())
+        ? userPin || (await authenticateWithPINAndCreateIfNeeded())
+        : undefined;
 
-    // Save seed - save this first
-    if (userPIN) {
-      // Encrypt with the PIN
-      const encryptedSeed = await encryptor.encrypt(userPIN, walletSeed);
-      if (encryptedSeed) {
-        await saveSeedPhrase(encryptedSeed, id);
-      } else {
-        logger.error(
-          new RainbowError(
-            '[createWallet] - Error encrypting seed with user pin'
-          )
-        );
-        return null;
-      }
-    } else {
-      await saveSeedPhrase(walletSeed, id);
-    }
+    await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
     logger.debug('[createWallet] - saved seed phrase', {}, DebugContext.wallet);
 
@@ -769,28 +789,15 @@ export const createWallet = async (
     logger.debug('[createWallet] - saved address', {}, DebugContext.wallet);
 
     // Save private key
-    if (userPIN) {
-      // Encrypt with the PIN
-      const encryptedPkey = await encryptor.encrypt(userPIN, pkey);
-      if (encryptedPkey) {
-        await saveKeyForWallet(walletAddress, encryptedPkey, isHardwareWallet);
-      } else {
-        logger.error(
-          new RainbowError(
-            '[createWallet] - Error encrypting private key with user pin'
-          )
-        );
-        return null;
-      }
-    } else {
-      await saveKeyForWallet(walletAddress, pkey, isHardwareWallet);
-    }
+    await saveKeyForWallet(walletAddress, pkey, isHardwareWallet, {
+      androidEncryptionPin,
+    });
     logger.debug('[createWallet] - saved private key', {}, DebugContext.wallet);
 
     const colorIndexForWallet =
       color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
-    let label = name || '';
+    const label = name || '';
 
     addresses.push({
       address: walletAddress,
@@ -908,33 +915,12 @@ export const createWallet = async (
 
         if (hasTxHistory) {
           // Save private key
-          if (userPIN) {
-            // Encrypt with the PIN
-            const encryptedPkey = await encryptor.encrypt(
-              userPIN,
-              nextWallet.privateKey
-            );
-            if (encryptedPkey) {
-              await saveKeyForWallet(
-                nextWallet.address,
-                encryptedPkey,
-                isHardwareWallet
-              );
-            } else {
-              logger.error(
-                new RainbowError(
-                  '[createWallet] - Error encrypting private key with user pin'
-                )
-              );
-              return null;
-            }
-          } else {
-            await saveKeyForWallet(
-              nextWallet.address,
-              nextWallet.privateKey,
-              isHardwareWallet
-            );
-          }
+          await saveKeyForWallet(
+            nextWallet.address,
+            nextWallet.privateKey,
+            isHardwareWallet,
+            { androidEncryptionPin }
+          );
           logger.debug(
             `[createWallet] - saved private key for wallet index: ${index}`,
             {},
@@ -1058,13 +1044,6 @@ export const createWallet = async (
         walletType === WalletLibraryType.ledger
           ? (walletResult as Wallet)
           : new Wallet(pkey);
-      setTimeout(() => {
-        // on android we need to call this logic in more specific places
-        if (ios || !isImported) {
-          // !imported = new wallet - then we use this logic for dismissing the loading state
-          dispatch(setIsWalletLoading(null));
-        }
-      }, 2000);
 
       return walletRes;
     }
@@ -1085,12 +1064,17 @@ export const createWallet = async (
 export const saveKeyForWallet = async (
   address: EthereumAddress,
   walletKey: null | EthereumPrivateKey | HardwareKey,
-  hardware: boolean
+  hardware: boolean,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   if (hardware) {
-    return await saveHardwareKey(address, walletKey as HardwareKey);
+    return await saveHardwareKey(address, walletKey as HardwareKey, {
+      androidEncryptionPin,
+    });
   } else {
-    return await savePrivateKey(address, walletKey);
+    return await savePrivateKey(address, walletKey, { androidEncryptionPin });
   }
 };
 
@@ -1119,7 +1103,10 @@ export const getKeyForWallet = async (
  */
 export const savePrivateKey = async (
   address: EthereumAddress,
-  privateKey: null | EthereumPrivateKey
+  privateKey: null | EthereumPrivateKey,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
@@ -1130,7 +1117,10 @@ export const savePrivateKey = async (
     version: privateKeyVersion,
   };
   // if its a hardware wallet we dont want in the private keychain
-  await keychain.saveObject(key, val, privateAccessControlOptions);
+  await kc.setObject(key, val, {
+    ...privateAccessControlOptions,
+    androidEncryptionPin,
+  });
 };
 
 /**
@@ -1141,7 +1131,10 @@ export const savePrivateKey = async (
  */
 export const saveHardwareKey = async (
   address: EthereumAddress,
-  privateKey: null | HardwareKey
+  privateKey: null | HardwareKey,
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ) => {
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1207,7 +1200,10 @@ export const getHardwareKey = async (
 
 export const saveSeedPhrase = async (
   seedphrase: EthereumWalletSeed,
-  keychain_id: RainbowWallet['id']
+  keychain_id: RainbowWallet['id'],
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ): Promise<void> => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
@@ -1217,19 +1213,29 @@ export const saveSeedPhrase = async (
     version: seedPhraseVersion,
   };
 
-  return keychain.saveObject(key, val, privateAccessControlOptions);
+  return kc.setObject(key, val, {
+    ...privateAccessControlOptions,
+    androidEncryptionPin,
+  });
 };
 
 export const getSeedPhrase = async (
-  id: RainbowWallet['id']
+  id: RainbowWallet['id'],
+  {
+    androidEncryptionPin,
+  }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
 ): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;
-    const seedPhraseData = (await keychain.loadObject(key, {
-      authenticationPrompt,
-    })) as SeedPhraseData | -2;
+    const { value: seedPhraseData, error } = await kc.getObject<SeedPhraseData>(
+      key,
+      {
+        authenticationPrompt,
+        androidEncryptionPin,
+      }
+    );
 
-    if (seedPhraseData === -2) {
+    if (error === -2) {
       Alert.alert(
         lang.t('wallet.authenticate.alert.error'),
         lang.t(
@@ -1323,37 +1329,18 @@ export const generateAccount = async (
       seedphrase = migratedSecrets?.seedphrase;
     }
 
-    let userPIN = null;
-    if (android) {
-      const hasBiometricsEnabled = await getSupportedBiometryType();
-      // Fallback to custom PIN
-      if (!hasBiometricsEnabled) {
-        try {
-          const { dispatch } = store;
-          // Hide the loading overlay while showing the pin auth screen
-          dispatch(setIsWalletLoading(null));
-          userPIN = await authenticateWithPINAndCreateIfNeeded();
-          dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
-        } catch (e) {
-          callbackAfterSeeds?.();
-          callbackAfterSeeds = null;
-          return null;
-        }
-      }
-    }
+    // load this up front and pass to other keychain setters to avoid multiple
+    // auth requests
+    const androidEncryptionPin =
+      IS_ANDROID && !(await kc.getSupportedBiometryType())
+        ? await authenticateWithPIN()
+        : undefined;
 
     if (!seedphrase) {
-      const seedData = await getSeedPhrase(id);
+      const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       callbackAfterSeeds?.();
       callbackAfterSeeds = null;
       seedphrase = seedData?.seedphrase;
-      if (userPIN) {
-        try {
-          seedphrase = await encryptor.decrypt(userPIN, seedphrase);
-        } catch (e) {
-          return null;
-        }
-      }
     }
 
     callbackAfterSeeds = null;
@@ -1374,26 +1361,9 @@ export const generateAccount = async (
     );
 
     const newAccount = new Wallet(walletPkey);
-    // Android users without biometrics need to secure their keys with a PIN
-    if (userPIN) {
-      try {
-        const encryptedPkey = await encryptor.encrypt(userPIN, walletPkey);
-        if (encryptedPkey) {
-          await saveKeyForWallet(walletAddress, encryptedPkey, false);
-        } else {
-          logger.error(
-            new RainbowError(
-              '[generateAccount] - Error encrypting pkey with user pin'
-            )
-          );
-          return null;
-        }
-      } catch (e) {
-        return null;
-      }
-    } else {
-      await saveKeyForWallet(walletAddress, walletPkey, false);
-    }
+    await saveKeyForWallet(walletAddress, walletPkey, false, {
+      androidEncryptionPin,
+    });
     // Creating signature for this wallet
     await createSignature(walletAddress, walletPkey);
 
@@ -1640,33 +1610,6 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       );
       const seedData = await getSeedPhrase(id);
       seedPhrase = seedData?.seedphrase ?? null;
-      let userPIN = null;
-      if (android) {
-        const hasBiometricsEnabled = await getSupportedBiometryType();
-        if (!seedData && !seedPhrase && !hasBiometricsEnabled) {
-          logger.debug(
-            '[loadAndMigrate] - Wallet is created with biometric data, there is no access to the seed',
-            {},
-            DebugContext.wallet
-          );
-          throw new Error(createdWithBiometricError);
-        }
-        // Fallback to check PIN
-        const isSeedHasPINInfo = seedPhrase?.includes('cipher');
-        if (isSeedHasPINInfo) {
-          try {
-            userPIN = await authenticateWithPIN();
-            if (userPIN) {
-              // Dencrypt with the PIN
-              seedPhrase = await encryptor.decrypt(userPIN, seedPhrase);
-            } else {
-              return null;
-            }
-          } catch (e) {
-            return null;
-          }
-        }
-      }
 
       if (seedPhrase) {
         logger.debug(

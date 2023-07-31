@@ -1,19 +1,21 @@
 import React from 'react';
-import { Animated, View } from 'react-native';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { Animated, StatusBar, View } from 'react-native';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
 import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import {
   EmojiAvatar,
   ProfileAvatarSize,
 } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from './HardwareWalletTxNavigator';
+import { IS_IOS } from '@/env';
 
-const statusBarHeight = getStatusBarHeight(true);
+const statusBarHeight = IS_IOS
+  ? safeAreaInsetValues.top
+  : StatusBar.currentHeight;
 export const sheetVerticalOffset = statusBarHeight;
 
 export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
@@ -464,6 +466,11 @@ export const addWalletNavigatorPreset = ({ route }) => ({
   height: route.params?.sheetHeight,
 });
 
+export const nftSingleOfferSheetPreset = ({ route }) => ({
+  ...bottomSheetPreset,
+  height: route?.params.longFormHeight,
+});
+
 export const hardwareWalletTxNavigatorPreset = {
   height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   backdropOpacity: 1,
@@ -491,6 +498,20 @@ export const sheetPreset = ({ route }) => {
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };
+
+export const addCashSheet = () => {
+  return {
+    cardOverlayEnabled: true,
+    cardShadowEnabled: true,
+    cardStyle: { backgroundColor: 'transparent' },
+    cardStyleInterpolator: sheetStyleInterpolator(1),
+    cardTransparent: true,
+    gestureDirection: 'vertical',
+    gestureResponseDistance: gestureResponseDistance,
+    transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+  };
+};
+
 export const selectUniquePreset = () => {
   return {
     cardOverlayEnabled: true,

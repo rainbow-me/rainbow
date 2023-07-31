@@ -54,6 +54,8 @@ import {
   NotificationRelationship,
 } from '@/notifications/settings';
 import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
+import { logger } from '@/logger';
+import { setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 
 type Callback = () => void;
 
@@ -293,6 +295,15 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           });
         }
       }
+    } else if (type === NotificationTypes.walletConnect) {
+      logger.info(
+        `NotificationsHandler: handling wallet connect notification`,
+        { notification }
+      );
+    } else {
+      logger.warn(`NotificationsHandler: received unknown notification`, {
+        notification,
+      });
     }
   };
 

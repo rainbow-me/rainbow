@@ -7,7 +7,7 @@ import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
@@ -19,14 +19,12 @@ import {
   backupUserDataIntoCloud,
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
+  logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { RouteProp, useRoute } from '@react-navigation/core';
-// @ts-ignore ts is complaining about this import
-import RNCloudFs from 'react-native-cloud-fs';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 
@@ -53,12 +51,7 @@ export const AddWalletSheet = () => {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
-  const {
-    isDamaged,
-    selectedWallet,
-    setIsWalletLoading,
-    wallets,
-  } = useWallets();
+  const { isDamaged, selectedWallet, wallets } = useWallets();
 
   const walletsBackedUp = useMemo(() => {
     let count = 0;
@@ -94,11 +87,9 @@ export const AddWalletSheet = () => {
             isNewProfile: true,
             onCancel: () => {
               creatingWallet.current = false;
-              setIsWalletLoading(null);
             },
             onCloseModal: async (args: any) => {
               if (args) {
-                setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
@@ -166,16 +157,11 @@ export const AddWalletSheet = () => {
 
                     // If doesn't exist, we need to create a new wallet
                   } else {
-                    await createWallet(
-                      null,
+                    await createWallet({
                       color,
                       name,
-                      false,
-                      null,
-                      null,
-                      false,
-                      true
-                    );
+                      clearCallbackOnStartCreation: true,
+                    });
                     await dispatch(walletsLoadState(profilesEnabled));
                     // @ts-ignore
                     await initializeWallet();
@@ -193,7 +179,6 @@ export const AddWalletSheet = () => {
                 }
               }
               creatingWallet.current = false;
-              setIsWalletLoading(null);
             },
             profile: {
               color: null,
@@ -204,7 +189,6 @@ export const AddWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
-      setIsWalletLoading(null);
       logger.error(e as RainbowError, {
         description: 'Error while trying to add account',
       });
@@ -219,7 +203,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'import' },
+      params: { type: 'import', isFirstWallet },
     });
   };
 
@@ -231,7 +215,7 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'watch' },
+      params: { type: 'watch', isFirstWallet },
     });
   };
 
@@ -241,6 +225,7 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     if (IS_ANDROID) {
+      await logoutFromGoogleDrive();
       const isAvailable = await isCloudBackupAvailable();
       if (isAvailable) {
         let proceed = false;
@@ -268,7 +253,6 @@ export const AddWalletSheet = () => {
               i18n.t(TRANSLATIONS.options.cloud.no_backups),
               i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
             );
-            await RNCloudFs.logout();
           }
         }
       }
@@ -310,7 +294,10 @@ export const AddWalletSheet = () => {
     });
     goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+        entryPoint: Routes.ADD_WALLET_SHEET,
+        isFirstWallet,
+      });
     });
   };
 

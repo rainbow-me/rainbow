@@ -86,6 +86,7 @@ export default function ProfileAvatar({
                   onLoadEnd={onLoadEnd}
                   source={{ uri: avatarUrl }}
                   width={{ custom: size }}
+                  size={100}
                 />
               ) : (
                 <Box

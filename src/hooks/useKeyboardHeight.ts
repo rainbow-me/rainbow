@@ -1,6 +1,10 @@
-import { useIsFocused } from '@react-navigation/core';
-import { useCallback, useEffect } from 'react';
-import { Keyboard } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { useCallback, useEffect, useRef } from 'react';
+import {
+  EmitterSubscription,
+  Keyboard,
+  KeyboardEventListener,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
@@ -14,6 +18,7 @@ export default function useKeyboardHeight(options = {}) {
   // things like "autofill" or "autocomplete" are enabled on the target input.
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'keyboardType' does not exist on type '{}... Remove this comment to see the full error message
   const { keyboardType = KeyboardTypes.default } = options;
+  const listenerRef = useRef<EmitterSubscription>();
 
   const dispatch = useDispatch();
 
@@ -23,7 +28,7 @@ export default function useKeyboardHeight(options = {}) {
 
   const isFocused = useIsFocused();
 
-  const handleKeyboardDidShow = useCallback(
+  const handleKeyboardDidShow: KeyboardEventListener = useCallback(
     event => {
       const newHeight = Math.floor(event.endCoordinates.height);
 
@@ -46,9 +51,12 @@ export default function useKeyboardHeight(options = {}) {
   );
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+    listenerRef.current = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardDidShow
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
+      listenerRef.current?.remove();
     };
   }, [handleKeyboardDidShow]);
 

@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { useFocusEffect, useRoute } from '@react-navigation/core';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, {
@@ -8,9 +8,15 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { Keyboard, ScrollView } from 'react-native';
+import {
+  EmitterSubscription,
+  Keyboard,
+  LayoutChangeEvent,
+  ScrollView,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -70,10 +76,10 @@ import {
   useENSRegistrationStepHandler,
   useENSSearch,
   useKeyboardHeight,
-  usePersistentDominantColorFromImage,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -133,9 +139,7 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarImage =
     avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
-  const { result: dominantColor } = usePersistentDominantColorFromImage(
-    avatarImage
-  );
+  const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   const bottomActionHeight = isSmallPhone
     ? BottomActionHeightSmall
@@ -152,14 +156,14 @@ export default function ENSAssignRecordsSheet() {
       nativeEvent: {
         layout: { y },
       },
-    }) => {
+    }: LayoutChangeEvent) => {
       params?.sheetRef.current.scrollTo({ y });
     },
     [params?.sheetRef]
   );
 
   const handleError = useCallback(
-    ({ yOffset }) => {
+    ({ yOffset }: { yOffset: number }) => {
       params?.sheetRef.current.scrollTo({ y: yOffset });
     },
     [params?.sheetRef]
@@ -456,6 +460,8 @@ export function ENSAssignRecordsBottomActions({
 
 function HideKeyboardButton({ color }: { color: string }) {
   const show = useSharedValue(false);
+  const keyboardHideListener = useRef<EmitterSubscription>();
+  const keyboardShowListener = useRef<EmitterSubscription>();
 
   useEffect(() => {
     const handleShowKeyboard = () => (show.value = true);
@@ -464,11 +470,17 @@ function HideKeyboardButton({ color }: { color: string }) {
     const showListener = android ? 'keyboardDidShow' : 'keyboardWillShow';
     const hideListener = android ? 'keyboardDidHide' : 'keyboardWillHide';
 
-    Keyboard.addListener(showListener, handleShowKeyboard);
-    Keyboard.addListener(hideListener, handleHideKeyboard);
+    keyboardShowListener.current = Keyboard.addListener(
+      showListener,
+      handleShowKeyboard
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      hideListener,
+      handleHideKeyboard
+    );
     return () => {
-      Keyboard.removeListener(showListener, handleShowKeyboard);
-      Keyboard.removeListener(hideListener, handleHideKeyboard);
+      keyboardHideListener.current?.remove();
+      keyboardShowListener.current?.remove();
     };
   }, [show]);
 

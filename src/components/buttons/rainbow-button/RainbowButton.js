@@ -17,6 +17,7 @@ import ShadowView from '@/react-native-shadow-stack/ShadowView';
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
   source: AddCashIconSource,
+  size: 45,
 })({
   ...position.sizeAsObject(45),
   marginTop: 7.5,

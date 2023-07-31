@@ -1,8 +1,14 @@
 import { BlurView } from '@react-native-community/blur';
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { InteractionManager, Linking, Share, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -22,7 +28,7 @@ import {
   SheetHandle,
   SlackSheet,
 } from '../sheet';
-import { ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
@@ -34,6 +40,7 @@ import {
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { PROFILES, useExperimentalFlag } from '@/config';
+import partyLogo from '../../assets/partyLogo.png';
 import {
   AccentColorProvider,
   Bleed,
@@ -63,7 +70,6 @@ import {
   useENSProfile,
   useENSRegistration,
   useHiddenTokens,
-  usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@/hooks';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -71,12 +77,9 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import {
-  buildRainbowUrl,
-  getUniqueTokenType,
-  magicMemo,
-  safeAreaInsetValues,
-} from '@/utils';
+import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -173,6 +176,7 @@ const Section = ({
                 height={{ custom: 24 }}
                 source={{ uri: titleImageUrl }}
                 width={{ custom: 24 }}
+                size={30}
               />
             </Bleed>
           )}
@@ -257,24 +261,34 @@ const UniqueTokenExpandedState = ({
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
+  const [
+    isRefreshMetadataToastActive,
+    setIsRefreshMetadataToastActive,
+  ] = useState(false);
+
+  const activateRefreshMetadataToast = useCallback(() => {
+    if (!isRefreshMetadataToastActive) {
+      setIsRefreshMetadataToastActive(true);
+      setTimeout(() => {
+        setIsRefreshMetadataToastActive(false);
+      }, 3000);
+    }
+  }, [isRefreshMetadataToastActive]);
+
   const {
     collection: {
       description: familyDescription,
       external_url: familyLink,
       slug,
     },
-    currentPrice,
     description,
     familyImage,
     familyName,
     isSendable,
-    lastPrice,
-    lastSalePaymentToken,
     marketplaceName,
     traits,
     uniqueId,
     fullUniqueId,
-    urlSuffixForAsset,
   } = asset;
 
   const uniqueTokenType = getUniqueTokenType(asset);
@@ -357,9 +371,7 @@ const UniqueTokenExpandedState = ({
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
   const imageColor =
-    // @ts-expect-error image_url could be null or undefined?
-    usePersistentDominantColorFromImage(asset.lowResUrl).result ||
-    colors.paleBlue;
+    usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -374,6 +386,10 @@ const UniqueTokenExpandedState = ({
   const handlePressMarketplaceName = useCallback(
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
+  );
+  const handlePressParty = useCallback(
+    () => Linking.openURL(asset.external_link!),
+    [asset.external_link]
   );
 
   const handlePressShowcase = useCallback(() => {
@@ -424,7 +440,8 @@ const UniqueTokenExpandedState = ({
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
-  const hasSendButton = isActionsEnabled && isSendable;
+  const hasSendButton = isSendable;
+  const isParty = asset?.external_link?.includes('party.app');
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
@@ -534,6 +551,7 @@ const UniqueTokenExpandedState = ({
                         isModificationActionsEnabled={isActionsEnabled}
                         isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
                         rainbowWebUrl={rainbowWebUrl}
+                        onRefresh={activateRefreshMetadataToast}
                       />
                     </Stack>
                     {isNFT || isENS ? (
@@ -550,6 +568,29 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
+                        ) : isParty ? (
+                          <SheetActionButton
+                            color={imageColor}
+                            nftShadows
+                            onPress={handlePressParty}
+                            testID="unique-expanded-state-party-button"
+                            textColor={textColor}
+                            weight="heavy"
+                          >
+                            <ImgixImage
+                              resizeMode="contain"
+                              source={partyLogo as any}
+                              size={20}
+                              style={{ height: 25, width: 25 }}
+                            />
+                            <Text
+                              weight="heavy"
+                              size="20pt"
+                              color={{ custom: textColor }}
+                            >
+                              Party
+                            </Text>
+                          </SheetActionButton>
                         ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
@@ -602,15 +643,7 @@ const UniqueTokenExpandedState = ({
                           bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}
                         >
-                          {isNFT && (
-                            <NFTBriefTokenInfoRow
-                              currentPrice={currentPrice}
-                              lastPrice={lastPrice}
-                              lastSalePaymentToken={lastSalePaymentToken}
-                              network={asset.network}
-                              urlSuffixForAsset={urlSuffixForAsset}
-                            />
-                          )}
+                          {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}
@@ -761,6 +794,10 @@ const UniqueTokenExpandedState = ({
           removeCopy={lang.t(
             'expanded_state.unique_expanded.toast_removed_from_showcase'
           )}
+        />
+        <Toast
+          isVisible={isRefreshMetadataToastActive}
+          text="Requesting metadata..."
         />
       </ToastPositionContainer>
     </>

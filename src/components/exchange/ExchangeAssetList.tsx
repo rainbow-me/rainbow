@@ -41,6 +41,7 @@ import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from './ExchangeTokenRow';
+import { SwappableAsset } from '@/entities';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -82,7 +83,7 @@ const keyExtractor = ({ uniqueId }: { uniqueId: string }) =>
 function useSwapDetailsClipboardState() {
   const [copiedText, setCopiedText] = useState<string>();
   const [copyCount, setCopyCount] = useState(0);
-  const onCopySwapDetailsText = useCallback(text => {
+  const onCopySwapDetailsText = useCallback((text: string) => {
     setCopiedText(abbreviations.formatAddressForDisplay(text));
     setCopyCount(count => count + 1);
   }, []);
@@ -180,7 +181,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   }
 
   const handleUnverifiedTokenPress = useCallback(
-    item => {
+    (item: SwappableAsset) => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
         asset: item,

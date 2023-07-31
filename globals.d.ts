@@ -28,6 +28,7 @@ declare module 'react-native-dotenv' {
   export const DATA_API_KEY: string;
   export const DATA_ENDPOINT: string;
   export const DATA_ORIGIN: string;
+  export const ADDYS_API_KEY: string;
   export const ETHEREUM_GOERLI_RPC: string;
   export const ETHEREUM_GOERLI_RPC_DEV: string;
   export const ETHEREUM_KOVAN_RPC: string;
@@ -39,9 +40,12 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_ROPSTEN_RPC: string;
   export const ETHEREUM_ROPSTEN_RPC_DEV: string;
   export const OPTIMISM_MAINNET_RPC: string;
+  export const BASE_MAINNET_RPC: string;
+  export const BASE_MAINNET_RPC_DEV: string;
   export const POLYGON_MAINNET_RPC: string;
   export const ARBITRUM_MAINNET_RPC: string;
   export const BSC_MAINNET_RPC: string;
+  export const ZORA_MAINNET_RPC: string;
   export const RAINBOW_WYRE_MERCHANT_ID: string;
   export const RAINBOW_WYRE_MERCHANT_ID_TEST: string;
   export const WYRE_ACCOUNT_ID: string;
@@ -79,7 +83,9 @@ declare module 'react-native-dotenv' {
   export const DEV_PKEY: string;
   export const RAINBOW_TOKEN_LIST_URL: string;
   export const WC_PROJECT_ID: string;
+  export const RAMP_HOST_API_KEY: string;
   export const LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
   export const LOG_DEBUG: string;
   export const QUIET_OLD_LOGGER: string;
+  export const ARC_GRAPHQL_API_KEY: string;
 }

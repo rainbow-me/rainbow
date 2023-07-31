@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getFlashbotsProvider,
-  getHasMerged,
   getProviderForNetwork,
   isL2Network,
   isTestnetNetwork,
@@ -61,7 +60,6 @@ import {
 } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { isDappAuthenticated } from '@/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import networkTypes from '@/helpers/networkTypes';
 import {
@@ -91,6 +89,7 @@ import { padding } from '@/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
+  delay,
   fromWei,
   greaterThan,
   greaterThanOrEqualTo,
@@ -112,9 +111,10 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
-import { handleSessionRequestResponse } from '@/utils/walletConnect';
+import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
+import { getNetworkObj } from '@/networks';
 
 const springConfig = {
   damping: 500,
@@ -250,6 +250,7 @@ export default function TransactionConfirmationScreen() {
     return {
       ...profileInfo,
       address,
+      isHardwareWallet: !!selectedWallet?.deviceId,
     };
   }, [
     walletConnector?._accounts,
@@ -262,8 +263,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const disableFlashbotsPostMerge =
-    getHasMerged(currentNetwork) && !config.flashbots_enabled;
+  const disableFlashbotsPostMerge = !config.flashbots_enabled;
   const flashbotsEnabled =
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
@@ -275,7 +275,7 @@ export default function TransactionConfirmationScreen() {
         )
       )
     );
-  }, [walletConnector?._chainId, walletConnectV2RequestValues]);
+  }, [walletConnectV2RequestValues?.chainId, walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -289,7 +289,7 @@ export default function TransactionConfirmationScreen() {
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [currentNetwork, flashbotsEnabled]);
+  }, [currentNetwork, flashbotsEnabled, setProvider]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -348,10 +348,6 @@ export default function TransactionConfirmationScreen() {
   const formattedDappUrl = useMemo(() => {
     const { hostname } = new URL(dappUrl);
     return hostname;
-  }, [dappUrl]);
-
-  const isAuthenticated = useMemo(() => {
-    return isDappAuthenticated(dappUrl);
   }, [dappUrl]);
 
   const handleL2DisclaimerPress = useCallback(() => {
@@ -413,6 +409,11 @@ export default function TransactionConfirmationScreen() {
 
   const closeScreen = useCallback(
     canceled => {
+      // we need to close the hw navigator too
+      if (accountInfo.isHardwareWallet) {
+        delay(300);
+        goBack();
+      }
       goBack();
       if (!isMessageRequest) {
         stopPollingGasFees();
@@ -427,22 +428,29 @@ export default function TransactionConfirmationScreen() {
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
+
+      if (walletConnectV2RequestValues?.onComplete) {
+        InteractionManager.runAfterInteractions(() => {
+          walletConnectV2RequestValues.onComplete();
+        });
+      }
     },
     [
+      accountInfo.isHardwareWallet,
       goBack,
       isMessageRequest,
       pendingRedirect,
+      walletConnectV2RequestValues,
       stopPollingGasFees,
       method,
-      dappScheme,
       dispatch,
+      dappScheme,
     ]
   );
 
   const onCancel = useCallback(
     async error => {
       try {
-        closeScreen(true);
         if (callback) {
           callback({ error: error || 'User cancelled the request' });
         }
@@ -463,7 +471,11 @@ export default function TransactionConfirmationScreen() {
           }
           const rejectionType =
             method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+            isHardwareWallet: accountInfo.isHardwareWallet,
+          });
+
+          closeScreen(true);
         }, 300);
       } catch (error) {
         logger.error(
@@ -474,6 +486,7 @@ export default function TransactionConfirmationScreen() {
       }
     },
     [
+      accountInfo.isHardwareWallet,
       callback,
       closeScreen,
       dispatch,
@@ -486,7 +499,7 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
+  const onPressCancel = useCallback(() => calculateGasLimit(), [onCancel]);
 
   useEffect(() => {
     if (
@@ -518,6 +531,12 @@ export default function TransactionConfirmationScreen() {
     const txPayload = params?.[0];
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
+
+    // sometimes provider is undefined, this is hack to ensure its defined
+    const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
+      Number(walletConnectV2RequestValues?.chainId || walletConnector?._chainId)
+    );
+    const provider = await getProviderForNetwork(localCurrentNetwork);
     try {
       // attempt to re-run estimation
       logger.debug(
@@ -525,7 +544,16 @@ export default function TransactionConfirmationScreen() {
         { gas },
         logger.DebugContext.walletconnect
       );
-      const rawGasLimit = await estimateGas(txPayload, provider);
+
+      // safety precaution: we want to ensure these properties are not used for gas estimation
+      const cleanTxPayload = omitFlatten(txPayload, [
+        'gas',
+        'gasLimit',
+        'gasPrice',
+        'maxFeePerGas',
+        'maxPriorityFeePerGas',
+      ]);
+      let rawGasLimit = await estimateGas(cleanTxPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
@@ -543,7 +571,7 @@ export default function TransactionConfirmationScreen() {
         logger.DebugContext.walletconnect
       );
 
-      if (currentNetwork === networkTypes.optimism) {
+      if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
           txPayload,
           provider
@@ -553,7 +581,13 @@ export default function TransactionConfirmationScreen() {
         updateTxFee(gas, null);
       }
     }
-  }, [currentNetwork, params, provider, updateTxFee]);
+  }, [
+    currentNetwork,
+    params,
+    updateTxFee,
+    walletConnectV2RequestValues?.chainId,
+    walletConnector?._chainId,
+  ]);
 
   useEffect(() => {
     if (
@@ -658,30 +692,28 @@ export default function TransactionConfirmationScreen() {
         logger.DebugContext.walletconnect
       );
 
-      if (currentNetwork === networkTypes.mainnet) {
-        // Estimate the tx with gas limit padding before sending
-        const rawGasLimit = await estimateGasWithPadding(
-          txPayload,
-          null,
-          null,
-          provider
-        );
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(
+        txPayload,
+        null,
+        null,
+        provider
+      );
 
-        // If the estimation with padding is higher or gas limit was missing,
-        // let's use the higher value
-        if (
-          (isNil(gas) && isNil(gasLimitFromPayload)) ||
-          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-          (!isNil(gasLimitFromPayload) &&
-            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-        ) {
-          logger.debug(
-            'WC: using padded estimation!',
-            { gas: rawGasLimit.toString() },
-            logger.DebugContext.walletconnect
-          );
-          gas = toHex(rawGasLimit);
-        }
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.debug(
+          'WC: using padded estimation!',
+          { gas: rawGasLimit.toString() },
+          logger.DebugContext.walletconnect
+        );
+        gas = toHex(rawGasLimit);
       }
     } catch (error) {
       logger.error(new RainbowError('WC: error estimating gas'), { error });
@@ -709,8 +741,9 @@ export default function TransactionConfirmationScreen() {
       'chainId',
     ]);
 
-    let response = null;
+    logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
 
+    let response = null;
     try {
       const existingWallet = await loadWallet(
         accountInfo.address,
@@ -770,11 +803,13 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
           await handleSessionRequestResponse(walletConnectV2RequestValues, {
-            result,
+            result: result.hash,
           });
         } else {
           await dispatch(
@@ -798,11 +833,14 @@ export default function TransactionConfirmationScreen() {
         dappScheme,
         dappUrl,
         formattedDappUrl,
-        isAuthenticated,
         rpcMethod: method,
+        network: currentNetwork,
       });
 
-      await onCancel(error);
+      // If the user is using a hardware wallet, we don't want to close the sheet on an error
+      if (!accountInfo.isHardwareWallet) {
+        await onCancel(error);
+      }
     }
   }, [
     method,
@@ -813,7 +851,10 @@ export default function TransactionConfirmationScreen() {
     currentNetwork,
     provider,
     accountInfo.address,
+    accountInfo.isHardwareWallet,
     callback,
+    dappName,
+    dappUrl,
     isFocused,
     requestId,
     closeScreen,
@@ -822,20 +863,17 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.from,
     displayDetails?.request?.to,
     nativeAsset,
-    dappName,
     accountAddress,
     dispatch,
     dataAddNewTransaction,
+    walletConnectV2RequestValues,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     switchToWalletWithAddress,
-    onCancel,
-    dappScheme,
-    dappUrl,
     formattedDappUrl,
-    isAuthenticated,
+    dappScheme,
+    onCancel,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -865,6 +903,8 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request', {
         dappName,
         dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {
@@ -884,19 +924,21 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
-    method,
-    accountInfo.address,
-    provider,
     params,
+    accountInfo.address,
+    accountInfo.isHardwareWallet,
+    provider,
+    method,
     dappName,
     dappUrl,
+    currentNetwork,
     requestId,
     callback,
     closeScreen,
+    walletConnectV2RequestValues,
     dispatch,
     removeRequest,
     walletConnectSendStatus,
-    walletConnectV2RequestValues,
     peerId,
     onCancel,
   ]);
@@ -925,6 +967,14 @@ export default function TransactionConfirmationScreen() {
       setIsAuthorizing(false);
     }
   }, [isAuthorizing, onConfirm]);
+
+  const submitFn = useCallback(async () => {
+    if (accountInfo.isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+    } else {
+      await onPressSend();
+    }
+  }, [accountInfo.isHardwareWallet, navigate, onPressSend]);
 
   const renderTransactionButtons = useCallback(() => {
     let ready = true;
@@ -967,7 +1017,7 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.appleBlue}
           label={`􀎽 ${lang.t('button.confirm')}`}
-          onPress={ready ? onPressSend : NOOP}
+          onPress={ready ? submitFn : NOOP}
           size="big"
           testID="wc-confirm"
           weight="heavy"
@@ -983,7 +1033,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressCancel,
-    onPressSend,
+    submitFn,
   ]);
 
   const renderTransactionSection = useCallback(() => {
@@ -997,7 +1047,8 @@ export default function TransactionConfirmationScreen() {
 
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
-      const nativeAssetPrice = genericNativeAsset?.price?.value;
+      const nativeAssetPrice =
+        genericNativeAsset?.price?.value || nativeAsset?.price?.value;
       const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
@@ -1031,6 +1082,7 @@ export default function TransactionConfirmationScreen() {
     request?.data,
     request?.value,
     request.message,
+    nativeAsset,
     genericNativeAsset?.price?.value,
     nativeCurrency,
   ]);
@@ -1167,7 +1219,7 @@ export default function TransactionConfirmationScreen() {
                       size="18px / 27px (Deprecated)"
                       weight="bold"
                     >
-                      {isAuthenticated ? dappName : formattedDappUrl}
+                      {formattedDappUrl}
                     </Text>
                   </Row>
                 </Row>

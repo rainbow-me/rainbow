@@ -23,6 +23,7 @@ export function selectTextSizes<SelectedTextSizes extends readonly TextSize[]>(
 export type TextProps = {
   align?: 'center' | 'left' | 'right';
   color: TextColor | CustomColor;
+  ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
   size: TextSize;
   tabularNumbers?: boolean;
@@ -35,20 +36,24 @@ export type TextProps = {
       children: string | (string | null)[];
     }
   | { containsEmoji?: false; children: ReactNode }
-);
+) & {
+    style?: Record<string, unknown>;
+  };
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
     {
-      numberOfLines,
-      containsEmoji: containsEmojiProp = false,
-      children,
-      testID,
       align,
+      children,
       color,
+      containsEmoji: containsEmojiProp = false,
+      ellipsizeMode,
+      numberOfLines,
       size,
-      weight,
       tabularNumbers,
+      testID,
       uppercase,
+      weight,
+      style,
     },
     ref
   ) {
@@ -85,8 +90,9 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       <NativeText
         allowFontScaling={false}
         numberOfLines={numberOfLines}
+        ellipsizeMode={ellipsizeMode}
         ref={ref}
-        style={textStyle}
+        style={[textStyle, style || {}]}
         testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)

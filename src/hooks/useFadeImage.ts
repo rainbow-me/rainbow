@@ -20,15 +20,6 @@ export default function useFadeImage({
 
   const opacity = useSharedValue(1);
 
-  useEffect(() => {
-    (async () => {
-      if (source) {
-        const cachedPath = await ImgixImage.getCachePath(source);
-        setIsLoading(!cachedPath);
-      }
-    })();
-  }, [source]);
-
   const style = useAnimatedStyle(() => {
     return {
       opacity: withTiming(opacity.value, {

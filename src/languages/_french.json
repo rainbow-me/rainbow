@@ -20,6 +20,7 @@
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Interactions de smart-contracts",
       "tab_investments": "Investissements",
+      "tab_positions": "Positions :)",
       "tab_savings": "Epargnes",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de tokens",
@@ -79,6 +80,7 @@
       }
     },
     "back_up": {
+      "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code. :)",
       "already_backed_up": {
         "backed_up": "Backed up :)",
         "backed_up_manually": "Backed up manually :)",
@@ -146,12 +148,14 @@
         "enter_backup_password": "Enter backup password :)",
         "enter_backup_password_description": "To restore your wallet, enter the backup password you created :)",
         "error_while_restoring": "Error while restoring backup :)",
+        "incorrect_pin_code": "Incorrect PIN code :)",
         "incorrect_password": "Incorrect Password :)",
         "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet! :)",
         "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings. :)",
+        "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly. :)",
         "copy_to_clipboard": "Copy to clipboard :)",
         "for_your_eyes_only": "For your eyes only :)",
         "private_key_title": "Private Key :)",
@@ -160,6 +164,20 @@
         "view_private_key": "View private key :)",
         "view_secret_phrase": "View secret phrase :)",
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName} :)"
+      }
+    },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth is off :)",
+        "message": "Please turn on Bluetooth to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
+      },
+      "permissions_alert": {
+        "title": "Bluetooth Permissions :)",
+        "message": "Please enable Bluetooth permissions in your settings to use this feature :)",
+        "open_settings": "Open Settings :)",
+        "cancel": "Cancel :)"
       }
     },
     "button": {
@@ -284,7 +302,7 @@
         "cards": {
           "get_started": {
             "title": "Get Started with Rainbow :)",
-            "description": "Welcome to Rainbow! We're so glad you're here. Weve created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
+            "description": "Welcome to Rainbow! We're so glad you're here. We've created this guide to help with the basics of Rainbow and get you started on your new Web3 and Ethereum journey. :)"
           },
           "backups": {
             "title": "The Importance of Backups :)",
@@ -333,6 +351,10 @@
           "navigating_your_wallet": "Navigating your Wallet :)"
         }
       },
+      "ledger": {
+        "title": "Pair a Hardware Wallet :)",
+        "body": "Connect your Ledger Nano X to Rainbow through Bluetooth. :)"
+      },
       "receive": {
         "receive_assets": "Receive assets :)",
         "copy_address": "Copy Address :)",
@@ -371,6 +393,7 @@
       "applied": "APPLIED :)",
       "backups_deleted_successfully": "Backups deleted successfully :)",
       "clear_async_storage": "Clear async storage :)",
+      "clear_pending_txs": "Clear Pending Transactions :)",
       "clear_image_cache": "Clear Image Cache :)",
       "clear_image_metadata_cache": "Clear Image Metadata Cache :)",
       "clear_local_storage": "Clear local storage :)",
@@ -384,7 +407,12 @@
       "not_applied": "NOT APPLIED :)",
       "notifications_debug": "Notifications Debug :)",
       "remove_all_backups": "Remove all backups :)",
-      "reset_keychain": "Reset Keychain :)",
+      "keychain": {
+        "menu_title": "Reset Keychain :)",
+        "delete_wallets": "Delete all wallets :)",
+        "alert_title": "Careful! :)",
+        "alert_body": "🚨🚨🚨 This will permanently delete all of your wallets private keys & data, please make sure you have everything backed up before proceeding!! 🚨🚨🚨 :)"
+      },
       "restart_app": "Restart app :)",
       "reset_experimental_config": "Reset experimental config :)",
       "status": "Status :)",
@@ -557,10 +585,6 @@
         "for_sale": "For sale",
         "last_sale": "Last sale price"
       },
-      "supported_countries": {
-        "supported_countries": "Supported Countries :)",
-        "us_except": "United States (except Texas and New York) :)"
-      },
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
@@ -654,19 +678,26 @@
         "view_on_marketplace_name": "View on %{marketplaceName} :)",
         "view_on_platform": "View on %{platform} :)",
         "view_on_web": "View on Web :)",
+        "refresh": "Refresh Metadata :)",
         "hide": "Hide",
         "unhide": "Unhide"
       }
     },
     "explain": {
       "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you’ve unlocked a Custom Icon!",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that’s made for magical pondering.",
-        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu’s 17th birthday.",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
-        "button": "Snag the icon"
+        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon! :)",
+        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you! :)",
+        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering. :)",
+        "finiliar_text": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine. :)",
+        "finiliar_title": "You've unlocked a\nRainbow Fini :)",
+        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
+        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
+        "pooly_title": "You've unlocked a\nRainbow Pooly :)",
+        "zorb_text": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient. :)",
+        "zorb_title": "You've unlocked\nRainbow Zorb Energy! :)",
+        "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
+        "button": "Snag the icon :)"
       },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
@@ -704,6 +735,14 @@
         "text": "The dapp requested wallet signing (RPC) methods that are unsupported by Rainbow. :)",
         "title": "Connection failed :)"
       },
+      "failed_wc_invalid_chains": {
+        "text": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "title": "Connection failed :)"
+      },
+      "failed_wc_invalid_chain": {
+        "text": "The network specified in this request is not supported by Rainbow. :)",
+        "title": "Handling failed :)"
+      },
       "floor_price": {
         "text": "A collection's floor price is the lowest asking price across all the items currently for sale in a collection.",
         "title": "Collection floor price"
@@ -724,12 +763,20 @@
         "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Optimism?"
       },
+      "base": {
+        "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Base"
+      },
+      "zora": {
+        "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Zora?"
+      },
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
       },
       "bsc": {
-        "text": "Binance Smart Chain, or BSC for short, is the blockchain network for the  trading platform Binance. \n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, BSC has its own security and consensus mechanisms that differ from Ethereum. :)",
+        "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum. :)",
         "title": "What's Binance Smart Chain? :)"
       },
       "read_more": "Read More",
@@ -787,15 +834,6 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about our approach to routing swaps."
-        }
-      },
-      "wyre_degradation": {
-        "text": "Because of the ongoing Ethereum network upgrade known as \"The Merge,\" our partners have temporarily paused crypto purchasing.",
-        "title": "It's happening \nThe Merge is underway",
-        "still_curious": {
-          "fragment1": "This is a precautionary step to ensure accurate pricing and the safety of user funds. Still curious? ",
-          "fragment2": "Learn more",
-          "fragment3": ""
         }
       },
       "slippage": {
@@ -1043,6 +1081,42 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
+    "nft_offers": {
+      "card": {
+        "title": {
+          "singular": "1 Offer :)",
+          "plural": "%{numOffers} Offers :)"
+        },
+        "button": "View All Offers :)",
+        "expired": "Expired :)"
+      },
+      "sheet": {
+        "title": "Offers :)",
+        "total": "Total :)",
+        "above_floor": "above floor :)",
+        "below_floor": "below floor :)",
+        "no_offers_found": "No offers found :)"
+      },
+      "sort_menu": {
+        "highest": "Highest :)",
+        "from_floor": "From Floor :)",
+        "recent": "Recent :)"
+      },
+      "single_offer_sheet": {
+        "title": "Offer :)",
+        "expires_in": "Expires in %{timeLeft} :)",
+        "floor_price": "Floor Price :)",
+        "marketplace": "Marketplace :)",
+        "marketplace_fees": "%{marketplace} Fees :)",
+        "creator_royalties": "Creator Royalties :)",
+        "receive": "Receive :)",
+        "proceeds": "Proceeds :)",
+        "view_offer": "View Offer :)",
+        "hold_to_accept": "Hold to Accept :)",
+        "offer_expired": "Offer Expired :)",
+        "expired": "Expired :)"
+      }
+    },
     "notification": {
       "error": {
         "failed_get_account_tx": "Échec de l’obtention des transactions de compte",
@@ -1289,6 +1363,19 @@
         "yes": "Yes :)"
       }
     },
+    "poaps": {
+      "title": "You found a POAP! :)",
+      "view_on_poap": "View on POAP 􀮶 :)",
+      "mint_poap": "􀑒 Mint POAP :)",
+      "minting": "Minting... :)",
+      "minted": "POAP Minted! :)",
+      "error": "Error Minting :)",
+      "error_messages": {
+        "limit_exceeded": "This POAP is fully minted out! :)",
+        "event_expired": "This POAP mint is expired! :)",
+        "unknown": "Unknown Error :)"
+      }
+    },
     "rewards": {
       "total_earnings": "Total Earnings :)",
       "you_earned": "You've earned  :)",
@@ -1296,18 +1383,57 @@
       "next_airdrop": "Next Airdrop :)",
       "last_airdrop": "Last Airdrop :)",
       "my_stats": "My Stats :)",
+      "swapped": "Swapped :)",
+      "bridged": "Bridged :)",
       "position": "Position :)",
       "leaderboard": "Leaderboard :)",
+      "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected. :)",
+      "program_paused": "\uDBC0\uDE97 Paused :)",
+      "program_paused_description": "The contest will be resumed soon, please check back later. :)",
+      "program_finished": "\uDBC1\uDF2A Ended :)",
+      "program_finished_description": "The contest ended, the leaderboard shows the results from the last week of the contest :)",
       "days_left": "%{days} days left :)",
       "data_powered_by": "Data powered by :)",
       "current_value": "Current Value :)",
-      "total_available_rewards": "Total Available Rewards :)",
-      "left_this_week": "~%{percent}% left this week :)",
+      "rewards_claimed": "Weekly Rewards Claimed :)",
       "refreshes_next_week": "Refreshes next week :)",
       "all_rewards_claimed": "All rewards have been claimed this week :)",
       "rainbow_users_claimed": "Rainbow users claimed %{amount} :)",
       "refreshes_in_with_days": "Refreshes in %{days} days %{hours} hours :)",
-      "refreshes_in_without_days": "Refreshes in %{hours} hours :)"
+      "refreshes_in_without_days": "Refreshes in %{hours} hours :)",
+      "percent": "%{percent}% reward :)",
+      "error_title": "Something went wrong :)",
+      "error_text": "Please check your internet connection and check back later. :)",
+      "ended_title": "Program ended :)",
+      "ended_text": "Stay tuned for what we have in store for you next! :)",
+      "op": {
+        "airdrop_timing": {
+          "title": "Airdrops Every Week :)",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet. :)"
+        },
+        "amount_distributed": {
+          "title": "67,850 OP Every Week :)",
+          "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week. :)"
+        },
+        "bridge": {
+          "title": "Earn 0.125% on Bridging :)",
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately 0.125% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here. :)"
+        },
+        "swap": {
+          "title": "Earn 0.425% on Swaps :)",
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately 0.425% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here. :)"
+        },
+        "position": {
+          "title": "Leaderboard Position :)",
+          "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP. :)"
+        }
+      }
+    },
+    "positions": {
+      "open_dapp": "Open 􀮶 :)",
+      "deposits": "Deposits :)",
+      "borrows": "Borrows :)",
+      "rewards": "Rewards :)"
     },
     "savings": {
       "deposit": "Dépôt",
@@ -1344,6 +1470,12 @@
     },
     "settings": {
       "backup": "Sauvegarder",
+      "google_account_used": "Google account used for backups :)",
+      "backup_switch_google_account": "Switch Google Account :)",
+      "backup_sign_out": "Sign out :)",
+      "backup_sign_in": "Sign in :)",
+      "backup_loading": "Loading... :)",
+      "backup_google_account": "Google Account :)",
       "currency": "Devise",
       "app_icon": "App Icon",
       "dev": "Dev :)",
@@ -1478,7 +1610,8 @@
       },
       "actions_menu": {
         "speed_up": "Speed Up :)",
-        "cancel": "Cancel :)"
+        "cancel": "Cancel :)",
+        "remove": "Remove :)"
       }
     },
     "time": {
@@ -1550,12 +1683,17 @@
       "pair_a_new_ledger": "Pair a new Ledger :)",
       "looking_for_devices": "Looking for devices :)",
       "make_sure_bluetooth_enabled": "Make sure you have Bluetooth enabled and your Ledger Nano X is unlocked. :)",
-      "pair_successful": "Pair successful :)",
+      "device_connected": "Device connected :)",
+      "confirm_on_device": "Confirm on device :)",
+      "transaction_rejected": "Transaction rejected :)",
+      "please_try_again": "Please try again if you'd like to continue :)",
+      "connected_and_ready": "Your ledger is connected, please review and confirm the transaction on your device. :)",
       "almost_done": "Almost done. Before you finish you need to enable blind signing on your Ledger device. :)",
       "enable_blind_signing": "Enable blind signing :)",
+      "blind_signing_enabled": "Blind signing enabled :)",
       "blind_signing_description": "Blind signing enables your device to approve signing a smart contract transactions. :)",
       "learn_more": "Learn More :)",
-      "blind_signing_enabled": "Blind signing is enabled :)",
+      "finish_importing": "Finish importing :)",
       "blind_signing_instructions": {
         "step_1": {
           "title": "On Ledger, open the ETH app :)",
@@ -1578,6 +1716,10 @@
         "off_or_locked": "Make sure your device is unlocked :)",
         "no_eth_app": "Open the Eth App on your device :)",
         "unknown": "Unknown Error, close and reopen this sheet :)"
+      },
+      "pairing_error_alert": {
+        "title": "Error Connecting :)",
+        "body": "Please try again, if issues persist close the app and try again :)"
       }
     },
     "wallet": {
@@ -1630,6 +1772,31 @@
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}? :)",
         "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
+      "add_cash_v2": {
+        "generic_error": {
+          "title": "Something went wrong :)",
+          "message": "Our team has been notified and will look into it ASAP. :)",
+          "button": "OK :)"
+        },
+        "unauthenticated_ratio_error": {
+          "title": "We're sorry, you failed authentication",
+          "message": "For your safety, you must authenticate before you can purchase crypto with Ratio."
+        },
+        "support_emails": {
+          "help": "I Need Help Buying Crypto With %{provider}",
+          "account_recovery": "Account Recovery for Crypto Purchasing"
+        },
+        "sheet_empty_state": {
+          "title": "Can't find your preferred provider? :)",
+          "description": "Check back soon for more options :)"
+        },
+        "explain_sheet": {
+          "semi_supported": {
+            "title": "Purchase successful! :)",
+            "text": "We don't fully support this asset yet, but we're working on it! You should see it appear in your wallet soon. :)"
+          }
+        }
+      },
       "alert": {
         "finish_importing": "Finish Importing :)",
         "looks_like_imported_public_address": "\nIt looks like you imported this wallet using only its public address. In order to control what's inside, you'll need to import the private key or secret phrase first. :)",
@@ -1664,7 +1831,8 @@
       "buy": "Buy",
       "change_wallet": {
         "balance_eth": "%{balanceEth} ETH :)",
-        "watching": "Watching :)"
+        "watching": "Watching :)",
+        "ledger": "Ledger :)"
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",
@@ -1689,9 +1857,19 @@
           "reminder_title": "Reminder :)",
           "these_words_are_for_your_eyes_only": "These words are for your eyes only. Your secret phrase gives access to your entire wallet. \n\n       Be very careful with it. :)"
         },
-        "uuid": "UUID :)",
-        "wallet_diagnostics_title": "Wallet Diagnostics :)",
-        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets :)"
+        "uuid": "Your UUID :)",
+        "uuid_copied": "\uDBC0\uDC63 UUID copied :)",
+        "uuid_description": "This identifier allows us to find your application error and crash reports. :)",
+        "loading": "Loading... :)",
+        "app_state_diagnostics_title": "App State :)",
+        "app_state_diagnostics_description": "Allows you to take a snapshot of the application state so that you can share it with our support team. :)",
+        "wallet_diagnostics_title": "Wallet :)",
+        "sheet_title": "Diagnostics :)",
+        "pin_auth_title": "PIN Authentication :)",
+        "you_need_to_authenticate_with_your_pin": "You need to authenticate with your PIN in order to access your Wallet secrets :)",
+        "share_application_state": "Share application state dump :)",
+        "wallet_details_title": "Wallet details :)",
+        "wallet_details_description": "Below are the details of all wallets added to Rainbow. :)"
       },
       "error_displaying_address": "Error displaying address :)",
       "feedback": {
@@ -1880,11 +2058,6 @@
         "message": "Collez l'URI WalletConnect ci-dessous",
         "title": "Nouvelle session WalletConnect"
       },
-      "scam": {
-        "heads_up_title": "Heads up! :)",
-        "ignore_this_request": "Ignore This Request :)",
-        "we_found_this_website_in_a_list": "We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately :)"
-      },
       "switch_network": "Switch Network :)",
       "switch_wallet": "Switch Wallet :)",
       "titles": {
@@ -1902,7 +2075,29 @@
       "requesting_network": "Requesting %{num} network :)",
       "requesting_networks": "Requesting %{num} networks :)",
       "unknown_dapp": "Unknown Dapp :)",
-      "unknown_url": "Unknown URL :)"
+      "unknown_url": "Unknown URL :)",
+      "approval_sheet_network": "Network :)",
+      "approval_sheet_networks": "%{length} Networks :)",
+      "auth": {
+        "signin_title": "Sign In :)",
+        "signin_prompt": "Do you want to sign into %{name} with your wallet? :)",
+        "signin_with": "Sign in with :)",
+        "signin_button": "Continue :)",
+        "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet :)",
+        "error_alert_title": "Authentication failed :)",
+        "error_alert_description": "Something went wrong. Please try again, or reach out to our support team. :)"
+      },
+      "errors": {
+        "go_back": "Go back",
+        "generic_title": "Connection failed",
+        "generic_error": "Something went wrong. Please try again, or reach out to our support team.",
+        "pairing_timeout": "This session timed-out before a connection could be established. This is usually due to a network error. Please try again.",
+        "pairing_unsupported_methods": "The dapp requested wallet RPC methods that are unsupported by Rainbow.",
+        "pairing_unsupported_networks": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
+        "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
+      }
     },
     "warning": {
       "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",

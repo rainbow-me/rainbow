@@ -24,8 +24,8 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
-import networkInfo from '@/helpers/networkInfo';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
+import { getNetworkObj } from '@/networks';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -94,6 +94,7 @@ const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
+  size: 30,
 }))({
   height: 20,
   width: 20,
@@ -149,9 +150,11 @@ const ExchangeSearch = (
 
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
-    const network = ethereumUtils.getNetworkFromChainId(currentChainId);
+    const network = getNetworkObj(
+      ethereumUtils.getNetworkFromChainId(currentChainId)
+    );
     return lang.t('button.exchange_search_placeholder_network', {
-      network: networkInfo[network].name,
+      network: network.name,
     });
   }, [currentChainId, placeholderText]);
 

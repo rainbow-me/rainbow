@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
+import { LayoutChangeEvent } from 'react-native';
 
 export default function useHeight(defaultHeight = 0) {
   const [height, setHeight] = useState(defaultHeight);
 
   const onHeight = useCallback(
-    ({ nativeEvent }) => setHeight(nativeEvent?.layout?.height),
+    ({ nativeEvent }: LayoutChangeEvent) =>
+      setHeight(nativeEvent?.layout?.height),
     []
   );
 

@@ -27,6 +27,12 @@ export enum CellType {
   FAMILY_HEADER = 'FAMILY_HEADER',
   NFT = 'NFT',
   NFT_SPACE_AFTER = 'NFT_SPACE_AFTER',
+
+  POSITIONS_SPACE_BEFORE = 'POSITIONS_SPACE_BEFORE',
+  POSITIONS_HEADER = 'POSITIONS_HEADER',
+  POSITION = 'POSITION',
+  POSITIONS_SPACE_AFTER = 'POSITIONS_SPACE_AFTER',
+
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
   ETH_CARD = 'ETH_CARD',
@@ -72,6 +78,13 @@ export type NFTExtraData = {
   uniqueId: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
+export type PositionExtraData = {
+  uniqueId: string;
+  index: number;
+};
+export type PositionHeaderExtraData = {
+  total: string;
+};
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
@@ -90,6 +103,8 @@ export type CellExtraData =
   | CoinExtraData
   | NFTExtraData
   | AssetsHeaderExtraData
-  | PoolsHeaderExtraData;
+  | PoolsHeaderExtraData
+  | PositionExtraData
+  | PositionHeaderExtraData;
 
 export type CellTypes = BaseCellType & CellExtraData;

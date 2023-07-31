@@ -16,6 +16,7 @@ import {
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
+  NativeCurrencyKey,
   RainbowMeteorologyData,
   RainbowMeteorologyLegacyData,
   SelectedGasFee,
@@ -26,6 +27,7 @@ import {
   getProviderForNetwork,
   isHardHat,
   isL2Network,
+  toHex,
   web3Provider,
 } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
@@ -43,6 +45,7 @@ import {
 import { ethUnits, supportedNativeCurrencies } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -52,15 +55,7 @@ const withRunExclusive = async (callback: (...args: any[]) => void) =>
   await mutex.runExclusive(callback);
 
 const getGasPricePollingInterval = (network: Network): number => {
-  switch (network) {
-    case Network.polygon:
-      return 2000;
-    case Network.arbitrum:
-    case Network.bsc:
-      return 3000;
-    default:
-      return 5000;
-  }
+  return getNetworkObj(network).gas.pollingIntervalInMs;
 };
 
 const getDefaultGasLimit = (
@@ -74,6 +69,7 @@ const getDefaultGasLimit = (
     case Network.bsc:
     case Network.optimism:
     case Network.mainnet:
+    case Network.zora:
     default:
       return defaultGasLimit;
   }
@@ -132,7 +128,7 @@ const getUpdatedGasFeeParams = (
   currentBaseFee: GasFeeParam,
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
   gasLimit: string,
-  nativeCurrency: keyof typeof supportedNativeCurrencies,
+  nativeCurrency: NativeCurrencyKey,
   selectedGasFeeOption: string,
   txNetwork: Network,
   l1GasFeeOptimism: BigNumber | null = null
@@ -268,7 +264,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   });
 };
 
-const getPolygonGasPrices = async () => {
+export const getPolygonGasPrices = async () => {
   try {
     const {
       data: {
@@ -304,7 +300,7 @@ const getPolygonGasPrices = async () => {
   }
 };
 
-const getBscGasPrices = async () => {
+export const getBscGasPrices = async () => {
   try {
     const {
       data: {
@@ -340,7 +336,7 @@ const getBscGasPrices = async () => {
     return null;
   }
 };
-const getArbitrumGasPrices = async () => {
+export const getArbitrumGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
@@ -358,10 +354,52 @@ const getArbitrumGasPrices = async () => {
   return priceData;
 };
 
-const getOptimismGasPrices = async () => {
+export const getOptimismGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.optimism);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
+
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
+
+export const getBaseGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.base);
+  const baseGasPrice = await provider.getGasPrice();
+
+  const BasePriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(
+    Math.ceil(Number((baseGasPrice.toString(), BasePriceBumpFactor)))
+  );
+
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
+
+export const getZoraGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.zora);
+  const baseGasPrice = await provider.getGasPrice();
+
+  const ZoraPriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(
+    Math.ceil(Number((baseGasPrice.toString(), ZoraPriceBumpFactor)))
+  );
 
   const priceData = {
     fast: normalGasPrice,
@@ -401,6 +439,7 @@ export const gasPricesStartPolling = (
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   dispatch(gasPricesStopPolling());
 
+  // this should be chain agnostic
   const getGasPrices = (network: Network) =>
     withRunExclusive(
       () =>
@@ -423,20 +462,18 @@ export const gasPricesStartPolling = (
               l1GasFeeOptimism,
             } = getState().gas;
             const { nativeCurrency } = getState().settings;
-            const isL2 = isL2Network(network);
+
+            const networkObj = getNetworkObj(network);
             let dataIsReady = true;
-            if (isL2) {
-              let adjustedGasFees;
-              if (network === Network.polygon) {
-                adjustedGasFees = await getPolygonGasPrices();
-              } else if (network === Network.arbitrum) {
-                adjustedGasFees = await getArbitrumGasPrices();
-              } else if (network === Network.optimism) {
-                adjustedGasFees = await getOptimismGasPrices();
+
+            if (networkObj.networkType === 'layer2') {
+              // OP chains have an additional fee we need to load
+              if (getNetworkObj(network).gas?.OptimismTxFee) {
                 dataIsReady = l1GasFeeOptimism !== null;
-              } else if (network === Network.bsc) {
-                adjustedGasFees = await getBscGasPrices();
               }
+
+              const adjustedGasFees = await networkObj.gas.getGasPrices();
+
               if (!adjustedGasFees) return;
 
               const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);
@@ -646,7 +683,7 @@ export const gasUpdateTxFee = (
     const { nativeCurrency } = getState().settings;
     if (
       isEmpty(gasFeeParamsBySpeed) ||
-      (txNetwork === Network.optimism && l1GasFeeOptimism === null)
+      (getNetworkObj(txNetwork).gas?.OptimismTxFee && l1GasFeeOptimism === null)
     ) {
       // if fee prices not ready, we need to store the gas limit for future calculations
       // the rest is as the initial state value

@@ -5,6 +5,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import logger from '@/utils/logger';
+import { CardSize } from '../unique-token/CardSize';
 
 const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
@@ -90,6 +91,12 @@ class SvgImage extends Component {
           const res = await fetch(uri);
           const text = await res.text();
           if (text.toLowerCase().indexOf('<svg') !== -1) {
+            // TODO APP-526 more thorough investigatation into if/why foreignObject images aren't supported
+            if (text.match(/<foreignObject[\s\S]*?<\/foreignObject>/)) {
+              logger.log('foreignObject tag not supported', { text, uri });
+              // return w/o error so we can fallback to png
+              return;
+            }
             this.mounted &&
               this.setState({ fetchingUrl: uri, svgContent: text });
           } else {
@@ -152,6 +159,7 @@ class SvgImage extends Component {
             resizeMode={ImgixImage.resizeMode.cover}
             source={{ uri: props.lowResFallbackUri }}
             style={position.coverAsObject}
+            size={CardSize}
           />
         )}
         {!this.state.trulyLoaded && props.fallbackUri && (
@@ -160,6 +168,7 @@ class SvgImage extends Component {
             resizeMode={ImgixImage.resizeMode.cover}
             source={{ uri: props.fallbackUri }}
             style={position.coverAsObject}
+            size={CardSize}
           />
         )}
         <WebView

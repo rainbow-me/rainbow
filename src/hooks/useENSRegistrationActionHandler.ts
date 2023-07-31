@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { useRecoilValue } from 'recoil';
@@ -12,6 +12,7 @@ import {
   useCurrentNonce,
   useENSRegistration,
   useWalletENSAvatar,
+  useWallets,
 } from '.';
 import { Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
@@ -61,9 +62,10 @@ export default function useENSRegistrationActionHandler(
   const { accountAddress, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
   const { registrationParameters } = useENSRegistration();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
+  const { isHardwareWallet } = useWallets();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -94,7 +96,9 @@ export default function useENSRegistrationActionHandler(
   const commitAction = useCallback(
     async (callback: () => void = NOOP) => {
       updateAvatarsOnNextBlock.current = true;
-      const wallet = await loadWallet();
+
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -127,10 +131,22 @@ export default function useENSRegistrationActionHandler(
         wallet,
         RapActionTypes.commitENS,
         commitEnsRegistrationParameters,
-        callback
+        () => {
+          if (isHardwareWallet) {
+            goBack();
+          }
+          callback;
+        }
       );
     },
-    [getNextNonce, registrationParameters, duration, accountAddress]
+    [
+      getNextNonce,
+      registrationParameters,
+      duration,
+      accountAddress,
+      isHardwareWallet,
+      goBack,
+    ]
   );
 
   const speedUpCommitAction = useCallback(
@@ -167,7 +183,8 @@ export default function useENSRegistrationActionHandler(
         duration,
       } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -214,7 +231,8 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -246,7 +264,8 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -272,7 +291,8 @@ export default function useENSRegistrationActionHandler(
 
   const setRecordsAction = useCallback(
     async (callback: () => void = NOOP) => {
-      const wallet = await loadWallet();
+      const provider = await getProviderForNetwork();
+      const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
       }
@@ -325,9 +345,13 @@ export default function useENSRegistrationActionHandler(
         toAddress,
         transferControl,
         wallet: walletOverride,
-      }
+      }: any
     ) => {
-      const wallet = walletOverride || (await loadWallet());
+      let wallet = walletOverride;
+      if (!wallet) {
+        const provider = await getProviderForNetwork();
+        wallet = await loadWallet(undefined, false, provider);
+      }
       if (!wallet) {
         return;
       }

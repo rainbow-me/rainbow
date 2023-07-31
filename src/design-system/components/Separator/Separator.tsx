@@ -6,12 +6,17 @@ import { useForegroundColor } from '../../color/useForegroundColor';
 export interface SeparatorProps {
   color: SeparatorColor;
   direction?: 'horizontal' | 'vertical';
+  thickness?: number;
 }
 
 /**
  * @description Renders a separator, either horizontal or vertical.
  */
-export function Separator({ color, direction = 'horizontal' }: SeparatorProps) {
+export function Separator({
+  color,
+  direction = 'horizontal',
+  thickness = 2,
+}: SeparatorProps) {
   const foregroundColor = useForegroundColor(color ?? 'separator'); // Fallback for JS consumers
   const style = useMemo(
     () => ({
@@ -19,14 +24,14 @@ export function Separator({ color, direction = 'horizontal' }: SeparatorProps) {
       borderRadius: 1,
       ...(direction === 'horizontal'
         ? {
-            height: 2,
+            height: thickness,
           }
         : {
             flexGrow: 1,
-            width: 2,
+            width: thickness,
           }),
     }),
-    [foregroundColor, direction]
+    [foregroundColor, direction, thickness]
   );
 
   return <View style={style} />;

@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import {
   InteractionManager,
+  LayoutChangeEvent,
   Pressable,
   PressableProps,
   StyleSheet,
@@ -45,6 +46,7 @@ import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
+import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -332,6 +334,7 @@ function ImagePreview({
                       height="full"
                       source={{ uri: imageUrl }}
                       width="full"
+                      size={FULL_NFT_IMAGE_SIZE}
                     />
                     <Box
                       as={BlurView}
@@ -526,7 +529,7 @@ export function ImagePreviewOverlayTarget({
   const hasMounted = useRef<any>(false);
 
   const handleLayout = useCallback(
-    ({ nativeEvent }) => {
+    ({ nativeEvent }: LayoutChangeEvent) => {
       const {
         layout: { width },
       } = nativeEvent;

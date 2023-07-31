@@ -10,9 +10,9 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
-import { AppState } from '@/redux/store';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
   type,
@@ -22,11 +22,18 @@ export default function useWalletSectionsData({
   const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { language, network, nativeCurrency } = useAccountSettings();
-  const sendableUniqueTokens = useSendableUniqueTokens();
-  const allUniqueTokens = useSelector(
-    (state: AppState) => state.uniqueTokens.uniqueTokens
-  );
+  const {
+    accountAddress,
+    language,
+    network,
+    nativeCurrency,
+  } = useAccountSettings();
+  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const {
+    data: { nfts: allUniqueTokens },
+  } = useLegacyNFTs({
+    address: accountAddress,
+  });
   const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -52,8 +59,8 @@ export default function useWalletSectionsData({
       network,
       pinnedCoins,
       savings,
+      sendableUniqueTokens,
       ...sortedAccountData,
-      ...sendableUniqueTokens,
       ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
@@ -61,6 +68,7 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
+      uniqueTokens: allUniqueTokens,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(

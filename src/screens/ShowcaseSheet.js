@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
@@ -11,9 +10,9 @@ import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { fetchUniqueTokens } from '@/redux/uniqueTokens';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 const tokenFamilyItem = item => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
@@ -53,7 +52,6 @@ export default function ShowcaseScreen() {
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
-  const dispatch = useDispatch();
   const { isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
@@ -65,10 +63,6 @@ export default function ShowcaseScreen() {
   }, [addressOrDomain]);
 
   useEffect(() => {
-    accountAddress && dispatch(fetchUniqueTokens(accountAddress));
-  }, [dispatch, accountAddress]);
-
-  useEffect(() => {
     async function fetchShowcase() {
       const userData = await fetchShowcaseForAddress(accountAddress);
       setUserData(userData);
@@ -78,13 +72,12 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const uniqueTokensShowcase = useSelector(
-    state => state.uniqueTokens.uniqueTokensShowcase
-  );
-
-  const uniqueTokensShowcaseLoading = useSelector(
-    state => state.uniqueTokens.fetchingUniqueTokensShowcase
-  );
+  const {
+    data: { nfts: uniqueTokens },
+    isInitialLoading,
+  } = useLegacyNFTs({
+    address: accountAddress ?? '',
+  });
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -93,12 +86,12 @@ export default function ShowcaseScreen() {
       {
         collectibles: true,
         data: buildUniqueTokenList(
-          uniqueTokensShowcase,
+          uniqueTokens,
           userData?.data?.showcase?.ids ?? []
         ),
         header: {
           title: '',
-          totalItems: uniqueTokensShowcase.length,
+          totalItems: uniqueTokens?.length,
           totalValue: '',
         },
         name: 'collectibles',
@@ -107,7 +100,7 @@ export default function ShowcaseScreen() {
         type: 'big',
       },
     ],
-    [uniqueTokensShowcase, userData?.data?.showcase?.ids, theme]
+    [uniqueTokens, userData?.data?.showcase?.ids, theme]
   );
 
   const contextValue = useMemo(
@@ -120,7 +113,7 @@ export default function ShowcaseScreen() {
     [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
   );
 
-  const loading = userData === null || uniqueTokensShowcaseLoading;
+  const loading = userData === null || isInitialLoading;
 
   useEffect(() => {
     setTimeout(() => layout?.(), 300);

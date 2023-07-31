@@ -177,6 +177,8 @@ export default function LargeCountdownClock({
               style={{
                 paddingRight: displayMinutes === 1 ? 3 : 0,
                 position: 'absolute',
+                zIndex: 99,
+                elevation: 99,
               }}
             >
               <ClockText fontSize={fontSize} lineHeight={lineHeight}>
@@ -242,6 +244,7 @@ export default function LargeCountdownClock({
                 id="large-countdown-clock-progress-bar"
                 r={PROGRESS_RADIUS}
                 stroke={accentColor}
+                fillOpacity={0}
                 strokeDasharray={PROGRESS_STROKE_FULL_LENGTH}
                 strokeDashoffset={0}
                 strokeLinecap="round"

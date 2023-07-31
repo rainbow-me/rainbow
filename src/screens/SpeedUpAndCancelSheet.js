@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
+import Routes from '@/navigation/routesNames';
 import React, {
   Fragment,
   useCallback,
@@ -40,7 +41,7 @@ import {
 } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { greaterThan } from '@/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import { getTitle, parseGasParamsForTransaction } from '@/parsers';
@@ -51,6 +52,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -121,8 +123,9 @@ const calcGasParamRetryValue = prevWeiValue => {
 };
 
 export default function SpeedUpAndCancelSheet() {
-  const { goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { accountAddress, network } = useAccountSettings();
+  const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
   const {
@@ -230,6 +233,10 @@ export default function SpeedUpAndCancelSheet() {
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
+      // if its a hardware wallet we need to close the hardware tx sheet
+      if (isHardwareWallet) {
+        goBack();
+      }
       goBack();
     }
   }, [
@@ -239,9 +246,20 @@ export default function SpeedUpAndCancelSheet() {
     dispatch,
     getNewTransactionGasParams,
     goBack,
+    isHardwareWallet,
     nonce,
     tx,
   ]);
+
+  const handleCancellationWrapperFn = useCallback(async () => {
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+        submit: handleCancellation,
+      });
+    } else {
+      handleCancellation();
+    }
+  }, [handleCancellation, isHardwareWallet, navigate]);
 
   const saveCommitTransactionHash = useCallback(
     hash => {
@@ -290,6 +308,10 @@ export default function SpeedUpAndCancelSheet() {
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
+      // if its a hardware wallet we need to close the hardware tx sheet
+      if (isHardwareWallet) {
+        goBack();
+      }
       goBack();
     }
   }, [
@@ -299,12 +321,21 @@ export default function SpeedUpAndCancelSheet() {
     gasLimit,
     getNewTransactionGasParams,
     goBack,
+    isHardwareWallet,
     nonce,
     saveCommitTransactionHash,
     to,
     tx,
     value,
   ]);
+
+  const handleSpeedUpWrapperFn = useCallback(async () => {
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: handleSpeedUp });
+    } else {
+      handleSpeedUp();
+    }
+  }, [handleSpeedUp, isHardwareWallet, navigate]);
 
   // Set the network
   useEffect(() => {
@@ -317,7 +348,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (tx.network === Network.mainnet && tx.flashbots) {
+        if (getNetworkObj(tx.network).features.flashbots && tx.flashbots) {
           logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();
         } else {
@@ -569,7 +600,7 @@ export default function SpeedUpAndCancelSheet() {
                         <SheetActionButton
                           color={colors.red}
                           label={`􀎽 ${lang.t('button.attempt_cancellation')}`}
-                          onPress={handleCancellation}
+                          onPress={handleCancellationWrapperFn}
                           size="big"
                           weight="bold"
                         />
@@ -602,7 +633,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButton
                         color={accentColor || colors.appleBlue}
                         label={`􀎽 ${lang.t('button.confirm')}`}
-                        onPress={handleSpeedUp}
+                        onPress={handleSpeedUpWrapperFn}
                         size="big"
                         weight="bold"
                       />

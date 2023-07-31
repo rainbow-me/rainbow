@@ -7,7 +7,6 @@ import {
   Bleed,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
@@ -38,8 +37,9 @@ import chartTypes from '@/helpers/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
+import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -57,27 +57,26 @@ export const EthCard = () => {
     emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
   }, [nativeCurrency]);
 
-  const handlePressBuy = useCallback(() => {
-    if (isDamaged) {
-      showWalletErrorAlert();
-      return;
-    }
+  const handlePressBuy = useCallback(
+    (e: ButtonPressAnimationTouchEvent) => {
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+      }
 
-    if (IS_IOS) {
-      navigate(Routes.ADD_CASH_FLOW);
-    } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
-        params: {
-          address: accountAddress,
-        },
-        screen: Routes.WYRE_WEBVIEW,
+      if (isDamaged) {
+        showWalletErrorAlert();
+        return;
+      }
+
+      navigate(Routes.ADD_CASH_SHEET);
+
+      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+        componentName: 'EthCard',
+        routeName,
       });
-    }
-    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
-      componentName: 'EthCard',
-      routeName,
-    });
-  }, [accountAddress, isDamaged, navigate, routeName]);
+    },
+    [accountAddress, isDamaged, navigate, routeName]
+  );
 
   const assetWithPrice = useMemo(() => {
     return {
@@ -90,7 +89,6 @@ export const EthCard = () => {
   const handleAssetPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
       asset: assetWithPrice,
-      longFormHeight: initialChartExpandedStateSheetHeight,
       type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
@@ -152,6 +150,7 @@ export const EthCard = () => {
 
   return (
     <GenericCard
+      /** @ts-ignore */
       onPress={IS_IOS ? handleAssetPress : handlePressBuy}
       type={cardType}
       testID="eth-card"

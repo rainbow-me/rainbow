@@ -43,6 +43,7 @@ const Spinner = ({
             source={SpinnerImageSource as any}
             style={style}
             tintColor={color || colors.whiteLabel}
+            size={30}
           />
         </SpinAnimation>
       )}

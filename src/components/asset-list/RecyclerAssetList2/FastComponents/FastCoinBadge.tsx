@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View, ViewStyle } from 'react-native';
+import { Image, ImageSourcePropType, View, ViewStyle } from 'react-native';
 import ArbitrumBadge from '@/assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '@/assets/badges/arbitrumBadgeDark.png';
 import OptimismBadge from '@/assets/badges/optimismBadge.png';
@@ -8,6 +8,10 @@ import PolygonBadge from '@/assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '@/assets/badges/polygonBadgeDark.png';
 import BscBadge from '@/assets/badges/bscBadge.png';
 import BscBadgeDark from '@/assets/badges/bscBadgeDark.png';
+import ZoraBadge from '@/assets/badges/zoraBadge.png';
+import ZoraBadgeDark from '@/assets/badges/zoraBadgeDark.png';
+import BaseBadge from '@/assets/badges/baseBadge.png';
+import BaseBadgeDark from '@/assets/badges/baseBadgeDark.png';
 import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
@@ -17,8 +21,8 @@ interface FastChainBadgeProps {
 
 const AssetIconsByTheme: {
   [key in AssetType]?: {
-    dark: StaticImageData;
-    light: StaticImageData;
+    dark: ImageSourcePropType;
+    light: ImageSourcePropType;
   };
 } = {
   [AssetType.arbitrum]: {
@@ -36,6 +40,14 @@ const AssetIconsByTheme: {
   [AssetType.bsc]: {
     dark: BscBadgeDark,
     light: BscBadge,
+  },
+  [AssetType.zora]: {
+    dark: ZoraBadgeDark,
+    light: ZoraBadge,
+  },
+  [AssetType.base]: {
+    dark: BaseBadgeDark,
+    light: BaseBadge,
   },
 };
 

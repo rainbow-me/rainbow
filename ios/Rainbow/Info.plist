@@ -16,33 +16,42 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-		  <key>smol</key>
-    	<dict>
-      	<key>UIPrerenderedIcon</key>
-      	<false/>
-      	<key>CFBundleIconFiles</key>
-      	<array>
-        	<string>smol</string>
-      	</array>
-    	</dict>
+			<key>pooly</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>pooly</string>
+				</array>
+			</dict>
+			<key>smol</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>smol</string>
+				</array>
+			</dict>
 			<key>raindoge</key>
-    	<dict>
-      	<key>UIPrerenderedIcon</key>
-      	<false/>
-      	<key>CFBundleIconFiles</key>
-      	<array>
-        	<string>raindoge</string>
-      	</array>
-    	</dict>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>raindoge</string>
+				</array>
+			</dict>
 			<key>golddoge</key>
-    	<dict>
-      	<key>UIPrerenderedIcon</key>
-      	<false/>
-      	<key>CFBundleIconFiles</key>
-      	<array>
-        	<string>golddoge</string>
-      	</array>
-    	</dict>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>golddoge</string>
+				</array>
+			</dict>
 			<key>pixel</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
@@ -68,6 +77,24 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>zora</string>
+				</array>
+			</dict>
+			<key>finiliar</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>finiliar</string>
+				</array>
+			</dict>
+			<key>zorb</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>zorb</string>
 				</array>
 			</dict>
 			<key>og</key>
@@ -151,7 +178,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This allows Rainbow to display selected photos as avatars across each of your wallet addresses</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
- 	<string>This allows Rainbow to find and pair a Ledger Nano X</string>
+	<string>This allows Rainbow to find and pair a Ledger Nano X</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.me.rainbow</key>
@@ -170,8 +197,6 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-		<string>SFMono-Medium.otf</string>
-		<string>SFMono-Regular.otf</string>
 		<string>SF-Pro-Rounded-Bold.otf</string>
 		<string>SF-Pro-Rounded-Heavy.otf</string>
 		<string>SF-Pro-Rounded-Medium.otf</string>

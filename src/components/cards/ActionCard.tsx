@@ -31,7 +31,11 @@ export const ActionCard = ({
   return (
     <GenericCard
       type="square"
-      gradient={gradient}
+      gradient={{
+        colors: gradient,
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 0 },
+      }}
       onPress={onPress}
       color={shadowColor}
     >

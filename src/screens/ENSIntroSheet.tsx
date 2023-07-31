@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
@@ -40,6 +40,7 @@ enum AnotherENSEnum {
   search = 'search',
   my_ens = 'my_ens',
 }
+
 const topPadding = android ? 29 : 19;
 
 const minHeight = 740;
@@ -145,6 +146,7 @@ export default function ENSIntroSheet() {
   }, []);
 
   const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AnotherENSEnum.my_ens) {
         handleSelectExistingName();

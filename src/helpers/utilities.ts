@@ -237,11 +237,45 @@ export const handleSignificantDecimalsWithThreshold = (
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+/**
+ * Converts a `BigNumber` to a string abbreviation with a suffix like "k", "m", or "b".
+ * Rounds to 1 decimal place, stripping trailing zeros.
+ * Example: 3100000000 => "3.1b"
+ */
+export const abbreviateBigNumber = (
+  value: BigNumber,
+  buffer: number
+): string => {
+  // converts a big number like 3,100,000,000 to "3.1" or 3,000,000 to "3"
+  const getNumericCounterpart = (value: BigNumber): string =>
+    value.toFormat(1).replace(/\.?0+$/, '');
+
+  if (value.isGreaterThanOrEqualTo(1_000_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000_000)) + 'b';
+  } else if (value.isGreaterThanOrEqualTo(1_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000)) + 'm';
+  } else if (value.isGreaterThanOrEqualTo(1000)) {
+    return getNumericCounterpart(value.div(1000)) + 'k';
+  } else if (value.isEqualTo(0)) {
+    // just return '0'
+    return value.toString();
+  } else {
+    // only display `buffer` number of digits after the decimal point
+    // trim trailing zeros
+    const roundedValue = value.toFormat(buffer).replace(/\.?0+$/, '');
+    // if this rounded value is 0, indicate that the actual value is less than 0.0...01
+    return roundedValue === '0'
+      ? `< 0.${'0'.repeat(buffer - 1)}1`
+      : roundedValue;
+  }
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
   buffer = 3,
-  skipDecimals = false
+  skipDecimals = false,
+  abbreviate = false
 ): string => {
   if (lessThan(new BigNumber(value).abs(), 1)) {
     decimals = new BigNumber(value).toFixed().slice(2).search(/[^0]/g) + buffer;
@@ -253,6 +287,9 @@ export const handleSignificantDecimals = (
     new BigNumber(value).toFixed(decimals)
   ).toFixed();
   const resultBN = new BigNumber(result);
+  if (abbreviate) {
+    return abbreviateBigNumber(resultBN, buffer);
+  }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
     : resultBN.toFormat();
@@ -394,7 +431,8 @@ export const convertAmountToNativeDisplay = (
   value: BigNumberish,
   nativeCurrency: keyof nativeCurrencyType,
   buffer?: number,
-  skipDecimals?: boolean
+  skipDecimals?: boolean,
+  abbreviate?: boolean
 ) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
@@ -402,12 +440,37 @@ export const convertAmountToNativeDisplay = (
     value,
     decimals,
     buffer,
-    skipDecimals
+    skipDecimals,
+    abbreviate
   );
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }
   return `${display} ${nativeSelected.symbol}`;
+};
+
+/**
+ * @desc convert from raw amount to rounded decimal
+ */
+export const convertRawAmountToRoundedDecimal = (
+  value: BigNumberish,
+  decimals = 18,
+  roundTo = 0
+): number => {
+  if (roundTo) {
+    const roundingFactor = 10 ** roundTo;
+    return (
+      Math.round(
+        new BigNumber(value)
+          .dividedBy(new BigNumber(10).pow(decimals))
+          .toNumber() * roundingFactor
+      ) / roundingFactor
+    );
+  } else {
+    return new BigNumber(value)
+      .dividedBy(new BigNumber(10).pow(decimals))
+      .toNumber();
+  }
 };
 
 /**
@@ -424,6 +487,8 @@ export const fromWei = (number: BigNumberish): string =>
 
 /**
  * @desc Promise that will resolve after the ms interval
+ *
+ * @deprecated use `@/utils/delay`
  */
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -504,4 +569,24 @@ export const pickBy = <T>(
       acc[key] = obj[key];
       return acc;
     }, {} as Dictionary<T>);
+};
+
+/**
+ * Formats ms since epoch into a string of the form "Xd Yh Zm".
+ * Doesn't support months, or years.
+ * @param ms ms since epoch
+ * @returns string of the format "Xd Yh Zm"
+ */
+export const getFormattedTimeQuantity = (ms: number): string => {
+  const totalMinutes = Math.ceil(ms / (1000 * 60));
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
+
+  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
+  const formattedHours = hours ? hours + 'h ' : '';
+  const formattedDays = days ? days + 'd ' : '';
+
+  return (formattedDays + formattedHours + formattedMinutes).trim();
 };

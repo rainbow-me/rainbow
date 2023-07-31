@@ -102,10 +102,7 @@ interface Props {
   currentWallet: any;
   editMode: boolean;
   height: number;
-  onChangeAccount: (
-    walletId: string,
-    address: EthereumAddress | undefined
-  ) => void;
+  onChangeAccount: (walletId: string, address: EthereumAddress) => void;
   onPressAddAnotherWallet: () => void;
   onPressPairHardwareWallet: () => void;
   scrollEnabled: boolean;
@@ -156,6 +153,7 @@ export default function WalletList({
           id: account.address,
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
+          isLedger: wallet.type === WalletTypes.bluetooth,
           isSelected:
             accountAddress === account.address &&
             (watchOnly || wallet?.id === currentWallet?.id),
@@ -170,6 +168,7 @@ export default function WalletList({
         switch (wallet.type) {
           case WalletTypes.mnemonic:
           case WalletTypes.seed:
+          case WalletTypes.bluetooth:
             seedRows.push(row);
             break;
           case WalletTypes.privateKey:
@@ -229,7 +228,7 @@ export default function WalletList({
   }));
 
   const renderItem = useCallback(
-    ({ item }) => {
+    ({ item }: any) => {
       switch (item.rowType) {
         case RowTypes.ADDRESS:
           return (
@@ -273,6 +272,7 @@ export default function WalletList({
                 onPress={onPressAddAnotherWallet}
                 testID="add-another-wallet-button"
               />
+
               {hardwareWalletsEnabled && (
                 <WalletOption
                   editMode={editMode}

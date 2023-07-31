@@ -17,16 +17,14 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import networkInfo from '@/helpers/networkInfo';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
 import { SocketBridges } from '@/references/swap/bridges';
+import { RainbowNetworks } from '@/networks';
 
 const parseExchangeName = name => {
-  const networks = Object.keys(networkInfo).map(network =>
-    network.toLowerCase()
-  );
+  const networks = RainbowNetworks.map(network => network.name.toLowerCase());
 
   const removeNetworks = name =>
     networks.some(network => name.toLowerCase().includes(network))
@@ -91,7 +89,9 @@ const ExchangeIcon = magicMemo(
                     size="14px / 19px (Deprecated)"
                     weight="semibold"
                   >
-                    {protocol?.substring(0, 1)}
+                    {typeof protocol === 'string'
+                      ? protocol?.substring(0, 1)?.toUpperCase()
+                      : 'U'}
                   </Text>
                 </Box>
               </Cover>
@@ -117,7 +117,9 @@ const ExchangeIconStack = magicMemo(
             >
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name || protocols.names[index]}
+                protocol={
+                  protocols?.name || protocols.names[index] || 'Unknown'
+                }
               />
             </Box>
           );
@@ -137,7 +139,9 @@ const CrossChainIconStack = magicMemo(
             <Inline key={`protocol-icon-${index}`} marginLeft={{ custom: 0 }}>
               <ExchangeIcon
                 icon={icon}
-                protocol={protocols?.name ?? protocols.names[index]}
+                protocol={
+                  protocols?.name || protocols.names[index] || 'Unknown'
+                }
               />
 
               {index < protocols?.icons.length - 1 && (

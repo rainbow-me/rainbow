@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
@@ -12,6 +12,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { Network } from '@/networks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -108,6 +109,7 @@ export default function MoreButton({
   }, [isWatching, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.OPEN_WALLET) {
         if (!isSelectedWallet) {
@@ -120,7 +122,7 @@ export default function MoreButton({
         setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address);
+        ethereumUtils.openAddressInBlockExplorer(address, Network.mainnet);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
