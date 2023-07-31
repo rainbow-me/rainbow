@@ -1,3 +1,4 @@
+import { getDateFnsLocale } from '@/languages';
 import format from 'date-fns/format';
 
 export function formatTransactionDetailsDate(
@@ -8,6 +9,8 @@ export function formatTransactionDetailsDate(
   }
   const timestampInMs = new Date(minedAtInSeconds * 1000);
 
-  const formatted = format(timestampInMs, "MMM d, yyyy 'at' h:mm a");
+  const formatted = format(timestampInMs, "MMM d, yyyy 'at' h:mm a", {
+    locale: getDateFnsLocale(),
+  });
   return formatted;
 }

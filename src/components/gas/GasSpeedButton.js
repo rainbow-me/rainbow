@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
 import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
@@ -42,6 +43,7 @@ const {
   URGENT,
   NORMAL,
   FAST,
+  getGasLabel,
 } = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
@@ -406,7 +408,8 @@ const GasSpeedButton = ({
       return {
         actionKey: gasOption,
         actionTitle:
-          (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + upperFirst(gasOption),
+          (android ? `${GAS_EMOJIS[gasOption]}  ` : '') +
+          getGasLabel(gasOption),
         discoverabilityTitle: gweiDisplay,
         icon: {
           iconType: 'ASSET',
@@ -440,7 +443,7 @@ const GasSpeedButton = ({
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
-    const label = selectedGasFeeOption ?? NORMAL;
+    const label = getGasLabel(selectedGasFeeOption);
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
@@ -610,7 +613,7 @@ const GasSpeedButton = ({
                         )
                   }
                 >
-                  Done
+                  {lang.t('button.done')}
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (
