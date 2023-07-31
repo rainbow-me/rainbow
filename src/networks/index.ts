@@ -8,25 +8,23 @@ import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 import { getGnosisNetworkObject } from './gnosis';
 import { getBaseNetworkObject } from './base';
+import store from '@/redux/store';
+import * as ls from '@/storage';
 
 /**
  * Array of all Rainbow Networks
+ * the ordering is the default sorting
  */
 export const RainbowNetworks = [
-  // L2s
+  getMainnetNetworkObject(),
   getArbitrumNetworkObject(),
   getBaseNetworkObject(),
-  getBSCNetworkObject(),
   getOptimismNetworkObject(),
   getPolygonNetworkObject(),
   getZoraNetworkObject(),
   getGnosisNetworkObject(),
-
-  // Testnets
   getGoerliNetworkObject(),
-
-  // Mainnet
-  getMainnetNetworkObject(),
+  getBSCNetworkObject(),
 ];
 
 /**
@@ -58,4 +56,30 @@ export function getNetworkObj(network: Network): NetworkProperties {
     default:
       return getMainnetNetworkObject();
   }
+}
+
+/**
+ * Sorts Networks based on addresses assets
+ */
+export function sortNetworks(overrideNetwork?: Network): NetworkProperties[] {
+  const accountAddress = store.getState().settings.accountAddress;
+
+  // sorting based on # of tokens
+  const tokenSort = (
+    network1: NetworkProperties,
+    network2: NetworkProperties
+  ) => {
+    const count1 =
+      ls.account.get([accountAddress, network1.value, 'totalTokens']) || 0;
+    const count2 =
+      ls.account.get([accountAddress, network2.value, 'totalTokens']) || 0;
+
+    if (overrideNetwork && network1.value === overrideNetwork) {
+      return -1;
+    }
+
+    return count1 > count2 ? -1 : 1;
+  };
+
+  return RainbowNetworks.sort(tokenSort);
 }
