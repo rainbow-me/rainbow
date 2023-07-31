@@ -8,17 +8,17 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
-import { useAccountSettings } from '.';
 import { PoolboyIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import { getAppIcon } from '@/handlers/localstorage/globalSettings';
+import { RainbowError, logger } from '@/logger';
 const Sound = require('react-native-sound');
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
-  const { appIcon } = useAccountSettings();
 
-  return useCallback(() => {
+  return useCallback(async () => {
     if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else {
@@ -57,24 +57,23 @@ export default function useHideSplashScreen() {
       analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
 
-      // play sound if wanted
+      // need to load setting straight from storage, redux isnt ready yet
+      const appIcon = (await getAppIcon()) as string;
       if (appIcon === PoolboyIcon.key) {
         const sound = new Sound(
           require('../assets/sounds/RainbowSega.mp3'),
           (error: any) => {
             if (error) {
-              console.log('failed to load the sound', error);
+              logger.error(new RainbowError('Error playing poolboy sound'));
               return;
             }
 
-            // if loaded successfully
-
             sound.play((success: any) => {
-              console.log('played 1');
+              logger.debug('playing poolboy sound');
             });
           }
         );
       }
     }
-  }, [appIcon]);
+  }, []);
 }
