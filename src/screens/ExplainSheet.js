@@ -369,9 +369,9 @@ const ZORB_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
 
 const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
 
-const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
+const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.poolboy_text');
 
-const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
+const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.poolboy_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
@@ -515,7 +515,7 @@ export const explainers = (params, colors) => ({
   },
   poolboy_app_icon: {
     logo: <PoolboyAppIcon />,
-    extraHeight: -65,
+    extraHeight: -90,
     text: POOLBOY_APP_ICON_EXPLAINER,
     title: POOLBOY_APP_ICON_TITLE,
     button: {

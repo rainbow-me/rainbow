@@ -9,7 +9,7 @@ import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { useAccountSettings } from '.';
-import { ZorbIcon } from '@/featuresToUnlock/unlockableAppIcons';
+import { PoolboyIcon } from '@/featuresToUnlock/unlockableAppIcons';
 const Sound = require('react-native-sound');
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
@@ -58,7 +58,7 @@ export default function useHideSplashScreen() {
       alreadyLoggedPerformance.current = true;
 
       // play sound if wanted
-      if (appIcon === ZorbIcon.key) {
+      if (appIcon === PoolboyIcon.key) {
         const sound = new Sound(
           require('../assets/sounds/RainbowSega.mp3'),
           (error: any) => {

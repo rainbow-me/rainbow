@@ -20,22 +20,22 @@ type FeatureUnlockCheck = (
 
 // the ordering of this list is IMPORTANT, this is the order that features will be unlocked
 export const featureUnlockChecks: FeatureUnlockCheck[] = [
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(OptimismIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(SmolIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(ZoraIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(GoldDogeIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(RainDogeIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(PoolyIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(FiniliarIcon, walletsToCheck),
-  // async (walletsToCheck: EthereumAddress[]) =>
-  //   await unlockableAppIconCheck(ZorbIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(OptimismIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(SmolIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(ZoraIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(GoldDogeIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(RainDogeIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(PoolyIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(FiniliarIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(ZorbIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
     await unlockableAppIconCheck(PoolboyIcon, walletsToCheck),
 ];
