@@ -8,12 +8,15 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
+import { useAccountSettings } from '.';
+import { ZorbIcon } from '@/featuresToUnlock/unlockableAppIcons';
 const Sound = require('react-native-sound');
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
+  const { appIcon } = useAccountSettings();
 
   return useCallback(() => {
     if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
@@ -55,21 +58,23 @@ export default function useHideSplashScreen() {
       alreadyLoggedPerformance.current = true;
 
       // play sound if wanted
-      const sound = new Sound(
-        require('../assets/sounds/RainbowSega.mp3'),
-        (error: any) => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
+      if (appIcon === ZorbIcon.key) {
+        const sound = new Sound(
+          require('../assets/sounds/RainbowSega.mp3'),
+          (error: any) => {
+            if (error) {
+              console.log('failed to load the sound', error);
+              return;
+            }
+
+            // if loaded successfully
+
+            sound.play((success: any) => {
+              console.log('played 1');
+            });
           }
-
-          // if loaded successfully
-
-          sound.play((success: any) => {
-            console.log('played 1');
-          });
-        }
-      );
+        );
+      }
     }
-  }, []);
+  }, [appIcon]);
 }
