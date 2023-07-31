@@ -189,13 +189,12 @@ export function simpleHashNFTToUniqueAsset(
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
 
   return {
-    animation_url: maybeSignUri(
-      nft?.image_url ??
-        nft?.video_url ??
-        nft.extra_metadata?.animation_original_url ??
-        undefined,
-      { fm: 'mp4' }
-    ),
+    animation_url:
+      nft?.video_url ??
+      nft.audio_url ??
+      nft.model_url ??
+      nft.extra_metadata?.animation_original_url ??
+      undefined,
     asset_contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
@@ -260,6 +259,12 @@ export function simpleHashNFTToUniqueAsset(
       ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
       : `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
+    video_url: nft.video_url,
+    video_properties: nft.video_properties,
+    audio_url: nft.audio_url,
+    audio_properties: nft.audio_properties,
+    model_url: nft.model_url,
+    model_properties: nft.model_properties,
   };
 }
 
