@@ -161,7 +161,9 @@ const colorModes: ColorMode[] = ['light', 'dark', 'darkTinted'];
 
 const HideSplashScreen = ({ children }: { children: ReactNode }) => {
   const hideSplashScreen = useHideSplashScreen();
-  useEffect(() => hideSplashScreen(), [hideSplashScreen]);
+  useEffect(() => {
+    hideSplashScreen();
+  }, [hideSplashScreen]);
 
   return <>{children}</>;
 };
