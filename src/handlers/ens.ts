@@ -38,11 +38,11 @@ import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
+import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
 import { queryClient } from '@/react-query';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { getEnsMarqueeFallback } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
-import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -62,11 +62,7 @@ const buildEnsToken = ({
   name: string;
   imageUrl: string;
 }) => {
-  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
-    originalUrl: imageUrl_,
-    previewUrl: undefined,
-    mimeType: MimeType.SVG,
-  });
+  const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
   return {
     animation_url: null,
     asset_contract: {
