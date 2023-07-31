@@ -25,6 +25,7 @@ import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
+import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -221,6 +222,23 @@ const ZorbAppIcon = () => {
   );
 };
 
+const PoolboyAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.poolboyPink}>
+      <Box
+        as={ImgixImage}
+        source={AppIconPoolboy}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
 const TheMergeIcon = () => {
   return (
     <Box
@@ -350,6 +368,10 @@ const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.finiliar_title');
 const ZORB_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
 
 const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
+
+const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.poolboy_text');
+
+const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.poolboy_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
@@ -489,6 +511,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.zorbPink,
       bgColor: colors?.zorbPink06,
+    },
+  },
+  poolboy_app_icon: {
+    logo: <PoolboyAppIcon />,
+    extraHeight: -90,
+    text: POOLBOY_APP_ICON_EXPLAINER,
+    title: POOLBOY_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.poolboyPink,
+      bgColor: colors?.poolboyPink06,
     },
   },
   output_disabled: {
