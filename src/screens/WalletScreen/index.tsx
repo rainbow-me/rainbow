@@ -15,6 +15,7 @@ import { prefetchENSIntroData } from '@/handlers/ens';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import {
+  useAccountAccentColor,
   useAccountEmptyState,
   useAccountProfile,
   useAccountSettings,
@@ -47,6 +48,7 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
 type RouteParams = {
   WalletScreen: {
@@ -55,10 +57,12 @@ type RouteParams = {
   };
 };
 
-const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }:{isVisible: boolean}) => ({
-  endingOpacity: 0.4,
-  pointerEvents: isVisible ? 'none' : 'box-none',
-}))({
+const HeaderOpacityToggler = styled(OpacityToggler).attrs(
+  ({ isVisible }: { isVisible: boolean }) => ({
+    endingOpacity: 0.4,
+    pointerEvents: isVisible ? 'none' : 'box-none',
+  })
+)({
   elevation: 1,
   zIndex: 1,
 });
@@ -155,13 +159,9 @@ function MoreButton({ children, onPress }) {
   );
 }
 
-export default function WalletScreen() {
-  const { params } = useRoute();
-  const {
-    setParams,
-    dangerouslyGetState,
-    dangerouslyGetParent,
-  } = useNavigation();
+const WalletScreen: React.FC<any> = ({ navigation, route }) => {
+  const { params } = route;
+  const { setParams, dangerouslyGetState, dangerouslyGetParent } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
@@ -333,24 +333,9 @@ export default function WalletScreen() {
     useSelector((state: AppState) => state.data.isLoadingAssets) &&
     !!accountAddress;
 
-  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
-
-  // ////////////////////////////////////////////////////
-  // Colors
-
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
+  const { accentColor } = useAccountAccentColor();
 
   const { colors } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  } else if (typeof accountColor === 'string') {
-    accentColor = accountColor;
-  }
 
   return (
     <View
@@ -384,4 +369,6 @@ export default function WalletScreen() {
       </WalletPage>
     </View>
   );
-}
+};
+
+export default WalletScreen;

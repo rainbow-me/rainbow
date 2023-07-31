@@ -101,6 +101,7 @@ class ScrollPager extends React.Component<PropsWithChildren> {
 
   scrollTo = (x: any, animated = true) => {
     if (this.scrollViewRef.current) {
+      console.log('this the issue');
       // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       this.scrollViewRef.current.scrollTo({
         animated: animated,

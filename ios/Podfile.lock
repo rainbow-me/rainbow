@@ -462,7 +462,7 @@ PODS:
     - React-Core
   - react-native-netinfo (5.9.7):
     - React-Core
-  - react-native-pager-view (6.1.2):
+  - react-native-pager-view (5.4.24):
     - React-Core
   - react-native-palette-full (1.2.0):
     - React
@@ -1161,7 +1161,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
+  boost: 57d2868c099736d80fcd648bf211b4431e51a558
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
@@ -1241,7 +1241,7 @@ SPEC CHECKSUMS:
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 69b9c003f10afdd01addf7c6ee784ce42ee2eff3
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
-  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
+  react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-plaid-link-sdk: 825c6526bf4e038f6d0ee6c7e5412b4d319ea580
   react-native-quick-md5: 20039aa5f718178ee370d523ca2918a2ccae097d
@@ -1319,4 +1319,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 2adc9331fbb742f03e06929d7b5a58fc44e6874c
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.11.2

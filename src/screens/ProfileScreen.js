@@ -8,6 +8,7 @@ import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
+  useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
   useContacts,

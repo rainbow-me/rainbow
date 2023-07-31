@@ -45,6 +45,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const {
     dangerouslyGetParent,
     navigate,
+    goBack,
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
     replace,
     setParams,
@@ -271,11 +272,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
+      console.log('!!!!!!!!!!! 0');
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress
           ? resolvedAddress
           : sanitizeSeedPhrase(seedPhrase);
 
+        console.log('!!!!!!!!!!! 1/2');
         if (!showImportModal) {
           await walletInit(
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
@@ -288,10 +291,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
+          console.log('!!!!!!!!!!! 1');
           await dispatch(walletsLoadState(profilesEnabled));
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
+          console.log('!!!!!!!!!!! 2');
           initializeWallet(
             input,
             // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
@@ -304,19 +309,30 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image
           )
             .then(success => {
+              console.log('!!!!!!!!!!! 3');
               ios && handleSetImporting(false);
               if (success) {
-                dangerouslyGetParent()?.goBack();
+                console.log('!!!!!!!!!!! 4');
+                dangerouslyGetParent?.()?.goBack();
+                console.log('!!!!!!!!!!! 5');
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
                     // on Android replacing is not working well, so we navigate and then remove the screen below
-                    const action = ios ? replace : navigate;
+                    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                    const action = navigate;
                     action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
                   } else {
-                    navigate(Routes.WALLET_SCREEN, { initialized: true });
+                    console.log('dangerous');
+                    dangerouslyGetParent?.()?.goBack();
+
+                    console.log('wallet screen');
+                    navigate(Routes.SWIPE_LAYOUT, {
+                      params: { initialized: true },
+                      screen: Routes.WALLET_SCREEN,
+                    });
                   }
                   if (android) {
                     handleSetImporting(false);
@@ -344,7 +360,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     isWalletEthZero,
                   });
                 });
+                console.log('!!!!!!!!!!! 6');
               } else {
+                console.log('fuck ');
                 if (android) {
                   handleSetImporting(false);
                 }

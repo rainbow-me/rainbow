@@ -11,7 +11,6 @@ import { TestnetToast } from '@/components/toasts';
 import { web3Provider } from '@/handlers/web3';
 import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import WalletScreen from '../screens/WalletScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import { deviceUtils } from '../utils';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
@@ -21,6 +20,7 @@ import {
 } from './ScrollPositionContext';
 import Routes from './routesNames';
 import {
+  useAccountAccentColor,
   useAccountProfile,
   useAccountSettings,
   useCoinListEdited,
@@ -30,7 +30,9 @@ import {
 import { maybeSignUri } from '@/handlers/imgix';
 import { Box, Columns, Stack } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
+
 import logger from 'logger';
+import WalletScreen from '@/screens/WalletScreen';
 
 const NUMBER_OF_TABS = 3;
 
@@ -49,38 +51,22 @@ const config = {
 const Swipe = createMaterialTopTabNavigator();
 
 const renderPager = props => (
-  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
+  <ScrollPagerWrapper {...props} initialScrollPosition={2} />
 );
 
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
   const { network } = useAccountSettings();
 
-  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+  const { accentColor } = useAccountAccentColor();
 
   // ////////////////////////////////////////////////////
   // Colors
 
-  const { result: dominantColor, state } = usePersistentDominantColorFromImage(
-    maybeSignUri(accountImage ?? '') ?? ''
-  );
-
   const { colors, isDarkMode } = useTheme();
-  let accentColor = colors.appleBlue;
-  if (accountImage) {
-    accentColor = dominantColor || colors.appleBlue;
-  } else if (typeof accountColor === 'number') {
-    accentColor = colors.avatarBackgrounds[accountColor];
-  } else if (typeof accountColor === 'string') {
-    accentColor = accountColor;
-  }
 
   // ////////////////////////////////////////////////////
   // Animations
-
-  const hasAvatarLoaded = !!accountImage || accountSymbol;
-  const hasImageColorLoaded = state === 2 || state === 3;
-  const hasLoaded = hasAvatarLoaded || hasImageColorLoaded;
 
   const TabBar = ({ state, descriptors, navigation }) => {
     const { width: deviceWidth } = useDimensions();
