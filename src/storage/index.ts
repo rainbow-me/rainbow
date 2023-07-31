@@ -73,6 +73,6 @@ export class Storage<Scopes extends unknown[], Schema> {
  */
 export const device = new Storage<[], Device>({ id: 'global' });
 
-export const assets = new Storage<[EthereumAddress, Network], Account>({
-  id: 'assets',
+export const account = new Storage<[EthereumAddress, Network], Account>({
+  id: 'account',
 });

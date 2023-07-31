@@ -31,6 +31,6 @@ export type Legacy = {
   [key: string]: any;
 };
 
-export type Assets = {
+export type Account = {
   totalTokens: number;
 };

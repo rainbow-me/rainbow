@@ -11,7 +11,6 @@ import { getBaseNetworkObject } from './base';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 
-
 /**
  * Array of all Rainbow Networks
  * the ordering is the default sorting
@@ -26,8 +25,6 @@ export const RainbowNetworks = [
   getGnosisNetworkObject(),
   getGoerliNetworkObject(),
   getBSCNetworkObject(),
-
-
 ];
 
 /**
@@ -73,9 +70,9 @@ export function sortNetworks(overrideNetwork?: Network): NetworkProperties[] {
     network2: NetworkProperties
   ) => {
     const count1 =
-      ls.assets.get([accountAddress, network1.value, 'totalTokens']) || 0;
+      ls.account.get([accountAddress, network1.value, 'totalTokens']) || 0;
     const count2 =
-      ls.assets.get([accountAddress, network2.value, 'totalTokens']) || 0;
+      ls.account.get([accountAddress, network2.value, 'totalTokens']) || 0;
 
     if (overrideNetwork && network1.value === overrideNetwork) {
       return -1;

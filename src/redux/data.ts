@@ -972,7 +972,7 @@ export const addressAssetsReceived = (
       true
     )
   ).length;
-  ls.assets.set([accountAddress, assetsNetwork, 'totalTokens'], count);
+  ls.account.set([accountAddress, assetsNetwork, 'totalTokens'], count);
 
   const { accountAssetsData: existingAccountAssetsData } = getState().data;
 
