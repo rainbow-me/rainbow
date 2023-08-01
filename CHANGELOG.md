@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.26] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.26)
+
+### Added
+
+- Swaps upgrade
+- Poolsuite
+
 ## [1.8.25] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.25)
 
 ### Added
