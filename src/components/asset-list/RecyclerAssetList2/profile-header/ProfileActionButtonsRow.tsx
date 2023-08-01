@@ -31,12 +31,11 @@ import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -168,7 +167,6 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
 
@@ -183,7 +181,7 @@ function BuyButton() {
     });
 
     navigate(Routes.ADD_CASH_SHEET);
-  }, [accountAddress, isDamaged, navigate]);
+  }, [isDamaged, navigate]);
 
   return (
     <Box>
@@ -276,10 +274,17 @@ export function MoreButton() {
   }, [accountAddress, isToastActive, setToastActive]);
 
   return (
-    <CopyFloatingEmojis textToCopy={accountAddress}>
-      <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
-        {'Copy'}
-      </ActionButton>
-    </CopyFloatingEmojis>
+    <>
+      {/* @ts-expect-error JavaScript component */}
+      <CopyFloatingEmojis textToCopy={accountAddress}>
+        <ActionButton
+          onPress={handlePressCopy}
+          icon="􀐅"
+          testID="receive-button"
+        >
+          {'Copy'}
+        </ActionButton>
+      </CopyFloatingEmojis>
+    </>
   );
 }

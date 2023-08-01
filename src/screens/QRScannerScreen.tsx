@@ -66,7 +66,9 @@ export default function QRScannerScreen() {
 
   const containerStyle = useAnimatedStyle(() => {
     // const scale = interpolate(scrollPosition.value, [0, 1], [1, 0.8]);
+
     const translateX = interpolate(
+      // @ts-expect-error Javascript Context
       scrollPosition?.value || 0,
       [0, 1],
       [0, deviceWidth - 72]
@@ -85,6 +87,7 @@ export default function QRScannerScreen() {
   });
 
   const overlayStyle = useAnimatedStyle(() => {
+    // @ts-expect-error Javascript Context
     const opacity = interpolate(scrollPosition?.value || 0, [0, 1], [0, 1]);
 
     return {
