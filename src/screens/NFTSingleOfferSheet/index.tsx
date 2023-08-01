@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -34,21 +34,19 @@ import { TransactionStatus, TransactionType, UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
 import { BigNumber } from '@ethersproject/bignumber';
-import { SheetActionButtonRow } from '@/components/sheet/sheet-action-buttons';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
-import { loadPrivateKey, loadWallet } from '@/model/wallet';
+import { loadPrivateKey } from '@/model/wallet';
 import { Network } from '@/helpers';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
-// import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter';
-import { Wallet } from '@ethersproject/wallet';
 import { mainnet } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
 import { getNetworkObj } from '@/networks';
+import { logger } from '@/logger';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -93,7 +91,8 @@ export function NFTSingleOfferSheet() {
 
   const { offer } = params as { offer: NftOffer };
 
-  const [txs, setTxs] = useState<string[]>([]);
+  const txsRef = useRef<string[]>([]);
+
   const [height, setHeight] = useState(0);
 
   const nft = useMemo(() => {
@@ -103,43 +102,6 @@ export function NFTSingleOfferSheet() {
       );
     }
   }, [nfts, offer.nft.uniqueId]);
-
-  // useEffect(() => {
-  //   const tx = {
-  //     to: '0x00000000000000adc04c56bf30ac9d3c0aaf14dc',
-  //     from: '0x2dc92aa78358310a87276cf6f893f48e896d8fc5',
-  //     hash:
-  //       '0x077201947b05329dadc5aa62776467ca887f4753c55b1b8ef38a9c66a564c5a2',
-  //     network: Network.mainnet,
-  //     nft,
-  //     type: TransactionType.authorize,
-  //     status: TransactionStatus.approving,
-  //   };
-  //   const tx = {
-  //     to: '0x00000000000000adc04c56bf30ac9d3c0aaf14dc', // x?.data?.to
-  //     from: '0x2dc92aa78358310a87276cf6f893f48e896d8fc5', // x?.data?.from
-  //     hash:
-  //       '0x077201947b05329dadc5aa62776467ca887f4753c55b1b8ef38a9c66a564c5a2', // x?.txHash
-  //     network: offer.network,
-  //     amount: 1,
-  //     asset: {
-  //       address: offer.paymentToken.address,
-  //       symbol: offer.paymentToken.symbol,
-  //     },
-  //     nft,
-  //     type: TransactionType.sell,
-  //     status: TransactionStatus.selling,
-  //   };
-  //   console.log(tx);
-  //   // setTx(tx);
-  //   dispatch(dataAddNewTransaction(tx));
-  // }, [
-  //   dispatch,
-  //   nft,
-  //   offer.network,
-  //   offer.paymentToken.address,
-  //   offer.paymentToken.symbol,
-  // ]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -583,22 +545,14 @@ export function NFTSingleOfferSheet() {
                     // }
                     label="Hold to sell"
                     onLongPress={async () => {
-                      const provider = await getProviderForNetwork(
-                        offer.network as Network
+                      logger.info(
+                        `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
                       );
-                      // const ethersSigner = await loadWallet(
-                      //   accountAddress,
-                      //   true,
-                      //   provider
-                      // );
                       const privateKey = await loadPrivateKey(
                         accountAddress,
                         false
                       );
                       const account = privateKeyToAccount(privateKey);
-                      // const reservoirSigner = adaptEthersSigner(
-                      //   ethersSigner as Wallet
-                      // );
                       const reservoirSigner = createWalletClient({
                         account,
                         chain: mainnet,
@@ -606,20 +560,6 @@ export function NFTSingleOfferSheet() {
                           getNetworkObj(offer.network as Network).rpc
                         ),
                       });
-                      console.log('HELLO???');
-                      console.log('test');
-                      console.log(
-                        BigNumber.from(offer.grossAmount.raw)
-                          .div(100)
-                          .toString()
-                      );
-                      console.log(
-                        `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-                          offer.grossAmount.raw
-                        )
-                          .div(100)
-                          .toString()}`
-                      );
                       getClient()?.actions.acceptOffer({
                         items: [
                           {
@@ -636,55 +576,19 @@ export function NFTSingleOfferSheet() {
                         //       .toString()}`,
                         //   ],
                         // },
-                        // precheck: true,
+                        precheck: true,
                         wallet: reservoirSigner,
-                        onProgress: (
-                          steps: Execute['steps'],
-                          path: Execute['path']
-                        ) => {
-                          // const tx = {
-                          // ...gasParams,
-                          // amount: inputAmount,
-                          // asset: inputCurrency,
-                          // data: swap?.data,
-                          // from: accountAddress,
-                          // gasLimit,
-                          // hash: swap?.hash,
-                          // network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-                          // nonce: swap?.nonce,
-                          // protocol: ProtocolType.socket,
-                          // status: isBridge ? TransactionStatus.bridging : TransactionStatus.swapping,
-                          // to: swap?.to,
-                          // type: TransactionType.trade,
-                          // value: (swap && toHex(swap.value)) || undefined,
-                          // swap: {
-                          //   type: SwapType.crossChain,
-                          //   fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
-                          //   toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
-                          //   isBridge,
-                          // },
-                          // };
-                          // console.log(steps);
-                          // steps.forEach(step =>
-                          //   step.items?.forEach(item => {
-                          //     console.log(item);
-                          //     if (item.data?.txHash) {
-                          //       console.log(item, 'ITEM');
-                          //       console.log(step, 'STEP');
-                          //     }
-                          //   })
-                          // );
+                        onProgress: (steps: Execute['steps']) => {
                           steps.forEach(step =>
                             step.items?.forEach(item => {
                               if (
                                 item.txHash &&
-                                !txs.includes(item.txHash) &&
+                                !txsRef.current.includes(item.txHash) &&
                                 item.status === 'incomplete'
                               ) {
+                                let tx;
                                 if (step.id === 'sale') {
-                                  console.log('SALE');
-                                  setTxs(prev => [...prev, item.txHash!]);
-                                  const tx = {
+                                  tx = {
                                     to: item.data?.to,
                                     from: item.data?.from,
                                     hash: item.txHash,
@@ -698,11 +602,8 @@ export function NFTSingleOfferSheet() {
                                     type: TransactionType.sell,
                                     status: TransactionStatus.selling,
                                   };
-                                  dispatch(dataAddNewTransaction(tx));
                                 } else if (step.id === 'nft-approval') {
-                                  console.log('APPROVAL');
-                                  setTxs(prev => [...prev, item.txHash!]);
-                                  const tx = {
+                                  tx = {
                                     to: item.data?.to,
                                     from: item.data?.from,
                                     hash: item.txHash,
@@ -711,52 +612,18 @@ export function NFTSingleOfferSheet() {
                                     type: TransactionType.authorize,
                                     status: TransactionStatus.approving,
                                   };
+                                }
+                                if (tx) {
+                                  txsRef.current.push(tx.hash);
+                                  // @ts-ignore TODO: fix when we overhaul tx list, types are not good
                                   dispatch(dataAddNewTransaction(tx));
                                 }
                               }
                             })
                           );
-                          console.log('ON PROGRESS');
-                          // if (!tx) {
-                          //   console.log('MAKING TX');
-                          //   console.log('steps');
-                          //   console.log(steps);
-                          //   const step = steps.find(step => step.id === 'sale');
-                          //   const item = step?.items?.find(
-                          //     item =>
-                          //       item.txHash && item.status === 'incomplete'
-                          //   );
-                          //   console.log('item');
-                          //   console.log(item);
-                          //   console.log('order id');
-                          //   console.log(item?.orderIds);
-                          //   if (item) {
-                          //     console.log('hello');
-                          //     console.log(item.transfersData);
-                          //     const tx = {
-                          //       data: item.data.data,
-                          //       to: item.data.to,
-                          //       from: item.data.from,
-                          //       hash: item.txHash!,
-                          //       network: Network.mainnet,
-                          //       // description: `${offer.nft.name} #${offer.nft.tokenId}`,
-                          //       amount: null,
-                          //       asset: nft,
-                          //       nonce: null,
-                          //       status: TransactionStatus.selling,
-                          //     };
-                          //     console.log(tx);
-                          //     setTx(tx);
-                          //     dispatch(dataAddNewTransaction(tx));
-                          //   }
-                          // }
                           navigate(Routes.PROFILE_SCREEN);
-                          // console.log('WHYY');
-                          // console.log('STEPS', steps);
-                          // console.log('PATH', path);
                         },
                       });
-                      console.log('pls');
                     }}
                     parentHorizontalPadding={28}
                     // showBiometryIcon={!insufficientEth}
