@@ -174,7 +174,7 @@ type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewState
 >;
 
-function useRecyclerListViewRef(): {
+export function useRecyclerListViewRef(): {
   readonly handleRef: (ref: RecyclerListViewRef) => void;
   readonly ref: RecyclerListViewRef | undefined;
 } {
@@ -788,6 +788,7 @@ function RecyclerAssetList({
       >
         {/* @ts-ignore */}
         <StyledRecyclerListView
+          automaticallyAdjustsScrollIndicatorInsets={false}
           dataProvider={dataProvider}
           extendedState={extendedState}
           {...(isInsideBottomSheet && {
@@ -799,6 +800,7 @@ function RecyclerAssetList({
           ref={handleRef}
           renderAheadOffset={renderAheadOffset}
           rowRenderer={rowRenderer}
+          scrollIndicatorInsets={{ bottom: 200, top: 300 }}
           scrollViewProps={scrollViewProps}
           {...extras}
         />

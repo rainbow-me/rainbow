@@ -546,9 +546,7 @@ export const settingsOptions = colors => ({
     backgroundColor: 'transparent',
     overflow: 'visible',
   },
-  gestureEnabled: ios,
-  gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
-  ...(ios && { headerBackImage: BackImage }),
+  fullScreenGestureEnabled: true,
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {

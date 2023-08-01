@@ -1,8 +1,7 @@
+import { InteractionManager, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { isEmpty, keys } from 'lodash';
-import { InteractionManager, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { OpacityToggler } from '../../components/animations';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { Network } from '@/helpers';
@@ -10,9 +9,10 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { Box, Inline } from '@/design-system';
+import { navbarHeight } from '@/components/navbar/Navbar';
+import { Box } from '@/design-system';
 import {
+  useAccountAccentColor,
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
@@ -27,7 +27,6 @@ import {
   useUserAccounts,
   useWalletSectionsData,
 } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import { updateRefetchSavings } from '@/redux/data';
 import { emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
@@ -37,20 +36,17 @@ import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
-import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 
-type RouteParams = {
-  WalletScreen: {
-    initialized?: boolean;
-    emptyWallet?: boolean;
-  };
-};
+const WalletPage = styled(Page)({
+  ...position.sizeAsObject('100%'),
+  flex: 1,
+});
 
-type Props = MaterialTopTabScreenProps<RouteParams, 'WalletScreen'>;
-
-export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
+const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const { params } = route;
   const { setParams, dangerouslyGetState, dangerouslyGetParent } = navigation;
   const removeFirst = useRemoveFirst();
@@ -208,87 +204,49 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
     analytics.identify(undefined, { appIcon });
   }, [appIcon]);
 
-  const { navigate } = useNavigation();
-
-  const handlePressActivity = useCallback(() => {
-    navigate(Routes.PROFILE_SCREEN);
-  }, [navigate]);
-
-  const handlePressQRScanner = useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
-  const handlePressDiscover = useCallback(() => {
-    navigate(Routes.DISCOVER_SCREEN);
-  }, [navigate]);
-
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
 
   const isLoadingAssets =
     useSelector((state: AppState) => state.data.isLoadingAssets) &&
     !!accountAddress;
 
+  const { accentColor } = useAccountAccentColor();
+
+  const { colors } = useTheme();
+
   return (
-    <Page testID="wallet-screen" style={styles.page}>
-      <OpacityToggler
-        endingOpacity={0.4}
-        pointerEvents={isCoinListEdited ? 'none' : 'auto'}
-        isVisible={isCoinListEdited}
-        style={styles.opacityToggler}
-      >
-        <Navbar
-          hasStatusBarInset
-          leftComponent={
-            <Navbar.Item onPress={handlePressActivity} testID="activity-button">
-              <Navbar.TextIcon icon="􀐫" />
-            </Navbar.Item>
-          }
-          rightComponent={
-            <Inline space={{ custom: 17 }}>
-              <Navbar.Item onPress={handlePressQRScanner}>
-                <Navbar.TextIcon icon="􀎹" />
-              </Navbar.Item>
-              <Navbar.Item
-                onPress={handlePressDiscover}
-                testID="discover-button"
-              >
-                <Navbar.TextIcon icon="􀎬" />
-              </Navbar.Item>
-            </Inline>
-          }
-        />
-      </OpacityToggler>
-      <Box
-        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
-      >
-        {/* @ts-expect-error JavaScript component */}
-        <AssetList
-          disableRefreshControl={isLoadingAssets}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
-          isLoading={android && isLoadingAssets}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
-      </Box>
-      <ToastPositionContainer>
-        <Toast
-          isVisible={isAddressCopiedToastActive}
-          text="􀁣 Address Copied"
-          testID="address-copied-toast"
-        />
-      </ToastPositionContainer>
-    </Page>
+    <View
+      style={{
+        backgroundColor: colors.trueBlack,
+        height: '100%',
+        width: '100%',
+      }}
+    >
+      <WalletPage testID="wallet-screen">
+        <Box
+          style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
+        >
+          {/* @ts-expect-error JavaScript component */}
+          <AssetList
+            accentColor={accentColor}
+            disableRefreshControl={isLoadingAssets}
+            isEmpty={isAccountEmpty || !!params?.emptyWallet}
+            isLoading={android && isLoadingAssets}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        </Box>
+        <ToastPositionContainer>
+          <Toast
+            isVisible={isAddressCopiedToastActive}
+            text="􀁣 Address Copied"
+            testID="address-copied-toast"
+          />
+        </ToastPositionContainer>
+      </WalletPage>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  opacityToggler: {
-    elevation: 1,
-    zIndex: 1,
-  },
-  page: {
-    ...position.sizeAsObject('100%'),
-    flex: 1,
-  },
-});
+export default WalletScreen;

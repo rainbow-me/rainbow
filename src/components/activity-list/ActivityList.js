@@ -8,14 +8,12 @@ import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row/CoinRow';
 import { TRANSACTION_COIN_ROW_VERTICAL_PADDING } from '../coin-row/TransactionCoinRow';
-import { ListHeaderHeight } from '../list/ListHeader';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { useAccountProfile } from '@/hooks';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -23,10 +21,12 @@ const sx = StyleSheet.create({
   },
 });
 
+const ActivityListHeaderHeight = 42;
+
 const getItemLayout = sectionListGetItemLayout({
   getItemHeight: () =>
     CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
-  getSectionHeaderHeight: () => ListHeaderHeight,
+  getSectionHeaderHeight: () => ActivityListHeaderHeight,
 });
 
 const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
@@ -116,19 +116,19 @@ const ActivityList = ({
   );
 
   if (network === networkTypes.mainnet || sections.length) {
-    if (recyclerListView) {
+    if (isEmpty && !isLoading) {
+      return <ActivityListEmptyState>{header}</ActivityListEmptyState>;
+    } else if (recyclerListView) {
       return (
         <RecyclerActivityList
           addCashAvailable={addCashAvailable}
-          header={header}
+          header={null}
           isEmpty={isEmpty}
           isLoading={isLoading}
           navigation={navigation}
           sections={sections}
         />
       );
-    } else if (isEmpty) {
-      return <ActivityListEmptyState>{header}</ActivityListEmptyState>;
     } else {
       return (
         <SectionList

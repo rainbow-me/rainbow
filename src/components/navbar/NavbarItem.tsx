@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 
 type NavbarItemProps = {
   children: React.ReactElement;
-  onPress: PressableProps['onPress'];
+  onPress?: PressableProps['onPress'];
   testID?: string;
 };
 
@@ -17,6 +17,7 @@ export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
         as={ButtonPressAnimation}
         // @ts-expect-error - JS component
         onPress={onPress}
+        pointerEvents="auto"
         scale={0.8}
         testID={testID}
       >

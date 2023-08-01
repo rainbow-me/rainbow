@@ -53,12 +53,14 @@ export type ExtendedState = {
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
   disablePullDownToRefresh,
+  scrollIndicatorInsets,
   extendedState,
   type,
 }: {
   briefSectionsData: BaseCellType[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
+  scrollIndicatorInsets?: object;
   type?: AssetListType;
 }) {
   const currentDataProvider = useMemoOne(
@@ -152,6 +154,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   return (
     <RecyclerListView
+      automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}
       // @ts-ignore
@@ -169,6 +172,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
+      scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );
 });
