@@ -4,7 +4,6 @@ import { Text } from '@/design-system';
 
 const sx = StyleSheet.create({
   activityListHeader: {
-    paddingBottom: 12,
     paddingHorizontal: 20,
     paddingTop: 4,
   },
