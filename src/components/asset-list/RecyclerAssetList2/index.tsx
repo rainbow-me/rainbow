@@ -18,6 +18,7 @@ import { analytics } from '@/analytics';
 import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
 import lang from 'i18n-js';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
+import { IS_ANDROID } from '@/env';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -60,10 +61,10 @@ function RecyclerAssetList({
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      {ios && type === 'wallet' && (
+      {type === 'wallet' && (
         <NavbarOverlay accentColor={accentColor} position={position} />
       )}
-      <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 0}>
+      <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 100}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
@@ -111,7 +112,7 @@ function NavbarOverlay({
     navigate(Routes.SETTINGS_SHEET);
   }, [navigate]);
 
-  const yOffset = 0;
+  const yOffset = IS_ANDROID ? 80 : 0;
   const shadowOpacityStyle = useMemo(
     () => ({
       shadowOpacity: position!.interpolate({
@@ -127,22 +128,13 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, 1, 1],
+        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
       }),
       shadowOpacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
-      transform: [
-        {
-          translateY: position!.interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, yOffset, yOffset + 38],
-            outputRange: [0, 24, 0],
-          }),
-        },
-      ],
     }),
     [isDarkMode, position, yOffset]
   );
@@ -151,17 +143,8 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, 1, 1],
+        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
       }),
-      transform: [
-        {
-          translateY: position!.interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, yOffset, yOffset + 38],
-            outputRange: [0, 38, 0],
-          }),
-        },
-      ],
     }),
     [position, yOffset]
   );
