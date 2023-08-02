@@ -142,7 +142,7 @@ const ActivityList = ({
           }
           ListHeaderComponent={header}
           alwaysBounceVertical={false}
-          contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
+          contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
           extraData={{
             hasPendingTransaction,
             nativeCurrency,
