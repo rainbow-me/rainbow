@@ -117,7 +117,7 @@ function NavbarOverlay({
       shadowOpacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
-        outputRange: [0, 0, isDarkMode ? 0.2 : 1],
+        outputRange: [0, 0, isDarkMode ? 0.2 : 0.2],
       }),
     }),
     [isDarkMode, position, yOffset]
@@ -219,8 +219,8 @@ function NavbarOverlay({
         {
           shadowColor: colors.shadowBlack,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
-          shadowRadius: isDarkMode ? 20 : 0,
+          //shadowOpacity: isDarkMode ? 0.4 : 0.004,
+          shadowRadius: isDarkMode ? 20 : 3,
           zIndex: 1,
         },
         shadowOpacityStyle,
