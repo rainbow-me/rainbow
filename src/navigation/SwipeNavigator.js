@@ -9,7 +9,9 @@ import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { web3Provider } from '@/handlers/web3';
-import DiscoverScreen from '../screens/discover/DiscoverScreen';
+import DiscoverScreen, {
+  discoverScrollToTopFnRef,
+} from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import { deviceUtils } from '../utils';
@@ -30,6 +32,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 
 import logger from 'logger';
 import WalletScreen from '@/screens/WalletScreen';
+import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
+import { InteractionManager } from 'react-native';
 
 const NUMBER_OF_TABS = 3;
 
@@ -197,10 +201,15 @@ export function SwipeNavigator() {
 
                     if (!isFocused && !event.defaultPrevented) {
                       navigation.navigate(route.name);
+                    } else if (
+                      isFocused &&
+                      options.tabBarIcon === 'tabDiscover'
+                    ) {
+                      discoverScrollToTopFnRef?.();
                     }
                   };
 
-                  const onLongPress = () => {
+                  const onLongPress = async () => {
                     navigation.emit({
                       type: 'tabLongPress',
                       target: route.key,
@@ -208,6 +217,12 @@ export function SwipeNavigator() {
 
                     if (options.tabBarIcon === 'tabHome') {
                       navigation.navigate(Routes.CHANGE_WALLET_SHEET);
+                    }
+                    if (options.tabBarIcon === 'tabDiscover') {
+                      navigation.navigate(Routes.DISCOVER_SCREEN);
+                      InteractionManager.runAfterInteractions(() => {
+                        discoverOpenSearchFnRef?.();
+                      });
                     }
                   };
 

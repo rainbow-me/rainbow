@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useCallback, useEffect } from 'react';
+
 import { Keyboard, ScrollView } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
@@ -14,7 +15,9 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
 
+export let discoverScrollToTopFnRef: () => void | null = () => null;
 export default function DiscoverScreen() {
+  const ref = React.useRef<ScrollView>(null);
   const { navigate } = useNavigation();
   const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -30,6 +33,16 @@ export default function DiscoverScreen() {
       Keyboard.dismiss();
     }
   }, [isFocused, isSearchModeEnabled]);
+  const scrollToTop = useCallback(() => {
+    ref.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    discoverScrollToTopFnRef = scrollToTop;
+  }, [ref, scrollToTop]);
 
   return (
     <DiscoverSheetContext.Provider
@@ -63,6 +76,8 @@ export default function DiscoverScreen() {
           title={isSearchModeEnabled ? 'Search' : 'Discover'}
         />
         <Box
+          //@ts-expect-error
+          ref={ref}
           as={ScrollView}
           automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}

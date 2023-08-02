@@ -217,7 +217,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   return (
     <View
       style={{
-        backgroundColor: colors.trueBlack,
         height: '100%',
         width: '100%',
       }}
