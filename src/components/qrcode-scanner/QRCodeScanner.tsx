@@ -1,4 +1,4 @@
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
@@ -110,9 +110,10 @@ export default function QRCodeScanner({
     }
   }, []);
 
-  useEffect(() => {
+  useFocusEffect(() => {
+    console.log('triggered');
     setTimeout(() => askForPermissions(), 200);
-  }, [askForPermissions]);
+  });
 
   const cameraStyle = useAnimatedStyle(() => ({
     opacity: withTiming(isCameraReady ? 1 : 0, {
