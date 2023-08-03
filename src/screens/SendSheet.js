@@ -353,11 +353,13 @@ export default function SendSheet(props) {
           : ethereumUtils.getNetworkFromType(selected.type);
         if (network === Network.goerli) {
           setCurrentNetwork(Network.goerli);
+          provider = await getProviderForNetwork(Network.goerli);
+          setCurrentProvider(provider);
         } else {
           setCurrentNetwork(selectedNetwork);
+          provider = await getProviderForNetwork(selectedNetwork);
+          setCurrentProvider(provider);
         }
-        provider = await getProviderForNetwork(selectedNetwork);
-        setCurrentProvider(provider);
       }
     };
     updateNetworkAndProvider();
