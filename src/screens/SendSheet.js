@@ -351,7 +351,11 @@ export default function SendSheet(props) {
         const selectedNetwork = isNft
           ? selected.network
           : ethereumUtils.getNetworkFromType(selected.type);
-        setCurrentNetwork(selectedNetwork);
+        if (network === Network.goerli) {
+          setCurrentNetwork(Network.goerli);
+        } else {
+          setCurrentNetwork(selectedNetwork);
+        }
         provider = await getProviderForNetwork(selectedNetwork);
         setCurrentProvider(provider);
       }
