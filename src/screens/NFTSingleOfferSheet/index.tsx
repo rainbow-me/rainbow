@@ -29,7 +29,7 @@ import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { TransactionStatus, TransactionType, UniqueAsset } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
@@ -38,15 +38,15 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
 import { loadPrivateKey } from '@/model/wallet';
 import { Network } from '@/helpers';
-import { getProviderForNetwork } from '@/handlers/web3';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { mainnet } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
-import { createWalletClient, http } from 'viem';
+import { WalletClient, createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
 import { getNetworkObj } from '@/networks';
 import { logger } from '@/logger';
+import { estimateGasWithPadding, getProviderForNetwork } from '@/handlers/web3';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -86,8 +86,10 @@ export function NFTSingleOfferSheet() {
   const { navigate, setParams } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
+  // const x = useGas();
   const { data: nfts } = useLegacyNFTs({ address: accountAddress });
   const dispatch = useDispatch();
+  const [signer, setSigner] = useState<WalletClient>();
 
   const { offer } = params as { offer: NftOffer };
 
@@ -102,6 +104,86 @@ export function NFTSingleOfferSheet() {
       );
     }
   }, [nfts, offer.nft.uniqueId]);
+
+  useEffect(() => {
+    (async () => {
+      const privateKey = await loadPrivateKey(accountAddress, false);
+      const account = privateKeyToAccount(privateKey);
+      const reservoirSigner = createWalletClient({
+        account,
+        chain: mainnet,
+        transport: http(getNetworkObj(offer.network as Network).rpc),
+      });
+      setSigner(reservoirSigner);
+    })();
+  }, [accountAddress, offer.network]);
+
+  // const rawGasLimit = await estimateGasWithPadding(
+  //   txPayload,
+  //   null,
+  //   null,
+  //   provider
+  // );
+  // logger.debug(
+  //   'WC: Estimated gas limit',
+  //   { rawGasLimit },
+  //   logger.DebugContext.walletconnect
+  // );
+  // if (rawGasLimit) {
+  //   gas = toHex(rawGasLimit);
+  // }
+
+  useEffect(() => {
+    if (signer) {
+      getClient()?.actions.acceptOffer({
+        items: [
+          {
+            token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+            quantity: 1,
+          },
+        ],
+        options: {
+          feesOnTop: [
+            `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+              offer.grossAmount.raw
+            )
+              .div(100)
+              .toString()}`,
+          ],
+        },
+        precheck: true,
+        wallet: signer,
+        onProgress: (steps: Execute['steps']) => {
+          console.log('progress3');
+          steps.forEach(step =>
+            step.items?.forEach(async item => {
+              if (item.data?.data && item.data?.to && item.data?.from) {
+                console.log('item', item);
+                console.log('step', step);
+                const rawGasLimit = await estimateGasWithPadding(
+                  {
+                    to: item.data.to,
+                    from: item.data.from,
+                    data: item.data.data,
+                  },
+                  null,
+                  null,
+                  await getProviderForNetwork(offer.network as Network)
+                );
+                console.log('rawGasLimit', rawGasLimit);
+              }
+            })
+          );
+        },
+      });
+    }
+  }, [
+    offer.grossAmount.raw,
+    offer.network,
+    offer.nft.contractAddress,
+    offer.nft.tokenId,
+    signer,
+  ]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -536,6 +618,7 @@ export function NFTSingleOfferSheet() {
                     backgroundColor={
                       offer.nft.predominantColor || buttonColorFallback
                     }
+                    disabled={!signer}
                     // disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     // label={
@@ -548,18 +631,6 @@ export function NFTSingleOfferSheet() {
                       logger.info(
                         `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
                       );
-                      const privateKey = await loadPrivateKey(
-                        accountAddress,
-                        false
-                      );
-                      const account = privateKeyToAccount(privateKey);
-                      const reservoirSigner = createWalletClient({
-                        account,
-                        chain: mainnet,
-                        transport: http(
-                          getNetworkObj(offer.network as Network).rpc
-                        ),
-                      });
                       getClient()?.actions.acceptOffer({
                         items: [
                           {
@@ -577,7 +648,7 @@ export function NFTSingleOfferSheet() {
                         //   ],
                         // },
                         precheck: true,
-                        wallet: reservoirSigner,
+                        wallet: signer,
                         onProgress: (steps: Execute['steps']) => {
                           steps.forEach(step =>
                             step.items?.forEach(item => {
