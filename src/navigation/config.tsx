@@ -9,6 +9,7 @@ import networkTypes from '@/helpers/networkTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { getNetworkObj } from '@/networks';
+import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
 import BackButton from '@/components/header/BackButton';
 import { Icon } from '@/components/icons';
@@ -164,7 +165,30 @@ export const opRewardsSheetConfig: PartialNavigatorConfigOptions = {
   },
 };
 
-export const walletDiagnosticsSheetConfig: PartialNavigatorConfigOptions = {
+export const nftOffersSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+    }),
+  }),
+};
+
+export const nftSingleOfferSheetConfig = {
+  options: ({
+    route: {
+      params: { longFormHeight, ...params },
+    },
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || 0,
+    }),
+  }),
+};
+
+export const walletDiagnosticsSheetConfig = {
   options: ({ route }) => {
     return buildCoolModalConfig({
       ...route.params,
@@ -195,7 +219,19 @@ export const addTokenSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const sendConfirmationSheetConfig: PartialNavigatorConfigOptions = {
+export const positionSheetConfig = {
+  options: ({ route: { params = {} } }) => {
+    const height = getPositionSheetHeight(params);
+    return {
+      ...buildCoolModalConfig({
+        ...params,
+        longFormHeight: height,
+      }),
+    };
+  },
+};
+
+export const sendConfirmationSheetConfig = {
   options: ({ route: { params = {} } }) => {
     const height = getSendConfirmationSheetHeight(params as any);
     return {

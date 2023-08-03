@@ -34,6 +34,7 @@ import { isAuthenticated } from '@/utils/authentication';
 import { ratioGetClientSession } from '@/resources/f2c';
 
 const ERROR_USER_FAILED_AUTH = 'user_failed_auth';
+const RATIO_SUPPORT_EMAIL = 'support@ratio.me';
 
 export function Ratio({
   accountAddress,
@@ -259,6 +260,8 @@ export function Ratio({
       onHelp={() => {
         logger.debug(`Ratio: help clicked`, {}, logger.DebugContext.f2c);
         emailRainbow({
+          email: RATIO_SUPPORT_EMAIL,
+          hideRainbowBranding: true,
           subject: lang.t(lang.l.wallet.add_cash_v2.support_emails.help, {
             provider: upperFirst(FiatProviderName.Ratio),
           }),
@@ -271,6 +274,8 @@ export function Ratio({
           logger.DebugContext.f2c
         );
         emailRainbow({
+          email: RATIO_SUPPORT_EMAIL,
+          hideRainbowBranding: true,
           subject: lang.t(
             lang.l.wallet.add_cash_v2.support_emails.account_recovery
           ),

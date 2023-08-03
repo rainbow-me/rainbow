@@ -64,6 +64,7 @@ export const CRYPTO_PUNKS_NFT_ADDRESS =
 
 export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
+export const POAP_BASE_URL = 'https://poap.website/';
 
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';
@@ -72,6 +73,7 @@ export const ARBITRUM_ETH_ADDRESS =
 export const OPTIMISM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const ZORA_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const BASE_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const BNB_BSC_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const BNB_MAINNET_ADDRESS = '0xb8c77482e45f1f44de1745f52c74426c631bdd52';
 export const MATIC_MAINNET_ADDRESS =

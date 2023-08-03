@@ -76,6 +76,7 @@ const messages = {
     RECEIVED_POLYGON: 'received address polygon-assets',
     RECEIVED_BSC: 'received address bsc-assets',
     RECEIVED_ZORA: 'received address zora-assets',
+    RECEIVED_BASE: 'received address base-assets',
   },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
@@ -88,6 +89,7 @@ const messages = {
     RECEIVED_POLYGON: 'received address polygon-transactions',
     RECEIVED_BSC: 'received address bsc-transactions',
     RECEIVED_ZORA: 'received address zora-transactions',
+    RECEIVED_BASE: 'received address base-transactions',
   },
   ASSET_CHARTS: {
     RECEIVED: 'received assets charts',
@@ -387,6 +389,7 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.polygon}-transactions`,
       `${Network.bsc}-transactions`,
       `${Network.zora}-transactions`,
+      `${Network.base}-transactions`,
     ],
   },
 ];
@@ -475,6 +478,14 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
         addressSubscribed!,
         nativeCurrency,
         Network.zora,
+        'unsubscribe'
+      )
+    );
+    addressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        addressSubscribed!,
+        nativeCurrency,
+        Network.base,
         'unsubscribe'
       )
     );
@@ -681,6 +692,13 @@ export const explorerInit = () => async (
         accountAddress,
         nativeCurrency,
         Network.zora
+      )
+    );
+    newAddressSocket.emit(
+      ...addressAssetBalanceSubscription(
+        accountAddress,
+        nativeCurrency,
+        Network.base
       )
     );
   });
@@ -963,6 +981,13 @@ const listenOnAddressMessages = (socket: Socket) => (
       dispatch(transactionsReceived(message));
     }
   );
+  socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_BASE,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('base txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
 
   socket.on(
     messages.ADDRESS_TRANSACTIONS.APPENDED,
@@ -1008,9 +1033,16 @@ const listenOnAddressMessages = (socket: Socket) => (
   );
 
   socket.on(
+    messages.ADDRESS_ASSETS.RECEIVED_BASE,
+    (message: L2AddressAssetsReceivedMessage) => {
+      dispatch(l2AddressAssetsReceived(message, Network.base));
+    }
+  );
+
+  socket.on(
     messages.ADDRESS_ASSETS.RECEIVED,
     (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message));
+      dispatch(addressAssetsReceived(message, Network.mainnet));
       if (isValidAssetsResponseFromZerion(message)) {
         logger.log(
           '😬 Cancelling fallback data provider listener. Zerion is good!'

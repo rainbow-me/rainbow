@@ -1,66 +1,66 @@
 # Rainbow CODEOWNERS file
-CODEOWNERS @salman-rb @estrattonbailey @skylarbarrera @jinchung
+CODEOWNERS  @benisgold @skylarbarrera @jinchung
 LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
-README.md @nickbytes @salman-rb @estrattonbailey @skylarbarrera @jinchung
-app.json @salman-rb @estrattonbailey @skylarbarrera @jinchung
+README.md @nickbytes  @benisgold @skylarbarrera @jinchung
+app.json  @benisgold @skylarbarrera @jinchung
 
 # ANDROID
-android/ @jkadamczyk @skylarbarrera
+android/ @skylarbarrera
 
 # IOS
-ios/ @benisgold @salman-rb @skylarbarrera
+ios/ @benisgold  @skylarbarrera
 
 # SECURITY / APP INFRA
-patches/ @estrattonbailey @skylarbarrera
-scripts/ @jkadamczyk @skylarbarrera
+patches/ @benisgold @skylarbarrera
+scripts/ @skylarbarrera
 
 # DESIGN SYSTEM
-src/design-system @estrattonbailey @benisgold
+src/design-system @skylarbarrera @benisgold
 
 # Handlers
 src/handlers/aesEncryption.ts @jinchung
 src/handlers/authentication.ts @jinchung
-src/handlers/cloudBackup.ts @skylarbarrera @jkadamczyk @jinchung
+src/handlers/cloudBackup.ts @skylarbarrera @jinchung
 
 # Model
-src/model/backup.ts @salman-rb @jkadamczyk @jinchung
-src/model/keychain.ts @salman-rb @estrattonbailey @skylarbarrera @jinchung
-src/model/migrations.ts @salman-rb @estrattonbailey @skylarbarrera @jinchung
-src/model/wallet.ts @salman-rb @estrattonbailey @skylarbarrera @jinchung
+src/model/backup.ts  @jinchung @skylarbarrera
+src/model/keychain.ts  @skylarbarrera @jinchung
+src/model/migrations.ts  @benisgold @skylarbarrera @jinchung
+src/model/wallet.ts  @skylarbarrera @jinchung
 
 # redux
-src/redux/gas.ts @skylarbarrera @estrattonbailey @jinchung
-src/redux/nonceManager.ts @derHowie @skylarbarrera @estrattonbailey @jinchung
+src/redux/gas.ts @skylarbarrera @benisgold @jinchung
+src/redux/nonceManager.ts @derHowie @skylarbarrera @benisgold @jinchung
 
 # navigation
-src/navigation @jkadamczyk @skylarbarrera @estrattonbailey
+src/navigation @skylarbarrera @benisgold
 
 # analytics & logging
-src/analytics @estrattonbailey @skylarbarrera
+src/analytics @benisgold @skylarbarrera
 
 # APP INFRA
-package.json @salman-rb @skylarbarrera @estrattonbailey @jinchung
-.eslintignore @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.eslintrc.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.gitattributes @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.gitignore @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.nvmrc @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.prettierrc.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
-.yarnrc @estrattonbailey @skylarbarrera @jinchung
-audit-ci.json @salman-rb @skylarbarrera @estrattonbailey @jinchung
-babel.config.js @estrattonbailey @jkadamczyk @skylarbarrera
-globals.d.ts @estrattonbailey @skylarbarrera
-yarn.lock @salman-rb @estrattonbailey @skylarbarrera @jinchung
-tsconfig.json @salman-rb @estrattonbailey @skylarbarrera @jinchung
-hardhat.config.js @salman-rb @skylarbarrera @jinchung
+package.json  @skylarbarrera @benisgold @jinchung
+.eslintignore  @benisgold @skylarbarrera @jinchung
+.eslintrc.js  @benisgold @skylarbarrera @jinchung
+.gitattributes  @benisgold @skylarbarrera @jinchung
+.gitignore  @benisgold @skylarbarrera @jinchung
+.nvmrc  @benisgold @skylarbarrera @jinchung
+.prettierrc.js  @benisgold @skylarbarrera @jinchung
+.yarnrc @benisgold @skylarbarrera @jinchung
+audit-ci.json  @skylarbarrera @benisgold @jinchung
+babel.config.js  @skylarbarrera
+globals.d.ts @benisgold @skylarbarrera
+yarn.lock  @benisgold @skylarbarrera @jinchung
+tsconfig.json  @benisgold @skylarbarrera @jinchung
+hardhat.config.js  @skylarbarrera @jinchung
 
 # APP INFRA
-globalVariables.js @estrattonbailey @skylarbarrera
-shim.js @salman-rb @estrattonbailey @skylarbarrera @jkadamczyk
-index.js @salman-rb @estrattonbailey @jkadamczyk @skylarbarrera
-src/App.js @salman-rb @estrattonbailey @skylarbarrera @jinchung
+globalVariables.js @benisgold @skylarbarrera
+shim.js  @skylarbarrera 
+index.js  @benisgold @skylarbarrera
+src/App.js  @benisgold @skylarbarrera @jinchung
 
 # SECURITY / APP INFRA
-metro.config.js @skylarbarrera @estrattonbailey @jkadamczyk
-metro.transform.js @skylarbarrera @estrattonbailey @jkadamczyk
-react-native.config.js @salman-rb @skylarbarrera @jkadamczyk @estrattonbailey
+metro.config.js @skylarbarrera @benisgold 
+metro.transform.js @skylarbarrera @benisgold 
+react-native.config.js  @skylarbarrera @benisgold

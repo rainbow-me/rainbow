@@ -37,6 +37,14 @@ const POOLY_NFT_ADDRESS_2: EthereumAddress =
 const FINILIAR_NFT_ADDRESS: EthereumAddress =
   '0xc5f18a7bf825c2b0433102da5bc79c9edfc3fa89';
 
+// zorb app icon unlocking NFTs
+const ZORB_NFT_ADDRESS: EthereumAddress =
+  '0x12e4527e2807978a49469f8d757abf5e07b32b8f';
+
+// poolboy app icon unlocking NFTs
+const POOLBOY_NFT_ADDRESS: EthereumAddress =
+  '0xf25298fa62a2eb94fc06626966f6f21399b4c508';
+
 export interface UnlockableAppIcon {
   key: string; // string used for analytics
   network: Network; // network that the unlockingNfts exist on
@@ -104,4 +112,20 @@ export const FiniliarIcon: UnlockableAppIcon = {
   network: Network.mainnet,
   unlockingNfts: [FINILIAR_NFT_ADDRESS],
   unlockKey: 'finiliar_nft_app_icon',
+};
+
+export const ZorbIcon: UnlockableAppIcon = {
+  key: 'zorb',
+  explainSheetType: 'zorb_app_icon',
+  network: Network.zora,
+  unlockingNfts: [ZORB_NFT_ADDRESS],
+  unlockKey: 'zorb_nft_app_icon',
+};
+
+export const PoolboyIcon: UnlockableAppIcon = {
+  key: 'poolboy',
+  explainSheetType: 'poolboy_app_icon',
+  network: Network.mainnet,
+  unlockingNfts: [POOLBOY_NFT_ADDRESS],
+  unlockKey: 'poolboy_nft_app_icon',
 };

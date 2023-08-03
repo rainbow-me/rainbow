@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
@@ -11,17 +11,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
-import { useIsFocused } from '@react-navigation/native';
-import { RainbowNetworks } from '@/networks';
-
-const networkMenuItems = RainbowNetworks.filter(
-  network => network.features.swaps
-).map(network => ({
-  chainId: network.id,
-  network: network.value,
-  title: network.name,
-  type: network.value !== Network.mainnet ? network.value : AssetType.token,
-}));
+import { sortNetworks } from '@/networks';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -34,7 +24,17 @@ const NetworkSwitcherv2 = ({
 }) => {
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
-  const isFocused = useIsFocused();
+  const networkMenuItems = useMemo(() => {
+    return sortNetworks(ethereumUtils.getNetworkFromChainId(currentChainId))
+      .filter(network => network.features.swaps)
+      .map(network => ({
+        chainId: network.id,
+        network: network.value,
+        title: network.name,
+        type:
+          network.value !== Network.mainnet ? network.value : AssetType.token,
+      }));
+  }, [currentChainId]);
 
   const radialGradientProps = (network: Network) => {
     return {
@@ -50,21 +50,6 @@ const NetworkSwitcherv2 = ({
       },
     };
   };
-
-  // if polygon or optimism are selected initially we should scroll into view
-  useEffect(() => {
-    if (
-      isFocused &&
-      scrollViewRef?.current &&
-      (currentChainId ===
-        ethereumUtils.getChainIdFromNetwork(Network.polygon) ||
-        currentChainId ===
-          ethereumUtils.getChainIdFromNetwork(Network.optimism))
-    ) {
-      scrollViewRef?.current.scrollToEnd();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
 
   return (
     <>

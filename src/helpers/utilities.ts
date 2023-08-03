@@ -237,6 +237,39 @@ export const handleSignificantDecimalsWithThreshold = (
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+/**
+ * Converts a `BigNumber` to a string abbreviation with a suffix like "k", "m", or "b".
+ * Rounds to 1 decimal place, stripping trailing zeros.
+ * Example: 3100000000 => "3.1b"
+ */
+export const abbreviateBigNumber = (
+  value: BigNumber,
+  buffer: number
+): string => {
+  // converts a big number like 3,100,000,000 to "3.1" or 3,000,000 to "3"
+  const getNumericCounterpart = (value: BigNumber): string =>
+    value.toFormat(1).replace(/\.?0+$/, '');
+
+  if (value.isGreaterThanOrEqualTo(1_000_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000_000)) + 'b';
+  } else if (value.isGreaterThanOrEqualTo(1_000_000)) {
+    return getNumericCounterpart(value.div(1_000_000)) + 'm';
+  } else if (value.isGreaterThanOrEqualTo(1000)) {
+    return getNumericCounterpart(value.div(1000)) + 'k';
+  } else if (value.isEqualTo(0)) {
+    // just return '0'
+    return value.toString();
+  } else {
+    // only display `buffer` number of digits after the decimal point
+    // trim trailing zeros
+    const roundedValue = value.toFormat(buffer).replace(/\.?0+$/, '');
+    // if this rounded value is 0, indicate that the actual value is less than 0.0...01
+    return roundedValue === '0'
+      ? `< 0.${'0'.repeat(buffer - 1)}1`
+      : roundedValue;
+  }
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,
@@ -255,13 +288,7 @@ export const handleSignificantDecimals = (
   ).toFixed();
   const resultBN = new BigNumber(result);
   if (abbreviate) {
-    if (resultBN.isGreaterThanOrEqualTo(1_000_000_000)) {
-      return resultBN.div(1_000_000_000).toFormat(1) + 'b';
-    } else if (resultBN.isGreaterThanOrEqualTo(1_000_000)) {
-      return resultBN.div(1_000_000).toFormat(1) + 'm';
-    } else if (resultBN.isGreaterThanOrEqualTo(1000)) {
-      return resultBN.div(1000).toFormat(1) + 'k';
-    }
+    return abbreviateBigNumber(resultBN, buffer);
   }
   return resultBN.dp() <= 2
     ? resultBN.toFormat(skipDecimals ? 0 : 2)
@@ -545,18 +572,21 @@ export const pickBy = <T>(
 };
 
 /**
- * Formats ms since epoch into a string of the form "Xh Ym" where X is the number of hours and Y is the number of minutes.
- * Doesn't support days, months, or years.
+ * Formats ms since epoch into a string of the form "Xd Yh Zm".
+ * Doesn't support months, or years.
  * @param ms ms since epoch
- * @returns string of the format "Xh Ym"
+ * @returns string of the format "Xd Yh Zm"
  */
 export const getFormattedTimeQuantity = (ms: number): string => {
-  const totalMinutes = Math.floor(ms / (1000 * 60));
-  const hours = Math.floor(totalMinutes / 60);
+  const totalMinutes = Math.ceil(ms / (1000 * 60));
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
   const minutes = totalMinutes % 60;
 
-  const formattedMinutes = hours && !minutes ? '' : minutes + 'm';
+  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
   const formattedHours = hours ? hours + 'h ' : '';
+  const formattedDays = days ? days + 'd ' : '';
 
-  return formattedHours + formattedMinutes;
+  return (formattedDays + formattedHours + formattedMinutes).trim();
 };

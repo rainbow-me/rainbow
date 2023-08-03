@@ -30,3 +30,7 @@ export type Legacy = {
   // foo: boolean;
   [key: string]: any;
 };
+
+export type Account = {
+  totalTokens: number;
+};

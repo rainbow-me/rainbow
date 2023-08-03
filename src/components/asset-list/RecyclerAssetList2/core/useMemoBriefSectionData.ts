@@ -12,6 +12,7 @@ import {
   useOpenSmallBalances,
   useWalletSectionsData,
 } from '@/hooks';
+import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 
 const FILTER_TYPES = {
   'ens-profile': [
@@ -56,6 +57,7 @@ export default function useMemoBriefSectionData({
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
+  const { isPositionCardsOpen } = useOpenPositionCards();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
@@ -97,7 +99,8 @@ export default function useMemoBriefSectionData({
 
         if (
           data.type === CellType.PROFILE_STICKY_HEADER ||
-          data.type === CellType.NFTS_HEADER
+          data.type === CellType.NFTS_HEADER ||
+          data.type === CellType.POSITIONS_HEADER
         ) {
           stickyHeaders.push(index);
         }
@@ -156,6 +159,10 @@ export default function useMemoBriefSectionData({
           return false;
         }
 
+        if (data.type === CellType.POSITION && !isPositionCardsOpen) {
+          return false;
+        }
+
         index++;
         return true;
       })
@@ -164,14 +171,15 @@ export default function useMemoBriefSectionData({
       });
     return briefSectionsDataFiltered;
   }, [
-    type,
     sectionsDataToUse,
+    type,
+    isCoinListEdited,
     isSmallBalancesOpen,
+    hiddenCoinsObj,
     isSavingsOpen,
     isInvestmentCardsOpen,
-    isCoinListEdited,
+    isPositionCardsOpen,
     openFamilies,
-    hiddenCoinsObj,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(

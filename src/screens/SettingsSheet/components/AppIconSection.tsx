@@ -13,6 +13,8 @@ import AppIconPixel from '@/assets/appIconPixel.png';
 import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
+import AppIconZorb from '@/assets/appIconZorb.png';
+import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -22,10 +24,12 @@ import {
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
+  PoolboyIcon,
   PoolyIcon,
   RainDogeIcon,
   SmolIcon,
   ZoraIcon,
+  ZorbIcon,
 } from '@/featuresToUnlock/unlockableAppIcons';
 import { analytics } from '@/analytics';
 import { ImageSourcePropType } from 'react-native';
@@ -106,6 +110,20 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     source: AppIconFiniliar,
     unlock_key: FiniliarIcon.unlockKey,
   },
+  zorb: {
+    accentColor: 'zorbPink',
+    key: ZorbIcon.key,
+    name: 'Rainbow Zorb Energy',
+    source: AppIconZorb,
+    unlock_key: ZorbIcon.unlockKey,
+  },
+  poolboy: {
+    accentColor: 'poolboyPink',
+    key: PoolboyIcon.key,
+    name: 'Rainbow Poolboy',
+    source: AppIconPoolboy,
+    unlock_key: PoolboyIcon.unlockKey,
+  },
 };
 
 const mmkv = new MMKV();
@@ -162,6 +180,7 @@ const AppIconSection = () => {
                     style={{
                       height: 36,
                       width: 36,
+                      borderRadius: 8,
                     }}
                     size={30}
                   />

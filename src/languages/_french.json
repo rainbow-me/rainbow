@@ -20,6 +20,7 @@
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Interactions de smart-contracts",
       "tab_investments": "Investissements",
+      "tab_positions": "Positions :)",
       "tab_savings": "Epargnes",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de tokens",
@@ -693,6 +694,10 @@
         "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday. :)",
         "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom. :)",
         "pooly_title": "You've unlocked a\nRainbow Pooly :)",
+        "zorb_text": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient. :)",
+        "zorb_title": "You've unlocked\nRainbow Zorb Energy! :)",
+        "poolboy_text": "A special edition Rainbow x Poolsuite Icon for onchain summer. :)",
+        "poolboy_title": "You've unlocked the\nRainbow Poolboy! :)",
         "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
         "button": "Snag the icon :)"
       },
@@ -760,9 +765,13 @@
         "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Optimism?"
       },
+      "base": {
+        "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Base"
+      },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Zora Network?"
+        "title": "What's Zora?"
       },
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
@@ -1074,18 +1083,40 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
-    "nftOffers": {
+    "nft_offers": {
       "card": {
         "title": {
           "singular": "1 Offer :)",
           "plural": "%{numOffers} Offers :)"
         },
-        "sortCriteria": {
-          "highest": "Highest :)",
-          "fromFloor": "From Floor :)",
-          "recent": "Recent :)"
-        },
-        "button": "View All Offers :)"
+        "button": "View All Offers :)",
+        "expired": "Expired :)"
+      },
+      "sheet": {
+        "title": "Offers :)",
+        "total": "Total :)",
+        "above_floor": "above floor :)",
+        "below_floor": "below floor :)",
+        "no_offers_found": "No offers found :)"
+      },
+      "sort_menu": {
+        "highest": "Highest :)",
+        "from_floor": "From Floor :)",
+        "recent": "Recent :)"
+      },
+      "single_offer_sheet": {
+        "title": "Offer :)",
+        "expires_in": "Expires in %{timeLeft} :)",
+        "floor_price": "Floor Price :)",
+        "marketplace": "Marketplace :)",
+        "marketplace_fees": "%{marketplace} Fees :)",
+        "creator_royalties": "Creator Royalties :)",
+        "receive": "Receive :)",
+        "proceeds": "Proceeds :)",
+        "view_offer": "View Offer :)",
+        "hold_to_accept": "Hold to Accept :)",
+        "offer_expired": "Offer Expired :)",
+        "expired": "Expired :)"
       }
     },
     "notification": {
@@ -1334,6 +1365,19 @@
         "yes": "Yes :)"
       }
     },
+    "poaps": {
+      "title": "You found a POAP! :)",
+      "view_on_poap": "View on POAP 􀮶 :)",
+      "mint_poap": "􀑒 Mint POAP :)",
+      "minting": "Minting... :)",
+      "minted": "POAP Minted! :)",
+      "error": "Error Minting :)",
+      "error_messages": {
+        "limit_exceeded": "This POAP is fully minted out! :)",
+        "event_expired": "This POAP mint is expired! :)",
+        "unknown": "Unknown Error :)"
+      }
+    },
     "rewards": {
       "total_earnings": "Total Earnings :)",
       "you_earned": "You've earned  :)",
@@ -1386,6 +1430,12 @@
           "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP. :)"
         }
       }
+    },
+    "positions": {
+      "open_dapp": "Open 􀮶 :)",
+      "deposits": "Deposits :)",
+      "borrows": "Borrows :)",
+      "rewards": "Rewards :)"
     },
     "savings": {
       "deposit": "Dépôt",

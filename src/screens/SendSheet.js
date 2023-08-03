@@ -347,34 +347,12 @@ export default function SendSheet(props) {
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
-        switch (selected.type) {
-          case AssetTypes.nft:
-            setCurrentNetwork(selected.network);
-            provider = await getProviderForNetwork(selected.network);
-            break;
-          case AssetTypes.polygon:
-            setCurrentNetwork(Network.polygon);
-            provider = await getProviderForNetwork(Network.polygon);
-            break;
-          case AssetTypes.bsc:
-            setCurrentNetwork(Network.bsc);
-            provider = await getProviderForNetwork(Network.bsc);
-            break;
-          case AssetTypes.arbitrum:
-            setCurrentNetwork(Network.arbitrum);
-            provider = await getProviderForNetwork(Network.arbitrum);
-            break;
-          case AssetTypes.optimism:
-            setCurrentNetwork(Network.optimism);
-            provider = await getProviderForNetwork(Network.optimism);
-            break;
-          case AssetTypes.zora:
-            setCurrentNetwork(Network.zora);
-            provider = await getProviderForNetwork(Network.zora);
-            break;
-          default:
-            setCurrentNetwork(network);
-        }
+        const isNft = selected.type === AssetTypes.nft;
+        const selectedNetwork = isNft
+          ? selected.network
+          : ethereumUtils.getNetworkFromType(selected.type);
+        setCurrentNetwork(selectedNetwork);
+        provider = await getProviderForNetwork(selectedNetwork);
         setCurrentProvider(provider);
       }
     };
@@ -402,7 +380,8 @@ export default function SendSheet(props) {
 
       if (
         assetNetwork === currentNetwork &&
-        currentProviderNetwork === currentNetwork
+        currentProviderNetwork === currentNetwork &&
+        selected.type !== AssetTypes.nft
       ) {
         updateAssetOnchainBalanceIfNeeded(
           selected,

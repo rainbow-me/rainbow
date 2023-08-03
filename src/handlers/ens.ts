@@ -118,6 +118,13 @@ const buildEnsToken = ({
     type: 'nft',
     uniqueId: name,
     urlSuffixForAsset: `${contractAddress}/${tokenId}`,
+    // hacky shit
+    video_url: null,
+    video_properties: null,
+    audio_url: null,
+    audio_properties: null,
+    model_url: null,
+    model_properties: null,
   } as UniqueAsset;
 };
 

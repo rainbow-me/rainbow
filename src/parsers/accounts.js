@@ -62,7 +62,8 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     asset.type === AssetTypes.optimism ||
     asset.type === AssetTypes.polygon ||
     asset.type === AssetTypes.bsc ||
-    asset.type == AssetTypes.zora
+    asset.type == AssetTypes.zora ||
+    asset.type == AssetTypes.base
       ? asset.type
       : AssetTypes.token;
 

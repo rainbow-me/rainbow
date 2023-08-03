@@ -13,6 +13,44 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.8.26] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.26)
+
+### Added
+
+- Swaps upgrade
+- Poolsuite
+
+## [1.8.25] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.25)
+
+### Added
+
+- Base network support
+- NFT offers fixes
+- Gas fixes for L2s
+
+## [1.8.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.24)
+
+### Added
+
+- Zora Swaps/Bridging
+- Defi positions
+- Mint: POAPs
+
+## [1.8.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.23)
+
+### Added
+
+- NFT offers v1
+- bug fixes
+
+## [1.8.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.22)
+
+### Added
+
+- Some NFT offers work (behind flag)
+- RN upgrade to 0.70.9
+- Zorb app icon
+
 ## [1.8.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.8.21)
 
 ### Added

@@ -72,7 +72,10 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const { data: uniqueTokens, isInitialLoading } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokens },
+    isInitialLoading,
+  } = useLegacyNFTs({
     address: accountAddress ?? '',
   });
 

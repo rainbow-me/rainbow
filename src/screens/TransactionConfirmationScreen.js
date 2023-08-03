@@ -275,7 +275,7 @@ export default function TransactionConfirmationScreen() {
         )
       )
     );
-  }, [walletConnector?._chainId, walletConnectV2RequestValues]);
+  }, [walletConnectV2RequestValues?.chainId, walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -289,7 +289,7 @@ export default function TransactionConfirmationScreen() {
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [currentNetwork, flashbotsEnabled]);
+  }, [currentNetwork, flashbotsEnabled, setProvider]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -499,7 +499,7 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
+  const onPressCancel = useCallback(() => calculateGasLimit(), [onCancel]);
 
   useEffect(() => {
     if (
@@ -531,6 +531,12 @@ export default function TransactionConfirmationScreen() {
     const txPayload = params?.[0];
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
+
+    // sometimes provider is undefined, this is hack to ensure its defined
+    const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
+      Number(walletConnectV2RequestValues?.chainId || walletConnector?._chainId)
+    );
+    const provider = await getProviderForNetwork(localCurrentNetwork);
     try {
       // attempt to re-run estimation
       logger.debug(
@@ -538,7 +544,16 @@ export default function TransactionConfirmationScreen() {
         { gas },
         logger.DebugContext.walletconnect
       );
-      const rawGasLimit = await estimateGas(txPayload, provider);
+
+      // safety precaution: we want to ensure these properties are not used for gas estimation
+      const cleanTxPayload = omitFlatten(txPayload, [
+        'gas',
+        'gasLimit',
+        'gasPrice',
+        'maxFeePerGas',
+        'maxPriorityFeePerGas',
+      ]);
+      let rawGasLimit = await estimateGas(cleanTxPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
@@ -566,7 +581,13 @@ export default function TransactionConfirmationScreen() {
         updateTxFee(gas, null);
       }
     }
-  }, [currentNetwork, params, provider, updateTxFee]);
+  }, [
+    currentNetwork,
+    params,
+    updateTxFee,
+    walletConnectV2RequestValues?.chainId,
+    walletConnector?._chainId,
+  ]);
 
   useEffect(() => {
     if (
@@ -671,30 +692,28 @@ export default function TransactionConfirmationScreen() {
         logger.DebugContext.walletconnect
       );
 
-      if (currentNetwork === networkTypes.mainnet) {
-        // Estimate the tx with gas limit padding before sending
-        const rawGasLimit = await estimateGasWithPadding(
-          txPayload,
-          null,
-          null,
-          provider
-        );
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(
+        txPayload,
+        null,
+        null,
+        provider
+      );
 
-        // If the estimation with padding is higher or gas limit was missing,
-        // let's use the higher value
-        if (
-          (isNil(gas) && isNil(gasLimitFromPayload)) ||
-          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-          (!isNil(gasLimitFromPayload) &&
-            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-        ) {
-          logger.debug(
-            'WC: using padded estimation!',
-            { gas: rawGasLimit.toString() },
-            logger.DebugContext.walletconnect
-          );
-          gas = toHex(rawGasLimit);
-        }
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.debug(
+          'WC: using padded estimation!',
+          { gas: rawGasLimit.toString() },
+          logger.DebugContext.walletconnect
+        );
+        gas = toHex(rawGasLimit);
       }
     } catch (error) {
       logger.error(new RainbowError('WC: error estimating gas'), { error });
@@ -725,7 +744,6 @@ export default function TransactionConfirmationScreen() {
     logger.debug(`WC: ${method} payload`, { txPayload, txPayloadUpdated });
 
     let response = null;
-
     try {
       const existingWallet = await loadWallet(
         accountInfo.address,

@@ -57,6 +57,7 @@ import {
   speedUpAndCancelStyleInterpolator,
   wcPromptPreset,
   addCashSheet,
+  nftSingleOfferSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -74,10 +75,14 @@ import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
+import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
+import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable import/no-unresolved */
 // @ts-ignore .android and .ios exports cause errors
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import PoapSheet from '@/screens/mints/PoapSheet';
+import { PositionSheet } from '@/screens/positions/PositionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -111,6 +116,11 @@ function MainNavigator() {
       <Stack.Screen
         component={Portal}
         name={Routes.PORTAL}
+        options={expandedPreset}
+      />
+      <Stack.Screen
+        component={PositionSheet}
+        name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
       <Stack.Screen
@@ -253,6 +263,7 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
       />
+      <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET_POOLS}
@@ -380,6 +391,16 @@ function BSNavigator() {
         name={Routes.OP_REWARDS_SHEET}
         component={RewardsSheet}
         options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.NFT_OFFERS_SHEET}
+        component={NFTOffersSheet}
+        options={{ ...bottomSheetPreset }}
+      />
+      <BSStack.Screen
+        name={Routes.NFT_SINGLE_OFFER_SHEET}
+        component={NFTSingleOfferSheet}
+        options={nftSingleOfferSheetPreset}
       />
     </BSStack.Navigator>
   );

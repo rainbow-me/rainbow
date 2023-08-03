@@ -28,6 +28,7 @@ declare module 'react-native-dotenv' {
   export const DATA_API_KEY: string;
   export const DATA_ENDPOINT: string;
   export const DATA_ORIGIN: string;
+  export const ADDYS_API_KEY: string;
   export const ETHEREUM_GOERLI_RPC: string;
   export const ETHEREUM_GOERLI_RPC_DEV: string;
   export const ETHEREUM_KOVAN_RPC: string;
@@ -39,6 +40,8 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_ROPSTEN_RPC: string;
   export const ETHEREUM_ROPSTEN_RPC_DEV: string;
   export const OPTIMISM_MAINNET_RPC: string;
+  export const BASE_MAINNET_RPC: string;
+  export const BASE_MAINNET_RPC_DEV: string;
   export const POLYGON_MAINNET_RPC: string;
   export const ARBITRUM_MAINNET_RPC: string;
   export const BSC_MAINNET_RPC: string;

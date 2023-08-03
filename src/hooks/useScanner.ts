@@ -16,12 +16,16 @@ import {
   isENSAddressFormat,
 } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
 import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';
+import {
+  getPoapAndOpenSheetWithQRHash,
+  getPoapAndOpenSheetWithSecretWord,
+} from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
@@ -112,18 +116,18 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   );
 
   const handleScanWalletConnect = useCallback(
-    async (qrCodeData: string) => {
+    async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
       try {
-        const { version } = parseUri(qrCodeData);
+        const { version } = parseUri(uri);
         if (version === 1) {
-          await walletConnectOnSessionRequest(qrCodeData, () => {});
+          await walletConnectOnSessionRequest(uri, connector, () => {});
         } else if (version === 2) {
-          await pairWalletConnect({ uri: qrCodeData });
+          await pairWalletConnect({ uri, connector });
         }
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
@@ -178,25 +182,66 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-        const { uri } = qs.parse(urlObj.query.substring(1));
+        const { uri, connector } = qs.parse(urlObj.query.substring(1));
         onSuccess();
         // @ts-expect-error The QS type is very broad. We could narrow it down but it's not worth it to not break current functionality
-        return handleScanWalletConnect(uri);
+        return handleScanWalletConnect(uri, connector);
       }
+
+      const lowerCaseData = data?.toLowerCase();
+
+      // poap mints
+      if (lowerCaseData.startsWith(`${POAP_BASE_URL}`)) {
+        const secretWord = lowerCaseData.split(`${POAP_BASE_URL}`)?.[1];
+        return getPoapAndOpenSheetWithSecretWord(secretWord, true);
+      }
+
+      if (lowerCaseData.startsWith(`https://collectors.poap.xyz/mint/`)) {
+        const qrHash = lowerCaseData.split(
+          'https://collectors.poap.xyz/mint/'
+        )?.[1];
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
+      }
+
+      if (lowerCaseData.startsWith(`https://poap.xyz/claim/`)) {
+        const qrHash = lowerCaseData.split('https://poap.xyz/claim/')?.[1];
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
+      }
+
+      if (lowerCaseData.startsWith(`https://app.poap.xyz/claim/`)) {
+        const qrHash = lowerCaseData.split('https://app.poap.xyz/claim/')?.[1];
+        return getPoapAndOpenSheetWithQRHash(qrHash, true);
+      }
+
+      if (lowerCaseData.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
+        const secretWordOrQrHash = lowerCaseData.split(
+          `${RAINBOW_PROFILES_BASE_URL}/poap/`
+        )?.[1];
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+      }
+
+      if (lowerCaseData.startsWith(`rainbow://poap`)) {
+        const secretWordOrQrHash = lowerCaseData.split(`rainbow://poap/`)?.[1];
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
+        await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
+        return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
+      }
+
       // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
       }
-
       return handleScanInvalid(data);
     },
     [
       disableScanning,
-      onSuccess,
-      handleScanWalletConnect,
       handleScanInvalid,
+      onSuccess,
       handleScanEthereumUrl,
       handleScanAddress,
+      handleScanWalletConnect,
       handleScanRainbowProfile,
     ]
   );

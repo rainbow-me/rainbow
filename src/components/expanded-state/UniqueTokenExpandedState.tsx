@@ -40,6 +40,7 @@ import {
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { PROFILES, useExperimentalFlag } from '@/config';
+import partyLogo from '../../assets/partyLogo.png';
 import {
   AccentColorProvider,
   Bleed,
@@ -79,6 +80,7 @@ import { useTheme } from '@/theme';
 import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import isHttpUrl from '@/helpers/isHttpUrl';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -290,6 +292,15 @@ const UniqueTokenExpandedState = ({
     fullUniqueId,
   } = asset;
 
+  const filteredTraits = traits.filter(
+    trait =>
+      trait.value !== undefined &&
+      trait.value !== null &&
+      trait.value !== '' &&
+      trait.trait_type &&
+      !isHttpUrl(trait.value)
+  );
+
   const uniqueTokenType = getUniqueTokenType(asset);
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
@@ -386,6 +397,10 @@ const UniqueTokenExpandedState = ({
     () => Linking.openURL(asset.permalink),
     [asset.permalink]
   );
+  const handlePressParty = useCallback(
+    () => Linking.openURL(asset.external_link!),
+    [asset.external_link]
+  );
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -435,7 +450,8 @@ const UniqueTokenExpandedState = ({
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
-  const hasSendButton = isActionsEnabled && isSendable;
+  const hasSendButton = isSendable;
+  const isParty = asset?.external_link?.includes('party.app');
 
   const hasEditButton =
     isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
@@ -562,6 +578,29 @@ const UniqueTokenExpandedState = ({
                             textColor={textColor}
                             weight="heavy"
                           />
+                        ) : isParty ? (
+                          <SheetActionButton
+                            color={imageColor}
+                            nftShadows
+                            onPress={handlePressParty}
+                            testID="unique-expanded-state-party-button"
+                            textColor={textColor}
+                            weight="heavy"
+                          >
+                            <ImgixImage
+                              resizeMode="contain"
+                              source={partyLogo as any}
+                              size={20}
+                              style={{ height: 25, width: 25 }}
+                            />
+                            <Text
+                              weight="heavy"
+                              size="20pt"
+                              color={{ custom: textColor }}
+                            >
+                              Party
+                            </Text>
+                          </SheetActionButton>
                         ) : asset.permalink ? (
                           <SheetActionButton
                             color={imageColor}
@@ -603,6 +642,7 @@ const UniqueTokenExpandedState = ({
                         marginHorizontal={0}
                         onPress={handleL2DisclaimerPress}
                         symbol="NFT"
+                        forceDarkMode
                       />
                     ) : null}
                     <Stack
@@ -641,7 +681,7 @@ const UniqueTokenExpandedState = ({
                               <Markdown>{description}</Markdown>
                             </Section>
                           ) : null}
-                          {traits.length ? (
+                          {filteredTraits.length ? (
                             <Section
                               title={`${lang.t(
                                 'expanded_state.unique_expanded.properties'
