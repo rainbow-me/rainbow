@@ -72,10 +72,8 @@ export function PairHardwareWalletNavigator() {
             initialLayout={{ height, width }}
             initialRouteName={currentRouteName}
             sceneContainerStyle={{ backgroundColor }}
-            // @ts-expect-error types are incomplete?
-            swipeEnabled={false}
+            screenOptions={{ swipeEnabled: false, lazy: true }}
             tabBar={() => null}
-            lazy
           >
             <Swipe.Screen
               component={PairHardwareWalletIntroSheet}

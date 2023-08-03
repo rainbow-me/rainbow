@@ -10,7 +10,6 @@ import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
 import { getActiveRoute, useNavigation } from './Navigation';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import {
   exchangeModalPreset,
@@ -89,17 +88,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       }
     }, [addListener, removeListener, params]);
 
-    const renderPager = useCallback(
-      props => (
-        <ScrollPagerWrapper
-          {...props}
-          id="exchange"
-          initialScrollPosition={props.navigationState.index}
-        />
-      ),
-      []
-    );
-
     const toggleGestureEnabled = useCallback(
       dismissable => {
         setOptions({ dismissable, gestureEnabled: dismissable });
@@ -125,9 +113,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     return (
       <FlexItem>
         <Tabs.Navigator
-          pager={renderPager}
           position={tabTransitionPosition}
-          swipeEnabled={enableSwipe}
+          screenOptions={{ swipeEnabled: enableSwipe }}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen

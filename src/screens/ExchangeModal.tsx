@@ -17,6 +17,7 @@ import {
   Keyboard,
   NativeModules,
   TextInput,
+  View,
 } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,10 +25,10 @@ import { useDebounce } from 'use-debounce/lib';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
-  AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
   DepositInfo,
   ExchangeDetailsRow,
+  ExchangeFloatingPanels,
   ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
@@ -103,6 +104,7 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
 import { logger as loggr } from '@/logger';
 import { getNetworkObj } from '@/networks';
+import Animated from 'react-native-reanimated';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -126,7 +128,7 @@ export const getDefaultSlippageFromConfig = (network: Network) => {
 };
 const NOOP = () => null;
 
-const FloatingPanels = AnimatedExchangeFloatingPanels;
+const FloatingPanels = Animated.createAnimatedComponent(ExchangeFloatingPanels);
 
 const Wrapper = KeyboardFixedOpenLayout;
 
@@ -1087,108 +1089,112 @@ export default function ExchangeModal({
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
       <Box height="full" width="full">
-        <FloatingPanels>
-          <>
-            <FloatingPanel
-              borderRadius={39}
-              overflow="visible"
-              paddingBottom={{ custom: showOutputField ? 0 : 24 }}
-              style={{
-                ...(android && {
-                  left: -1,
-                }),
-              }}
-              testID={testID}
-            >
-              {showOutputField && <ExchangeNotch testID={testID} />}
-              <ExchangeHeader testID={testID} title={title} />
-              <ExchangeInputField
-                color={inputCurrencyColor}
-                disableInputCurrencySelection={isWithdrawal}
-                editable={!!inputCurrency}
-                inputAmount={inputAmountDisplay}
-                inputCurrencyAddress={inputCurrency?.address}
-                inputCurrencyAssetType={inputCurrency?.type}
-                inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
-                inputCurrencySymbol={inputCurrency?.symbol}
-                inputFieldRef={inputFieldRef}
-                loading={loading}
-                nativeAmount={nativeAmountDisplay}
-                nativeCurrency={nativeCurrency}
-                nativeFieldRef={nativeFieldRef}
-                network={inputNetwork}
-                onFocus={handleFocus}
-                onPressMaxBalance={updateMaxInputAmount}
-                onPressSelectInputCurrency={chainId => {
-                  navigateToSelectInputCurrency(chainId);
+        <View style={{ flexGrow: 1, justifyContent: 'center', width: '100%' }}>
+          <FloatingPanels>
+            <>
+              <FloatingPanel
+                borderRadius={39}
+                overflow="visible"
+                paddingBottom={{ custom: showOutputField ? 0 : 24 }}
+                style={{
+                  ...(android && {
+                    left: -1,
+                  }),
                 }}
-                setInputAmount={updateInputAmount}
-                setNativeAmount={updateNativeAmount}
-                testID={`${testID}-input`}
-                updateAmountOnFocus={
-                  maxInputUpdate || flipCurrenciesUpdate || isFillingParams
-                }
-              />
-              {showOutputField && (
-                <ExchangeOutputField
-                  color={outputCurrencyColor}
-                  editable={!!outputCurrency && !isCrosschainSwap}
-                  network={outputNetwork}
-                  onFocus={handleFocus}
-                  onPressSelectOutputCurrency={() => {
-                    navigateToSelectOutputCurrency(chainId);
-                  }}
-                  {...(isCrosschainSwap &&
-                    !!outputCurrency && {
-                      onTapWhileDisabled: handleTapWhileDisabled,
-                    })}
+                testID={testID}
+              >
+                {showOutputField && <ExchangeNotch testID={testID} />}
+                <ExchangeHeader testID={testID} title={title} />
+                <ExchangeInputField
+                  color={inputCurrencyColor}
+                  disableInputCurrencySelection={isWithdrawal}
+                  editable={!!inputCurrency}
+                  inputAmount={inputAmountDisplay}
+                  inputCurrencyAddress={inputCurrency?.address}
+                  inputCurrencyAssetType={inputCurrency?.type}
+                  inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
+                  inputCurrencySymbol={inputCurrency?.symbol}
+                  inputFieldRef={inputFieldRef}
                   loading={loading}
-                  outputAmount={outputAmountDisplay}
-                  outputCurrencyAddress={outputCurrency?.address}
-                  outputCurrencyAssetType={outputCurrency?.type}
-                  outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
-                  outputCurrencySymbol={outputCurrency?.symbol}
-                  outputFieldRef={outputFieldRef}
-                  setOutputAmount={updateOutputAmount}
-                  testID={`${testID}-output`}
+                  nativeAmount={nativeAmountDisplay}
+                  nativeCurrency={nativeCurrency}
+                  nativeFieldRef={nativeFieldRef}
+                  network={inputNetwork}
+                  onFocus={handleFocus}
+                  onPressMaxBalance={updateMaxInputAmount}
+                  onPressSelectInputCurrency={chainId => {
+                    navigateToSelectInputCurrency(chainId);
+                  }}
+                  setInputAmount={updateInputAmount}
+                  setNativeAmount={updateNativeAmount}
+                  testID={`${testID}-input`}
                   updateAmountOnFocus={
                     maxInputUpdate || flipCurrenciesUpdate || isFillingParams
                   }
                 />
+                {showOutputField && (
+                  <ExchangeOutputField
+                    color={outputCurrencyColor}
+                    editable={!!outputCurrency && !isCrosschainSwap}
+                    network={outputNetwork}
+                    onFocus={handleFocus}
+                    onPressSelectOutputCurrency={() => {
+                      navigateToSelectOutputCurrency(chainId);
+                    }}
+                    {...(isCrosschainSwap &&
+                      !!outputCurrency && {
+                        onTapWhileDisabled: handleTapWhileDisabled,
+                      })}
+                    loading={loading}
+                    outputAmount={outputAmountDisplay}
+                    outputCurrencyAddress={outputCurrency?.address}
+                    outputCurrencyAssetType={outputCurrency?.type}
+                    outputCurrencyMainnetAddress={
+                      outputCurrency?.mainnet_address
+                    }
+                    outputCurrencySymbol={outputCurrency?.symbol}
+                    outputFieldRef={outputFieldRef}
+                    setOutputAmount={updateOutputAmount}
+                    testID={`${testID}-output`}
+                    updateAmountOnFocus={
+                      maxInputUpdate || flipCurrenciesUpdate || isFillingParams
+                    }
+                  />
+                )}
+              </FloatingPanel>
+              {isDeposit && (
+                <DepositInfo
+                  amount={(Number(inputAmount) > 0 && outputAmount) || null}
+                  asset={outputCurrency}
+                  isHighPriceImpact={debouncedIsHighPriceImpact}
+                  onPress={navigateToSwapDetailsModal}
+                  priceImpactColor={priceImpactColor}
+                  priceImpactNativeAmount={priceImpactNativeAmount}
+                  priceImpactPercentDisplay={priceImpactPercentDisplay}
+                />
               )}
-            </FloatingPanel>
-            {isDeposit && (
-              <DepositInfo
-                amount={(Number(inputAmount) > 0 && outputAmount) || null}
-                asset={outputCurrency}
-                isHighPriceImpact={debouncedIsHighPriceImpact}
-                onPress={navigateToSwapDetailsModal}
-                priceImpactColor={priceImpactColor}
-                priceImpactNativeAmount={priceImpactNativeAmount}
-                priceImpactPercentDisplay={priceImpactPercentDisplay}
-              />
-            )}
-            {!isSavings && showConfirmButton && (
-              <ExchangeDetailsRow
-                isHighPriceImpact={
-                  !confirmButtonProps.disabled &&
-                  !confirmButtonProps.loading &&
-                  debouncedIsHighPriceImpact &&
-                  isSufficientBalance
-                }
-                onFlipCurrencies={loading ? NOOP : flipCurrencies}
-                onPressImpactWarning={navigateToSwapDetailsModal}
-                onPressSettings={navigateToSwapSettingsSheet}
-                priceImpactColor={priceImpactColor}
-                priceImpactNativeAmount={priceImpactNativeAmount}
-                priceImpactPercentDisplay={priceImpactPercentDisplay}
-                type={type}
-              />
-            )}
+              {!isSavings && showConfirmButton && (
+                <ExchangeDetailsRow
+                  isHighPriceImpact={
+                    !confirmButtonProps.disabled &&
+                    !confirmButtonProps.loading &&
+                    debouncedIsHighPriceImpact &&
+                    isSufficientBalance
+                  }
+                  onFlipCurrencies={loading ? NOOP : flipCurrencies}
+                  onPressImpactWarning={navigateToSwapDetailsModal}
+                  onPressSettings={navigateToSwapSettingsSheet}
+                  priceImpactColor={priceImpactColor}
+                  priceImpactNativeAmount={priceImpactNativeAmount}
+                  priceImpactPercentDisplay={priceImpactPercentDisplay}
+                  type={type}
+                />
+              )}
 
-            {isWithdrawal && <Box height="30px" />}
-          </>
-        </FloatingPanels>
+              {isWithdrawal && <Box height="30px" />}
+            </>
+          </FloatingPanels>
+        </View>
 
         <Box>
           <Rows alignVertical="bottom" space="19px (Deprecated)">

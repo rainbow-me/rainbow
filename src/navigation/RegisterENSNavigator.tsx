@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, {
@@ -9,7 +9,6 @@ import ENSAssignRecordsSheet, {
 } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
@@ -27,14 +26,6 @@ import { deviceUtils } from '@/utils';
 const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
-const renderPager = (props: any) => (
-  <ScrollPagerWrapper
-    {...props}
-    {...(android && {
-      style: { height: Dimensions.get('window').height },
-    })}
-  />
-);
 
 const defaultScreenOptions = {
   [Routes.ENS_ASSIGN_RECORDS_SHEET]: {
@@ -174,10 +165,8 @@ export default function RegisterENSNavigator() {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={currentRouteName}
-            // @ts-ignore
-            pager={renderPager}
-            swipeEnabled={false}
             tabBar={renderTabBar}
+            screenOptions={{ swipeEnabled: false }}
           >
             <Swipe.Screen
               component={ENSIntroSheet}

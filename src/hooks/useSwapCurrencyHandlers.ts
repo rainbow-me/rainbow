@@ -239,7 +239,7 @@ export default function useSwapCurrencyHandlers({
     (chainId: number) => {
       InteractionManager.runAfterInteractions(() => {
         // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        dangerouslyGetParent().getState().index = 0;
         setParams({ focused: false });
         delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {

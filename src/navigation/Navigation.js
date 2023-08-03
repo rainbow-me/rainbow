@@ -40,7 +40,11 @@ export function useNavigation() {
   const { navigate: oldNavigate, ...rest } = oldUseNavigation();
 
   const handleNavigate = useCallbackOne(
-    (...args) => navigate(oldNavigate, ...args),
+    (...args) => {
+      console.log(`Navigating to ${args[0]}`);
+      console.log(`With params ${JSON.stringify(args[1], undefined, 2)}`);
+      return navigate(oldNavigate, ...args);
+    },
     [oldNavigate]
   );
 
@@ -84,7 +88,7 @@ function block() {
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
-      let wasBlocked = blocked;
+      const wasBlocked = blocked;
       block();
       if (wasBlocked) {
         return;
