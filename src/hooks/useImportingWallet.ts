@@ -11,7 +11,6 @@ import useInitializeWallet from './useInitializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
-import useTimeout from './useTimeout';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -59,7 +58,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const [busy, setBusy] = useState(false);
   const [checkedWallet, setCheckedWallet] = useState(null);
   const [resolvedAddress, setResolvedAddress] = useState(null);
-  const [startAnalyticsTimeout] = useTimeout();
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -271,7 +269,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
-      startAnalyticsTimeout(async () => {
+      const asyncFn = async () => {
         const input = resolvedAddress
           ? resolvedAddress
           : sanitizeSeedPhrase(seedPhrase);
@@ -367,7 +365,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }, 100);
             });
         }
-      }, 50);
+      };
+      asyncFn();
     }
   }, [
     checkedWallet,
@@ -383,7 +382,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     seedPhrase,
     selectedWallet.id,
     selectedWallet.type,
-    startAnalyticsTimeout,
     wallets,
     wasImporting,
     updateWalletENSAvatars,
