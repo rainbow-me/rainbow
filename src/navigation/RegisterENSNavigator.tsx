@@ -93,10 +93,6 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const [wrapperHeight, setWrapperHeight] = useState<number | undefined>(
-    contentHeight
-  );
-
   const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
     currentRouteName,
   ]);
@@ -132,14 +128,6 @@ export default function RegisterENSNavigator() {
     currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   useEffect(() => {
-    if (screenOptions.scrollEnabled) {
-      setTimeout(() => setWrapperHeight(undefined), 200);
-      return;
-    }
-    setWrapperHeight(contentHeight);
-  }, [contentHeight, screenOptions.scrollEnabled]);
-
-  useEffect(() => {
     if (!screenOptions.scrollEnabled) {
       sheetRef.current?.scrollTo({ animated: false, x: 0, y: 0 });
     }
@@ -158,7 +146,7 @@ export default function RegisterENSNavigator() {
       >
         <Box
           style={{
-            height: wrapperHeight,
+            height: contentHeight,
             overflow: 'hidden',
           }}
         >
