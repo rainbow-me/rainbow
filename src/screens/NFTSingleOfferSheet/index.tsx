@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Linking, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -46,7 +52,8 @@ import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
 import { getNetworkObj } from '@/networks';
 import { logger } from '@/logger';
-import { estimateGasWithPadding, getProviderForNetwork } from '@/handlers/web3';
+import { estimateNFTOfferGas } from '@/handlers/nftOffers';
+import { useTheme } from '@/theme';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -86,12 +93,26 @@ export function NFTSingleOfferSheet() {
   const { navigate, setParams } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
-  // const x = useGas();
+  const { isDarkMode } = useTheme();
+  const {
+    updateTxFee,
+    startPollingGasFees,
+    stopPollingGasFees,
+    isSufficientGas,
+    isValidGas,
+  } = useGas();
   const { data: nfts } = useLegacyNFTs({ address: accountAddress });
   const dispatch = useDispatch();
   const [signer, setSigner] = useState<WalletClient>();
 
   const { offer } = params as { offer: NftOffer };
+
+  const insufficientEth = isSufficientGas === false && isValidGas;
+  const feeParam = `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+    offer.grossAmount.raw
+  )
+    .div(100)
+    .toString()}`;
 
   const txsRef = useRef<string[]>([]);
 
@@ -106,83 +127,71 @@ export function NFTSingleOfferSheet() {
   }, [nfts, offer.nft.uniqueId]);
 
   useEffect(() => {
-    (async () => {
-      const privateKey = await loadPrivateKey(accountAddress, false);
-      const account = privateKeyToAccount(privateKey);
-      const reservoirSigner = createWalletClient({
-        account,
-        chain: mainnet,
-        transport: http(getNetworkObj(offer.network as Network).rpc),
-      });
-      setSigner(reservoirSigner);
-    })();
-  }, [accountAddress, offer.network]);
-
-  // const rawGasLimit = await estimateGasWithPadding(
-  //   txPayload,
-  //   null,
-  //   null,
-  //   provider
-  // );
-  // logger.debug(
-  //   'WC: Estimated gas limit',
-  //   { rawGasLimit },
-  //   logger.DebugContext.walletconnect
-  // );
-  // if (rawGasLimit) {
-  //   gas = toHex(rawGasLimit);
-  // }
-
-  useEffect(() => {
-    if (signer) {
-      getClient()?.actions.acceptOffer({
-        items: [
-          {
-            token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
-            quantity: 1,
-          },
-        ],
-        options: {
-          feesOnTop: [
-            `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-              offer.grossAmount.raw
-            )
-              .div(100)
-              .toString()}`,
+    if (!isReadOnlyWallet) {
+      (async () => {
+        const privateKey = await loadPrivateKey(accountAddress, false);
+        // @ts-ignore
+        const account = privateKeyToAccount(privateKey);
+        const reservoirSigner = createWalletClient({
+          account,
+          chain: mainnet,
+          transport: http(getNetworkObj(offer.network as Network).rpc),
+        });
+        setSigner(reservoirSigner);
+        getClient()?.actions.acceptOffer({
+          items: [
+            {
+              token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+              quantity: 1,
+            },
           ],
-        },
-        precheck: true,
-        wallet: signer,
-        onProgress: (steps: Execute['steps']) => {
-          console.log('progress3');
-          steps.forEach(step =>
-            step.items?.forEach(async item => {
-              if (item.data?.data && item.data?.to && item.data?.from) {
-                console.log('item', item);
-                console.log('step', step);
-                const rawGasLimit = await estimateGasWithPadding(
-                  {
-                    to: item.data.to,
-                    from: item.data.from,
-                    data: item.data.data,
-                  },
-                  null,
-                  null,
-                  await getProviderForNetwork(offer.network as Network)
-                );
-                console.log('rawGasLimit', rawGasLimit);
-              }
-            })
-          );
-        },
-      });
+          options: {
+            feesOnTop: [feeParam],
+          },
+          precheck: true,
+          wallet: reservoirSigner,
+          onProgress: async (steps: Execute['steps']) => {
+            let sale;
+            let approval;
+            steps.forEach(step =>
+              step.items?.forEach(async item => {
+                if (item.data?.data && item.data?.to && item.data?.from) {
+                  if (step.id === 'sale') {
+                    sale = {
+                      to: item.data.to,
+                      from: item.data.from,
+                      data: item.data.data,
+                    };
+                  } else if (step.id === 'nft-approval') {
+                    approval = {
+                      to: item.data.to,
+                      from: item.data.from,
+                      data: item.data.data,
+                    };
+                  }
+                }
+              })
+            );
+            const gas = await estimateNFTOfferGas(offer, approval, sale);
+            if (gas) {
+              updateTxFee(gas, null);
+              startPollingGasFees();
+            }
+          },
+        });
+      })();
     }
+    return () => {
+      stopPollingGasFees();
+    };
   }, [
-    offer.grossAmount.raw,
-    offer.network,
-    offer.nft.contractAddress,
-    offer.nft.tokenId,
-    signer,
+    accountAddress,
+    feeParam,
+    isReadOnlyWallet,
+    offer,
+    startPollingGasFees,
+    stopPollingGasFees,
+    updateTxFee,
   ]);
 
   useEffect(() => {
@@ -248,6 +257,92 @@ export function NFTSingleOfferSheet() {
     ? getFormattedTimeQuantity(timeRemaining)
     : undefined;
   const buttonColorFallback = useForegroundColor('accent');
+
+  const acceptOffer = useCallback(async () => {
+    logger.info(
+      `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
+    );
+    getClient()?.actions.acceptOffer({
+      items: [
+        {
+          token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+          quantity: 1,
+        },
+      ],
+      options: {
+        feesOnTop: [
+          `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+            offer.grossAmount.raw
+          )
+            .div(100)
+            .toString()}`,
+        ],
+      },
+      precheck: true,
+      wallet: signer!,
+      onProgress: (steps: Execute['steps']) => {
+        steps.forEach(step =>
+          step.items?.forEach(item => {
+            if (
+              item.txHash &&
+              !txsRef.current.includes(item.txHash) &&
+              item.status === 'incomplete'
+            ) {
+              let tx;
+              if (step.id === 'sale') {
+                tx = {
+                  to: item.data?.to,
+                  from: item.data?.from,
+                  hash: item.txHash,
+                  network: offer.network,
+                  amount: offer.netAmount.decimal,
+                  asset: {
+                    address: offer.paymentToken.address,
+                    symbol: offer.paymentToken.symbol,
+                  },
+                  nft,
+                  type: TransactionType.sell,
+                  status: TransactionStatus.selling,
+                };
+              } else if (step.id === 'nft-approval') {
+                tx = {
+                  to: item.data?.to,
+                  from: item.data?.from,
+                  hash: item.txHash,
+                  network: offer.network,
+                  nft,
+                  type: TransactionType.authorize,
+                  status: TransactionStatus.approving,
+                };
+              }
+              if (tx) {
+                txsRef.current.push(tx.hash);
+                // @ts-ignore TODO: fix when we overhaul tx list, types are not good
+                dispatch(dataAddNewTransaction(tx));
+              }
+            } else if (item.status === 'complete' && step.id === 'sale') {
+              logger.info(
+                `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
+              );
+            }
+          })
+        );
+        navigate(Routes.PROFILE_SCREEN);
+      },
+    });
+  }, [
+    dispatch,
+    navigate,
+    nft,
+    offer.grossAmount.raw,
+    offer.netAmount.decimal,
+    offer.network,
+    offer.nft.contractAddress,
+    offer.nft.tokenId,
+    offer.paymentToken.address,
+    offer.paymentToken.symbol,
+    signer,
+  ]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -614,99 +709,32 @@ export function NFTSingleOfferSheet() {
                 </AccentColorProvider>
               ) : (
                 <>
+                  {/* @ts-ignore */}
                   <HoldToAuthorizeButton
                     backgroundColor={
                       offer.nft.predominantColor || buttonColorFallback
                     }
-                    disabled={!signer}
-                    // disabled={!isSufficientGas || !isValidGas}
+                    disabled={!isSufficientGas || !isValidGas || !signer}
                     hideInnerBorder
-                    // label={
-                    //   insufficientEth
-                    //     ? lang.t('profiles.confirm.insufficient_eth')
-                    //     : label
-                    // }
-                    label="Hold to sell"
-                    onLongPress={async () => {
-                      logger.info(
-                        `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
-                      );
-                      getClient()?.actions.acceptOffer({
-                        items: [
-                          {
-                            token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
-                            quantity: 1,
-                          },
-                        ],
-                        // options: {
-                        //   feesOnTop: [
-                        //     `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-                        //       offer.grossAmount.raw
-                        //     )
-                        //       .div(100)
-                        //       .toString()}`,
-                        //   ],
-                        // },
-                        precheck: true,
-                        wallet: signer,
-                        onProgress: (steps: Execute['steps']) => {
-                          steps.forEach(step =>
-                            step.items?.forEach(item => {
-                              if (
-                                item.txHash &&
-                                !txsRef.current.includes(item.txHash) &&
-                                item.status === 'incomplete'
-                              ) {
-                                let tx;
-                                if (step.id === 'sale') {
-                                  tx = {
-                                    to: item.data?.to,
-                                    from: item.data?.from,
-                                    hash: item.txHash,
-                                    network: offer.network,
-                                    amount: offer.netAmount.decimal,
-                                    asset: {
-                                      address: offer.paymentToken.address,
-                                      symbol: offer.paymentToken.symbol,
-                                    },
-                                    nft,
-                                    type: TransactionType.sell,
-                                    status: TransactionStatus.selling,
-                                  };
-                                } else if (step.id === 'nft-approval') {
-                                  tx = {
-                                    to: item.data?.to,
-                                    from: item.data?.from,
-                                    hash: item.txHash,
-                                    network: offer.network,
-                                    nft,
-                                    type: TransactionType.authorize,
-                                    status: TransactionStatus.approving,
-                                  };
-                                }
-                                if (tx) {
-                                  txsRef.current.push(tx.hash);
-                                  // @ts-ignore TODO: fix when we overhaul tx list, types are not good
-                                  dispatch(dataAddNewTransaction(tx));
-                                }
-                              }
-                            })
-                          );
-                          navigate(Routes.PROFILE_SCREEN);
-                        },
-                      });
-                    }}
+                    label={
+                      insufficientEth
+                        ? i18n.t(
+                            i18n.l.button.confirm_exchange.insufficient_eth
+                          )
+                        : 'Hold to Send'
+                    }
+                    onLongPress={acceptOffer}
                     parentHorizontalPadding={28}
-                    // showBiometryIcon={!insufficientEth}
-                    showBiometryIcon
-                    // testID={`ens-transaction-action-${testID}`}
+                    showBiometryIcon={!insufficientEth}
                   />
+                  {/* @ts-ignore */}
                   <GasSpeedButton
                     asset={{
                       color: offer.nft.predominantColor || buttonColorFallback,
                     }}
-                    currentNetwork="mainnet"
-                    theme="light"
+                    horizontalPadding={0}
+                    currentNetwork={offer.network}
+                    theme={isDarkMode ? 'dark' : 'light'}
                   />
                 </>
               )}
