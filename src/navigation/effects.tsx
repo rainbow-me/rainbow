@@ -424,6 +424,7 @@ export const expandedPreset: StackNavigationOptions = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
+  detachPreviousScreen: false,
 };
 
 export const swapSettingsPreset: StackNavigationOptions = {
