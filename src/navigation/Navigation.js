@@ -40,11 +40,7 @@ export function useNavigation() {
   const { navigate: oldNavigate, ...rest } = oldUseNavigation();
 
   const handleNavigate = useCallbackOne(
-    (...args) => {
-      console.log(`Navigating to ${args[0]}`);
-      console.log(`With params ${JSON.stringify(args[1], undefined, 2)}`);
-      return navigate(oldNavigate, ...args);
-    },
+    (...args) => navigate(oldNavigate, ...args),
     [oldNavigate]
   );
 
