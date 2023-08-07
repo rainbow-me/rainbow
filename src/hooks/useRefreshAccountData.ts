@@ -3,7 +3,6 @@ import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
-import { fetchAssetsFromRefraction } from '../redux/explorer';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
@@ -12,6 +11,7 @@ import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 
@@ -38,13 +38,18 @@ export default function useRefreshAccountData() {
         currency: nativeCurrency,
       }),
     });
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: accountAddress,
+        currency: nativeCurrency,
+      }),
+    });
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
       const getWalletENSAvatars = profilesEnabled
         ? dispatch(fetchWalletENSAvatars())
         : null;
-      const balances = dispatch(fetchAssetsFromRefraction());
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
@@ -53,7 +58,6 @@ export default function useRefreshAccountData() {
         getWalletENSAvatars,
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
-        balances,
         wc,
         uniswapPositions,
       ]);

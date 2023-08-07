@@ -20,14 +20,11 @@ import {
   DEFAULT_CHART_TYPE,
 } from './charts';
 import {
-  addressAssetsReceived,
-  AddressAssetsReceivedMessage,
   assetPricesChanged,
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
   DISPERSION_SUCCESS_CODE,
-  MessageMeta,
   portfolioReceived,
   PortfolioReceivedMessage,
   transactionsReceived,
@@ -35,7 +32,6 @@ import {
 } from './data';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
-import { ZerionAsset } from '@/entities';
 import {
   getProviderForNetwork,
   isHardHat,
@@ -53,7 +49,7 @@ import {
   MATIC_MAINNET_ADDRESS,
   OP_ADDRESS,
 } from '@/references';
-import { ethereumUtils, TokensListenedCache } from '@/utils';
+import { TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 
@@ -69,15 +65,6 @@ const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
-  ADDRESS_ASSETS: {
-    RECEIVED: 'received address assets',
-    RECEIVED_ARBITRUM: 'received address arbitrum-assets',
-    RECEIVED_OPTIMISM: 'received address optimism-assets',
-    RECEIVED_POLYGON: 'received address polygon-assets',
-    RECEIVED_BSC: 'received address bsc-assets',
-    RECEIVED_ZORA: 'received address zora-assets',
-    RECEIVED_BASE: 'received address base-assets',
-  },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
   },
@@ -116,26 +103,6 @@ interface ExplorerState {
 
   // A socket for the assets endpoint.
   assetsSocket: Socket | null;
-}
-
-// A `ZerionAsset` with additional fields available for L2 assets.
-type ZerionAsseWithL2Fields = ZerionAsset & {
-  mainnet_address: string;
-  network: string;
-};
-
-/**
- * A message from the Zerion API indicating that L2 assets were received.
- * Note, unlike a `AddressAssetsReceivedMessage`, the `payload.assets` field is
- * an array, not an object.
- */
-interface L2AddressAssetsReceivedMessage {
-  payload?: {
-    assets?: {
-      asset: ZerionAsseWithL2Fields;
-    }[];
-  };
-  meta?: MessageMeta;
 }
 
 /**
@@ -178,11 +145,6 @@ type SocketGetActionType = 'get';
  */
 type SocketEmitArguments = Parameters<Socket['emit']>;
 
-/**
- * An ordering option, either ascending or descending.
- */
-type OrderType = 'asc' | 'desc';
-
 // -- Actions ---------------------------------------- //
 
 /**
@@ -220,31 +182,7 @@ const addressSubscription = (
       currency: toLower(currency),
       transactions_limit: TRANSACTIONS_LIMIT,
     },
-    scope: ['assets', 'transactions'],
-  },
-];
-
-/**
- * Configures a subscription to get asset balances for a network
- *
- * @param address The address.
- * @param currency The currency to use.
- * @param action The subscription asset.
- * @returns The arguments for the `emit` function call.
- */
-const addressAssetBalanceSubscription = (
-  address: string,
-  currency: string,
-  network: Network,
-  action: SocketSubscriptionActionType = 'subscribe'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: [`${network === Network.mainnet ? '' : `${network}-`}assets`],
+    scope: ['transactions'],
   },
 ];
 
@@ -341,27 +279,6 @@ const ethUSDSubscription: SocketEmitArguments = [
       currency: currencyTypes.usd,
     },
     scope: ['prices'],
-  },
-];
-
-/**
- * Configures an asset request.
- *
- * @param address The wallet address.
- * @param currency The currency to use.
- * @returns The arguments for an `emit` function call.
- */
-const addressAssetsRequest = (
-  address: string,
-  currency: string
-): SocketEmitArguments => [
-  'get',
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: ['assets'],
   },
 ];
 
@@ -464,30 +381,6 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.bsc,
-        'unsubscribe'
-      )
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.zora,
-        'unsubscribe'
-      )
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.base,
-        'unsubscribe'
-      )
     );
     addressSocket.close();
   }
@@ -680,27 +573,6 @@ export const explorerInit = () => async (
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
     );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.bsc
-      )
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.zora
-      )
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.base
-      )
-    );
   });
 
   dispatch(listenOnAssetMessages(newAssetsSocket));
@@ -847,76 +719,6 @@ const listenOnAssetMessages = (socket: Socket) => (
 };
 
 /**
- * Fetches the current wallet's assets. The result is handled by a listener
- * in `listenOnAddressMessages`.
- */
-export const fetchAssetsFromRefraction = () => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
-  const { addressSocket } = getState().explorer;
-  if (addressSocket) {
-    addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
-  }
-};
-
-/**
- * Handles an incoming Zerion message for address asset information on a
- * layer-2 network.
- *
- * @param message The Zerion message.
- * @param network The network/
- */
-const l2AddressAssetsReceived = (
-  message: L2AddressAssetsReceivedMessage,
-  network: Network
-) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  const { genericAssets } = getState().data;
-
-  const newAssets:
-    | { asset: ZerionAsseWithL2Fields }[]
-    | undefined = message?.payload?.assets?.map(asset => {
-    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
-    const fallbackAsset =
-      mainnetAddress &&
-      (ethereumUtils.getAccountAsset(mainnetAddress) ||
-        genericAssets[mainnetAddress]);
-
-    if (fallbackAsset) {
-      return {
-        ...asset,
-        asset: {
-          ...asset?.asset,
-          price: {
-            ...asset?.asset?.price,
-            ...fallbackAsset.price,
-          } as ZerionAsseWithL2Fields['price'],
-        },
-      };
-    }
-    return asset;
-  });
-
-  // temporary until backend supports sending back map for L2 data
-  const newAssetsMap = keyBy(
-    newAssets,
-    asset => `${asset.asset.asset_code}_${asset.asset.network}`
-  );
-  const updatedMessage = {
-    ...message,
-    payload: {
-      ...message?.payload,
-      assets: newAssetsMap,
-    },
-  };
-  dispatch(addressAssetsReceived(updatedMessage, network));
-};
-
-/**
  * Adds listeners for address information messages to a given socket.
  *
  * @param socket The socket to add listeners to.
@@ -994,60 +796,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
       dispatch(transactionsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.arbitrum));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.optimism));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.polygon));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_BSC,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.bsc));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_ZORA,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.zora));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_BASE,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.base));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, Network.mainnet));
-      if (isValidAssetsResponseFromZerion(message)) {
-        logger.log(
-          '😬 Cancelling fallback data provider listener. Zerion is good!'
-        );
-      }
     }
   );
 };
