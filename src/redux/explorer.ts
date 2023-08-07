@@ -1,14 +1,4 @@
-import { Contract } from '@ethersproject/contracts';
-import { captureException } from '@sentry/react-native';
-import {
-  concat,
-  isEmpty,
-  isNil,
-  keyBy,
-  keys,
-  mapValues,
-  toLower,
-} from 'lodash';
+import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
@@ -24,7 +14,6 @@ import {
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
-  DISPERSION_SUCCESS_CODE,
   portfolioReceived,
   PortfolioReceivedMessage,
   transactionsReceived,
@@ -32,18 +21,12 @@ import {
 } from './data';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
-import {
-  getProviderForNetwork,
-  isHardHat,
-  web3Provider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
 import {
-  balanceCheckerContractAbi,
   BNB_MAINNET_ADDRESS,
-  chainAssets,
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
@@ -51,17 +34,11 @@ import {
 } from '@/references';
 import { TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
-import { getNetworkObj } from '@/networks';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
-let hardhatAndTestnetHandle: ReturnType<typeof setTimeout> | null = null;
-
-const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
-  '0x0000000000000000000000000000000000000000';
-const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
@@ -393,142 +370,13 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
 };
 
 /**
- * Checks whether or not a response message from Zerion is valid.
- *
- * @param msg The Zerion asset message.
- * @returns Whether or not the response is valid.
- */
-const isValidAssetsResponseFromZerion = (msg: AddressAssetsReceivedMessage) => {
-  // Check that the payload meta is valid
-  if (msg?.meta?.status === DISPERSION_SUCCESS_CODE) {
-    // Check that there's an assets property in the payload
-    if (msg.payload?.assets) {
-      const assets = keys(msg.payload.assets);
-      // Check that we have assets
-      if (assets.length > 0) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-/**
  * Clears the explorer's state and unsubscribes from listeners.
  */
 export const explorerClearState = () => (
   dispatch: ThunkDispatch<AppState, unknown, ExplorerClearStateAction>
 ) => {
-  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
-};
-
-/**
- * Fetches balances for tokens for a given address.
- *
- * @param tokens The tokens to find balances for.
- * @param address The account address.
- * @param network The network to use.
- * @returns An object mapping token addresses to balances, or `null` if an error
- * occurs.
- */
-const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
-  tokens: string[],
-  address: string,
-  network: Network
-): Promise<{ [tokenAddress: string]: string } | null> => {
-  const balanceCheckerContract = new Contract(
-    getNetworkObj(network).balanceCheckerAddress,
-    balanceCheckerContractAbi,
-    web3Provider
-  );
-  try {
-    const values = await balanceCheckerContract.balances([address], tokens);
-    const balances: {
-      [address: string]: { [tokenAddress: string]: string };
-    } = {};
-    [address].forEach((addr, addrIdx) => {
-      balances[addr] = {};
-      tokens.forEach((tokenAddr, tokenIdx) => {
-        const balance = values[addrIdx * tokens.length + tokenIdx];
-        balances[addr][tokenAddr] = balance.toString();
-      });
-    });
-    return balances[address];
-  } catch (e) {
-    logger.sentry(
-      'Error fetching balances from balanceCheckerContract',
-      network,
-      e
-    );
-    captureException(new Error('fallbackExplorer::balanceChecker failure'));
-    return null;
-  }
-};
-
-const fetchTestnetOrHardhatBalances = (
-  accountAddress: string,
-  network: Network,
-  nativeCurrency: string
-) => async (dispatch: ThunkDispatch<AppState, unknown, never>) => {
-  const chainAssetsMap = keyBy(
-    chainAssets[network as keyof typeof chainAssets],
-    'asset.asset_code'
-  );
-
-  const tokenAddresses = Object.values(
-    chainAssetsMap
-  ).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : asset_code.toLowerCase()
-  );
-  const balances = await fetchTestnetOrHardhatBalancesWithBalanceChecker(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-  if (!balances) return;
-
-  const updatedAssets = mapValues(chainAssetsMap, assetAndQuantity => {
-    const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-    return {
-      asset: {
-        ...assetAndQuantity.asset,
-        asset_code:
-          assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            ? ETH_ADDRESS
-            : assetCode,
-      },
-      quantity:
-        balances[
-          assetCode === ETH_ADDRESS
-            ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            : assetCode
-        ],
-    };
-  });
-
-  const newPayload = { assets: updatedAssets };
-  const updatedMessage = {
-    meta: {
-      address: accountAddress,
-      currency: nativeCurrency,
-      status: DISPERSION_SUCCESS_CODE,
-    },
-    payload: newPayload,
-  };
-
-  dispatch(addressAssetsReceived(updatedMessage, network));
-  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
-  hardhatAndTestnetHandle = setTimeout(
-    () =>
-      dispatch(
-        fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
-      ),
-    HARDHAT_TESTNET_BALANCE_FREQUENCY
-  );
 };
 
 /**
@@ -550,9 +398,6 @@ export const explorerInit = () => async (
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
   if (isHardHat(providerUrl) || network !== Network.mainnet) {
-    dispatch(
-      fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
-    );
     return;
   }
 
