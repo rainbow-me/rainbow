@@ -2,16 +2,7 @@ import {
   StaticJsonRpcProvider,
   TransactionResponse,
 } from '@ethersproject/providers';
-import isValidDomain from 'is-valid-domain';
-import {
-  find,
-  isEmpty,
-  isNil,
-  mapValues,
-  partition,
-  cloneDeep,
-  filter,
-} from 'lodash';
+import { find, isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -22,9 +13,7 @@ import {
 } from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
-import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
-  AssetTypes,
   NativeCurrencyKeys,
   NewTransactionOrAddCashTransaction,
   ParsedAddressAsset,
@@ -39,29 +28,18 @@ import {
   getLocalPendingTransactions,
   getLocalTransactions,
   saveAccountAssetsData,
-  saveAccountEmptyState,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
-import {
-  getProviderForNetwork,
-  isL2Network,
-  web3Provider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, web3Provider } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
-import {
-  parseAccountAssets,
-  parseAsset,
-  parseNewTransaction,
-  parseTransactions,
-} from '@/parsers';
+import { parseAsset, parseNewTransaction, parseTransactions } from '@/parsers';
 import { setHiddenCoins } from '@/redux/editOptions';
-import { ETH_ADDRESS, shitcoins } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { pickBy } from '@/helpers/utilities';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import logger from '@/utils/logger';
 import {
@@ -79,9 +57,6 @@ import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
 import { ratioGetUserActivityItem } from '@/resources/f2c';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
-import { RainbowPositions } from '@/resources/defi/types';
-import * as ls from '@/storage';
 
 const storage = new MMKV();
 
@@ -117,7 +92,6 @@ let pendingTransactionsHandle: ReturnType<typeof setTimeout> | null = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
-const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
 
 // -- Constants --------------------------------------- //
 
@@ -903,134 +877,6 @@ export const maybeFetchF2CHashForPendingTransactions = async (
       return tx;
     })
   );
-};
-
-/**
- * Handles an `AddressAssetsReceivedMessage` from Zerion and updates state and
- * account local storage.
- *
- * @param message The message.
- * @param assetsNetwork The asset's network.
- */
-export const addressAssetsReceived = (
-  message: AddressAssetsReceivedMessage,
-  assetsNetwork: Network
-) => (
-  dispatch: ThunkDispatch<
-    AppState,
-    unknown,
-    DataLoadAccountAssetsDataReceivedAction
-  >,
-  getState: AppGetState
-) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-  const { accountAddress, network, nativeCurrency } = getState().settings;
-  const responseAddress = message?.meta?.address;
-  const addressMatch =
-    accountAddress?.toLowerCase() === responseAddress?.toLowerCase();
-  if (!addressMatch) return;
-
-  const newAssets = message?.payload?.assets ?? {};
-
-  let parsedAssets = parseAccountAssets(newAssets) as {
-    [id: string]: ParsedAddressAsset;
-  };
-
-  const liquidityTokens = Object.values(parsedAssets).filter(
-    asset => asset?.type === AssetTypes.uniswapV2
-  );
-
-  // remove V2 LP tokens
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset => asset?.type !== AssetTypes.uniswapV2
-  );
-
-  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
-  if (!isL2 && !assetsNetwork) {
-    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
-  }
-
-  const filterScams = (tokens: ParsedAddressAsset[], filterOut: boolean) =>
-    tokens.filter(asset =>
-      filterOut
-        ? !(
-            ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
-              (asset?.symbol && isValidDomain(asset.symbol))) &&
-            !asset.isVerified
-          )
-        : ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
-            (asset?.symbol && isValidDomain(asset.symbol))) &&
-          !asset.isVerified
-    );
-
-  // save the total tokens with scams & 0 price tokens filtered out
-  const count = Object.keys(
-    filterScams(
-      Object.values(parsedAssets).filter(asset => asset?.price?.value || 0 > 0),
-      true
-    )
-  ).length;
-  ls.account.set([accountAddress, assetsNetwork, 'totalTokens'], count);
-
-  const { accountAssetsData: existingAccountAssetsData } = getState().data;
-
-  if (assetsNetwork === Network.mainnet) {
-    const existingL2DataOnly = pickBy(
-      existingAccountAssetsData,
-      (value: ParsedAddressAsset, index: string) => {
-        return index.includes('_');
-      }
-    );
-    parsedAssets = {
-      ...existingL2DataOnly,
-      ...parsedAssets,
-    };
-  } else {
-    parsedAssets = {
-      ...existingAccountAssetsData,
-      ...parsedAssets,
-    };
-  }
-
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address: accountAddress, currency: nativeCurrency })
-  );
-
-  const positionTokens = positionsObj?.positionTokens || [];
-
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset =>
-      !positionTokens.find(positionToken => positionToken === asset.uniqueId)
-  );
-
-  parsedAssets = pickBy(
-    parsedAssets,
-    asset => !!Number(asset?.balance?.amount)
-  );
-
-  saveAccountAssetsData(parsedAssets, accountAddress, network);
-  if (!isEmpty(parsedAssets)) {
-    // Change the state since the account isn't empty anymore
-    saveAccountEmptyState(false, accountAddress, network);
-  }
-
-  const assetsWithScamURL: string[] = filterScams(
-    Object.values(parsedAssets),
-    false
-  ).map(asset => asset.uniqueId);
-
-  // we need to store hidden coins before storing parsedAssets
-  // so all the selectors that depend on both will have hidden coins by that time
-  // to be able to filter them
-  addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-
-  dispatch({
-    payload: parsedAssets,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED,
-  });
 };
 
 const callbacksOnAssetReceived: {
