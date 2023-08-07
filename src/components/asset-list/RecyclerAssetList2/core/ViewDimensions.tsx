@@ -39,7 +39,6 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.SAVINGS_HEADER_SPACE_BEFORE]: { height: 7 },
   [CellType.SAVINGS_HEADER]: { height: SavingsListHeader.height },
   [CellType.SAVINGS]: { height: SavingsCoinRowHeight },
-  [CellType.POOLS_HEADER]: { height: SavingsListHeader.height },
   [CellType.PROFILE_ACTION_BUTTONS_ROW]: {
     height: ProfileActionButtonsRowHeight - ProfileStickyHeaderHeight,
   },
@@ -53,7 +52,6 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },
   [CellType.PROFILE_BALANCE_ROW]: { height: ProfileBalanceRowHeight },
   [CellType.PROFILE_BALANCE_ROW_SPACE_AFTER]: { height: 24 },
-  [CellType.UNISWAP_POOL]: { height: CoinRowHeight },
   [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },
   [CellType.NFTS_HEADER_SPACE_AFTER]: { height: 6 },

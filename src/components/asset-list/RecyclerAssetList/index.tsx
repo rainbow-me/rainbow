@@ -37,7 +37,6 @@ import { EthereumAddress } from '@/entities';
 import {
   useCoinListEdited,
   useOpenFamilies,
-  useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
   usePrevious,
@@ -98,20 +97,6 @@ const extractRelevantAssetInfo = (asset: {
   } catch (e) {}
 };
 
-const extractPoolRelevantAssetsInfo = (data: any[]) => {
-  try {
-    return data?.map(asset => ({
-      address: asset.address,
-      balanceDisplay: asset.balance?.display,
-      nativeBalanceDisplay: asset.native?.balance?.display,
-      priceDisplay: asset.price?.value,
-      relativeChange24h: asset.price?.relative_change_24h,
-      totalNativeDisplay: asset.totalNativeDisplay,
-    }));
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-};
-
 const defaultIndices = [0];
 const isEqualDataProvider = new DataProvider((r1, r2) => {
   // Last placeholder
@@ -138,11 +123,6 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
     const slimR1 = extractRelevantAssetInfo(r1.item);
     const slimR2 = extractRelevantAssetInfo(r2.item);
     return isEqual(slimR1, slimR2);
-    // Pool rows
-  } else if (r1.data) {
-    const r1Assets = r1.data.map(extractPoolRelevantAssetsInfo);
-    const r2Assets = r2.data?.map(extractPoolRelevantAssetsInfo);
-    return isEqual(r1Assets, r2Assets);
     // Small balances rows
   } else if (r1.item?.assets) {
     const r1Assets = r1.item.assets.map(extractRelevantAssetInfo);
@@ -204,7 +184,6 @@ export type RecyclerAssetListSection = {
     readonly totalValue: string;
   };
   readonly perData: any;
-  readonly pools: boolean;
   readonly renderItem: (item: any) => JSX.Element | null;
   readonly type: string;
 };
@@ -244,9 +223,6 @@ function RecyclerAssetList({
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
-  const {
-    isInvestmentCardsOpen: openInvestmentCards,
-  } = useOpenInvestmentCards();
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { isSavingsOpen: openSavings } = useOpenSavings();
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
@@ -267,43 +243,33 @@ function RecyclerAssetList({
     const stickyComponentsIndices: number[] = [];
     const items = sections.reduce((ctx: any[], section) => {
       sectionsIndices.push(ctx.length);
-      if (section.pools) {
-        ctx = ctx.concat([
-          {
-            data: section.data,
-            pools: true,
-            ...section.header,
-          },
-        ]);
-      } else {
-        stickyComponentsIndices.push(ctx.length);
-        ctx = ctx.concat([
-          {
-            isHeader: true,
-            ...section.header,
-          },
-        ]);
-        if (section.collectibles) {
-          section.data.forEach((item, index) => {
-            if (
-              item.isHeader ||
-              openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]
-            ) {
-              ctx.push({
-                familySectionIndex: index,
-                item: { ...item, ...section.perData },
-                renderItem: section.renderItem,
-              });
-            }
-          });
-        } else {
-          ctx = ctx.concat(
-            section.data.map(item => ({
+      stickyComponentsIndices.push(ctx.length);
+      ctx = ctx.concat([
+        {
+          isHeader: true,
+          ...section.header,
+        },
+      ]);
+      if (section.collectibles) {
+        section.data.forEach((item, index) => {
+          if (
+            item.isHeader ||
+            openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]
+          ) {
+            ctx.push({
+              familySectionIndex: index,
               item: { ...item, ...section.perData },
               renderItem: section.renderItem,
-            }))
-          );
-        }
+            });
+          }
+        });
+      } else {
+        ctx = ctx.concat(
+          section.data.map(item => ({
+            item: { ...item, ...section.perData },
+            renderItem: section.renderItem,
+          }))
+        );
       }
       return ctx;
     }, []);
@@ -415,8 +381,6 @@ function RecyclerAssetList({
         return ViewTypes.COIN_SAVINGS.renderComponent({
           data,
         });
-      } else if (type.index === ViewTypes.POOLS.index) {
-        return ViewTypes.POOLS.renderComponent({ data, isCoinListEdited });
       } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
         return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
           data,
@@ -455,20 +419,8 @@ function RecyclerAssetList({
         const collectiblesIndex = sections.findIndex(
           ({ name }) => name === 'collectibles'
         );
-        const poolsIndex = sections.findIndex(({ name }) => name === 'pools');
 
         if (sectionsIndices.includes(index)) {
-          if (index === sectionsIndices[poolsIndex]) {
-            return {
-              height: ViewTypes.POOLS.calculateHeight({
-                amountOfRows: sections[poolsIndex].data.length,
-                isLast: true,
-                isOpen: openInvestmentCards,
-              }),
-              index: ViewTypes.POOLS.index,
-              visibleDuringCoinEdit: ViewTypes.POOLS.visibleDuringCoinEdit,
-            };
-          }
           return {
             height: (showcase
               ? ViewTypes.SHOWCASE_HEADER
@@ -492,9 +444,7 @@ function RecyclerAssetList({
 
         if (
           balancesIndex > -1 &&
-          (index <= sectionsIndices[collectiblesIndex] ||
-            collectiblesIndex < 0) &&
-          (index <= sectionsIndices[poolsIndex] || poolsIndex < 0)
+          (index <= sectionsIndices[collectiblesIndex] || collectiblesIndex < 0)
         ) {
           const balanceItemsCount = sections?.[balancesIndex]?.data.length ?? 0;
           const lastBalanceIndex =
@@ -542,7 +492,7 @@ function RecyclerAssetList({
                 height: ViewTypes.COIN_SAVINGS.calculateHeight({
                   amountOfRows:
                     sections[balancesIndex].data[index - 1].assets?.length || 0,
-                  isLast: poolsIndex < 0,
+                  isLast: true,
                   isOpen: openSavings,
                 }),
                 index: ViewTypes.COIN_SAVINGS.index,
@@ -615,7 +565,6 @@ function RecyclerAssetList({
     items,
     itemsCount,
     openFamilyTabs,
-    openInvestmentCards,
     openSavings,
     openSmallBalances,
     paddingBottom,
@@ -663,7 +612,6 @@ function RecyclerAssetList({
     let balances: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let smallBalances: any = {};
     let savings: any = {};
-    let pools: RecyclerAssetListSection = {} as RecyclerAssetListSection;
 
     if (sections) {
       sections.forEach(section => {
@@ -672,9 +620,6 @@ function RecyclerAssetList({
         }
         if (section?.balances) {
           balances = section;
-        }
-        if (section?.pools) {
-          pools = section;
         }
       });
 
@@ -709,14 +654,8 @@ function RecyclerAssetList({
         isOpen: openSavings,
       });
 
-      const poolsHeight = ViewTypes.POOLS.calculateHeight({
-        amountOfRows: pools?.data?.length || 0,
-        isLast: !!pools.data,
-        isOpen: openInvestmentCards,
-      });
-
       const colleciblesStartHeight =
-        balancesHeight + smallBalancesHeight + savingsHeight + poolsHeight;
+        balancesHeight + smallBalancesHeight + savingsHeight;
 
       lastSections.forEach(section => {
         if (section.collectibles) {
@@ -755,7 +694,6 @@ function RecyclerAssetList({
     sections,
     isCoinListEdited,
     openFamilyTabs,
-    openInvestmentCards,
     openSavings,
     openSmallBalances,
     paddingBottom,
