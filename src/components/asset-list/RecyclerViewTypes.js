@@ -8,7 +8,6 @@ import { CoinRowHeight } from '../coin-row';
 import { SavingsCoinRowHeight } from '../coin-row/SavingsCoinRow';
 import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
-import PoolsListWrapper from '../pools/PoolsListWrapper';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
 import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
@@ -25,11 +24,6 @@ const savingsOpenAdditionalHeight = -7.5;
 const savingsClosedAdditionalHeight = -5;
 const savingsLastOpenAdditionalHeight = -13;
 const savingsLastClosedAdditionalHeight = -10;
-
-const poolsOpenAdditionalHeight = -12;
-const poolsClosedAdditionalHeight = -15;
-const poolsLastOpenAdditionalHeight = -14;
-const poolsLastClosedAdditionalHeight = -10.5;
 
 const firstUniqueTokenMarginTop = 4;
 const extraSpaceForDropShadow = 19;
@@ -139,25 +133,6 @@ export const ViewTypes = {
       return (
         <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
       );
-    },
-    visibleDuringCoinEdit: false,
-  },
-
-  POOLS: {
-    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
-      isOpen
-        ? TokenFamilyHeaderHeight +
-          (isLast
-            ? ListFooter.height + poolsLastOpenAdditionalHeight
-            : poolsOpenAdditionalHeight) +
-          CoinRowHeight * amountOfRows
-        : TokenFamilyHeaderHeight +
-          (isLast
-            ? ListFooter.height + poolsLastClosedAdditionalHeight
-            : poolsClosedAdditionalHeight),
-    index: 5,
-    renderComponent: ({ data, isCoinListEdited }) => {
-      return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
     },
     visibleDuringCoinEdit: false,
   },

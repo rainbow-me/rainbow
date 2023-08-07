@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -11,7 +10,6 @@ import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
@@ -34,7 +32,6 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
   });
-  const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
@@ -61,7 +58,6 @@ export default function useWalletSectionsData({
       savings,
       sendableUniqueTokens,
       ...sortedAccountData,
-      ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -102,7 +98,6 @@ export default function useWalletSectionsData({
     sortedAccountData,
     type,
     sendableUniqueTokens,
-    uniswap,
   ]);
   return walletSections;
 }

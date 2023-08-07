@@ -7,7 +7,6 @@ import {
   useCoinListEditOptions,
   useExternalWalletSectionsData,
   useOpenFamilies,
-  useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
   useWalletSectionsData,
@@ -56,7 +55,6 @@ export default function useMemoBriefSectionData({
 
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
-  const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isPositionCardsOpen } = useOpenPositionCards();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
@@ -147,18 +145,6 @@ export default function useMemoBriefSectionData({
           return isGroupOpen;
         }
 
-        if (
-          (data.type === CellType.POOLS_HEADER ||
-            data.type === CellType.UNISWAP_POOL) &&
-          isCoinListEdited
-        ) {
-          return false;
-        }
-
-        if (data.type === CellType.UNISWAP_POOL && !isInvestmentCardsOpen) {
-          return false;
-        }
-
         if (data.type === CellType.POSITION && !isPositionCardsOpen) {
           return false;
         }
@@ -177,7 +163,6 @@ export default function useMemoBriefSectionData({
     isSmallBalancesOpen,
     hiddenCoinsObj,
     isSavingsOpen,
-    isInvestmentCardsOpen,
     isPositionCardsOpen,
     openFamilies,
   ]);

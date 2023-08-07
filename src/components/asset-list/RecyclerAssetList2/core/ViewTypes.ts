@@ -9,7 +9,6 @@ export enum CellType {
   SAVINGS_HEADER = 'SAVINGS_HEADER',
   SAVINGS_HEADER_SPACE_BEFORE = 'SAVINGS_HEADER_SPACE_BEFORE',
   SAVINGS = 'SAVINGS',
-  POOLS_HEADER = 'POOLS_HEADER',
   PROFILE_ACTION_BUTTONS_ROW = 'PROFILE_ACTION_BUTTONS_ROW',
   PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER = 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
   PROFILE_AVATAR_ROW = 'PROFILE_AVATAR_ROW',
@@ -20,7 +19,6 @@ export enum CellType {
   PROFILE_NAME_ROW = 'PROFILE_NAME_ROW',
   PROFILE_NAME_ROW_SPACE_AFTER = 'PROFILE_NAME_ROW_SPACE_AFTER',
   PROFILE_STICKY_HEADER = 'PROFILE_STICKY_HEADER',
-  UNISWAP_POOL = 'UNISWAP_POOL',
   NFTS_HEADER = 'NFTS_HEADER',
   NFTS_HEADER_SPACE_BEFORE = 'NFTS_HEADER_SPACE_BEFORE',
   NFTS_HEADER_SPACE_AFTER = 'NFTS_HEADER_SPACE_AFTER',
@@ -54,10 +52,6 @@ export type SavingsHeaderExtraData = {
   value: number;
 };
 export type SavingExtraData = { type: CellType.SAVINGS; address: string };
-export type UniswapPoolExtraData = {
-  type: CellType.UNISWAP_POOL;
-  address: string;
-};
 export type CoinDividerExtraData = {
   type: CellType.COIN_DIVIDER;
   value: number;
@@ -65,10 +59,6 @@ export type CoinDividerExtraData = {
 };
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
-  value: string;
-};
-export type PoolsHeaderExtraData = {
-  type: CellType.POOLS_HEADER;
   value: string;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
@@ -98,12 +88,10 @@ export type CellExtraData =
   | NFTFamilyExtraData
   | SavingExtraData
   | SavingsHeaderExtraData
-  | UniswapPoolExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
   | AssetsHeaderExtraData
-  | PoolsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData;
 
