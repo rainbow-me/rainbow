@@ -499,7 +499,7 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onPressCancel = useCallback(() => calculateGasLimit(), [onCancel]);
+  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
     if (
