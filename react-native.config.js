@@ -11,14 +11,6 @@ module.exports = {
     'react-native-ios-context-menu': {
       platforms: { android: null },
     },
-    ...(process.env.SKIP_FLIPPER
-      ? {
-          'react-native-flipper': { platforms: { ios: null, android: null } },
-          'react-native-flipper-performance-plugin': {
-            platforms: { ios: null, android: null },
-          },
-        }
-      : {}),
   },
   project: {
     android: {},

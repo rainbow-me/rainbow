@@ -17,10 +17,6 @@
 #import <CodePush/CodePush.h>
 #import <segment_analytics_react_native-Swift.h>
 
-#ifdef FB_SONARKIT_ENABLED
-  #import <FlipperKit/FlipperClient.h>
-  #import <FlipperPerformancePlugin.h>
-#endif
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -65,11 +61,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
 
-// Additional Flipper Plugin Setup
-#ifdef FB_SONARKIT_ENABLED
-  FlipperClient *client = [FlipperClient sharedClient];
-  [client addPlugin:[FlipperPerformancePlugin new]];
-#endif
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
 
   // Firebase Init
