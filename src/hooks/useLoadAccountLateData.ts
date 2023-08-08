@@ -4,7 +4,6 @@ import { prefetchAccountENSDomains } from './useAccountENSDomains';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 import logger from '@/utils/logger';
-import { uniswapLiquidityLoadState } from '@/redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '@/redux/usersPositions';
 import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
 import { useDispatch } from 'react-redux';
@@ -26,10 +25,9 @@ export default function useLoadAccountLateData() {
     const p2 = dispatch(hiddenTokensUpdateStateFromWeb());
 
     // uniswap lp positions
-    const p3 = dispatch(uniswapLiquidityLoadState());
-    const p4 = dispatch(uniswapPositionsLoadState());
+    const p3 = dispatch(uniswapPositionsLoadState());
 
-    promises.push(p1, p2, p3, p4);
+    promises.push(p1, p2, p3);
 
     if (!isReadOnlyWallet) {
       // ENS registration info
