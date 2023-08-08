@@ -59,6 +59,7 @@ export interface ParsedAddressAsset
     amount?: string;
     display?: string;
   };
+  chainId?: number;
   color?: string;
   colors?: {
     primary?: string;

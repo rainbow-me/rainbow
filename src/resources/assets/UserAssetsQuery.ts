@@ -105,6 +105,28 @@ async function userAssetsQueryFunction({
         }, {});
     }
 
+    // grab cached data for chain IDs with errors
+    const erroredChainIds = data?.meta?.chain_ids_with_errors;
+    if (!isEmpty(erroredChainIds)) {
+      const cachedDataForErroredChainIds = Object.keys(cachedAddressAssets)
+        .filter(uniqueId => {
+          const cachedAsset = cachedAddressAssets[uniqueId];
+          return erroredChainIds?.find(
+            (chainId: number) => chainId === cachedAsset.chainId
+          );
+        })
+        .reduce((cur, uniqueId) => {
+          return Object.assign(cur, {
+            [uniqueId]: cachedAddressAssets[uniqueId],
+          });
+        }, {});
+
+      parsedSuccessResults = {
+        ...parsedSuccessResults,
+        ...cachedDataForErroredChainIds,
+      };
+    }
+
     // add tokens with URLs to hidden list
     hideTokensWithUrls(parsedSuccessResults, address);
 
@@ -119,6 +141,10 @@ async function userAssetsQueryFunction({
     return cachedAddressAssets;
   }
 }
+
+const retryErroredChainIds = (chainsWithErrors: number[]) => {
+  // TODO JIN: retry for errored chainIds
+};
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
 
