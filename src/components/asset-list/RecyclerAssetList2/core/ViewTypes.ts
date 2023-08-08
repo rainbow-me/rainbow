@@ -6,9 +6,6 @@ export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
   COIN_DIVIDER = 'COIN_DIVIDER',
-  SAVINGS_HEADER = 'SAVINGS_HEADER',
-  SAVINGS_HEADER_SPACE_BEFORE = 'SAVINGS_HEADER_SPACE_BEFORE',
-  SAVINGS = 'SAVINGS',
   PROFILE_ACTION_BUTTONS_ROW = 'PROFILE_ACTION_BUTTONS_ROW',
   PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER = 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
   PROFILE_AVATAR_ROW = 'PROFILE_AVATAR_ROW',
@@ -47,11 +44,6 @@ export type RecyclerListViewRef = RecyclerListView<
 
 export type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 
-export type SavingsHeaderExtraData = {
-  type: CellType.SAVINGS_HEADER;
-  value: number;
-};
-export type SavingExtraData = { type: CellType.SAVINGS; address: string };
 export type CoinDividerExtraData = {
   type: CellType.COIN_DIVIDER;
   value: number;
@@ -86,8 +78,6 @@ export type CellExtraData =
   | { type: CellType.NFTS_HEADER }
   | { type: CellType.LOADING_ASSETS }
   | NFTFamilyExtraData
-  | SavingExtraData
-  | SavingsHeaderExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData

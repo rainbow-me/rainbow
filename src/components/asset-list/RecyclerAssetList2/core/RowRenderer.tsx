@@ -3,8 +3,6 @@ import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
-import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
-import WrappedSavingsRow from '../WrappedSavingsRow';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { ExtendedState } from './RawRecyclerList';
 import {
@@ -16,8 +14,6 @@ import {
   NFTFamilyExtraData,
   PositionExtraData,
   PositionHeaderExtraData,
-  SavingExtraData,
-  SavingsHeaderExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -52,7 +48,6 @@ function rowRenderer(
     case CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE:
     case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
     case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
-    case CellType.SAVINGS_HEADER_SPACE_BEFORE:
     case CellType.EMPTY_WALLET_SPACER:
     case CellType.BIG_EMPTY_WALLET_SPACER:
     case CellType.EMPTY_ROW:
@@ -103,15 +98,6 @@ function rowRenderer(
           uniqueId={(data as CoinExtraData).uniqueId}
         />
       );
-    case CellType.SAVINGS_HEADER:
-      return (
-        <WrappedSavingsListHeader
-          // @ts-ignore
-          value={(data as SavingsHeaderExtraData).value}
-        />
-      );
-    case CellType.SAVINGS:
-      return <WrappedSavingsRow address={(data as SavingExtraData).address} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>

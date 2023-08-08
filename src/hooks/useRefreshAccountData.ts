@@ -8,7 +8,6 @@ import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
-import useSavingsAccount from './useSavingsAccount';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
@@ -19,8 +18,6 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { accountAddress, network, nativeCurrency } = useAccountSettings();
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
-  const { refetchSavings } = useSavingsAccount();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -62,8 +59,6 @@ export default function useRefreshAccountData() {
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getWalletENSAvatars,
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
-        refetchSavings(true),
         wc,
         uniswapPositions,
       ]);
@@ -72,14 +67,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [
-    accountAddress,
-    dispatch,
-    nativeCurrency,
-    network,
-    profilesEnabled,
-    refetchSavings,
-  ]);
+  }, [accountAddress, dispatch, nativeCurrency, network, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
