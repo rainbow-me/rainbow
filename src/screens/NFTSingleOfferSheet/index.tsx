@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { Linking, View } from 'react-native';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
@@ -43,17 +44,17 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
 import { loadPrivateKey } from '@/model/wallet';
-import { Network } from '@/helpers';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { mainnet } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { WalletClient, createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
-import { getNetworkObj } from '@/networks';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import { estimateNFTOfferGas } from '@/handlers/nftOffers';
 import { useTheme } from '@/theme';
+import { Network } from '@/helpers';
+import { getNetworkObj } from '@/networks';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
@@ -104,6 +105,7 @@ export function NFTSingleOfferSheet() {
   const { data: nfts } = useLegacyNFTs({ address: accountAddress });
   const dispatch = useDispatch();
   const [signer, setSigner] = useState<WalletClient>();
+  const didErrorRef = useRef<boolean>(false);
 
   const { offer } = params as { offer: NftOffer };
 
@@ -126,8 +128,20 @@ export function NFTSingleOfferSheet() {
     }
   }, [nfts, offer.nft.uniqueId]);
 
+  const [timeRemaining, setTimeRemaining] = useState(
+    offer.validUntil
+      ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
+      : undefined
+  );
+  const isExpiring =
+    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
+  const isExpired = timeRemaining === 0;
+  const time = timeRemaining
+    ? getFormattedTimeQuantity(timeRemaining)
+    : undefined;
+
   useEffect(() => {
-    if (!isReadOnlyWallet) {
+    if (!isReadOnlyWallet && !isExpired) {
       (async () => {
         const privateKey = await loadPrivateKey(accountAddress, false);
         // @ts-ignore
@@ -187,6 +201,7 @@ export function NFTSingleOfferSheet() {
   }, [
     accountAddress,
     feeParam,
+    isExpired,
     isReadOnlyWallet,
     offer,
     startPollingGasFees,
@@ -197,12 +212,6 @@ export function NFTSingleOfferSheet() {
   useEffect(() => {
     setParams({ longFormHeight: height });
   }, [height, setParams]);
-
-  const [timeRemaining, setTimeRemaining] = useState(
-    offer.validUntil
-      ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
-      : undefined
-  );
 
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const listPrice = handleSignificantDecimals(
@@ -250,12 +259,7 @@ export function NFTSingleOfferSheet() {
       return () => clearInterval(interval);
     }
   }, [offer.validUntil]);
-  const isExpiring =
-    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
-  const isExpired = timeRemaining === 0;
-  const time = timeRemaining
-    ? getFormattedTimeQuantity(timeRemaining)
-    : undefined;
+
   const buttonColorFallback = useForegroundColor('accent');
 
   const acceptOffer = useCallback(async () => {
@@ -278,10 +282,33 @@ export function NFTSingleOfferSheet() {
             .toString()}`,
         ],
       },
-      precheck: true,
+      // precheck: true,
       wallet: signer!,
       onProgress: (steps: Execute['steps']) => {
-        steps.forEach(step =>
+        steps.forEach(step => {
+          if (step.error && !didErrorRef.current) {
+            didErrorRef.current = true;
+            logger.error(
+              new RainbowError(
+                `Error accepting offer on NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${step.error}`
+              )
+            );
+            Alert.alert(
+              'There was an error completing the transaction',
+              'Please contact Rainbow support for assistance.',
+              [
+                {
+                  onPress: () =>
+                    navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
+                  text: 'Go back',
+                },
+                {
+                  text: 'Cancel',
+                },
+              ]
+            );
+            return;
+          }
           step.items?.forEach(item => {
             if (
               item.txHash &&
@@ -321,28 +348,18 @@ export function NFTSingleOfferSheet() {
                 dispatch(dataAddNewTransaction(tx));
               }
             } else if (item.status === 'complete' && step.id === 'sale') {
+              // TODO: remove offer from query cache
+
               logger.info(
                 `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
               );
             }
-          })
-        );
-        navigate(Routes.PROFILE_SCREEN);
+          });
+        });
       },
     });
-  }, [
-    dispatch,
-    navigate,
-    nft,
-    offer.grossAmount.raw,
-    offer.netAmount.decimal,
-    offer.network,
-    offer.nft.contractAddress,
-    offer.nft.tokenId,
-    offer.paymentToken.address,
-    offer.paymentToken.symbol,
-    signer,
-  ]);
+    navigate(Routes.PROFILE_SCREEN);
+  }, [dispatch, navigate, nft, offer, signer]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -661,83 +678,85 @@ export function NFTSingleOfferSheet() {
                   </Column>
                 </Columns>
               </Inset>
-              {isReadOnlyWallet ? (
-                <AccentColorProvider
-                  color={offer.nft.predominantColor || buttonColorFallback}
-                >
-                  {/* @ts-ignore js component */}
-                  <Box
-                    as={ButtonPressAnimation}
-                    background="accent"
-                    height="46px"
-                    // @ts-ignore
-                    disabled={isExpired}
-                    width="full"
-                    borderRadius={99}
-                    justifyContent="center"
-                    alignItems="center"
-                    style={{ overflow: 'hidden' }}
-                    onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersViewedExternalOffer,
-                        {
-                          marketplace: offer.marketplace.name,
-                          offerPriceUSD: offer.grossAmount.usd,
-                          nft: {
-                            collectionAddress: offer.nft.contractAddress,
-                            tokenId: offer.nft.tokenId,
-                            network: offer.network,
-                          },
-                        }
-                      );
-                      Linking.openURL(offer.url);
-                    }}
+              {!isExpired &&
+                (isReadOnlyWallet ? (
+                  <AccentColorProvider
+                    color={offer.nft.predominantColor || buttonColorFallback}
                   >
-                    <Text
-                      color="label"
-                      align="center"
-                      size="17pt"
-                      weight="heavy"
+                    {/* @ts-ignore js component */}
+                    <Box
+                      as={ButtonPressAnimation}
+                      background="accent"
+                      height="46px"
+                      // @ts-ignore
+                      disabled={isExpired}
+                      width="full"
+                      borderRadius={99}
+                      justifyContent="center"
+                      alignItems="center"
+                      style={{ overflow: 'hidden' }}
+                      onPress={() => {
+                        analyticsV2.track(
+                          analyticsV2.event.nftOffersViewedExternalOffer,
+                          {
+                            marketplace: offer.marketplace.name,
+                            offerPriceUSD: offer.grossAmount.usd,
+                            nft: {
+                              collectionAddress: offer.nft.contractAddress,
+                              tokenId: offer.nft.tokenId,
+                              network: offer.network,
+                            },
+                          }
+                        );
+                        Linking.openURL(offer.url);
+                      }}
                     >
-                      {i18n.t(
-                        isExpired
-                          ? i18n.l.nft_offers.single_offer_sheet.offer_expired
-                          : i18n.l.nft_offers.single_offer_sheet.view_offer
-                      )}
-                    </Text>
-                  </Box>
-                </AccentColorProvider>
-              ) : (
-                <>
-                  {/* @ts-ignore */}
-                  <HoldToAuthorizeButton
-                    backgroundColor={
-                      offer.nft.predominantColor || buttonColorFallback
-                    }
-                    disabled={!isSufficientGas || !isValidGas || !signer}
-                    hideInnerBorder
-                    label={
-                      insufficientEth
-                        ? i18n.t(
-                            i18n.l.button.confirm_exchange.insufficient_eth
-                          )
-                        : 'Hold to Send'
-                    }
-                    onLongPress={acceptOffer}
-                    parentHorizontalPadding={28}
-                    showBiometryIcon={!insufficientEth}
-                  />
-                  {/* @ts-ignore */}
-                  <GasSpeedButton
-                    asset={{
-                      color: offer.nft.predominantColor || buttonColorFallback,
-                    }}
-                    horizontalPadding={0}
-                    currentNetwork={offer.network}
-                    theme={isDarkMode ? 'dark' : 'light'}
-                  />
-                </>
-              )}
+                      <Text
+                        color="label"
+                        align="center"
+                        size="17pt"
+                        weight="heavy"
+                      >
+                        {i18n.t(
+                          isExpired
+                            ? i18n.l.nft_offers.single_offer_sheet.offer_expired
+                            : i18n.l.nft_offers.single_offer_sheet.view_offer
+                        )}
+                      </Text>
+                    </Box>
+                  </AccentColorProvider>
+                ) : (
+                  <>
+                    {/* @ts-ignore */}
+                    <HoldToAuthorizeButton
+                      backgroundColor={
+                        offer.nft.predominantColor || buttonColorFallback
+                      }
+                      disabled={!isSufficientGas || !isValidGas || !signer}
+                      hideInnerBorder
+                      label={
+                        insufficientEth
+                          ? i18n.t(
+                              i18n.l.button.confirm_exchange.insufficient_eth
+                            )
+                          : 'Hold to Sell'
+                      }
+                      onLongPress={acceptOffer}
+                      parentHorizontalPadding={28}
+                      showBiometryIcon={!insufficientEth}
+                    />
+                    {/* @ts-ignore */}
+                    <GasSpeedButton
+                      asset={{
+                        color:
+                          offer.nft.predominantColor || buttonColorFallback,
+                      }}
+                      horizontalPadding={0}
+                      currentNetwork={offer.network}
+                      theme={isDarkMode ? 'dark' : 'light'}
+                    />
+                  </>
+                ))}
             </Inset>
           </View>
         </SimpleSheet>

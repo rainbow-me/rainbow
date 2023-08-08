@@ -411,9 +411,9 @@ export async function estimateGasWithPadding(
     /*
      * Reported ~400x per day, but if it's not actionable it might as well be a warning.
      */
-    logger.warn('Error calculating gas limit with padding', {
-      message: e.message,
-    });
+    // logger.warn('Error calculating gas limit with padding', {
+    //   message: e.message,
+    // });
     return estimatedGasLimit;
   }
 }

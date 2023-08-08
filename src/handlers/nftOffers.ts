@@ -1,4 +1,8 @@
-import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
+import {
+  Block,
+  JsonRpcProvider,
+  StaticJsonRpcProvider,
+} from '@ethersproject/providers';
 import {
   estimateGasWithPadding,
   getProviderForNetwork,
@@ -66,12 +70,11 @@ export const estimateNFTOfferGas = async (
 ): Promise<string | null> => {
   const provider = await getProviderForNetwork(offer.network);
   if (!sale) {
-    if (offer.marketplace.name === 'Blur') {
-      // rough gas estimate
-      return '1000000';
+    if (offer.marketplace.name !== 'Blur') {
+      // expecting sale tx data for all marketplaces except Blur
+      logger.warn('No sale tx data for NFT Offer');
     }
-    logger.warn('No sale tx data for NFT Offer');
-    return null;
+    return '1000000';
   }
   if (!approval) {
     return await estimateGasWithPadding(sale, null, null, provider);
@@ -106,6 +109,7 @@ export const estimateNFTOfferGas = async (
         return false;
       }
     });
+
     if (gasLimit && gasLimit >= ethUnits.basic_swap) {
       return gasLimit.toString();
     } else {
@@ -120,5 +124,6 @@ export const estimateNFTOfferGas = async (
       )
     );
   }
-  return null;
+  // fallback to some reasonable gas limit estimate
+  return '1000000';
 };
