@@ -57,6 +57,22 @@ import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const RAINBOW_FEE_FACTOR = 0.0085;
+const RAINBOW_FEE_ADDRESS_MAINNET =
+  '0x69d6d375de8c7ade7e44446df97f49e661fdad7d';
+const RAINBOW_FEE_ADDRESS_POLYGON =
+  '0xfb9af3db5e19c4165f413f53fe3bbe6226834548';
+
+function getRainbowFeeAddress(network: Network) {
+  switch (network) {
+    case Network.mainnet:
+      return RAINBOW_FEE_ADDRESS_MAINNET;
+    case Network.polygon:
+      return RAINBOW_FEE_ADDRESS_POLYGON;
+    default:
+      return undefined;
+  }
+}
 
 function Row({
   symbol,
@@ -106,15 +122,20 @@ export function NFTSingleOfferSheet() {
   const dispatch = useDispatch();
   const [signer, setSigner] = useState<WalletClient>();
   const didErrorRef = useRef<boolean>(false);
+  const didCompleteRef = useRef<boolean>(false);
 
   const { offer } = params as { offer: NftOffer };
 
   const insufficientEth = isSufficientGas === false && isValidGas;
-  const feeParam = `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-    offer.grossAmount.raw
-  )
-    .div(100)
-    .toString()}`;
+
+  const rainbowFeeAddress = getRainbowFeeAddress(offer.network as Network);
+  const feeParam = rainbowFeeAddress
+    ? `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
+        offer.grossAmount.raw
+      )
+        .mul(RAINBOW_FEE_FACTOR)
+        .toString()}`
+    : undefined;
 
   const txsRef = useRef<string[]>([]);
 
@@ -159,9 +180,11 @@ export function NFTSingleOfferSheet() {
               quantity: 1,
             },
           ],
-          options: {
-            feesOnTop: [feeParam],
-          },
+          options: feeParam
+            ? {
+                feesOnTop: [feeParam],
+              }
+            : undefined,
           precheck: true,
           wallet: reservoirSigner,
           onProgress: async (steps: Execute['steps']) => {
@@ -266,6 +289,26 @@ export function NFTSingleOfferSheet() {
     logger.info(
       `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
     );
+    const analyticsEventObject = {
+      nft: {
+        contractAddress: offer.nft.contractAddress,
+        tokenId: offer.nft.tokenId,
+        network: offer.network,
+      },
+      marketplace: offer.marketplace.name,
+      offerValue: offer.grossAmount.decimal,
+      offerValueUSD: offer.grossAmount.usd,
+      floorDifferencePercentage: offer.floorDifferencePercentage,
+      rainbowFee: offer.grossAmount.decimal * RAINBOW_FEE_FACTOR,
+      offerCurrency: {
+        symbol: offer.paymentToken.symbol,
+        contractAddress: offer.paymentToken.address,
+      },
+    };
+    analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+      status: 'in progress',
+      ...analyticsEventObject,
+    });
     getClient()?.actions.acceptOffer({
       items: [
         {
@@ -273,15 +316,11 @@ export function NFTSingleOfferSheet() {
           quantity: 1,
         },
       ],
-      options: {
-        feesOnTop: [
-          `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-            offer.grossAmount.raw
-          )
-            .div(100)
-            .toString()}`,
-        ],
-      },
+      options: feeParam
+        ? {
+            feesOnTop: [feeParam],
+          }
+        : undefined,
       // precheck: true,
       wallet: signer!,
       onProgress: (steps: Execute['steps']) => {
@@ -290,20 +329,24 @@ export function NFTSingleOfferSheet() {
             didErrorRef.current = true;
             logger.error(
               new RainbowError(
-                `Error accepting offer on NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${step.error}`
+                `Error selling NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${step.error}`
               )
             );
+            analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+              status: 'failed',
+              ...analyticsEventObject,
+            });
             Alert.alert(
-              'There was an error completing the transaction',
-              'Please contact Rainbow support for assistance.',
+              i18n.t(i18n.l.nft_offers.single_offer_sheet.error.title),
+              i18n.t(i18n.l.nft_offers.single_offer_sheet.error.message),
               [
                 {
                   onPress: () =>
                     navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
-                  text: 'Go back',
+                  text: i18n.t(i18n.l.button.go_back),
                 },
                 {
-                  text: 'Cancel',
+                  text: i18n.t(i18n.l.button.cancel),
                 },
               ]
             );
@@ -347,12 +390,21 @@ export function NFTSingleOfferSheet() {
                 // @ts-ignore TODO: fix when we overhaul tx list, types are not good
                 dispatch(dataAddNewTransaction(tx));
               }
-            } else if (item.status === 'complete' && step.id === 'sale') {
+            } else if (
+              item.status === 'complete' &&
+              step.id === 'sale' &&
+              !didCompleteRef.current
+            ) {
+              didCompleteRef.current = true;
               // TODO: remove offer from query cache
 
               logger.info(
                 `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
               );
+              analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+                status: 'completed',
+                ...analyticsEventObject,
+              });
             }
           });
         });

@@ -56,9 +56,33 @@ export function useNFTOffers({
       (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
       0
     );
+    const offerVarianceArray = nftOffers.map(
+      offer => offer.floorDifferencePercentage / 100
+    );
+    offerVarianceArray.sort((a, b) => a - b);
+
+    // calculate median offer variance
+    const middleIndex = Math.floor(offerVarianceArray.length / 2);
+    let medianVariance;
+    if (offerVarianceArray.length % 2 === 0) {
+      medianVariance =
+        (offerVarianceArray[middleIndex - 1] +
+          offerVarianceArray[middleIndex]) /
+        2;
+    } else {
+      medianVariance = offerVarianceArray[middleIndex];
+    }
+
+    // calculate mean offer variance
+    const meanVariance =
+      offerVarianceArray.reduce((acc, cur) => acc + cur, 0) /
+      offerVarianceArray.length;
+
     analyticsV2.identify({
       nftOffersAmount: nftOffers.length,
       nftOffersUSDValue: totalUSDValue,
+      nftOffersMedianVariance: medianVariance,
+      nftOffersMeanVariance: meanVariance,
     });
   }, [query.data?.nftOffers]);
 
