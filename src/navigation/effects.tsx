@@ -445,6 +445,7 @@ export const overlayExpandedPreset: StackNavigationOptions = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
+  detachPreviousScreen: false,
 };
 
 export const bottomSheetPreset: StackNavigationOptions &
