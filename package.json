@@ -118,7 +118,7 @@
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
     "@sentry/react-native": "3.4.1",
-    "@shopify/react-native-skia": "0.1.197",
+    "@shopify/react-native-skia": "0.1.200",
     "@tanstack/query-async-storage-persister": "4.2.1",
     "@tanstack/react-query": "4.2.1",
     "@tanstack/react-query-persist-client": "4.2.1",

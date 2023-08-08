@@ -4234,10 +4234,10 @@
     xcode "3.0.1"
     yargs "^16.2.0"
 
-"@shopify/react-native-skia@0.1.197":
-  version "0.1.197"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.197.tgz#7595ad52015b4ac869813c8b3c4f4bd231485f92"
-  integrity sha512-OW7SG/X57gKScz1n9e3GaxrjuiJoQYqXVsYQKuU/JtpoYkzZHpzH8cvBBEjHhuUzoMW0/ER25XB+SUk1K58ozg==
+"@shopify/react-native-skia@0.1.200":
+  version "0.1.200"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.200.tgz#3ef86750106a3b7e02496133173b449bfce6abc2"
+  integrity sha512-wAauKsLgScLspJY4KzoV0lWoXFCbzsUDJ3uso0o81HQMKBjDvXG9aOq/xE0KFLQsrQVICRdbfvvoYLQvSh/Xmw==
   dependencies:
     canvaskit-wasm "0.38.0"
     react-reconciler "^0.27.0"

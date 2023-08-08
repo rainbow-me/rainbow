@@ -506,7 +506,7 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-skia (0.1.197):
+  - react-native-skia (0.1.200):
     - React
     - React-callinvoker
     - React-Core
@@ -1261,7 +1261,7 @@ SPEC CHECKSUMS:
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
-  react-native-skia: e2cb3443442bf7680e3276dc82cd87c97f96b6f9
+  react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
