@@ -73,7 +73,9 @@ export default function useENSModifiedRegistration({
   const { records, initialRecords, name, mode } = useENSRegistration();
   const { accountAddress } = useAccountSettings();
 
-  const { data: uniqueTokens } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokens },
+  } = useLegacyNFTs({
     address: accountAddress,
   });
 

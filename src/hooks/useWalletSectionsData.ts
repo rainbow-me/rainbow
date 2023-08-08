@@ -29,7 +29,9 @@ export default function useWalletSectionsData({
     nativeCurrency,
   } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { data: allUniqueTokens } = useLegacyNFTs({
+  const {
+    data: { nfts: allUniqueTokens },
+  } = useLegacyNFTs({
     address: accountAddress,
   });
   const uniswap = useSelector(readableUniswapSelector);

@@ -1,10 +1,9 @@
 import React, { ReactNode } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { Box, Stack } from '@/design-system';
 
 interface ExchangeFloatingPanelsProps {
   children: ReactNode;
-  style: StyleProp<ViewStyle>;
 }
 
 const ExchangeFloatingPanels = React.forwardRef<

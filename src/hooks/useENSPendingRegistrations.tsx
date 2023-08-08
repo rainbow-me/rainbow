@@ -39,7 +39,9 @@ export default function useENSPendingRegistrations() {
     }
   );
 
-  const { data: uniqueTokens } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokens },
+  } = useLegacyNFTs({
     address: accountAddress,
   });
   const registrationImages = useMemo(() => {

@@ -3,6 +3,7 @@ import {
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
+  PoolboyIcon,
   PoolyIcon,
   RainDogeIcon,
   SmolIcon,
@@ -35,4 +36,6 @@ export const featureUnlockChecks: FeatureUnlockCheck[] = [
     await unlockableAppIconCheck(FiniliarIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
     await unlockableAppIconCheck(ZorbIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(PoolboyIcon, walletsToCheck),
 ];

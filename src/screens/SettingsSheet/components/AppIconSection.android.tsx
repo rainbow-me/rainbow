@@ -15,6 +15,7 @@ import AppIconPooly from '@/assets/appIconPooly.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
+import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -24,6 +25,7 @@ import {
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
+  PoolboyIcon,
   PoolyIcon,
   RainDogeIcon,
   SmolIcon,
@@ -116,6 +118,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Rainbow Zorb Energy',
     source: AppIconZorb,
     unlock_key: ZorbIcon.unlockKey,
+  },
+  poolboy: {
+    accentColor: 'poolboyPink',
+    key: PoolboyIcon.key,
+    name: 'Rainbow Poolboy',
+    source: AppIconPoolboy,
+    unlock_key: PoolboyIcon.unlockKey,
   },
 };
 

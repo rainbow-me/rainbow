@@ -139,8 +139,10 @@ export default function useInitializeWallet() {
           await loadAccountData(network);
           logger.sentry('loaded account data', network);
         }
+        if (!switching) {
+          hideSplashScreen();
+        }
 
-        hideSplashScreen();
         logger.sentry('Hide splash screen');
         initializeAccountData();
 
@@ -171,8 +173,8 @@ export default function useInitializeWallet() {
         // TODO specify error states more granular
         if (!switching) {
           await runKeychainIntegrityChecks();
+          hideSplashScreen();
         }
-        hideSplashScreen();
         captureException(error);
         Alert.alert(lang.t('wallet.something_went_wrong_importing'));
         dispatch(appStateUpdate({ walletReady: true }));

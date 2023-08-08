@@ -140,7 +140,7 @@ export default function useENSSearch({
     nativeCurrency,
   ]);
 
-  const { data, status, isIdle, isLoading } = useQuery(
+  const { data, status, isLoading, fetchStatus } = useQuery(
     [
       'getRegistrationValues',
       [
@@ -165,6 +165,7 @@ export default function useENSSearch({
   const isRegistered = status === 'success' && data?.available === false;
   const isPending = status === 'success' && data?.pending === true;
   const isInvalid = status === 'success' && !data?.valid;
+  const isIdle = isLoading && fetchStatus === 'idle';
 
   return {
     data,

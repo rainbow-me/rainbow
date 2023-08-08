@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Handle, InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedScrollHandler,
-  Value,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { PropsWithChildren } from 'react';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);

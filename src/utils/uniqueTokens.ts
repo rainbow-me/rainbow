@@ -1,6 +1,4 @@
 import { UniqueAsset } from '@/entities';
-import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
-import supportedUriExtensions from '@/helpers/supportedUriExtensions';
 
 export const uniqueTokenTypes = {
   ENS: 'ENS',
@@ -27,30 +25,13 @@ export function getUniqueTokenType(asset: UniqueAsset) {
 }
 
 export function getUniqueTokenFormat(asset: UniqueAsset) {
-  const { animation_url, image_url } = asset;
-  const assetUrl = animation_url || image_url || '';
-  if (
-    isSupportedUriExtension(
-      assetUrl,
-      supportedUriExtensions.SUPPORTED_3D_EXTENSIONS
-    )
-  ) {
+  if (asset?.model_properties) {
     return uniqueTokenFormats['3d'];
   }
-  if (
-    isSupportedUriExtension(
-      assetUrl,
-      supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
-    )
-  ) {
+  if (asset?.audio_properties) {
     return uniqueTokenFormats.audio;
   }
-  if (
-    isSupportedUriExtension(
-      assetUrl,
-      supportedUriExtensions.SUPPORTED_VIDEO_EXTENSIONS
-    )
-  ) {
+  if (asset?.video_properties) {
     return uniqueTokenFormats.video;
   }
   return uniqueTokenFormats.image;

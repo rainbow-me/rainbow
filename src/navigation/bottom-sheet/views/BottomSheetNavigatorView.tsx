@@ -13,6 +13,7 @@ import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@/hooks';
 
 type Props = BottomSheetNavigationConfig & {
+  // @ts-ignore type mismatch
   state: StackNavigationState;
   navigation: BottomSheetNavigationHelpers;
   descriptors: BottomSheetDescriptorMap;
@@ -30,6 +31,7 @@ const BottomSheetNavigatorView = ({
   //#region variables
   const descriptorsCache = useRef<BottomSheetDescriptorMap>({});
   const [firstKey, ...restKeys] = useMemo(
+    // @ts-ignore navigation type mismatch
     () => state.routes.map(route => route.key),
     [state.routes]
   );
@@ -37,6 +39,7 @@ const BottomSheetNavigatorView = ({
   /**
    * we cache all presented routes descriptor
    */
+  // @ts-ignore type mismatch
   restKeys.forEach(key => {
     descriptorsCache.current[key] = descriptors[key];
   });

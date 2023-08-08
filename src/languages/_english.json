@@ -695,6 +695,8 @@
         "pooly_title": "You've unlocked a\nRainbow Pooly",
         "zorb_text": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient.",
         "zorb_title": "You've unlocked\nRainbow Zorb Energy!",
+        "poolboy_text": "A special edition Rainbow x Poolsuite Icon for onchain summer.",
+        "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
         "title": "You've unlocked\nRainbow 􀆄 %{partner}",
         "button": "Snag the icon"
       },
@@ -762,9 +764,13 @@
         "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Optimism?"
       },
+      "base": {
+        "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Base"
+      },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Zora Network?"
+        "title": "What's Zora?"
       },
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
@@ -1079,7 +1085,8 @@
     "nft_offers": {
       "card": {
         "title": { "singular": "1 Offer", "plural": "%{numOffers} Offers" },
-        "button": "View All Offers"
+        "button": "View All Offers",
+        "expired": "Expired"
       },
       "sheet": {
         "title": "Offers",

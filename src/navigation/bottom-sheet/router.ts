@@ -10,6 +10,7 @@ import { actions } from './actions';
 
 export const router = (
   routerOptions: StackRouterOptions
+  // @ts-ignore type mismatch
 ): Router<StackNavigationState, CommonNavigationAction | StackActionType> => {
   const stackRouter = StackRouter(routerOptions);
 

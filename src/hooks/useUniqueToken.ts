@@ -1,8 +1,5 @@
 import React from 'react';
 
-import isSupportedUriExtension from '@/helpers/isSupportedUriExtension';
-import supportedUriExtensions from '@/helpers/supportedUriExtensions';
-
 export type useUniqueTokenResult = {
   readonly supports3d: boolean;
   readonly supportsAudio: boolean;
@@ -20,20 +17,13 @@ export default function useUniqueToken(
 ): useUniqueTokenResult {
   return React.useMemo((): useUniqueTokenResult => {
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
-      const { animation_url, image_url } = maybeUniqueToken;
-      const assetUrl = animation_url || image_url;
-      const supports3d = isSupportedUriExtension(
-        assetUrl,
-        supportedUriExtensions.SUPPORTED_3D_EXTENSIONS
-      );
-      const supportsAudio = isSupportedUriExtension(
-        assetUrl,
-        supportedUriExtensions.SUPPORTED_AUDIO_EXTENSIONS
-      );
-      const supportsVideo = isSupportedUriExtension(
-        assetUrl,
-        supportedUriExtensions.SUPPORTED_VIDEO_EXTENSIONS
-      );
+      const supports3d = !!maybeUniqueToken?.model_properties;
+      const supportsAudio = !!maybeUniqueToken?.audio_properties;
+      console.log({
+        videoProps: maybeUniqueToken?.video_properties,
+        video: maybeUniqueToken?.video_url,
+      });
+      const supportsVideo = !!maybeUniqueToken?.video_properties;
       return { supports3d, supportsAudio, supportsVideo };
     }
     return fallbackResult;
