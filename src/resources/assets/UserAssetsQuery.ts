@@ -16,7 +16,7 @@ import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { useQuery } from '@tanstack/react-query';
-import { parseAddressAsset } from './assets';
+import { hideTokensWithUrls, parseAddressAsset } from './assets';
 import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 
 // ///////////////////////////////////////////////
@@ -91,6 +91,9 @@ async function userAssetsQueryFunction({
           });
         }, {});
     }
+
+    // add tokens with URLs to hidden list
+    hideTokensWithUrls(parsedSuccessResults, address);
 
     // Temporary: update data redux with address assets
     const { dispatch } = store;

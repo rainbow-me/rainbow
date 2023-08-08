@@ -3,10 +3,8 @@ import {
   TransactionResponse,
 } from '@ethersproject/providers';
 import { find, isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
-import { MMKV } from 'react-native-mmkv';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import {
   cancelDebouncedUpdateGenericAssets,
   debouncedUpdateGenericAssets,
@@ -37,7 +35,6 @@ import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
 import { parseAsset, parseNewTransaction, parseTransactions } from '@/parsers';
-import { setHiddenCoins } from '@/redux/editOptions';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
@@ -57,34 +54,6 @@ import { queryClient } from '@/react-query';
 import { nftsQueryKey } from '@/resources/nfts';
 import { QueryClient } from '@tanstack/react-query';
 import { ratioGetUserActivityItem } from '@/resources/f2c';
-
-const storage = new MMKV();
-
-/**
- * Adds new hidden coins for an address and updates key-value storage.
- *
- * @param coins New coin IDs.
- * @param dispatch The Redux dispatch.
- * @param address The address to hide coins for.
- */
-function addHiddenCoins(
-  coins: string[],
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  address: string
-) {
-  const storageKey = 'hidden-coins-obj-' + address;
-  const storageEntity = storage.getString(storageKey);
-  const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
-  const newHiddenCoins = [
-    ...list.filter((i: string) => !coins.includes(i)),
-    ...coins,
-  ].reduce((acc, curr) => {
-    acc[curr] = true;
-    return acc;
-  }, {} as BooleanMap);
-  dispatch(setHiddenCoins(newHiddenCoins));
-  storage.set(storageKey, JSON.stringify(newHiddenCoins));
-}
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 

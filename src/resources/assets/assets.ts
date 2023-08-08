@@ -1,10 +1,22 @@
 import lang from 'i18n-js';
+import isValidDomain from 'is-valid-domain';
+import { MMKV } from 'react-native-mmkv';
 import { AssetType, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
+import { setHiddenCoins } from '@/redux/editOptions';
+import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
-import { AddysAddressAsset, AddysAsset, ParsedAsset } from './types';
+import {
+  AddysAddressAsset,
+  AddysAsset,
+  ParsedAsset,
+  RainbowAddressAssets,
+} from './types';
+import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+
+const storage = new MMKV();
 
 const MAINNET_CHAIN_ID = ethereumUtils.getChainIdFromNetwork(Network.mainnet);
 
@@ -66,3 +78,43 @@ export function parseAddressAsset({
     balance: convertRawAmountToBalance(quantity, asset),
   };
 }
+
+/**
+ * Adds new hidden coins for an address and updates key-value storage.
+ *
+ * @param coins New coin IDs.
+ * @param address The address to hide coins for.
+ */
+function addHiddenCoins(coins: string[], address: string) {
+  const { dispatch } = store;
+  const storageKey = 'hidden-coins-obj-' + address;
+  const storageEntity = storage.getString(storageKey);
+  const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
+  const newHiddenCoins = [
+    ...list.filter((i: string) => !coins.includes(i)),
+    ...coins,
+  ].reduce((acc, curr) => {
+    acc[curr] = true;
+    return acc;
+  }, {} as BooleanMap);
+  dispatch(setHiddenCoins(newHiddenCoins));
+  storage.set(storageKey, JSON.stringify(newHiddenCoins));
+}
+
+const getTokenUrlScams = (tokens: RainbowAddressAssets): string[] =>
+  Object.values(tokens)
+    .filter(
+      asset =>
+        ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
+          (asset?.symbol && isValidDomain(asset.symbol))) &&
+        !asset.isVerified
+    )
+    .map(asset => asset.uniqueId);
+
+export const hideTokensWithUrls = (
+  tokens: RainbowAddressAssets,
+  address: string
+) => {
+  const tokensWithUrls = getTokenUrlScams(tokens);
+  addHiddenCoins(tokensWithUrls, address);
+};
