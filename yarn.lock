@@ -14431,10 +14431,10 @@ react-native-indicators@0.17.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-ios-context-menu@1.7.4:
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.7.4.tgz#37f3d32b292eef43f6126d9d708fafc471b1f442"
-  integrity sha512-qOu6VFVP2KH92HuXSzy6y86pKSfrkovJuWwXVnzc5PK6m40+H5+Ah8moUr5/yQJSD3FwlmqfKhyDMFO5MSlaBg==
+react-native-ios-context-menu@1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.7.6.tgz#f59d05fbd000c2030c620940ffb062dad16807cb"
+  integrity sha512-bYtHWM5Gtc1/Gn1jrTXN3btFi2aHYvcChCJARNmgS5lpwxFbEKyCzCH2VFN7Cv0/WoEdU5eO1EM6NxBjz45ANA==
 
 react-native-keyboard-area@1.0.6:
   version "1.0.6"

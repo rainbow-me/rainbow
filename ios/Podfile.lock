@@ -452,7 +452,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.5.0):
     - React
-  - react-native-ios-context-menu (1.7.4):
+  - react-native-ios-context-menu (1.7.6):
     - React-Core
   - react-native-mail (4.1.0):
     - React
@@ -1247,7 +1247,7 @@ SPEC CHECKSUMS:
   react-native-flipper: 9645ebaaae25790d3a46725497ef35e2b4afaf3a
   react-native-flipper-performance-plugin: 42ec5017abd26e7c5a1f527f2db92c14a90cabdb
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
-  react-native-ios-context-menu: 7bf49ec6006cc0c61d873419557b85eb1b9629fb
+  react-native-ios-context-menu: 1d59bb10c607ab027cabf8ef287f28831a0f04b4
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-menu: 52089949cbe30b035c51e54f92a7d99136c2fed4
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
