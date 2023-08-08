@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
 import { greaterThan } from '@/helpers/utilities';
@@ -12,6 +13,8 @@ import {
 } from '@/react-query';
 import { DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS } from '@/redux/data';
 import store from '@/redux/store';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { RainbowPositions } from '@/resources/defi/types';
 import { useQuery } from '@tanstack/react-query';
 import { parseAddressAsset } from './assets';
 import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
@@ -20,9 +23,9 @@ import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 // Query Types
 
 export type UserAssetsArgs = {
-  address?: string; // Address;
+  address: string; // Address;
   currency: NativeCurrencyKey;
-  connectedToHardhat: boolean;
+  connectedToHardhat?: boolean;
 };
 
 // ///////////////////////////////////////////////
@@ -69,16 +72,34 @@ async function userAssetsQueryFunction({
       },
     });
     const data = response.data;
-    const parsedResults = parseUserAssetsByChain(data);
+    let parsedSuccessResults = parseUserAssetsByChain(data);
+
+    // filter out positions data
+    const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+      positionsQueryKey({ address, currency })
+    );
+    const positionTokens = positionsObj?.positionTokens || [];
+    if (!isEmpty(positionTokens)) {
+      parsedSuccessResults = Object.keys(parsedSuccessResults)
+        .filter(
+          uniqueId =>
+            !positionTokens.find(positionToken => positionToken === uniqueId)
+        )
+        .reduce((cur, uniqueId) => {
+          return Object.assign(cur, {
+            [uniqueId]: parsedSuccessResults[uniqueId],
+          });
+        }, {});
+    }
 
     // Temporary: update data redux with address assets
     const { dispatch } = store;
     dispatch({
-      payload: parsedResults,
+      payload: parsedSuccessResults,
       type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
     });
 
-    return parsedResults;
+    return parsedSuccessResults;
   } catch (e) {
     return cachedAddressAssets;
   }
