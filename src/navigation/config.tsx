@@ -588,7 +588,7 @@ export const settingsOptions = (colors: any) => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.cardBackdrop,
     overflow: 'visible',
   },
   gestureEnabled: ios,
