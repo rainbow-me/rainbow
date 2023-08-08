@@ -16,15 +16,13 @@ import {
 import { Network } from '@/helpers/networkTypes';
 
 const ASSETS = 'uniswapassets';
-const LIQUIDITY = 'uniswapliquidity';
 const UNISWAP_POSITIONS = 'uniswapPositions';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
 const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetadata';
-const uniswapLiquidityVersion = '0.2.0';
 const uniswapPositionsVersion = '0.1.0';
 const uniswapFavoritesMetadataVersion = '0.1.0';
 
-export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, UNISWAP_POSITIONS];
+export const uniswapAccountLocalKeys = [ASSETS, UNISWAP_POSITIONS];
 
 export const getUniswapFavorites = (
   network: Network
@@ -70,28 +68,6 @@ export const saveUniswapPositions = (
     accountAddress,
     network,
     uniswapPositionsVersion
-  );
-
-export const getLiquidity = (accountAddress: any, network: Network) =>
-  getAccountLocal(
-    LIQUIDITY,
-    accountAddress,
-    network,
-    [],
-    uniswapLiquidityVersion
-  );
-
-export const saveLiquidity = (
-  liquidity: any,
-  accountAddress: any,
-  network: Network
-) =>
-  saveAccountLocal(
-    LIQUIDITY,
-    liquidity,
-    accountAddress,
-    network,
-    uniswapLiquidityVersion
   );
 
 export const getUniswapAssets = (accountAddress: any, network: Network) =>
