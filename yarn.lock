@@ -4033,6 +4033,13 @@
     color "^3.1.2"
     react-native-iphone-x-helper "^1.2.1"
 
+"@reservoir0x/reservoir-sdk@1.1.24":
+  version "1.1.24"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.1.24.tgz#69b8eb52ec11dc087fe715d2e70c22fe66b972a7"
+  integrity sha512-8CUJi/ut1Ts0HpMazLaAu2u1Rht6pLN/nfNvKhk2+ago4Y7VAxfEbYCLR47r8/urO9Qj2roFUm2gQsS/up1h7g==
+  dependencies:
+    axios "^0.27.2"
+
 "@rnx-kit/align-deps@2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@rnx-kit/align-deps/-/align-deps-2.2.4.tgz#3ed70da68276163ee9b362f1c625ccc4e17d364d"
@@ -6350,6 +6357,14 @@ axios@^0.26.1:
   integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
   dependencies:
     follow-redirects "^1.14.8"
+
+axios@^0.27.2:
+  version "0.27.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
+  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
+  dependencies:
+    follow-redirects "^1.14.9"
+    form-data "^4.0.0"
 
 babel-core@7.0.0-bridge.0, babel-core@^7.0.0-bridge.0:
   version "7.0.0-bridge.0"
@@ -9756,7 +9771,7 @@ flow-parser@^0.206.0:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
-follow-redirects@1.14.8, follow-redirects@^1.12.1, follow-redirects@^1.14.8:
+follow-redirects@1.14.8, follow-redirects@^1.12.1, follow-redirects@^1.14.8, follow-redirects@^1.14.9:
   version "1.14.8"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
   integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==

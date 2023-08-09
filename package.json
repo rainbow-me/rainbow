@@ -115,6 +115,7 @@
     "@react-navigation/material-top-tabs": "5.2.19",
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
+    "@reservoir0x/reservoir-sdk": "1.1.24",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
     "@sentry/react-native": "3.4.1",
