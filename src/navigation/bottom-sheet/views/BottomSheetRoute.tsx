@@ -50,6 +50,7 @@ const BottomSheetRoute = ({
   // #endregion
 
   // #region styles
+  // @ts-ignore type mismatch
   const screenContainerStyle: ViewStyle = useMemo(
     () => ({
       bottom: 0,

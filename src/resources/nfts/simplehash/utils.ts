@@ -10,6 +10,7 @@ import {
   SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
+import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ETH_ADDRESS,
@@ -32,7 +33,6 @@ import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
 import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
-import { handleNFTImages } from '@/utils/handleNFTImages';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -92,6 +92,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.bsc;
     case SimpleHashChain.Zora:
       return Network.zora;
+    case SimpleHashChain.Base:
+      return Network.base;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this
@@ -165,12 +167,12 @@ export function simpleHashNFTToUniqueAsset(
 ): UniqueAsset {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-
-  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
-    originalUrl: nft.image_url ?? nft.extra_metadata?.image_original_url,
-    previewUrl: nft.previews.image_large_url,
-    mimeType: nft.image_properties?.mime_type,
-  });
+  const { imageUrl, lowResUrl } = handleAndSignImages(
+    // @ts-ignore
+    nft.image_url,
+    nft.previews.image_large_url,
+    nft.extra_metadata?.image_original_url
+  );
 
   const marketplace = nft.collection.marketplace_pages?.[0];
 
@@ -187,13 +189,12 @@ export function simpleHashNFTToUniqueAsset(
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
 
   return {
-    animation_url: maybeSignUri(
-      nft?.image_url ??
-        nft?.video_url ??
-        nft.extra_metadata?.animation_original_url ??
-        undefined,
-      { fm: 'mp4' }
-    ),
+    animation_url:
+      nft?.video_url ??
+      nft.audio_url ??
+      nft.model_url ??
+      nft.extra_metadata?.animation_original_url ??
+      undefined,
     asset_contract: {
       address: lowercasedContractAddress,
       name: nft.contract.name || undefined,
@@ -259,12 +260,16 @@ export function simpleHashNFTToUniqueAsset(
       ? nft.name ?? `${nft.contract_address}_${nft.token_id}`
       : `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
+    video_url: nft.video_url,
+    video_properties: nft.video_properties,
+    audio_url: nft.audio_url,
+    audio_properties: nft.audio_properties,
+    model_url: nft.model_url,
+    model_properties: nft.model_properties,
   };
 }
 
 /**
- * DELETE ME, use `handleNFTImages` instead.
- *
  * Reformats, resizes and signs images provided by simplehash.
  * @param original original image url
  * @param preview preview image url

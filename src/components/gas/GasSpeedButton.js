@@ -369,6 +369,8 @@ const GasSpeedButton = ({
         return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
+      case networkTypes.zora:
+      case networkTypes.base:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }

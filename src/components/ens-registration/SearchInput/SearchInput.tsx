@@ -67,6 +67,7 @@ const SearchInput = ({
               width="full"
             />
           }
+          //@ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
           <SearchInputGradientBackground
@@ -90,6 +91,7 @@ const SearchInput = ({
               />
             </Inset>
           }
+          // @ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
           <SearchInputGradientBackground

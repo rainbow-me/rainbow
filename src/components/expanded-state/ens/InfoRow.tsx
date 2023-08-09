@@ -216,10 +216,14 @@ function ImageValue({
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const { data: uniqueTokensAccount } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokensAccount },
+  } = useLegacyNFTs({
     address: accountAddress,
   });
-  const { data: uniqueTokensProfile } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokensProfile },
+  } = useLegacyNFTs({
     address: address ?? '',
   });
   const isSelf = address === accountAddress;

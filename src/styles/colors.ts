@@ -132,6 +132,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     paleBlue: '#579DFF', // 87, 157, 255
     pink: '#FF54BB', // 255, 84, 187
     pinkLight: '#FF75E8', // '255, 117, 232'
+    poolboyPink: '#E46CA4', // '228, 108, 164',
+    poolboyPink06: 'rgba(228, 108, 164, 0.06)',
     poolyPurple: '#6434C4', // '100, 52, 196'
     poolyPurple06: 'rgba(100, 52, 196, 0.06)',
     purple: '#735CFF', // '115, 92, 255'
@@ -198,6 +200,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
   let networkColors = {
     arbitrum: '#2D374B',
+    base: '#0052FF',
     goerli: '#f6c343',
     gnosis: '#479E9C',
     mainnet: '#25292E',
@@ -382,6 +385,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
 
     networkColors = {
       arbitrum: '#ADBFE3',
+      base: '#3979FF',
       goerli: '#f6c343',
       gnosis: '#479E9C',
       mainnet: '#E0E8FF',

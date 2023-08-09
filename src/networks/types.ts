@@ -9,6 +9,7 @@ export enum Network {
   mainnet = 'mainnet',
   optimism = 'optimism',
   polygon = 'polygon',
+  base = 'base',
   bsc = 'bsc',
   zora = 'zora',
   gnosis = 'gnosis',

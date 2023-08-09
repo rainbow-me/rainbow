@@ -23,7 +23,7 @@ export default function useSwapInputHandlers() {
   const dispatch = useDispatch();
   const type = useSelector((state: AppState) => state.swap.type);
 
-  const { selectedGasFee } = useGas();
+  const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
   const supplyBalanceUnderlying = useSelector(
     (state: AppState) =>
@@ -51,7 +51,11 @@ export default function useSwapInputHandlers() {
         accountAsset
       ) {
         newAmount = toFixedDecimals(
-          ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset),
+          ethereumUtils.getBalanceAmount(
+            selectedGasFee,
+            accountAsset,
+            l1GasFeeOptimism
+          ),
           6
         );
         const transactionFee = subtract(oldAmount, newAmount);

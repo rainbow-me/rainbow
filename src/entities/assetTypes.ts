@@ -1,5 +1,6 @@
 export enum AssetType {
   arbitrum = 'arbitrum',
+  base = 'base',
   bsc = 'bsc',
   compound = 'compound',
   eth = 'eth',
@@ -15,6 +16,7 @@ export enum AssetType {
 
 export default {
   arbitrum: 'arbitrum',
+  base: 'base',
   bsc: 'bsc',
   compound: 'compound',
   eth: 'eth',

@@ -12,7 +12,10 @@ export default function useExternalWalletSectionsData({
   address?: string;
   type?: AssetListType;
 }) {
-  const { data: uniqueTokens, isInitialLoading } = useLegacyNFTs({
+  const {
+    data: { nfts: uniqueTokens },
+    isInitialLoading,
+  } = useLegacyNFTs({
     address: address ?? '',
   });
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });

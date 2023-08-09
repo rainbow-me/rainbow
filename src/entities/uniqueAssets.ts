@@ -61,6 +61,30 @@ export interface UniqueAsset {
   network: Network;
   seaport_sell_orders?: SeaportOrder[];
   predominantColor?: string;
+
+  // hacky shit
+  video_url: string | null;
+  video_properties: {
+    width: number | null;
+    height: number | null;
+    duration: number | null;
+    video_coding: string | null;
+    audio_coding: string | null;
+    size: number | string;
+    mime_type: string | null;
+  } | null;
+  audio_url: string | null;
+  audio_properties: {
+    duration: number | null;
+    audio_coding: string | null;
+    size: number | string;
+    mime_type: string | null;
+  } | null;
+  model_url: string | null;
+  model_properties: {
+    size: number | null;
+    mime_type: string | null;
+  } | null;
 }
 
 export interface UniqueAssetTrait {

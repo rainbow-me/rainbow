@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { FlashList } from '@shopify/flash-list';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   AccentColorProvider,
   BackgroundProvider,
+  Bleed,
   Box,
   Inline,
   Inset,
@@ -12,16 +14,12 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { FakeOfferRow, OfferRow } from './OfferRow';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import {
-  SortMenu,
-  SortOption,
-  SortOptions,
-} from '@/components/nft-offers/SortMenu';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -39,15 +37,17 @@ export const NFTOffersSheet = () => {
     accountAddress,
   } = useAccountProfile();
   const { isDarkMode } = useTheme();
+  const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
-  const [sortOption, setSortOption] = useState<SortOption>(SortOptions.Highest);
-
-  const { data, dataUpdatedAt, isLoading } = useNFTOffers({
+  const {
+    data: { nftOffers },
+    dataUpdatedAt,
+    isLoading,
+  } = useNFTOffers({
     walletAddress: accountAddress,
-    sortBy: sortOption.criterion,
   });
 
-  const offers = data?.nftOffers ?? [];
+  const offers = nftOffers ?? [];
 
   const totalUSDValue = offers.reduce(
     (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
@@ -91,13 +91,14 @@ export const NFTOffersSheet = () => {
                     {i18n.t(i18n.l.nft_offers.sheet.title)}
                   </Text>
                   <Box
-                    width={{ custom: PROFILE_AVATAR_SIZE }}
+                    paddingHorizontal={{ custom: 6.5 }}
                     height={{ custom: PROFILE_AVATAR_SIZE }}
                     borderRadius={PROFILE_AVATAR_SIZE / 2}
                     background="surfaceSecondary"
                     style={{
                       borderWidth: 1.5,
                       borderColor: separatorSecondary,
+                      minWidth: 36,
                     }}
                     alignItems="center"
                     justifyContent="center"
@@ -147,81 +148,83 @@ export const NFTOffersSheet = () => {
                       </Text>
                     )}
                   </Stack>
-                  <SortMenu
-                    sortOption={sortOption}
-                    setSortOption={setSortOption}
-                    type="sheet"
-                  />
+                  <SortMenu type="sheet" />
                 </Inline>
               </Stack>
             </Inset>
             <Separator color="separatorTertiary" />
-            <Inset top="20px">
-              <Stack space="20px">
-                {/* eslint-disable-next-line no-nested-ternary */}
-                {isLoading ? (
-                  <>
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                    <FakeOfferRow />
-                  </>
-                ) : offers.length ? (
-                  offers.map((offer: NftOffer) => (
-                    <OfferRow key={offer.nft.uniqueId} offer={offer} />
-                  ))
-                ) : (
-                  <Box
-                    paddingTop={{ custom: 180 }}
-                    width="full"
-                    alignItems="center"
+            {isLoading || offers.length ? (
+              <Inset vertical="10px">
+                <Bleed horizontal="20px">
+                  <FlashList
+                    data={offers}
+                    ListEmptyComponent={
+                      <>
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                        <FakeOfferRow />
+                      </>
+                    }
+                    estimatedItemSize={70}
+                    estimatedListSize={{
+                      height: 2 * deviceHeight,
+                      width: deviceWidth,
+                    }}
+                    renderItem={({ item }) => <OfferRow offer={item} />}
+                    keyExtractor={offer => offer.nft.uniqueId + offer.createdAt}
+                  />
+                </Bleed>
+              </Inset>
+            ) : (
+              <Box
+                paddingTop={{ custom: 180 }}
+                width="full"
+                alignItems="center"
+              >
+                <Stack space="36px">
+                  <Text
+                    align="center"
+                    color="labelSecondary"
+                    weight="bold"
+                    size="20pt"
                   >
-                    <Stack space="36px">
-                      <Text
-                        align="center"
-                        color="labelSecondary"
-                        weight="bold"
-                        size="20pt"
-                      >
-                        {i18n.t(i18n.l.nft_offers.sheet.no_offers_found)}
-                      </Text>
-                      <ButtonPressAnimation
-                        onPress={() => {
-                          // only allow refresh if data is at least 30 seconds old
-                          if (
-                            !dataUpdatedAt ||
-                            Date.now() - dataUpdatedAt > 30_000
-                          ) {
-                            queryClient.invalidateQueries({
-                              queryKey: nftOffersQueryKey({
-                                address: accountAddress,
-                                sortCriterion: sortOption.criterion,
-                              }),
-                            });
-                          }
-                        }}
-                      >
-                        <Text
-                          align="center"
-                          color="labelSecondary"
-                          size="34pt"
-                          weight="semibold"
-                        >
-                          􀅈
-                        </Text>
-                      </ButtonPressAnimation>
-                    </Stack>
-                  </Box>
-                )}
-              </Stack>
-            </Inset>
+                    {i18n.t(i18n.l.nft_offers.sheet.no_offers_found)}
+                  </Text>
+                  <ButtonPressAnimation
+                    onPress={() => {
+                      // only allow refresh if data is at least 30 seconds old
+                      if (
+                        !dataUpdatedAt ||
+                        Date.now() - dataUpdatedAt > 30_000
+                      ) {
+                        queryClient.invalidateQueries({
+                          queryKey: nftOffersQueryKey({
+                            address: accountAddress,
+                          }),
+                        });
+                      }
+                    }}
+                  >
+                    <Text
+                      align="center"
+                      color="labelSecondary"
+                      size="34pt"
+                      weight="semibold"
+                    >
+                      􀅈
+                    </Text>
+                  </ButtonPressAnimation>
+                </Stack>
+              </Box>
+            )}
           </Inset>
         </SimpleSheet>
       )}

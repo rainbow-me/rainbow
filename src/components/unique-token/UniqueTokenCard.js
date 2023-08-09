@@ -70,7 +70,6 @@ const UniqueTokenCard = ({
           isCard
           item={item}
           resizeMode={resizeMode}
-          size={size}
           small={smallENSName}
         />
         {borderEnabled && (

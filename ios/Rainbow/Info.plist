@@ -25,6 +25,15 @@
 					<string>pooly</string>
 				</array>
 			</dict>
+			<key>poolboy</key>
+    	<dict>
+        <key>UIPrerenderedIcon</key>
+        <false/>
+        <key>CFBundleIconFiles</key>
+        <array>
+          <string>poolboy</string>
+        </array>
+    	</dict>
 			<key>smol</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>

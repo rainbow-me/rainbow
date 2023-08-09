@@ -8,13 +8,24 @@ import {
   ImportOrWatchWalletSheetParams,
 } from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
+import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
 import { BackgroundProvider } from '@/design-system';
-import { StatusBar, View } from 'react-native';
+import { Dimensions, StatusBar, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
+import { colors } from '@/styles';
 
 const Swipe = createMaterialTopTabNavigator();
+
+const renderPager = (props: any) => (
+  <ScrollPagerWrapper
+    {...props}
+    {...(android && {
+      style: { height: Dimensions.get('window').height },
+    })}
+  />
+);
 
 type RouteParams = {
   AddWalletNavigatorParams: AddWalletSheetParams &
@@ -51,6 +62,7 @@ export const AddWalletNavigator = () => {
               initialRouteName={Routes.ADD_WALLET_SHEET}
               swipeEnabled={false}
               tabBar={() => null}
+              pager={renderPager}
             >
               <Swipe.Screen
                 component={AddWalletSheet}

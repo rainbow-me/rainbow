@@ -296,6 +296,7 @@ export const walletConnectRemovePendingRedirect = (
  */
 export const walletConnectOnSessionRequest = (
   uri: string,
+  connector?: string,
   callback?: WalletconnectRequestCallback
 ) => async (
   dispatch: ThunkDispatch<StoreAppState, unknown, never>,
@@ -357,6 +358,7 @@ export const walletConnectOnSessionRequest = (
             analytics.track('Approved new WalletConnect session', {
               dappName,
               dappUrl,
+              connector,
             });
           } else if (!timedOut) {
             await dispatch(
@@ -366,6 +368,7 @@ export const walletConnectOnSessionRequest = (
             analytics.track('Rejected new WalletConnect session', {
               dappName,
               dappUrl,
+              connector,
             });
           } else {
             callback?.('timedOut', dappScheme);
@@ -376,6 +379,7 @@ export const walletConnectOnSessionRequest = (
               bridge,
               dappName,
               dappUrl,
+              connector,
             });
           }
         },
@@ -406,6 +410,7 @@ export const walletConnectOnSessionRequest = (
         analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
+          connector,
         });
 
         meta = {
@@ -567,7 +572,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               analytics.track('Approved WalletConnect network switch', {
                 chainId,
                 dappName,
-                // @ts-ignore
                 dappUrl,
               });
               dispatch(walletConnectRemovePendingRedirect('connect'));
@@ -578,7 +582,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
               });
               analytics.track('Rejected new WalletConnect chain request', {
                 dappName,
-                // @ts-ignore
                 dappUrl,
               });
             }
@@ -644,7 +647,6 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         InteractionManager.runAfterInteractions(() => {
           analytics.track('Showing Walletconnect signing request', {
             dappName,
-            // @ts-ignore
             dappUrl,
           });
         });

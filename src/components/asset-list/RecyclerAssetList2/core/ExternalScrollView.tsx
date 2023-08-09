@@ -53,6 +53,7 @@ const ExternalScrollViewWithRef = React.forwardRef<
       contentInset={{ top: insets.top }}
       contentOffset={{ x: 0, y: -insets.top }}
       onScroll={event}
+      //@ts-ignore possibly undefined
       ref={scrollViewRef}
     />
   );
