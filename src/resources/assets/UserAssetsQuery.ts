@@ -48,6 +48,27 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
+const fetchUserAssetsForChainIds = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  chainIds: number[]
+) => {
+  const chainIdsString = chainIds.join(',');
+  const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets`;
+
+  const response = await rainbowFetch(url, {
+    method: 'get',
+    params: {
+      currency: currency.toLowerCase(),
+    },
+    headers: {
+      Authorization: `Bearer ${ADDYS_API_KEY}`,
+    },
+  });
+
+  return response.data;
+};
+
 async function userAssetsQueryFunction({
   queryKey: [{ address, currency, connectedToHardhat }],
 }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
@@ -72,19 +93,8 @@ async function userAssetsQueryFunction({
     const chainIds = RainbowNetworks.filter(
       network => network.enabled && network.networkType !== 'testnet'
     ).map(network => network.id);
-    const chainIdsString = chainIds.join(',');
-    const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets`;
 
-    const response = await rainbowFetch(url, {
-      method: 'get',
-      params: {
-        currency: currency.toLowerCase(),
-      },
-      headers: {
-        Authorization: `Bearer ${ADDYS_API_KEY}`,
-      },
-    });
-    const data = response.data;
+    const data = await fetchUserAssetsForChainIds(address, currency, chainIds);
     let parsedSuccessResults = parseUserAssetsByChain(data);
 
     // filter out positions data
