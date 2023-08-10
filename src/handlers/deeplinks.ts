@@ -274,6 +274,10 @@ const walletConnectURICache = new Set();
 
 function handleWalletConnect(uri?: string, connector?: string) {
   if (!uri) {
+    // On a "eth_sendTransaction" from wc2 the url is like
+    // rainbow://wc?requestId=anId&sessionTopic=aSessionTopic
+    setHasPendingDeeplinkPendingRedirect(true);
+
     logger.debug(`handleWalletConnect: skipping uri empty`, {});
     return;
   }
