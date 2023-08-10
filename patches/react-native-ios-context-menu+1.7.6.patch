@@ -1,17 +1,16 @@
 diff --git a/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButton.swift b/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButton.swift
-index 4926f62..22da184 100644
+index 50ac183..dea3cea 100644
 --- a/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButton.swift
 +++ b/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButton.swift
-@@ -43,6 +43,8 @@ class RNIContextMenuButton: UIButton {
+@@ -42,6 +42,7 @@ class RNIContextMenuButton: UIButton {
+ 
    // MARK: - RN Exported Props
    // -------------------------
- 
 +  @objc var menuAlignmentOverride: NSString?
-+
+ 
    @objc var menuConfig: NSDictionary? {
      didSet {
-       guard
-@@ -275,3 +277,21 @@ extension RNIContextMenuButton: RNIContextMenu {
+@@ -279,3 +280,21 @@ extension RNIContextMenuButton: RNIContextMenu {
      childVC.removeFromParent();
    };
  };
@@ -34,10 +33,10 @@ index 4926f62..22da184 100644
 +  }
 +}
 diff --git a/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButtonManager.m b/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButtonManager.m
-index 8af7359..a606051 100644
+index 511ee58..5bc275f 100644
 --- a/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButtonManager.m
 +++ b/node_modules/react-native-ios-context-menu/ios/src/ReactNative/RNIContextMenuButton/RNIContextMenuButtonManager.m
-@@ -34,6 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(menuConfig, NSDictionary);
+@@ -34,6 +34,7 @@ @interface RCT_EXTERN_MODULE(RNIContextMenuButtonManager, RCTViewManager)
  RCT_EXPORT_VIEW_PROPERTY(enableContextMenu   , BOOL);
  RCT_EXPORT_VIEW_PROPERTY(isMenuPrimaryAction , BOOL);
  RCT_EXPORT_VIEW_PROPERTY(isContextMenuEnabled, BOOL);
@@ -46,7 +45,7 @@ index 8af7359..a606051 100644
  // MARK: -  View Manager Commands
  // ------------------------------
 diff --git a/node_modules/react-native-ios-context-menu/lib/typescript/components/ContextMenuButton/ContextMenuButton.d.ts b/node_modules/react-native-ios-context-menu/lib/typescript/components/ContextMenuButton/ContextMenuButton.d.ts
-index d46a89e..d9e0b55 100644
+index 37719d5..d16c85b 100644
 --- a/node_modules/react-native-ios-context-menu/lib/typescript/components/ContextMenuButton/ContextMenuButton.d.ts
 +++ b/node_modules/react-native-ios-context-menu/lib/typescript/components/ContextMenuButton/ContextMenuButton.d.ts
 @@ -8,6 +8,7 @@ export declare class ContextMenuButton extends React.PureComponent<ContextMenuBu
@@ -82,17 +81,17 @@ index ad9f406..d5affc7 100644
      isMenuPrimaryAction?: boolean;
  };
 diff --git a/node_modules/react-native-ios-context-menu/lib/typescript/native_components/RNIContextMenuView.d.ts b/node_modules/react-native-ios-context-menu/lib/typescript/native_components/RNIContextMenuView.d.ts
-index 525a882..ec9b3eb 100644
+index 8fc2acd..09c7b33 100644
 --- a/node_modules/react-native-ios-context-menu/lib/typescript/native_components/RNIContextMenuView.d.ts
 +++ b/node_modules/react-native-ios-context-menu/lib/typescript/native_components/RNIContextMenuView.d.ts
-@@ -4,6 +4,7 @@ import type { MenuPreviewConfig } from '../types/MenuPreviewConfig';
+@@ -5,6 +5,7 @@ import type { MenuAuxiliaryPreviewConfig } from '../types/MenuAuxiliaryPreviewCo
  import type { OnMenuWillShowEvent, OnMenuWillHideEvent, OnMenuDidShowEvent, OnMenuDidHideEvent, OnMenuWillCancelEvent, OnMenuDidCancelEvent, OnMenuWillCreateEvent, OnPressMenuItemEvent, OnPressMenuPreviewEvent } from '../types/MenuEvents';
  export declare type RNIContextMenuViewProps = ViewProps & {
      menuConfig?: MenuConfig;
 +    menuAlignmentOverride?: 'left' | 'right';
      previewConfig?: MenuPreviewConfig;
+     auxiliaryPreviewConfig?: MenuAuxiliaryPreviewConfig;
      /**
-      * On iOS 15+, the `MenuActionConfig.discoverabilityTitle` is no longer
 diff --git a/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx b/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx
 index e545806..4fbb9ac 100644
 --- a/node_modules/react-native-ios-context-menu/src/components/ContextMenuButton/ContextMenuButton.tsx
@@ -141,14 +140,14 @@ index a609a8a..0acf10b 100644
    | 'onMenuWillShow'
    | 'onMenuWillHide'
 diff --git a/node_modules/react-native-ios-context-menu/src/native_components/RNIContextMenuView.ts b/node_modules/react-native-ios-context-menu/src/native_components/RNIContextMenuView.ts
-index 0ee1daf..6cf23bf 100644
+index a54e54a..361f9e4 100644
 --- a/node_modules/react-native-ios-context-menu/src/native_components/RNIContextMenuView.ts
 +++ b/node_modules/react-native-ios-context-menu/src/native_components/RNIContextMenuView.ts
-@@ -12,6 +12,7 @@ export type RNIContextMenuViewProps = ViewProps & {
+@@ -13,6 +13,7 @@ export type RNIContextMenuViewProps = ViewProps & {
    // -----------
  
-   menuConfig?: MenuConfig;
+   menuConfig?: MenuConfig; 
 +  menuAlignmentOverride?: 'left' | 'right';
    previewConfig?: MenuPreviewConfig;
+   auxiliaryPreviewConfig?: MenuAuxiliaryPreviewConfig;
  
-   /** 

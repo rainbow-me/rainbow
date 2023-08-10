@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';

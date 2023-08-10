@@ -469,7 +469,7 @@ export const addWalletNavigatorPreset = ({ route }: any) => ({
   height: route.params?.sheetHeight,
 });
 
-export const nftSingleOfferSheetPreset = ({ route }) => ({
+export const nftSingleOfferSheetPreset = ({ route }: any) => ({
   ...bottomSheetPreset,
   height: route?.params.longFormHeight,
 });

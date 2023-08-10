@@ -180,6 +180,8 @@ export const nftSingleOfferSheetConfig = {
     route: {
       params: { longFormHeight, ...params },
     },
+  }: {
+    route: { params: any };
   }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -189,7 +191,7 @@ export const nftSingleOfferSheetConfig = {
 };
 
 export const walletDiagnosticsSheetConfig = {
-  options: ({ route }) => {
+  options: ({ route }: { route: { params: any } }) => {
     return buildCoolModalConfig({
       ...route.params,
       scrollEnabled: true,
@@ -220,7 +222,7 @@ export const addTokenSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const positionSheetConfig = {
-  options: ({ route: { params = {} } }) => {
+  options: ({ route: { params = {} } }: { route: { params: any } }) => {
     const height = getPositionSheetHeight(params);
     return {
       ...buildCoolModalConfig({

@@ -44,6 +44,7 @@ import networkTypes from './helpers/networkTypes';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
+// eslint-disable-next-line import/no-unresolved
 import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
