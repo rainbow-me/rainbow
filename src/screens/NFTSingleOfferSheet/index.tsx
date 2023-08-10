@@ -397,11 +397,16 @@ export function NFTSingleOfferSheet() {
               // remove offer from cache
               queryClient.setQueryData(
                 nftOffersQueryKey({ address: accountAddress }),
-                (offers: NftOffer[] | undefined) =>
-                  offers?.filter(
-                    cachedOffer =>
-                      cachedOffer.nft.uniqueId !== offer.nft.uniqueId
-                  )
+                (
+                  cachedData: { nftOffers: NftOffer[] | undefined } | undefined
+                ) => {
+                  return {
+                    nftOffers: cachedData?.nftOffers?.filter(
+                      cachedOffer =>
+                        cachedOffer.nft.uniqueId !== offer.nft.uniqueId
+                    ),
+                  };
+                }
               );
 
               logger.info(
@@ -417,7 +422,16 @@ export function NFTSingleOfferSheet() {
       },
     });
     navigate(Routes.PROFILE_SCREEN);
-  }, [dispatch, navigate, nft, offer, signer]);
+  }, [
+    accountAddress,
+    dispatch,
+    feeParam,
+    navigate,
+    nft,
+    offer,
+    rainbowFeeDecimal,
+    signer,
+  ]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
