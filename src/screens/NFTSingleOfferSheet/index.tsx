@@ -33,7 +33,6 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { TransactionStatus, TransactionType } from '@/entities';
 import { analyticsV2 } from '@/analytics';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
@@ -50,10 +49,13 @@ import { useTheme } from '@/theme';
 import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
+import { queryClient } from '@/react-query';
+import { nftOffersQueryKey } from '@/resources/nftOffers';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-const RAINBOW_FEE_FACTOR = 0.0085;
+const RAINBOW_FEE_BIPS = 85;
+const BIPS_TO_DECIMAL_RATIO = 10000;
 const RAINBOW_FEE_ADDRESS_MAINNET =
   '0x69d6d375de8c7ade7e44446df97f49e661fdad7d';
 const RAINBOW_FEE_ADDRESS_POLYGON =
@@ -132,11 +134,12 @@ export function NFTSingleOfferSheet() {
   const insufficientEth = isSufficientGas === false && isValidGas;
 
   const rainbowFeeAddress = getRainbowFeeAddress(offer.network as Network);
+  const rainbowFeeDecimal =
+    (offer.grossAmount.decimal * RAINBOW_FEE_BIPS) / BIPS_TO_DECIMAL_RATIO;
   const feeParam = rainbowFeeAddress
-    ? `${RAINBOW_ROUTER_CONTRACT_ADDRESS}:${BigNumber.from(
-        offer.grossAmount.raw
-      )
-        .mul(RAINBOW_FEE_FACTOR)
+    ? `${rainbowFeeAddress}:${BigNumber.from(offer.grossAmount.raw)
+        .mul(RAINBOW_FEE_BIPS)
+        .div(BIPS_TO_DECIMAL_RATIO)
         .toString()}`
     : undefined;
 
@@ -293,7 +296,7 @@ export function NFTSingleOfferSheet() {
       offerValue: offer.grossAmount.decimal,
       offerValueUSD: offer.grossAmount.usd,
       floorDifferencePercentage: offer.floorDifferencePercentage,
-      rainbowFee: offer.grossAmount.decimal * RAINBOW_FEE_FACTOR,
+      rainbowFee: rainbowFeeDecimal,
       offerCurrency: {
         symbol: offer.paymentToken.symbol,
         contractAddress: offer.paymentToken.address,
@@ -390,7 +393,16 @@ export function NFTSingleOfferSheet() {
               !didCompleteRef.current
             ) {
               didCompleteRef.current = true;
-              // TODO: remove offer from query cache
+
+              // remove offer from cache
+              queryClient.setQueryData(
+                nftOffersQueryKey({ address: accountAddress }),
+                (offers: NftOffer[] | undefined) =>
+                  offers?.filter(
+                    cachedOffer =>
+                      cachedOffer.nft.uniqueId !== offer.nft.uniqueId
+                  )
+              );
 
               logger.info(
                 `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
@@ -726,92 +738,90 @@ export function NFTSingleOfferSheet() {
                   </Column>
                 </Columns>
               </Inset>
-              {!isExpired &&
-                (isReadOnlyWallet ? (
-                  <AccentColorProvider
-                    color={offer.nft.predominantColor || buttonColorFallback}
+              {isReadOnlyWallet ? (
+                <AccentColorProvider
+                  color={offer.nft.predominantColor || buttonColorFallback}
+                >
+                  {/* @ts-ignore js component */}
+                  <Box
+                    as={ButtonPressAnimation}
+                    background="accent"
+                    height="46px"
+                    // @ts-ignore
+                    disabled={isExpired}
+                    width="full"
+                    borderRadius={99}
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ overflow: 'hidden' }}
+                    onPress={() => {
+                      analyticsV2.track(
+                        analyticsV2.event.nftOffersViewedExternalOffer,
+                        {
+                          marketplace: offer.marketplace.name,
+                          offerValueUSD: offer.grossAmount.usd,
+                          offerValue: offer.grossAmount.decimal,
+                          offerCurrency: {
+                            symbol: offer.paymentToken.symbol,
+                            contractAddress: offer.paymentToken.address,
+                          },
+                          floorDifferencePercentage:
+                            offer.floorDifferencePercentage,
+                          nft: {
+                            contractAddress: offer.nft.contractAddress,
+                            tokenId: offer.nft.tokenId,
+                            network: offer.network,
+                          },
+                        }
+                      );
+                      Linking.openURL(offer.url);
+                    }}
                   >
-                    {/* @ts-ignore js component */}
-                    <Box
-                      as={ButtonPressAnimation}
-                      background="accent"
-                      height="46px"
-                      // @ts-ignore
-                      disabled={isExpired}
-                      width="full"
-                      borderRadius={99}
-                      justifyContent="center"
-                      alignItems="center"
-                      style={{ overflow: 'hidden' }}
-                      onPress={() => {
-                        analyticsV2.track(
-                          analyticsV2.event.nftOffersViewedExternalOffer,
-                          {
-                            marketplace: offer.marketplace.name,
-                            offerValueUSD: offer.grossAmount.usd,
-                            offerValue: offer.grossAmount.decimal,
-                            offerCurrency: {
-                              symbol: offer.paymentToken.symbol,
-                              contractAddress: offer.paymentToken.address,
-                            },
-                            floorDifferencePercentage:
-                              offer.floorDifferencePercentage,
-                            nft: {
-                              contractAddress: offer.nft.contractAddress,
-                              tokenId: offer.nft.tokenId,
-                              network: offer.network,
-                            },
-                          }
-                        );
-                        Linking.openURL(offer.url);
-                      }}
+                    <Text
+                      color="label"
+                      align="center"
+                      size="17pt"
+                      weight="heavy"
                     >
-                      <Text
-                        color="label"
-                        align="center"
-                        size="17pt"
-                        weight="heavy"
-                      >
-                        {i18n.t(
-                          isExpired
-                            ? i18n.l.nft_offers.single_offer_sheet.offer_expired
-                            : i18n.l.nft_offers.single_offer_sheet.view_offer
-                        )}
-                      </Text>
-                    </Box>
-                  </AccentColorProvider>
-                ) : (
-                  <>
-                    {/* @ts-ignore */}
-                    <HoldToAuthorizeButton
-                      backgroundColor={
-                        offer.nft.predominantColor || buttonColorFallback
-                      }
-                      disabled={!isSufficientGas || !isValidGas || !signer}
-                      hideInnerBorder
-                      label={
-                        insufficientEth
-                          ? i18n.t(
-                              i18n.l.button.confirm_exchange.insufficient_eth
-                            )
-                          : 'Hold to Sell'
-                      }
-                      onLongPress={acceptOffer}
-                      parentHorizontalPadding={28}
-                      showBiometryIcon={!insufficientEth}
-                    />
-                    {/* @ts-ignore */}
-                    <GasSpeedButton
-                      asset={{
-                        color:
-                          offer.nft.predominantColor || buttonColorFallback,
-                      }}
-                      horizontalPadding={0}
-                      currentNetwork={offer.network}
-                      theme={isDarkMode ? 'dark' : 'light'}
-                    />
-                  </>
-                ))}
+                      {i18n.t(
+                        isExpired
+                          ? i18n.l.nft_offers.single_offer_sheet.offer_expired
+                          : i18n.l.nft_offers.single_offer_sheet.view_offer
+                      )}
+                    </Text>
+                  </Box>
+                </AccentColorProvider>
+              ) : (
+                <>
+                  {/* @ts-ignore */}
+                  <HoldToAuthorizeButton
+                    backgroundColor={
+                      offer.nft.predominantColor || buttonColorFallback
+                    }
+                    disabled={!isSufficientGas || !isValidGas || !signer}
+                    hideInnerBorder
+                    label={
+                      insufficientEth
+                        ? i18n.t(
+                            i18n.l.button.confirm_exchange.insufficient_eth
+                          )
+                        : 'Hold to Sell'
+                    }
+                    onLongPress={acceptOffer}
+                    parentHorizontalPadding={28}
+                    showBiometryIcon={!insufficientEth}
+                  />
+                  {/* @ts-ignore */}
+                  <GasSpeedButton
+                    asset={{
+                      color: offer.nft.predominantColor || buttonColorFallback,
+                    }}
+                    horizontalPadding={0}
+                    currentNetwork={offer.network}
+                    theme={isDarkMode ? 'dark' : 'light'}
+                  />
+                </>
+              )}
             </Inset>
           </View>
         </SimpleSheet>
