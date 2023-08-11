@@ -207,13 +207,19 @@ export default forwardRef(function SlackSheet(
             scrollIndicatorInsets={scrollIndicatorInsets}
             showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
             showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-            {...(isInsideBottomSheet && IS_ANDROID
+            {...(isInsideBottomSheet
               ? {
                   onScrollWorklet: scrollHandler,
                 }
-              : {
-                  onScroll: scrollHandler,
-                })}
+              : {})}
+            // onScrollWorklet={scrollHandler}
+            // {...(isInsideBottomSheet && IS_ANDROID
+            //   ? {
+            //       onScrollWorklet: scrollHandler,
+            //     }
+            //   : {
+            //       onScroll: scrollHandler,
+            //     })}
           >
             {children}
             {!scrollEnabled && (
