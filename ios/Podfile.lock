@@ -7,7 +7,7 @@ PODS:
     - AppCenter/Core (= 4.4.3)
   - Base64 (1.1.2)
   - boost (1.76.0)
-  - BranchSDK (2.2.0)
+  - Branch (1.40.2)
   - BVLinearGradient (2.7.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
@@ -457,8 +457,8 @@ PODS:
     - React-Core
   - react-native-blur (4.3.0):
     - React-Core
-  - react-native-branch (5.9.0):
-    - BranchSDK (= 2.2.0)
+  - react-native-branch (5.3.1):
+    - Branch (= 1.40.2)
     - React-Core
   - react-native-camera (4.2.1):
     - React-Core
@@ -918,7 +918,7 @@ SPEC REPOS:
     - AppCenter
     - AppCenterReactNativeShared
     - Base64
-    - BranchSDK
+    - Branch
     - CocoaAsyncSocket
     - Firebase
     - FirebaseABTesting
@@ -1199,8 +1199,8 @@ SPEC CHECKSUMS:
   appcenter-core: c593b2e4ac28d6a21b6a217c4a5e6b3de7b0b00f
   AppCenterReactNativeShared: f395caeabde0dc3a11609dbcb737d0f14cd40e79
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
-  BranchSDK: 8749d10e30725d08b6c188ab90e6fd6223d204db
+  boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: 9eddecce05cd10491e2673b259c85885a462be33
@@ -1240,7 +1240,7 @@ SPEC CHECKSUMS:
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   Rainbow-Internals: 6e69837f173f2017e4fff07e64d77d429e5a958c
-  RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
+  RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
   RCTTypeSafety: cb09f3e4747b6d18331a15eb05271de7441ca0b3
   React: 13109005b5353095c052f26af37413340ccf7a5d
@@ -1258,7 +1258,7 @@ SPEC CHECKSUMS:
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: 50c9feabacbc5f49b61337ebc32192c6be7ec3c3
-  react-native-branch: 43f1c46d9a971cae0eeb337313991ce72b467351
+  react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833

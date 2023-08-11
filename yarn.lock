@@ -14772,10 +14772,10 @@ react-native-bootsplash@4.3.2:
     jimp "^0.16.1"
     picocolors "^1.0.0"
 
-react-native-branch@5.9.0:
-  version "5.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.9.0.tgz#8c3958453c67709e82548cc753b828c82f339765"
-  integrity sha512-sgKM2Y7LMAKLFX39qpzuyCEfOwOTwgg+Cg563usLxSggK44js2xojMk+Il/DQqmtRFtR0F+eVILGgfwn4icfIA==
+react-native-branch@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.3.1.tgz#872bb3500a6756e9e59883bd03fd8f9aab4857c6"
+  integrity sha512-d7gaQQg43bS57O4j8V07s7lqD5gu3G4Vrf23bS/RnxTmQMKcifVFpUCSyUYuiUyL4H58D7pL2GgsujP2TRuhkw==
 
 react-native-camera@4.2.1:
   version "4.2.1"
