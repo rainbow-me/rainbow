@@ -40,7 +40,9 @@ type Props = {
 export function NanoXDeviceAnimation({ state, isConnected }: Props) {
   const { colorMode } = useColorMode();
   const { colors } = useTheme();
-  const { width, height } = useDimensions();
+  const { width, height: deviceHeight } = useDimensions();
+
+  const height = deviceHeight - 100;
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
