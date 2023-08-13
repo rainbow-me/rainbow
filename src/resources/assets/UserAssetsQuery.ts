@@ -1,6 +1,8 @@
 import isEmpty from 'lodash/isEmpty';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+import { Network } from '@/helpers/networkTypes';
 import { greaterThan } from '@/helpers/utilities';
 import { RainbowNetworks } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
@@ -220,6 +222,12 @@ const fetchAndParseUserAssetsForChainIds = async (
 
   // add tokens with URLs to hidden list
   hideTokensWithUrls(parsedSuccessResults, address);
+
+  // update account empty state
+  if (!isEmpty(parsedSuccessResults)) {
+    saveAccountEmptyState(false, address, Network.mainnet);
+  }
+
   const erroredChainIds = data?.meta?.chain_ids_with_errors;
   return { erroredChainIds, meta: data?.meta, results: parsedSuccessResults };
 };
