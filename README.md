@@ -1,5 +1,8 @@
 ![](https://pbs.twimg.com/profile_banners/1103191459409420288/1573207178/1500x500)
 
+[![Twitter Follow](https://img.shields.io/twitter/follow/rainbowdotme?style=social)](https://twitter.com/rainbowdotme)
+[![Website Status](https://img.shields.io/website?url=https%3A%2F%2Frainbow.me)](https://rainbow.me)
+
 ### 🌈️ Rainbow
 
 > the Ethereum wallet that lives in your pocket!
