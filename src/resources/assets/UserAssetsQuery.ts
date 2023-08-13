@@ -271,6 +271,10 @@ export function useUserAssets(
   return useQuery(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
     userAssetsQueryFunction,
-    config
+    {
+      staleTime: 60_000, // 1 minute
+      refetchInterval: 300_000, // 5 minutes
+      ...config,
+    }
   );
 }
