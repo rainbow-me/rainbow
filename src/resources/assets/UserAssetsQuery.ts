@@ -13,10 +13,12 @@ import {
 } from '@/react-query';
 import { DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS } from '@/redux/data';
 import store from '@/redux/store';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
-import { RainbowPositions } from '@/resources/defi/types';
 import { useQuery } from '@tanstack/react-query';
-import { hideTokensWithUrls, parseAddressAsset } from './assets';
+import {
+  filterPositionsData,
+  hideTokensWithUrls,
+  parseAddressAsset,
+} from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 
@@ -94,29 +96,13 @@ async function userAssetsQueryFunction({
       network => network.enabled && network.networkType !== 'testnet'
     ).map(network => network.id);
 
-    const data = await fetchUserAssetsForChainIds(address, currency, chainIds);
-    let parsedSuccessResults = parseUserAssetsByChain(data);
-
-    // filter out positions data
-    const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-      positionsQueryKey({ address, currency })
-    );
-    const positionTokens = positionsObj?.positionTokens || [];
-    if (!isEmpty(positionTokens)) {
-      parsedSuccessResults = Object.keys(parsedSuccessResults)
-        .filter(
-          uniqueId =>
-            !positionTokens.find(positionToken => positionToken === uniqueId)
-        )
-        .reduce((cur, uniqueId) => {
-          return Object.assign(cur, {
-            [uniqueId]: parsedSuccessResults[uniqueId],
-          });
-        }, {});
-    }
+    const {
+      erroredChainIds,
+      results,
+    } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
+    let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors
-    const erroredChainIds = data?.meta?.chain_ids_with_errors;
     if (!isEmpty(erroredChainIds)) {
       const cachedDataForErroredChainIds = Object.keys(cachedAddressAssets)
         .filter(uniqueId => {
@@ -135,10 +121,9 @@ async function userAssetsQueryFunction({
         ...parsedSuccessResults,
         ...cachedDataForErroredChainIds,
       };
-    }
 
-    // add tokens with URLs to hidden list
-    hideTokensWithUrls(parsedSuccessResults, address);
+      // TODO JIN: trigger retry for errored chains
+    }
 
     // Temporary: update data redux with address assets
     dispatch({
@@ -157,6 +142,32 @@ const retryErroredChainIds = (chainsWithErrors: number[]) => {
 };
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
+
+interface AssetsAndErroredChains {
+  erroredChainIds: number[];
+  results: RainbowAddressAssets;
+}
+
+const fetchAndParseUserAssetsForChainIds = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  chainIds: number[]
+): Promise<AssetsAndErroredChains> => {
+  const data = await fetchUserAssetsForChainIds(address, currency, chainIds);
+  let parsedSuccessResults = parseUserAssetsByChain(data);
+
+  // filter out positions data
+  parsedSuccessResults = filterPositionsData(
+    address,
+    currency,
+    parsedSuccessResults
+  );
+
+  // add tokens with URLs to hidden list
+  hideTokensWithUrls(parsedSuccessResults, address);
+  const erroredChainIds = data?.meta?.chain_ids_with_errors;
+  return { erroredChainIds, results: parsedSuccessResults };
+};
 
 function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
   return Object.values(message?.payload?.assets || {}).reduce(

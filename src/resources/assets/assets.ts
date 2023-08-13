@@ -1,12 +1,17 @@
 import lang from 'i18n-js';
 import isValidDomain from 'is-valid-domain';
-import { MMKV } from 'react-native-mmkv';
-import { AssetType, ParsedAddressAsset } from '@/entities';
+import isEmpty from 'lodash/isEmpty';
+import { MMKV, NativeMMKV } from 'react-native-mmkv';
+import { AssetType, NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
+import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { queryClient } from '@/react-query';
 import { setHiddenCoins } from '@/redux/editOptions';
 import store from '@/redux/store';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { RainbowPositions } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
 import {
   AddysAddressAsset,
@@ -14,11 +19,36 @@ import {
   ParsedAsset,
   RainbowAddressAssets,
 } from './types';
-import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 
 const storage = new MMKV();
 
 const MAINNET_CHAIN_ID = ethereumUtils.getChainIdFromNetwork(Network.mainnet);
+
+export const filterPositionsData = (
+  address: string,
+  currency: NativeCurrencyKey,
+  assetsData: RainbowAddressAssets
+): RainbowAddressAssets => {
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
+    positionsQueryKey({ address, currency })
+  );
+  const positionTokens = positionsObj?.positionTokens || [];
+
+  if (isEmpty(positionTokens)) {
+    return assetsData;
+  }
+
+  return Object.keys(assetsData)
+    .filter(
+      uniqueId =>
+        !positionTokens.find(positionToken => positionToken === uniqueId)
+    )
+    .reduce((cur, uniqueId) => {
+      return Object.assign(cur, {
+        [uniqueId]: assetsData[uniqueId],
+      });
+    }, {});
+};
 
 export function parseAsset({
   address,
