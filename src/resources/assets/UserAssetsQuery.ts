@@ -20,7 +20,11 @@ import {
   parseAddressAsset,
 } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
-import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
+import {
+  AddysAccountAssetsMeta,
+  AddysAccountAssetsResponse,
+  RainbowAddressAssets,
+} from './types';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -122,7 +126,12 @@ async function userAssetsQueryFunction({
         ...cachedDataForErroredChainIds,
       };
 
-      // TODO JIN: trigger retry for errored chains
+      retryErroredChainIds(
+        address,
+        currency,
+        connectedToHardhat,
+        erroredChainIds
+      );
     }
 
     // Temporary: update data redux with address assets
@@ -137,14 +146,60 @@ async function userAssetsQueryFunction({
   }
 }
 
-const retryErroredChainIds = (chainsWithErrors: number[]) => {
-  // TODO JIN: retry for errored chainIds
+const retryErroredChainIds = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  connectedToHardhat: boolean,
+  erroredChainIds: number[]
+) => {
+  const { meta, results } = await fetchAndParseUserAssetsForChainIds(
+    address,
+    currency,
+    erroredChainIds
+  );
+  let parsedSuccessResults = results;
+  const successChainIds = meta?.chain_ids;
+
+  if (isEmpty(successChainIds)) {
+    return;
+  }
+
+  // grab cached data without data that will be replaced
+  const cache = queryClient.getQueryCache();
+  const cachedAddressAssets = (cache.find(
+    userAssetsQueryKey({ address, currency, connectedToHardhat })
+  )?.state?.data || {}) as RainbowAddressAssets;
+
+  const cachedData = Object.keys(cachedAddressAssets)
+    .filter(uniqueId => {
+      const cachedAsset = cachedAddressAssets[uniqueId];
+      return successChainIds?.find(
+        (chainId: number) => chainId !== cachedAsset.chainId
+      );
+    })
+    .reduce((cur, uniqueId) => {
+      return Object.assign(cur, {
+        [uniqueId]: cachedAddressAssets[uniqueId],
+      });
+    }, {});
+
+  parsedSuccessResults = {
+    ...cachedData,
+    ...parsedSuccessResults,
+  };
+
+  const { dispatch } = store;
+  dispatch({
+    payload: parsedSuccessResults,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+  });
 };
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
 
-interface AssetsAndErroredChains {
+interface AssetsAndMetadata {
   erroredChainIds: number[];
+  meta: AddysAccountAssetsMeta;
   results: RainbowAddressAssets;
 }
 
@@ -152,7 +207,7 @@ const fetchAndParseUserAssetsForChainIds = async (
   address: string,
   currency: NativeCurrencyKey,
   chainIds: number[]
-): Promise<AssetsAndErroredChains> => {
+): Promise<AssetsAndMetadata> => {
   const data = await fetchUserAssetsForChainIds(address, currency, chainIds);
   let parsedSuccessResults = parseUserAssetsByChain(data);
 
@@ -166,7 +221,7 @@ const fetchAndParseUserAssetsForChainIds = async (
   // add tokens with URLs to hidden list
   hideTokensWithUrls(parsedSuccessResults, address);
   const erroredChainIds = data?.meta?.chain_ids_with_errors;
-  return { erroredChainIds, results: parsedSuccessResults };
+  return { erroredChainIds, meta: data?.meta, results: parsedSuccessResults };
 };
 
 function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
