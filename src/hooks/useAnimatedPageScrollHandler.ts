@@ -1,6 +1,5 @@
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 import { NativeScrollEvent, Platform } from 'react-native';
-import { WorkletEventHandler } from 'react-native-reanimated';
 
 // we convert it to require to make sure each type is any
 // otherwise it breaks ts linting
@@ -11,6 +10,18 @@ const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated
   .default;
 const { makeRemote } = require('react-native-reanimated/src/reanimated2/core');
 /* eslint-enable import/no-commonjs */
+
+type WorkletEventHandler<T> = {
+  worklet: (event: T) => void;
+  eventNames: string[];
+  reattachNeeded: boolean;
+  listeners: Record<string, (event: T) => void>;
+  viewTag: number | undefined;
+  registrations: string[];
+  updateWorklet(newWorklet: (event: T) => void): void;
+  registerForEvents(viewTag: number, fallbackEventName?: string): void;
+  unregisterFromEvents(): void;
+};
 
 type DependencyList = unknown[] | undefined;
 type Context = Record<string, unknown>;

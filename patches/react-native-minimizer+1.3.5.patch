@@ -1,26 +1,26 @@
 diff --git a/node_modules/react-native-minimizer/android/build.gradle b/node_modules/react-native-minimizer/android/build.gradle
-index 43e070f..39157b0 100644
+index 43e070f..ee65662 100644
 --- a/node_modules/react-native-minimizer/android/build.gradle
 +++ b/node_modules/react-native-minimizer/android/build.gradle
 @@ -20,7 +20,7 @@ def safeExtGet(prop, fallback) {
  }
-
+ 
  apply plugin: 'com.android.library'
 -apply plugin: 'maven'
 +// apply plugin: 'maven'
-
+ 
  buildscript {
      // The Android Gradle plugin is only required when opening the android folder stand-alone.
 @@ -39,7 +39,7 @@ buildscript {
  }
-
+ 
  apply plugin: 'com.android.library'
 -apply plugin: 'maven'
 +// apply plugin: 'maven'
-
+ 
  android {
      compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
-@@ -109,7 +109,7 @@ afterEvaluate { project ->
+@@ -109,17 +109,17 @@ afterEvaluate { project ->
      task androidJavadoc(type: Javadoc) {
          source = android.sourceSets.main.java.srcDirs
          classpath += files(android.bootClasspath)
@@ -28,9 +28,21 @@ index 43e070f..39157b0 100644
 +        // classpath += files(project.getConfigurations().getByName('implementation').asList())
          include '**/*.java'
      }
-
+ 
+     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        classifier = 'javadoc'
++        archiveClassifier = 'javadoc'
+         from androidJavadoc.destinationDir
+     }
+ 
+     task androidSourcesJar(type: Jar) {
+-        classifier = 'sources'
++        archiveClassifier = 'sources'
+         from android.sourceSets.main.java.srcDirs
+         include '**/*.java'
+     }
 @@ -140,10 +140,10 @@ afterEvaluate { project ->
-
+ 
      task installArchives(type: Upload) {
          configuration = configurations.archives
 -        repositories.mavenDeployer {
@@ -52,7 +64,7 @@ index 4301f8d..b06152f 100644
 @@ -27,24 +27,9 @@ public class MinimizerModule extends ReactContextBaseJavaModule {
      //     callback.invoke("Received numberArgument: " + numberArgument + " stringArgument: " + stringArgument);
      // }
-
+ 
 -    @ReactMethod
 -    public void exit() {
 -      Activity activity = reactContext.getCurrentActivity();
@@ -79,9 +91,9 @@ index cad05c6..59560ea 100644
 --- a/node_modules/react-native-minimizer/ios/Minimizer.m
 +++ b/node_modules/react-native-minimizer/ios/Minimizer.m
 @@ -12,14 +12,12 @@ @implementation Minimizer
-
+ 
  RCT_EXPORT_MODULE()
-
+ 
 -RCT_EXPORT_METHOD(exit)
 -{
 -    exit(0);
@@ -100,11 +112,11 @@ index cad05c6..59560ea 100644
 @@ -30,10 +28,5 @@ @implementation Minimizer
    return;
  }
-
+ 
 -RCT_EXPORT_METHOD(minimize)
 -{
 -  UIApplication *app = [UIApplication sharedApplication];
 -  [app performSelector:@selector(suspend)];
 -};
-
+ 
  @end

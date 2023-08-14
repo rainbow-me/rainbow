@@ -28,6 +28,7 @@ const BottomSheetNavigator = ({
   ...rest
 }: Props) => {
   const { state, descriptors, navigation } = useNavigationBuilder<
+    // @ts-ignore type mismatch
     StackNavigationState,
     StackRouterOptions,
     BottomSheetNavigationOptions,
@@ -67,6 +68,7 @@ const BottomSheetNavigator = ({
     <NavigationHelpersContext.Provider value={navigation}>
       <BottomSheetNavigatorView
         {...rest}
+        // @ts-ignore type mismatch
         descriptors={descriptors}
         navigation={navigation}
         state={state}
@@ -76,6 +78,7 @@ const BottomSheetNavigator = ({
 };
 
 export const createBottomSheetNavigator = createNavigatorFactory<
+  // @ts-ignore type mismatch
   StackNavigationState,
   BottomSheetNavigationOptions,
   BottomSheetNavigationEventMap,

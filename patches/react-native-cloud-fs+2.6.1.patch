@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-native-cloud-fs/android/build.gradle b/node_modules/react-native-cloud-fs/android/build.gradle
+index 0c80504..2bb6dd7 100644
+--- a/node_modules/react-native-cloud-fs/android/build.gradle
++++ b/node_modules/react-native-cloud-fs/android/build.gradle
+@@ -43,9 +43,7 @@ allprojects {
+ 
+ dependencies {
+     implementation 'com.google.android.gms:play-services-drive:17.0.0'
+-    implementation ('com.google.android.gms:play-services-auth:17.0.0') {
+-        force = true;
+-    }
++    implementation ('com.google.android.gms:play-services-auth:17.0.0') 
+     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
+     implementation('com.google.api-client:google-api-client-android:1.26.0') {
+         exclude group: 'org.apache.httpcomponents'

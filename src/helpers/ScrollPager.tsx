@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Handle, InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedScrollHandler,
-  Value,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { PropsWithChildren } from 'react';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
@@ -131,13 +128,11 @@ class ScrollPager extends React.Component<PropsWithChildren> {
     }
   };
 
-  position = new Value(
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
-    this.props.navigationState.index * this.props.layout.width
-  );
+  // @ts-expect-error
+  position = this.props.navigationState.index * this.props.layout.width;
 
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
-  layoutWidthNode = new Value(this.props.layout.width);
+  layoutWidthNode = this.props.layout.width;
 
   changeIndexIfNeeded = (newIndex: any) => {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
@@ -245,13 +240,7 @@ class ScrollPager extends React.Component<PropsWithChildren> {
 }
 
 export default function ScrollPagerWrapperWithScrollHandler(props: any) {
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    if (event.layoutMeasurement.width) {
-      props.position.value =
-        event.contentOffset.x / event.layoutMeasurement.width;
-    }
-  });
-  return <ScrollPager {...props} scrollHandler={scrollHandler} />;
+  return <ScrollPager {...props} />;
 }
 
 const styles = StyleSheet.create({

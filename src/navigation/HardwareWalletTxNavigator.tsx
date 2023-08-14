@@ -15,6 +15,8 @@ import { DebugContext } from '@/logger/debugContext';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import ScrollPagerWrapper from './ScrollPagerWrapper';
+import { Dimensions } from 'react-native';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -28,6 +30,16 @@ export const setHardwareTXError = (value: boolean) => {
 };
 
 const Swipe = createMaterialTopTabNavigator();
+
+const renderPager = (props: any) => (
+  <ScrollPagerWrapper
+    {...props}
+    {...(android && {
+      style: { height: Dimensions.get('window').height },
+    })}
+  />
+);
+
 export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
 
 export type HardwareWalletTxParams = {
@@ -129,6 +141,7 @@ export const HardwareWalletTxNavigator = () => {
             swipeEnabled={false}
             sceneContainerStyle={{ backgroundColor: backgroundColor }}
             tabBar={() => null}
+            pager={renderPager}
           >
             <Swipe.Screen
               component={PairHardwareWalletAgainSheet}

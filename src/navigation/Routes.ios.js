@@ -7,7 +7,6 @@ import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
-import DepositModal from '../screens/DepositModal';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
@@ -32,7 +31,6 @@ import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import WithdrawModal from '../screens/WithdrawModal';
 import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
@@ -348,16 +346,6 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
         {...customGasSheetConfig}
-      />
-      <NativeStack.Screen
-        component={WithdrawModal}
-        name={Routes.SAVINGS_WITHDRAW_MODAL}
-        options={nativeStackDefaultConfigWithoutStatusBar}
-      />
-      <NativeStack.Screen
-        component={DepositModal}
-        name={Routes.SAVINGS_DEPOSIT_MODAL}
-        options={nativeStackDefaultConfigWithoutStatusBar}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

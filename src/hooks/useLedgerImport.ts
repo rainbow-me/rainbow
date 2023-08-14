@@ -105,7 +105,7 @@ export function useLedgerImport({
             error: error => {
               logger.error(
                 new RainbowError('[Ledger Import] - Error Pairing'),
-                { errorMessage: error.message }
+                { errorMessage: (error as Error).message }
               );
             },
             next: async e => {

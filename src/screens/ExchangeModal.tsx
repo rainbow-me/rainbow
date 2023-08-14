@@ -24,10 +24,10 @@ import { useDebounce } from 'use-debounce/lib';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
-  AnimatedExchangeFloatingPanels,
   ConfirmExchangeButton,
   DepositInfo,
   ExchangeDetailsRow,
+  ExchangeFloatingPanels,
   ExchangeHeader,
   ExchangeInputField,
   ExchangeNotch,
@@ -126,7 +126,7 @@ export const getDefaultSlippageFromConfig = (network: Network) => {
 };
 const NOOP = () => null;
 
-const FloatingPanels = AnimatedExchangeFloatingPanels;
+const FloatingPanels = ExchangeFloatingPanels;
 
 const Wrapper = KeyboardFixedOpenLayout;
 
