@@ -70,14 +70,10 @@ const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
-export const DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED =
-  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
-export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED =
-  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -160,10 +156,8 @@ type DataAction =
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
   | DataLoadAccountAssetsDataRequestAction
-  | DataLoadAccountAssetsDataReceivedAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
-  | DataLoadAccountAssetsDataFinalizedAction
   | DataUpdatePendingTransactionSuccessAction
   | DataClearStateAction;
 
@@ -230,15 +224,6 @@ interface DataLoadAccountAssetsDataRequestAction {
 }
 
 /**
- * The action to update `accountAssetsData` and indicate that data has been
- * received.
- */
-interface DataLoadAccountAssetsDataReceivedAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED;
-  payload: DataState['accountAssetsData'];
-}
-
-/**
  * The action to update `accountAssetsData` and indicate that loading was
  * successful.
  */
@@ -252,13 +237,6 @@ interface DataLoadAccountAssetsDataSuccessAction {
  */
 interface DataLoadAccountAssetsDataFailureAction {
   type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE;
-}
-
-/**
- * The action used to incidate that loading *all* account assets is finished.
- */
-export interface DataLoadAccountAssetsDataFinalizedAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED;
 }
 
 /**
@@ -1437,12 +1415,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: true,
       };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_RECEIVED: {
-      return {
-        ...state,
-        accountAssetsData: action.payload,
-      };
-    }
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
         ...state,
@@ -1455,12 +1427,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         isLoadingAssets: false,
       };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_FINALIZED: {
-      return {
-        ...state,
-        isLoadingAssets: false,
-      };
-    }
     case DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS:
       return {
         ...state,
