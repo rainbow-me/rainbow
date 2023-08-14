@@ -14,10 +14,10 @@ import logger from '@/utils/logger';
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
 
-const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
+const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string,
-  network: Network
+  network: Network = Network.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
   const balanceCheckerContract = new Contract(
     getNetworkObj(network).balanceCheckerAddress,
@@ -48,10 +48,9 @@ const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
   }
 };
 
-export const fetchTestnetOrHardhatBalances = async (
+export const fetchHardhatBalances = async (
   accountAddress: string,
-  network: Network,
-  nativeCurrency: string
+  network: Network = Network.mainnet
 ) => {
   const chainAssetsMap = keyBy(
     chainAssets[network as keyof typeof chainAssets],
@@ -65,7 +64,7 @@ export const fetchTestnetOrHardhatBalances = async (
       ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
       : asset_code.toLowerCase()
   );
-  const balances = await fetchTestnetOrHardhatBalancesWithBalanceChecker(
+  const balances = await fetchHardhatBalancesWithBalanceChecker(
     tokenAddresses,
     accountAddress,
     network
@@ -90,4 +89,5 @@ export const fetchTestnetOrHardhatBalances = async (
         ],
     };
   });
+  return updatedAssets;
 };

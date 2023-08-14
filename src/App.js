@@ -37,7 +37,11 @@ import {
   runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
-import { isL2Network } from './handlers/web3';
+import {
+  getCachedProviderForNetwork,
+  isHardHat,
+  isL2Network,
+} from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
@@ -221,6 +225,11 @@ class OldApp extends Component {
       ? ethereumUtils.getNetworkFromChainId(tx.chainId)
       : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
+
+    const provider = getCachedProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    const connectedToHardhat = isHardHat(providerUrl);
+
     const updateBalancesAfter = (timeout, isL2, network) => {
       const { accountAddress, nativeCurrency } = store.getState().settings;
       setTimeout(() => {
@@ -234,6 +243,7 @@ class OldApp extends Component {
               queryKey: userAssetsQueryKey({
                 address: accountAddress,
                 currency: nativeCurrency,
+                connectedToHardhat,
               }),
             });
           }
@@ -242,6 +252,7 @@ class OldApp extends Component {
             queryKey: userAssetsQueryKey({
               address: accountAddress,
               currency: nativeCurrency,
+              connectedToHardhat,
             }),
           });
         }

@@ -17,6 +17,7 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { useQuery } from '@tanstack/react-query';
 import { hideTokensWithUrls, parseAddressAsset } from './assets';
+import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 
 // ///////////////////////////////////////////////
@@ -25,7 +26,7 @@ import { AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 export type UserAssetsArgs = {
   address: string; // Address;
   currency: NativeCurrencyKey;
-  connectedToHardhat?: boolean;
+  connectedToHardhat: boolean;
 };
 
 // ///////////////////////////////////////////////
@@ -54,6 +55,18 @@ async function userAssetsQueryFunction({
   const cachedAddressAssets = (cache.find(
     userAssetsQueryKey({ address, currency, connectedToHardhat })
   )?.state?.data || {}) as RainbowAddressAssets;
+
+  const { dispatch } = store;
+
+  if (connectedToHardhat) {
+    const parsedTestnetOrHardhatResults = await fetchHardhatBalances(address);
+    // Temporary: update data redux with address assets
+    dispatch({
+      payload: parsedTestnetOrHardhatResults,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    });
+    return parsedTestnetOrHardhatResults;
+  }
 
   try {
     const chainIds = RainbowNetworks.filter(
@@ -96,7 +109,6 @@ async function userAssetsQueryFunction({
     hideTokensWithUrls(parsedSuccessResults, address);
 
     // Temporary: update data redux with address assets
-    const { dispatch } = store;
     dispatch({
       payload: parsedSuccessResults,
       type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,

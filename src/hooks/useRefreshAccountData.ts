@@ -2,6 +2,7 @@ import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import NetworkTypes from '../helpers/networkTypes';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
@@ -29,6 +30,10 @@ export default function useRefreshAccountData() {
       return Promise.all([delay(1250)]);
     }
 
+    const provider = getCachedProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    const connectedToHardhat = isHardHat(providerUrl);
+
     queryClient.invalidateQueries({
       queryKey: nftsQueryKey({ address: accountAddress }),
     });
@@ -42,6 +47,7 @@ export default function useRefreshAccountData() {
       queryKey: userAssetsQueryKey({
         address: accountAddress,
         currency: nativeCurrency,
+        connectedToHardhat,
       }),
     });
 
