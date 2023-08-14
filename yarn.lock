@@ -4242,6 +4242,11 @@
     recyclerlistview "4.2.0"
     tslib "2.4.0"
 
+"@shopify/react-native-skia@0.1.152":
+  version "0.1.152"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.152.tgz#8137908cc8f533872d892d60b7d98ebe19a1572a"
+  integrity sha512-2Z6yCer2czjIuRPKIRwXZMrXCSPbAMaHA11dLdaxZ7D7kBRSgGFwIrk4vwjvDNqww7YACqSScKkMk52pMwkFrQ==
+
 "@shopify/react-native-skia@0.1.200":
   version "0.1.200"
   resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.200.tgz#3ef86750106a3b7e02496133173b449bfce6abc2"
@@ -15056,6 +15061,10 @@ react-native-share@8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-8.2.1.tgz#f9933852de3ddd0f474ab63448e06c22cfecc9d4"
   integrity sha512-dUIgrcdg4nOHrbKN1w+hs17RZ+51NeXd62CEezPAd4tEyj2Ki1qeAxWnJe8ZPRwvB5/6ml7YUR/2PJApxGHCAQ==
+react-native-sound@0.11.2:
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.11.2.tgz#e542dc5b9e16ab4b3ac7e6eaddb1fc8d98da9038"
+  integrity sha512-LmGc8lgOK3qecYMVQpyHvww/C+wgT6sWeMpVbOe4NCRGC2yKd4fo4U0KBUo9PO7AqKESO3I/2GZg1/C0+bwiiA==
 
 react-native-sound@0.11.2:
   version "0.11.2"
