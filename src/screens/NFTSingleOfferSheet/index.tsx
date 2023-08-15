@@ -38,7 +38,6 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
 import { loadPrivateKey } from '@/model/wallet';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
-import { mainnet, polygon } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
@@ -67,17 +66,6 @@ function getRainbowFeeAddress(network: Network) {
       return RAINBOW_FEE_ADDRESS_MAINNET;
     case Network.polygon:
       return RAINBOW_FEE_ADDRESS_POLYGON;
-    default:
-      return undefined;
-  }
-}
-
-function getViemChainFromNetwork(network: Network) {
-  switch (network) {
-    case Network.mainnet:
-      return mainnet;
-    case Network.polygon:
-      return polygon;
     default:
       return undefined;
   }
@@ -143,7 +131,8 @@ export function NFTSingleOfferSheet() {
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
-  const rainbowFeeAddress = getRainbowFeeAddress(offer.network as Network);
+  const network = offer.network as Network;
+  const rainbowFeeAddress = getRainbowFeeAddress(network);
   const rainbowFeeDecimal =
     (offer.grossAmount.decimal * RAINBOW_FEE_BIPS) / BIPS_TO_DECIMAL_RATIO;
   const feeParam = rainbowFeeAddress
@@ -222,11 +211,12 @@ export function NFTSingleOfferSheet() {
   }, [offer.validUntil]);
 
   const estimateGas = useCallback(() => {
+    const networkObj = getNetworkObj(network);
     const signer = createWalletClient({
       // @ts-ignore
       account: accountAddress,
-      chain: getViemChainFromNetwork(offer.network as Network),
-      transport: http(getNetworkObj(offer.network as Network).rpc),
+      chain: networkObj,
+      transport: http(networkObj.rpc),
     });
     getClient()?.actions.acceptOffer({
       items: [
@@ -267,11 +257,18 @@ export function NFTSingleOfferSheet() {
         const gas = await estimateNFTOfferGas(offer, approval, sale);
         if (gas) {
           updateTxFee(gas, null);
-          startPollingGasFees();
+          startPollingGasFees(network);
         }
       },
     });
-  }, [accountAddress, feeParam, offer, startPollingGasFees, updateTxFee]);
+  }, [
+    accountAddress,
+    feeParam,
+    network,
+    offer,
+    startPollingGasFees,
+    updateTxFee,
+  ]);
 
   // estimate gas
   useEffect(() => {
@@ -310,10 +307,11 @@ export function NFTSingleOfferSheet() {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
+    const networkObj = getNetworkObj(network);
     const signer = createWalletClient({
       account,
-      chain: getViemChainFromNetwork(offer.network as Network),
-      transport: http(getNetworkObj(offer.network as Network).rpc),
+      chain: networkObj,
+      transport: http(networkObj.rpc),
     });
     getClient()?.actions.acceptOffer({
       items: [
@@ -438,7 +436,6 @@ export function NFTSingleOfferSheet() {
     nft,
     offer,
     rainbowFeeDecimal,
-    signer,
   ]);
 
   return (
@@ -820,7 +817,7 @@ export function NFTSingleOfferSheet() {
                     backgroundColor={
                       offer.nft.predominantColor || buttonColorFallback
                     }
-                    disabled={!isSufficientGas || !isValidGas || !signer}
+                    disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     label={
                       insufficientEth
