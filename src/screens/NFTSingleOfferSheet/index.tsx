@@ -211,6 +211,7 @@ export function NFTSingleOfferSheet() {
     }
   }, [offer.validUntil]);
 
+  // estimate gas
   useEffect(() => {
     if (!isReadOnlyWallet && !isExpired) {
       (async () => {
@@ -318,7 +319,6 @@ export function NFTSingleOfferSheet() {
             feesOnTop: [feeParam],
           }
         : undefined,
-      // precheck: true,
       wallet: signer!,
       onProgress: (steps: Execute['steps']) => {
         steps.forEach(step => {

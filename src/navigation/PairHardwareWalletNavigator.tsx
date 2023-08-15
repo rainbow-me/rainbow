@@ -11,8 +11,8 @@ import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/core';
 import { analyticsV2 } from '@/analytics';
-import { Dimensions } from 'react-native';
 import ScrollPagerWrapper from './ScrollPagerWrapper';
+import { Dimensions } from 'react-native';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -85,7 +85,6 @@ export function PairHardwareWalletNavigator() {
             sceneContainerStyle={{ backgroundColor }}
             swipeEnabled={false}
             tabBar={() => null}
-            lazy
             pager={renderPager}
           >
             <Swipe.Screen
