@@ -74,14 +74,14 @@ export const estimateNFTOfferGas = async (
       // expecting sale tx data for all marketplaces except Blur
       logger.warn('No sale tx data for NFT Offer');
     }
-    return '1000000';
+    return ethUnits.mainnet_nft_offer_gas_fee_fallback.toString();
   }
   if (!approval) {
     return await estimateGasWithPadding(sale, null, null, provider);
   }
   if (offer.network !== Network.mainnet) {
     // rough gas estimate
-    return '1500000';
+    return ethUnits.polygon_nft_offer_gas_fee_fallback.toString();
   }
   try {
     const stateDiff = await getStateDiff(provider, approval);
@@ -125,5 +125,5 @@ export const estimateNFTOfferGas = async (
     );
   }
   // fallback to some reasonable gas limit estimate
-  return '1000000';
+  return ethUnits.mainnet_nft_offer_gas_fee_fallback.toString();
 };

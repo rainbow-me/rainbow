@@ -3576,7 +3576,14 @@
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/semver-v6/-/semver-v6-6.3.3.tgz#ea6d23ade78a325f7a52750aab1526b02b628c29"
   integrity sha512-3Yc1fUTs69MG/uZbJlLSI3JISMn2UV2rg+1D/vROUqZyh3l6iYHCs7GMp+M40ZD7yOdDbYjJcU1oTJhrc+dGKg==
 
-"@noble/curves@1.0.0", "@noble/curves@~1.0.0":
+"@noble/curves@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.1.0.tgz#f13fc667c89184bc04cccb9b11e8e7bae27d8c3d"
+  integrity sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==
+  dependencies:
+    "@noble/hashes" "1.3.1"
+
+"@noble/curves@~1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.0.0.tgz#e40be8c7daf088aaf291887cbc73f43464a92932"
   integrity sha512-2upgEu0iLiDVDZkNLeFV2+ht0BAVgQnEmCk6JsOch9Rp8xfkMCbvbAZlA2pBHQc73dbl+vFOXfqkf4uemdn0bw==
@@ -3588,7 +3595,7 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
   integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
 
-"@noble/hashes@~1.3.0":
+"@noble/hashes@1.3.1", "@noble/hashes@~1.3.0":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.1.tgz#8831ef002114670c603c458ab8b11328406953a9"
   integrity sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==
@@ -5061,6 +5068,13 @@
   dependencies:
     "@types/bn.js" "*"
     "@types/underscore" "*"
+
+"@types/ws@^8.5.4":
+  version "8.5.5"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.5.tgz#af587964aa06682702ee6dcbc7be41a80e4b28eb"
+  integrity sha512-lwhs8hktwxSjf9UaZ9tG5M03PGogvFaH8gUgLNbN9HKIg0dvv6q+gkSuJ8HN4/VbyxkuLzCjlN7GquQ0gUJfIg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/yargs-parser@*":
   version "20.2.1"
@@ -14841,10 +14855,10 @@ react-native-bootsplash@4.3.2:
     jimp "^0.16.1"
     picocolors "^1.0.0"
 
-react-native-branch@5.9.0:
-  version "5.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.9.0.tgz#8c3958453c67709e82548cc753b828c82f339765"
-  integrity sha512-sgKM2Y7LMAKLFX39qpzuyCEfOwOTwgg+Cg563usLxSggK44js2xojMk+Il/DQqmtRFtR0F+eVILGgfwn4icfIA==
+react-native-branch@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.3.1.tgz#872bb3500a6756e9e59883bd03fd8f9aab4857c6"
+  integrity sha512-d7gaQQg43bS57O4j8V07s7lqD5gu3G4Vrf23bS/RnxTmQMKcifVFpUCSyUYuiUyL4H58D7pL2GgsujP2TRuhkw==
 
 react-native-camera@4.2.1:
   version "4.2.1"
@@ -17716,16 +17730,17 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viem@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.4.1.tgz#490f39b3f371bf58910b1b338c237e19066805cf"
-  integrity sha512-MtaoBHDSJDqa+QyXKG5d+S6EQSebRO0tzw6anSP4zC7AbC614vMeg9Y8LbkmEkWCw8swFYkort+H9l7GkWB0uA==
+viem@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.6.0.tgz#8befa678c3ac79b9558dfd1708130b2ecb1994f4"
+  integrity sha512-ae9Twkd0q2Qlj4yYpWjb4DzYAhKY0ibEpRH8FJaTywZXNpTjFidSdBaT0CVn1BaH7O7cnX4/O47zvDUMGJD1AA==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
-    "@noble/curves" "1.0.0"
+    "@noble/curves" "1.1.0"
     "@noble/hashes" "1.3.0"
     "@scure/bip32" "1.3.0"
     "@scure/bip39" "1.2.0"
+    "@types/ws" "^8.5.4"
     "@wagmi/chains" "1.6.0"
     abitype "0.9.3"
     isomorphic-ws "5.0.0"

@@ -38,9 +38,9 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
 import { loadPrivateKey } from '@/model/wallet';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
-import { mainnet } from 'viem/chains';
+import { mainnet, polygon } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
-import { WalletClient, createWalletClient, http } from 'viem';
+import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
 import { dataAddNewTransaction } from '@/redux/data';
 import { RainbowError, logger } from '@/logger';
@@ -67,6 +67,17 @@ function getRainbowFeeAddress(network: Network) {
       return RAINBOW_FEE_ADDRESS_MAINNET;
     case Network.polygon:
       return RAINBOW_FEE_ADDRESS_POLYGON;
+    default:
+      return undefined;
+  }
+}
+
+function getViemChainFromNetwork(network: Network) {
+  switch (network) {
+    case Network.mainnet:
+      return mainnet;
+    case Network.polygon:
+      return polygon;
     default:
       return undefined;
   }
@@ -123,7 +134,6 @@ export function NFTSingleOfferSheet() {
 
   const { offer } = params as { offer: NftOffer };
 
-  const [signer, setSigner] = useState<WalletClient>();
   const [height, setHeight] = useState(0);
   const didErrorRef = useRef<boolean>(false);
   const didCompleteRef = useRef<boolean>(false);
@@ -211,77 +221,67 @@ export function NFTSingleOfferSheet() {
     }
   }, [offer.validUntil]);
 
+  const estimateGas = useCallback(() => {
+    const signer = createWalletClient({
+      // @ts-ignore
+      account: accountAddress,
+      chain: getViemChainFromNetwork(offer.network as Network),
+      transport: http(getNetworkObj(offer.network as Network).rpc),
+    });
+    getClient()?.actions.acceptOffer({
+      items: [
+        {
+          token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+          quantity: 1,
+        },
+      ],
+      options: feeParam
+        ? {
+            feesOnTop: [feeParam],
+          }
+        : undefined,
+      precheck: true,
+      wallet: signer,
+      onProgress: async (steps: Execute['steps']) => {
+        let sale;
+        let approval;
+        steps.forEach(step =>
+          step.items?.forEach(async item => {
+            if (item.data?.data && item.data?.to && item.data?.from) {
+              if (step.id === 'sale') {
+                sale = {
+                  to: item.data.to,
+                  from: item.data.from,
+                  data: item.data.data,
+                };
+              } else if (step.id === 'nft-approval') {
+                approval = {
+                  to: item.data.to,
+                  from: item.data.from,
+                  data: item.data.data,
+                };
+              }
+            }
+          })
+        );
+        const gas = await estimateNFTOfferGas(offer, approval, sale);
+        if (gas) {
+          updateTxFee(gas, null);
+          startPollingGasFees();
+        }
+      },
+    });
+  }, [accountAddress, feeParam, offer, startPollingGasFees, updateTxFee]);
+
   // estimate gas
   useEffect(() => {
     if (!isReadOnlyWallet && !isExpired) {
-      (async () => {
-        const privateKey = await loadPrivateKey(accountAddress, false);
-        // @ts-ignore
-        const account = privateKeyToAccount(privateKey);
-        const reservoirSigner = createWalletClient({
-          account,
-          chain: mainnet,
-          transport: http(getNetworkObj(offer.network as Network).rpc),
-        });
-        setSigner(reservoirSigner);
-        getClient()?.actions.acceptOffer({
-          items: [
-            {
-              token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
-              quantity: 1,
-            },
-          ],
-          options: feeParam
-            ? {
-                feesOnTop: [feeParam],
-              }
-            : undefined,
-          precheck: true,
-          wallet: reservoirSigner,
-          onProgress: async (steps: Execute['steps']) => {
-            let sale;
-            let approval;
-            steps.forEach(step =>
-              step.items?.forEach(async item => {
-                if (item.data?.data && item.data?.to && item.data?.from) {
-                  if (step.id === 'sale') {
-                    sale = {
-                      to: item.data.to,
-                      from: item.data.from,
-                      data: item.data.data,
-                    };
-                  } else if (step.id === 'nft-approval') {
-                    approval = {
-                      to: item.data.to,
-                      from: item.data.from,
-                      data: item.data.data,
-                    };
-                  }
-                }
-              })
-            );
-            const gas = await estimateNFTOfferGas(offer, approval, sale);
-            if (gas) {
-              updateTxFee(gas, null);
-              startPollingGasFees();
-            }
-          },
-        });
-      })();
+      estimateGas();
     }
     return () => {
       stopPollingGasFees();
     };
-  }, [
-    accountAddress,
-    feeParam,
-    isExpired,
-    isReadOnlyWallet,
-    offer,
-    startPollingGasFees,
-    stopPollingGasFees,
-    updateTxFee,
-  ]);
+  }, [estimateGas, isExpired, isReadOnlyWallet, stopPollingGasFees]);
 
   const acceptOffer = useCallback(async () => {
     logger.info(
@@ -306,6 +306,14 @@ export function NFTSingleOfferSheet() {
     analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
       status: 'in progress',
       ...analyticsEventObject,
+    });
+    const privateKey = await loadPrivateKey(accountAddress, false);
+    // @ts-ignore
+    const account = privateKeyToAccount(privateKey);
+    const signer = createWalletClient({
+      account,
+      chain: getViemChainFromNetwork(offer.network as Network),
+      transport: http(getNetworkObj(offer.network as Network).rpc),
     });
     getClient()?.actions.acceptOffer({
       items: [
