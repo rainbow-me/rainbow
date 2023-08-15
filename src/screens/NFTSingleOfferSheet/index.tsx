@@ -752,7 +752,7 @@ export function NFTSingleOfferSheet() {
                   </Column>
                 </Columns>
               </Inset>
-              {isReadOnlyWallet ? (
+              {isReadOnlyWallet || isExpired ? (
                 <AccentColorProvider
                   color={offer.nft.predominantColor || buttonColorFallback}
                 >
@@ -819,7 +819,9 @@ export function NFTSingleOfferSheet() {
                         ? i18n.t(
                             i18n.l.button.confirm_exchange.insufficient_eth
                           )
-                        : 'Hold to Sell'
+                        : i18n.t(
+                            i18n.l.nft_offers.single_offer_sheet.hold_to_sell
+                          )
                     }
                     onLongPress={acceptOffer}
                     parentHorizontalPadding={28}
