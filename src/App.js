@@ -13,7 +13,11 @@ import {
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import { IS_TESTING } from 'react-native-dotenv';
+import {
+  IS_TESTING,
+  RESERVOIR_API_KEY_PROD,
+  RESERVOIR_API_KEY_DEV,
+} from 'react-native-dotenv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -81,6 +85,11 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { createClient } from '@reservoir0x/reservoir-sdk';
+import { IS_PROD } from './env';
+
+const RESERVOIR_API_KEY = IS_PROD
+  ? RESERVOIR_API_KEY_PROD
+  : RESERVOIR_API_KEY_DEV;
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -285,13 +294,13 @@ function Root() {
         id: 1,
         baseApiUrl: 'https://api.reservoir.tools',
         active: true,
-        apiKey: 'demo-api-key',
+        apiKey: RESERVOIR_API_KEY,
       },
       {
         id: 137,
         baseApiUrl: 'https://api-polygon.reservoir.tools',
         active: true,
-        apiKey: 'demo-api-key',
+        apiKey: RESERVOIR_API_KEY,
       },
     ],
     logLevel: 4,
