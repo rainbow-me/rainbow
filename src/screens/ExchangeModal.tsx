@@ -229,6 +229,7 @@ export default function ExchangeModal({
     accountAddress,
     flashbotsEnabled,
     nativeCurrency,
+    network,
   } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -280,7 +281,9 @@ export default function ExchangeModal({
       outputCurrency?.type
     );
     const chainId =
-      inputCurrency?.type || outputCurrency?.type
+      network === Network.goerli
+        ? getNetworkObj(Network.goerli).id
+        : inputCurrency?.type || outputCurrency?.type
         ? ethereumUtils.getChainIdFromType(
             inputCurrency?.type ?? outputCurrency?.type
           )
