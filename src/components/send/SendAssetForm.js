@@ -1,5 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -152,6 +153,7 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
+            <KeyboardArea initialHeight={keyboardHeight} isOpen />
           </Fragment>
         )}
       </FormContainer>
