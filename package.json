@@ -115,6 +115,7 @@
     "@react-navigation/material-top-tabs": "5.2.19",
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
+    "@reservoir0x/reservoir-sdk": "1.1.24",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
     "@sentry/react-native": "3.4.1",
@@ -300,6 +301,7 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
+    "viem": "1.6.0",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2"
   },
@@ -359,7 +361,7 @@
     "schedule": "0.5.0",
     "ts-jest": "28.0.8",
     "ts-migrate": "0.1.26",
-    "typescript": "4.9.5",
+    "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {

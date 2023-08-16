@@ -25,7 +25,7 @@ function StepButton({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error JavaScript component
+      // @ts-ignore overloaded props
       minLongPressDuration={MIN_LONG_PRESS_DURATION}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}

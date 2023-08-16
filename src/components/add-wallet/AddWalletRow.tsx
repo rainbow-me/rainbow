@@ -64,7 +64,7 @@ export const AddWalletRow = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error js component
+      // @ts-ignore js component
       scaleTo={0.9}
       flexDirection="row"
       alignItems="center"

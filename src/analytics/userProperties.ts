@@ -17,6 +17,8 @@ export interface UserProperties {
   // nft offers
   nftOffersAmount?: number;
   nftOffersUSDValue?: number;
+  nftOffersMeanOfferVariance?: number;
+  nftOffersMedianOfferVariance?: number;
 
   // ens
   // TODO: remove ensProfile tracking the entire object

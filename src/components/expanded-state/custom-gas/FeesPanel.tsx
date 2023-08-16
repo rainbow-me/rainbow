@@ -211,7 +211,7 @@ export default function FeesPanel({
           as={ButtonPressAnimation}
           paddingVertical="8px"
           marginVertical="-8px"
-          // @ts-expect-error
+          // @ts-ignore overloaded props
           onPress={openHelper}
           backgroundColor="accent"
         >
@@ -709,7 +709,8 @@ export default function FeesPanel({
             as={ButtonPressAnimation}
             paddingVertical="8px"
             marginVertical="-8px"
-            // @ts-expect-error
+            // @ts-ignore overloaded props
+
             onPress={() => openGasHelper(trendType)}
             scaleTo={1}
           >
@@ -734,7 +735,8 @@ export default function FeesPanel({
               </Box>
               <Box
                 as={ButtonPressAnimation}
-                // @ts-expect-error
+                // @ts-ignore overloaded props
+
                 onPress={() => openGasHelper(trendType)}
                 scaleTo={1}
               >
