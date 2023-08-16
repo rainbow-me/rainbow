@@ -290,7 +290,7 @@ function NativeStackNavigator() {
         name={Routes.DIAGNOSTICS_SHEET}
         {...walletDiagnosticsSheetConfig}
       />
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
@@ -300,7 +300,7 @@ function NativeStackNavigator() {
           springDamping: 1,
           transitionDuration: 0.25,
         }}
-      />
+      /> */}
       <NativeStack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}

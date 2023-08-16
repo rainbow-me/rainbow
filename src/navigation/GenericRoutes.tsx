@@ -3,6 +3,7 @@ import { createBottomSheetNavigator } from './bottom-sheet-navigator/createBotto
 import ExpandedAssetSheet from '@/screens/ExpandedAssetSheet';
 import Routes from './routesNames';
 import { AddCashSheet } from '@/screens/AddCash';
+import ChangeWalletSheet from '@/screens/ChangeWalletSheet';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -21,6 +22,10 @@ export function GenericRoutes({ mainComponent }: Props) {
       <BottomSheet.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
+      />
+      <BottomSheet.Screen
+        component={ChangeWalletSheet}
+        name={Routes.CHANGE_WALLET_SHEET}
       />
     </BottomSheet.Navigator>
   );

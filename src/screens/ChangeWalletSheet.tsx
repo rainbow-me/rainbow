@@ -40,6 +40,7 @@ import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { AdaptiveBottomSheet } from '@/navigation/bottom-sheet-navigator/components/AdaptiveBottomSheet';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
@@ -435,9 +436,7 @@ export default function ChangeWalletSheet() {
   }, []);
 
   return (
-    // @ts-ignore
-    <Sheet borderRadius={30}>
-      {android && <Whitespace />}
+    <AdaptiveBottomSheet>
       <Column height={headerHeight} justify="space-between">
         <Centered>
           <SheetTitle testID="change-wallet-sheet-title">
@@ -479,6 +478,6 @@ export default function ChangeWalletSheet() {
         showDividers={showDividers}
         watchOnly={watchOnly}
       />
-    </Sheet>
+    </AdaptiveBottomSheet>
   );
 }

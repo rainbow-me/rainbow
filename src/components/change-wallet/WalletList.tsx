@@ -30,6 +30,7 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -53,8 +54,9 @@ const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
 
 // @ts-ignore
 const Container = styled.View({
-  height: ({ height }: { height: number }) => height,
-  marginTop: -2,
+  // height: ({ height }: { height: number }) => height,
+  // marginTop: -2,
+  paddingBottom: 16,
 });
 
 const WalletsContainer = styled(Animated.View)({
@@ -70,15 +72,15 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(
+const WalletFlatList = styled(BottomSheetFlatList).attrs(
   ({ showDividers }: { showDividers: boolean }) => ({
     contentContainerStyle: {
       paddingBottom: showDividers ? 9.5 : 0,
       paddingTop: listTopPadding,
     },
-    getItemLayout,
+    // getItemLayout,
     keyExtractor,
-    removeClippedSubviews: true,
+    // removeClippedSubviews: true,
   })
 )({
   flex: 1,
@@ -126,7 +128,7 @@ export default function WalletList({
 }: Props) {
   const [rows, setRows] = useState<any[]>([]);
   const [ready, setReady] = useState(false);
-  const scrollView = useRef(null);
+  // const scrollView = useRef(null);
   const { network } = useAccountSettings();
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
@@ -149,7 +151,7 @@ export default function WalletList({
         const row = {
           ...account,
           editMode,
-          height: rowHeight,
+          // height: rowHeight,
           id: account.address,
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
@@ -196,43 +198,43 @@ export default function WalletList({
   ]);
 
   // Update the data provider when rows change
-  useEffect(() => {
-    if (rows?.length && !ready) {
-      setTimeout(() => {
-        setReady(true);
-        emptyOpacityAnimation.value = withTiming(0, {
-          duration: transitionDuration,
-          easing: Easing.out(Easing.ease),
-        });
-      }, 50);
-    }
-  }, [rows, ready, emptyOpacityAnimation]);
+  // useEffect(() => {
+  //   if (rows?.length && !ready) {
+  //     setTimeout(() => {
+  //       setReady(true);
+  //       emptyOpacityAnimation.value = withTiming(0, {
+  //         duration: transitionDuration,
+  //         easing: Easing.out(Easing.ease),
+  //       });
+  //     }, 50);
+  //   }
+  // }, [rows, ready, emptyOpacityAnimation]);
 
-  useLayoutEffect(() => {
-    if (ready) {
-      opacityAnimation.value = withTiming(1, {
-        duration: transitionDuration,
-        easing: Easing.in(Easing.ease),
-      });
-    } else {
-      opacityAnimation.value = 0;
-    }
-  }, [ready, opacityAnimation]);
+  // useLayoutEffect(() => {
+  //   if (ready) {
+  //     opacityAnimation.value = withTiming(1, {
+  //       duration: transitionDuration,
+  //       easing: Easing.in(Easing.ease),
+  //     });
+  //   } else {
+  //     opacityAnimation.value = 0;
+  //   }
+  // }, [ready, opacityAnimation]);
 
-  const opacityStyle = useAnimatedStyle(() => ({
-    opacity: opacityAnimation.value,
-  }));
+  // const opacityStyle = useAnimatedStyle(() => ({
+  //   opacity: opacityAnimation.value,
+  // }));
 
-  const emptyOpacityStyle = useAnimatedStyle(() => ({
-    opacity: emptyOpacityAnimation.value,
-  }));
+  // const emptyOpacityStyle = useAnimatedStyle(() => ({
+  //   opacity: emptyOpacityAnimation.value,
+  // }));
 
   const renderItem = useCallback(
     ({ item }: any) => {
       switch (item.rowType) {
         case RowTypes.ADDRESS:
           return (
-            <Column height={item.height}>
+            <Column>
               <AddressRow
                 contextMenuActions={contextMenuActions}
                 data={item}
@@ -248,18 +250,20 @@ export default function WalletList({
     [contextMenuActions, editMode]
   );
 
+  console.log(rows);
+
   return (
-    <Container height={height}>
-      <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
+    <Container>
+      {/* <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
         <EmptyWalletList />
-      </Animated.View>
-      <WalletsContainer style={opacityStyle}>
+      </Animated.View> */}
+      <WalletsContainer>
         <WalletFlatList
           data={rows}
-          initialNumToRender={rows.length}
-          ref={scrollView}
+          // initialNumToRender={rows.length}
+          // ref={scrollView}
           renderItem={renderItem}
-          scrollEnabled={scrollEnabled}
+          // scrollEnabled={scrollEnabled}
           showDividers={showDividers}
         />
         {showDividers && <WalletListDivider />}
