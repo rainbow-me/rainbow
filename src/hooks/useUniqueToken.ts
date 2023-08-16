@@ -19,10 +19,6 @@ export default function useUniqueToken(
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
       const supports3d = !!maybeUniqueToken?.model_properties;
       const supportsAudio = !!maybeUniqueToken?.audio_properties;
-      console.log({
-        videoProps: maybeUniqueToken?.video_properties,
-        video: maybeUniqueToken?.video_url,
-      });
       const supportsVideo = !!maybeUniqueToken?.video_properties;
       return { supports3d, supportsAudio, supportsVideo };
     }
