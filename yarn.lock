@@ -15059,11 +15059,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-screen-corner-radius@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-screen-corner-radius/-/react-native-screen-corner-radius-0.1.1.tgz#653b35828f2bcf4c0f9f7f07844646248be30168"
-  integrity sha512-cz01Kkj9XNM2H5Q2pi1K3VxggmqZa440fZORmrsQXLdb2jTh/VLQ6I5sITuK4AD/qT77z8Va+Y5QPVKB27r+ow==
-
 react-native-screens@3.20.0:
   version "3.20.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.20.0.tgz#4d154177395e5541387d9a05bc2e12e54d2fb5b1"
