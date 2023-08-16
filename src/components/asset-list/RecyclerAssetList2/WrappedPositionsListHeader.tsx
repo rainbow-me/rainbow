@@ -1,15 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, Image } from 'react-native';
 import CaretImageSource from '../../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
-import { ImgixImage } from '@/components/images';
 import { Box, Inline, Text } from '@/design-system';
 import { StickyHeader } from './core/StickyHeaders';
 import * as i18n from '@/languages';
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
+const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 44;
@@ -91,11 +90,9 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
                   </Animated.View>
                 )}
                 <AnimatedImgixImage
-                  resizeMode={ImgixImage.resizeMode.contain}
                   source={CaretImageSource as any}
                   style={imageAnimatedStyles}
                   tintColor={colors.dark}
-                  size={30}
                 />
               </Inline>
             </Inline>

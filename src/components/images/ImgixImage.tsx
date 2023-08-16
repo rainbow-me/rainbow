@@ -12,7 +12,6 @@ export type ImgixImageProps = FastImageProps & {
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
 type HiddenImgixImageProps = {
-  forwardedRef: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
   size: number;
