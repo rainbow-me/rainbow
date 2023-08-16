@@ -7,13 +7,12 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import { ScrollViewProps, ViewStyle } from 'react-native';
-import Animated, {
-  runOnJS,
-  useAnimatedScrollHandler,
-  useSharedValue,
-  useWorkletCallback,
-} from 'react-native-reanimated';
+import {
+  ScrollViewProps,
+  ViewStyle,
+  Animated as RNAnimated,
+} from 'react-native';
+import { useSharedValue, useWorkletCallback } from 'react-native-reanimated';
 
 import BaseScrollView, {
   ScrollViewDefaultProps,
@@ -22,6 +21,8 @@ import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
 import ProfileSheetHeader from '../../../ens-profile/ProfileSheetHeader';
 import ImagePreviewOverlay from '../../../images/ImagePreviewOverlay';
 import { StickyHeaderContext } from './StickyHeaders';
+import { useMemoOne } from 'use-memo-one';
+import { useRecyclerAssetListPosition } from './Contexts';
 
 const extraPadding = { paddingBottom: 144 };
 const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
@@ -53,11 +54,24 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
     });
 
     const yPosition = useSharedValue(0);
+    const y = useRecyclerAssetListPosition()!;
 
-    const scrollHandler = useAnimatedScrollHandler(nativeEvent => {
-      yPosition.value = nativeEvent.contentOffset.y;
-      runOnJS(props.onScroll)({ nativeEvent });
-    });
+    const event = useMemoOne(
+      () =>
+        RNAnimated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y,
+                },
+              },
+            },
+          ],
+          { listener: props.onScroll, useNativeDriver: true }
+        ),
+      [props.onScroll, y]
+    );
 
     const scrollWorklet = useWorkletCallback(event => {
       yPosition.value = event.contentOffset.y;
@@ -67,7 +81,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
 
     const ScrollView = isInsideBottomSheet
       ? BottomSheetScrollView
-      : Animated.ScrollView;
+      : RNAnimated.ScrollView;
 
     return (
       <ScrollView
@@ -81,7 +95,7 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
               onScrollWorklet: scrollWorklet,
             }
           : {
-              onScroll: scrollHandler,
+              onScroll: event,
             })}
       >
         <ImagePreviewOverlay

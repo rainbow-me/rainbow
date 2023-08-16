@@ -7,14 +7,14 @@
 #import <Foundation/Foundation.h>
 #import <Rainbow-Internals/Internals.h>
 
-#import <React/RCTBridgeDelegate.h>
+#import <RCTAppDelegate.h>
 #import <Firebase.h>
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
 @class RCTBridge;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+@interface AppDelegate : RCTAppDelegate
 
 - (void)hideSplashScreenAnimated;
 

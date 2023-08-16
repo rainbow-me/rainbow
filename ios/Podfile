@@ -1,4 +1,5 @@
 platform :ios, '13.0'
+use_modular_headers!
 install! 'cocoapods', :deterministic_uuids => false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -15,7 +16,7 @@ target 'SelectTokenIntent' do
 end
 
 target 'ImageNotification' do
-  pod 'Firebase/Messaging', '~> 8.14.0'
+  pod 'Firebase/Messaging', '~> 10.12.0'
 end
 
 target 'Rainbow' do
@@ -32,9 +33,6 @@ target 'Rainbow' do
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    :flipper_configuration => ENV['SKIP_FLIPPER'] != "true" ? FlipperConfiguration.enabled(["Debug", "LocalRelease", "Staging", "Release"], { 'Flipper' => '0.182.0' }) : FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -57,13 +55,14 @@ target 'Rainbow' do
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
-  pod 'Plaid', '~> 4.1.0'
+  pod 'Plaid', '~> 4.4.0'
 
   use_native_modules!
 
   post_install do |installer|
     react_native_post_install(
       installer,
+      config[:reactNativePath],
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false

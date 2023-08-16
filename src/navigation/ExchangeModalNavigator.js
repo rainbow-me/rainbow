@@ -2,7 +2,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { useValue } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
@@ -67,11 +66,10 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   }
 
   return function ExchangeModalNavigator() {
-    const { setOptions, addListener, removeListener } = useNavigation();
     const ref = useRef();
     const { params } = useRoute();
+    const { setOptions, addListener, removeListener } = useNavigation();
 
-    const tabTransitionPosition = useValue(0);
     const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
     useEffect(() => {
@@ -97,11 +95,10 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const initialParams = useMemoOne(
       () => ({
-        tabTransitionPosition,
         toggleGestureEnabled,
         ...params?.params,
       }),
-      [tabTransitionPosition, toggleGestureEnabled]
+      [toggleGestureEnabled]
     );
 
     const routeName = getActiveRoute()?.name;
@@ -113,7 +110,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     return (
       <FlexItem>
         <Tabs.Navigator
-          position={tabTransitionPosition}
           screenOptions={{ swipeEnabled: enableSwipe }}
           {...exchangeTabNavigatorConfig}
         >
@@ -133,5 +129,4 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     );
   };
 }
-
 export default ExchangeNavigatorFactory();

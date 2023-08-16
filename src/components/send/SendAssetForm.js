@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import LinearGradient from 'react-native-linear-gradient';
+import { KeyboardArea } from 'react-native-keyboard-area';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -10,7 +10,7 @@ import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@/entities';
-import { useColorForAsset, useDimensions, useKeyboardHeight } from '@/hooks';
+import { useDimensions, useKeyboardHeight } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';

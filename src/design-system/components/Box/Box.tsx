@@ -285,6 +285,7 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
+    //@ts-ignore
     <BackgroundProvider color={background} style={style}>
       {({ backgroundColor, backgroundStyle }) => (
         <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
@@ -295,6 +296,7 @@ export const Box = forwardRef(function Box(
       )}
     </BackgroundProvider>
   ) : (
+    //@ts-ignore
     <Component style={style} {...restProps} ref={ref}>
       {children}
     </Component>

@@ -3,7 +3,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { ScrollView, StatusBar } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import wait from 'w2t';
 
 import { SheetHandle } from '@/components/sheet';
@@ -100,7 +99,7 @@ export function AddCashSheet() {
       alignItems="center"
       overflow="hidden"
       style={{
-        ...borders.buildRadiusAsObject('top', ScreenCornerRadius || 30),
+        ...borders.buildRadiusAsObject('top', 30),
       }}
     >
       <Box
@@ -119,7 +118,7 @@ export function AddCashSheet() {
       <ScrollView
         style={{
           width: '100%',
-          ...borders.buildRadiusAsObject('top', ScreenCornerRadius || 30),
+          ...borders.buildRadiusAsObject('top', 30),
         }}
       >
         <Box

@@ -5,12 +5,10 @@ import {
   useIsFocused,
 } from '@react-navigation/native';
 import React from 'react';
-import { Value } from 'react-native-reanimated';
 import { useCallbackOne } from 'use-memo-one';
 import { NATIVE_ROUTES } from '@/navigation/routesNames';
 
 let TopLevelNavigationRef = null;
-const transitionPosition = new Value(0);
 
 const poppingCounter = { isClosing: false, pendingActions: [] };
 
@@ -143,6 +141,5 @@ export default {
   getActiveRouteName,
   handleAction,
   setTopLevelNavigator,
-  transitionPosition,
   goBack,
 };

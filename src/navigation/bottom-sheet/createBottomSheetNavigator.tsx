@@ -77,6 +77,7 @@ const BottomSheetNavigator = ({
     <NavigationHelpersContext.Provider value={navigation}>
       <BottomSheetNavigatorView
         {...rest}
+        // @ts-ignore type mismatch
         descriptors={descriptors}
         navigation={navigation}
         state={state}

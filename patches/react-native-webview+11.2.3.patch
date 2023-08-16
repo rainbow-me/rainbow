@@ -1,0 +1,113 @@
+diff --git a/node_modules/react-native-webview/android/build.gradle b/node_modules/react-native-webview/android/build.gradle
+index e6d0508..d6d2b24 100644
+--- a/node_modules/react-native-webview/android/build.gradle
++++ b/node_modules/react-native-webview/android/build.gradle
+@@ -38,7 +38,7 @@ android {
+   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+   buildToolsVersion getExtOrDefault('buildToolsVersion')
+   defaultConfig {
+-    minSdkVersion 16
++    minSdkVersion 21
+     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+     versionCode 1
+     versionName "1.0"
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManager.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManager.java
+index 952e46e..bf0a736 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManager.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewManager.java
+@@ -82,14 +82,17 @@ import com.reactnativecommunity.webview.events.TopRenderProcessGoneEvent;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+ 
++import java.io.InputStream;
+ import java.io.UnsupportedEncodingException;
+ import java.net.MalformedURLException;
+ import java.net.URL;
+ import java.net.URLEncoder;
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.Iterator;
+ import java.util.Locale;
+ import java.util.Map;
++import java.util.Scanner;
+ import java.util.concurrent.atomic.AtomicReference;
+ 
+ /**
+@@ -149,6 +152,9 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
+   protected boolean mAllowsFullscreenVideo = false;
+   protected @Nullable String mUserAgent = null;
+   protected @Nullable String mUserAgentWithApplicationName = null;
++  private JSONObject allowedDomains;
++  private JSONObject allowedDomainsWithSubdomains;
++
+ 
+   public RNCWebViewManager() {
+     mWebViewConfig = new WebViewConfig() {
+@@ -180,7 +186,29 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
+   @Override
+   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+   protected WebView createViewInstance(ThemedReactContext reactContext) {
++    try {
++      Context context = reactContext.getApplicationContext();
++      InputStream inputStream = context.getResources().openRawResource(R.raw.extras);
++      String jsonString = new Scanner(inputStream).useDelimiter("\\A").next();
++      allowedDomains = new JSONObject(jsonString).getJSONObject("allowedDomains");
++      allowedDomainsWithSubdomains = new JSONObject();
++      Iterator<String> keys = allowedDomains.keys();
++
++      while(keys.hasNext()) {
++        String domain = keys.next();
++        if (allowedDomains.get(domain) instanceof JSONObject) {
++          JSONObject domainObj = (JSONObject) allowedDomains.get(domain);
++          if (domainObj.has("subdomains")) {
++            allowedDomainsWithSubdomains.put(domain, true);
++          }
++        }
++      }
++    } catch (Exception e) {
++      e.printStackTrace();
++    }
+     RNCWebView webView = createRNCWebViewInstance(reactContext);
++    webView.allowedDomains = allowedDomains;
++    webView.allowedDomainsWithSubdomains = allowedDomainsWithSubdomains;
+     setupWebChromeClient(reactContext, webView);
+     reactContext.addLifecycleEventListener(webView);
+     mWebViewConfig.configWebView(webView);
+@@ -845,9 +873,27 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
+           createWebViewEvent(webView, url)));
+     }
+ 
++    public static boolean isHostAllowed(JSONObject allowedDomains, JSONObject allowedDomainsWithSubdomains, String host) {
++      boolean exactMatch = allowedDomains.has(host);
++      if(!exactMatch){
++        String[] domainParts = host.split("\\.");
++        String topLevelDomain = domainParts[domainParts.length - 2] + '.' + domainParts[domainParts.length - 1];
++        return allowedDomainsWithSubdomains.has(topLevelDomain);
++      }
++      return true;
++    }
++
+     @Override
+     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+       final RNCWebView rncWebView = (RNCWebView) view;
++      if(!isHostAllowed(
++        rncWebView.allowedDomains,
++        rncWebView.allowedDomainsWithSubdomains,
++        Uri.parse(url).getHost())
++      ){
++        return true;
++      }
++
+       final boolean isJsDebugging = ((ReactContext) view.getContext()).getJavaScriptContextHolder().get() == 0;
+ 
+       if (!isJsDebugging && rncWebView.mCatalystInstance != null) {
+@@ -1241,6 +1287,9 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
+     protected @Nullable
+     String injectedJSBeforeContentLoaded;
+ 
++    private JSONObject allowedDomains;
++    private JSONObject allowedDomainsWithSubdomains;
++
+     /**
+      * android.webkit.WebChromeClient fundamentally does not support JS injection into frames other
+      * than the main frame, so these two properties are mostly here just for parity with iOS & macOS.

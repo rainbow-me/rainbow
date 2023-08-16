@@ -5,23 +5,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 buildscript {
 
     ext {
-        buildToolsVersion = "31.0.0"
-        minSdkVersion = 21
-        compileSdkVersion = 31
+        buildToolsVersion = "33.0.0"
+        minSdkVersion = 30
+        compileSdkVersion = 33
         targetSdkVersion = 33
-        if (System.properties['os.arch'] == "aarch64") {
-            // For M1 Users we need to use the NDK 24 which added support for aarch64
-            ndkVersion = "24.0.8215888"
-        } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            // For Android Users, we need to use NDK 23, otherwise the build will
-            // fail due to paths longer than the OS limit
-            ndkVersion = "23.1.7779620"
-        } else {
-            // Otherwise we default to the side-by-side NDK version from AGP.
-            ndkVersion = "21.4.7075529"
-        }
-        kotlin_version = "1.6.10"
-        kotlinVersion = "$kotlin_version"
+        ndkVersion = "23.1.7779620"
+        kotlin_version = "1.6.20"
+        kotlinVersion = "1.6.20"
         androidXCore = "1.6.0"
     }
 
@@ -29,24 +19,23 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
+         maven {
             url 'https://maven.fabric.io/public'
         }
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
         classpath("de.undercouch:gradle-download-task:5.0.1")
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
         classpath 'io.fabric.tools:gradle:1.28.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
-}
-
-allprojects {
+    allprojects {
     repositories {
         google()
         mavenLocal()
@@ -79,9 +68,15 @@ allprojects {
         if (!project.name.equalsIgnoreCase("app") && project.hasProperty("android")) {
             android {
                 defaultConfig {
-                    minSdkVersion 21
+                    compileSdkVersion rootProject.ext.compileSdkVersion
+                    buildToolsVersion rootProject.ext.buildToolsVersion
+                    minSdkVersion rootProject.ext.minSdkVersion
+                    
                 }
             }
         }
     }
 }
+
+}
+
