@@ -69,7 +69,7 @@ class ImgixImage extends React.PureComponent<
     return (
       <Component
         {...props}
-        key={retryCount}
+        key={`${JSON.stringify(source)}-${retryCount}`}
         onError={this.handleError}
         source={source}
       />
