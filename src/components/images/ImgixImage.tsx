@@ -1,5 +1,6 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import { Image } from 'react-native';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -65,7 +66,7 @@ class ImgixImage extends React.PureComponent<
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
-    const Component = maybeComponent || FastImage;
+    const Component = maybeComponent || Image;
     return (
       <Component
         {...props}
@@ -86,19 +87,14 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
         w: size,
       }),
     };
-    return FastImage.preload(
-      sources.map(source => maybeSignSource(source, options))
-    );
   }
   return;
 };
 
-const getCachePath = (source: Source) =>
-  FastImage.getCachePath(maybeSignSource(source));
-
 const ImgixImageWithForwardRef = React.forwardRef(
   (props: ImgixImageProps, ref: React.Ref<any>) => (
-    <ImgixImage forwardedRef={ref} {...props} />
+    // @ts-ignore
+    <Image forwardedRef={ref} {...props} />
   )
 );
 
@@ -116,7 +112,6 @@ export default Object.assign(ImgixImageWithForwardRef, {
   clearDiskCache,
   clearMemoryCache,
   contextTypes,
-  getCachePath,
   preload,
   priority,
   resizeMode,
