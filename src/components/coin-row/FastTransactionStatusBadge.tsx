@@ -42,6 +42,10 @@ const StatusProps = {
     marginRight: 4,
     marginTop: ios ? 1 : 0,
   },
+  [TransactionStatusTypes.selling]: {
+    marginRight: 4,
+    marginTop: ios ? 1 : 0,
+  },
   [TransactionStatusTypes.speeding_up]: {
     marginRight: 4,
     marginTop: ios ? 1 : 0,
