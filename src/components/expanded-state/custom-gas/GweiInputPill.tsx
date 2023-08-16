@@ -82,7 +82,7 @@ function GweiInputPill(
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error
+      // @ts-ignore overloaded props
       onPress={onPress}
     >
       <Box

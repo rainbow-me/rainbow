@@ -202,7 +202,9 @@ export default function LargeCountdownClock({
               key="onlySeconds"
               style={{
                 paddingRight:
-                  displaySeconds >= 10 && displaySeconds < 20 ? 3 : 0,
+                  Number(displaySeconds) >= 10 && Number(displaySeconds) < 20
+                    ? 3
+                    : 0,
                 position: 'absolute',
               }}
             >

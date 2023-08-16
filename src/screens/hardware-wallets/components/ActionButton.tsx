@@ -17,7 +17,7 @@ export const ActionButton = ({ onPress, label }: Props) => (
       justifyContent="center"
       width="full"
       height={{ custom: 56 }}
-      // @ts-expect-error js component
+      // @ts-ignore overloaded props
       onPress={onPress}
     >
       <Text size="20pt" weight="heavy" color="label" align="center">
