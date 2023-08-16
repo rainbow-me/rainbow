@@ -87,9 +87,13 @@ export const ZoomableWrapper = ({
   disableEnteringWithPinch,
   hideStatusBar = true,
   onZoomIn = () => {},
-  onZoomInWorklet = () => {},
+  onZoomInWorklet = () => {
+    'worklet';
+  },
   onZoomOut = () => {},
-  onZoomOutWorklet = () => {},
+  onZoomOutWorklet = () => {
+    'worklet';
+  },
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,

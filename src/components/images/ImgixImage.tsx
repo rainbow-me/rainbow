@@ -49,15 +49,15 @@ class ImgixImage extends React.PureComponent<
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
     const isNotFound =
-      err.nativeEvent.statusCode === 404 ||
-      err.nativeEvent.message?.includes('404');
+      err?.nativeEvent?.statusCode === 404 ||
+      err?.nativeEvent?.message?.includes('404');
     const shouldRetry = retryOnError && !isNotFound;
 
     if (shouldRetry && retryCount < maxRetries) {
       this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
     } else {
       // @ts-expect-error
-      onError?.(err);
+      onError?.(err?.nativeEvent?.error);
     }
   };
 
@@ -91,13 +91,6 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
   return;
 };
 
-const ImgixImageWithForwardRef = React.forwardRef(
-  (props: ImgixImageProps, ref: React.Ref<any>) => (
-    // @ts-ignore
-    <Image forwardedRef={ref} {...props} />
-  )
-);
-
 const {
   cacheControl,
   clearDiskCache,
@@ -107,7 +100,7 @@ const {
   resizeMode,
 } = FastImage;
 
-export default Object.assign(ImgixImageWithForwardRef, {
+export default Object.assign(ImgixImage, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,

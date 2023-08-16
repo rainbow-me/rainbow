@@ -74,13 +74,17 @@ export const ZoomableWrapper = ({
   aspectRatio,
   borderRadius,
   disableAnimations,
-  onZoomInWorklet,
-  onZoomOutWorklet,
+  onZoomIn = () => {},
+  onZoomInWorklet = () => {
+    'worklet';
+  },
+  onZoomOut = () => {},
+  onZoomOutWorklet = () => {
+    'worklet';
+  },
   opacity,
   yOffset = 85,
   xOffset: givenXOffset = 0,
-  onZoomIn,
-  onZoomOut,
   yDisplacement: givenYDisplacement,
   width,
   height,
