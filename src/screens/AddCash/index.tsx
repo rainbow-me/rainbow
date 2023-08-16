@@ -30,6 +30,7 @@ import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
+import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
@@ -91,114 +92,115 @@ export function AddCashSheet() {
   }, [providers, error]);
 
   return (
-    <Box
-      background="surfaceSecondary"
-      height={{ custom: sheetHeight }}
-      top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
-      width="full"
-      alignItems="center"
-      overflow="hidden"
-      style={{
-        ...borders.buildRadiusAsObject('top', 30),
-      }}
-    >
-      <Box
-        position="absolute"
-        flexDirection="row"
-        justifyContent="center"
-        left={{ custom: 0 }}
-        right={{ custom: 0 }}
-        top={{ custom: 9 }}
-        height={{ custom: 80 }}
-        style={{ zIndex: 1 }}
-      >
-        <SheetHandle showBlur={undefined} />
-      </Box>
-
-      <ScrollView
+    <StaticBottomSheet scrollable>
+      {/* <Box
+        background="surfaceSecondary"
+        height={{ custom: sheetHeight }}
+        top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
+        width="full"
+        alignItems="center"
+        overflow="hidden"
         style={{
-          width: '100%',
           ...borders.buildRadiusAsObject('top', 30),
         }}
-      >
-        <Box
-          width="full"
-          paddingTop="52px"
-          paddingHorizontal="20px"
-          paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
+      > */}
+      {/* <Box
+          position="absolute"
+          flexDirection="row"
+          justifyContent="center"
+          left={{ custom: 0 }}
+          right={{ custom: 0 }}
+          top={{ custom: 9 }}
+          height={{ custom: 80 }}
+          style={{ zIndex: 1 }}
         >
-          <Box paddingHorizontal="20px">
-            <Text size="26pt" weight="heavy" color="label" align="center">
-              Choose a payment option to buy crypto
-            </Text>
-          </Box>
+          <SheetHandle showBlur={undefined} />
+        </Box> */}
 
-          <Box paddingVertical="44px" width="full">
-            <Separator color="separatorTertiary" />
+      {/* <ScrollView
+          style={{
+            width: '100%',
+            ...borders.buildRadiusAsObject('top', 30),
+          }}
+        > */}
+      <Box
+        width="full"
+        paddingTop="52px"
+        paddingHorizontal="20px"
+        paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
+      >
+        <Box paddingHorizontal="20px">
+          <Text size="26pt" weight="heavy" color="label" align="center">
+            Choose a payment option to buy crypto
+          </Text>
+        </Box>
 
-            {!isLoading && providers?.length ? (
-              <>
-                {providers.map((provider, index) => {
-                  const Comp = providerComponents[provider.id];
+        <Box paddingVertical="44px" width="full">
+          <Separator color="separatorTertiary" />
+
+          {!isLoading && providers?.length ? (
+            <>
+              {providers.map((provider, index) => {
+                const Comp = providerComponents[provider.id];
+                return (
+                  <Box key={provider.id} paddingTop="20px">
+                    <Comp accountAddress={accountAddress} config={provider} />
+                  </Box>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              {Array(4)
+                .fill(0)
+                .map((_, index) => {
+                  const height = 140;
                   return (
-                    <Box key={provider.id} paddingTop="20px">
-                      <Comp accountAddress={accountAddress} config={provider} />
+                    <Box
+                      key={index}
+                      paddingTop="20px"
+                      height={{ custom: height + 20 }}
+                    >
+                      <Skeleton skeletonColor={skeletonColor}>
+                        <Box
+                          background="surfacePrimaryElevated"
+                          borderRadius={30}
+                          height={{ custom: height }}
+                          width="full"
+                        />
+                      </Skeleton>
                     </Box>
                   );
                 })}
-              </>
-            ) : (
-              <>
-                {Array(4)
-                  .fill(0)
-                  .map((_, index) => {
-                    const height = 140;
-                    return (
-                      <Box
-                        key={index}
-                        paddingTop="20px"
-                        height={{ custom: height + 20 }}
-                      >
-                        <Skeleton skeletonColor={skeletonColor}>
-                          <Box
-                            background="surfacePrimaryElevated"
-                            borderRadius={30}
-                            height={{ custom: height }}
-                            width="full"
-                          />
-                        </Skeleton>
-                      </Box>
-                    );
-                  })}
-              </>
-            )}
+            </>
+          )}
 
-            <Box paddingTop="20px">
-              <Box
-                padding="20px"
-                borderRadius={20}
-                style={{
-                  borderWidth: 1,
-                  borderColor,
-                }}
-              >
-                <Box paddingBottom="12px">
-                  <Text size="17pt" weight="bold" color="labelTertiary">
-                    􀵲{' '}
-                    {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.title)}
-                  </Text>
-                </Box>
-
-                <Text size="15pt" weight="semibold" color="labelQuaternary">
-                  {lang.t(
-                    lang.l.wallet.add_cash_v2.sheet_empty_state.description
-                  )}
+          <Box paddingTop="20px">
+            <Box
+              padding="20px"
+              borderRadius={20}
+              style={{
+                borderWidth: 1,
+                borderColor,
+              }}
+            >
+              <Box paddingBottom="12px">
+                <Text size="17pt" weight="bold" color="labelTertiary">
+                  􀵲 {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.title)}
                 </Text>
               </Box>
+
+              <Text size="15pt" weight="semibold" color="labelQuaternary">
+                {lang.t(
+                  lang.l.wallet.add_cash_v2.sheet_empty_state.description
+                )}
+              </Text>
             </Box>
           </Box>
         </Box>
-      </ScrollView>
-    </Box>
+      </Box>
+      {/* </ScrollView> */}
+      {/* </Box> */}
+    </StaticBottomSheet>
   );
 }

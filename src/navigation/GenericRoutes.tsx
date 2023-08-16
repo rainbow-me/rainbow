@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomSheetNavigator } from './bottom-sheet-navigator/createBottomSheetNavigator';
 import ExpandedAssetSheet from '@/screens/ExpandedAssetSheet';
 import Routes from './routesNames';
+import { AddCashSheet } from '@/screens/AddCash';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -16,6 +17,10 @@ export function GenericRoutes({ mainComponent }: Props) {
       <BottomSheet.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
+      />
+      <BottomSheet.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
       />
     </BottomSheet.Navigator>
   );

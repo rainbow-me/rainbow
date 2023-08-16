@@ -151,11 +151,11 @@ function MainNavigator() {
         name={Routes.AVATAR_BUILDER_WALLET}
         options={emojiPresetWallet}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
         options={addCashSheet}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
