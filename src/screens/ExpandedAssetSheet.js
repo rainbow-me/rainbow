@@ -16,6 +16,8 @@ import { useAsset, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
+import { UniqueOperationNamesRule } from 'graphql';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
@@ -51,12 +53,8 @@ export default function ExpandedAssetSheet(props) {
   const selectedAsset = useAsset(params.asset);
 
   return (
-    <Container
-      deviceHeight={deviceHeight}
-      height={params.longFormHeight}
-      insets={insets}
-    >
-      {ios && <TouchableBackdrop onPress={goBack} />}
+    <StaticBottomSheet scrollable snapPoints={['90%', '100%']}>
+      {/* {ios && <TouchableBackdrop onPress={goBack} />} */}
 
       {createElement(ScreenTypes[params.type], {
         ...params,
@@ -66,6 +64,6 @@ export default function ExpandedAssetSheet(props) {
           ...selectedAsset,
         },
       })}
-    </Container>
+    </StaticBottomSheet>
   );
 }

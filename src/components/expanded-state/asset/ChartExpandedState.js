@@ -337,14 +337,7 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address === DOG_ADDRESS ||
     assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
-    <SlackSheet
-      additionalTopPadding={android}
-      contentHeight={ChartExpandedStateSheetHeight}
-      scrollEnabled
-      {...(ios
-        ? { height: '100%' }
-        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
-    >
+    <>
       {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
@@ -493,6 +486,6 @@ export default function ChartExpandedState({ asset }) {
         />
         <Spacer />
       </AdditionalContentWrapper>
-    </SlackSheet>
+    </>
   );
 }

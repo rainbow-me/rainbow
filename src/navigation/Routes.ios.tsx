@@ -96,6 +96,7 @@ import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import { Routes as ExampleRoutes } from './bottom-sheet-navigator/example/Routes';
+import { GenericRoutes } from './GenericRoutes';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -205,11 +206,11 @@ function NativeStackNavigator() {
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
-      />
+      /> */}
       <NativeStack.Screen
         component={PoapSheet}
         name={Routes.POAP_SHEET}
@@ -479,8 +480,8 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      {/* <NativeStackNavigator /> */}
-      <ExampleRoutes />
+      <GenericRoutes mainComponent={NativeStackNavigator} />
+      {/* <ExampleRoutes /> */}
     </NavigationContainer>
   )
 );

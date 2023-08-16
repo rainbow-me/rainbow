@@ -234,21 +234,17 @@ function SendButton() {
 
   const { navigate } = useNavigation();
 
-  // const handlePress = React.useCallback(() => {
-  //   if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-  //     analytics.track('Tapped "Send"', {
-  //       category: 'home screen',
-  //     });
+  const handlePress = React.useCallback(() => {
+    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      analytics.track('Tapped "Send"', {
+        category: 'home screen',
+      });
 
-  //     navigate(Routes.SEND_FLOW);
-  //   } else {
-  //     watchingAlert();
-  //   }
-  // }, [navigate, isReadOnlyWallet]);
-
-  const handlePress = () => {
-    navigate('BOTTOM_SHEET');
-  };
+      navigate(Routes.SEND_FLOW);
+    } else {
+      watchingAlert();
+    }
+  }, [navigate, isReadOnlyWallet]);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">

@@ -81,6 +81,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { GenericRoutes } from './GenericRoutes';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -427,7 +428,7 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      <AuthNavigator />
+      <GenericRoutes mainComponent={AuthNavigator} />
     </NavigationContainer>
   )
 );
