@@ -39,7 +39,7 @@ const TabPill = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error Not seen as a valid prop
+      // @ts-ignore overloaded props
       onPress={handleOnPress}
       scaleTo={0.8}
       testID={testID}

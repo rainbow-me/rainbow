@@ -81,6 +81,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
+import { initializeReservoirClient } from '@/resources/nftOffers/utils';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -359,6 +360,7 @@ function Root() {
         // for failure, continue to rest of the app for now
         setInitializing(false);
       });
+    initializeReservoirClient();
   }, [setInitializing]);
 
   return initializing ? null : (

@@ -13,7 +13,7 @@ export const CancelButton = ({ onPress }: { onPress: () => void }) => (
       justifyContent="center"
       width={{ custom: 91 }}
       height={{ custom: 46 }}
-      // @ts-expect-error js component
+      // @ts-ignore overloaded props
       onPress={onPress}
     >
       <Text size="17pt" weight="heavy" color="labelSecondary" align="center">

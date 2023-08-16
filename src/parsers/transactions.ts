@@ -576,6 +576,19 @@ export const getTransactionLabel = ({
   if (status === TransactionStatus.cancelled)
     return TransactionStatus.cancelled;
 
+  if (
+    status === TransactionStatus.selling ||
+    (type === TransactionType.sell && pending)
+  ) {
+    return TransactionStatus.selling;
+  }
+
+  if (
+    status === TransactionStatus.sold ||
+    (type === TransactionType.sell && !pending)
+  )
+    return TransactionStatus.sold;
+
   if (status === TransactionStatus.speeding_up)
     return TransactionStatus.speeding_up;
 
