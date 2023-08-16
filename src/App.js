@@ -81,6 +81,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -252,10 +253,12 @@ class OldApp extends Component {
         <View style={containerStyle}>
           {this.state.initialRoute && (
             <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RoutesComponent
+                  onReady={this.handleSentryNavigationIntegration}
+                  ref={this.handleNavigatorRef}
+                />
+              </GestureHandlerRootView>
               <PortalConsumer />
             </InitialRouteContext.Provider>
           )}

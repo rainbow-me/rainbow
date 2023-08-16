@@ -102,11 +102,11 @@ function MainNavigator() {
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
         options={expandedPreset}
-      />
+      /> */}
       <Stack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}
@@ -156,11 +156,11 @@ function MainNavigator() {
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
         options={wcPromptPreset}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
         options={addCashSheet}
-      />
+      /> */}
       <Stack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
@@ -248,10 +248,10 @@ function BSNavigator() {
         name={Routes.LEARN_WEB_VIEW_SCREEN}
         {...learnWebViewScreenConfig}
       />
-      <BSStack.Screen
+      {/* <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-      />
+      /> */}
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
