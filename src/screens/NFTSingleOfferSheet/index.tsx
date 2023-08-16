@@ -433,6 +433,7 @@ export function NFTSingleOfferSheet() {
     dispatch,
     feeParam,
     navigate,
+    network,
     nft,
     offer,
     rainbowFeeDecimal,

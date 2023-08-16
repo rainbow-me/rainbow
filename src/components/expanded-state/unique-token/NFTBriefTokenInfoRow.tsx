@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
@@ -13,6 +13,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
+import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 
 const NONE = 'None';
 
@@ -34,6 +35,20 @@ export default function NFTBriefTokenInfoRow({
   const { navigate } = useNavigation();
 
   const { nativeCurrency } = useAccountSettings();
+
+  const [floorPrice, setFloorPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFloorPrice = async () => {
+      const result = await fetchReservoirNFTFloorPrice(asset);
+      if (result) {
+        setFloorPrice(result);
+      } else {
+        setFloorPrice(formatPrice(asset?.floorPriceEth, 'ETH'));
+      }
+    };
+    fetchFloorPrice();
+  }, [asset]);
 
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
@@ -69,7 +84,6 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const floorPrice = formatPrice(asset?.floorPriceEth, 'ETH');
   const lastSalePrice = formatPrice(
     asset?.lastPrice,
     asset?.lastSalePaymentToken
