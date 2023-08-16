@@ -32,7 +32,7 @@ export default function SelectableButton({
       <Box
         as={ButtonPressAnimation}
         height={`${height}px`}
-        // @ts-expect-error
+        // @ts-ignore overloaded props
         onPress={onSelect}
         testID={testID}
       >

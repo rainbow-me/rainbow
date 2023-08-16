@@ -47,7 +47,8 @@ const GweiStepButton = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-expect-error
+      // @ts-ignore overloaded props
+
       scaleTo={0.75}
       minLongPressDuration={MIN_LONG_PRESS_DELAY_THRESHOLD}
       onLongPress={onLongPress}

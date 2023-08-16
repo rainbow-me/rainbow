@@ -44,7 +44,6 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
-  [NFT_OFFERS]: { settings: true, value: false },
   [NFT_OFFERS]: { settings: true, value: true },
 };
 

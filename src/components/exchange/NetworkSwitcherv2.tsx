@@ -75,7 +75,8 @@ const NetworkSwitcherv2 = ({
                   as={ButtonPressAnimation}
                   height="36px"
                   key={`${testID}-${title}`}
-                  // @ts-expect-error overloaded props from ButtonPressAnimation
+                  // @ts-ignore overloaded props
+
                   onPress={() => setCurrentChainId(chainId)}
                   padding="8px"
                   testID={`${testID}-${network}`}
@@ -83,7 +84,8 @@ const NetworkSwitcherv2 = ({
                   {isSelected && (
                     <RadialGradient
                       {...radialGradientProps(network)}
-                      // @ts-expect-error overloaded props from RadialGradient
+                      // @ts-ignore overloaded props
+
                       borderRadius={30}
                     />
                   )}

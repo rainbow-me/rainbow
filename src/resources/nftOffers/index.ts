@@ -117,8 +117,8 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     analyticsV2.identify({
       nftOffersAmount: nftOffers.length,
       nftOffersUSDValue: totalUSDValue,
-      nftOffersMedianVariance: medianVariance,
-      nftOffersMeanVariance: meanVariance,
+      nftOffersMedianOfferVariance: medianVariance,
+      nftOffersMeanOfferVariance: meanVariance,
     });
   }, [query.data?.nftOffers]);
 
