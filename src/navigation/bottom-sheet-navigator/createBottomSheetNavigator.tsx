@@ -1,33 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   DefaultNavigatorOptions,
   ParamListBase,
   StackActionHelpers,
-  StackActions,
   StackNavigationState,
   StackRouter,
   StackRouterOptions,
   createNavigatorFactory,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import { StackNavigationConfig } from '@react-navigation/stack/lib/typescript/src/types';
-import { BottomSheetContainer } from './BottomSheetContainer';
 import { BottomSheetNavigationContext } from './context/BottomSheetNavigationContext';
 
 export type BottomNavigationOptions = {
-  snapPoints?: Array<number | string>;
+  root?: boolean;
 };
-export type BottomNavigationEventMap = {};
+export type BottomNavigationEventMap = Record<string, never>;
 
-// TODO: Update this type to contain BottomSheet types instead of Stack
 type Props = DefaultNavigatorOptions<
   ParamListBase,
   StackNavigationState<ParamListBase>,
   BottomNavigationOptions,
   BottomNavigationEventMap
-> &
-  StackRouterOptions &
-  StackNavigationConfig;
+>;
 
 function BottomSheetNavigator({
   id,
@@ -35,7 +29,6 @@ function BottomSheetNavigator({
   children,
   screenListeners,
   screenOptions,
-  ...rest
 }: Props) {
   const {
     state,
@@ -58,33 +51,31 @@ function BottomSheetNavigator({
 
   const closeSheet = () => {
     navigation.pop();
-    // navigation?.dispatch?.({
-    //   ...StackActions.pop(),
-    //   source: route.key,
-    //   // target: state.key,
-    // });
   };
+
+  const rootKey = useMemo(
+    () => Object.keys(descriptors).find(key => descriptors[key].options.root),
+    [descriptors]
+  );
+
+  if (!rootKey) {
+    throw new Error('Bottom Sheet Navigator needs a root screen');
+  }
+
+  const sheetRoutes = useMemo(
+    () => state.routes.filter(r => r.key !== rootKey),
+    [state, rootKey]
+  );
 
   return (
     <BottomSheetNavigationContext.Provider value={{ closeSheet }}>
       <NavigationContent>
-        {descriptors[state.routes[0].key].render()}
-        {state.routes.slice(1).map(route => (
+        {descriptors[rootKey].render()}
+        {sheetRoutes.map(route => (
           <React.Fragment key={route.key}>
             {descriptors[route.key].render()}
           </React.Fragment>
         ))}
-        {/* {state.routes.slice(1).map(route => (
-          <BottomSheetContainer
-            key={route.key}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...rest}
-            state={state}
-            descriptors={descriptors}
-            navigation={navigation}
-            route={route}
-          />
-        ))} */}
       </NavigationContent>
     </BottomSheetNavigationContext.Provider>
   );

@@ -16,7 +16,11 @@ type Props = {
 export function GenericRoutes({ mainComponent }: Props) {
   return (
     <BottomSheet.Navigator>
-      <BottomSheet.Screen component={mainComponent} name="MAIN" />
+      <BottomSheet.Screen
+        options={{ root: true }}
+        component={mainComponent}
+        name="MAIN"
+      />
       <BottomSheet.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
