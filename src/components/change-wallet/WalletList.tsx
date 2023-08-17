@@ -31,6 +31,7 @@ import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/core';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -250,8 +251,6 @@ export default function WalletList({
     [contextMenuActions, editMode]
   );
 
-  console.log(rows);
-
   return (
     <Container>
       {/* <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
@@ -265,6 +264,7 @@ export default function WalletList({
           renderItem={renderItem}
           // scrollEnabled={scrollEnabled}
           showDividers={showDividers}
+          focusHook={useFocusEffect}
         />
         {showDividers && <WalletListDivider />}
         {!watchOnly && (

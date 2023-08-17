@@ -1,9 +1,17 @@
 import React, { ReactNode } from 'react';
-import NativeBottomSheet from '@gorhom/bottom-sheet';
+import NativeBottomSheet, {
+  useBottomSheetSpringConfigs,
+  useBottomSheetTimingConfigs,
+} from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/core';
 import { SheetBackdrop } from './SheetBackdrop';
-import { SharedValue } from 'react-native-reanimated';
+import {
+  Easing,
+  SharedValue,
+  WithSpringConfig,
+  WithTimingConfig,
+} from 'react-native-reanimated';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
@@ -37,9 +45,15 @@ export function BottomSheet({
     navigation.goBack();
   };
 
+  const defaultTimingConfig = useBottomSheetTimingConfigs({
+    duration: 400,
+    easing: Easing.out(Easing.exp),
+  });
+
   return (
     <NativeBottomSheet
       animateOnMount
+      animationConfigs={defaultTimingConfig}
       backdropComponent={SheetBackdrop}
       enableContentPanningGesture
       enableHandlePanningGesture

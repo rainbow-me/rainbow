@@ -110,7 +110,11 @@ const MainStack = () => (
 export const Routes = () => {
   return (
     <BottomSheetNav.Navigator>
-      <BottomSheetNav.Screen component={MainStack} name={'MAIN_STACK'} />
+      <BottomSheetNav.Screen
+        options={{ root: true }}
+        component={MainStack}
+        name={'MAIN_STACK'}
+      />
       <BottomSheetNav.Screen
         component={FullScreenSheetScreen}
         name={'FullScreenSheetScreen'}
