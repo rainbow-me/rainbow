@@ -64,9 +64,7 @@ function least(length: number, compare: (value: number) => number) {
 
 function impactHeavy() {
   'worklet';
-  (runOnJS
-    ? runOnJS(ReactNativeHapticFeedback.trigger)
-    : ReactNativeHapticFeedback.trigger)('impactHeavy');
+  runOnJS(() => ReactNativeHapticFeedback.trigger('impactHeavy'));
 }
 
 const timingFeedbackDefaultConfig = {
