@@ -4,6 +4,8 @@ import ExpandedAssetSheet from '@/screens/ExpandedAssetSheet';
 import Routes from './routesNames';
 import { AddCashSheet } from '@/screens/AddCash';
 import ChangeWalletSheet from '@/screens/ChangeWalletSheet';
+import SendSheet from '@/screens/SendSheet';
+import ExplainSheet from '@/screens/ExplainSheet';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -26,6 +28,14 @@ export function GenericRoutes({ mainComponent }: Props) {
       <BottomSheet.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
+      />
+      <BottomSheet.Screen
+        component={SendSheet}
+        name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <BottomSheet.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
       />
     </BottomSheet.Navigator>
   );

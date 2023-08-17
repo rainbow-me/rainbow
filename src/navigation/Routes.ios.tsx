@@ -265,11 +265,11 @@ function NativeStackNavigator() {
         name={Routes.ADD_TOKEN_SHEET}
         {...addTokenSheetConfig}
       />
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
-      />
+      /> */}
       <NativeStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
@@ -429,10 +429,10 @@ function NativeStackNavigator() {
           />
         </>
       )}
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
+      /> */}
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}

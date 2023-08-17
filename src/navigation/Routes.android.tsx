@@ -214,11 +214,11 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
       />
-      <OuterStack.Screen
+      {/* <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
         options={expandedPresetWithSmallGestureResponseDistance}
-      />
+      /> */}
     </OuterStack.Navigator>
   );
 }
@@ -326,11 +326,11 @@ function BSNavigator() {
         name={Routes.NOTIFICATIONS_PROMO_SHEET}
         options={bottomSheetPreset}
       />
-      <BSStack.Screen
+      {/* <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         options={bottomSheetPreset}
-      />
+      /> */}
       <BSStack.Screen
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}

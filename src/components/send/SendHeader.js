@@ -218,7 +218,7 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandleFixedToTop />
+      {/* <SheetHandleFixedToTop /> */}
       {isTinyPhone ? null : (
         <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
       )}
