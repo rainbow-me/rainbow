@@ -138,7 +138,7 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    AppState.addEventListener('change', this.handleAppStateChange);
+    AppState?.addEventListener('change', this?.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
