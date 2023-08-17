@@ -9,6 +9,7 @@ const DEFAULT_BACKDROP_OPACITY = 0.5;
 export function SheetBackdrop(props: BottomSheetBackdropProps) {
   return (
     <BottomSheetBackdrop
+      enableTouchThrough
       appearsOnIndex={0}
       disappearsOnIndex={-1}
       opacity={DEFAULT_BACKDROP_OPACITY}

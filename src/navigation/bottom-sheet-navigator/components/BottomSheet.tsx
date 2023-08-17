@@ -1,19 +1,14 @@
 import React, { ReactNode } from 'react';
 import NativeBottomSheet, {
-  useBottomSheetSpringConfigs,
   useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/core';
 import { SheetBackdrop } from './SheetBackdrop';
-import {
-  Easing,
-  SharedValue,
-  WithSpringConfig,
-  WithTimingConfig,
-} from 'react-native-reanimated';
+import { Easing, SharedValue } from 'react-native-reanimated';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { useTheme } from '@/theme';
 
 const SHEET_BORDER_RADIUS = 40;
 
@@ -40,6 +35,7 @@ export function BottomSheet({
 }: Props) {
   const navigation = useNavigation();
   const safeAreaInsets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   const handleClose = () => {
     navigation.goBack();
@@ -59,7 +55,10 @@ export function BottomSheet({
       enableHandlePanningGesture
       enablePanDownToClose
       enableOverDrag={enableOverDrag}
-      backgroundStyle={bottomSheetStyle.background}
+      backgroundStyle={{
+        ...bottomSheetStyle.background,
+        backgroundColor: colors.white,
+      }}
       onClose={handleClose}
       topInset={safeAreaInsets.top}
       snapPoints={snapPoints}
@@ -75,7 +74,6 @@ export function BottomSheet({
 
 const bottomSheetStyle = StyleSheet.create({
   background: {
-    backgroundColor: 'white',
     borderTopLeftRadius: SHEET_BORDER_RADIUS,
     borderTopRightRadius: SHEET_BORDER_RADIUS,
   },
