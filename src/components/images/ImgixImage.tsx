@@ -1,5 +1,6 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import { Image } from 'react-native';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -11,7 +12,6 @@ export type ImgixImageProps = FastImageProps & {
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
 type HiddenImgixImageProps = {
-  forwardedRef: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
   size: number;
@@ -48,15 +48,15 @@ class ImgixImage extends React.PureComponent<
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
     const isNotFound =
-      err.nativeEvent.statusCode === 404 ||
-      err.nativeEvent.message?.includes('404');
+      err?.nativeEvent?.statusCode === 404 ||
+      err?.nativeEvent?.message?.includes('404');
     const shouldRetry = retryOnError && !isNotFound;
 
     if (shouldRetry && retryCount < maxRetries) {
       this.setState(({ retryCount }) => ({ retryCount: retryCount + 1 }));
     } else {
       // @ts-expect-error
-      onError?.(err);
+      onError?.(err?.nativeEvent?.error);
     }
   };
 
@@ -65,11 +65,11 @@ class ImgixImage extends React.PureComponent<
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
-    const Component = maybeComponent || FastImage;
+    const Component = maybeComponent || Image;
     return (
       <Component
         {...props}
-        key={retryCount}
+        key={`${JSON.stringify(source)}-${retryCount}`}
         onError={this.handleError}
         source={source}
       />
@@ -86,21 +86,9 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
         w: size,
       }),
     };
-    return FastImage.preload(
-      sources.map(source => maybeSignSource(source, options))
-    );
   }
   return;
 };
-
-const getCachePath = (source: Source) =>
-  FastImage.getCachePath(maybeSignSource(source));
-
-const ImgixImageWithForwardRef = React.forwardRef(
-  (props: ImgixImageProps, ref: React.Ref<any>) => (
-    <ImgixImage forwardedRef={ref} {...props} />
-  )
-);
 
 const {
   cacheControl,
@@ -111,12 +99,11 @@ const {
   resizeMode,
 } = FastImage;
 
-export default Object.assign(ImgixImageWithForwardRef, {
+export default Object.assign(ImgixImage, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,
   contextTypes,
-  getCachePath,
   preload,
   priority,
   resizeMode,
