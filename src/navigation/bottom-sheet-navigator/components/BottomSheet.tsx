@@ -9,8 +9,7 @@ import { Easing, SharedValue } from 'react-native-reanimated';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '@/theme';
-
-const SHEET_BORDER_RADIUS = 40;
+import { getDeviceRadius } from '../utils/getDeviceRadius';
 
 type MaybeSharedValue<T> = T | SharedValue<T>;
 
@@ -71,6 +70,8 @@ export function BottomSheet({
     </NativeBottomSheet>
   );
 }
+
+const SHEET_BORDER_RADIUS = getDeviceRadius();
 
 const bottomSheetStyle = StyleSheet.create({
   background: {
