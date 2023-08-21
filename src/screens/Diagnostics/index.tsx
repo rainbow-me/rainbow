@@ -50,6 +50,8 @@ export const WalletDiagnosticsSheet = () => {
 
         // get wallet and set wallet data
         const allKeys = await loadAllKeys();
+        console.log('HELLO???');
+        console.log(allKeys);
         if (allKeys) {
           const processedKeys = await Promise.all(
             allKeys
