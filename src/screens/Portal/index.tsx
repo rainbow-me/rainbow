@@ -6,7 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
-type PortalSheetProps = {
+export type PortalSheetProps = {
   sheetHeight?: number;
   children: React.FC;
 };

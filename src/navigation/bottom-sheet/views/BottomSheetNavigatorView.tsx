@@ -11,10 +11,10 @@ import type {
 } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@/hooks';
+import { RootStackParamList } from '@/navigation/types';
 
 type Props = BottomSheetNavigationConfig & {
-  // @ts-ignore type mismatch
-  state: StackNavigationState;
+  state: StackNavigationState<RootStackParamList>;
   navigation: BottomSheetNavigationHelpers;
   descriptors: BottomSheetDescriptorMap;
 };

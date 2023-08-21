@@ -15,7 +15,6 @@ import {
   expandedPreset,
   swapSettingsPreset,
 } from './effects';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
 import { useSwapCurrencies } from '@/hooks';
 import styled from '@/styled-thing';
@@ -87,16 +86,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       }
     }, [addListener, removeListener, params]);
 
-    const renderPager = useCallback(
-      props => (
-        <ScrollPagerWrapper
-          {...props}
-          id="exchange"
-          initialScrollPosition={1}
-        />
-      ),
-      []
-    );
     const toggleGestureEnabled = useCallback(
       dismissable => {
         setOptions({ dismissable, gestureEnabled: dismissable });
@@ -121,8 +110,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     return (
       <FlexItem>
         <Tabs.Navigator
-          pager={renderPager}
-          swipeEnabled={enableSwipe}
+          screenOptions={{ swipeEnabled: enableSwipe }}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen

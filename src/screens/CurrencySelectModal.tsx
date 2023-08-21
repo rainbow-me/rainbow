@@ -34,7 +34,6 @@ import NetworkSwitcherv1 from '../components/exchange/NetworkSwitcher';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
-import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
@@ -122,7 +121,7 @@ type ParamList = {
 export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-  const { goBack, navigate, dangerouslyGetState } = useNavigation();
+  const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -141,8 +140,6 @@ export default function CurrencySelectModal() {
   } = useRoute<RouteProp<ParamList, 'Currency'>>();
 
   const listRef = useRef<SectionList<any, DefaultSectionT>>(null);
-
-  const scrollPosition = (usePagerPosition() as unknown) as { value: number };
 
   const searchInputRef = useRef<TextInput>(null);
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
@@ -394,7 +391,7 @@ export default function CurrencySelectModal() {
   const handleNavigate = useCallback(
     (item: any) => {
       delayNext();
-      // @ts-expect-error – updating read-only property
+      // @ts-expect-error read only property
       dangerouslyGetState().index = 1;
       if (fromDiscover) {
         goBack();
@@ -607,14 +604,6 @@ export default function CurrencySelectModal() {
     }
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
-  const style = useAnimatedStyle(() => ({
-    opacity: android ? 1 : scrollPosition.value,
-    transform: [
-      { scale: 0.9 + scrollPosition.value / 10 },
-      { translateX: (1 - scrollPosition.value) * 8 },
-    ],
-  }));
-
   useEffect(() => {
     // check if list has items before attempting to scroll
     if (!currencyList[0]?.data) return;
@@ -631,7 +620,7 @@ export default function CurrencySelectModal() {
 
   return (
     <Wrapper>
-      <Box as={Animated.View} height="full" width="full" style={style}>
+      <Box as={Animated.View} height="full" width="full">
         {/* @ts-expect-error JavaScript component */}
         <Modal
           containerPadding={0}

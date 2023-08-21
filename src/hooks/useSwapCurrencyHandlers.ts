@@ -40,7 +40,11 @@ export default function useSwapCurrencyHandlers({
 }: any = {}) {
   const dispatch = useDispatch();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const { navigate, setParams, dangerouslyGetParent } = useNavigation();
+  const {
+    navigate,
+    setParams,
+    getParent: dangerouslyGetParent,
+  } = useNavigation();
 
   const { derivedValues } = useSwapDerivedValues();
 
@@ -235,7 +239,7 @@ export default function useSwapCurrencyHandlers({
     (chainId: number) => {
       InteractionManager.runAfterInteractions(() => {
         // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-        dangerouslyGetParent().dangerouslyGetState().index = 0;
+        dangerouslyGetParent().getState().index = 0;
         setParams({ focused: false });
         delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {

@@ -86,7 +86,7 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
-  const { replace, navigate, dangerouslyGetState } = useNavigation();
+  const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const [userData, setUserData] = useState(null);
   const hideSplashScreen = useHideSplashScreen();
 

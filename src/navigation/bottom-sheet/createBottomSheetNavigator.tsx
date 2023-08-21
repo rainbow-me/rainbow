@@ -16,8 +16,14 @@ import type {
   BottomSheetNavigationOptions,
 } from './types';
 import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
+import { RootStackParamList } from '@/navigation/types';
 
-type Props = DefaultNavigatorOptions<BottomSheetNavigationOptions> &
+type Props = DefaultNavigatorOptions<
+  RootStackParamList,
+  StackNavigationState<RootStackParamList>,
+  BottomSheetNavigationOptions,
+  BottomSheetNavigationEventMap
+> &
   StackRouterOptions &
   BottomSheetNavigationConfig;
 
@@ -28,19 +34,22 @@ const BottomSheetNavigator = ({
   ...rest
 }: Props) => {
   const { state, descriptors, navigation } = useNavigationBuilder<
-    // @ts-ignore type mismatch
-    StackNavigationState,
+    StackNavigationState<RootStackParamList>,
     StackRouterOptions,
+    Record<string, () => void>,
     BottomSheetNavigationOptions,
     BottomSheetNavigationEventMap
   >(router, {
     children,
     initialRouteName,
+    // @ts-expect-error doesn't like the typing of RootStackParamList
     screenOptions,
   });
 
   React.useEffect(
     () =>
+      // @ts-expect-error we're missing this event handler in our custom
+      // bottom-sheet types
       navigation.addListener?.('tabPress', e => {
         const isFocused = navigation.isFocused();
 
@@ -78,8 +87,7 @@ const BottomSheetNavigator = ({
 };
 
 export const createBottomSheetNavigator = createNavigatorFactory<
-  // @ts-ignore type mismatch
-  StackNavigationState,
+  StackNavigationState<RootStackParamList>,
   BottomSheetNavigationOptions,
   BottomSheetNavigationEventMap,
   typeof BottomSheetNavigator

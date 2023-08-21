@@ -82,7 +82,7 @@ function block() {
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
-      let wasBlocked = blocked;
+      const wasBlocked = blocked;
       block();
       if (wasBlocked) {
         return;

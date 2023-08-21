@@ -1,12 +1,12 @@
 diff --git a/node_modules/@react-navigation/routers/src/StackRouter.tsx b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-index 0174491..426cd2a 100644
+index eaa43a0..7efff5e 100644
 --- a/node_modules/@react-navigation/routers/src/StackRouter.tsx
 +++ b/node_modules/@react-navigation/routers/src/StackRouter.tsx
-@@ -281,6 +281,33 @@ export default function StackRouter(options: StackRouterOptions) {
+@@ -483,6 +483,33 @@ export default function StackRouter(options: StackRouterOptions) {
  
            return null;
  
-+          // @ts-ignore
++        // @ts-ignore
 +        case '@RAINBOW/REMOVE_NEXT_TO_LAST': {
 +          if (state.routes.length < 3) {
 +            return state;
@@ -22,7 +22,7 @@ index 0174491..426cd2a 100644
 +          };
 +        }
 +
-+          // @ts-ignore
++        // @ts-ignore
 +        case '@RAINBOW/REMOVE_FIRST': {
 +          return {
 +            ...state,
@@ -33,6 +33,6 @@ index 0174491..426cd2a 100644
 +          };
 +        }
 +
-         case 'POP': {
-           const index =
-             action.target === state.key && action.source
+         default:
+           return BaseRouter.getStateForAction(state, action);
+       }

@@ -7,11 +7,14 @@ import {
   StackRouterOptions,
 } from '@react-navigation/native';
 import { actions } from './actions';
+import { RootStackParamList } from '@/navigation/types';
 
 export const router = (
   routerOptions: StackRouterOptions
-  // @ts-ignore type mismatch
-): Router<StackNavigationState, CommonNavigationAction | StackActionType> => {
+): Router<
+  StackNavigationState<RootStackParamList>,
+  CommonNavigationAction | StackActionType
+> => {
   const stackRouter = StackRouter(routerOptions);
 
   return {
@@ -22,6 +25,7 @@ export const router = (
       ...actions,
     },
 
+    // @ts-expect-error doesn't like the typing of RootStackParamList
     getStateForAction(state, action, options) {
       switch (action.type) {
         // TODO

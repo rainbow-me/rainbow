@@ -7,17 +7,12 @@ import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { WalletScreen } from '@/screens/WalletScreen';
 import { deviceUtils } from '../utils';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
 import { useAccountSettings, useCoinListEdited } from '@/hooks';
 
 const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
-
-const renderPager = props => (
-  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
-);
 
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
@@ -30,7 +25,6 @@ export function SwipeNavigator() {
       <Swipe.Navigator
         initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.WALLET_SCREEN}
-        pager={renderPager}
         swipeEnabled={swipeEnabled && !isCoinListEdited}
         tabBar={renderTabBar}
       >
