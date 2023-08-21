@@ -5,6 +5,7 @@ import {
   Columns,
   Inline,
   Inset,
+  Stack,
   Text,
   useColorMode,
   useForegroundColor,
@@ -19,9 +20,9 @@ import { useDimensions } from '@/hooks';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-const EFFECTIVE_HORIZONTAL_PADDING = 20;
+const HORIZONTAL_PADDING = 20;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -64,133 +65,126 @@ export function CarouselCard<T>({
   const { width: deviceWidth } = useDimensions();
   const { colorMode } = useColorMode();
 
-  const horizontalPadding =
-    EFFECTIVE_HORIZONTAL_PADDING - carouselItem.spaceBetween / 2;
-
   return (
-    <Bleed horizontal="20px">
-      <Box style={{ overflow: 'hidden' }}>
-        <Inset horizontal="20px">
-          <Inline alignVertical="center" alignHorizontal="justify">
-            {typeof title === 'string' ? (
-              <Text color="label" weight="heavy" size="20pt">
-                {title}
-              </Text>
-            ) : (
-              title
-            )}
-            {menu}
-          </Inline>
-          <Bleed horizontal="20px" vertical="10px">
-            <Box height={{ custom: carouselItem.height }}>
-              {data?.length ? (
-                <FlashList
-                  data={data}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{
-                    paddingHorizontal: horizontalPadding,
-                  }}
-                  estimatedItemSize={carouselItem.width}
-                  horizontal
-                  estimatedListSize={{
-                    height: carouselItem.height,
-                    width: deviceWidth * 2,
-                  }}
-                  style={{ flex: 1 }}
-                  renderItem={carouselItem.renderItem}
-                  keyExtractor={carouselItem.keyExtractor}
+    <Stack space="20px">
+      <Inline alignVertical="center" alignHorizontal="justify">
+        {typeof title === 'string' ? (
+          <Text color="label" weight="heavy" size="20pt">
+            {title}
+          </Text>
+        ) : (
+          title
+        )}
+        {menu}
+      </Inline>
+      {/* FlashList vertical visible overflow does not work due to a bug,
+      so we need to manually add vertical padding to the recycled component.
+      The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 
+      See https://github.com/Shopify/flash-list/issues/723*/}
+      <Bleed horizontal="20px" vertical="10px">
+        <Box height={{ custom: carouselItem.height }}>
+          {data?.length ? (
+            <FlashList
+              data={data}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: HORIZONTAL_PADDING,
+              }}
+              estimatedItemSize={carouselItem.width}
+              horizontal
+              estimatedListSize={{
+                height: carouselItem.height,
+                width: deviceWidth * 2,
+              }}
+              style={{ flex: 1 }}
+              renderItem={carouselItem.renderItem}
+              ItemSeparatorComponent={() => (
+                <View style={{ width: carouselItem.spaceBetween }} />
+              )}
+              keyExtractor={carouselItem.keyExtractor}
+            />
+          ) : (
+            // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: HORIZONTAL_PADDING,
+              }}
+            >
+              {carouselItem.placeholder}
+              {carouselItem.placeholder}
+              {carouselItem.placeholder}
+              {carouselItem.placeholder}
+              {carouselItem.placeholder}
+            </ScrollView>
+          )}
+        </Box>
+      </Bleed>
+      <Columns space="10px">
+        <Column>
+          {/* @ts-ignore js component */}
+          <Box
+            as={ButtonPressAnimation}
+            background={button.style === 'fill' ? 'fillSecondary' : undefined}
+            height="36px"
+            width="full"
+            borderRadius={99}
+            justifyContent="center"
+            alignItems="center"
+            style={{
+              overflow: 'hidden',
+              borderWidth: button.style === 'outline' ? 1 : undefined,
+              borderColor: button.style === 'outline' ? 'blue' : undefined,
+            }}
+            onPress={button.onPress}
+          >
+            {/* unfortunately shimmer width must be hardcoded */}
+            <ShimmerAnimation
+              color={buttonColor}
+              width={
+                deviceWidth -
+                2 * HORIZONTAL_PADDING -
+                // 46 = 36px refresh button width + 10px spacing
+                (refresh ? 46 : 0)
+              }
+            />
+            <Text color="label" align="center" size="15pt" weight="bold">
+              {button.text}
+            </Text>
+          </Box>
+        </Column>
+        {!!refresh && (
+          <Column width="content">
+            <Box
+              as={ButtonPressAnimation}
+              // @ts-ignore
+              disabled={!canRefresh}
+              onPress={refresh}
+              justifyContent="center"
+              alignItems="center"
+              borderRadius={18}
+              style={{
+                borderWidth: isRefreshing ? 0 : 1,
+                borderColor,
+                width: 36,
+                height: 36,
+              }}
+            >
+              {isRefreshing ? (
+                <LoadingSpinner
+                  color={colorMode === 'light' ? 'black' : 'white'}
+                  size={20}
                 />
               ) : (
-                // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{
-                    paddingHorizontal: horizontalPadding,
-                  }}
-                >
-                  {carouselItem.placeholder}
-                  {carouselItem.placeholder}
-                  {carouselItem.placeholder}
-                  {carouselItem.placeholder}
-                  {carouselItem.placeholder}
-                </ScrollView>
+                <Text align="center" color="label" size="17pt" weight="bold">
+                  􀅈
+                </Text>
               )}
             </Box>
-          </Bleed>
-          <Columns space="10px">
-            <Column>
-              {/* @ts-ignore js component */}
-              <Box
-                as={ButtonPressAnimation}
-                background={
-                  button.style === 'fill' ? 'fillSecondary' : undefined
-                }
-                height="36px"
-                width="full"
-                borderRadius={99}
-                justifyContent="center"
-                alignItems="center"
-                style={{
-                  overflow: 'hidden',
-                  borderWidth: button.style === 'outline' ? 1 : undefined,
-                  borderColor: button.style === 'outline' ? 'blue' : undefined,
-                }}
-                onPress={button.onPress}
-              >
-                {/* unfortunately shimmer width must be hardcoded */}
-                <ShimmerAnimation
-                  color={buttonColor}
-                  width={
-                    deviceWidth -
-                    2 * EFFECTIVE_HORIZONTAL_PADDING -
-                    // 46 = 36px refresh button width + 10px spacing
-                    (refresh ? 46 : 0)
-                  }
-                />
-                <Text color="label" align="center" size="15pt" weight="bold">
-                  {button.text}
-                </Text>
-              </Box>
-            </Column>
-            {!!refresh && (
-              <Column width="content">
-                <Box
-                  as={ButtonPressAnimation}
-                  // @ts-ignore
-                  disabled={!canRefresh}
-                  onPress={refresh}
-                  justifyContent="center"
-                  alignItems="center"
-                  borderRadius={18}
-                  style={{
-                    borderWidth: isRefreshing ? 0 : 1,
-                    borderColor,
-                    width: 36,
-                    height: 36,
-                  }}
-                >
-                  {isRefreshing ? (
-                    <LoadingSpinner
-                      color={colorMode === 'light' ? 'black' : 'white'}
-                      size={20}
-                    />
-                  ) : (
-                    <Text
-                      align="center"
-                      color="label"
-                      size="17pt"
-                      weight="bold"
-                    >
-                      􀅈
-                    </Text>
-                  )}
-                </Box>
-              </Column>
-            )}
-          </Columns>
-        </Inset>
-      </Box>
-    </Bleed>
+          </Column>
+        )}
+      </Columns>
+    </Stack>
   );
 }

@@ -4,10 +4,11 @@ import useExperimentalFlag, {
   PROFILES,
   HARDWARE_WALLETS,
   NFT_OFFERS,
+  MINT_DOT_FUN,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Stack } from '@/design-system';
+import { Inline, Inset, Separator, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -24,6 +25,7 @@ import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
+import { MintDotFunCard } from '@/components/cards/MintDotFunCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
@@ -31,6 +33,7 @@ export default function DiscoverHome() {
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
+  const mintDotFunEnabled = useExperimentalFlag(MINT_DOT_FUN);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
@@ -55,6 +58,12 @@ export default function DiscoverHome() {
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
               {nftOffersEnabled && <NFTOffersCard />}
+              {mintDotFunEnabled && (
+                <>
+                  <MintDotFunCard />
+                  <Separator color="separatorTertiary" thickness={1} />
+                </>
+              )}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
