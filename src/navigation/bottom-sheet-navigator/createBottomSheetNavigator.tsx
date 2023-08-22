@@ -9,7 +9,6 @@ import {
   createNavigatorFactory,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import { BottomSheetNavigationContext } from './context/BottomSheetNavigationContext';
 
 export type BottomNavigationOptions = {
   root?: boolean;
@@ -30,12 +29,7 @@ function BottomSheetNavigator({
   screenListeners,
   screenOptions,
 }: Props) {
-  const {
-    state,
-    descriptors,
-    navigation,
-    NavigationContent,
-  } = useNavigationBuilder<
+  const { state, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -48,10 +42,6 @@ function BottomSheetNavigator({
     screenListeners,
     screenOptions,
   });
-
-  const closeSheet = () => {
-    navigation.pop();
-  };
 
   const rootKey = useMemo(
     () => Object.keys(descriptors).find(key => descriptors[key].options.root),
@@ -68,16 +58,14 @@ function BottomSheetNavigator({
   );
 
   return (
-    <BottomSheetNavigationContext.Provider value={{ closeSheet }}>
-      <NavigationContent>
-        {descriptors[rootKey].render()}
-        {sheetRoutes.map(route => (
-          <React.Fragment key={route.key}>
-            {descriptors[route.key].render()}
-          </React.Fragment>
-        ))}
-      </NavigationContent>
-    </BottomSheetNavigationContext.Provider>
+    <NavigationContent>
+      {descriptors[rootKey].render()}
+      {sheetRoutes.map(route => (
+        <React.Fragment key={route.key}>
+          {descriptors[route.key].render()}
+        </React.Fragment>
+      ))}
+    </NavigationContent>
   );
 }
 
