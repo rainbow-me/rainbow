@@ -1,8 +1,12 @@
 import React from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { CELL_HORIZONTAL_PADDING, Mint, NFT_IMAGE_SIZE } from './Mint';
+import { Menu } from './Menu';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export const MintDotFunCard = () => {
+  const { navigate } = useNavigation();
   return (
     <CarouselCard
       title="Mints"
@@ -15,7 +19,12 @@ export const MintDotFunCard = () => {
         height: 167,
         spaceBetween: CELL_HORIZONTAL_PADDING * 2,
       }}
-      button={{ text: 'View All Mints', style: 'fill', onPress: () => {} }}
+      button={{
+        text: 'View All Mints',
+        style: 'fill',
+        onPress: () => navigate(Routes.MINT_DOT_FUN_SHEET),
+      }}
+      menu={<Menu />}
     />
   );
 };

@@ -46,6 +46,7 @@ import {
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
   externalLinkWarningSheetConfig,
+  mintDotFunSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
@@ -95,6 +96,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+import { MintDotFunSheet } from '@/screens/MintDotFunSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -460,6 +462,11 @@ function NativeStackNavigator() {
         name={Routes.NFT_SINGLE_OFFER_SHEET}
         component={NFTSingleOfferSheet}
         {...nftSingleOfferSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.MINT_DOT_FUN_SHEET}
+        component={MintDotFunSheet}
+        {...mintDotFunSheetConfig}
       />
     </NativeStack.Navigator>
   );
