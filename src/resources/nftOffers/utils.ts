@@ -21,7 +21,7 @@ export function initializeReservoirClient() {
       {
         id: 137,
         baseApiUrl: 'https://api-polygon.reservoir.tools',
-        active: true,
+        active: false,
         apiKey: RESERVOIR_API_KEY,
       },
     ],

@@ -4040,10 +4040,10 @@
     color "^3.1.2"
     react-native-iphone-x-helper "^1.2.1"
 
-"@reservoir0x/reservoir-sdk@1.1.24":
-  version "1.1.24"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.1.24.tgz#69b8eb52ec11dc087fe715d2e70c22fe66b972a7"
-  integrity sha512-8CUJi/ut1Ts0HpMazLaAu2u1Rht6pLN/nfNvKhk2+ago4Y7VAxfEbYCLR47r8/urO9Qj2roFUm2gQsS/up1h7g==
+"@reservoir0x/reservoir-sdk@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.2.1.tgz#8f1a1330c06c658b98e4fd66d0de994c398197ba"
+  integrity sha512-+FN4mN5m5zEPAW41ZkO23NBc1ANQA8gIJr7bWE44fOm7T0dMtbBKEHuGsLtwbuKUx+IslbjmdhytkXRfFTPMqQ==
   dependencies:
     axios "^0.27.2"
 
