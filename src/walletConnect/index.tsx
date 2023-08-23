@@ -668,7 +668,6 @@ export async function onSessionProposal(
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
-  setHasPendingDeeplinkPendingRedirect(true);
   const client = await web3WalletClient;
 
   logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
