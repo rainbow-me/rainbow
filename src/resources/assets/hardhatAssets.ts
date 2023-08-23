@@ -9,6 +9,8 @@ import {
   chainAssets,
   ETH_ADDRESS,
 } from '@/references';
+import { parseAddressAsset } from './assets';
+import { RainbowAddressAssets } from './types';
 import logger from '@/utils/logger';
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
@@ -27,16 +29,17 @@ const fetchHardhatBalancesWithBalanceChecker = async (
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
-      [address: string]: { [tokenAddress: string]: string };
+      [tokenAddress: string]: string;
     } = {};
-    [address].forEach((addr, addrIdx) => {
-      balances[addr] = {};
-      tokens.forEach((tokenAddr, tokenIdx) => {
-        const balance = values[addrIdx * tokens.length + tokenIdx];
-        balances[addr][tokenAddr] = balance.toString();
-      });
+    tokens.forEach((tokenAddr, tokenIdx) => {
+      const balance = values[tokenIdx];
+      const assetCode =
+        tokenAddr === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+          ? ETH_ADDRESS
+          : tokenAddr;
+      balances[assetCode] = balance.toString();
     });
-    return balances[address];
+    return balances;
   } catch (e) {
     logger.sentry(
       'Error fetching balances from balanceCheckerContract',
@@ -51,7 +54,7 @@ const fetchHardhatBalancesWithBalanceChecker = async (
 export const fetchHardhatBalances = async (
   accountAddress: string,
   network: Network = Network.mainnet
-) => {
+): Promise<RainbowAddressAssets | null> => {
   const chainAssetsMap = keyBy(
     chainAssets[network as keyof typeof chainAssets],
     'asset.asset_code'
@@ -69,25 +72,18 @@ export const fetchHardhatBalances = async (
     accountAddress,
     network
   );
-  if (!balances) return;
+  if (!balances) return null;
 
-  const updatedAssets = mapValues(chainAssetsMap, assetAndQuantity => {
-    const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-    return {
+  const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
+    const assetCode = chainAsset.asset.asset_code.toLowerCase();
+    const updatedAsset = {
       asset: {
-        ...assetAndQuantity.asset,
-        asset_code:
-          assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            ? ETH_ADDRESS
-            : assetCode,
+        ...chainAsset.asset,
+        network: chainAsset.asset.network as Network,
       },
-      quantity:
-        balances[
-          assetCode === ETH_ADDRESS
-            ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            : assetCode
-        ],
+      quantity: balances[assetCode],
     };
+    return parseAddressAsset({ assetData: updatedAsset });
   });
   return updatedAssets;
 };

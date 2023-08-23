@@ -40,7 +40,7 @@ export type AddysAsset = {
 
 export type AddysAssetColors = {
   fallback?: string;
-  primary?: string;
+  primary: string;
   shadow?: string;
 };
 

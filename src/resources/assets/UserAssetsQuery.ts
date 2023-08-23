@@ -88,13 +88,13 @@ async function userAssetsQueryFunction({
   const { dispatch } = store;
 
   if (connectedToHardhat) {
-    const parsedTestnetOrHardhatResults = await fetchHardhatBalances(address);
+    const parsedHardhatResults = await fetchHardhatBalances(address);
     // Temporary: update data redux with address assets
     dispatch({
-      payload: parsedTestnetOrHardhatResults,
+      payload: parsedHardhatResults,
       type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
     });
-    return parsedTestnetOrHardhatResults;
+    return parsedHardhatResults;
   }
 
   try {
