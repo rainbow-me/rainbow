@@ -1,6 +1,6 @@
 import React from 'react';
 import { CarouselCard } from '../CarouselCard';
-import { CELL_HORIZONTAL_PADDING, Mint, NFT_IMAGE_SIZE } from './Mint';
+import { Cell, NFT_IMAGE_SIZE, Placeholder } from './Cell';
 import { Menu } from './Menu';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -12,12 +12,12 @@ export const MintDotFunCard = () => {
       title="Mints"
       data={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
       carouselItem={{
-        renderItem: () => <Mint />,
+        renderItem: () => <Cell />,
         keyExtractor: (item: any) => item.id,
-        placeholder: <></>,
-        width: NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2,
+        placeholder: <Placeholder />,
+        width: NFT_IMAGE_SIZE,
         height: 167,
-        spaceBetween: CELL_HORIZONTAL_PADDING * 2,
+        padding: 10,
       }}
       button={{
         text: 'View All Mints',

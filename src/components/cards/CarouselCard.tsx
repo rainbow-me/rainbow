@@ -31,8 +31,8 @@ type CarouselItem<T> = {
   keyExtractor: (item: T, index: number) => string;
   placeholder: React.ReactNode;
   width: number;
-  height: number;
-  spaceBetween: number;
+  height: number; // make sure to include extra 20px to accommodate for vertical bleed
+  padding: number;
 };
 
 type Button = {
@@ -99,7 +99,7 @@ export function CarouselCard<T>({
               style={{ flex: 1 }}
               renderItem={carouselItem.renderItem}
               ItemSeparatorComponent={() => (
-                <View style={{ width: carouselItem.spaceBetween }} />
+                <View style={{ width: carouselItem.padding }} />
               )}
               keyExtractor={carouselItem.keyExtractor}
             />
@@ -112,11 +112,13 @@ export function CarouselCard<T>({
                 paddingHorizontal: HORIZONTAL_PADDING,
               }}
             >
-              {carouselItem.placeholder}
-              {carouselItem.placeholder}
-              {carouselItem.placeholder}
-              {carouselItem.placeholder}
-              {carouselItem.placeholder}
+              <Inline space={{ custom: carouselItem.padding }}>
+                {carouselItem.placeholder}
+                {carouselItem.placeholder}
+                {carouselItem.placeholder}
+                {carouselItem.placeholder}
+                {carouselItem.placeholder}
+              </Inline>
             </ScrollView>
           )}
         </Box>

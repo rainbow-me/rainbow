@@ -6,6 +6,7 @@ import { handleSignificantDecimals } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
+  Bleed,
   Box,
   Inline,
   Inset,
@@ -18,48 +19,49 @@ import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
 
-export const CELL_HORIZONTAL_PADDING = 5;
 export const NFT_IMAGE_SIZE = 111;
 
-export const FakeOffer = () => {
+export const Placeholder = () => {
   const { colors } = useTheme();
   return (
     <AccentColorProvider color={colors.skeleton}>
-      <Inset vertical="10px" horizontal={{ custom: 7 }}>
+      <Inset vertical="10px">
         <Box
           background="accent"
           width={{ custom: NFT_IMAGE_SIZE }}
           height={{ custom: NFT_IMAGE_SIZE }}
           borderRadius={12}
         />
-        <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
+        <Box paddingBottom="10px" paddingTop="12px">
           <Inline space="4px" alignVertical="center">
-            <Box
-              background="accent"
-              width={{ custom: 12 }}
-              height={{ custom: 12 }}
-              borderRadius={6}
-            />
+            <Bleed vertical="4px">
+              <Box
+                background="accent"
+                width={{ custom: 12 }}
+                height={{ custom: 12 }}
+                borderRadius={6}
+              />
+            </Bleed>
             <Box
               background="accent"
               width={{ custom: 50 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
+              height={{ custom: 8 }}
+              borderRadius={4}
             />
           </Inline>
         </Box>
         <Box
           background="accent"
           width={{ custom: 50 }}
-          height={{ custom: 9.3333 }}
-          borderRadius={9.3333 / 2}
+          height={{ custom: 8 }}
+          borderRadius={4}
         />
       </Inset>
     </AccentColorProvider>
   );
 };
 
-export const Mint = () => {
+export function Cell() {
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const { isDarkMode } = useTheme();
@@ -138,4 +140,4 @@ export const Mint = () => {
       </Text>
     </ButtonPressAnimation>
   );
-};
+}

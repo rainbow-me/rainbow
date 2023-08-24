@@ -58,7 +58,7 @@ const getSortOptionFromCriterion = (criterion: SortCriterion) => {
   }
 };
 
-export const Menu = () => {
+export function Menu() {
   const [filter, setFilter] = useRecoilState(mintDotFunFilterAtom);
 
   const menuConfig = {
@@ -119,4 +119,4 @@ export const Menu = () => {
       </ButtonPressAnimation>
     </ContextMenuButton>
   );
-};
+}
