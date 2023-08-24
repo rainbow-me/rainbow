@@ -9,6 +9,7 @@ import { WalletScreen } from '@/screens/WalletScreen';
 import { deviceUtils } from '../utils';
 import Routes from './routesNames';
 import { useAccountSettings, useCoinListEdited } from '@/hooks';
+import { useTheme } from '@/theme';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -16,12 +17,13 @@ const renderTabBar = () => null;
 
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
+  const { colors } = useTheme();
   const { network } = useAccountSettings();
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   const params = useMemo(() => ({ setSwipeEnabled }), []);
 
   return (
-    <FlexItem>
+    <FlexItem style={{ backgroundColor: colors.white }}>
       <Swipe.Navigator
         initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.WALLET_SCREEN}
