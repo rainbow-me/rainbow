@@ -16,14 +16,20 @@ export function initializeReservoirClient() {
         id: 1,
         baseApiUrl: 'https://api.reservoir.tools',
         active: true,
-        apiKey: RESERVOIR_API_KEY,
+        apiKey: 'c5cb3233-4921-528d-bafa-d4ca2f739bed',
       },
       {
         id: 137,
         baseApiUrl: 'https://api-polygon.reservoir.tools',
         active: true,
-        apiKey: RESERVOIR_API_KEY,
+        apiKey: 'c5cb3233-4921-528d-bafa-d4ca2f739bed',
       },
+      {
+        id: 7777777,
+        baseApiUrl: 'https://api-zora.reservoir.tools',
+        active: true,
+        apiKey: 'c5cb3233-4921-528d-bafa-d4ca2f739bed'
+      }
     ],
     logLevel: IS_PROD ? 1 : 4,
   });
