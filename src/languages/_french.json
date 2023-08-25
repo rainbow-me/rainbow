@@ -1083,6 +1083,16 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
+    "mints":{
+      "hold_to_mint": "Hold To Mint",
+      "mint_price": "Mint Price",
+      "total_minted": "Total Minted",
+      "first_event": "First Event",
+      "last_event": "Last Event",
+      "max_supply": "Max Supply",
+      "contract": "Contract",
+      "network": "Network"
+    },
     "nft_offers": {
       "card": {
         "title": {

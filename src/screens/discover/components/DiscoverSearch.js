@@ -22,6 +22,7 @@ import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@/handlers/ens';
 import {
+  useAccountSettings,
   useHardwareBackOnFocus,
   usePrevious,
   useSwapCurrencyList,
@@ -36,6 +37,8 @@ import {
   getPoapAndOpenSheetWithQRHash,
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
+import { arcDevClient } from '@/graphql';
+import { getNetworkObj } from '@/networks';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -44,6 +47,7 @@ export const SearchContainer = styled(Row)({
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
+  const { accountAddress } = useAccountSettings();
   const {
     isSearching,
     isFetchingEns,
@@ -143,6 +147,35 @@ export default function DiscoverSearch() {
     };
     checkAndHandlePoaps(searchQueryForPoap);
   }, [searchQueryForPoap]);
+
+  useEffect(() => {
+    const checkAndHandleMint = async seachQueryForMint => {
+      if (seachQueryForMint.includes('mint.fun')) {
+        const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
+        console.log(seachQueryForMint);
+        console.log(mintdotfunURL);
+        const query = mintdotfunURL[1];
+        let network = query.split('/')[0];
+        if (network === 'ethereum') {
+          network = 'mainnet';
+        }
+        const contractAddress = query.split('/')[1];
+        const chainID = getNetworkObj(network).id;
+        console.log({ chainID, contractAddress });
+        const res = await arcDevClient.getSingleCollection({
+          walletAddress: accountAddress,
+          contractAddress,
+          chain: chainID,
+        });
+        if (res) {
+          navigate(Routes.MINT_SHEET, {
+            collection: res.getSingleCollection?.collection,
+          });
+        }
+      }
+    };
+    checkAndHandleMint(searchQuery);
+  }, [accountAddress, navigate, searchQuery]);
 
   const handlePress = useCallback(
     item => {
