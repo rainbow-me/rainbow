@@ -531,6 +531,7 @@ const UniqueTokenExpandedState = ({
                 uniqueId={asset.uniqueId}
                 yPosition={yPosition}
               />
+
               <Animated.View style={opacityStyle}>
                 <Inset horizontal="24px" vertical={sectionSpace}>
                   <Stack space={sectionSpace}>

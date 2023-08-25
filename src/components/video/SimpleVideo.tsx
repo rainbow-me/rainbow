@@ -30,13 +30,26 @@ const StyledBackground = styled(View)({
   ...absoluteFill,
   // @ts-ignore
   backgroundColor: ({ theme: { colors } }) => colors.white,
+  alignItems: 'center', // center contents
+  justifyContent: 'center',
+  background: 'red',
+});
+
+const LoadingSpinnerWrapper = styled.View({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
 });
 
 const StyledVideo = styled(Video)(absoluteFill);
 
-const StyledPosterContainer = styled(Animated.View)(absoluteFill);
-
-const StyledImgixImage = styled(ImgixImage)(position.sizeAsObject('100%'));
+const StyledPosterContainer = styled(Animated.View)({
+  ...absoluteFill,
+});
+const StyledImgixImage = styled(ImgixImage)({
+  maxWidth: 60,
+  maxHeight: 60,
+});
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -93,7 +106,9 @@ export default function SimpleVideo({
           pointerEvents={loading ? 'auto' : 'none'}
           style={{ opacity }}
         >
-          <StyledImgixImage source={{ uri: posterUri }} />
+          <LoadingSpinnerWrapper>
+            <StyledImgixImage source={{ uri: posterUri }} />
+          </LoadingSpinnerWrapper>
         </StyledPosterContainer>
       </View>
     </TouchableWithoutFeedback>
