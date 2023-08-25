@@ -45,7 +45,7 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       speeds: [gasUtils.NORMAL],
 
       // ?
-      gasType: 'legacy',
+      gasType: 'eip1559',
       roundGasDisplay: true,
 
       // this prob can just be blockTime

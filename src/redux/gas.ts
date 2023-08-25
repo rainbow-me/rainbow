@@ -147,9 +147,9 @@ const getUpdatedGasFeeParams = (
       break;
   }
 
-  const isL2 = isL2Network(txNetwork);
+  const isLegacyGasNetwork = getNetworkObj(txNetwork).gas.gasType === 'legacy';
 
-  const gasFeesBySpeed = isL2
+  const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
         gasFeeParamsBySpeed as LegacyGasFeeParamsBySpeed,
         gasLimit,
@@ -413,8 +413,8 @@ export const getZoraGasPrices = async () => {
   return priceData;
 };
 
-export const getEIP1559GasParams = async () => {
-  const { data } = (await rainbowMeteorologyGetData(Network.mainnet)) as {
+export const getEIP1559GasParams = async (network: Network) => {
+  const { data } = (await rainbowMeteorologyGetData(network)) as {
     data: RainbowMeteorologyData;
   };
   const {
@@ -423,7 +423,7 @@ export const getEIP1559GasParams = async () => {
     baseFeeTrend,
     currentBaseFee,
     blocksToConfirmation,
-  } = parseRainbowMeteorologyData(data);
+  } = parseRainbowMeteorologyData(data, network);
   return {
     baseFeePerGas,
     blocksToConfirmation,
@@ -466,7 +466,7 @@ export const gasPricesStartPolling = (
             const networkObj = getNetworkObj(network);
             let dataIsReady = true;
 
-            if (networkObj.networkType === 'layer2') {
+            if (networkObj.gas.gasType === 'legacy') {
               // OP chains have an additional fee we need to load
               if (getNetworkObj(network).gas?.OptimismTxFee) {
                 dataIsReady = l1GasFeeOptimism !== null;
@@ -515,7 +515,7 @@ export const gasPricesStartPolling = (
                   trend,
                   currentBaseFee,
                   blocksToConfirmation,
-                } = await getEIP1559GasParams();
+                } = await getEIP1559GasParams(network);
 
                 if (flashbots) {
                   [SLOW, NORMAL, FAST, URGENT].forEach(speed => {

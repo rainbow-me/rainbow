@@ -24,6 +24,7 @@ import {
   add,
   greaterThan,
   isZero,
+  lessThan,
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
@@ -38,10 +39,12 @@ import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { getNetworkObj } from '@/networks';
 
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const GAS_FEE_INCREMENT = 3;
+const GAS_FEE_L2_INCREMENT = 1;
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
@@ -81,6 +84,7 @@ export default function FeesPanel({
     customGasFeeModifiedByUser,
     gasFeeParamsBySpeed,
     updateToCustomGasFee,
+    txNetwork,
   } = useGas();
 
   const { navigate, getState: dangerouslyGetState } = useNavigation();
@@ -112,6 +116,8 @@ export default function FeesPanel({
   });
   const [startPriorityFeeTimeout, stopPriorityFeeTimeout] = useTimeout();
   const [startBaseFeeTimeout, stopBaseFeeTimeout] = useTimeout();
+
+  const isL2 = getNetworkObj(txNetwork)?.networkType === 'layer2';
 
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<AlertInfo>(
     null
@@ -235,10 +241,14 @@ export default function FeesPanel({
     [colors, openGasHelper, selectedOptionIsCustom]
   );
 
-  const formattedBaseFee = useMemo(
-    () => `${toFixedDecimals(currentBaseFee, 0)} Gwei`,
-    [currentBaseFee]
-  );
+  const formattedBaseFee = useMemo(() => {
+    console.log(currentBaseFee);
+    if (lessThan(currentBaseFee, 1)) {
+      return `< 1 Gwei`;
+    }
+
+    return `${toFixedDecimals(currentBaseFee, 0)} Gwei`;
+  }, [currentBaseFee]);
 
   const handleMaxBaseInputGweiPress = useCallback(
     () => setLastFocusedInputHandle(maxBaseFieldRef),
@@ -332,12 +342,12 @@ export default function FeesPanel({
   }, [maxPriorityFee, updatePriorityFeePerGas]);
 
   const addMaxFee = useCallback(() => {
-    updateFeePerGas(GAS_FEE_INCREMENT);
-  }, [updateFeePerGas]);
+    updateFeePerGas(isL2 ? GAS_FEE_L2_INCREMENT : GAS_FEE_INCREMENT);
+  }, [isL2, updateFeePerGas]);
 
   const substMaxFee = useCallback(() => {
-    updateFeePerGas(-GAS_FEE_INCREMENT);
-  }, [updateFeePerGas]);
+    updateFeePerGas(isL2 ? GAS_FEE_L2_INCREMENT : GAS_FEE_INCREMENT);
+  }, [isL2, updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
     (text: string) => {

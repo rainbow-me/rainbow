@@ -41,10 +41,10 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
     },
 
     gas: {
-      speeds: [gasUtils.NORMAL],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
       // ?
-      gasType: 'legacy',
+      gasType: 'eip1559',
       roundGasDisplay: true,
       OptimismTxFee: true,
 

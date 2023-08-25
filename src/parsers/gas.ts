@@ -31,6 +31,8 @@ import {
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
+import { Network } from '@/networks/types';
+import { getNetworkObj } from '@/networks';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -98,7 +100,8 @@ const parseGasDataConfirmationTime = (
 };
 
 export const parseRainbowMeteorologyData = (
-  rainbowMeterologyData: RainbowMeteorologyData
+  rainbowMeterologyData: RainbowMeteorologyData,
+  network: Network
 ): {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   baseFeePerGas: GasFeeParam;
@@ -124,19 +127,18 @@ export const parseRainbowMeteorologyData = (
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const baseFeeMultiplier = getBaseFeeMultiplier(speed);
-    const speedMaxBaseFee = toFixedDecimals(
-      multiply(baseFeeSuggestion, baseFeeMultiplier),
-      0
-    );
+    const speedMaxBaseFee = multiply(baseFeeSuggestion, baseFeeMultiplier);
+
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
     const cleanMaxPriorityFee = gweiToWei(
-      new BigNumber(weiToGwei(maxPriorityFee)).toFixed(2)
+      new BigNumber(weiToGwei(maxPriorityFee))
     );
+    console.log({ maxPriorityFee, cleanMaxPriorityFee });
     // clean max base fee to only parser int gwei
     const cleanMaxBaseFee = gweiToWei(
-      new BigNumber(weiToGwei(speedMaxBaseFee)).toFixed(0)
+      new BigNumber(weiToGwei(speedMaxBaseFee))
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
