@@ -21,7 +21,7 @@ export default function CurrencySelectModalHeader({
   showHandle: boolean;
   testID: string;
 }) {
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const { navigate, getState: dangerouslyGetState } = useNavigation();
   const {
     params: { defaultOutputAsset, title, showCoinIcon },
   } = useRoute<any>();

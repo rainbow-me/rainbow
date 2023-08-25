@@ -749,8 +749,9 @@ export const estimateENSRegistrationGasLimit = async (
   const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
 
   const totalRegistrationGasLimit =
-    [...gasLimits, registerWithConfigGasLimit].reduce((a, b) =>
-      add(a || 0, b || 0)
+    [...gasLimits, registerWithConfigGasLimit].reduce(
+      (a, b) => add(a || 0, b || 0),
+      ''
     ) || `${ethUnits.ens_registration}`;
 
   return {
@@ -802,7 +803,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   }
 
   const gasLimits = await Promise.all(promises);
-  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0));
+  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0), '');
   if (!gasLimit) return '0';
   return gasLimit;
 };
@@ -874,7 +875,7 @@ export const estimateENSSetRecordsGasLimit = async ({
     );
   }
   const gasLimits = await Promise.all(promises);
-  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0));
+  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0), '');
   if (!gasLimit) return '0';
   return gasLimit;
 };

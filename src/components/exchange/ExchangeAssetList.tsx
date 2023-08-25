@@ -148,7 +148,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   };
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
-  const { dangerouslyGetParent, navigate } = useNavigation();
+  const { getParent: dangerouslyGetParent, navigate } = useNavigation();
   const {
     copiedText,
     copyCount,

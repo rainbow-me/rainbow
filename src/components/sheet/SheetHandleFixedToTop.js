@@ -10,9 +10,7 @@ const paddingTop = 6;
 export const SheetHandleFixedToTopHeight =
   HandleHeight + paddingBottom + paddingTop;
 
-const Container = styled(Centered).attrs({
-  pointerEvents: 'none',
-})({
+const Container = styled(Centered)({
   ...padding.object(paddingTop, 0, paddingBottom),
   left: 0,
   position: 'absolute',
