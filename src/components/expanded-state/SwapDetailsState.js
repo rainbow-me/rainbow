@@ -1,41 +1,24 @@
-import useSwapDetailsButtonPosition from './useSwapDetailsButtonPosition';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
 
 import { useSelector } from 'react-redux';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
-import {
-  SheetHandleFixedToTopHeight,
-  SheetKeyboardAnimation,
-  SheetTitle,
-  SlackSheet,
-} from '../sheet';
+import { SheetTitle } from '../sheet';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import {
   SwapDetailsContent,
   SwapDetailsMasthead,
-  SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
-import {
-  useHeight,
-  usePrevious,
-  usePriceImpactDetails,
-  useSwapCurrencies,
-} from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { usePrevious, usePriceImpactDetails, useSwapCurrencies } from '@/hooks';
 import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
+import { padding } from '@/styles';
 import { abbreviations } from '@/utils';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
-
-const AnimatedContainer = styled(Animated.View)({
-  ...position.sizeAsObject('100%'),
-});
+import { AdaptiveBottomSheet } from '@/navigation/bottom-sheet-navigator/components/AdaptiveBottomSheet';
 
 const Footer = styled(Column).attrs({
   grow: 1,
@@ -46,16 +29,7 @@ const Footer = styled(Column).attrs({
 
 const Header = styled(Column).attrs({
   justify: 'start',
-})({
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: -2,
-  width: '100%',
-});
-
-const FOOTER_MIN_HEIGHT = 143;
-const FOOTER_CONTENT_MIN_HEIGHT = 160;
+})();
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -83,7 +57,6 @@ export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
-  const { setParams } = useNavigation();
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const {
@@ -124,49 +97,12 @@ export default function SwapDetailsState({
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
 
-  const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
-  const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
-  const [contentHeight, setContentHeight] = useHeight(
-    FOOTER_CONTENT_MIN_HEIGHT
-  );
-
-  const {
-    onHeightChange,
-    wrapperStyle,
-    onPressMore,
-    onWrapperLayout,
-  } = useSwapDetailsButtonPosition({ contentHeight });
-
-  const onContentHeightChange = useCallback(
-    event => {
-      onHeightChange(event);
-      setContentHeight(event);
-    },
-    [onHeightChange, setContentHeight]
-  );
-
   useEffect(() => {
     if (!isFocused && prevIsFocused) {
       return restoreFocusOnSwapModal();
     }
   }, [isFocused, prevIsFocused, restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
-
-  const sheetHeightWithoutKeyboard =
-    SheetHandleFixedToTopHeight +
-    SwapDetailsMastheadHeight +
-    contentHeight +
-    slippageMessageHeight +
-    footerHeight;
-
-  const contentScroll = useSharedValue(0);
-
-  useEffect(() => {
-    setParams({
-      longFormHeight: sheetHeightWithoutKeyboard,
-      transitionDuration: 0.7,
-    });
-  }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   useEffect(() => {
     return () => {
@@ -175,67 +111,51 @@ export default function SwapDetailsState({
   }, [onClose]);
 
   return (
-    <SheetKeyboardAnimation
-      as={AnimatedContainer}
-      isKeyboardVisible={false}
-      translateY={contentScroll}
-    >
-      <SlackSheet
-        additionalTopPadding={android}
-        borderRadius={39}
-        contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
-        testID="swap-details-sheet"
-      >
-        <Header testID="swap-details-header">
-          <SheetTitle weight="heavy">
-            {lang.t('expanded_state.swap_details.review')}
-          </SheetTitle>
-        </Header>
-        <SwapDetailsMasthead
-          inputAmount={inputAmount}
-          inputAmountDisplay={inputAmountDisplay}
-          inputPriceValue={inputPriceValue}
-          isHighPriceImpact={isHighPriceImpact}
-          outputAmount={outputAmount}
-          outputAmountDisplay={outputAmountDisplay}
-          outputPriceValue={outputPriceValue}
-          priceImpactColor={priceImpactColor}
+    <AdaptiveBottomSheet style={{ paddingTop: 24, paddingBottom: 16 }}>
+      <Header testID="swap-details-header">
+        <SheetTitle weight="heavy">
+          {lang.t('expanded_state.swap_details.review')}
+        </SheetTitle>
+      </Header>
+      <SwapDetailsMasthead
+        inputAmount={inputAmount}
+        inputAmountDisplay={inputAmountDisplay}
+        inputPriceValue={inputPriceValue}
+        isHighPriceImpact={isHighPriceImpact}
+        outputAmount={outputAmount}
+        outputAmountDisplay={outputAmountDisplay}
+        outputPriceValue={outputPriceValue}
+        priceImpactColor={priceImpactColor}
+      />
+      <SwapDetailsSlippageMessage
+        isHighPriceImpact={isHighPriceImpact}
+        priceImpactColor={priceImpactColor}
+        priceImpactNativeAmount={priceImpactNativeAmount}
+        priceImpactPercentDisplay={priceImpactPercentDisplay}
+      />
+      <SwapDetailsContent
+        isRefuelTx={isRefuelTx}
+        isHighPriceImpact={isHighPriceImpact}
+        onCopySwapDetailsText={onCopySwapDetailsText}
+        tradeDetails={tradeDetails}
+      />
+      <Footer>
+        <ConfirmExchangeButton
+          {...confirmButtonProps}
+          testID="swap-details-confirm-button"
         />
-        <SwapDetailsSlippageMessage
-          isHighPriceImpact={isHighPriceImpact}
-          onLayout={setSlippageMessageHeight}
-          priceImpactColor={priceImpactColor}
-          priceImpactNativeAmount={priceImpactNativeAmount}
-          priceImpactPercentDisplay={priceImpactPercentDisplay}
+        <GasSpeedButton
+          asset={outputCurrency}
+          currentNetwork={currentNetwork}
+          flashbotTransaction={flashbotTransaction}
+          testID="swap-details-gas"
+          theme="light"
+          crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
         />
-        <SwapDetailsContent
-          isRefuelTx={isRefuelTx}
-          isHighPriceImpact={isHighPriceImpact}
-          onCopySwapDetailsText={onCopySwapDetailsText}
-          onLayout={onContentHeightChange}
-          onPressMore={onPressMore}
-          tradeDetails={tradeDetails}
-        />
-        <Animated.View style={wrapperStyle} onLayout={onWrapperLayout}>
-          <Footer onLayout={setFooterHeight}>
-            <ConfirmExchangeButton
-              {...confirmButtonProps}
-              testID="swap-details-confirm-button"
-            />
-            <GasSpeedButton
-              asset={outputCurrency}
-              currentNetwork={currentNetwork}
-              flashbotTransaction={flashbotTransaction}
-              testID="swap-details-gas"
-              theme="light"
-              crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
-            />
-          </Footer>
-        </Animated.View>
-        <ToastPositionContainer>
-          <CopyToast copiedText={copiedText} copyCount={copyCount} />
-        </ToastPositionContainer>
-      </SlackSheet>
-    </SheetKeyboardAnimation>
+      </Footer>
+      <ToastPositionContainer>
+        <CopyToast copiedText={copiedText} copyCount={copyCount} />
+      </ToastPositionContainer>
+    </AdaptiveBottomSheet>
   );
 }

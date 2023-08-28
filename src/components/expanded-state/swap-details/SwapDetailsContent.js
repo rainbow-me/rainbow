@@ -33,7 +33,6 @@ export default function SwapDetailsContent({
   isRefuelTx,
   onCopySwapDetailsText,
   tradeDetails,
-  onPressMore,
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -120,7 +119,6 @@ export default function SwapDetailsContent({
               <ButtonPressAnimation
                 onPress={() => {
                   setDetailsExpanded(!detailsExpanded);
-                  onPressMore();
                 }}
                 scaleTo={1.06}
                 style={{

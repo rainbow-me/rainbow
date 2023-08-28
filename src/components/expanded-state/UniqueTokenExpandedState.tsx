@@ -29,12 +29,7 @@ import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
 import ImgixImage from '../images/ImgixImage';
-import {
-  SendActionButton,
-  SheetActionButton,
-  SheetHandle,
-  SlackSheet,
-} from '../sheet';
+import { SendActionButton, SheetActionButton, SheetHandle } from '../sheet';
 import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { CardSize } from '../unique-token/CardSize';

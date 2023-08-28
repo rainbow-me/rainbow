@@ -18,12 +18,12 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 
 const ScreenTypes = {
-  custom_gas: CustomGasState,
-  swap_details: SwapDetailsState,
+  custom_gas: CustomGasState, // To be done as a part of Swap
+  swap_details: SwapDetailsState, // Migrated
   swap_settings: SwapSettingsState,
-  token: ChartExpandedState,
+  token: ChartExpandedState, // Migrated
   token_index: TokenIndexExpandedState,
-  unique_token: UniqueTokenExpandedState,
+  unique_token: UniqueTokenExpandedState, // Migrated
   uniswap: LiquidityPoolExpandedState,
 };
 
@@ -50,18 +50,17 @@ export default function ExpandedAssetSheet(props) {
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
 
-  console.log('XDXDXD ExpandedAssetSheet');
-  console.log(params.type);
+  const shouldRenderContainer = params.type === 'custom_gas';
 
-  console.log(params);
+  const Wrapper = shouldRenderContainer ? Container : React.Fragment;
 
   return (
-    <Container
+    <Wrapper
       deviceHeight={deviceHeight}
       height={params.longFormHeight}
       insets={insets}
     >
-      {ios && <TouchableBackdrop onPress={goBack} />}
+      {ios && shouldRenderContainer && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {
         ...params,
@@ -71,6 +70,6 @@ export default function ExpandedAssetSheet(props) {
           ...selectedAsset,
         },
       })}
-    </Container>
+    </Wrapper>
   );
 }

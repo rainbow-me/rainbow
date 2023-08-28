@@ -347,11 +347,11 @@ export default function NativeStackNavigator() {
         name={Routes.CUSTOM_GAS_SHEET}
         {...customGasSheetConfig}
       />
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_DETAILS_SHEET}
         {...swapDetailsSheetConfig}
-      />
+      /> */}
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.SWAP_SETTINGS_SHEET}

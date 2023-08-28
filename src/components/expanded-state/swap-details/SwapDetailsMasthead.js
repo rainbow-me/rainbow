@@ -49,7 +49,7 @@ export default function SwapDetailsMasthead({
       {...props}
       alignItems="center"
       paddingHorizontal="19px (Deprecated)"
-      paddingTop="42px (Deprecated)"
+      paddingTop="32px"
     >
       <Columns space={{ custom: 9 }}>
         <CurrencyTile

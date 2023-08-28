@@ -22,6 +22,10 @@ export function Routes() {
         name={RouteNames.EXPANDED_ASSET_SHEET}
       />
       <BottomSheet.Screen
+        component={ExpandedAssetSheet}
+        name={RouteNames.SWAP_DETAILS_SHEET}
+      />
+      <BottomSheet.Screen
         component={ExplainSheet}
         name={RouteNames.EXPLAIN_SHEET}
       />
