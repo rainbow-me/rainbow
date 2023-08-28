@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   DefaultNavigatorOptions,
   ParamListBase,
   StackActionHelpers,
-  StackActions,
   StackNavigationState,
   StackRouter,
   StackRouterOptions,

@@ -11,6 +11,8 @@ import { useTheme } from '@/theme';
 import { getDeviceRadius } from '../utils/getDeviceRadius';
 import { useBottomSheetNavigatorContext } from '../hooks/useBottomSheetNavigatorContext';
 import { useNavigation } from '@react-navigation/core';
+import { FullWindowOverlay } from 'react-native-screens';
+import { IS_IOS } from '@/env';
 
 type MaybeSharedValue<T> = T | SharedValue<T>;
 
@@ -27,6 +29,9 @@ type Props = {
     containerStyle: StyleProp<ViewStyle>;
   }) => ReactNode;
 };
+
+// Fix for transition from react-native-cool-modals
+const Wrapper = IS_IOS ? FullWindowOverlay : React.Fragment;
 
 export function BottomSheet({
   children,
@@ -63,29 +68,31 @@ export function BottomSheet({
   };
 
   return (
-    <NativeBottomSheet
-      ref={ref}
-      animateOnMount
-      animationConfigs={defaultTimingConfig}
-      backdropComponent={SheetBackdrop}
-      enableContentPanningGesture
-      enableHandlePanningGesture
-      enablePanDownToClose
-      enableOverDrag={enableOverDrag}
-      backgroundStyle={{
-        ...bottomSheetStyle.background,
-        backgroundColor: colors.white,
-      }}
-      onClose={handleClose}
-      topInset={topInset ?? safeAreaInsets.top}
-      snapPoints={snapPoints}
-      handleHeight={handleHeight}
-      contentHeight={contentHeight}
-      handleComponent={null}
-    >
-      {showHandle && <SheetHandleFixedToTop showBlur={false} />}
-      {children({ containerStyle: bottomSheetStyle.containerStyle })}
-    </NativeBottomSheet>
+    <Wrapper>
+      <NativeBottomSheet
+        ref={ref}
+        animateOnMount
+        animationConfigs={defaultTimingConfig}
+        backdropComponent={SheetBackdrop}
+        enableContentPanningGesture
+        enableHandlePanningGesture
+        enablePanDownToClose
+        enableOverDrag={enableOverDrag}
+        backgroundStyle={{
+          ...bottomSheetStyle.background,
+          backgroundColor: colors.white,
+        }}
+        onClose={handleClose}
+        topInset={topInset ?? safeAreaInsets.top}
+        snapPoints={snapPoints}
+        handleHeight={handleHeight}
+        contentHeight={contentHeight}
+        handleComponent={null}
+      >
+        {showHandle && <SheetHandleFixedToTop showBlur={false} />}
+        {children({ containerStyle: bottomSheetStyle.containerStyle })}
+      </NativeBottomSheet>
+    </Wrapper>
   );
 }
 
