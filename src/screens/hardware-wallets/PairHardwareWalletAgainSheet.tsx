@@ -33,6 +33,7 @@ import {
 } from '@/navigation/HardwareWalletTxNavigator';
 import { TryAgainButton } from './components/TryAgainButton';
 import { useMMKVBoolean } from 'react-native-mmkv';
+import { ImageBackground } from 'react-native';
 
 const INDICATOR_SIZE = 9;
 
@@ -124,24 +125,22 @@ export const PairHardwareWalletAgainSheet = () => {
           </Inset>
         </Box>
         <Box marginTop={{ custom: -70 }} style={{ zIndex: -99 }}>
-          <ImgixImage
-            source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
+          <ImageBackground
+            source={isDarkMode ? gridDotsDark : gridDotsLight}
             style={{
               width: GRID_DOTS_SIZE,
               height: GRID_DOTS_SIZE,
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            size={GRID_DOTS_SIZE}
           >
-            <ImgixImage
-              source={ledgerNano as Source}
+            <ImageBackground
+              source={ledgerNano}
               style={{
                 width: LEDGER_NANO_WIDTH,
                 height: LEDGER_NANO_HEIGHT,
                 alignItems: 'center',
               }}
-              size={LEDGER_NANO_HEIGHT}
             >
               <Box
                 height={{ custom: 36 }}
@@ -204,8 +203,8 @@ export const PairHardwareWalletAgainSheet = () => {
                   </Box>
                 </Inline>
               </Box>
-            </ImgixImage>
-          </ImgixImage>
+            </ImageBackground>
+          </ImageBackground>
         </Box>
         {hardwareTXError && (
           <Box position="absolute" bottom={{ custom: 20 }} width="full">
