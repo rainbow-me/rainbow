@@ -237,11 +237,6 @@ export default function NativeStackNavigator() {
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{

@@ -58,7 +58,6 @@ const SendSheetTitle = styled(SheetTitle).attrs({
   weight: 'heavy',
 })({
   marginBottom: android ? -10 : 0,
-  marginTop: android ? 10 : 17,
 });
 
 const defaultContactItem = {

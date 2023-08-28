@@ -232,10 +232,6 @@ function BSNavigator() {
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
       />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-      />
-      <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
         options={{
@@ -247,10 +243,6 @@ function BSNavigator() {
         name={Routes.LEARN_WEB_VIEW_SCREEN}
         {...learnWebViewScreenConfig}
       />
-      {/* <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-      /> */}
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}

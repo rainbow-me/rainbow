@@ -111,7 +111,7 @@ export default function SwapDetailsState({
   }, [onClose]);
 
   return (
-    <AdaptiveBottomSheet style={{ paddingTop: 24, paddingBottom: 16 }}>
+    <AdaptiveBottomSheet style={{ paddingBottom: 16 }}>
       <Header testID="swap-details-header">
         <SheetTitle weight="heavy">
           {lang.t('expanded_state.swap_details.review')}

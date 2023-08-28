@@ -22,7 +22,7 @@ const ScreenTypes = {
   swap_details: SwapDetailsState, // Migrated
   swap_settings: SwapSettingsState, // To be done as part of Swap
   token: ChartExpandedState, // Migrated
-  token_index: TokenIndexExpandedState,
+  token_index: TokenIndexExpandedState, // Migrated
   unique_token: UniqueTokenExpandedState, // Migrated
   uniswap: LiquidityPoolExpandedState,
 };
@@ -49,6 +49,9 @@ export default function ExpandedAssetSheet(props) {
   // We want to revalidate (ie. refresh OpenSea metadata) collectibles
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
+
+  console.log('EXPANDED ASSET SHEET');
+  console.log(params.asset);
 
   const shouldRenderContainer =
     params.type === 'custom_gas' || params.type === 'swap_settings';

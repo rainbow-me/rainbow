@@ -23,7 +23,7 @@ export function FullscreenBlurSheet({
       {({ containerStyle }) => (
         <>
           {renderBlur && renderBlur(containerStyle)}
-          <BottomSheetScrollView style={containerStyle}>
+          <BottomSheetScrollView style={[containerStyle, { paddingTop: 0 }]}>
             {children}
           </BottomSheetScrollView>
         </>

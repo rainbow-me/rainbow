@@ -105,6 +105,7 @@ const bottomSheetStyle = StyleSheet.create({
   },
   containerStyle: {
     flex: 1,
+    paddingTop: 16,
     borderTopLeftRadius: SHEET_BORDER_RADIUS,
     borderTopRightRadius: SHEET_BORDER_RADIUS,
   },

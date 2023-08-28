@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import sortBy from 'lodash/sortBy';
-import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetListItemSkeleton } from '../asset-list';
 import { Column, Row } from '../layout';
@@ -8,7 +8,6 @@ import {
   BuyActionButton,
   SheetActionButtonRow,
   SheetDivider,
-  SlackSheet,
   SwapActionButton,
 } from '../sheet';
 import { Text } from '../text';
@@ -17,12 +16,7 @@ import UnderlyingAsset from './unique-token/UnderlyingAsset';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import AssetInputTypes from '@/helpers/assetInputTypes';
-import {
-  useAccountSettings,
-  useChartThrottledPoints,
-  useDimensions,
-  useDPI,
-} from '@/hooks';
+import { useAccountSettings, useChartThrottledPoints, useDPI } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import {
   convertRawAmountToNativeDisplay,
@@ -33,6 +27,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
+import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
 const formatItem = (
   { address, name, price, symbol, color },
@@ -147,103 +142,94 @@ export default function TokenIndexExpandedState({ asset }) {
   if (duration.current === 0) {
     duration.current = 300;
   }
-  const { height: screenHeight } = useDimensions();
   const { network } = useAccountSettings();
   const isTestnet = isTestnetNetwork(network);
 
   return (
-    <Fragment>
-      <SlackSheet
-        bottomInset={42}
-        {...(ios
-          ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
-        testID="index-expanded-state"
-      >
-        <ChartPathProvider data={throttledData}>
-          <Chart
-            {...chartData}
-            {...initialChartDataLabels}
-            asset={assetWithPrice}
-            chart={chart}
-            chartType={chartType}
-            color={color}
-            fetchingCharts={fetchingCharts}
-            nativePoints={chart}
-            showChart={showChart}
-            testID="index"
-            throttledData={throttledData}
-          />
-        </ChartPathProvider>
-        <SheetDivider />
-        {needsEth ? (
-          <SheetActionButtonRow>
-            <BuyActionButton color={color} />
-          </SheetActionButtonRow>
-        ) : (
-          <SheetActionButtonRow>
-            <Column marginTop={5}>
-              {!isTestnet && (
-                <SwapActionButton
-                  asset={assetWithPrice}
-                  color={color}
-                  inputType={AssetInputTypes.out}
-                  label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
-                    assetSymbol: asset?.symbol,
-                  })}`}
-                  weight="heavy"
-                />
-              )}
-            </Column>
-          </SheetActionButtonRow>
-        )}
-        <Row marginHorizontal={19} marginTop={6}>
-          <Column align="start" flex={1}>
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              letterSpacing="roundedMedium"
-              size="smedium"
-              testID="index-underlying-assets"
-              weight="semibold"
-            >
-              {lang.t('expanded_state.token_index.underlying_tokens')}
-            </Text>
+    <StaticBottomSheet scrollable>
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          {...chartData}
+          {...initialChartDataLabels}
+          asset={assetWithPrice}
+          chart={chart}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          nativePoints={chart}
+          showChart={showChart}
+          testID="index"
+          throttledData={throttledData}
+        />
+      </ChartPathProvider>
+      <SheetDivider />
+      {needsEth ? (
+        <SheetActionButtonRow>
+          <BuyActionButton color={color} />
+        </SheetActionButtonRow>
+      ) : (
+        <SheetActionButtonRow>
+          <Column marginTop={5}>
+            {!isTestnet && (
+              <SwapActionButton
+                asset={assetWithPrice}
+                color={color}
+                inputType={AssetInputTypes.out}
+                label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
+                  assetSymbol: asset?.symbol,
+                })}`}
+                weight="heavy"
+              />
+            )}
           </Column>
-          <Column align="end" flex={1}>
-            <Text
-              align="right"
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-              letterSpacing="roundedMedium"
-              size="smedium"
-              weight="semibold"
-            >
-              {lang.t('expanded_state.token_index.makeup_of_token', {
-                assetSymbol: assetWithPrice.symbol,
-              })}
-            </Text>
-          </Column>
-        </Row>
-        <Column marginBottom={55} marginLeft={19} marginTop={12}>
-          {underlying?.length
-            ? underlying.map(item => (
-                <UnderlyingAsset
-                  {...item}
-                  changeVisible
-                  key={item.address}
-                  marginRight={19}
-                />
-              ))
-            : times(3, index => (
-                <AssetListItemSkeleton
-                  animated
-                  descendingOpacity
-                  ignorePaddingHorizontal
-                  key={`underlying-assets-skeleton-${index}`}
-                  paddingRight={19}
-                />
-              ))}
+        </SheetActionButtonRow>
+      )}
+      <Row marginHorizontal={19} marginTop={6}>
+        <Column align="start" flex={1}>
+          <Text
+            color={colors.alpha(colors.blueGreyDark, 0.5)}
+            letterSpacing="roundedMedium"
+            size="smedium"
+            testID="index-underlying-assets"
+            weight="semibold"
+          >
+            {lang.t('expanded_state.token_index.underlying_tokens')}
+          </Text>
         </Column>
-      </SlackSheet>
-    </Fragment>
+        <Column align="end" flex={1}>
+          <Text
+            align="right"
+            color={colors.alpha(colors.blueGreyDark, 0.5)}
+            letterSpacing="roundedMedium"
+            size="smedium"
+            weight="semibold"
+          >
+            {lang.t('expanded_state.token_index.makeup_of_token', {
+              assetSymbol: assetWithPrice.symbol,
+            })}
+          </Text>
+        </Column>
+      </Row>
+      <Column marginBottom={55} marginLeft={19} marginTop={12}>
+        {underlying?.length
+          ? underlying.map(item => (
+              <UnderlyingAsset
+                {...item}
+                changeVisible
+                key={item.address}
+                marginRight={19}
+              />
+            ))
+          : times(3, index => (
+              <AssetListItemSkeleton
+                animated
+                descendingOpacity
+                ignorePaddingHorizontal
+                key={`underlying-assets-skeleton-${index}`}
+                paddingRight={19}
+              />
+            ))}
+      </Column>
+    </StaticBottomSheet>
   );
 }
