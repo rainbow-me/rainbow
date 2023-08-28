@@ -173,7 +173,7 @@ function MainStack() {
   );
 }
 
-function NativeStackNavigator() {
+export default function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -204,11 +204,11 @@ function NativeStackNavigator() {
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
         {...expandedAssetSheetConfigWithLimit}
-      />
+      /> */}
       <NativeStack.Screen
         component={PoapSheet}
         name={Routes.POAP_SHEET}
@@ -262,11 +262,6 @@ function NativeStackNavigator() {
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         {...addTokenSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ExplainSheet}
-        name={Routes.EXPLAIN_SHEET}
-        {...explainSheetConfig}
       />
       <NativeStack.Screen
         component={SwapsPromoSheet}
@@ -427,10 +422,10 @@ function NativeStackNavigator() {
           />
         </>
       )}
-      <NativeStack.Screen
+      {/* <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
+      /> */}
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
@@ -464,25 +459,3 @@ function NativeStackNavigator() {
     </NativeStack.Navigator>
   );
 }
-
-const AppContainerWithAnalytics = React.forwardRef(
-  (
-    props: {
-      onReady: () => void;
-    },
-    ref
-  ) => (
-    <NavigationContainer
-      onReady={props.onReady}
-      onStateChange={onNavigationStateChange}
-      // @ts-ignore
-      ref={ref}
-    >
-      <NativeStackNavigator />
-    </NavigationContainer>
-  )
-);
-
-AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
-
-export default React.memo(AppContainerWithAnalytics);

@@ -42,6 +42,7 @@ import { isL2Network } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { getNetworkObj } from '@/networks';
+import { AdaptiveBottomSheet } from '@/navigation/bottom-sheet-navigator/components/AdaptiveBottomSheet';
 
 const { GAS_TRENDS } = gasUtils;
 const APP_ICON_SIZE = 64;
@@ -1308,8 +1309,6 @@ export const explainers = (params, colors) => ({
 });
 
 const ExplainSheet = () => {
-  const { height: deviceHeight } = useDimensions();
-  const insets = useSafeAreaInsets();
   const { params } = useRoute();
   const type = params.type;
 
@@ -1431,60 +1430,53 @@ const ExplainSheet = () => {
   ]);
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={sheetHeight}
-        scrollEnabled={false}
+    <AdaptiveBottomSheet>
+      <Centered
+        direction="column"
+        height={sheetHeight}
+        testID={`explain-sheet-${type}`}
+        width="100%"
       >
-        <Centered
-          direction="column"
-          height={sheetHeight}
-          testID={`explain-sheet-${type}`}
-          width="100%"
+        <ColumnWithMargins
+          margin={15}
+          style={{
+            height: sheetHeight,
+            padding: 19,
+            width: '100%',
+          }}
         >
-          <ColumnWithMargins
-            margin={15}
-            style={{
-              height: sheetHeight,
-              padding: 19,
-              width: '100%',
-            }}
-          >
-            {explainSheetConfig?.logo ? (
-              <Centered>{explainSheetConfig.logo}</Centered>
-            ) : (
-              <EmojiText
-                align="center"
-                size="h1"
-                style={{
-                  ...fontWithWidth(fonts.weight.bold),
-                  height: android ? 62 : 47,
-                }}
-              >
-                {explainSheetConfig.emoji}
-              </EmojiText>
-            )}
-            <Title align="center" lineHeight="big" size="big" weight="heavy">
-              {explainSheetConfig.title}
-            </Title>
+          {explainSheetConfig?.logo ? (
+            <Centered>{explainSheetConfig.logo}</Centered>
+          ) : (
+            <EmojiText
+              align="center"
+              size="h1"
+              style={{
+                ...fontWithWidth(fonts.weight.bold),
+                height: android ? 62 : 47,
+              }}
+            >
+              {explainSheetConfig.emoji}
+            </EmojiText>
+          )}
+          <Title align="center" lineHeight="big" size="big" weight="heavy">
+            {explainSheetConfig.title}
+          </Title>
 
-            {/** base fee explainer */}
-            {renderBaseFeeIndicator}
+          {/** base fee explainer */}
+          {renderBaseFeeIndicator}
 
-            {explainSheetConfig.text && (
-              <Text {...getBodyTextPropsWithColor(colors)}>
-                {explainSheetConfig.text}
-              </Text>
-            )}
+          {explainSheetConfig.text && (
+            <Text {...getBodyTextPropsWithColor(colors)}>
+              {explainSheetConfig.text}
+            </Text>
+          )}
 
-            {explainSheetConfig?.stillCurious &&
-              explainSheetConfig.stillCurious}
-            {buttons}
-          </ColumnWithMargins>
-        </Centered>
-      </SlackSheet>
-    </Container>
+          {explainSheetConfig?.stillCurious && explainSheetConfig.stillCurious}
+          {buttons}
+        </ColumnWithMargins>
+      </Centered>
+    </AdaptiveBottomSheet>
   );
 };
 

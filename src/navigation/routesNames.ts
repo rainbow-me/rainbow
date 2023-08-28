@@ -63,6 +63,7 @@ const Routes = {
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   RESTORE_SHEET: 'RestoreSheet',
+  ROOT_STACK: 'RootStack',
   SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
   SAVINGS_SHEET: 'SavingsSheet',
   SAVINGS_WITHDRAW_MODAL: 'SavingsWithdrawModal',

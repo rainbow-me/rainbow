@@ -44,8 +44,7 @@ import networkTypes from './helpers/networkTypes';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
-// eslint-disable-next-line import/no-unresolved
-import RoutesComponent from './navigation/Routes';
+import { AppRouterContainer } from './navigation/Router';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
@@ -253,7 +252,7 @@ class OldApp extends Component {
         <View style={containerStyle}>
           {this.state.initialRoute && (
             <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
+              <AppRouterContainer
                 onReady={this.handleSentryNavigationIntegration}
                 ref={this.handleNavigatorRef}
               />

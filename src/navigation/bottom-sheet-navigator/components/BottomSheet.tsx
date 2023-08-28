@@ -1,15 +1,16 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import NativeBottomSheet, {
   useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/core';
 import { SheetBackdrop } from './SheetBackdrop';
 import { Easing, SharedValue } from 'react-native-reanimated';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '@/theme';
 import { getDeviceRadius } from '../utils/getDeviceRadius';
+import { useBottomSheetNavigatorContext } from '../hooks/useBottomSheetNavigatorContext';
+import { useNavigation } from '@react-navigation/core';
 
 type MaybeSharedValue<T> = T | SharedValue<T>;
 
@@ -18,6 +19,8 @@ type Props = {
   handleHeight?: MaybeSharedValue<number>;
   contentHeight?: MaybeSharedValue<number>;
   enableOverDrag?: boolean;
+  showHandle?: boolean;
+  topInset?: number;
   children: ({
     containerStyle,
   }: {
@@ -30,23 +33,38 @@ export function BottomSheet({
   snapPoints,
   handleHeight,
   contentHeight,
+  topInset,
+  showHandle = true,
   enableOverDrag = true,
 }: Props) {
+  const { onClose, removing } = useBottomSheetNavigatorContext();
   const navigation = useNavigation();
+  const ref = useRef<NativeBottomSheet>(null);
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
 
-  const handleClose = () => {
-    navigation.goBack();
-  };
-
   const defaultTimingConfig = useBottomSheetTimingConfigs({
-    duration: 400,
+    duration: 300,
     easing: Easing.out(Easing.exp),
   });
 
+  useEffect(() => {
+    if (removing) {
+      ref.current?.close(defaultTimingConfig);
+    }
+  }, [removing, defaultTimingConfig]);
+
+  const handleClose = () => {
+    if (!removing) {
+      navigation.goBack();
+    }
+
+    onClose();
+  };
+
   return (
     <NativeBottomSheet
+      ref={ref}
       animateOnMount
       animationConfigs={defaultTimingConfig}
       backdropComponent={SheetBackdrop}
@@ -59,13 +77,13 @@ export function BottomSheet({
         backgroundColor: colors.white,
       }}
       onClose={handleClose}
-      topInset={safeAreaInsets.top}
+      topInset={topInset ?? safeAreaInsets.top}
       snapPoints={snapPoints}
       handleHeight={handleHeight}
       contentHeight={contentHeight}
       handleComponent={null}
     >
-      <SheetHandleFixedToTop showBlur={false} />
+      {showHandle && <SheetHandleFixedToTop showBlur={false} />}
       {children({ containerStyle: bottomSheetStyle.containerStyle })}
     </NativeBottomSheet>
   );
@@ -80,7 +98,6 @@ const bottomSheetStyle = StyleSheet.create({
   },
   containerStyle: {
     flex: 1,
-    paddingTop: 16,
     borderTopLeftRadius: SHEET_BORDER_RADIUS,
     borderTopRightRadius: SHEET_BORDER_RADIUS,
   },

@@ -1,27 +1,26 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { IS_IOS } from '@/env';
+import { useNavigation } from '@/navigation';
 
 function SendActionButton({ asset, color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
-  const navigate = useExpandedStateNavigation();
-  const handlePress = useCallback(
-    () =>
-      navigate(Routes.SEND_FLOW, params => {
-        const updatedParams = { ...params, asset };
-        return IS_IOS
-          ? {
-              params: updatedParams,
-              screen: Routes.SEND_SHEET,
-            }
-          : { ...updatedParams };
-      }),
-    [navigate, asset]
-  );
+  const { navigate, goBack } = useNavigation();
+  const handlePress = useCallback(() => {
+    goBack();
+    navigate(Routes.SEND_FLOW, params => {
+      const updatedParams = { ...params, asset };
+      return IS_IOS
+        ? {
+            params: updatedParams,
+            screen: Routes.SEND_SHEET,
+          }
+        : { ...updatedParams };
+    });
+  }, [navigate, asset, goBack]);
 
   return (
     <SheetActionButton

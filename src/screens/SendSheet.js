@@ -91,6 +91,7 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS
@@ -954,112 +955,110 @@ export default function SendSheet(props) {
   const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
 
   return (
-    <Container testID="send-sheet">
-      <SheetContainer>
-        <SendHeader
-          colorForAsset={colorForAsset}
-          contacts={contacts}
-          fromProfile={params?.fromProfile}
-          hideDivider={showAssetForm}
-          isValidAddress={isValidAddress}
-          nickname={nickname}
-          onChangeAddressInput={onChangeInput}
-          onPressPaste={recipient => {
-            checkAddress(recipient);
+    <StaticBottomSheet>
+      <SendHeader
+        colorForAsset={colorForAsset}
+        contacts={contacts}
+        fromProfile={params?.fromProfile}
+        hideDivider={showAssetForm}
+        isValidAddress={isValidAddress}
+        nickname={nickname}
+        onChangeAddressInput={onChangeInput}
+        onPressPaste={recipient => {
+          checkAddress(recipient);
+          setRecipient(recipient);
+        }}
+        recipient={recipient}
+        recipientFieldRef={recipientFieldRef}
+        removeContact={onRemoveContact}
+        showAssetList={showAssetList}
+        userAccounts={userAccounts}
+        watchedAccounts={watchedAccounts}
+      />
+      {showEmptyState && (
+        <SendContactList
+          contacts={filteredContacts}
+          currentInput={currentInput}
+          ensSuggestions={ensSuggestions}
+          key={sendContactListDataKey}
+          loadingEnsSuggestions={loadingEnsSuggestions}
+          onPressContact={(recipient, nickname) => {
+            setIsValidAddress(true);
             setRecipient(recipient);
+            setNickname(nickname);
           }}
-          recipient={recipient}
-          recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
-          showAssetList={showAssetList}
           userAccounts={userAccounts}
           watchedAccounts={watchedAccounts}
         />
-        {showEmptyState && (
-          <SendContactList
-            contacts={filteredContacts}
-            currentInput={currentInput}
-            ensSuggestions={ensSuggestions}
-            key={sendContactListDataKey}
-            loadingEnsSuggestions={loadingEnsSuggestions}
-            onPressContact={(recipient, nickname) => {
-              setIsValidAddress(true);
-              setRecipient(recipient);
-              setNickname(nickname);
-            }}
-            removeContact={onRemoveContact}
-            userAccounts={userAccounts}
-            watchedAccounts={watchedAccounts}
-          />
-        )}
-        {showAssetList &&
-          (!isEmptyWallet ? (
-            <SendAssetList
-              hiddenCoins={hiddenCoinsObj}
-              nativeCurrency={nativeCurrency}
-              network={network}
-              onSelectAsset={sendUpdateSelected}
-              pinnedCoins={pinnedCoinsObj}
-              savings={savings}
-              sortedAssets={sortedAssets}
-              theme={theme}
-              uniqueTokens={sendableUniqueTokens}
-            />
-          ) : (
-            <View
-              pointerEvents="none"
-              style={{
-                position: 'absolute',
-                width: '100%',
-                height: sheetHeight,
-                alignItems: 'center',
-                justifyContent: 'center',
-                bottom: 0,
-              }}
-            >
-              <NoResults type={NoResultsType.Send} />
-            </View>
-          ))}
-        {showAssetForm && (
-          <SendAssetForm
-            {...props}
-            assetAmount={amountDetails.assetAmount}
-            assetInputRef={assetInputRef}
-            buttonRenderer={
-              <SheetActionButton
-                color={colorForAsset}
-                disabled={buttonDisabled}
-                forceShadows
-                label={buttonLabel}
-                onPress={showConfirmationSheet}
-                scaleTo={buttonDisabled ? 1.025 : 0.9}
-                size="big"
-                testID="send-sheet-confirm"
-                weight="heavy"
-              />
-            }
-            colorForAsset={colorForAsset}
-            nativeAmount={amountDetails.nativeAmount}
+      )}
+      {showAssetList &&
+        (!isEmptyWallet ? (
+          <SendAssetList
+            hiddenCoins={hiddenCoinsObj}
             nativeCurrency={nativeCurrency}
-            nativeCurrencyInputRef={nativeCurrencyInputRef}
-            onChangeAssetAmount={onChangeAssetAmount}
-            onChangeNativeAmount={onChangeNativeAmount}
-            onResetAssetSelection={onResetAssetSelection}
-            selected={selected}
-            sendMaxBalance={sendMaxBalance}
-            setLastFocusedInputHandle={setLastFocusedInputHandle}
-            txSpeedRenderer={
-              <GasSpeedButton
-                asset={selected}
-                currentNetwork={currentNetwork}
-                horizontalPadding={0}
-                marginBottom={17}
-                theme={isDarkMode ? 'dark' : 'light'}
-              />
-            }
+            network={network}
+            onSelectAsset={sendUpdateSelected}
+            pinnedCoins={pinnedCoinsObj}
+            savings={savings}
+            sortedAssets={sortedAssets}
+            theme={theme}
+            uniqueTokens={sendableUniqueTokens}
           />
-        )}
-      </SheetContainer>
-    </Container>
+        ) : (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: sheetHeight,
+              alignItems: 'center',
+              justifyContent: 'center',
+              bottom: 0,
+            }}
+          >
+            <NoResults type={NoResultsType.Send} />
+          </View>
+        ))}
+      {showAssetForm && (
+        <SendAssetForm
+          {...props}
+          assetAmount={amountDetails.assetAmount}
+          assetInputRef={assetInputRef}
+          buttonRenderer={
+            <SheetActionButton
+              color={colorForAsset}
+              disabled={buttonDisabled}
+              forceShadows
+              label={buttonLabel}
+              onPress={showConfirmationSheet}
+              scaleTo={buttonDisabled ? 1.025 : 0.9}
+              size="big"
+              testID="send-sheet-confirm"
+              weight="heavy"
+            />
+          }
+          colorForAsset={colorForAsset}
+          nativeAmount={amountDetails.nativeAmount}
+          nativeCurrency={nativeCurrency}
+          nativeCurrencyInputRef={nativeCurrencyInputRef}
+          onChangeAssetAmount={onChangeAssetAmount}
+          onChangeNativeAmount={onChangeNativeAmount}
+          onResetAssetSelection={onResetAssetSelection}
+          selected={selected}
+          sendMaxBalance={sendMaxBalance}
+          setLastFocusedInputHandle={setLastFocusedInputHandle}
+          txSpeedRenderer={
+            <GasSpeedButton
+              asset={selected}
+              currentNetwork={currentNetwork}
+              horizontalPadding={0}
+              marginBottom={17}
+              theme={isDarkMode ? 'dark' : 'light'}
+            />
+          }
+        />
+      )}
+    </StaticBottomSheet>
   );
 }

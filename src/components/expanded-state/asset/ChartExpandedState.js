@@ -22,7 +22,6 @@ import {
   SendActionButton,
   SheetActionButtonRow,
   SheetDivider,
-  SlackSheet,
   SwapActionButton,
 } from '../../sheet';
 import { Text } from '../../text';
@@ -41,6 +40,7 @@ import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useAdditionalAssetData,
+  useAsset,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
@@ -57,6 +57,7 @@ import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
 import { getNetworkObj } from '@/networks';
+import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -183,7 +184,9 @@ function Description({ text = '' }) {
   );
 }
 
-export default function ChartExpandedState({ asset }) {
+export default function ChartExpandedState() {
+  const { params } = useRoute();
+  const asset = useAsset(params.asset);
   const genericAsset = useGenericAsset(asset?.address);
   const {
     params: { fromDiscover = false },
@@ -304,13 +307,6 @@ export default function ChartExpandedState({ asset }) {
     duration.current = 300;
   }
 
-  let ChartExpandedStateSheetHeight =
-    ios || showChart ? heightWithChart : heightWithoutChart;
-
-  if (android && !hasBalance) {
-    ChartExpandedStateSheetHeight -= 60;
-  }
-
   const { navigate } = useNavigation();
 
   const handleL2DisclaimerPress = useCallback(() => {
@@ -337,14 +333,7 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address === DOG_ADDRESS ||
     assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
-    <SlackSheet
-      additionalTopPadding={android}
-      contentHeight={ChartExpandedStateSheetHeight}
-      scrollEnabled
-      {...(ios
-        ? { height: '100%' }
-        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
-    >
+    <StaticBottomSheet scrollable style={{ paddingTop: 24 }}>
       {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
@@ -493,6 +482,6 @@ export default function ChartExpandedState({ asset }) {
         />
         <Spacer />
       </AdditionalContentWrapper>
-    </SlackSheet>
+    </StaticBottomSheet>
   );
 }

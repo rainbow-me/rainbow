@@ -213,11 +213,11 @@ function MainOuterNavigator() {
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
       />
-      <OuterStack.Screen
+      {/* <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
         options={expandedPresetWithSmallGestureResponseDistance}
-      />
+      /> */}
     </OuterStack.Navigator>
   );
 }
@@ -247,10 +247,10 @@ function BSNavigator() {
         name={Routes.LEARN_WEB_VIEW_SCREEN}
         {...learnWebViewScreenConfig}
       />
-      <BSStack.Screen
+      {/* <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-      />
+      /> */}
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
@@ -326,11 +326,6 @@ function BSNavigator() {
         options={bottomSheetPreset}
       />
       <BSStack.Screen
-        component={ExplainSheet}
-        name={Routes.EXPLAIN_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
         options={bottomSheetPreset}
@@ -394,7 +389,7 @@ function BSNavigator() {
   );
 }
 
-function AuthNavigator() {
+export default function AuthNavigator() {
   return (
     <AuthStack.Navigator
       {...stackNavigationConfig}
@@ -413,25 +408,3 @@ function AuthNavigator() {
     </AuthStack.Navigator>
   );
 }
-
-const AppContainerWithAnalytics = React.forwardRef(
-  (
-    props: {
-      onReady: () => void;
-    },
-    ref
-  ) => (
-    <NavigationContainer
-      onReady={props.onReady}
-      onStateChange={onNavigationStateChange}
-      // @ts-ignore
-      ref={ref}
-    >
-      <AuthNavigator />
-    </NavigationContainer>
-  )
-);
-
-AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
-
-export default React.memo(AppContainerWithAnalytics);

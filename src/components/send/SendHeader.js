@@ -24,7 +24,7 @@ import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
-  ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
+  ({ isSmallPhone, isTinyPhone }) => ({
     ...(android
       ? padding.object(0, 19)
       : isTinyPhone
@@ -32,7 +32,6 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
       : isSmallPhone
       ? padding.object(11, 19, 15)
       : padding.object(18, 19, 19)),
-    backgroundColor: colors.white,
     overflow: 'hidden',
     width: '100%',
   })
@@ -218,7 +217,6 @@ export default function SendHeader({
 
   return (
     <Fragment>
-      <SheetHandleFixedToTop />
       {isTinyPhone ? null : (
         <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
       )}

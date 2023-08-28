@@ -1,14 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DefaultNavigatorOptions,
   ParamListBase,
   StackActionHelpers,
+  StackActions,
   StackNavigationState,
   StackRouter,
   StackRouterOptions,
   createNavigatorFactory,
   useNavigationBuilder,
 } from '@react-navigation/native';
+import { BottomSheetNavigatorContext } from './context/BottomSheetNavigatorContext';
+import { useForceUpdate } from '@/hooks';
 
 export type BottomNavigationOptions = {
   root?: boolean;
@@ -29,6 +32,8 @@ function BottomSheetNavigator({
   screenListeners,
   screenOptions,
 }: Props) {
+  const forceUpdate = useForceUpdate();
+  const descriptorsCache = useRef<Record<string, any>>({});
   const { state, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -42,7 +47,6 @@ function BottomSheetNavigator({
     screenListeners,
     screenOptions,
   });
-
   const rootKey = useMemo(
     () => Object.keys(descriptors).find(key => descriptors[key].options.root),
     [descriptors]
@@ -52,18 +56,42 @@ function BottomSheetNavigator({
     throw new Error('Bottom Sheet Navigator needs a root screen');
   }
 
-  const sheetRoutes = useMemo(
-    () => state.routes.filter(r => r.key !== rootKey),
+  const sheetRouteKeys = useMemo(
+    () => state.routes.map(r => r.key).filter(k => k !== rootKey),
     [state, rootKey]
   );
+
+  // Cache all the descriptor routes
+  sheetRouteKeys.forEach(key => {
+    descriptorsCache.current[key] = descriptors[key];
+  });
+
+  // Mark descriptors for removal
+  Object.keys(descriptorsCache.current)
+    .filter(key => !sheetRouteKeys.includes(key))
+    .forEach(removedKey => {
+      descriptorsCache.current[removedKey].removing = true;
+    });
+
+  // Force refresh after the closing animation has ended
+  const getOnCloseHandler = (key: string) => () => {
+    delete descriptorsCache.current[key];
+    forceUpdate();
+  };
 
   return (
     <NavigationContent>
       {descriptors[rootKey].render()}
-      {sheetRoutes.map(route => (
-        <React.Fragment key={route.key}>
-          {descriptors[route.key].render()}
-        </React.Fragment>
+      {Object.keys(descriptorsCache.current).map(key => (
+        <BottomSheetNavigatorContext.Provider
+          value={{
+            onClose: getOnCloseHandler(key),
+            removing: descriptorsCache.current[key].removing,
+          }}
+          key={key}
+        >
+          {descriptorsCache.current[key].render()}
+        </BottomSheetNavigatorContext.Provider>
       ))}
     </NavigationContent>
   );
