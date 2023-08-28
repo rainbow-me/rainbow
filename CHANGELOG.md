@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.1] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.1)
+
+### Added
+
+- Turn on gif support
+- Fix Base swaps
+- Fix cache key
+
 ## [1.9.0] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.0)
 
 ### Added
