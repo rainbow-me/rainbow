@@ -156,11 +156,6 @@ function MainNavigator() {
         options={wcPromptPreset}
       />
       <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={addCashSheet}
-      />
-      <Stack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
         options={bottomSheetPreset}

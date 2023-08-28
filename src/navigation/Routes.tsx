@@ -6,6 +6,7 @@ import { createBottomSheetNavigator } from './bottom-sheet-navigator/createBotto
 import ExplainSheet from '@/screens/ExplainSheet';
 import ExpandedAssetSheet from '@/screens/ExpandedAssetSheet';
 import SendSheet from '@/screens/SendSheet';
+import { AddCashSheet } from '@/screens/AddCash';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -40,6 +41,10 @@ export function Routes() {
       <BottomSheet.Screen
         component={SendSheet}
         name={RouteNames.SEND_SHEET_NAVIGATOR}
+      />
+      <BottomSheet.Screen
+        component={AddCashSheet}
+        name={RouteNames.ADD_CASH_SHEET}
       />
     </BottomSheet.Navigator>
   );
