@@ -23,6 +23,8 @@ export default function PoolsListWrapper({
 
   const { network } = useAccountSettings();
 
+  console.log('AAAAl', data);
+
   if (isCoinListEdited || isTestnetNetwork(network)) return null;
   return (
     <Fragment>

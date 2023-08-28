@@ -204,11 +204,6 @@ export default function NativeStackNavigator() {
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
-      {/* <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      /> */}
       <NativeStack.Screen
         component={PoapSheet}
         name={Routes.POAP_SHEET}
@@ -229,11 +224,6 @@ export default function NativeStackNavigator() {
       <NativeStack.Screen
         component={SelectUniqueTokenSheet}
         name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen

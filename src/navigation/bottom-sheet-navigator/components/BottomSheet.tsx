@@ -23,6 +23,9 @@ type Props = {
   enableOverDrag?: boolean;
   showHandle?: boolean;
   topInset?: number;
+  // Workaround for ActionSheetIOS rendering behind the modal
+  // Can be removed when we stop using `FullWindowOverlay`
+  fullWindowOverlay?: boolean;
   children: ({
     containerStyle,
   }: {
@@ -30,15 +33,13 @@ type Props = {
   }) => ReactNode;
 };
 
-// Fix for transition from react-native-cool-modals
-const Wrapper = IS_IOS ? FullWindowOverlay : React.Fragment;
-
 export function BottomSheet({
   children,
   snapPoints,
   handleHeight,
   contentHeight,
   topInset,
+  fullWindowOverlay = true,
   showHandle = true,
   enableOverDrag = true,
 }: Props) {
@@ -47,6 +48,10 @@ export function BottomSheet({
   const ref = useRef<NativeBottomSheet>(null);
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
+
+  // Fix for transition from react-native-cool-modals
+  const Wrapper =
+    IS_IOS && fullWindowOverlay ? FullWindowOverlay : React.Fragment;
 
   const defaultTimingConfig = useBottomSheetTimingConfigs({
     duration: 300,

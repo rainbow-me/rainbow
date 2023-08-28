@@ -245,11 +245,6 @@ function BSNavigator() {
       />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
       />

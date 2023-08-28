@@ -333,7 +333,7 @@ export default function ChartExpandedState() {
     assetWithPrice.address === DOG_ADDRESS ||
     assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
-    <StaticBottomSheet scrollable style={{ paddingTop: 24 }}>
+    <StaticBottomSheet scrollable fullWindowOverlay={false}>
       {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart

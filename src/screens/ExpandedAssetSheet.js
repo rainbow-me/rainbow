@@ -50,9 +50,6 @@ export default function ExpandedAssetSheet(props) {
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
 
-  console.log('EXPANDED ASSET SHEET');
-  console.log(params.asset);
-
   const shouldRenderContainer =
     params.type === 'custom_gas' || params.type === 'swap_settings';
 
