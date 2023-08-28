@@ -20,7 +20,7 @@ import { position } from '@/styles';
 const ScreenTypes = {
   custom_gas: CustomGasState, // To be done as a part of Swap
   swap_details: SwapDetailsState, // Migrated
-  swap_settings: SwapSettingsState,
+  swap_settings: SwapSettingsState, // To be done as part of Swap
   token: ChartExpandedState, // Migrated
   token_index: TokenIndexExpandedState,
   unique_token: UniqueTokenExpandedState, // Migrated
@@ -50,7 +50,8 @@ export default function ExpandedAssetSheet(props) {
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
 
-  const shouldRenderContainer = params.type === 'custom_gas';
+  const shouldRenderContainer =
+    params.type === 'custom_gas' || params.type === 'swap_settings';
 
   const Wrapper = shouldRenderContainer ? Container : React.Fragment;
 
