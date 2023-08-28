@@ -81,6 +81,8 @@ export function Cell() {
     12 >= 10_000
   );
 
+  const timeElapsed = 1;
+
   return (
     <ButtonPressAnimation onPress={() => {}} style={{ marginVertical: 10 }}>
       <View
@@ -132,7 +134,10 @@ export function Cell() {
           style={{ marginRight: 4, marginVertical: -4 }}
         />
         <Text color="label" size="11pt" weight="bold">
-          {cryptoAmount}
+          {cryptoAmount ?? 'FREE'}
+        </Text>
+        <Text color="labelQuaternary" size="11pt" weight="medium">
+          {` · ${timeElapsed}m`}
         </Text>
       </View>
       <Text color="labelTertiary" size="11pt" weight="semibold">

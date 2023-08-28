@@ -132,7 +132,7 @@ export function Cell() {
           style={{ marginRight: 4, marginVertical: -4 }}
         />
         <Text color="label" size="11pt" weight="bold">
-          {cryptoAmount}
+          {cryptoAmount ?? 'FREE'}
         </Text>
       </View>
       <Text color="labelTertiary" size="11pt" weight="semibold">

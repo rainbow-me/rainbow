@@ -2,6 +2,7 @@ import React from 'react';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   BackgroundProvider,
+  Inline,
   Inset,
   Separator,
   Stack,
@@ -10,16 +11,29 @@ import {
 import { CarouselCard } from '@/components/cards/CarouselCard';
 import { Cell, NFT_IMAGE_SIZE, Placeholder } from './Cell';
 
-const Card = ({
-  collectionName,
-  mints,
-}: {
-  collectionName: string;
-  mints: any[];
-}) => (
+type Collection = {
+  recentMints: any[];
+  name: string;
+  timeElapsed: number;
+  mintsLastHour: number;
+};
+
+const Card = ({ collection }: { collection: Collection }) => (
   <CarouselCard
-    title={collectionName}
-    data={mints}
+    title={
+      <Inline space="3px" alignVertical="center">
+        <Text size="11pt" weight="semibold" color="labelQuaternary">
+          􀐫
+        </Text>
+        <Text size="13pt" weight="semibold" color="labelTertiary">
+          {`${collection.timeElapsed}h ago`}
+        </Text>
+        <Text size="13pt" weight="semibold" color="labelTertiary">
+          {` · ${collection.mintsLastHour} mints past hour`}
+        </Text>
+      </Inline>
+    }
+    data={collection.recentMints}
     carouselItem={{
       renderItem: () => <Cell />,
       keyExtractor: (item: any) => item.id,
@@ -52,16 +66,28 @@ export function MintDotFunSheet() {
                 separator={<Separator color="separatorTertiary" />}
               >
                 <Card
-                  collectionName="Collection Name"
-                  mints={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
+                  collection={{
+                    name: 'Collection 1',
+                    recentMints: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+                    timeElapsed: 2,
+                    mintsLastHour: 100,
+                  }}
                 />
                 <Card
-                  collectionName="Collection Name"
-                  mints={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
+                  collection={{
+                    name: 'Collection 4',
+                    recentMints: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+                    timeElapsed: 4,
+                    mintsLastHour: 200,
+                  }}
                 />
                 <Card
-                  collectionName="Collection Name"
-                  mints={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
+                  collection={{
+                    name: 'Collection 3',
+                    recentMints: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+                    timeElapsed: 3,
+                    mintsLastHour: 300,
+                  }}
                 />
               </Stack>
             </Stack>
