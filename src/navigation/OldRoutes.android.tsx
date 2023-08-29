@@ -102,11 +102,6 @@ function MainNavigator() {
         options={emojiPreset}
       />
       <Stack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}
         options={expandedPreset}
@@ -156,11 +151,6 @@ function MainNavigator() {
         options={wcPromptPreset}
       />
       <Stack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
@@ -197,11 +187,6 @@ function MainOuterNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SCREEN}
         options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <OuterStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SCREEN}
-        options={expandedPreset}
       />
       {/* <OuterStack.Screen
         component={SendSheet}

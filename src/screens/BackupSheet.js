@@ -3,7 +3,6 @@ import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DelayedAlert } from '../components/alerts';
 import {
   BackupCloudStep,
@@ -11,37 +10,30 @@ import {
   BackupManualStep,
   BackupSheetSection,
 } from '../components/backup';
-import { Column } from '../components/layout';
-import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import {
-  useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { AdaptiveBottomSheet } from '@/navigation/bottom-sheet-navigator/components/AdaptiveBottomSheet';
 
 const onError = error => DelayedAlert({ title: error }, 500);
 
-const AndroidHeight = 400;
-
 export default function BackupSheet() {
   const { selectedWallet, isDamaged } = useWallets();
-  const { height: deviceHeight } = useDimensions();
   const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
   const {
     params: {
-      longFormHeight = 0,
       missingPassword = null,
       step = WalletBackupStepTypes.first,
       walletId = selectedWallet.id,
-      nativeScreen = false,
     } = {},
   } = useRoute();
 
@@ -210,39 +202,5 @@ export default function BackupSheet() {
     step,
   ]);
 
-  let sheetHeight =
-    android && !nativeScreen
-      ? AndroidHeight
-      : longFormHeight + getSoftMenuBarHeight();
-  const wrapperHeight =
-    deviceHeight +
-    (android && !nativeScreen ? AndroidHeight : longFormHeight) +
-    getSoftMenuBarHeight();
-  let additionalTopPadding = android && !nativeScreen;
-
-  // If the sheet is full screen we should handle the sheet heights and padding differently
-  if (
-    android &&
-    (step === WalletBackupStepTypes.cloud ||
-      step === WalletBackupStepTypes.manual)
-  ) {
-    sheetHeight = deviceHeight - 40;
-    additionalTopPadding = true;
-  }
-
-  if (android && step === WalletBackupStepTypes.existing_user) {
-    // on this step we have 3 lines of text instead of 2
-    sheetHeight += 26;
-  }
-
-  return (
-    <Column height={wrapperHeight} testID="backup-sheet">
-      <SlackSheet
-        additionalTopPadding={additionalTopPadding}
-        contentHeight={sheetHeight}
-      >
-        {renderStep()}
-      </SlackSheet>
-    </Column>
-  );
+  return <AdaptiveBottomSheet>{renderStep()}</AdaptiveBottomSheet>;
 }

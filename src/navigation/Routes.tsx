@@ -8,6 +8,8 @@ import ExpandedAssetSheet from '@/screens/ExpandedAssetSheet';
 import SendSheet from '@/screens/SendSheet';
 import { AddCashSheet } from '@/screens/AddCash';
 import AddTokenSheet from '@/screens/AddTokenSheet';
+import BackupSheet from '@/screens/BackupSheet';
+import ChangeWalletSheet from '@/screens/ChangeWalletSheet';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -50,6 +52,14 @@ export function Routes() {
       <BottomSheet.Screen
         component={AddTokenSheet}
         name={RouteNames.ADD_TOKEN_SHEET}
+      />
+      <BottomSheet.Screen
+        component={BackupSheet}
+        name={RouteNames.BACKUP_SHEET}
+      />
+      <BottomSheet.Screen
+        component={ChangeWalletSheet}
+        name={RouteNames.CHANGE_WALLET_SHEET}
       />
     </BottomSheet.Navigator>
   );

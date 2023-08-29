@@ -8,7 +8,6 @@ import React, {
   useState,
 } from 'react';
 import { StyleSheet } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -30,6 +29,8 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/core';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -40,20 +41,10 @@ const RowTypes = {
   EMPTY: 2,
 };
 
-const getItemLayout = (data: any, index: number) => {
-  const { height } = data[index];
-  return {
-    index,
-    length: height,
-    offset: height * index,
-  };
-};
-
 const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
 
 // @ts-ignore
 const Container = styled.View({
-  height: ({ height }: { height: number }) => height,
   marginTop: -2,
 });
 
@@ -70,15 +61,13 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(
+const WalletFlatList = styled(BottomSheetFlatList).attrs(
   ({ showDividers }: { showDividers: boolean }) => ({
     contentContainerStyle: {
       paddingBottom: showDividers ? 9.5 : 0,
       paddingTop: listTopPadding,
     },
-    getItemLayout,
     keyExtractor,
-    removeClippedSubviews: true,
   })
 )({
   flex: 1,
@@ -249,7 +238,7 @@ export default function WalletList({
   );
 
   return (
-    <Container height={height}>
+    <Container>
       <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
         <EmptyWalletList />
       </Animated.View>
@@ -261,6 +250,7 @@ export default function WalletList({
           renderItem={renderItem}
           scrollEnabled={scrollEnabled}
           showDividers={showDividers}
+          focusHook={useFocusEffect}
         />
         {showDividers && <WalletListDivider />}
         {!watchOnly && (

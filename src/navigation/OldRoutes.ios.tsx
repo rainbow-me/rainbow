@@ -96,33 +96,8 @@ import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 
-type StackNavigatorParams = {
-  [Routes.SEND_SHEET]: unknown;
-  [Routes.MODAL_SCREEN]: unknown;
-};
-
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
-
-function SendFlowNavigator() {
-  return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.SEND_SHEET}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={sheetPreset}
-      />
-    </Stack.Navigator>
-  );
-}
 
 function MainNavigator() {
   const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
@@ -259,17 +234,6 @@ export default function NativeStackNavigator() {
         {...walletDiagnosticsSheetConfig}
       />
       <NativeStack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundOpacity: 0.7,
-          customStack: true,
-          springDamping: 1,
-          transitionDuration: 0.25,
-        }}
-      />
-      <NativeStack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}
         options={{
@@ -279,11 +243,6 @@ export default function NativeStackNavigator() {
           springDamping: 1,
           transitionDuration: 0.25,
         }}
-      />
-      <NativeStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET}
-        {...backupSheetConfig}
       />
       <NativeStack.Screen
         component={ModalScreen}
@@ -392,10 +351,6 @@ export default function NativeStackNavigator() {
           />
         </>
       )}
-      {/* <NativeStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-      /> */}
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
