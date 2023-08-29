@@ -138,7 +138,6 @@ export const parseRainbowMeteorologyData = (
     const cleanMaxPriorityFee = gweiToWei(
       new BigNumber(weiToGwei(maxPriorityFee))
     );
-    console.log({ maxPriorityFee, cleanMaxPriorityFee });
     // clean max base fee to only parser int gwei
     const cleanMaxBaseFee = gweiToWei(
       new BigNumber(weiToGwei(speedMaxBaseFee))

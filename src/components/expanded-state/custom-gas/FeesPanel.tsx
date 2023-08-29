@@ -316,7 +316,6 @@ export default function FeesPanel({
         add(maxBaseFee, feePerGas),
         isL2 ? 3 : 0
       );
-      console.log({ newGweiMaxBaseFee });
 
       const newMaxBaseFee = parseGasFeeParam(gweiToWei(newGweiMaxBaseFee));
       if (greaterThan(0, newMaxBaseFee.amount)) return;
