@@ -238,3 +238,5 @@ export const savingsAssetsListByUnderlying: Record<
     value => value.address
   )
 );
+
+export const REFERRER = 'native-app';

@@ -28,6 +28,7 @@ import logger from '@/utils/logger';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { REFERRER } from '@/references';
 
 export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
@@ -115,7 +116,14 @@ export const executeSwap = async ({
       permit,
       chainId
     );
-    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId);
+    return fillQuote(
+      tradeDetails,
+      transactionParams,
+      wallet,
+      permit,
+      chainId,
+      REFERRER
+    );
   }
 };
 
