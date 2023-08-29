@@ -33,7 +33,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       txHistory: true,
       flashbots: false,
       walletconnect: true,
-      swaps: config.base_swaps_enabled,
+      swaps: true,
       nfts: true,
       savings: false,
       pools: false,
