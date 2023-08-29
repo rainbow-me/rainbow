@@ -40,7 +40,6 @@ const FeesPanelWrapper = styled(Column)(margin.object(19, 24, 29, 24));
 const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
 export default function CustomGasState({ asset }) {
-  const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const {
     params: { longFormHeight, speeds, openCustomOptions } = {},
@@ -49,7 +48,7 @@ export default function CustomGasState({ asset }) {
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
-  const { selectedGasFee, currentBlockParams } = useGas();
+  const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);
 
@@ -111,7 +110,7 @@ export default function CustomGasState({ asset }) {
         <GasSpeedButton
           asset={asset}
           canGoBack={canGoBack}
-          currentNetwork={network}
+          currentNetwork={txNetwork}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"

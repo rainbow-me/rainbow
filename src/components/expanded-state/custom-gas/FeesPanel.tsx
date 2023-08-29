@@ -44,7 +44,7 @@ import { getNetworkObj } from '@/networks';
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const GAS_FEE_INCREMENT = 3;
-const GAS_FEE_L2_INCREMENT = 1;
+const GAS_FEE_L2_INCREMENT = 0.02;
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
@@ -166,7 +166,10 @@ export default function FeesPanel({
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom
       ? customMaxBaseFee
-      : toFixedDecimals(selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei || 0, 0);
+      : toFixedDecimals(
+          selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei || 0,
+          isL2 ? 3 : 0
+        );
 
     const maxPriorityFee = selectedOptionIsCustom
       ? customMaxPriorityFee
@@ -180,6 +183,7 @@ export default function FeesPanel({
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
+    isL2,
     customMaxPriorityFee,
   ]);
 
@@ -187,12 +191,12 @@ export default function FeesPanel({
     (type: string) => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
-        currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+        currentBaseFee: toFixedDecimals(currentBaseFee, isL2 ? 3 : 0),
         currentGasTrend,
         type,
       });
     },
-    [currentBaseFee, currentGasTrend, navigate]
+    [currentBaseFee, currentGasTrend, isL2, navigate]
   );
 
   const renderRowLabel = useCallback(
@@ -308,7 +312,11 @@ export default function FeesPanel({
       setLastFocusedInputHandle(maxBaseFieldRef);
       const maxBaseFee = selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei ?? 0;
 
-      const newGweiMaxBaseFee = toFixedDecimals(add(maxBaseFee, feePerGas), 0);
+      const newGweiMaxBaseFee = toFixedDecimals(
+        add(maxBaseFee, feePerGas),
+        isL2 ? 3 : 0
+      );
+      console.log({ newGweiMaxBaseFee });
 
       const newMaxBaseFee = parseGasFeeParam(gweiToWei(newGweiMaxBaseFee));
       if (greaterThan(0, newMaxBaseFee.amount)) return;
@@ -326,6 +334,7 @@ export default function FeesPanel({
       updateToCustomGasFee(newGasParams);
     },
     [
+      isL2,
       maxBaseFieldRef,
       selectedGasFee.gasFeeParams,
       setLastFocusedInputHandle,
@@ -334,19 +343,23 @@ export default function FeesPanel({
   );
 
   const addMinerTip = useCallback(() => {
-    updatePriorityFeePerGas(calculateMinerTipAddDifference(maxPriorityFee));
-  }, [maxPriorityFee, updatePriorityFeePerGas]);
+    updatePriorityFeePerGas(
+      calculateMinerTipAddDifference(maxPriorityFee, txNetwork)
+    );
+  }, [maxPriorityFee, txNetwork, updatePriorityFeePerGas]);
 
   const substMinerTip = useCallback(() => {
-    updatePriorityFeePerGas(-calculateMinerTipSubstDifference(maxPriorityFee));
-  }, [maxPriorityFee, updatePriorityFeePerGas]);
+    updatePriorityFeePerGas(
+      -calculateMinerTipSubstDifference(maxPriorityFee, txNetwork)
+    );
+  }, [maxPriorityFee, txNetwork, updatePriorityFeePerGas]);
 
   const addMaxFee = useCallback(() => {
     updateFeePerGas(isL2 ? GAS_FEE_L2_INCREMENT : GAS_FEE_INCREMENT);
   }, [isL2, updateFeePerGas]);
 
   const substMaxFee = useCallback(() => {
-    updateFeePerGas(isL2 ? GAS_FEE_L2_INCREMENT : GAS_FEE_INCREMENT);
+    updateFeePerGas(isL2 ? -GAS_FEE_L2_INCREMENT : -GAS_FEE_INCREMENT);
   }, [isL2, updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
@@ -533,7 +546,7 @@ export default function FeesPanel({
       if (
         !maxPriorityFee ||
         isZero(maxPriorityFee) ||
-        greaterThan(1, maxPriorityFee)
+        greaterThan(isL2 ? 0.0001 : 1, maxPriorityFee)
       ) {
         setMaxPriorityFeeError({
           message: lang.t('gas.tip_too_low_error'),
@@ -580,6 +593,7 @@ export default function FeesPanel({
     });
   }, [
     gasFeeParamsBySpeed,
+    isL2,
     maxPriorityFee,
     startPriorityFeeTimeout,
     stopPriorityFeeTimeout,

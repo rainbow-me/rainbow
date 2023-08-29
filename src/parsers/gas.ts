@@ -53,7 +53,8 @@ const getBaseFeeMultiplier = (speed: string) => {
 const parseGasDataConfirmationTime = (
   maxBaseFee: string,
   maxPriorityFee: string,
-  blocksToConfirmation: BlocksToConfirmation
+  blocksToConfirmation: BlocksToConfirmation,
+  secondsPerNewBlock: number
 ) => {
   let blocksToWaitForPriorityFee = 0;
   let blocksToWaitForBaseFee = 0;
@@ -89,7 +90,7 @@ const parseGasDataConfirmationTime = (
   const totalBlocksToWait =
     blocksToWaitForBaseFee +
     (blocksToWaitForBaseFee < 240 ? blocksToWaitForPriorityFee : 0);
-  const timeAmount = 15 * totalBlocksToWait;
+  const timeAmount = secondsPerNewBlock * totalBlocksToWait;
 
   return {
     amount: timeAmount,
@@ -108,12 +109,14 @@ export const parseRainbowMeteorologyData = (
   baseFeeTrend: number;
   currentBaseFee: GasFeeParam;
   blocksToConfirmation: BlocksToConfirmation;
+  secondsPerNewBlock: number;
 } => {
   const {
     baseFeeSuggestion,
     baseFeeTrend,
     maxPriorityFeeSuggestions,
     currentBaseFee,
+    secondsPerNewBlock,
   } = rainbowMeterologyData.data;
 
   const blocksToConfirmation: BlocksToConfirmation = {
@@ -144,7 +147,8 @@ export const parseRainbowMeteorologyData = (
       estimatedTime: parseGasDataConfirmationTime(
         cleanMaxBaseFee,
         cleanMaxPriorityFee,
-        blocksToConfirmation
+        blocksToConfirmation,
+        secondsPerNewBlock
       ),
       maxBaseFee: parseGasFeeParam(cleanMaxBaseFee),
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
@@ -159,6 +163,7 @@ export const parseRainbowMeteorologyData = (
     blocksToConfirmation,
     currentBaseFee: parsedCurrentBaseFee,
     gasFeeParamsBySpeed: parsedFees,
+    secondsPerNewBlock,
   };
 };
 
@@ -218,12 +223,14 @@ export const defaultGasParamsFormat = (
   option: string,
   maxBaseFee: string,
   maxPriorityFeePerGas: string,
-  blocksToConfirmation: BlocksToConfirmation
+  blocksToConfirmation: BlocksToConfirmation,
+  secondsPerNewBlock: number
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
     maxBaseFee,
     maxPriorityFeePerGas,
-    blocksToConfirmation
+    blocksToConfirmation,
+    secondsPerNewBlock
   );
   return {
     estimatedTime: time,

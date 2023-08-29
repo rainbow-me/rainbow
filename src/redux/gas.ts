@@ -88,6 +88,7 @@ interface GasState {
   blocksToConfirmation: BlocksToConfirmation;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
+  secondsPerNewBlock: number;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -212,6 +213,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasLimit,
     currentBlockParams,
     blocksToConfirmation,
+    secondsPerNewBlock,
   } = getState().gas;
 
   const { nativeCurrency } = getState().settings;
@@ -246,7 +248,8 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     CUSTOM,
     gasParams.maxBaseFee.amount,
     gasParams.maxPriorityFeePerGas.amount,
-    blocksToConfirmation
+    blocksToConfirmation,
+    secondsPerNewBlock
   );
   const newSelectedGasFee = getSelectedGasFee(
     newGasFeeParamsBySpeed,
@@ -423,6 +426,7 @@ export const getEIP1559GasParams = async (network: Network) => {
     baseFeeTrend,
     currentBaseFee,
     blocksToConfirmation,
+    secondsPerNewBlock,
   } = parseRainbowMeteorologyData(data, network);
   return {
     baseFeePerGas,
@@ -430,6 +434,7 @@ export const getEIP1559GasParams = async (network: Network) => {
     currentBaseFee,
     gasFeeParamsBySpeed,
     trend: baseFeeTrend,
+    secondsPerNewBlock,
   };
 };
 
@@ -515,6 +520,7 @@ export const gasPricesStartPolling = (
                   trend,
                   currentBaseFee,
                   blocksToConfirmation,
+                  secondsPerNewBlock,
                 } = await getEIP1559GasParams(network);
 
                 if (flashbots) {
@@ -592,6 +598,7 @@ export const gasPricesStartPolling = (
                     gasFeeParamsBySpeed: gasFeeParamsBySpeed,
                     gasFeesBySpeed,
                     selectedGasFee: updatedSelectedGasFee,
+                    secondsPerNewBlock,
                   },
                   type: GAS_FEES_SUCCESS,
                 });
@@ -744,6 +751,7 @@ const INITIAL_STATE: GasState = {
   l1GasFeeOptimism: null,
   selectedGasFee: {} as SelectedGasFee,
   txNetwork: null,
+  secondsPerNewBlock: 15,
 };
 
 export default (
@@ -774,6 +782,7 @@ export default (
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
         selectedGasFee: action.payload.selectedGasFee,
+        secondsPerNewBlock: action.payload.secondsPerNewBlock,
       };
     case GAS_PRICES_CUSTOM_UPDATE:
       return {

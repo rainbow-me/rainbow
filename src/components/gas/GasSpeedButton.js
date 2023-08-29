@@ -31,7 +31,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import { gasUtils } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 
 const {
@@ -333,7 +333,7 @@ const GasSpeedButton = ({
     selectedGasFee?.estimatedTime?.display,
   ]);
 
-  const openGasHelper = useCallback(() => {
+  const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
     const networkObj = getNetworkObj(currentNetwork);
     const networkName = networkObj.name;
@@ -344,7 +344,14 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
+        networkName
+      );
+      navigate(Routes.EXPLAIN_SHEET, {
+        network: networkName,
+        type: 'gas',
+        nativeAsset,
+      });
     }
   }, [
     crossChainServiceTime,
@@ -398,10 +405,10 @@ const GasSpeedButton = ({
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
         ? ''
         : greaterThan(estimatedGwei, totalGwei)
-        ? `${toFixedDecimals(totalGwei, 0)} Gwei`
-        : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
+        ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
+        : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(
             totalGwei,
-            0
+            isL2 ? 4 : 0
           )} Gwei`;
       return {
         actionKey: gasOption,
@@ -529,11 +536,19 @@ const GasSpeedButton = ({
         >
           <Row>
             <NativeCoinIconWrapper>
-              <CoinIcon
-                address={nativeFeeCurrency.address}
-                size={18}
-                symbol={nativeFeeCurrency.symbol}
-              />
+              {currentNetwork === Network.mainnet ? (
+                <CoinIcon
+                  address={nativeFeeCurrency.address}
+                  size={18}
+                  symbol={nativeFeeCurrency.symbol}
+                />
+              ) : (
+                <ChainBadge
+                  assetType={currentNetwork}
+                  size="gas"
+                  position="relative"
+                />
+              )}
             </NativeCoinIconWrapper>
             <TextContainer>
               <Text>
