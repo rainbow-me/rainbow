@@ -18,6 +18,7 @@ export function FullscreenBlurSheet({
       snapPoints={['100%']}
       enableOverDrag={false}
       showHandle={false}
+      fullWindowOverlay={false}
       topInset={0}
     >
       {({ containerStyle }) => (

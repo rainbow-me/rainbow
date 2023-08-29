@@ -156,11 +156,6 @@ function MainNavigator() {
         options={wcPromptPreset}
       />
       <Stack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
         options={expandedPreset}

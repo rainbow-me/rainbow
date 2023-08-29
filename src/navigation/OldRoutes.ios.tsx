@@ -239,11 +239,6 @@ export default function NativeStackNavigator() {
         {...sendConfirmationSheetConfig}
       />
       <NativeStack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        {...addTokenSheetConfig}
-      />
-      <NativeStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
         {...promoSheetConfig}

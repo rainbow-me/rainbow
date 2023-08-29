@@ -20,6 +20,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { haptics } from '@/utils';
+import { AdaptiveBottomSheet } from '@/navigation/bottom-sheet-navigator/components/AdaptiveBottomSheet';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -90,114 +91,106 @@ export default function AddTokenSheet() {
   const { colors } = useTheme();
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      {ios && <TouchableBackdrop onPress={goBack} />}
+    <AdaptiveBottomSheet>
+      <Centered direction="column" testID="add-token-sheet">
+        <Column marginTop={16}>
+          <CoinIcon
+            address={item.address}
+            size={50}
+            symbol={item.symbol}
+            type={item.type}
+          />
+        </Column>
+        <Column marginBottom={4} marginTop={12}>
+          <Text
+            align="center"
+            color={colors.alpha(colors.blueGreyDark, 0.8)}
+            letterSpacing="roundedMedium"
+            size="large"
+            weight="bold"
+          >
+            {item.name}
+          </Text>
+        </Column>
+        <Column marginBottom={24}>
+          <Text
+            align="center"
+            color={colors.dark}
+            letterSpacing="roundedMedium"
+            size="larger"
+            weight="heavy"
+          >
+            {lang.t('button.add_to_list')}
+          </Text>
+        </Column>
 
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={sheetHeight}
-        scrollEnabled={false}
-      >
-        <Centered direction="column" testID="add-token-sheet">
-          <Column marginTop={16}>
-            <CoinIcon
-              address={item.address}
-              size={50}
-              symbol={item.symbol}
-              type={item.type}
-            />
-          </Column>
-          <Column marginBottom={4} marginTop={12}>
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.8)}
-              letterSpacing="roundedMedium"
-              size="large"
-              weight="bold"
-            >
-              {item.name}
-            </Text>
-          </Column>
-          <Column marginBottom={24}>
-            <Text
-              align="center"
-              color={colors.dark}
-              letterSpacing="roundedMedium"
-              size="larger"
-              weight="heavy"
-            >
-              {lang.t('button.add_to_list')}
-            </Text>
-          </Column>
-
-          <Centered marginBottom={9}>
-            <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
-          </Centered>
-
-          <Column align="center" marginBottom={isL2 ? 63 : 8}>
-            {DefaultTokenLists[network]
-              .filter(list => writeableLists.includes(list?.id))
-              .map(list => {
-                const alreadyAdded = isTokenInList(list?.id);
-                const handleAdd = () => {
-                  if (alreadyAdded) return;
-                  updateList(item.address, list?.id, !alreadyAdded);
-                  haptics.notificationSuccess();
-                };
-                const handleRemove = () => {
-                  updateList(item.address, list?.id, false);
-                  haptics.notificationSuccess();
-                };
-                return (
-                  <Row align="center" key={`list-${list?.id}`}>
-                    <ListButton
-                      alreadyAdded={alreadyAdded}
-                      onPress={alreadyAdded ? handleRemove : handleAdd}
-                      testID={`add-to-${list?.id}`}
-                    >
-                      <Row>
-                        <ListEmoji name={list.emoji} />
-                        <Text
-                          color={
-                            alreadyAdded
-                              ? colors.alpha(colors.blueGreyDark, 0.6)
-                              : colors.appleBlue
-                          }
-                          size="larger"
-                          weight="bold"
-                        >
-                          {list.name}
-                        </Text>
-                      </Row>
-                    </ListButton>
-                    {alreadyAdded && (
-                      <RemoveButton
-                        onPress={handleRemove}
-                        testID={`remove-from-${list?.id}`}
-                      >
-                        <RemoveButtonContent>
-                          􀈔 {lang.t('button.remove')}
-                        </RemoveButtonContent>
-                      </RemoveButton>
-                    )}
-                  </Row>
-                );
-              })}
-          </Column>
-
-          <SheetActionButtonRow>
-            <SheetActionButton
-              color={colors.white}
-              label={lang.t('button.cancel')}
-              onPress={goBack}
-              size="big"
-              testID="close"
-              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-              weight="bold"
-            />
-          </SheetActionButtonRow>
+        <Centered marginBottom={9}>
+          <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
         </Centered>
-      </SlackSheet>
-    </Container>
+
+        <Column align="center" marginBottom={isL2 ? 63 : 8}>
+          {DefaultTokenLists[network]
+            .filter(list => writeableLists.includes(list?.id))
+            .map(list => {
+              const alreadyAdded = isTokenInList(list?.id);
+              const handleAdd = () => {
+                if (alreadyAdded) return;
+                updateList(item.address, list?.id, !alreadyAdded);
+                haptics.notificationSuccess();
+              };
+              const handleRemove = () => {
+                updateList(item.address, list?.id, false);
+                haptics.notificationSuccess();
+              };
+              return (
+                <Row align="center" key={`list-${list?.id}`}>
+                  <ListButton
+                    alreadyAdded={alreadyAdded}
+                    onPress={alreadyAdded ? handleRemove : handleAdd}
+                    testID={`add-to-${list?.id}`}
+                  >
+                    <Row>
+                      <ListEmoji name={list.emoji} />
+                      <Text
+                        color={
+                          alreadyAdded
+                            ? colors.alpha(colors.blueGreyDark, 0.6)
+                            : colors.appleBlue
+                        }
+                        size="larger"
+                        weight="bold"
+                      >
+                        {list.name}
+                      </Text>
+                    </Row>
+                  </ListButton>
+                  {alreadyAdded && (
+                    <RemoveButton
+                      onPress={handleRemove}
+                      testID={`remove-from-${list?.id}`}
+                    >
+                      <RemoveButtonContent>
+                        􀈔 {lang.t('button.remove')}
+                      </RemoveButtonContent>
+                    </RemoveButton>
+                  )}
+                </Row>
+              );
+            })}
+        </Column>
+
+        <SheetActionButtonRow>
+          <SheetActionButton
+            color={colors.white}
+            label={lang.t('button.cancel')}
+            onPress={goBack}
+            size="big"
+            testID="close"
+            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            weight="bold"
+          />
+        </SheetActionButtonRow>
+      </Centered>
+    </AdaptiveBottomSheet>
   );
 }
