@@ -230,6 +230,7 @@ export function NFTSingleOfferSheet() {
             feesOnTop: [feeParam],
           }
         : undefined,
+      chainId: networkObj.id,
       precheck: true,
       wallet: signer,
       onProgress: async (steps: Execute['steps']) => {
@@ -325,6 +326,7 @@ export function NFTSingleOfferSheet() {
             feesOnTop: [feeParam],
           }
         : undefined,
+      chainId: networkObj.id,
       wallet: signer!,
       onProgress: (steps: Execute['steps']) => {
         steps.forEach(step => {
