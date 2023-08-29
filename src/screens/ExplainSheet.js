@@ -549,7 +549,7 @@ export const explainers = (params, colors) => ({
   },
   adworld_app_icon: {
     logo: <AdworldAppIcon />,
-    extraHeight: -65,
+    extraHeight: -90,
     text: ADWORLD_APP_ICON_EXPLAINER,
     title: ADWORLD_APP_ICON_TITLE,
     button: {
