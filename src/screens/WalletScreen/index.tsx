@@ -263,7 +263,7 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
         />
       </OpacityToggler>
       <Box
-        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0}}
+        style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
       >
         {/* @ts-expect-error JavaScript component */}
         <AssetList

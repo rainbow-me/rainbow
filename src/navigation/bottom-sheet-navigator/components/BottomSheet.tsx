@@ -93,6 +93,7 @@ export function BottomSheet({
         handleHeight={handleHeight}
         contentHeight={contentHeight}
         handleComponent={null}
+        overDragResistanceFactor={3}
       >
         {showHandle && <SheetHandleFixedToTop showBlur={false} />}
         {children({ containerStyle: bottomSheetStyle.containerStyle })}
