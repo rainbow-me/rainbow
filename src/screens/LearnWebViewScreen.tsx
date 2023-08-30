@@ -97,8 +97,7 @@ export default function LearnWebViewScreen() {
     ? globalColors.white10
     : globalColors.white100;
 
-  const injectedJavaScript = useMemo(
-    () => `
+  const injectedJavaScript = `
     const style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = \`
@@ -124,9 +123,7 @@ export default function LearnWebViewScreen() {
     window.addEventListener('resize', updateHeight);
     
     updateHeight();
-  `,
-    [isDarkMode, surfacePrimaryElevated]
-  );
+  `;
 
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
