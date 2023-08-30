@@ -109,7 +109,7 @@ export type EditWalletContextMenuActions = {
   remove: (walletId: string, address: EthereumAddress) => void;
 };
 
-export default function ChangeWalletSheet() {
+function ChangeWallet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
@@ -436,7 +436,7 @@ export default function ChangeWalletSheet() {
   }, []);
 
   return (
-    <AdaptiveBottomSheet style={{ paddingBottom: 16 }}>
+    <>
       <Column height={headerHeight} justify="space-between">
         <Centered>
           <SheetTitle testID="change-wallet-sheet-title">
@@ -478,6 +478,17 @@ export default function ChangeWalletSheet() {
         showDividers={showDividers}
         watchOnly={watchOnly}
       />
+    </>
+  );
+}
+
+export default function ChangeWalletSheet() {
+  return (
+    <AdaptiveBottomSheet
+      style={{ paddingBottom: 16 }}
+      fullWindowOverlay={false}
+    >
+      <ChangeWallet />
     </AdaptiveBottomSheet>
   );
 }
