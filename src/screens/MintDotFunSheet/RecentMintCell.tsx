@@ -2,7 +2,10 @@ import React from 'react';
 import { useNavigation } from '@/navigation';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
-import { handleSignificantDecimals } from '@/helpers/utilities';
+import {
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimals,
+} from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
@@ -18,6 +21,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
+import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
+import { getTimeElapsedFromDate } from './utils';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -61,9 +68,13 @@ export const Placeholder = () => {
   );
 };
 
-export function Cell() {
-  const { navigate } = useNavigation();
-  const { colorMode } = useColorMode();
+export function RecentMintCell({
+  recentMint,
+  collection,
+}: {
+  recentMint: NftSample;
+  collection: MintableCollection;
+}) {
   const { isDarkMode } = useTheme();
 
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
@@ -71,20 +82,17 @@ export function Cell() {
     'surfaceSecondaryElevated'
   );
 
-  const cryptoAmount = handleSignificantDecimals(
-    12,
-    18,
-    // don't show more than 3 decimals
-    3,
-    undefined,
-    // abbreviate if amount is >= 10,000
-    12 >= 10_000
-  );
+  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
+    .nativeCurrency;
 
-  const timeElapsed = 1;
+  const amount = convertRawAmountToDecimalFormat(recentMint.value);
+
+  const timeElapsed = getTimeElapsedFromDate(new Date(recentMint.mintTime));
+
+  const isFree = amount === '0';
 
   return (
-    <ButtonPressAnimation onPress={() => {}} style={{ marginVertical: 10 }}>
+    <View style={{ marginVertical: 10, width: NFT_IMAGE_SIZE }}>
       <View
         style={{
           shadowColor: globalColors.grey100,
@@ -95,8 +103,7 @@ export function Cell() {
       >
         <View
           style={{
-            shadowColor:
-              colorMode === 'dark' || !'blue' ? globalColors.grey100 : 'blue',
+            shadowColor: globalColors.grey100,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -104,8 +111,7 @@ export function Cell() {
         >
           <ImgixImage
             source={{
-              uri:
-                'https://i.seadn.io/gcs/files/beb92069cbb19fb52206ab431562ec47.png?auto=format&dpr=1&w=3840',
+              uri: recentMint.imageURI ?? collection.imageURL,
             }}
             style={{
               width: NFT_IMAGE_SIZE,
@@ -127,22 +133,31 @@ export function Cell() {
           alignItems: 'center',
         }}
       >
-        <CoinIcon
-          address={'eth'}
-          size={12}
-          symbol={'ETH'}
-          style={{ marginRight: 4, marginVertical: -4 }}
-        />
-        <Text color="label" size="11pt" weight="bold">
-          {cryptoAmount ?? 'FREE'}
-        </Text>
-        <Text color="labelQuaternary" size="11pt" weight="medium">
-          {` · ${timeElapsed}m`}
-        </Text>
+        {!isFree && (
+          <CoinIcon
+            address={currency.address}
+            size={12}
+            symbol={currency.symbol}
+            style={{ marginRight: 4, marginVertical: -4 }}
+          />
+        )}
+        <View style={{ width: NFT_IMAGE_SIZE - 47, flexDirection: 'row' }}>
+          <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
+            {isFree ? 'FREE' : amount}
+          </Text>
+          <Text color="labelQuaternary" size="11pt" weight="medium">
+            {` · ${timeElapsed}`}
+          </Text>
+        </View>
       </View>
-      <Text color="labelTertiary" size="11pt" weight="semibold">
-        {'TEST'}
+      <Text
+        color="labelTertiary"
+        size="11pt"
+        weight="semibold"
+        numberOfLines={1}
+      >
+        {recentMint.title}
       </Text>
-    </ButtonPressAnimation>
+    </View>
   );
 }

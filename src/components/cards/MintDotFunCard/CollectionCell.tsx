@@ -1,11 +1,7 @@
 import React from 'react';
-import { useNavigation } from '@/navigation';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
-import {
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
@@ -15,17 +11,18 @@ import {
   Inset,
   Text,
   useBackgroundColor,
-  useColorMode,
 } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { Linking, View } from 'react-native';
-import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
+import { MintableCollection } from '@/graphql/__generated__/arc';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 
 export const NFT_IMAGE_SIZE = 111;
 
-export const Placeholder = () => {
+export function Placeholder() {
   const { colors } = useTheme();
   return (
     <AccentColorProvider color={colors.skeleton}>
@@ -63,15 +60,13 @@ export const Placeholder = () => {
       </Inset>
     </AccentColorProvider>
   );
-};
+}
 
-export function Cell({
-  mintableCollection,
+export function CollectionCell({
+  collection,
 }: {
-  mintableCollection: MintableCollection;
+  collection: MintableCollection;
 }) {
-  const { navigate } = useNavigation();
-  const { colorMode } = useColorMode();
   const { isDarkMode } = useTheme();
 
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
@@ -79,23 +74,16 @@ export function Cell({
     'surfaceSecondaryElevated'
   );
 
-  // const cryptoAmount = handleSignificantDecimals(
-  //   mintableCollection.mintStatus.price,
-  //   18,
-  //   // don't show more than 3 decimals
-  //   3,
-  //   undefined,
-  //   // abbreviate if amount is >= 10,000
-  //   12 >= 10_000
-  // );
+  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
+    .nativeCurrency;
 
-  const cryptoAmount = convertRawAmountToDecimalFormat(
-    mintableCollection.mintStatus.price
-  );
+  const amount = convertRawAmountToDecimalFormat(collection.mintStatus.price);
+
+  const isFree = amount === '0';
 
   return (
     <ButtonPressAnimation
-      onPress={() => Linking.openURL(mintableCollection.externalURL)}
+      onPress={() => Linking.openURL(collection.externalURL)}
       style={{ marginVertical: 10, width: NFT_IMAGE_SIZE }}
     >
       <View
@@ -108,8 +96,7 @@ export function Cell({
       >
         <View
           style={{
-            shadowColor:
-              colorMode === 'dark' || !'blue' ? globalColors.grey100 : 'blue',
+            shadowColor: globalColors.grey100,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -117,7 +104,7 @@ export function Cell({
         >
           <ImgixImage
             source={{
-              uri: mintableCollection.imageURL,
+              uri: collection.imageURL,
             }}
             style={{
               width: NFT_IMAGE_SIZE,
@@ -139,17 +126,19 @@ export function Cell({
           alignItems: 'center',
         }}
       >
-        {cryptoAmount !== '0' && (
+        {!isFree && (
           <CoinIcon
-            address={'eth'}
+            address={currency.address}
             size={12}
-            symbol={'ETH'}
+            symbol={currency.symbol}
             style={{ marginRight: 4, marginVertical: -4 }}
           />
         )}
-        <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
-          {cryptoAmount === '0' ? 'FREE' : cryptoAmount}
-        </Text>
+        <View style={{ width: NFT_IMAGE_SIZE - 16 }}>
+          <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
+            {isFree ? 'FREE' : amount}
+          </Text>
+        </View>
       </View>
       <Text
         color="labelTertiary"
@@ -157,7 +146,7 @@ export function Cell({
         weight="semibold"
         numberOfLines={1}
       >
-        {mintableCollection.name}
+        {collection.name}
       </Text>
     </ButtonPressAnimation>
   );

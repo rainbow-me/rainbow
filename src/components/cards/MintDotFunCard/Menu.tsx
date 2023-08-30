@@ -12,7 +12,13 @@ import { MMKV } from 'react-native-mmkv';
 
 const mmkv = new MMKV();
 
-type Filter = 'all' | 'paid' | 'free';
+// type Filter = 'all' | 'paid' | 'free';
+
+export enum Filter {
+  All = 'all',
+  Paid = 'paid',
+  Free = 'free',
+}
 
 export type SortOption = {
   name: string;
@@ -65,19 +71,19 @@ export function Menu() {
     menuTitle: '',
     menuItems: [
       {
-        actionKey: 'all',
+        actionKey: Filter.All,
         actionTitle: 'All',
-        menuState: filter === 'all' ? 'on' : 'off',
+        menuState: filter === Filter.All ? 'on' : 'off',
       },
       {
-        actionKey: 'paid',
+        actionKey: Filter.Paid,
         actionTitle: 'Paid',
-        menuState: filter === 'paid' ? 'on' : 'off',
+        menuState: filter === Filter.Paid ? 'on' : 'off',
       },
       {
-        actionKey: 'free',
+        actionKey: Filter.Free,
         actionTitle: 'Free',
-        menuState: filter === 'free' ? 'on' : 'off',
+        menuState: filter === Filter.Free ? 'on' : 'off',
       },
     ],
   };
