@@ -2,7 +2,10 @@ import React from 'react';
 import { useNavigation } from '@/navigation';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
-import { handleSignificantDecimals } from '@/helpers/utilities';
+import {
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimals,
+} from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
@@ -17,7 +20,8 @@ import {
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
+import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -61,7 +65,11 @@ export const Placeholder = () => {
   );
 };
 
-export function Cell() {
+export function Cell({
+  mintableCollection,
+}: {
+  mintableCollection: MintableCollection;
+}) {
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const { isDarkMode } = useTheme();
@@ -71,18 +79,25 @@ export function Cell() {
     'surfaceSecondaryElevated'
   );
 
-  const cryptoAmount = handleSignificantDecimals(
-    12,
-    18,
-    // don't show more than 3 decimals
-    3,
-    undefined,
-    // abbreviate if amount is >= 10,000
-    12 >= 10_000
+  // const cryptoAmount = handleSignificantDecimals(
+  //   mintableCollection.mintStatus.price,
+  //   18,
+  //   // don't show more than 3 decimals
+  //   3,
+  //   undefined,
+  //   // abbreviate if amount is >= 10,000
+  //   12 >= 10_000
+  // );
+
+  const cryptoAmount = convertRawAmountToDecimalFormat(
+    mintableCollection.mintStatus.price
   );
 
   return (
-    <ButtonPressAnimation onPress={() => {}} style={{ marginVertical: 10 }}>
+    <ButtonPressAnimation
+      onPress={() => Linking.openURL(mintableCollection.externalURL)}
+      style={{ marginVertical: 10, width: NFT_IMAGE_SIZE }}
+    >
       <View
         style={{
           shadowColor: globalColors.grey100,
@@ -102,8 +117,7 @@ export function Cell() {
         >
           <ImgixImage
             source={{
-              uri:
-                'https://i.seadn.io/gcs/files/beb92069cbb19fb52206ab431562ec47.png?auto=format&dpr=1&w=3840',
+              uri: mintableCollection.imageURL,
             }}
             style={{
               width: NFT_IMAGE_SIZE,
@@ -125,18 +139,25 @@ export function Cell() {
           alignItems: 'center',
         }}
       >
-        <CoinIcon
-          address={'eth'}
-          size={12}
-          symbol={'ETH'}
-          style={{ marginRight: 4, marginVertical: -4 }}
-        />
-        <Text color="label" size="11pt" weight="bold">
-          {cryptoAmount ?? 'FREE'}
+        {cryptoAmount !== '0' && (
+          <CoinIcon
+            address={'eth'}
+            size={12}
+            symbol={'ETH'}
+            style={{ marginRight: 4, marginVertical: -4 }}
+          />
+        )}
+        <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
+          {cryptoAmount === '0' ? 'FREE' : cryptoAmount}
         </Text>
       </View>
-      <Text color="labelTertiary" size="11pt" weight="semibold">
-        {'TEST'}
+      <Text
+        color="labelTertiary"
+        size="11pt"
+        weight="semibold"
+        numberOfLines={1}
+      >
+        {mintableCollection.name}
       </Text>
     </ButtonPressAnimation>
   );
