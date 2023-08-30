@@ -37,61 +37,7 @@ const traverseData = (prev: any, data: any) => {
   };
 };
 
-function useJumpingForm(
-  isLong: any,
-  heightWithChart: any,
-  heightWithoutChart: any,
-  shortHeightWithChart: any,
-  shortHeightWithoutChart: any
-) {
-  const { setOptions } = useNavigation();
-
-  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
-
-  useEffect(() => {
-    if (!isLong) {
-      if (
-        typeof heightWithoutChart === 'number' &&
-        !isNaN(heightWithoutChart)
-      ) {
-        setOptions({
-          longFormHeight: heightWithoutChart,
-          ...(shortHeightWithoutChart && {
-            shortFormHeight: shortHeightWithoutChart,
-          }),
-        });
-      }
-    } else {
-      if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
-        setOptions({
-          longFormHeight: heightWithChart,
-          ...(shortHeightWithChart && {
-            shortFormHeight: shortHeightWithChart,
-          }),
-        });
-      }
-    }
-  }, [
-    heightWithChart,
-    heightWithoutChart,
-    isLong,
-    setOptions,
-    jumpToShort,
-    jumpToLong,
-    shortHeightWithoutChart,
-    shortHeightWithChart,
-  ]);
-}
-
-export default function useChartThrottledPoints({
-  asset,
-  heightWithChart,
-  heightWithoutChart,
-  isPool,
-  uniBalance = true,
-  shortHeightWithChart,
-  shortHeightWithoutChart,
-}: any) {
+export default function useChartThrottledPoints({ asset, isPool }: any) {
   const { nativeCurrency } = useAccountSettings();
 
   let assetForColor = asset;
@@ -147,32 +93,21 @@ export default function useChartThrottledPoints({
     ]
   );
 
-  useJumpingForm(
-    showChart,
-    heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
-  );
-
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
     points: throttledPoints.points,
     smoothingStrategy: 'bezier',
   });
 
-  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
-    .current;
-
   useEffect(() => {
     if (throttledPoints.points && !fetchingCharts) {
-      debouncedSetThrottledData({
+      setThrottledData({
         nativePoints: throttledPoints.nativePoints,
         points: throttledPoints.points,
         smoothingStrategy: 'bezier',
       });
     }
-  }, [throttledPoints, fetchingCharts, debouncedSetThrottledData]);
+  }, [throttledPoints, fetchingCharts, setThrottledData]);
 
   return {
     chart,

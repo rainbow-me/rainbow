@@ -14,12 +14,14 @@ import {
 type Props = {
   snapPoints?: Array<string | number>;
   style?: StyleProp<ViewStyle>;
+  fullWindowOverlay?: boolean;
 };
 
 export function AdaptiveBottomSheet({
   children,
   style,
   snapPoints = ['CONTENT_HEIGHT'],
+  fullWindowOverlay,
 }: React.PropsWithChildren<Props>) {
   const window = useWindowDimensions();
   const [height, setHeight] = useState(0);
@@ -37,6 +39,7 @@ export function AdaptiveBottomSheet({
       handleHeight={animatedHandleHeight}
       contentHeight={animatedContentHeight}
       enableOverDrag={!isFullscreen}
+      fullWindowOverlay={fullWindowOverlay}
     >
       {({ containerStyle }) => (
         <BottomSheetView

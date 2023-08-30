@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, {
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -10,7 +9,6 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../EdgeFade';
@@ -43,7 +41,6 @@ import {
   useAsset,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
-  useDimensions,
   useGenericAsset,
 } from '@/hooks';
 import config from '@/model/config';
@@ -60,10 +57,6 @@ import { getNetworkObj } from '@/networks';
 import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
 const defaultCarouselHeight = 60;
-const baseHeight =
-  386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
-const heightWithoutChart = baseHeight + (android && 30);
-const heightWithChart = baseHeight + 292;
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
@@ -192,9 +185,7 @@ export default function ChartExpandedState() {
     params: { fromDiscover = false },
   } = useRoute();
 
-  const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
-  const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
   // It's a generic asset
@@ -252,14 +243,9 @@ export default function ChartExpandedState() {
     };
   }, [assetWithPrice, isL2, asset?.address, networks]);
 
-  const { height: screenHeight } = useDimensions();
-
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
     description?.replace(/\s+/g, '')
   );
-
-  const scrollableContentHeight =
-    !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
 
   const {
     chart,
@@ -272,30 +258,6 @@ export default function ChartExpandedState() {
     throttledData,
   } = useChartThrottledPoints({
     asset: assetWithPrice,
-    heightWithChart: Math.min(
-      carouselHeight +
-        heightWithChart -
-        (!hasBalance && 68) +
-        additionalContentHeight +
-        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-      screenHeight
-    ),
-    heightWithoutChart: Math.min(
-      carouselHeight +
-        heightWithoutChart -
-        (!hasBalance && 68) +
-        additionalContentHeight +
-        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-      screenHeight
-    ),
-    shortHeightWithChart: Math.min(
-      carouselHeight + heightWithChart - (!hasBalance && 68),
-      screenHeight
-    ),
-    shortHeightWithoutChart: Math.min(
-      carouselHeight + heightWithoutChart - (!hasBalance && 68),
-      screenHeight
-    ),
   });
 
   const needsEth =
@@ -314,8 +276,6 @@ export default function ChartExpandedState() {
       type: assetWithPrice.type,
     });
   }, [assetWithPrice.type, navigate]);
-
-  const { layout } = useContext(ModalContext) || {};
 
   const { colors } = useTheme();
 
@@ -423,7 +383,6 @@ export default function ChartExpandedState() {
       <CarouselWrapper
         isAnyItemLoading={additionalAssetDataLoading}
         isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
-        setCarouselHeight={setCarouselHeight}
       >
         <Carousel>
           <CarouselItem
@@ -452,16 +411,7 @@ export default function ChartExpandedState() {
         </Carousel>
         <EdgeFade />
       </CarouselWrapper>
-      <AdditionalContentWrapper
-        onLayout={({
-          nativeEvent: {
-            layout: { height },
-          },
-        }) => {
-          setAdditionalContentHeight(height);
-          layout?.();
-        }}
-      >
+      <AdditionalContentWrapper>
         {!!delayedDescriptions && (
           <ExpandedStateSection
             isL2

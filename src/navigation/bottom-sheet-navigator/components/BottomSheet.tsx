@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, memo, useEffect, useRef } from 'react';
 import NativeBottomSheet, {
   useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
@@ -54,7 +54,7 @@ export function BottomSheet({
     IS_IOS && fullWindowOverlay ? FullWindowOverlay : React.Fragment;
 
   const defaultTimingConfig = useBottomSheetTimingConfigs({
-    duration: 300,
+    duration: 200,
     easing: Easing.out(Easing.exp),
   });
 
