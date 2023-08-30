@@ -246,7 +246,6 @@ export default function FeesPanel({
   );
 
   const formattedBaseFee = useMemo(() => {
-    console.log(currentBaseFee);
     if (lessThan(currentBaseFee, 1)) {
       return `< 1 Gwei`;
     }

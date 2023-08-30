@@ -42,7 +42,12 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
     },
 
     gas: {
-      speeds: [gasUtils.NORMAL],
+      speeds: [
+        gasUtils.NORMAL,
+        gasUtils.FAST,
+        gasUtils.URGENT,
+        gasUtils.CUSTOM,
+      ],
 
       // ?
       gasType: 'eip1559',

@@ -139,8 +139,9 @@ export const parseRainbowMeteorologyData = (
       new BigNumber(weiToGwei(maxPriorityFee))
     );
     // clean max base fee to only parser int gwei
-    const cleanMaxBaseFee = gweiToWei(
-      new BigNumber(weiToGwei(speedMaxBaseFee))
+    const cleanMaxBaseFee = toFixedDecimals(
+      gweiToWei(new BigNumber(weiToGwei(speedMaxBaseFee))),
+      0
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
@@ -153,6 +154,7 @@ export const parseRainbowMeteorologyData = (
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
+    console.log({ [speed]: parsedFees[speed] });
   });
 
   parsedFees[CUSTOM] = {} as GasFeeParams;
@@ -384,6 +386,8 @@ export const gweiToWei = (gweiAmount: BigNumberish) => {
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
+  console.log(weiAmount);
   const gweiAmount = divide(weiAmount, ethUnits.gwei);
+  console.log({ gweiAmount });
   return gweiAmount;
 };
