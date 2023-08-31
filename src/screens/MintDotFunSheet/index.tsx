@@ -63,7 +63,7 @@ function Card({ collection }: { collection: MintableCollection }) {
         keyExtractor: (item: NftSample) => item.tokenID,
         placeholder: <Placeholder />,
         width: NFT_IMAGE_SIZE,
-        height: 167,
+        height: NFT_IMAGE_SIZE + 20,
         padding: 10,
       }}
       button={{
@@ -79,8 +79,9 @@ export function MintDotFunSheet() {
   const { accountAddress } = useAccountSettings();
   const { data } = useMintableCollections({
     walletAddress: accountAddress,
-    chainId: 1,
+    chainId: 8453,
   });
+
   return (
     <BackgroundProvider color="surfaceSecondaryElevated">
       {({ backgroundColor }) => (

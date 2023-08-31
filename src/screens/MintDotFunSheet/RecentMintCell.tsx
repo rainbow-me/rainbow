@@ -92,7 +92,7 @@ export function RecentMintCell({
   const isFree = amount === '0';
 
   return (
-    <View style={{ marginVertical: 10, width: NFT_IMAGE_SIZE }}>
+    <View style={{ marginVertical: 10 }}>
       <View
         style={{
           shadowColor: globalColors.grey100,
@@ -125,39 +125,6 @@ export function RecentMintCell({
           />
         </View>
       </View>
-      <View
-        style={{
-          paddingBottom: 10,
-          paddingTop: 12,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        {!isFree && (
-          <CoinIcon
-            address={currency.address}
-            size={12}
-            symbol={currency.symbol}
-            style={{ marginRight: 4, marginVertical: -4 }}
-          />
-        )}
-        <View style={{ width: NFT_IMAGE_SIZE - 47, flexDirection: 'row' }}>
-          <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
-            {isFree ? 'FREE' : amount}
-          </Text>
-          <Text color="labelQuaternary" size="11pt" weight="medium">
-            {` · ${timeElapsed}`}
-          </Text>
-        </View>
-      </View>
-      <Text
-        color="labelTertiary"
-        size="11pt"
-        weight="semibold"
-        numberOfLines={1}
-      >
-        {recentMint.title}
-      </Text>
     </View>
   );
 }
