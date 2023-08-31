@@ -1,4 +1,5 @@
-import lang from 'i18n-js';
+import { I18n } from 'i18n-js';
+
 import en_US from './en_US.json';
 import fr_FR from './fr_FR.json';
 import ja_JP from './ja_JP.json';
@@ -6,43 +7,39 @@ import ja_JP from './ja_JP.json';
 import { simpleObjectProxy } from '@/languages/utils';
 
 /**
- * Use English as our "template" for translations. All other translations
+ * Use English (EN_US) as our "template" for translations. All other translations
  * should match the objects and keys within the English translation.
  */
 export type Translation = typeof en_US;
 
 export enum Language {
-  English = 'en_US',
-  French = 'fr_FR',
-  Japanese = 'ja_JP',
+  EN_US = 'en_US',
+  FR_FR = 'fr_FR',
+  JA_JP = 'ja_JP',
 }
 
-export const resources: {
-  [key in Language]: Translation | any;
-} = {
+export const lang = new I18n({
   en_US,
   fr_FR,
   ja_JP,
-};
-
-export const supportedLanguages: {
-  [key in Language]: string;
-} = {
-  en_US: 'English',
-  fr_FR: 'French',
-  ja_JP: 'Japanese',
-};
+});
 
 // Configure languages
-lang.defaultLocale = Language.English;
-lang.locale = Language.English;
-lang.fallbacks = true;
-lang.translations = Object.assign(
-  {},
-  ...Object.keys(resources).map(key => ({
-    [key]: resources[key as Language].translation,
-  }))
-);
+lang.defaultLocale = Language.EN_US;
+lang.locale = Language.EN_US;
+lang.enableFallback = true;
+
+export const supportedLanguages = {
+  [Language.EN_US]: {
+    label: 'English',
+  },
+  [Language.FR_FR]: {
+    label: 'Français',
+  },
+  [Language.JA_JP]: {
+    label: '日本語',
+  },
+};
 
 export const updateLanguageLocale = (code: Language) => {
   lang.locale = code;
