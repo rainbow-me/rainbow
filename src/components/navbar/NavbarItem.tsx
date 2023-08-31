@@ -15,7 +15,8 @@ export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
     <Bleed space={hitSlop}>
       <Box
         as={ButtonPressAnimation}
-        // @ts-expect-error - JS component
+        // @ts-ignore overloaded props
+
         onPress={onPress}
         pointerEvents="auto"
         scale={0.8}

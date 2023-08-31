@@ -1,5 +1,5 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { setListener } from '@/navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
@@ -100,7 +100,7 @@ export default function useMagicAutofocus(
           timeout = setTimeout(() => {
             triggerFocus();
             delay = false;
-          }, 200);
+          }, 400);
         });
       } else if (IS_ANDROID) {
         // We need to do this in order to assure that the input gets focused
@@ -113,10 +113,6 @@ export default function useMagicAutofocus(
           triggerFocus();
         }
       }
-
-      return () => {
-        setListener(null);
-      };
     }, [
       fallbackRefocusLastInput,
       shouldFocusOnNavigateOnAndroid,
@@ -124,6 +120,8 @@ export default function useMagicAutofocus(
       triggerFocus,
     ])
   );
+
+  useEffect(() => () => setListener(null), []);
 
   return {
     handleFocus,

@@ -10,6 +10,7 @@ export enum TransactionType {
   purchase = 'purchase', // Rainbow-specific type
   receive = 'receive',
   repay = 'repay',
+  sell = 'sell',
   send = 'send',
   trade = 'trade',
   withdraw = 'withdraw',
@@ -27,6 +28,7 @@ export default {
   purchase: 'purchase',
   receive: 'receive',
   repay: 'repay',
+  sell: 'sell',
   send: 'send',
   trade: 'trade',
   withdraw: 'withdraw',

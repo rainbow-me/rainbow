@@ -1,8 +1,8 @@
-import { Box, AccentColorProvider, Space, DebugLayout } from '@/design-system';
+// @ts-nocheck
+import { Box, AccentColorProvider, Space } from '@/design-system';
 import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
-import { globalColors } from '@/design-system/color/palettes';
 import { deviceUtils } from '@/utils';
 import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
@@ -71,6 +71,7 @@ export const GenericCard = ({
     >
       <Box
         background={color ? 'accent' : 'surfacePrimaryElevated'}
+        // @ts-ignore overloaded props
         as={LinearGradient}
         colors={gradient.colors}
         end={gradient.end}

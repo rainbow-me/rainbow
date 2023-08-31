@@ -2,7 +2,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { useValue } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
@@ -10,7 +9,6 @@ import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
 import { getActiveRoute, useNavigation } from './Navigation';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import {
   exchangeModalPreset,
@@ -68,11 +66,10 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
   }
 
   return function ExchangeModalNavigator() {
-    const { setOptions, addListener, removeListener } = useNavigation();
     const ref = useRef();
     const { params } = useRoute();
+    const { setOptions, addListener, removeListener } = useNavigation();
 
-    const tabTransitionPosition = useValue(0);
     const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
     useEffect(() => {
@@ -89,17 +86,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
       }
     }, [addListener, removeListener, params]);
 
-    const renderPager = useCallback(
-      props => (
-        <ScrollPagerWrapper
-          {...props}
-          id="exchange"
-          initialScrollPosition={props.navigationState.index}
-        />
-      ),
-      []
-    );
-
     const toggleGestureEnabled = useCallback(
       dismissable => {
         setOptions({ dismissable, gestureEnabled: dismissable });
@@ -109,11 +95,10 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const initialParams = useMemoOne(
       () => ({
-        tabTransitionPosition,
         toggleGestureEnabled,
         ...params?.params,
       }),
-      [tabTransitionPosition, toggleGestureEnabled]
+      [toggleGestureEnabled]
     );
 
     const routeName = getActiveRoute()?.name;
@@ -125,9 +110,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     return (
       <FlexItem>
         <Tabs.Navigator
-          pager={renderPager}
-          position={tabTransitionPosition}
-          swipeEnabled={enableSwipe}
+          screenOptions={{ swipeEnabled: enableSwipe }}
           {...exchangeTabNavigatorConfig}
         >
           <Tabs.Screen
@@ -146,5 +129,4 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     );
   };
 }
-
 export default ExchangeNavigatorFactory();

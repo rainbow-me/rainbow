@@ -21,11 +21,11 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
-import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   HARDWARE_TX_ERROR_KEY,
+  HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   LedgerIsReadyAtom,
   ledgerStorage,
   readyForPollingAtom,
@@ -33,6 +33,7 @@ import {
 } from '@/navigation/HardwareWalletTxNavigator';
 import { TryAgainButton } from './components/TryAgainButton';
 import { useMMKVBoolean } from 'react-native-mmkv';
+import { ImageBackground } from 'react-native';
 
 const INDICATOR_SIZE = 9;
 
@@ -96,7 +97,14 @@ export const PairHardwareWalletAgainSheet = () => {
 
   return (
     <>
-      <Layout>
+      <Box
+        height={{ custom: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT }}
+        width="full"
+        justifyContent="space-between"
+        alignItems="center"
+        paddingTop={{ custom: 55 }}
+        paddingBottom={{ custom: 54 }}
+      >
         <Box style={{ zIndex: 1 }}>
           <Inset horizontal="36px">
             <Stack alignHorizontal="center" space="20px">
@@ -116,25 +124,23 @@ export const PairHardwareWalletAgainSheet = () => {
             </Stack>
           </Inset>
         </Box>
-        <Box marginTop={{ custom: -70 }}>
-          <ImgixImage
-            source={(isDarkMode ? gridDotsDark : gridDotsLight) as Source}
+        <Box marginTop={{ custom: -70 }} style={{ zIndex: -99 }}>
+          <ImageBackground
+            source={isDarkMode ? gridDotsDark : gridDotsLight}
             style={{
               width: GRID_DOTS_SIZE,
               height: GRID_DOTS_SIZE,
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            size={GRID_DOTS_SIZE}
           >
-            <ImgixImage
-              source={ledgerNano as Source}
+            <ImageBackground
+              source={ledgerNano}
               style={{
                 width: LEDGER_NANO_WIDTH,
                 height: LEDGER_NANO_HEIGHT,
                 alignItems: 'center',
               }}
-              size={LEDGER_NANO_HEIGHT}
             >
               <Box
                 height={{ custom: 36 }}
@@ -197,15 +203,15 @@ export const PairHardwareWalletAgainSheet = () => {
                   </Box>
                 </Inline>
               </Box>
-            </ImgixImage>
-          </ImgixImage>
+            </ImageBackground>
+          </ImageBackground>
         </Box>
-      </Layout>
-      {hardwareTXError && (
-        <Box position="absolute" bottom={{ custom: 40 }} width="full">
-          <TryAgainButton onPress={onPressTryAgain} />
-        </Box>
-      )}
+        {hardwareTXError && (
+          <Box position="absolute" bottom={{ custom: 20 }} width="full">
+            <TryAgainButton onPress={onPressTryAgain} />
+          </Box>
+        )}
+      </Box>
     </>
   );
 };

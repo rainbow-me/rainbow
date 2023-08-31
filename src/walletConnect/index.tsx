@@ -58,7 +58,6 @@ const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
 ).map(({ id }) => id);
 
 const T = lang.l.walletconnect;
-let PAIRING_TIMEOUT: NodeJS.Timeout | undefined = undefined;
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -315,7 +314,6 @@ export async function pair({
   /**
    * Make sure this is cleared if we get multiple pairings in rapid succession
    */
-  if (PAIRING_TIMEOUT) clearTimeout(PAIRING_TIMEOUT);
 
   const { topic, ...rest } = parseUri(uri);
   const client = await web3WalletClient;
@@ -336,28 +334,7 @@ export async function pair({
       dappUrl: metadata.url,
       connector,
     });
-
-    // @ts-expect-error We can't differentiate between these two unless we have separate handlers
-    if (proposal.topic === topic || proposal.params.pairingTopic === topic) {
-      if (PAIRING_TIMEOUT) {
-        clearTimeout(PAIRING_TIMEOUT);
-        analytics.track(analytics.event.wcNewPairingTimeout);
-      }
-    }
   }
-
-  // set new timeout
-  PAIRING_TIMEOUT = setTimeout(() => {
-    logger.warn(`WC v2: pairing timeout`, { uri });
-    client.off('session_proposal', handler);
-    client.off('auth_request', handler);
-    showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.pairing_timeout),
-      sheetHeight: 270,
-    });
-    analytics.track(analytics.event.wcNewSessionTimeout);
-  }, 10_000);
 
   // CAN get fired on subsequent pairs, so need to make sure we clean up
   client.on('session_proposal', handler);
@@ -466,69 +443,10 @@ export async function onSessionProposal(
   const receivedTimestamp = Date.now();
   const { proposer, requiredNamespaces } = proposal.params;
 
-  const requiredNamespaceKeys = Object.keys(requiredNamespaces);
-  const supportedNamespaces = requiredNamespaceKeys.filter(
-    key => key === 'eip155'
-  );
-  const unsupportedNamespaces = requiredNamespaceKeys.filter(
-    key => key !== 'eip155'
-  );
-
-  if (unsupportedNamespaces.length || !supportedNamespaces.length) {
-    logger.warn(`WC v2: session proposal requested unsupported namespaces`, {
-      unsupportedNamespaces,
-    });
-    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
-    showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.pairing_unsupported_networks),
-      sheetHeight: 250,
-      onClose: maybeGoBackAndClearHasPendingRedirect,
-    });
-    return;
-  }
-
-  const { chains, methods } = requiredNamespaces.eip155;
+  const { chains } = requiredNamespaces.eip155;
   // we already checked for eip155 namespace above
   const chainIds = chains!.map(chain => parseInt(chain.split('eip155:')[1]));
   const supportedChainIds = chainIds.filter(isSupportedChain);
-  const unsupportedChainIds = chainIds.filter(id => !isSupportedChain(id));
-
-  if (unsupportedChainIds.length) {
-    logger.warn(
-      `WC v2: session proposal requested unsupported networks or namespaces`,
-      {
-        unsupportedChainIds,
-        unsupportedNamespaces,
-      }
-    );
-    await rejectProposal({ proposal, reason: 'UNSUPPORTED_CHAINS' });
-    showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.pairing_unsupported_networks),
-      sheetHeight: 250,
-      onClose: maybeGoBackAndClearHasPendingRedirect,
-    });
-    return;
-  }
-
-  const unsupportedMethods = methods.filter(
-    method => !isSupportedMethod(method as RPCMethod)
-  );
-
-  if (unsupportedMethods.length) {
-    logger.info(`WC v2: dapp requested unsupported RPC methods`, {
-      methods: unsupportedMethods,
-    });
-    await rejectProposal({ proposal, reason: 'UNSUPPORTED_METHODS' });
-    showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.pairing_unsupported_methods),
-      sheetHeight: 250,
-      onClose: maybeGoBackAndClearHasPendingRedirect,
-    });
-    return;
-  }
 
   const peerMeta = proposer.metadata;
   const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
@@ -668,6 +586,7 @@ export async function onSessionProposal(
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
+  setHasPendingDeeplinkPendingRedirect(true);
   const client = await web3WalletClient;
 
   logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
@@ -780,41 +699,8 @@ export async function onSessionRequest(
 
     const { nativeCurrency, network } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
-    const isSupportedNetwork = isSupportedChain(chainId);
 
     logger.debug(`WC v2: getting session for topic`, { session });
-
-    if (!isSupportedNetwork) {
-      logger.error(
-        new RainbowError(`WC v2: session_request was for unsupported network`),
-        {
-          chainId,
-        }
-      );
-
-      try {
-        await client.respondSessionRequest({
-          topic,
-          response: formatJsonRpcError(id, `Network not supported`),
-        });
-      } catch (e) {
-        logger.error(
-          new RainbowError(`WC v2: error rejecting session_request`),
-          {
-            error: (e as Error).message,
-          }
-        );
-      }
-
-      showErrorSheet({
-        title: lang.t(T.errors.generic_title),
-        body: lang.t(T.errors.request_unsupported_network),
-        sheetHeight: 250,
-        onClose: maybeGoBackAndClearHasPendingRedirect,
-      });
-
-      return;
-    }
 
     logger.debug(
       `WC v2: handling request`,

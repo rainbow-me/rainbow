@@ -83,7 +83,7 @@ export default function FeesPanel({
     updateToCustomGasFee,
   } = useGas();
 
-  const { navigate, dangerouslyGetState } = useNavigation();
+  const { navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
   const {
@@ -211,7 +211,7 @@ export default function FeesPanel({
           as={ButtonPressAnimation}
           paddingVertical="8px"
           marginVertical="-8px"
-          // @ts-expect-error
+          // @ts-ignore overloaded props
           onPress={openHelper}
           backgroundColor="accent"
         >
@@ -463,7 +463,6 @@ export default function FeesPanel({
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
     const lastRouteType =
-      // @ts-expect-error
       navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
     if (
       lastRouteName === 'ExplainSheet' &&
@@ -709,7 +708,8 @@ export default function FeesPanel({
             as={ButtonPressAnimation}
             paddingVertical="8px"
             marginVertical="-8px"
-            // @ts-expect-error
+            // @ts-ignore overloaded props
+
             onPress={() => openGasHelper(trendType)}
             scaleTo={1}
           >
@@ -734,7 +734,8 @@ export default function FeesPanel({
               </Box>
               <Box
                 as={ButtonPressAnimation}
-                // @ts-expect-error
+                // @ts-ignore overloaded props
+
                 onPress={() => openGasHelper(trendType)}
                 scaleTo={1}
               >

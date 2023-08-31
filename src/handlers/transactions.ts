@@ -112,6 +112,8 @@ const getConfirmedState = (type?: TransactionType): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
       return TransactionStatus.approved;
+    case TransactionTypes.sell:
+      return TransactionStatus.sold;
     case TransactionTypes.deposit:
       return TransactionStatus.deposited;
     case TransactionTypes.withdraw:

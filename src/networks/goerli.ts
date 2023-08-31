@@ -34,7 +34,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
 
       // not sure if flashbots is being used app wide vs just swaps
       flashbots: false,
-      walletconnect: true,
+      walletconnect: false,
       swaps: false,
       nfts: false,
       savings: true,

@@ -8,6 +8,7 @@ const deferredNotification: {
 };
 
 function deferNotification(notification: MinimalNotification) {
+  // @ts-ignore type mismatch
   deferredNotification.current = notification;
 }
 

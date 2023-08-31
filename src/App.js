@@ -44,6 +44,7 @@ import networkTypes from './helpers/networkTypes';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
+// eslint-disable-next-line import/no-unresolved
 import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
@@ -80,6 +81,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
+import { initializeReservoirClient } from '@/resources/nftOffers/utils';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -137,7 +139,7 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    AppState.addEventListener('change', this.handleAppStateChange);
+    AppState?.addEventListener('change', this?.handleAppStateChange);
     rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
@@ -358,6 +360,7 @@ function Root() {
         // for failure, continue to rest of the app for now
         setInitializing(false);
       });
+    initializeReservoirClient();
   }, [setInitializing]);
 
   return initializing ? null : (

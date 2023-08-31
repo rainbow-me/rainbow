@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
 import { IS_ANDROID } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
@@ -23,12 +23,9 @@ type RouteParams = {
   };
 };
 
-type Props = {
-  route: RouteProp<RouteParams, 'TransactionDetails'>;
-  navigation: StackNavigationProp<RouteParams, 'TransactionDetails'>;
-};
-
-export const TransactionDetails: React.FC<Props> = ({ navigation, route }) => {
+export const TransactionDetails = () => {
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
   const { transaction } = route.params;
   const [sheetHeight, setSheetHeight] = useState(0);

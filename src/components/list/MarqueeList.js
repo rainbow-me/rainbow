@@ -64,10 +64,12 @@ const SwipeableList = ({ components, height, speed, testID }) => {
   const startPan = () => (isPanStarted.current = true);
   const endPan = () => (isPanStarted.current = false);
 
-  useFocusEffect(() => {
-    swiping.value = withSpeed({ targetSpeed: speed });
-    return () => cancelAnimation(swiping);
-  }, [speed, swiping]);
+  useFocusEffect(
+    useCallback(() => {
+      swiping.value = withSpeed({ targetSpeed: speed });
+      return () => cancelAnimation(swiping);
+    }, [speed, swiping])
+  );
 
   const onGestureEvent = useAnimatedGestureHandler({
     onActive: (event, ctx) => {

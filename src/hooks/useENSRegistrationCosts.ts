@@ -501,7 +501,9 @@ export default function useENSRegistrationCosts({
         .map(({ isLoading }) => isLoading)
         .reduce((a, b) => a || b) && !isGasReady;
     const isIdle = statusQueries
-      .map(({ isIdle }) => ({ isIdle }))
+      .map(({ isLoading, fetchStatus }) => ({
+        isIdle: isLoading && fetchStatus === 'idle',
+      }))
       .reduce((a, b) => a && b);
     return { isIdle, isLoading, isSuccess };
   }, [data?.estimatedRentPrice, isGasReady, queries]);

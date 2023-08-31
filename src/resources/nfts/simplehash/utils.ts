@@ -10,7 +10,6 @@ import {
   SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
 import { Network } from '@/helpers/networkTypes';
-import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   ETH_ADDRESS,
@@ -33,6 +32,7 @@ import { UniqueTokenType, uniqueTokenTypes } from '@/utils/uniqueTokens';
 import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
+import { handleNFTImages } from '@/utils/handleNFTImages';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -167,12 +167,12 @@ export function simpleHashNFTToUniqueAsset(
 ): UniqueAsset {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-  const { imageUrl, lowResUrl } = handleAndSignImages(
-    // @ts-ignore
-    nft.image_url,
-    nft.previews.image_large_url,
-    nft.extra_metadata?.image_original_url
-  );
+
+  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
+    originalUrl: nft.image_url ?? nft.extra_metadata?.image_original_url,
+    previewUrl: nft.previews.image_large_url,
+    mimeType: nft.image_properties?.mime_type,
+  });
 
   const marketplace = nft.collection.marketplace_pages?.[0];
 
@@ -252,6 +252,7 @@ export function simpleHashNFTToUniqueAsset(
     name: nft.name,
     network: nft.chain,
     permalink: marketplace?.nft_url ?? '',
+    predominantColor: nft.previews?.predominant_color ?? undefined,
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,
@@ -269,6 +270,8 @@ export function simpleHashNFTToUniqueAsset(
 }
 
 /**
+ * DELETE ME, use `handleNFTImages` instead.
+ *
  * Reformats, resizes and signs images provided by simplehash.
  * @param original original image url
  * @param preview preview image url

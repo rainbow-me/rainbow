@@ -5,12 +5,10 @@ import {
   useIsFocused,
 } from '@react-navigation/native';
 import React from 'react';
-import { Value } from 'react-native-reanimated';
 import { useCallbackOne } from 'use-memo-one';
 import { NATIVE_ROUTES } from '@/navigation/routesNames';
 
 let TopLevelNavigationRef = null;
-const transitionPosition = new Value(0);
 
 const poppingCounter = { isClosing: false, pendingActions: [] };
 
@@ -84,7 +82,7 @@ function block() {
 export function navigate(oldNavigate, ...args) {
   if (typeof args[0] === 'string') {
     if (NATIVE_ROUTES.indexOf(args[0]) !== -1) {
-      let wasBlocked = blocked;
+      const wasBlocked = blocked;
       block();
       if (wasBlocked) {
         return;
@@ -143,6 +141,5 @@ export default {
   getActiveRouteName,
   handleAction,
   setTopLevelNavigator,
-  transitionPosition,
   goBack,
 };

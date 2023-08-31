@@ -115,7 +115,8 @@ export const MaxToleranceInput = forwardRef(
             <Box
               as={ButtonPressAnimation}
               marginVertical="-12px"
-              // @ts-expect-error
+              // @ts-ignore overloaded props
+
               onPress={openSlippageExplainer}
               paddingVertical="12px"
               testID="swap-slippage-label"

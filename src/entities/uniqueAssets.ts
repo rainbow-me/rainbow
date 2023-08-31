@@ -60,6 +60,7 @@ export interface UniqueAsset {
   isPoap?: boolean;
   network: Network;
   seaport_sell_orders?: SeaportOrder[];
+  predominantColor?: string;
 
   // hacky shit
   video_url: string | null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation';
 import {
   Bleed,
   Box,
@@ -145,9 +145,15 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
       onPress={() => {
         analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
           entryPoint: 'NFTOffersSheet',
-          offerPriceUSD: offer.grossAmount.usd,
+          offerValueUSD: offer.grossAmount.usd,
+          offerValue: offer.grossAmount.decimal,
+          offerCurrency: {
+            symbol: offer.paymentToken.symbol,
+            contractAddress: offer.paymentToken.address,
+          },
+          floorDifferencePercentage: offer.floorDifferencePercentage,
           nft: {
-            collectionAddress: offer.nft.contractAddress,
+            contractAddress: offer.nft.contractAddress,
             tokenId: offer.nft.tokenId,
             network: offer.network,
           },

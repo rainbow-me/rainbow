@@ -48,7 +48,11 @@ const WalletPage = styled(Page)({
 
 const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const { params } = route;
-  const { setParams, dangerouslyGetState, dangerouslyGetParent } = navigation;
+  const {
+    setParams,
+    getState: dangerouslyGetState,
+    getParent: dangerouslyGetParent,
+  } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
@@ -82,7 +86,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
 
   useEffect(() => {
-    const supportedNetworks = [Network.mainnet, Network.goerli];
+    const supportedNetworks = [Network.mainnet];
     if (!supportedNetworks.includes(currentNetwork)) {
       revertToMainnet();
     }
@@ -106,12 +110,12 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       return;
     }
     const isWelcomeScreen =
-      dangerouslyGetParent()?.dangerouslyGetState().routes[0].name ===
+      dangerouslyGetParent()?.getState().routes[0].name ===
       Routes.WELCOME_SCREEN;
     if (isWelcomeScreen) {
       removeFirst();
     }
-  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
+  }, [dangerouslyGetState, removeFirst]);
 
   const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
 

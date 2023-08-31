@@ -38,11 +38,11 @@ import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
-import { handleAndSignImages } from '@/utils/handleAndSignImages';
 import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
 import { queryClient } from '@/react-query';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { getEnsMarqueeFallback } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
+import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -62,7 +62,11 @@ const buildEnsToken = ({
   name: string;
   imageUrl: string;
 }) => {
-  const { imageUrl, lowResUrl } = handleAndSignImages(imageUrl_);
+  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
+    originalUrl: imageUrl_,
+    previewUrl: undefined,
+    mimeType: MimeType.SVG,
+  });
   return {
     animation_url: null,
     asset_contract: {
@@ -749,8 +753,9 @@ export const estimateENSRegistrationGasLimit = async (
   const registerWithConfigGasLimit = `${ethUnits.ens_register_with_config}`;
 
   const totalRegistrationGasLimit =
-    [...gasLimits, registerWithConfigGasLimit].reduce((a, b) =>
-      add(a || 0, b || 0)
+    [...gasLimits, registerWithConfigGasLimit].reduce(
+      (a, b) => add(a || 0, b || 0),
+      ''
     ) || `${ethUnits.ens_registration}`;
 
   return {
@@ -802,7 +807,7 @@ export const estimateENSRegisterSetRecordsAndNameGasLimit = async ({
   }
 
   const gasLimits = await Promise.all(promises);
-  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0));
+  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0), '');
   if (!gasLimit) return '0';
   return gasLimit;
 };
@@ -874,7 +879,7 @@ export const estimateENSSetRecordsGasLimit = async ({
     );
   }
   const gasLimits = await Promise.all(promises);
-  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0));
+  const gasLimit = gasLimits?.reduce((a, b) => add(a || 0, b || 0), '');
   if (!gasLimit) return '0';
   return gasLimit;
 };

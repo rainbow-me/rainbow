@@ -33,7 +33,7 @@ const TintButton = ({
       as={ButtonPressAnimation}
       height={`${height}px`}
       justifyContent="center"
-      // @ts-expect-error
+      // @ts-ignore overloaded props
       onPress={disabled ? () => undefined : onPress}
       scale={disabled ? 1 : 0.8}
       style={{

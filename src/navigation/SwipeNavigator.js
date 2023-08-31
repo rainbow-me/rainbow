@@ -15,7 +15,6 @@ import DiscoverScreen, {
 import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import { deviceUtils } from '../utils';
-import ScrollPagerWrapper from './ScrollPagerWrapper';
 import {
   ScrollPositionContext,
   usePagerPosition,
@@ -51,10 +50,6 @@ const config = {
 
 const Swipe = createMaterialTopTabNavigator();
 
-const renderPager = props => (
-  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
-);
-
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
   const { network } = useAccountSettings();
@@ -69,9 +64,9 @@ export function SwipeNavigator() {
   // ////////////////////////////////////////////////////
   // Animations
 
-  const TabBar = ({ state, descriptors, navigation }) => {
+  const TabBar = ({ state, descriptors, navigation, position }) => {
     const { width: deviceWidth } = useDimensions();
-    const scrollPosition = usePagerPosition();
+
 
     const tabWidth = deviceWidth / NUMBER_OF_TABS;
     const tabPillStartPosition = (tabWidth - 72) / 2;
@@ -82,8 +77,8 @@ export function SwipeNavigator() {
           {
             translateX:
               tabPillStartPosition +
-              (scrollPosition
-                ? (Math.max(scrollPosition.value, 1) - 1) * tabWidth
+              (position
+                ? (Math.max(position.value, 1) - 1) * tabWidth
                 : 0),
           },
         ],
@@ -93,7 +88,7 @@ export function SwipeNavigator() {
 
     const offScreenTabBar = useAnimatedStyle(() => {
       const translateX = interpolate(
-        scrollPosition.value,
+        position.value,
         [0, 1, 10],
         [deviceWidth, 0, 0]
       );
@@ -254,7 +249,7 @@ export function SwipeNavigator() {
                                 accentColor={accentColor}
                                 icon={options.tabBarIcon}
                                 index={index}
-                                rawScrollPosition={scrollPosition}
+                                rawScrollPosition={position}
                               />
                             </Box>
                           </Stack>
@@ -277,7 +272,7 @@ export function SwipeNavigator() {
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
           initialRouteName={Routes.WALLET_SCREEN}
-          pager={renderPager}
+
           swipeEnabled={!isCoinListEdited}
           tabBar={props => <TabBar {...props} />}
           tabBarPosition="bottom"

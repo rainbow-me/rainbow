@@ -39,6 +39,7 @@ export const parseNewTransaction = async (
     maxFeePerGas,
     maxPriorityFeePerGas,
     network,
+    nft,
     nonce,
     hash: txHash,
     protocol,
@@ -82,8 +83,11 @@ export const parseNewTransaction = async (
     type,
   });
 
+  const nftName =
+    type === TransactionType.authorize ? nft?.collection.name : nft?.name;
+
   const description = getDescription({
-    name: asset?.name ?? null,
+    name: nftName ?? asset?.name ?? null,
     status,
     type,
   });
@@ -107,6 +111,7 @@ export const parseNewTransaction = async (
     name: asset?.name ?? null,
     native,
     network,
+    nft,
     nonce,
     pending: true,
     protocol,

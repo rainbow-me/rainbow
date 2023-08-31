@@ -124,7 +124,8 @@ const AvailableNetworksv2 = ({
   return (
     <>
       <MenuWrapper
-        // @ts-expect-error overloaded props ContextMenuButton
+        // @ts-ignore overloaded props
+
         menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
         isMenuPrimaryAction
         onPressMenuItem={handlePressContextMenu}
@@ -132,7 +133,8 @@ const AvailableNetworksv2 = ({
       >
         <Box
           as={ButtonPressAnimation}
-          // @ts-expect-error overloaded props ButtonPressAnimation
+          // @ts-ignore overloaded props
+
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
           marginHorizontal={{ custom: marginHorizontal }}
@@ -146,7 +148,8 @@ const AvailableNetworksv2 = ({
           >
             <RadialGradient
               {...radialGradientProps}
-              // @ts-expect-error overloaded props RadialGradient
+              // @ts-ignore overloaded props
+
               borderRadius={99}
               radius={600}
             />

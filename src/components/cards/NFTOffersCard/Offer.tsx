@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
@@ -190,9 +190,15 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
       onPress={() => {
         analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
           entryPoint: 'NFTOffersCard',
-          offerPriceUSD: offer.grossAmount.usd,
+          offerValueUSD: offer.grossAmount.usd,
+          offerValue: offer.grossAmount.decimal,
+          offerCurrency: {
+            symbol: offer.paymentToken.symbol,
+            contractAddress: offer.paymentToken.address,
+          },
+          floorDifferencePercentage: offer.floorDifferencePercentage,
           nft: {
-            collectionAddress: offer.nft.contractAddress,
+            contractAddress: offer.nft.contractAddress,
             tokenId: offer.nft.tokenId,
             network: offer.network,
           },

@@ -94,6 +94,8 @@ export const getConfirmedState = (
       return TransactionStatus.received;
     case TransactionTypes.purchase:
       return TransactionStatus.purchased;
+    case TransactionTypes.sell:
+      return TransactionStatus.sold;
     default:
       return TransactionStatus.sent;
   }
