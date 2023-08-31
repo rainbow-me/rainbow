@@ -13,7 +13,7 @@ import { useTheme } from '@/theme';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
 import { SlackSheet } from '@/components/sheet';
-import { Box, Text } from '@/design-system';
+import { Box, Text, useBackgroundColor } from '@/design-system';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -93,9 +93,7 @@ export default function LearnWebViewScreen() {
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
-  const surfacePrimaryElevated = isDarkMode
-    ? globalColors.white10
-    : globalColors.white100;
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
   const injectedJavaScript = `
     const style = document.createElement('style');
