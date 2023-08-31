@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import english from './_english.json';
-import french from './_french.json';
-import japanese from './_japanese.json';
+import en_US from './en_US.json';
+import fr_FR from './fr_FR.json';
+import ja_JP from './ja_JP.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
 
@@ -9,28 +9,28 @@ import { simpleObjectProxy } from '@/languages/utils';
  * Use English as our "template" for translations. All other translations
  * should match the objects and keys within the English translation.
  */
-export type Translation = typeof english;
+export type Translation = typeof en_US;
 
 export enum Language {
-  English = 'en',
-  French = 'fr',
-  Japanese = 'jp',
+  English = 'en_US',
+  French = 'fr_FR',
+  Japanese = 'ja_JP',
 }
 
 export const resources: {
-  [key in Language]: Translation;
+  [key in Language]: Translation | any;
 } = {
-  en: english,
-  fr: french,
-  jp: japanese,
+  en_US,
+  fr_FR,
+  ja_JP,
 };
 
 export const supportedLanguages: {
   [key in Language]: string;
 } = {
-  en: 'English',
-  fr: 'French',
-  jp: 'Japanese',
+  en_US: 'English',
+  fr_FR: 'French',
+  ja_JP: 'Japanese',
 };
 
 // Configure languages
@@ -77,5 +77,5 @@ export function t(keypath: string, args?: { [key: string]: string | number }) {
  *   `i18n.t('account.hide')`
  */
 export const l = simpleObjectProxy<Translation['translation']>(
-  english['translation']
+  en_US['translation']
 );
