@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import {
   DefaultNavigatorOptions,
+  Descriptor,
   ParamListBase,
   StackActionHelpers,
   StackNavigationState,
@@ -24,6 +25,10 @@ type Props = DefaultNavigatorOptions<
   BottomNavigationEventMap
 >;
 
+type CachedDescriptor = Descriptor<BottomNavigationOptions, any, any> & {
+  removing?: boolean;
+};
+
 function BottomSheetNavigator({
   id,
   initialRouteName,
@@ -32,7 +37,7 @@ function BottomSheetNavigator({
   screenOptions,
 }: Props) {
   const forceUpdate = useForceUpdate();
-  const descriptorsCache = useRef<Record<string, any>>({});
+  const descriptorsCache = useRef<Record<string, CachedDescriptor>>({});
   const { state, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -85,7 +90,7 @@ function BottomSheetNavigator({
         <BottomSheetNavigatorContext.Provider
           value={{
             onClose: getOnCloseHandler(key),
-            removing: descriptorsCache.current[key].removing,
+            removing: Boolean(descriptorsCache.current[key].removing),
           }}
           key={key}
         >

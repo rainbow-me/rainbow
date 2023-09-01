@@ -375,7 +375,7 @@ export const AddWalletSheet = () => {
             background="surfaceSecondaryElevated"
             borderRadius={18}
             shadow="12px"
-            style={{ height: '100%' }}
+            style={{ flex: 0 }}
           >
             <Inset vertical="24px" horizontal="20px">
               <AddWalletList

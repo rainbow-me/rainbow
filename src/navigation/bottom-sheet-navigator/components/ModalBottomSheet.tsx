@@ -1,33 +1,44 @@
 import React from 'react';
 import { BottomSheet } from './BottomSheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import TouchableBackdrop from '@/components/TouchableBackdrop';
+import { useNavigation } from '@react-navigation/core';
 
 type Props = {
-  snapPoints?: Array<string | number>;
   style?: StyleProp<ViewStyle>;
-  fullWindowOverlay?: boolean;
 };
 
 export function ModalBottomSheet({
-  snapPoints = ['100%'],
   style,
   children,
 }: React.PropsWithChildren<Props>) {
+  const { goBack } = useNavigation();
   return (
     <BottomSheet
-      snapPoints={snapPoints}
+      snapPoints={['100%']}
       showHandle={false}
       fullWindowOverlay={false}
       backgroundStyle={{
         backgroundColor: 'transparent',
       }}
+      topInset={0}
     >
       {({ containerStyle }) => (
         <BottomSheetView style={StyleSheet.flatten([containerStyle, style])}>
-          {children}
+          <TouchableBackdrop onPress={goBack} style={styles.backdrop} />
+          <View style={styles.viewContainer}>{children}</View>
         </BottomSheetView>
       )}
     </BottomSheet>
   );
 }
+
+const styles = StyleSheet.create({
+  viewContainer: {
+    zIndex: 2,
+  },
+  backdrop: {
+    zIndex: 1,
+  },
+});
