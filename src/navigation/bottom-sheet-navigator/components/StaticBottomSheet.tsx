@@ -7,6 +7,8 @@ type Props = {
   snapPoints?: Array<string | number>;
   scrollable?: boolean;
   style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  backgroundStyle?: StyleProp<ViewStyle>;
   fullWindowOverlay?: boolean;
 };
 
@@ -15,6 +17,8 @@ export function StaticBottomSheet({
   scrollable = false,
   fullWindowOverlay,
   style,
+  contentContainerStyle,
+  backgroundStyle,
   children,
 }: React.PropsWithChildren<Props>) {
   const isFullscreen = snapPoints.includes('100%');
@@ -28,9 +32,13 @@ export function StaticBottomSheet({
       snapPoints={snapPoints}
       enableOverDrag={!isFullscreen}
       fullWindowOverlay={fullWindowOverlay}
+      backgroundStyle={backgroundStyle}
     >
       {({ containerStyle }) => (
-        <Wrapper style={StyleSheet.flatten([containerStyle, style])}>
+        <Wrapper
+          style={StyleSheet.flatten([containerStyle, style])}
+          contentContainerStyle={contentContainerStyle}
+        >
           {children}
         </Wrapper>
       )}

@@ -224,11 +224,6 @@ function BSNavigator() {
         name={Routes.QR_SCANNER_SCREEN}
       />
       <BSStack.Screen
-        component={AddWalletNavigator}
-        name={Routes.ADD_WALLET_NAVIGATOR}
-        options={addWalletNavigatorPreset}
-      />
-      <BSStack.Screen
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
         options={{
@@ -291,11 +286,6 @@ function BSNavigator() {
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
         options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ModalScreen}
-        {...closeKeyboardOnClose}
-        name={Routes.MODAL_SCREEN}
       />
       <BSStack.Screen
         component={SendConfirmationSheet}

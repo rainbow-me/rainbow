@@ -7,7 +7,7 @@ import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
@@ -347,12 +347,7 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box
-      height="full"
-      width="full"
-      background="surfaceSecondary"
-      testID="add-wallet-sheet"
-    >
+    <Box background="surfaceSecondary" testID="add-wallet-sheet">
       <Inset horizontal="20px" top="36px" bottom="104px">
         <Stack space="32px">
           <Stack space="20px">

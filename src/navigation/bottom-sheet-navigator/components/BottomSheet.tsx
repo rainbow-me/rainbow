@@ -1,4 +1,4 @@
-import React, { ReactNode, memo, useEffect, useRef } from 'react';
+import React, { ReactNode, memo, useCallback, useEffect, useRef } from 'react';
 import NativeBottomSheet, {
   useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
@@ -9,10 +9,12 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useTheme } from '@/theme';
 import { getDeviceRadius } from '../utils/getDeviceRadius';
-import { useBottomSheetNavigatorContext } from '../hooks/useBottomSheetNavigatorContext';
-import { useNavigation } from '@react-navigation/core';
 import { FullWindowOverlay } from 'react-native-screens';
 import { IS_IOS } from '@/env';
+import {
+  SHEET_ANIMATION_DURATION,
+  useBottomSheetState,
+} from '../hooks/useBottomSheetState';
 
 type MaybeSharedValue<T> = T | SharedValue<T>;
 
@@ -23,6 +25,7 @@ type Props = {
   enableOverDrag?: boolean;
   showHandle?: boolean;
   topInset?: number;
+  backgroundStyle?: StyleProp<ViewStyle>;
   // Workaround for ActionSheetIOS rendering behind the modal
   // Can be removed when we stop using `FullWindowOverlay`
   fullWindowOverlay?: boolean;
@@ -39,12 +42,11 @@ export function BottomSheet({
   handleHeight,
   contentHeight,
   topInset,
+  backgroundStyle,
   fullWindowOverlay = true,
   showHandle = true,
   enableOverDrag = true,
 }: Props) {
-  const { onClose, removing } = useBottomSheetNavigatorContext();
-  const navigation = useNavigation();
   const ref = useRef<NativeBottomSheet>(null);
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -54,23 +56,26 @@ export function BottomSheet({
     IS_IOS && fullWindowOverlay ? FullWindowOverlay : React.Fragment;
 
   const defaultTimingConfig = useBottomSheetTimingConfigs({
-    duration: 200,
+    duration: SHEET_ANIMATION_DURATION,
     easing: Easing.out(Easing.exp),
   });
 
-  useEffect(() => {
-    if (removing) {
-      ref.current?.close(defaultTimingConfig);
-    }
-  }, [removing, defaultTimingConfig]);
+  const { handleClose } = useBottomSheetState({
+    animationTimingConfig: defaultTimingConfig,
+    sheetRef: ref,
+  });
 
-  const handleClose = () => {
-    if (!removing) {
-      navigation.goBack();
-    }
-
-    onClose();
-  };
+  // `onClose` handler is unexpectedly firing sometimes
+  // or not firing at all, so we use animation index to
+  // determine if the modal is in 'closed` state or not
+  const onAnimate = useCallback(
+    (from: number, to: number) => {
+      if (to === -1) {
+        handleClose();
+      }
+    },
+    [handleClose]
+  );
 
   return (
     <Wrapper>
@@ -83,17 +88,18 @@ export function BottomSheet({
         enableHandlePanningGesture
         enablePanDownToClose
         enableOverDrag={enableOverDrag}
-        backgroundStyle={{
-          ...bottomSheetStyle.background,
-          backgroundColor: colors.white,
-        }}
-        onClose={handleClose}
+        backgroundStyle={StyleSheet.flatten([
+          bottomSheetStyle.background,
+          { backgroundColor: colors.white },
+          backgroundStyle,
+        ])}
         topInset={topInset ?? safeAreaInsets.top}
         snapPoints={snapPoints}
         handleHeight={handleHeight}
         contentHeight={contentHeight}
         handleComponent={null}
         overDragResistanceFactor={3}
+        onAnimate={onAnimate}
       >
         {showHandle && <SheetHandleFixedToTop showBlur={false} />}
         {children({ containerStyle: bottomSheetStyle.containerStyle })}

@@ -11,6 +11,7 @@ import { Centered } from '../components/layout';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
+import { ModalBottomSheet } from '@/navigation/bottom-sheet-navigator/components/ModalBottomSheet';
 
 const ModalTypes = {
   contact_profile: ContactProfileState,
@@ -30,12 +31,12 @@ export default function ModalScreen(props) {
   const { params } = useRoute();
 
   return (
-    <Container insets={insets}>
+    <ModalBottomSheet>
       <TouchableBackdrop onPress={goBack} />
       {createElement(ModalTypes[params.type], {
         ...params,
         ...props,
       })}
-    </Container>
+    </ModalBottomSheet>
   );
 }

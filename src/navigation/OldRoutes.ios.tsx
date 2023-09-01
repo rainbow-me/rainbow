@@ -245,16 +245,6 @@ export default function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={{
-          customStack: true,
-          ignoreBottomOffset: true,
-          onAppear: null,
-          topOffset: 0,
-        }}
-      />
-      <NativeStack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
@@ -300,11 +290,6 @@ export default function NativeStackNavigator() {
         component={HardwareWalletTxNavigator}
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         {...hardwareWalletTxNavigatorConfig}
-      />
-      <NativeStack.Screen
-        component={AddWalletNavigator}
-        name={Routes.ADD_WALLET_NAVIGATOR}
-        {...addWalletNavigatorConfig}
       />
       <NativeStack.Screen
         component={Portal}

@@ -10,6 +10,8 @@ import { AddCashSheet } from '@/screens/AddCash';
 import AddTokenSheet from '@/screens/AddTokenSheet';
 import BackupSheet from '@/screens/BackupSheet';
 import ChangeWalletSheet from '@/screens/ChangeWalletSheet';
+import { AddWalletNavigator } from './AddWalletNavigator';
+import ModalScreen from '@/screens/ModalScreen';
 
 const BottomSheet = createBottomSheetNavigator();
 
@@ -60,6 +62,14 @@ export function Routes() {
       <BottomSheet.Screen
         component={ChangeWalletSheet}
         name={RouteNames.CHANGE_WALLET_SHEET}
+      />
+      <BottomSheet.Screen
+        component={AddWalletNavigator}
+        name={RouteNames.ADD_WALLET_NAVIGATOR}
+      />
+      <BottomSheet.Screen
+        component={ModalScreen}
+        name={RouteNames.MODAL_SCREEN}
       />
     </BottomSheet.Navigator>
   );

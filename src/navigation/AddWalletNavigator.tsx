@@ -9,10 +9,12 @@ import {
 } from '@/screens/ImportOrWatchWalletSheet';
 import { IS_ANDROID } from '@/env';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '@/components/sheet';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, useBackgroundColor } from '@/design-system';
 import { ColorValue, StatusBar, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
+import { StaticBottomSheet } from './bottom-sheet-navigator/components/StaticBottomSheet';
+import { useTheme } from '@/theme';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -21,89 +23,36 @@ type RouteParams = {
     ImportOrWatchWalletSheetParams;
 };
 
-type WrapConfig = {
-  contentHeight: number;
-  backgroundColor?: ColorValue;
-  scrollEnabled: boolean;
-};
-
-function wrapWithSlackSheet({
-  contentHeight,
-  backgroundColor,
-  scrollEnabled,
-}: WrapConfig) {
-  return (Component: React.ComponentType) => {
-    return function WrappedWithSlackSheet() {
-      return (
-        // @ts-expect-error js component
-        <SlackSheet
-          contentHeight={contentHeight}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-          backgroundColor={backgroundColor}
-          height="100%"
-          scrollEnabled={scrollEnabled}
-        >
-          <Component />
-        </SlackSheet>
-      );
-    };
-  };
-}
-
 export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, type, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
-  const { height: deviceHeight } = useDimensions();
-
-  const [scrollEnabled, setScrollEnabled] = useState(false);
+  const backgroundColor = useBackgroundColor('surfaceSecondary');
 
   return (
-    // wrapping in View prevents keyboard from pushing up sheet on android
-    <View
-      style={{
-        height: deviceHeight,
-      }}
+    <StaticBottomSheet
+      scrollable
+      fullWindowOverlay={false}
+      contentContainerStyle={{ flex: 1 }}
+      backgroundStyle={{ backgroundColor }}
     >
-      <BackgroundProvider color="surfaceSecondary">
-        {({ backgroundColor }) => (
-          <Swipe.Navigator
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={Routes.ADD_WALLET_SHEET}
-            screenOptions={{ swipeEnabled: false }}
-            tabBar={() => null}
-          >
-            <Swipe.Screen
-              component={wrapWithSlackSheet({
-                contentHeight: deviceHeight - SheetHandleFixedToTopHeight,
-                backgroundColor: backgroundColor,
-                scrollEnabled: scrollEnabled,
-              })(AddWalletSheet)}
-              initialParams={{ isFirstWallet, userData }}
-              name={Routes.ADD_WALLET_SHEET}
-              listeners={{
-                focus: () => {
-                  setScrollEnabled(!isFirstWallet);
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={wrapWithSlackSheet({
-                contentHeight: deviceHeight - SheetHandleFixedToTopHeight,
-                backgroundColor: backgroundColor,
-                scrollEnabled: scrollEnabled,
-              })(ImportOrWatchWalletSheet)}
-              initialParams={{ type }}
-              name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
-              listeners={{
-                focus: () => {
-                  setScrollEnabled(false);
-                },
-              }}
-            />
-          </Swipe.Navigator>
-        )}
-      </BackgroundProvider>
-    </View>
+      <Swipe.Navigator
+        initialLayout={deviceUtils.dimensions}
+        initialRouteName={Routes.ADD_WALLET_SHEET}
+        screenOptions={{ swipeEnabled: false }}
+        tabBar={() => null}
+      >
+        <Swipe.Screen
+          component={AddWalletSheet}
+          initialParams={{ isFirstWallet, userData }}
+          name={Routes.ADD_WALLET_SHEET}
+        />
+        <Swipe.Screen
+          component={ImportOrWatchWalletSheet}
+          initialParams={{ type }}
+          name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
+        />
+      </Swipe.Navigator>
+    </StaticBottomSheet>
   );
 };

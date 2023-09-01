@@ -72,11 +72,6 @@ function BottomSheetNavigator({
       descriptorsCache.current[removedKey].removing = true;
     });
 
-  console.log('Current cached routes');
-  console.log(Object.keys(descriptorsCache.current));
-  console.log('Route state');
-  console.log(sheetRouteKeys);
-
   // Force refresh after the closing animation has ended
   const getOnCloseHandler = (key: string) => () => {
     delete descriptorsCache.current[key];
