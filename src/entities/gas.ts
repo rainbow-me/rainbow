@@ -121,6 +121,7 @@ export interface RainbowMeteorologyData {
     blocksToConfirmationByPriorityFee: BlocksToConfirmationByPriorityFee;
     blocksToConfirmationByBaseFee: BlocksToConfirmationByBaseFee;
     maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
+    secondsPerNewBlock: number;
   };
   meta: {
     blockNumber: number;

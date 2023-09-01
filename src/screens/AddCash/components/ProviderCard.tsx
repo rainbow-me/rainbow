@@ -23,6 +23,7 @@ import {
   CalloutType,
   PaymentMethod,
 } from '@/screens/AddCash/types';
+import * as i18n from '@/languages';
 
 type PaymentMethodConfig = {
   name: string;
@@ -194,7 +195,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
 
               switch (callout.type) {
                 case CalloutType.Rate: {
-                  title = 'Fees';
+                  title = i18n.t(i18n.l.wallet.add_cash_v2.fees_title);
                   content = (
                     <Box
                       flexDirection="row"
@@ -209,7 +210,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                   break;
                 }
                 case CalloutType.InstantAvailable: {
-                  title = 'Instant';
+                  title = i18n.t(i18n.l.wallet.add_cash_v2.instant_title);
                   content = (
                     <Box
                       flexDirection="row"
@@ -235,7 +236,9 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                 case CalloutType.PaymentMethods: {
                   const methods = getPaymentMethodConfigs(callout.methods);
                   const multi = methods.length > 1;
-                  title = multi ? 'Methods' : 'Method';
+                  title = multi
+                    ? i18n.t(i18n.l.wallet.add_cash_v2.methods_title)
+                    : i18n.t(i18n.l.wallet.add_cash_v2.method_title);
                   content = (
                     <Box flexDirection="row">
                       {methods.map(m => {
@@ -270,7 +273,10 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                   break;
                 }
                 case CalloutType.Networks: {
-                  title = callout.networks.length > 1 ? 'Networks' : 'Network';
+                  title =
+                    callout.networks.length > 1
+                      ? i18n.t(i18n.l.wallet.add_cash_v2.networks_title)
+                      : i18n.t(i18n.l.wallet.add_cash_v2.network_title);
                   content = (
                     <Box
                       flexDirection="row"

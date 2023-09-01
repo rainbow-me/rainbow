@@ -67,6 +67,9 @@
       "weekly_limit_reached": "Weekly limit reached :)",
       "yearly_limit_reached": "Yearly limit reached :)"
     },
+    "assets": {
+      "unkown_token": "Unknown Token ;)"
+    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Activities :)",
@@ -80,6 +83,14 @@
       }
     },
     "back_up": {
+      "errors": {
+        "keychain_access": "You need to authenticate to proceed with the Backup process",
+        "decrypting_data": "Incorrect password! Please try again.",
+        "no_backups_found": "We couldn't find your previous backup!",
+        "cant_get_encrypted_data": "We couldn't access your backup at this time. Please try again later.",
+        "missing_pin": "Something went wrong while processing your PIN code. Please try again later.",
+        "generic": "Error while trying to backup. Error code: %{errorCodes}"
+      },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code. :)",
       "already_backed_up": {
         "backed_up": "Backed up :)",
@@ -219,6 +230,7 @@
       "continue": "Continue :)",
       "delete": "Effacer",
       "disconnect_account": "Log out",
+      "dismiss": "Dismiss :)",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
       "edit": "Modifier",
@@ -428,9 +440,11 @@
         "trading_at_prefix": "Trading at :)"
       },
       "search": {
-        "profiles": "Profiles :)",
-        "search_ethereum": "Search all of Ethereum :)",
-        "search_ethereum_short": "Search Ethereum :)"
+        "profiles": "Profiles",
+        "search_ethereum": "Search all of Ethereum",
+        "search_ethereum_short": "Search Ethereum",
+        "search": "Search",
+        "discover": "Discover"
       },
       "strategies": {
         "strategies_title": "Strategies :)",
@@ -885,6 +899,19 @@
       }
     },
     "gas": {
+      "card": {
+        "falling": "Falling",
+        "rising": "Rising",
+        "stable": "Stable",
+        "surging": "Surging"
+      },
+      "speeds": {
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Rapide",
+        "urgent": "Urgent",
+        "custom": "Custom"
+      },
       "network_fee": "Frais de réseau",
       "current_base_fee": "Frais de base actuels",
       "max_base_fee": "Frais de base max",
@@ -1081,6 +1108,9 @@
       "tx_verify": "Vérifiez votre transaction ici",
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
+    },
+    "nfts": {
+      "selling": "Selling"
     },
     "nft_offers": {
       "card": {
@@ -1598,6 +1628,44 @@
         }
       }
     },
+    "transactions": {
+      "actions": {
+        "addToContacts": "Add to Contacts",
+        "cancel": "☠️ Cancel",
+        "close": "Close",
+        "speedUp": "🚀 Speed Up",
+        "trySwapAgain": "Try Swap Again",
+        "viewContact": "View Contact"
+      },
+      "pending_title": "Pending :)",
+      "dropped_title": "Dropped :)",
+      "type": {
+        "approved": "Approved :)",
+        "approving": "Approving",
+        "bridging": "Bridging",
+        "bridged": "Bridged",
+        "cancelled": "Cancelled",
+        "cancelling": "Cancelling",
+        "contract interaction": "Contract interaction",
+        "deposited": "Deposited",
+        "depositing": "Depositing",
+        "dropped": "Dropped",
+        "failed": "Failed",
+        "purchased": "Purchased",
+        "purchasing": "Purchasing",
+        "received": "Received",
+        "receiving": "Receiving",
+        "self": "Self",
+        "sending": "Sending",
+        "sent": "Sent",
+        "speeding up": "Speeding up",
+        "swapped": "Swapped",
+        "swapping": "Swapping",
+        "unknown": "Unknown",
+        "withdrawing": "Withdrawing",
+        "withdrew": "Withdrew"
+      }
+    },
     "transaction_details": {
       "from": "De",
       "to": "À",
@@ -1620,6 +1688,11 @@
       }
     },
     "time": {
+      "today_caps": "Today :)",
+      "today": "today :)",
+      "yesterday_caps": "Yesterday",
+      "yesterday": "yesterday :)",
+      "this_month_caps": "This Month",
       "days": {
         "long": {
           "plural": "jours",
@@ -1778,6 +1851,13 @@
         "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
       "add_cash_v2": {
+        "sheet_title": "Choose a payment option to buy crypto ;)",
+        "fees_title": "Fees :)",
+        "instant_title": "Instant :)",
+        "method_title": "Method :)",
+        "methods_title": "Method :)",
+        "network_title": "Network :)",
+        "networks_title": "Networks :)",
         "generic_error": {
           "title": "Something went wrong :)",
           "message": "Our team has been notified and will look into it ASAP. :)",
@@ -2034,6 +2114,17 @@
           "has_a_wallet_that_supports": "La personne à qui j'envoie a un portefeuille qui prend en charge %{networkName}",
           "im_not_sending_to_an_exchange": "Je n'envoie pas à une bourse"
         },
+        "speed_up": {
+          "speed_up_title": "Speed up transaction",
+          "cancel_tx_title": "Cancel transaction",
+          "speed_up_text": "This will attempt to cancel your pending transaction. It requires broadcasting another transaction!",
+          "cancel_tx_text": "This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!"
+        },
+        "errors": {
+          "unpredictable_gas": "Oh no! We were unable to estimate the gas limit. Please try again.",
+          "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
+          "generic": "Oh no! There was a problem submitting the transaction. Please try again."
+        },
         "complete_checks": "Complete checks :)",
         "ens_configuration_options": "Options de configuration ENS",
         "confirm": "Confirmer transaction",
@@ -2051,6 +2142,21 @@
         "walletconnect_session_has_expired_while_trying_to_send": "WalletConnect session has expired while trying to send request status. Please reconnect. :)"
       },
       "wallet_title": "Wallet :)"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "Copy email address",
+        "no_thanks": "No thanks",
+        "message": "Would you like to manually copy our support email address to your clipboard?",
+        "title": "Error launching email client",
+        "subject": "Rainbow Support"
+      },
+      "wallet_alert": {
+        "message_support": "Message Support",
+        "close": "Close",
+        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
+        "title": "An error occured"
+      }
     },
     "walletconnect": {
       "available_networks": "Available Networks :)",
@@ -2091,6 +2197,12 @@
         "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet :)",
         "error_alert_title": "Authentication failed :)",
         "error_alert_description": "Something went wrong. Please try again, or reach out to our support team. :)"
+      },
+      "menu_options": {
+        "disconnect": "Disconnect :)",
+        "switch_wallet": "Switch Wallet :)",
+        "switch_network": "Switch Network :)",
+        "available_networks": "Available Networks :)"
       },
       "errors": {
         "go_back": "Go back :)",

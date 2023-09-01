@@ -4,6 +4,7 @@ import Mailer from 'react-native-mail';
 import Clipboard from '@react-native-community/clipboard';
 
 import { Alert } from '@/components/alerts';
+import * as lang from '@/languages';
 
 type Options = {
   subject: string;
@@ -29,15 +30,15 @@ export function emailRainbow({
           buttons: [
             {
               onPress: () => Clipboard.setString(email),
-              text: 'Copy email address',
+              text: lang.t(lang.l.support.error_alert.copy_email_address),
             },
             {
               style: 'cancel',
-              text: 'No thanks',
+              text: lang.t(lang.l.support.error_alert.no_thanks),
             },
           ],
-          message: `Would you like to manually copy our email address to your clipboard?`,
-          title: 'Unable to auto-launch email client',
+          message: lang.t(lang.l.support.error_alert.message),
+          title: lang.t(lang.l.support.error_alert.title),
         });
       }
     }, 250)

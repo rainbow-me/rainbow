@@ -574,7 +574,14 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.floor_price.title'),
   },
   gas: {
-    emoji: '⛽️',
+    logo: (
+      <CoinIcon
+        address={params?.nativeAsset?.address}
+        size={40}
+        symbol={params?.nativeAsset?.symbol}
+        type={params?.network?.toLowerCase()}
+      />
+    ),
     extraHeight: 2,
     text: gasExplainer(params?.network),
     title: lang.t('explain.gas.title', {
