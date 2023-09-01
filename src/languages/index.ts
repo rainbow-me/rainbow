@@ -76,7 +76,7 @@ export const supportedLanguages = {
 
 export function getDateFnsLocale() {
   switch (lang.locale) {
-    case Language.French:
+    case Language.FR_FR:
       return fr;
     default:
       return enUS;
