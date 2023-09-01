@@ -1,6 +1,13 @@
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
-import { Box, globalColors, Inset, Stack, Text } from '@/design-system';
+import {
+  Box,
+  globalColors,
+  Inset,
+  Stack,
+  Text,
+  useBackgroundColor,
+} from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React, { useMemo, useRef } from 'react';
@@ -23,10 +30,12 @@ import {
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { ios, IS_ANDROID, IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { getDeviceRadius } from '@/navigation/bottom-sheet-navigator/utils/getDeviceRadius';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -346,52 +355,62 @@ export const AddWalletSheet = () => {
     onPress: onPressConnectHardwareWallet,
   };
 
+  const Wrapper = IS_IOS ? React.Fragment : BottomSheetScrollView;
+
   return (
-    <Box background="surfaceSecondary" testID="add-wallet-sheet">
-      <Inset horizontal="20px" top="36px" bottom="104px">
-        <Stack space="32px">
-          <Stack space="20px">
-            <Text align="center" size="26pt" weight="bold" color="label">
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].title
-              )}
-            </Text>
-            <Text
-              align="center"
-              size="15pt / 135%"
-              weight="semibold"
-              color="labelTertiary"
+    <Box
+      background="surfaceSecondary"
+      testID="add-wallet-sheet"
+      style={{
+        flex: 1,
+      }}
+    >
+      <Wrapper showsVerticalScrollIndicator={false}>
+        <Inset horizontal="20px" top="36px" bottom="104px">
+          <Stack space="32px">
+            <Stack space="20px">
+              <Text align="center" size="26pt" weight="bold" color="label">
+                {i18n.t(
+                  TRANSLATIONS[
+                    isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                  ].title
+                )}
+              </Text>
+              <Text
+                align="center"
+                size="15pt / 135%"
+                weight="semibold"
+                color="labelTertiary"
+              >
+                {i18n.t(
+                  TRANSLATIONS[
+                    isFirstWallet ? 'first_wallet' : 'additional_wallet'
+                  ].description
+                )}
+              </Text>
+            </Stack>
+            <Box
+              background="surfaceSecondaryElevated"
+              borderRadius={18}
+              shadow="12px"
+              style={{ flex: 0 }}
             >
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].description
-              )}
-            </Text>
+              <Inset vertical="24px" horizontal="20px">
+                <AddWalletList
+                  totalHorizontalInset={40}
+                  items={[
+                    ...(!isFirstWallet ? [create] : []),
+                    ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                    restoreFromSeed,
+                    ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
+                    watch,
+                  ]}
+                />
+              </Inset>
+            </Box>
           </Stack>
-          <Box
-            background="surfaceSecondaryElevated"
-            borderRadius={18}
-            shadow="12px"
-            style={{ flex: 0 }}
-          >
-            <Inset vertical="24px" horizontal="20px">
-              <AddWalletList
-                totalHorizontalInset={40}
-                items={[
-                  ...(!isFirstWallet ? [create] : []),
-                  ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
-                  restoreFromSeed,
-                  ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                  watch,
-                ]}
-              />
-            </Inset>
-          </Box>
-        </Stack>
-      </Inset>
+        </Inset>
+      </Wrapper>
     </Box>
   );
 };

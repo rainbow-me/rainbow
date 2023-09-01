@@ -15,6 +15,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useDimensions } from '@/hooks';
 import { StaticBottomSheet } from './bottom-sheet-navigator/components/StaticBottomSheet';
 import { useTheme } from '@/theme';
+import { getDeviceRadius } from './bottom-sheet-navigator/utils/getDeviceRadius';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -28,19 +29,36 @@ export const AddWalletNavigator = () => {
     params: { isFirstWallet, type, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
   const backgroundColor = useBackgroundColor('surfaceSecondary');
+  const radius = getDeviceRadius();
+
+  // Androids needs a little extra treatment with nested navigators styles
+  const androidAdditionalNavigatorProps = {
+    style: {
+      backgroundColor: 'transparent',
+    },
+    pagerStyle: {
+      backgroundColor: 'transparent',
+    },
+    sceneContainerStyle: {
+      backgroundColor: 'transparent',
+      borderTopLeftRadius: radius,
+      borderTopRightRadius: radius,
+    },
+  };
 
   return (
     <StaticBottomSheet
       scrollable
       fullWindowOverlay={false}
       contentContainerStyle={{ flex: 1 }}
+      style={{ paddingTop: 0 }}
       backgroundStyle={{ backgroundColor }}
     >
       <Swipe.Navigator
-        initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.ADD_WALLET_SHEET}
         screenOptions={{ swipeEnabled: false }}
         tabBar={() => null}
+        {...(IS_ANDROID ? androidAdditionalNavigatorProps : {})}
       >
         <Swipe.Screen
           component={AddWalletSheet}
