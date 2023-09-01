@@ -85,6 +85,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import { FullscreenBlurSheet } from '@/navigation/bottom-sheet-navigator/components/FullscreenBlurSheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -523,6 +524,7 @@ const UniqueTokenExpandedState = () => {
   const backgroundColor = isDarkMode
     ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
     : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`;
+  const insets = useSafeAreaInsets();
 
   return (
     <>
@@ -539,6 +541,7 @@ const UniqueTokenExpandedState = () => {
         <View
           style={{
             backgroundColor: ios ? 'transparent' : backgroundColor,
+            paddingTop: insets.top,
           }}
         >
           <ColorModeProvider value="darkTinted">
@@ -548,7 +551,7 @@ const UniqueTokenExpandedState = () => {
                 opacity={ensCoverOpacity}
                 yPosition={yPosition}
               >
-                <Inset bottom={sectionSpace} top={{ custom: 33 }}>
+                <Inset bottom={sectionSpace}>
                   <Stack alignHorizontal="center">
                     <Animated.View style={sheetHandleStyle}>
                       {/* @ts-expect-error JavaScript component */}
