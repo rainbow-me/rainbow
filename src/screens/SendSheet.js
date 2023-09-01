@@ -169,7 +169,8 @@ export default function SendSheet(props) {
 
   const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
-  const { params } = useRoute();
+  const { params: getRouteParams } = useRoute();
+  const { params } = getRouteParams();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 

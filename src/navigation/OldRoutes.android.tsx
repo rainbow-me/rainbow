@@ -188,11 +188,6 @@ function MainOuterNavigator() {
         name={Routes.TOKEN_INDEX_SCREEN}
         options={expandedPresetWithSmallGestureResponseDistance}
       />
-      {/* <OuterStack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      /> */}
     </OuterStack.Navigator>
   );
 }
