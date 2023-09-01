@@ -52,6 +52,7 @@ import {
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
+import { uniq } from 'lodash';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
@@ -238,7 +239,9 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  return !!RainbowNetworks.find(({ id }) => id === chainId);
+  return !!RainbowNetworks.find(
+    ({ id, features }) => id === chainId && features.walletconnect
+  );
 }
 
 /**
@@ -441,11 +444,15 @@ export async function onSessionProposal(
   );
 
   const receivedTimestamp = Date.now();
-  const { proposer, requiredNamespaces } = proposal.params;
+  const { proposer, requiredNamespaces, optionalNamespaces } = proposal.params;
 
-  const { chains } = requiredNamespaces.eip155;
+  const { chains: requiredChains } = requiredNamespaces.eip155;
+  const { chains: optionalChains } = optionalNamespaces.eip155;
+
+  const chains = uniq([...(requiredChains || []), ...(optionalChains || [])]);
+
   // we already checked for eip155 namespace above
-  const chainIds = chains!.map(chain => parseInt(chain.split('eip155:')[1]));
+  const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
   const supportedChainIds = chainIds.filter(isSupportedChain);
 
   const peerMeta = proposer.metadata;
@@ -541,8 +548,10 @@ export async function onSessionProposal(
 
             showErrorSheet({
               title: lang.t(T.errors.generic_title),
-              body: lang.t(T.errors.generic_error),
-              sheetHeight: 250,
+              body: `${lang.t(T.errors.generic_error)} \n \n ${
+                namespaces.error.message
+              }`,
+              sheetHeight: 400,
               onClose: maybeGoBackAndClearHasPendingRedirect,
             });
           }
