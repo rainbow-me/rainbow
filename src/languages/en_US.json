@@ -1685,10 +1685,10 @@
       }
     },
     "time": {
-      "today_caps": "Today :)",
-      "today": "today :)",
+      "today_caps": "Today",
+      "today": "today",
       "yesterday_caps": "Yesterday",
-      "yesterday": "yesterday :)",
+      "yesterday": "yesterday",
       "this_month_caps": "This Month",
       "days": {
         "long": {
