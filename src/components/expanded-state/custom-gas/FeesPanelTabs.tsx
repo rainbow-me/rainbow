@@ -77,7 +77,7 @@ const TabPill = ({
               align="center"
               weight="heavy"
             >
-              {upperFirst(label)}
+              {label}
             </Text>
           </Inset>
         </Box>
@@ -117,7 +117,7 @@ export default function FeesPanelTabs({
             color={colorForAsset}
             handleOnPressTabPill={handleOnPressTabPill}
             isSelected={selectedGasFeeOption === speed}
-            label={speed}
+            label={gasUtils.getGasLabel(speed)}
             testID={`speed-pill-${speed}`}
           />
         </Box>

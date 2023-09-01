@@ -3,6 +3,7 @@ import english from './_english.json';
 import french from './_french.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
+import { enUS, eo, ru, fr } from 'date-fns/locale';
 
 /**
  * Use English as our "template" for translations. All other translations
@@ -28,6 +29,15 @@ export const supportedLanguages: {
   en: 'English',
   fr: 'French',
 };
+
+export function getDateFnsLocale() {
+  switch (lang.locale) {
+    case Language.French:
+      return fr;
+    default:
+      return enUS;
+  }
+}
 
 // Configure languages
 lang.defaultLocale = Language.English;

@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { passwordStrength } from 'check-password-strength';
@@ -128,7 +128,11 @@ export default function BackupCloudStep() {
   const walletId = params?.walletId || selectedWallet.id;
 
   const [label, setLabel] = useState(
-    !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'
+    !validPassword
+      ? `􀙶 ${lang.t(lang.l.back_up.confirm_password.add_to_cloud_platform, {
+          cloudPlatformName: cloudPlatform,
+        })}`
+      : `􀎽 ${lang.t(lang.l.back_up.confirm_password.confirm_backup)}`
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -178,7 +182,7 @@ export default function BackupCloudStep() {
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = `􀎽 ${lang.t('back_up.cloud.password.confirm_backup')}`;
+      newLabel = `􀎽 ${lang.t(lang.l.back_up.cloud.password.confirm_backup)}`;
     } else if (password.length < cloudBackupPasswordMinLength) {
       newLabel = lang.t('back_up.cloud.password.minimum_characters', {
         minimumLength: cloudBackupPasswordMinLength,
@@ -190,19 +194,19 @@ export default function BackupCloudStep() {
       password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()
     ) {
-      newLabel = lang.t('back_up.cloud.password.use_a_longer_password');
+      newLabel = lang.t(lang.l.back_up.cloud.password.use_a_longer_password);
     } else if (
       isCloudBackupPasswordValid(password) &&
       isCloudBackupPasswordValid(confirmPassword) &&
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {
-      newLabel = lang.t('back_up.cloud.password.passwords_dont_match');
+      newLabel = lang.t(lang.l.back_up.cloud.password.passwords_dont_match);
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       !passwordFocused
     ) {
-      newLabel = lang.t('back_up.cloud.password.confirm_password');
+      newLabel = lang.t(lang.l.back_up.cloud.password.confirm_password);
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       passwordFocused
@@ -211,16 +215,24 @@ export default function BackupCloudStep() {
       switch (passInfo.id) {
         case 0:
         case 1:
-          newLabel = `💩 ${lang.t('back_up.cloud.password.strength.level1')}`;
+          newLabel = `💩 ${lang.t(
+            lang.l.back_up.cloud.password.strength.level1
+          )}`;
           break;
         case 2:
-          newLabel = `👌 ${lang.t('back_up.cloud.password.strength.level2')}`;
+          newLabel = `👌 ${lang.t(
+            lang.l.back_up.cloud.password.strength.level2
+          )}`;
           break;
         case 3:
-          newLabel = `💪 ${lang.t('back_up.cloud.password.strength.level3')}`;
+          newLabel = `💪 ${lang.t(
+            lang.l.back_up.cloud.password.strength.level3
+          )}`;
           break;
         case 4:
-          newLabel = `🏰️ ${lang.t('back_up.cloud.password.strength.level4')}`;
+          newLabel = `🏰️ ${lang.t(
+            lang.l.back_up.cloud.password.strength.level4
+          )}`;
           break;
         default:
       }
@@ -256,7 +268,7 @@ export default function BackupCloudStep() {
     logger.log('BackupCloudStep:: saving backup password');
     await saveBackupPassword(password);
     if (!isSettingsRoute) {
-      DelayedAlert({ title: lang.t('cloud.backup_success') }, 1000);
+      DelayedAlert({ title: lang.t(lang.l.cloud.backup_success) }, 1000);
     }
     // This means the user set a new password
     // and it was the first wallet backed up
@@ -307,12 +319,13 @@ export default function BackupCloudStep() {
           <MastheadIcon>􀌍</MastheadIcon>
         )}
         <Title isTinyPhone={isTinyPhone}>
-          {lang.t('back_up.cloud.password.choose_a_password')}
+          {lang.t(lang.l.back_up.cloud.password.choose_a_password)}
         </Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
-          {lang.t('back_up.cloud.password.a_password_youll_remember')}&nbsp;
+          {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember)}
+          &nbsp;
           <ImportantText isTinyPhone={isTinyPhone}>
-            {lang.t('back_up.cloud.password.it_cant_be_recovered')}
+            {lang.t(lang.l.back_up.cloud.password.it_cant_be_recovered)}
           </ImportantText>
         </DescriptionText>
       </Masthead>
@@ -329,7 +342,7 @@ export default function BackupCloudStep() {
           onFocus={onPasswordFocus}
           onSubmitEditing={onPasswordSubmit}
           password={password}
-          placeholder={lang.t('back_up.cloud.password.backup_password')}
+          placeholder={lang.t(lang.l.back_up.cloud.password.backup_password)}
           ref={passwordRef}
           returnKeyType="next"
           textContentType="newPassword"
@@ -346,7 +359,9 @@ export default function BackupCloudStep() {
           onFocus={onConfirmPasswordFocus}
           onSubmitEditing={onConfirmPasswordSubmit}
           password={confirmPassword}
-          placeholder={lang.t('back_up.cloud.password.confirm_placeholder')}
+          placeholder={lang.t(
+            lang.l.back_up.cloud.password.confirm_placeholder
+          )}
           ref={confirmPasswordRef}
         />
       </ColumnWithMargins>
