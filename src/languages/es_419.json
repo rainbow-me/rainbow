@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "Interacciones con Contratos Inteligentes",
       "tab_investments": "Pools",
       "tab_savings": "Ahorros",
+      "tab_showcase": "Escaparate",
       "tab_positions": "Posiciones",
       "tab_transactions": "Transacciones",
       "tab_transactions_tooltip": "Transacciones y Transferencias de Tokens",
@@ -67,6 +68,9 @@
       "weekly_limit_reached": "Límite semanal alcanzado",
       "yearly_limit_reached": "Límite anual alcanzado"
     },
+    "assets": {
+      "unkown_token": "Token desconocido"
+    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Actividades",
@@ -80,6 +84,14 @@
       }
     },
     "back_up": {
+      "errors": {
+        "keychain_access": "Necesita autenticarse para proceder con el proceso de Respaldo",
+        "decrypting_data": "¡Contraseña incorrecta! Por favor, inténtelo de nuevo.",
+        "no_backups_found": "¡No pudimos encontrar su respaldo anterior!",
+        "cant_get_encrypted_data": "No pudimos acceder a su respaldo en este momento. Por favor, inténtelo de nuevo más tarde.",
+        "missing_pin": "Algo salió mal mientras procesábamos su código PIN. Por favor, inténtelo de nuevo más tarde.",
+        "generic": "Error al intentar respaldar. Código de error: %{errorCodes}"
+      },
       "wrong_pin": "El código PIN que ingresaste es incorrecto y no podemos hacer una copia de seguridad. Por favor, intenta de nuevo con el código correcto.",
       "already_backed_up": {
         "backed_up": "Resguardado",
@@ -218,6 +230,7 @@
       "connect_walletconnect": "Usar WalletConnect",
       "continue": "Continuar",
       "delete": "Eliminar",
+      "dismiss": "Descartar",
       "disconnect_account": "Cerrar sesión",
       "donate": "Donar ETH",
       "done": "Listo",
@@ -420,7 +433,14 @@
     "discover": {
       "lists": {
         "lists_title": "Listas",
-        "this_list_is_empty": "¡Esta lista está vacía!"
+        "this_list_is_empty": "¡Esta lista está vacía!",
+        "types": {
+          "trending": "Tendencias",
+          "watchlist": "Lista de seguimiento",
+          "favorites": "Favoritos",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
       },
       "pulse": {
         "pulse_description": "Todos los tokens DeFi principales en uno",
@@ -430,7 +450,9 @@
       "search": {
         "profiles": "Perfiles",
         "search_ethereum": "Buscar todo en Ethereum",
-        "search_ethereum_short": "Buscar Ethereum"
+        "search_ethereum_short": "Buscar Ethereum",
+        "search": "Buscar",
+        "discover": "Explorar"
       },
       "strategies": {
         "strategies_title": "Estrategias",
@@ -885,6 +907,19 @@
       }
     },
     "gas": {
+      "card": {
+        "falling": "Cayendo",
+        "rising": "En aumento",
+        "stable": "Estable",
+        "surging": "Subiendo"
+      },
+      "speeds": {
+        "slow": "Lento",
+        "normal": "Normal",
+        "fast": "Rápido",
+        "urgent": "Urgente",
+        "custom": "Personalizado"
+      },
       "network_fee": "Comisión estimada de red",
       "current_base_fee": "Tarifa base actual",
       "max_base_fee": "Tarifa base máxima",
@@ -1081,6 +1116,9 @@
       "tx_verify": "Verifica tu transacción aquí",
       "withdrawal_dropdown_label": "Para",
       "withdrawal_input_label": "Obtener"
+    },
+    "nfts": {
+      "selling": "Vendiendo"
     },
     "nft_offers": {
       "card": {
@@ -1598,6 +1636,51 @@
         }
       }
     },
+    "transactions": {
+      "actions": {
+        "addToContacts": "Agregar a contactos",
+        "cancel": "☠️ Cancelar",
+        "close": "Cerrar",
+        "speedUp": "🚀 Acelerar",
+        "trySwapAgain": "Intentar intercambio de nuevo",
+        "viewContact": "Ver contacto"
+      },
+      "pending_title": "Pendiente",
+      "dropped_title": "Descartado",
+      "type": {
+        "approved": "Aprobado",
+        "approving": "Aprobando",
+        "bridging": "Conectando",
+        "bridged": "Bridging",
+        "cancelled": "Cancelado",
+        "cancelling": "Cancelando",
+        "contract interaction": "Interacción con el contrato",
+        "deposited": "Depositado",
+        "depositing": "Depositando",
+        "dropped": "Descartado",
+        "failed": "Fallado",
+        "purchased": "Comprado",
+        "purchasing": "Comprando",
+        "received": "Recibido",
+        "receiving": "Recibiendo",
+        "self": "Propio",
+        "sending": "Enviando",
+        "sent": "Enviado",
+        "speeding up": "Acelerando",
+        "selling": "Vendiendo",
+        "sold": "Vendido",
+        "swapped": "Intercambiado",
+        "swapping": "Intercambiando",
+        "unknown": "Desconocido",
+        "withdrawing": "Retirando",
+        "withdrew": "Retirado"
+      },
+      "savings": "Ahorros",
+      "signed": "Firmado",
+      "contract_interaction": "Interacción de contrato",
+      "deposited_with_token": "Depositado %{name}",
+      "withdrew_with_token": "Retirado %{name}"
+    },
     "transaction_details": {
       "from": "De",
       "to": "A",
@@ -1620,6 +1703,11 @@
       }
     },
     "time": {
+      "today_caps": "Hoy",
+      "today": "hoy",
+      "yesterday_caps": "Ayer",
+      "yesterday": "ayer",
+      "this_month_caps": "Este Mes",
       "days": {
         "long": {
           "plural": "días",
@@ -1778,6 +1866,13 @@
         "watching_mode_confirm_title": "Estás en Modo de Observación"
       },
       "add_cash_v2": {
+        "sheet_title": "Elija una opción de pago para comprar cripto",
+        "fees_title": "Tarifas",
+        "instant_title": "Instantáneo",
+        "method_title": "Método",
+        "methods_title": "Método",
+        "network_title": "Red",
+        "networks_title": "Redes",
         "generic_error": {
           "title": "Algo salió mal",
           "message": "Nuestro equipo ha sido notificado y lo investigará lo más pronto posible.",
@@ -2027,12 +2122,23 @@
           "please_go_back_and_reconnect": "Por favor regresa a la DApp y reconéctala a tu billetera",
           "transaction_status": "Falló al enviar el estado de la transacción"
         },
+        "speed_up": {
+          "speed_up_title": "Acelerar transacción",
+          "cancel_tx_title": "Cancelar transacción",
+          "speed_up_text": "Esto intentará cancelar tu transacción pendiente. ¡Requiere transmitir otra transacción!",
+          "cancel_tx_text": "Esto acelerará tu transacción pendiente reemplazándola. ¡Todavía existe la posibilidad de que tu transacción original se confirme primero!"
+        },
         "checkboxes": {
           "clear_profile_information": "Borrar información del perfil",
           "point_name_to_recipient": "Apuntar este nombre a la dirección de billetera del destinatario",
           "transfer_control": "Transferir el control al destinatario",
           "has_a_wallet_that_supports": "La persona a quien envío tiene una billetera que admite %{networkName}",
           "im_not_sending_to_an_exchange": "No estoy enviando a un exchange"
+        },
+        "errors": {
+          "unpredictable_gas": "¡Oh no! No pudimos estimar el límite de gas. Por favor, inténtalo de nuevo.",
+          "insufficient_funds": "¡Oh no! El precio del gas cambió y ya no tienes fondos suficientes para esta transacción. Por favor, intenta nuevamente con una cantidad menor.",
+          "generic": "¡Oh no! Hubo un problema al enviar la transacción. Por favor, inténtalo de nuevo."
         },
         "complete_checks": "Completar verificaciones",
         "ens_configuration_options": "Opciones de configuración de ENS",
@@ -2051,6 +2157,21 @@
         "walletconnect_session_has_expired_while_trying_to_send": "La sesión de WalletConnect ha expirado mientras se intentaba enviar el estado de la solicitud. Por favor, reconéctate."
       },
       "wallet_title": "Cartera"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "Copiar dirección de correo electrónico",
+        "no_thanks": "No, gracias",
+        "message": "¿Le gustaría copiar manualmente nuestra dirección de correo electrónico de soporte en su portapapeles?",
+        "title": "Error al abrir el cliente de correo electrónico",
+        "subject": "Soporte de Rainbow"
+      },
+      "wallet_alert": {
+        "message_support": "Soporte de Mensajes",
+        "close": "Cerrar",
+        "message": "Para obtener ayuda, por favor ponte en contacto con el soporte! \n¡Te responderemos pronto!",
+        "title": "Ocurrió un error"
+      }
     },
     "walletconnect": {
       "available_networks": "Redes Disponibles",
@@ -2091,6 +2212,12 @@
         "signin_notice": "Al continuar, firmarás un mensaje gratuito que prueba que eres el propietario de esta billetera",
         "error_alert_title": "Fallo de autenticación",
         "error_alert_description": "Algo salió mal. Por favor, intenta nuevamente o contáctate con nuestro equipo de soporte."
+      },
+      "menu_options": {
+        "disconnect": "Desconectar",
+        "switch_wallet": "Cambiar Billetera",
+        "switch_network": "Cambiar Red",
+        "available_networks": "Redes Disponibles"
       },
       "errors": {
         "go_back": "Volver",

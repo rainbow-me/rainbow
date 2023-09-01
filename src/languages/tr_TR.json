@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "Akıllı Sözleşme Etkileşimleri",
       "tab_investments": "Havuzlar",
       "tab_savings": "Tasarruflar",
+      "tab_showcase": "Vitrin",
       "tab_positions": "Pozisyonlar",
       "tab_transactions": "İşlemler",
       "tab_transactions_tooltip": "İşlemler ve Token Transferleri",
@@ -67,6 +68,9 @@
       "weekly_limit_reached": "Haftalık limit ulaşıldı",
       "yearly_limit_reached": "Yıllık limit ulaşıldı"
     },
+    "assets": {
+      "unkown_token": "Bilinmeyen Token"
+    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Aktiviteler",
@@ -80,6 +84,14 @@
       }
     },
     "back_up": {
+      "errors": {
+        "keychain_access": "Yedekleme süreciyle devam etmek için kimlik doğrulamanız gerekiyor",
+        "decrypting_data": "Yanlış şifre! Lütfen tekrar deneyin.",
+        "no_backups_found": "Önceki yedeğinizi bulamadık!",
+        "cant_get_encrypted_data": "Bu sefer yedeğinize erişemedik. Lütfen daha sonra tekrar deneyin.",
+        "missing_pin": "PIN kodunuz işlenirken bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin.",
+        "generic": "Yedekleme yapmaya çalışırken hata. Hata kodu: %{errorCodes}"
+      },
       "wrong_pin": "Girdiğiniz PIN kodu yanlış ve bir yedekleme yapamıyoruz. Lütfen doğru kodla tekrar deneyin.",
       "already_backed_up": {
         "backed_up": "Yedeklendi",
@@ -218,6 +230,7 @@
       "connect_walletconnect": "WalletConnect Kullan",
       "continue": "Devam Et",
       "delete": "Sil",
+      "dismiss": "İptal Et",
       "disconnect_account": "Çıkış Yap",
       "donate": "ETH Bağışla",
       "done": "Tamamlandı",
@@ -420,7 +433,14 @@
     "discover": {
       "lists": {
         "lists_title": "Listeler",
-        "this_list_is_empty": "Bu liste boş!"
+        "this_list_is_empty": "Bu liste boş!",
+        "types": {
+          "trending": "Trending",
+          "watchlist": "İzleme Listesi",
+          "favorites": "Favoriler",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
       },
       "pulse": {
         "pulse_description": "Tüm üst DeFi tokenları bir arada",
@@ -430,7 +450,9 @@
       "search": {
         "profiles": "Profller",
         "search_ethereum": "Ethereum'un hepsini ara",
-        "search_ethereum_short": "Ethereum'u ara"
+        "search_ethereum_short": "Ethereum'u ara",
+        "search": "Ara",
+        "discover": "Keşfet"
       },
       "strategies": {
         "strategies_title": "Stratejiler",
@@ -885,6 +907,19 @@
       }
     },
     "gas": {
+      "card": {
+        "falling": "Düşen",
+        "rising": "Yükseliyor",
+        "stable": "Sabit",
+        "surging": "Artan"
+      },
+      "speeds": {
+        "slow": "Yavaş",
+        "normal": "Normal",
+        "fast": "Hızlı",
+        "urgent": "Acil",
+        "custom": "Özel"
+      },
       "network_fee": "Tahmini ağ ücreti",
       "current_base_fee": "Geçerli temel ücret",
       "max_base_fee": "Mak. taban ücreti",
@@ -1081,6 +1116,9 @@
       "tx_verify": "İşleminizi burada doğrulayın",
       "withdrawal_dropdown_label": "İçin",
       "withdrawal_input_label": "Al"
+    },
+    "nfts": {
+      "selling": "Satış"
     },
     "nft_offers": {
       "card": {
@@ -1598,6 +1636,51 @@
         }
       }
     },
+    "transactions": {
+      "actions": {
+        "addToContacts": "Kişilere Ekle",
+        "cancel": "☠️ İptal",
+        "close": "Kapat",
+        "speedUp": "🚀 Hızlandır",
+        "trySwapAgain": "Takası Tekrar Dene",
+        "viewContact": "Kişiyi Görüntüle"
+      },
+      "pending_title": "Beklemede",
+      "dropped_title": "Düşürüldü",
+      "type": {
+        "approved": "Onaylandı",
+        "approving": "Onaylanıyor",
+        "bridging": "Köprüleme",
+        "bridged": "Köprü Kuruldu",
+        "cancelled": "İptal Edildi",
+        "cancelling": "İptal Ediliyor",
+        "contract interaction": "Sözleşme Etkileşimi",
+        "deposited": "Yatırıldı",
+        "depositing": "Yatırılıyor",
+        "dropped": "Düşürüldü",
+        "failed": "Başarısız",
+        "purchased": "Satın Alındı",
+        "purchasing": "Satın Alma",
+        "received": "Alınan",
+        "receiving": "Alma",
+        "self": "Kendi",
+        "sending": "Gönderiliyor",
+        "sent": "Gönderilen",
+        "speeding up": "Hızlandırma",
+        "selling": "Satış",
+        "sold": "Satıldı",
+        "swapped": "Takas Edildi",
+        "swapping": "Takas Etme",
+        "unknown": "Bilinmeyen",
+        "withdrawing": "Çekme",
+        "withdrew": "Çekildi"
+      },
+      "savings": "Tasarruflar",
+      "signed": "İmzalandı",
+      "contract_interaction": "Sözleşme Etkileşimi",
+      "deposited_with_token": "Yatırılan %{name}",
+      "withdrew_with_token": "Çekilen %{name}"
+    },
     "transaction_details": {
       "from": "Gönderen",
       "to": "Kime",
@@ -1620,6 +1703,11 @@
       }
     },
     "time": {
+      "today_caps": "Bugün",
+      "today": "bugün",
+      "yesterday_caps": "Dün",
+      "yesterday": "dün",
+      "this_month_caps": "Bu Ay",
       "days": {
         "long": {
           "plural": "günler",
@@ -1778,6 +1866,13 @@
         "watching_mode_confirm_title": "İzleme Modundasınız"
       },
       "add_cash_v2": {
+        "sheet_title": "Kripto satın almak için bir ödeme seçeneği seçin",
+        "fees_title": "Ücretler",
+        "instant_title": "Anlık",
+        "method_title": "Yöntem",
+        "methods_title": "Yöntem",
+        "network_title": "Ağ",
+        "networks_title": "Ağlar",
         "generic_error": {
           "title": "Bir şeyler yanlış gitti",
           "message": "Ekibimize bildirildi ve en kısa sürede üzerinde çalışılacak.",
@@ -2027,12 +2122,23 @@
           "please_go_back_and_reconnect": "Lütfen dapp'a geri dönün ve cüzdanınıza yeniden bağlayın",
           "transaction_status": "İşlem durumunun gönderilmesi başarısız oldu"
         },
+        "speed_up": {
+          "speed_up_title": "İşlemi hızlandır",
+          "cancel_tx_title": "İşlemi iptal et",
+          "speed_up_text": "Bu, bekleyen işleminizi iptal etmeye çalışacak. Başka bir işlem yayınlamanız gerekiyor!",
+          "cancel_tx_text": "Bu, bekleyen işleminizi yerine getirerek hızlandıracaktır. Orijinal işleminizin ilk olarak onaylanma ihtimali hala var!"
+        },
         "checkboxes": {
           "clear_profile_information": "Profil bilgilerini temizle",
           "point_name_to_recipient": "Bu ismi alıcının cüzdan adresine yönlendir",
           "transfer_control": "Kontrolü alıcıya transfer et",
           "has_a_wallet_that_supports": "Gönderdiğim kişinin %{networkName}destekleyen bir cüzdanı var",
           "im_not_sending_to_an_exchange": "Bir borsaya göndermiyorum"
+        },
+        "errors": {
+          "unpredictable_gas": "Oh hayır! Gaz limitini tahmin edemedik. Lütfen tekrar deneyin.",
+          "insufficient_funds": "Oh hayır! Gaz fiyatı değişti ve bu işlem için artık yeterli paranız yok. Lütfen daha düşük bir miktarla tekrar deneyin.",
+          "generic": "Oh hayır! İşlemi gönderirken bir problem oldu. Lütfen tekrar deneyin."
         },
         "complete_checks": "Kontrolleri tamamla",
         "ens_configuration_options": "ENS yapılandırma seçenekleri",
@@ -2051,6 +2157,21 @@
         "walletconnect_session_has_expired_while_trying_to_send": "İstek durumunu göndermeye çalışırken WalletConnect oturumu sona erdi. Lütfen yeniden bağlanın."
       },
       "wallet_title": "Cüzdan"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "E-posta adresini kopyala",
+        "no_thanks": "Hayır, teşekkür ederim",
+        "message": "Destek e-posta adresimizi manuel olarak panonuza kopyalamak ister misiniz?",
+        "title": "E-posta istemcisi başlatılırken hata",
+        "subject": "Gökkuşağı Destek"
+      },
+      "wallet_alert": {
+        "message_support": "Mesaj Destek",
+        "close": "Kapat",
+        "message": "Yardım için, lütfen destek ekibimize ulaşın! \nSize yakında geri döneceğiz!",
+        "title": "Bir hata oluştu"
+      }
     },
     "walletconnect": {
       "available_networks": "Kullanılabilir Ağlar",
@@ -2091,6 +2212,12 @@
         "signin_notice": "Devam ederek, bu cüzdana sahip olduğunuzu kanıtlayan ücretsiz bir mesaj imzalayacaksınız",
         "error_alert_title": "Kimlik doğrulama başarısız",
         "error_alert_description": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin veya destek ekibimize başvurun."
+      },
+      "menu_options": {
+        "disconnect": "Bağlantıyı Kes",
+        "switch_wallet": "Cüzdanı Değiştir",
+        "switch_network": "Ağı Değiştir",
+        "available_networks": "Kullanılabilir Ağlar"
       },
       "errors": {
         "go_back": "geri dön",

@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "Interações de Contrato Inteligente",
       "tab_investments": "Pools",
       "tab_savings": "Poupanças",
+      "tab_showcase": "Vitrine",
       "tab_positions": "Posições",
       "tab_transactions": "Transações",
       "tab_transactions_tooltip": "Transações e Transferências de Token",
@@ -67,6 +68,9 @@
       "weekly_limit_reached": "Limite semanal atingido",
       "yearly_limit_reached": "Limite anual atingido"
     },
+    "assets": {
+      "unkown_token": "Token desconhecido"
+    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "Atividades",
@@ -80,6 +84,14 @@
       }
     },
     "back_up": {
+      "errors": {
+        "keychain_access": "Você precisa autenticar para prosseguir com o processo de Backup",
+        "decrypting_data": "Senha incorreta! Por favor, tente novamente.",
+        "no_backups_found": "Não conseguimos encontrar seu backup anterior!",
+        "cant_get_encrypted_data": "Não conseguimos acessar seu backup neste momento. Por favor, tente novamente mais tarde.",
+        "missing_pin": "Algo deu errado ao processar seu código PIN. Por favor, tente novamente mais tarde.",
+        "generic": "Erro ao tentar fazer backup. Código de erro: %{errorCodes}"
+      },
       "wrong_pin": "O código PIN que você digitou está incorreto e não podemos fazer backup. Por favor, tente novamente com o código correto.",
       "already_backed_up": {
         "backed_up": "Foi feito backup",
@@ -218,6 +230,7 @@
       "connect_walletconnect": "Usar WalletConnect",
       "continue": "Continuar",
       "delete": "Excluir",
+      "dismiss": "Dispensar",
       "disconnect_account": "Sair",
       "donate": "Doar ETH",
       "done": "Concluído",
@@ -420,7 +433,14 @@
     "discover": {
       "lists": {
         "lists_title": "Listas",
-        "this_list_is_empty": "Esta lista está vazia!"
+        "this_list_is_empty": "Esta lista está vazia!",
+        "types": {
+          "trending": "Tendências",
+          "watchlist": "Lista de observação",
+          "favorites": "Favoritos",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
       },
       "pulse": {
         "pulse_description": "Todos os principais tokens DeFi em um só lugar",
@@ -430,7 +450,9 @@
       "search": {
         "profiles": "Perfis",
         "search_ethereum": "Pesquisar em todo o Ethereum",
-        "search_ethereum_short": "Pesquisar Ethereum"
+        "search_ethereum_short": "Pesquisar Ethereum",
+        "search": "Pesquisar",
+        "discover": "Descobrir"
       },
       "strategies": {
         "strategies_title": "Estratégias",
@@ -885,6 +907,19 @@
       }
     },
     "gas": {
+      "card": {
+        "falling": "Caindo",
+        "rising": "Subindo",
+        "stable": "Estável",
+        "surging": "Em alta"
+      },
+      "speeds": {
+        "slow": "Lento",
+        "normal": "Normal",
+        "fast": "Rápido",
+        "urgent": "Urgente",
+        "custom": "Personalizado"
+      },
       "network_fee": "Taxa estimada da rede",
       "current_base_fee": "Taxa de base atual",
       "max_base_fee": "Taxa base máxima",
@@ -1081,6 +1116,9 @@
       "tx_verify": "Verifique sua transação aqui",
       "withdrawal_dropdown_label": "Para",
       "withdrawal_input_label": "Obter"
+    },
+    "nfts": {
+      "selling": "Vendendo"
     },
     "nft_offers": {
       "card": {
@@ -1598,6 +1636,51 @@
         }
       }
     },
+    "transactions": {
+      "actions": {
+        "addToContacts": "Adicionar aos Contatos",
+        "cancel": "☠️ Cancelar",
+        "close": "Fechar",
+        "speedUp": "🚀 Acelerar",
+        "trySwapAgain": "Tentar Swap Novamente",
+        "viewContact": "Visualizar Contato"
+      },
+      "pending_title": "Pendente",
+      "dropped_title": "Desconsiderado",
+      "type": {
+        "approved": "Aprovado",
+        "approving": "Aprovando",
+        "bridging": "Pontuando",
+        "bridged": "Ponte concluída",
+        "cancelled": "Cancelado",
+        "cancelling": "Cancelando",
+        "contract interaction": "Interação de contrato",
+        "deposited": "Depositado",
+        "depositing": "Depositando",
+        "dropped": "Desconsiderado",
+        "failed": "Falha",
+        "purchased": "Comprado",
+        "purchasing": "Comprando",
+        "received": "Recebido",
+        "receiving": "Recebendo",
+        "self": "Próprio",
+        "sending": "Enviando",
+        "sent": "Enviado",
+        "speeding up": "Acelerando",
+        "selling": "Vendendo",
+        "sold": "Vendido",
+        "swapped": "Troca concluída",
+        "swapping": "Trocando",
+        "unknown": "Desconhecido",
+        "withdrawing": "Retirando",
+        "withdrew": "Retirou"
+      },
+      "savings": "Poupanças",
+      "signed": "Assinado",
+      "contract_interaction": "Interacção de Contrato",
+      "deposited_with_token": "Depositado %{name}",
+      "withdrew_with_token": "Retirou %{name}"
+    },
     "transaction_details": {
       "from": "De",
       "to": "Para",
@@ -1620,6 +1703,11 @@
       }
     },
     "time": {
+      "today_caps": "Hoje",
+      "today": "hoje",
+      "yesterday_caps": "Ontem",
+      "yesterday": "ontem",
+      "this_month_caps": "Este Mês",
       "days": {
         "long": {
           "plural": "dias",
@@ -1778,6 +1866,13 @@
         "watching_mode_confirm_title": "Você está no Modo de Observação"
       },
       "add_cash_v2": {
+        "sheet_title": "Escolha uma opção de pagamento para comprar cripto",
+        "fees_title": "Taxas",
+        "instant_title": "Imediato",
+        "method_title": "Método",
+        "methods_title": "Método",
+        "network_title": "Rede",
+        "networks_title": "Redes",
         "generic_error": {
           "title": "Algo deu errado",
           "message": "Nossa equipe foi notificada e analisará o problema o mais rápido possível.",
@@ -2027,12 +2122,23 @@
           "please_go_back_and_reconnect": "Por favor, volte para o dapp e reconecte-o à sua carteira",
           "transaction_status": "Falha ao enviar status da transação"
         },
+        "speed_up": {
+          "speed_up_title": "Acelerar transação",
+          "cancel_tx_title": "Cancelar transação",
+          "speed_up_text": "Isso tentará cancelar sua transação pendente. Isso requer a transmissão de outra transação!",
+          "cancel_tx_text": "Isso acelerará sua transação pendente substituindo-a. Ainda há uma chance de sua transação original ser confirmada primeiro!"
+        },
         "checkboxes": {
           "clear_profile_information": "Limpar informações do perfil",
           "point_name_to_recipient": "Apontar esse nome para o endereço da carteira do destinatário",
           "transfer_control": "Transferir controle para o destinatário",
           "has_a_wallet_that_supports": "A pessoa para quem estou enviando tem uma carteira que suporta %{networkName}",
           "im_not_sending_to_an_exchange": "Não estou enviando para uma exchange"
+        },
+        "errors": {
+          "unpredictable_gas": "Oh não! Não conseguimos estimar o limite de gás. Por favor, tente novamente.",
+          "insufficient_funds": "Oh não! O preço do gás mudou e você não tem mais fundos suficientes para esta transação. Por favor, tente novamente com um valor menor.",
+          "generic": "Oh não! Ocorreu um problema ao enviar a transação. Por favor tente novamente."
         },
         "complete_checks": "Verificar completos",
         "ens_configuration_options": "Opções de configuração de ENS",
@@ -2051,6 +2157,21 @@
         "walletconnect_session_has_expired_while_trying_to_send": "A sessão do WalletConnect expirou ao tentar enviar o status da solicitação. Por favor, reconecte."
       },
       "wallet_title": "Carteira"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "Copiar endereço de e-mail",
+        "no_thanks": "Não, obrigado",
+        "message": "Gostaria de copiar manualmente nosso endereço de email de suporte para a sua área de transferência?",
+        "title": "Erro ao abrir o cliente de e-mail",
+        "subject": "Suporte Arco-Íris"
+      },
+      "wallet_alert": {
+        "message_support": "Mensagem de Suporte",
+        "close": "Fechar",
+        "message": "Para ajuda, por favor contate o suporte! \nNós retornaremos em breve!",
+        "title": "Ocorreu um erro"
+      }
     },
     "walletconnect": {
       "available_networks": "Redes Disponíveis",
@@ -2091,6 +2212,12 @@
         "signin_notice": "Ao continuar, você assinará uma mensagem gratuita provando que você é proprietário desta carteira",
         "error_alert_title": "A autenticação falhou",
         "error_alert_description": "Algo deu errado. Por favor, tente novamente ou entre em contato com nossa equipe de suporte."
+      },
+      "menu_options": {
+        "disconnect": "Desconectar",
+        "switch_wallet": "Trocar Carteira",
+        "switch_network": "Trocar Rede",
+        "available_networks": "Redes Disponíveis"
       },
       "errors": {
         "go_back": "voltar",

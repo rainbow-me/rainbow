@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "Interactions de smart-contracts",
       "tab_investments": "Investissements",
       "tab_savings": "Epargnes",
+      "tab_showcase": "Showcase :)",
       "tab_positions": "Positions :)",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de tokens",
@@ -68,7 +69,7 @@
       "yearly_limit_reached": "Yearly limit reached :)"
     },
     "assets": {
-      "unkown_token": "Unknown Token ;)"
+      "unkown_token": "Token inconnu"
     },
     "avatar_builder": {
       "emoji_categories": {
@@ -84,12 +85,12 @@
     },
     "back_up": {
       "errors": {
-        "keychain_access": "You need to authenticate to proceed with the Backup process",
-        "decrypting_data": "Incorrect password! Please try again.",
-        "no_backups_found": "We couldn't find your previous backup!",
-        "cant_get_encrypted_data": "We couldn't access your backup at this time. Please try again later.",
-        "missing_pin": "Something went wrong while processing your PIN code. Please try again later.",
-        "generic": "Error while trying to backup. Error code: %{errorCodes}"
+        "keychain_access": "Vous devez vous authentifier pour poursuivre avec le processus de sauvegarde",
+        "decrypting_data": "Mot de passe incorrect! Veuillez réessayer.",
+        "no_backups_found": "Nous n'avons pas pu trouver votre sauvegarde précédente!",
+        "cant_get_encrypted_data": "Nous ne pouvons pas accéder à votre sauvegarde pour le moment. Veuillez réessayer plus tard.",
+        "missing_pin": "Une erreur s'est produite lors du traitement de votre code PIN. Veuillez réessayer plus tard.",
+        "generic": "Erreur lors de la tentative de sauvegarde. Code d'erreur: %{errorCodes}"
       },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code. :)",
       "already_backed_up": {
@@ -229,8 +230,8 @@
       "connect_walletconnect": "Utiliser WalletConnect",
       "continue": "Continue :)",
       "delete": "Effacer",
+      "dismiss": "Rejeter",
       "disconnect_account": "Log out",
-      "dismiss": "Dismiss :)",
       "donate": "Donner de l’ETH",
       "done": "Terminé",
       "edit": "Modifier",
@@ -432,7 +433,14 @@
     "discover": {
       "lists": {
         "lists_title": "Lists :)",
-        "this_list_is_empty": "This list is empty! :)"
+        "this_list_is_empty": "This list is empty! :)",
+        "types": {
+          "trending": "Tendance",
+          "watchlist": "Liste de surveillance",
+          "favorites": "Favoris",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
       },
       "pulse": {
         "pulse_description": "All the top DeFi tokens in one :)",
@@ -440,11 +448,11 @@
         "trading_at_prefix": "Trading at :)"
       },
       "search": {
-        "profiles": "Profiles",
-        "search_ethereum": "Search all of Ethereum",
-        "search_ethereum_short": "Search Ethereum",
-        "search": "Search",
-        "discover": "Discover"
+        "profiles": "Profiles :)",
+        "search_ethereum": "Search all of Ethereum :)",
+        "search_ethereum_short": "Search Ethereum :)",
+        "search": "Search :)",
+        "discover": "Discover :)"
       },
       "strategies": {
         "strategies_title": "Strategies :)",
@@ -900,17 +908,17 @@
     },
     "gas": {
       "card": {
-        "falling": "Falling",
-        "rising": "Rising",
+        "falling": "Chutant",
+        "rising": "Montant",
         "stable": "Stable",
-        "surging": "Surging"
+        "surging": "Surging :)"
       },
       "speeds": {
-        "slow": "Slow",
+        "slow": "Lent",
         "normal": "Normal",
-        "fast": "Rapide",
+        "fast": "Vite",
         "urgent": "Urgent",
-        "custom": "Custom"
+        "custom": "Personnalisé"
       },
       "network_fee": "Frais de réseau",
       "current_base_fee": "Frais de base actuels",
@@ -1110,7 +1118,7 @@
       "withdrawal_input_label": "Obtenir"
     },
     "nfts": {
-      "selling": "Selling"
+      "selling": "Vente"
     },
     "nft_offers": {
       "card": {
@@ -1630,41 +1638,48 @@
     },
     "transactions": {
       "actions": {
-        "addToContacts": "Add to Contacts",
-        "cancel": "☠️ Cancel",
-        "close": "Close",
-        "speedUp": "🚀 Speed Up",
-        "trySwapAgain": "Try Swap Again",
-        "viewContact": "View Contact"
+        "addToContacts": "Ajouter aux contacts",
+        "cancel": "☠️ Annuler",
+        "close": "Fermer",
+        "speedUp": "🚀 Accélérer",
+        "trySwapAgain": "Essayer l'echange encore",
+        "viewContact": "Voir Contact"
       },
-      "pending_title": "Pending :)",
-      "dropped_title": "Dropped :)",
+      "pending_title": "En attente",
+      "dropped_title": "Lâché",
       "type": {
         "approved": "Approved :)",
-        "approving": "Approving",
+        "approving": "Approuvant",
         "bridging": "Bridging",
-        "bridged": "Bridged",
-        "cancelled": "Cancelled",
-        "cancelling": "Cancelling",
-        "contract interaction": "Contract interaction",
-        "deposited": "Deposited",
-        "depositing": "Depositing",
-        "dropped": "Dropped",
-        "failed": "Failed",
-        "purchased": "Purchased",
-        "purchasing": "Purchasing",
-        "received": "Received",
-        "receiving": "Receiving",
-        "self": "Self",
-        "sending": "Sending",
-        "sent": "Sent",
-        "speeding up": "Speeding up",
-        "swapped": "Swapped",
-        "swapping": "Swapping",
-        "unknown": "Unknown",
-        "withdrawing": "Withdrawing",
-        "withdrew": "Withdrew"
-      }
+        "bridged": "Bridged :)",
+        "cancelled": "Annulé",
+        "cancelling": "Annulation",
+        "contract interaction": "Interaction de contrat",
+        "deposited": "Deposits :)",
+        "depositing": "Dépôt",
+        "dropped": "Lâché",
+        "failed": "Échoué",
+        "purchased": "Purchased :)",
+        "purchasing": "Achat",
+        "received": "Reçu",
+        "receiving": "Réception",
+        "self": "Moi",
+        "sending": "Sending :)",
+        "sent": "Envoyé",
+        "speeding up": "Accélération",
+        "selling": "Vente",
+        "sold": "Sold :)",
+        "swapped": "Swapped :)",
+        "swapping": "Échange",
+        "unknown": "Inconnu",
+        "withdrawing": "Retrait",
+        "withdrew": "Retiré"
+      },
+      "savings": "Epargnes",
+      "signed": "Signé",
+      "contract_interaction": "Interaction de contrat",
+      "deposited_with_token": "Déposé %{name}",
+      "withdrew_with_token": "Retiré %{name}"
     },
     "transaction_details": {
       "from": "De",
@@ -1690,9 +1705,9 @@
     "time": {
       "today_caps": "Today :)",
       "today": "today :)",
-      "yesterday_caps": "Yesterday",
-      "yesterday": "yesterday :)",
-      "this_month_caps": "This Month",
+      "yesterday_caps": "Hier",
+      "yesterday": "hier",
+      "this_month_caps": "Ce mois-ci",
       "days": {
         "long": {
           "plural": "jours",
@@ -1851,13 +1866,13 @@
         "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
       "add_cash_v2": {
-        "sheet_title": "Choose a payment option to buy crypto ;)",
-        "fees_title": "Fees :)",
-        "instant_title": "Instant :)",
-        "method_title": "Method :)",
-        "methods_title": "Method :)",
-        "network_title": "Network :)",
-        "networks_title": "Networks :)",
+        "sheet_title": "Choisissez une option de paiement pour acheter de la crypto",
+        "fees_title": "Frais",
+        "instant_title": "Instantané",
+        "method_title": "Méthode",
+        "methods_title": "Méthode",
+        "network_title": "Réseau",
+        "networks_title": "Réseaux",
         "generic_error": {
           "title": "Something went wrong :)",
           "message": "Our team has been notified and will look into it ASAP. :)",
@@ -2107,6 +2122,12 @@
           "please_go_back_and_reconnect": "Please go back to the dapp and reconnect it to your wallet :)",
           "transaction_status": "Échec de l'envoie du status de la transaction"
         },
+        "speed_up": {
+          "speed_up_title": "Accélérer la transaction",
+          "cancel_tx_title": "Annuler la transaction",
+          "speed_up_text": "Cela tentera d'annuler votre transaction en attente. Il nécessite la diffusion d'une autre transaction!",
+          "cancel_tx_text": "Cela accélérera votre transaction en attente en la remplaçant. Il y a toujours une chance que votre transaction originale soit confirmée en premier!"
+        },
         "checkboxes": {
           "clear_profile_information": "Effacer les informations de profil",
           "point_name_to_recipient": "Pointer ce nom vers l'adresse du portefeuille du destinataire",
@@ -2114,16 +2135,10 @@
           "has_a_wallet_that_supports": "La personne à qui j'envoie a un portefeuille qui prend en charge %{networkName}",
           "im_not_sending_to_an_exchange": "Je n'envoie pas à une bourse"
         },
-        "speed_up": {
-          "speed_up_title": "Speed up transaction",
-          "cancel_tx_title": "Cancel transaction",
-          "speed_up_text": "This will attempt to cancel your pending transaction. It requires broadcasting another transaction!",
-          "cancel_tx_text": "This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!"
-        },
         "errors": {
-          "unpredictable_gas": "Oh no! We were unable to estimate the gas limit. Please try again.",
-          "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
-          "generic": "Oh no! There was a problem submitting the transaction. Please try again."
+          "unpredictable_gas": "Oh non! Nous n'avons pas pu estimer la limite de gaz. Veuillez réessayer.",
+          "insufficient_funds": "Oh non! Le prix du gaz a changé et vous n'avez plus assez de fonds pour cette transaction. Veuillez réessayer avec un montant inférieur.",
+          "generic": "Oh non! Il y a eu un problème lors de la soumission de la transaction. Veuillez réessayer."
         },
         "complete_checks": "Complete checks :)",
         "ens_configuration_options": "Options de configuration ENS",
@@ -2145,17 +2160,17 @@
     },
     "support": {
       "error_alert": {
-        "copy_email_address": "Copy email address",
-        "no_thanks": "No thanks",
-        "message": "Would you like to manually copy our support email address to your clipboard?",
-        "title": "Error launching email client",
-        "subject": "Rainbow Support"
+        "copy_email_address": "Copy email address :)",
+        "no_thanks": "Non merci",
+        "message": "Souhaitez-vous copier manuellement notre adresse e-mail de support dans votre presse-papiers? :)",
+        "title": "Error launching email client :)",
+        "subject": "Support d'arc-en-ciel"
       },
       "wallet_alert": {
-        "message_support": "Message Support",
-        "close": "Close",
-        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
-        "title": "An error occured"
+        "message_support": "Support de message",
+        "close": "Fermer",
+        "message": "Pour obtenir de l'aide, veuillez contacter le support! \nNous vous répondrons bientôt!",
+        "title": "Une erreur s'est produite"
       }
     },
     "walletconnect": {

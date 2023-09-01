@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "智能合约交互",
       "tab_investments": "池",
       "tab_savings": "储蓄",
+      "tab_showcase": "展示",
       "tab_positions": "持仓",
       "tab_transactions": "交易",
       "tab_transactions_tooltip": "交易和代币转账",
@@ -67,6 +68,9 @@
       "weekly_limit_reached": "已达到每周限额",
       "yearly_limit_reached": "年度限制已达上限"
     },
+    "assets": {
+      "unkown_token": "未知代币"
+    },
     "avatar_builder": {
       "emoji_categories": {
         "activities": "活动",
@@ -80,6 +84,14 @@
       }
     },
     "back_up": {
+      "errors": {
+        "keychain_access": "您需要进行身份验证才能继续备份过程",
+        "decrypting_data": "密码错误！请再试一次。",
+        "no_backups_found": "我们找不到您之前的备份！",
+        "cant_get_encrypted_data": "我们现在无法访问您的备份。请稍后再试。",
+        "missing_pin": "在处理您的PIN码时出错了。请稍后再试。",
+        "generic": "尝试备份时出错。错误代码： %{errorCodes}"
+      },
       "wrong_pin": "您输入的PIN码有误，我们无法进行备份。请使用正确的PIN码再试一次。",
       "already_backed_up": {
         "backed_up": "已备份",
@@ -120,7 +132,7 @@
       },
       "explainers": {
         "backup": "不要忘记此密码！它与您的 %{cloudPlatformName} 密码是分开的，您应该将其保存在一个安全的地方。\n\n将来您需要它来从备份中恢复您的钱包。",
-        "if_lose_cloud": "如果您丢失此设备，您可以从 %{cloudPlatformName}恢复加密的钱包备份。",
+        "if_lose_cloud": "如果您丢失此设备，您可以从 %{cloudPlatformName} 恢复加密的钱包备份。",
         "if_lose_imported": "如果您丢失此设备，您可以使用最初导入的密钥来恢复您的钱包。",
         "if_lose_manual": "如果您丢失此设备，您可以使用您保存的秘密短语来恢复您的钱包。"
       },
@@ -150,7 +162,7 @@
         "error_while_restoring": "恢复备份时发生错误",
         "incorrect_pin_code": "错误的PIN码",
         "incorrect_password": "密码错误",
-        "restore_from_cloud_platform": "从 %{cloudPlatformName}恢复"
+        "restore_from_cloud_platform": "从 %{cloudPlatformName} 恢复"
       },
       "secret": {
         "anyone_who_has_these": "任何拥有这些词语的人都可以访问您的整个钱包！",
@@ -218,6 +230,7 @@
       "connect_walletconnect": "使用WalletConnect",
       "continue": "继续",
       "delete": "删除",
+      "dismiss": "关闭",
       "disconnect_account": "登出",
       "donate": "捐赠ETH",
       "done": "完成",
@@ -225,7 +238,7 @@
       "exchange": "交易",
       "exchange_again": "再次交易",
       "exchange_search_placeholder": "搜索代币",
-      "exchange_search_placeholder_network": "在 %{network}上搜索代币",
+      "exchange_search_placeholder_network": "在 %{network} 上搜索代币",
       "go_back": "返回",
       "go_back_lowercase": "返回",
       "got_it": "我知道了",
@@ -420,7 +433,14 @@
     "discover": {
       "lists": {
         "lists_title": "列表",
-        "this_list_is_empty": "这个列表是空的！"
+        "this_list_is_empty": "这个列表是空的！",
+        "types": {
+          "trending": "热门",
+          "watchlist": "观察列表",
+          "favorites": "收藏夹",
+          "defi": "去中心化金融",
+          "stablecoins": "稳定币"
+        }
       },
       "pulse": {
         "pulse_description": "所有顶级DeFi代币汇总",
@@ -430,7 +450,9 @@
       "search": {
         "profiles": "个人资料",
         "search_ethereum": "搜索所有以太坊",
-        "search_ethereum_short": "搜索以太坊"
+        "search_ethereum_short": "搜索以太坊",
+        "search": "搜索",
+        "discover": "发现"
       },
       "strategies": {
         "strategies_title": "策略",
@@ -885,6 +907,19 @@
       }
     },
     "gas": {
+      "card": {
+        "falling": "下降",
+        "rising": "上升",
+        "stable": "稳定",
+        "surging": "激增"
+      },
+      "speeds": {
+        "slow": "慢速",
+        "normal": "正常",
+        "fast": "快速",
+        "urgent": "紧急",
+        "custom": "自定义"
+      },
       "network_fee": "预计网络费",
       "current_base_fee": "当前基本费用",
       "max_base_fee": "最大基础费用",
@@ -1081,6 +1116,9 @@
       "tx_verify": "在这里验证您的交易",
       "withdrawal_dropdown_label": "对于",
       "withdrawal_input_label": "获取"
+    },
+    "nfts": {
+      "selling": "出售"
     },
     "nft_offers": {
       "card": {
@@ -1598,6 +1636,51 @@
         }
       }
     },
+    "transactions": {
+      "actions": {
+        "addToContacts": "添加到联系人",
+        "cancel": "☠️ 取消",
+        "close": "关闭",
+        "speedUp": "🚀 加速",
+        "trySwapAgain": "再次尝试交换",
+        "viewContact": "查看联系人"
+      },
+      "pending_title": "待处理",
+      "dropped_title": "已掉落",
+      "type": {
+        "approved": "已批准",
+        "approving": "批准中",
+        "bridging": "桥接中",
+        "bridged": "已建立桥接",
+        "cancelled": "已取消",
+        "cancelling": "取消中",
+        "contract interaction": "合约互动",
+        "deposited": "已存款",
+        "depositing": "存款中",
+        "dropped": "已掉落",
+        "failed": "失败",
+        "purchased": "已购买",
+        "purchasing": "购买",
+        "received": "已收到",
+        "receiving": "接收",
+        "self": "自己",
+        "sending": "发送中",
+        "sent": "已发送",
+        "speeding up": "加速",
+        "selling": "出售",
+        "sold": "已出售",
+        "swapped": "已交换",
+        "swapping": "交换",
+        "unknown": "未知",
+        "withdrawing": "提款",
+        "withdrew": "已提款"
+      },
+      "savings": "储蓄",
+      "signed": "已签署",
+      "contract_interaction": "合同互动",
+      "deposited_with_token": "存款 %{name}",
+      "withdrew_with_token": "取款 %{name}"
+    },
     "transaction_details": {
       "from": "来自",
       "to": "至",
@@ -1620,6 +1703,11 @@
       }
     },
     "time": {
+      "today_caps": "今天",
+      "today": "今天",
+      "yesterday_caps": "昨天",
+      "yesterday": "昨天",
+      "this_month_caps": "本月",
       "days": {
         "long": {
           "plural": "天",
@@ -1778,6 +1866,13 @@
         "watching_mode_confirm_title": "您处于“观察模式”"
       },
       "add_cash_v2": {
+        "sheet_title": "选择一种支付方式购买加密货币",
+        "fees_title": "费用",
+        "instant_title": "即时",
+        "method_title": "方法",
+        "methods_title": "方法",
+        "network_title": "网络",
+        "networks_title": "网络",
         "generic_error": {
           "title": "出了些问题",
           "message": "我们的团队已经收到通知，将尽快进行查看。",
@@ -2027,12 +2122,23 @@
           "please_go_back_and_reconnect": "请返回到dapp并重新连接您的钱包",
           "transaction_status": "无法发送交易状态"
         },
+        "speed_up": {
+          "speed_up_title": "加速交易",
+          "cancel_tx_title": "取消交易",
+          "speed_up_text": "这将试图取消您的待处理交易。它需要广播另一笔交易！",
+          "cancel_tx_text": "这将通过替换来加速您的待处理交易。您的原始交易仍有可能首先得到确认！"
+        },
         "checkboxes": {
           "clear_profile_information": "清除个人资料信息",
           "point_name_to_recipient": "将此名称指向接收者的钱包地址",
           "transfer_control": "将控制权转交给接收者",
           "has_a_wallet_that_supports": "我正在发送的人有一个支持 %{networkName}的钱包",
           "im_not_sending_to_an_exchange": "我没有向交易所发送"
+        },
+        "errors": {
+          "unpredictable_gas": "哦不！我们无法估计燃气限制。请再试一次。",
+          "insufficient_funds": "哦不！燃气价格改变，您的资金不再足够进行此交易。请尝试使用较低的金额再试一次。",
+          "generic": "哦不！提交交易时出现问题。请再试一次。"
         },
         "complete_checks": "完成检查",
         "ens_configuration_options": "ENS配置选项",
@@ -2051,6 +2157,21 @@
         "walletconnect_session_has_expired_while_trying_to_send": "尝试发送请求状态时WalletConnect会话已过期。请重新连接。"
       },
       "wallet_title": "钱包"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "复制电子邮件地址",
+        "no_thanks": "不，谢谢",
+        "message": "您想要手动将我们的支持邮箱地址复制到剪贴板吗？",
+        "title": "启动电子邮件客户端错误",
+        "subject": "彩虹支持"
+      },
+      "wallet_alert": {
+        "message_support": "消息支持",
+        "close": "关闭",
+        "message": "如需帮助，请联系支持！ \n我们会尽快回复您！",
+        "title": "发生错误"
+      }
     },
     "walletconnect": {
       "available_networks": "可用网络",
@@ -2091,6 +2212,12 @@
         "signin_notice": "继续后，您将签署一条免费信息，证明你拥有这个钱包",
         "error_alert_title": "身份验证失败",
         "error_alert_description": "出现了问题。请重试，或联系我们的支持团队。"
+      },
+      "menu_options": {
+        "disconnect": "断开连接",
+        "switch_wallet": "切换钱包",
+        "switch_network": "切换网络",
+        "available_networks": "可用网络"
       },
       "errors": {
         "go_back": "返回",
