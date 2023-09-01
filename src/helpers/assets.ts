@@ -13,6 +13,7 @@ import {
   getUniqueTokenFormat,
   getUniqueTokenType,
 } from '@/utils';
+import * as i18n from '@/languages';
 
 const COINS_TO_SHOW = 5;
 
@@ -315,10 +316,11 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
+  // i18n all names
   if (sellingTokens.length > 0) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
-      name: 'Selling',
+      name: i18n.t(i18n.l.nfts.selling),
       total: sellingTokens.length,
       type: 'FAMILY_HEADER',
       uid: 'selling',

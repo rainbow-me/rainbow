@@ -29,20 +29,20 @@ import * as i18n from '@/languages';
 function getUserError(e: Error) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
-      return 'You need to authenticate to proceed with the Backup process';
+      return i18n.t(i18n.l.back_up.errors.keychain_access);
     case CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA:
-      return 'Incorrect password! Please try again.';
+      return i18n.t(i18n.l.back_up.errors.decrypting_data);
     case CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND:
     case CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND:
-      return `We couldn't find your previous backup!`;
+      return i18n.t(i18n.l.back_up.errors.no_backups_found);
     case CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA:
-      return `We couldn't access your backup at this time. Please try again later.`;
+      return i18n.t(i18n.l.back_up.errors.cant_get_encrypted_data);
     case CLOUD_BACKUP_ERRORS.MISSING_PIN:
-      return `Something went wrong while processing your PIN code. Please try again later.`;
+      return i18n.t(i18n.l.back_up.errors.missing_pin);
     default:
-      return `Error while trying to backup. Error code: ${values(
-        CLOUD_BACKUP_ERRORS
-      ).indexOf(e.message)}`;
+      return i18n.t(i18n.l.back_up.errors.generic, {
+        errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),
+      });
   }
 }
 
