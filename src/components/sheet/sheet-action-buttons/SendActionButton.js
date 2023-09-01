@@ -11,14 +11,8 @@ function SendActionButton({ asset, color: givenColor, ...props }) {
   const { navigate, goBack } = useNavigation();
   const handlePress = useCallback(() => {
     goBack();
-    navigate(Routes.SEND_FLOW, params => {
-      const updatedParams = { ...params, asset };
-      return IS_IOS
-        ? {
-            params: updatedParams,
-            screen: Routes.SEND_SHEET,
-          }
-        : { ...updatedParams };
+    navigate(Routes.SEND_SHEET, {
+      asset,
     });
   }, [navigate, asset, goBack]);
 

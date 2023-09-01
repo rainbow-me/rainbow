@@ -177,18 +177,9 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
           });
           return;
         case 'send':
-          if (IS_IOS) {
-            Navigation.handleAction(Routes.SEND_FLOW, {
-              params: {
-                address,
-              },
-              screen: Routes.SEND_SHEET,
-            });
-          } else {
-            Navigation.handleAction(Routes.SEND_FLOW, {
-              address,
-            });
-          }
+          Navigation.handleAction(Routes.SEND_SHEET, {
+            address,
+          });
 
           return;
       }

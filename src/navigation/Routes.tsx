@@ -43,10 +43,7 @@ export function Routes() {
         component={ExplainSheet}
         name={RouteNames.EXPLAIN_SHEET}
       />
-      <BottomSheet.Screen
-        component={SendSheet}
-        name={RouteNames.SEND_SHEET_NAVIGATOR}
-      />
+      <BottomSheet.Screen component={SendSheet} name={RouteNames.SEND_SHEET} />
       <BottomSheet.Screen
         component={AddCashSheet}
         name={RouteNames.ADD_CASH_SHEET}

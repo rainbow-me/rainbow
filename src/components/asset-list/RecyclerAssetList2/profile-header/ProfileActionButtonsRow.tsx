@@ -240,7 +240,7 @@ function SendButton() {
         category: 'home screen',
       });
 
-      navigate(Routes.SEND_FLOW);
+      navigate(Routes.SEND_SHEET);
     } else {
       watchingAlert();
     }

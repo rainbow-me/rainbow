@@ -136,11 +136,8 @@ export function Header() {
 
   const onSend = useCallback(async () => {
     goBack();
-    navigate(Routes.SEND_FLOW, {
-      params: {
-        address: contextValue?.addressOrDomain || contextValue?.address,
-      },
-      screen: Routes.SEND_SHEET,
+    navigate(Routes.SEND_SHEET, {
+      address: contextValue?.addressOrDomain || contextValue?.address,
     });
   }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
 

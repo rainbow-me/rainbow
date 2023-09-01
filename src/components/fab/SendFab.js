@@ -28,7 +28,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
 
   const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      navigate(Routes.SEND_FLOW);
+      navigate(Routes.SEND_SHEET);
     } else {
       watchingAlert();
     }

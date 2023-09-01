@@ -521,14 +521,7 @@ async function parseEthereumUrl(data: string) {
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
-    if (IS_IOS) {
-      Navigation.handleAction(Routes.SEND_FLOW, {
-        params,
-        screen: Routes.SEND_SHEET,
-      });
-    } else {
-      Navigation.handleAction(Routes.SEND_FLOW, params);
-    }
+    Navigation.handleAction(Routes.SEND_SHEET, params);
   });
 }
 

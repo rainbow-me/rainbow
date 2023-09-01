@@ -71,7 +71,6 @@ const Routes = {
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',
   SEND_CONFIRMATION_SHEET: 'SendConfirmationSheet',
   SEND_SHEET: 'SendSheet',
-  SEND_SHEET_NAVIGATOR: 'SendSheetNavigator',
   SETTINGS_SHEET: 'SettingsSheet',
   SHOWCASE_SHEET: 'ShowcaseSheet',
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
@@ -115,14 +114,7 @@ export const NATIVE_ROUTES = [
   Routes.SAVINGS_SHEET,
   Routes.SAVINGS_WITHDRAW_MODAL,
   Routes.SAVINGS_DEPOSIT_MODAL,
-  ...(IS_IOS
-    ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR]
-    : []),
+  ...(IS_IOS ? [Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ];
 
-const RoutesWithPlatformDifferences = {
-  ...Routes,
-  SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
-};
-
-export default RoutesWithPlatformDifferences;
+export default Routes;
