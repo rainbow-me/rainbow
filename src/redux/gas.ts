@@ -88,6 +88,7 @@ interface GasState {
   blocksToConfirmation: BlocksToConfirmation;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
+  secondsPerNewBlock: number;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -147,9 +148,9 @@ const getUpdatedGasFeeParams = (
       break;
   }
 
-  const isL2 = isL2Network(txNetwork);
+  const isLegacyGasNetwork = getNetworkObj(txNetwork).gas.gasType === 'legacy';
 
-  const gasFeesBySpeed = isL2
+  const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
         gasFeeParamsBySpeed as LegacyGasFeeParamsBySpeed,
         gasLimit,
@@ -212,6 +213,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasLimit,
     currentBlockParams,
     blocksToConfirmation,
+    secondsPerNewBlock,
   } = getState().gas;
 
   const { nativeCurrency } = getState().settings;
@@ -246,7 +248,8 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     CUSTOM,
     gasParams.maxBaseFee.amount,
     gasParams.maxPriorityFeePerGas.amount,
-    blocksToConfirmation
+    blocksToConfirmation,
+    secondsPerNewBlock
   );
   const newSelectedGasFee = getSelectedGasFee(
     newGasFeeParamsBySpeed,
@@ -413,8 +416,8 @@ export const getZoraGasPrices = async () => {
   return priceData;
 };
 
-export const getEIP1559GasParams = async () => {
-  const { data } = (await rainbowMeteorologyGetData(Network.mainnet)) as {
+export const getEIP1559GasParams = async (network: Network) => {
+  const { data } = (await rainbowMeteorologyGetData(network)) as {
     data: RainbowMeteorologyData;
   };
   const {
@@ -423,13 +426,15 @@ export const getEIP1559GasParams = async () => {
     baseFeeTrend,
     currentBaseFee,
     blocksToConfirmation,
-  } = parseRainbowMeteorologyData(data);
+    secondsPerNewBlock,
+  } = parseRainbowMeteorologyData(data, network);
   return {
     baseFeePerGas,
     blocksToConfirmation,
     currentBaseFee,
     gasFeeParamsBySpeed,
     trend: baseFeeTrend,
+    secondsPerNewBlock,
   };
 };
 
@@ -466,7 +471,7 @@ export const gasPricesStartPolling = (
             const networkObj = getNetworkObj(network);
             let dataIsReady = true;
 
-            if (networkObj.networkType === 'layer2') {
+            if (networkObj.gas.gasType === 'legacy') {
               // OP chains have an additional fee we need to load
               if (getNetworkObj(network).gas?.OptimismTxFee) {
                 dataIsReady = l1GasFeeOptimism !== null;
@@ -515,7 +520,8 @@ export const gasPricesStartPolling = (
                   trend,
                   currentBaseFee,
                   blocksToConfirmation,
-                } = await getEIP1559GasParams();
+                  secondsPerNewBlock,
+                } = await getEIP1559GasParams(network);
 
                 if (flashbots) {
                   [SLOW, NORMAL, FAST, URGENT].forEach(speed => {
@@ -592,6 +598,7 @@ export const gasPricesStartPolling = (
                     gasFeeParamsBySpeed: gasFeeParamsBySpeed,
                     gasFeesBySpeed,
                     selectedGasFee: updatedSelectedGasFee,
+                    secondsPerNewBlock,
                   },
                   type: GAS_FEES_SUCCESS,
                 });
@@ -744,6 +751,7 @@ const INITIAL_STATE: GasState = {
   l1GasFeeOptimism: null,
   selectedGasFee: {} as SelectedGasFee,
   txNetwork: null,
+  secondsPerNewBlock: 15,
 };
 
 export default (
@@ -774,6 +782,7 @@ export default (
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
         selectedGasFee: action.payload.selectedGasFee,
+        secondsPerNewBlock: action.payload.secondsPerNewBlock,
       };
     case GAS_PRICES_CUSTOM_UPDATE:
       return {

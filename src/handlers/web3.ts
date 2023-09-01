@@ -464,7 +464,7 @@ export const getTransactionCount = async (
 export const getTransactionGasParams = (
   transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput
 ): GasParamsReturned => {
-  return isL2Network(transaction.network)
+  return getNetworkObj(transaction.network).gas.gasType === 'legacy'
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }
