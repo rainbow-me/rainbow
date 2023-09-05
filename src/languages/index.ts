@@ -31,7 +31,7 @@ export enum Language {
 }
 
 export const resources: {
-  [key in Language]: Translation;
+  [key in Language]: any;
 } = {
   en_US,
   es_419,

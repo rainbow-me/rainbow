@@ -210,6 +210,7 @@
         "insufficient_bnb": "BNB Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
+        "fee_on_transfer": "􀅵 Fee on Transfer Token",
         "no_route_found": "􀅵 No route found :)",
         "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
@@ -830,6 +831,12 @@
         "fragment2": "Read more :)",
         "fragment3": " à propos des AMM et de la liquidité des jetons.",
         "title": "Liquidité insuffisante"
+      },
+      "fee_on_transfer": {
+        "fragment1": "This swap will fail in Rainbow because the %{tokenName} contract adds extra fees.  \n\n Read ",
+        "fragment2": "our guide",
+        "fragment3": " for help swapping this token!",
+        "title": "Fee on Transfer Token"
       },
       "no_route_found": {
         "fragment1": "Nous n'avons pas pu trouver de route pour cet échange. ",
