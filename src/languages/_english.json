@@ -819,7 +819,7 @@
         "title": "No Tokens on %{networkName}"
       },
       "insufficient_liquidity": {
-        "fragment1": "This swap will fail in Rainbow because the token contract adds extra fees. \n\n Still curious? ",
+        "fragment1": "The exchanges don't have enough of the tokens you requested to complete this transaction. \n\n Still curious? ",
         "fragment2": "Read more",
         "fragment3": " about AMMs and token liquidity.",
         "title": "Insufficient Liquidity"
