@@ -4,44 +4,38 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import * as i18n from '@/languages';
-import { atom, useRecoilState } from 'recoil';
-import { MMKV } from 'react-native-mmkv';
-
-const mmkv = new MMKV();
-
-export enum Filter {
-  All = 'all',
-  Paid = 'paid',
-  Free = 'free',
-}
-
-const MMKV_KEY = 'mintDotFunFilter';
-
-export const mintDotFunFilterAtom = atom<Filter>({
-  default: (mmkv.getString(MMKV_KEY) as Filter | undefined) ?? Filter.All,
-  key: 'mintDotFunFilter',
-});
+import {
+  MintableCollectionsFilter,
+  getMintableCollectionsFilterLabel,
+  useMintableCollectionsFilter,
+} from '@/resources/mintdotfun';
 
 export function Menu() {
-  const [filter, setFilter] = useRecoilState(mintDotFunFilterAtom);
+  const { filter, setFilter } = useMintableCollectionsFilter();
 
   const menuConfig = {
     menuTitle: '',
     menuItems: [
       {
-        actionKey: Filter.All,
-        actionTitle: 'All Mints',
-        menuState: filter === Filter.All ? 'on' : 'off',
+        actionKey: MintableCollectionsFilter.All,
+        actionTitle: getMintableCollectionsFilterLabel(
+          MintableCollectionsFilter.All
+        ),
+        menuState: filter === MintableCollectionsFilter.All ? 'on' : 'off',
       },
       {
-        actionKey: Filter.Paid,
-        actionTitle: 'Paid',
-        menuState: filter === Filter.Paid ? 'on' : 'off',
+        actionKey: MintableCollectionsFilter.Free,
+        actionTitle: getMintableCollectionsFilterLabel(
+          MintableCollectionsFilter.Free
+        ),
+        menuState: filter === MintableCollectionsFilter.Free ? 'on' : 'off',
       },
       {
-        actionKey: Filter.Free,
-        actionTitle: 'Free',
-        menuState: filter === Filter.Free ? 'on' : 'off',
+        actionKey: MintableCollectionsFilter.Paid,
+        actionTitle: getMintableCollectionsFilterLabel(
+          MintableCollectionsFilter.Paid
+        ),
+        menuState: filter === MintableCollectionsFilter.Paid ? 'on' : 'off',
       },
     ],
   };
@@ -49,11 +43,10 @@ export function Menu() {
   const onPressMenuItem = ({
     nativeEvent: { actionKey: filter },
   }: {
-    nativeEvent: { actionKey: Filter };
+    nativeEvent: { actionKey: MintableCollectionsFilter };
   }) => {
     haptics.selection();
     setFilter(filter);
-    mmkv.set(MMKV_KEY, filter);
   };
 
   return (

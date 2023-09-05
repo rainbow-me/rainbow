@@ -1,12 +1,6 @@
-import React from 'react';
-import { useNavigation } from '@/navigation';
+import React, { useReducer } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
-import {
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
-import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
   Bleed,
@@ -15,16 +9,11 @@ import {
   Inset,
   Text,
   useBackgroundColor,
-  useColorMode,
 } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
-import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
-import { getTimeElapsedFromDate } from './utils';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { getNetworkObj } from '@/networks';
+import { NftSample } from '@/graphql/__generated__/arc';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -68,13 +57,7 @@ export const Placeholder = () => {
   );
 };
 
-export function RecentMintCell({
-  recentMint,
-  collection,
-}: {
-  recentMint: NftSample;
-  collection: MintableCollection;
-}) {
+export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
   const { isDarkMode } = useTheme();
 
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
@@ -82,48 +65,65 @@ export function RecentMintCell({
     'surfaceSecondaryElevated'
   );
 
-  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
-    .nativeCurrency;
-
-  const amount = convertRawAmountToDecimalFormat(recentMint.value);
-
-  const timeElapsed = getTimeElapsedFromDate(new Date(recentMint.mintTime));
-
-  const isFree = amount === '0';
+  const [imageError, setImageError] = useReducer(() => true, false);
 
   return (
-    <View style={{ marginVertical: 10 }}>
+    <View
+      style={{
+        shadowColor: globalColors.grey100,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.02,
+        shadowRadius: 3,
+      }}
+    >
       <View
         style={{
           shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.02,
-          shadowRadius: 3,
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.24,
+          shadowRadius: 9,
         }}
       >
-        <View
-          style={{
-            shadowColor: globalColors.grey100,
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.24,
-            shadowRadius: 9,
-          }}
-        >
+        {!imageError ? (
           <ImgixImage
             source={{
-              uri: recentMint.imageURI ?? collection.imageURL,
+              uri: recentMint.imageURI ?? '',
             }}
+            fm="png"
             style={{
               width: NFT_IMAGE_SIZE,
               height: NFT_IMAGE_SIZE,
-              borderRadius: 12,
+              borderRadius: 16,
               backgroundColor: isDarkMode
                 ? surfaceSecondaryElevated
                 : surfacePrimaryElevated,
             }}
+            onError={setImageError}
             size={CardSize}
           />
-        </View>
+        ) : (
+          <Box
+            style={{
+              width: NFT_IMAGE_SIZE,
+              height: NFT_IMAGE_SIZE,
+              borderRadius: 16,
+              backgroundColor: isDarkMode
+                ? surfaceSecondaryElevated
+                : surfacePrimaryElevated,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              align="center"
+              color="labelQuaternary"
+              size="20pt"
+              weight="semibold"
+            >
+              􀣵
+            </Text>
+          </Box>
+        )}
       </View>
     </View>
   );

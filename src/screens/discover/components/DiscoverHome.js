@@ -8,7 +8,7 @@ import useExperimentalFlag, {
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Separator, Stack } from '@/design-system';
+import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -26,6 +26,7 @@ import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintDotFunCard } from '@/components/cards/MintDotFunCard';
+import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 
 export default function DiscoverHome() {
   const { network } = useAccountSettings();
@@ -48,44 +49,42 @@ export default function DiscoverHome() {
     ).length > 0;
 
   return (
-    <Inset top="20px" bottom={{ custom: 150 }}>
-      <Stack space="20px">
-        <Inset horizontal="20px">
-          {!testNetwork ? (
-            <Stack space="20px">
-              <Inline space="20px">
-                <GasCard />
-                {isProfilesEnabled && <ENSSearchCard />}
-              </Inline>
-              {nftOffersEnabled && <NFTOffersCard />}
-              {mintDotFunEnabled && (
-                <>
-                  <MintDotFunCard />
-                  <Separator color="separatorTertiary" thickness={1} />
-                </>
-              )}
-              {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
-              {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
-              {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
-              {isProfilesEnabled && <ENSCreateProfileCard />}
-              <Inline space="20px">
-                <LearnCard cardDetails={backupsCard} type="square" />
-                <LearnCard cardDetails={avoidScamsCard} type="square" />
-              </Inline>
-              <DPICard />
-            </Stack>
-          ) : (
-            <Stack space="20px">
-              <Inline space="20px">
-                <GasCard />
-                <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
-              </Inline>
-              <DPICard />
-            </Stack>
-          )}
-        </Inset>
-        <Lists />
-      </Stack>
+    <Inset top="10px" bottom={{ custom: 150 }}>
+      <Inset horizontal="20px">
+        {!testNetwork ? (
+          <Stack>
+            <Inline space="20px">
+              <GasCard />
+              {isProfilesEnabled && <ENSSearchCard />}
+            </Inline>
+            {mintDotFunEnabled && (
+              <Stack>
+                <FeaturedMintCard />
+                <MintDotFunCard />
+              </Stack>
+            )}
+            {nftOffersEnabled && <NFTOffersCard />}
+            {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
+            {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
+            {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
+            {isProfilesEnabled && <ENSCreateProfileCard />}
+            <Inline space="20px">
+              <LearnCard cardDetails={backupsCard} type="square" />
+              <LearnCard cardDetails={avoidScamsCard} type="square" />
+            </Inline>
+            <DPICard />
+          </Stack>
+        ) : (
+          <Stack>
+            <Inline space="20px">
+              <GasCard />
+              <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
+            </Inline>
+            <DPICard />
+          </Stack>
+        )}
+      </Inset>
+      <Lists />
     </Inset>
   );
 }

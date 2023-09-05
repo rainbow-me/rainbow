@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
@@ -73,6 +73,7 @@ export function CollectionCell({
   const surfaceSecondaryElevated = useBackgroundColor(
     'surfaceSecondaryElevated'
   );
+  const [imageError, setImageError] = useReducer(() => true, false);
 
   const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
     .nativeCurrency;
@@ -81,10 +82,14 @@ export function CollectionCell({
 
   const isFree = amount === '0';
 
+  const onError = useCallback(() => {
+    setImageError();
+  }, []);
+
   return (
     <ButtonPressAnimation
       onPress={() => Linking.openURL(collection.externalURL)}
-      style={{ marginVertical: 10, width: NFT_IMAGE_SIZE }}
+      style={{ width: NFT_IMAGE_SIZE }}
     >
       <View
         style={{
@@ -102,20 +107,45 @@ export function CollectionCell({
             shadowRadius: 9,
           }}
         >
-          <ImgixImage
-            source={{
-              uri: collection.imageURL,
-            }}
-            style={{
-              width: NFT_IMAGE_SIZE,
-              height: NFT_IMAGE_SIZE,
-              borderRadius: 12,
-              backgroundColor: isDarkMode
-                ? surfaceSecondaryElevated
-                : surfacePrimaryElevated,
-            }}
-            size={CardSize}
-          />
+          {!imageError ? (
+            <ImgixImage
+              source={{
+                uri: collection.imageURL,
+              }}
+              style={{
+                width: NFT_IMAGE_SIZE,
+                height: NFT_IMAGE_SIZE,
+                borderRadius: 12,
+                backgroundColor: isDarkMode
+                  ? surfaceSecondaryElevated
+                  : surfacePrimaryElevated,
+              }}
+              onError={onError}
+              size={CardSize}
+            />
+          ) : (
+            <Box
+              style={{
+                width: NFT_IMAGE_SIZE,
+                height: NFT_IMAGE_SIZE,
+                borderRadius: 12,
+                backgroundColor: isDarkMode
+                  ? surfaceSecondaryElevated
+                  : surfacePrimaryElevated,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                align="center"
+                color="labelQuaternary"
+                size="20pt"
+                weight="semibold"
+              >
+                􀣵
+              </Text>
+            </Box>
+          )}
         </View>
       </View>
       <View

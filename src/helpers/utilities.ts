@@ -270,6 +270,25 @@ export const abbreviateBigNumber = (
   }
 };
 
+export const abbreviateNumber = (number: number): string => {
+  if (number >= 1_000_000_000) {
+    const quotient = number / 1_000_000_000;
+    const isInteger = Number.isInteger(quotient);
+    return `${quotient.toFixed(isInteger ? 0 : 1)}b`;
+  } else if (number >= 1_000_000) {
+    const quotient = number / 1_000_000;
+    const isInteger = Number.isInteger(quotient);
+    return `${quotient.toFixed(isInteger ? 0 : 1)}m`;
+  } else if (number >= 1000) {
+    const quotient = number / 1000;
+    const isInteger = Number.isInteger(quotient);
+    return `${quotient.toFixed(isInteger ? 0 : 1)}k`;
+  } else {
+    const isInteger = Number.isInteger(number);
+    return number.toFixed(isInteger ? 0 : 1);
+  }
+};
+
 export const handleSignificantDecimals = (
   value: BigNumberish,
   decimals: number,

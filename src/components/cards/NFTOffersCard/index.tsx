@@ -118,175 +118,177 @@ export const NFTOffersCard = () => {
   );
 
   return (
-    <Bleed horizontal="20px">
-      <Box style={{ overflow: 'hidden' }}>
-        <Inset horizontal="20px">
-          <Box as={Animated.View} width="full" style={[animatedStyle]}>
-            <Stack space="20px">
-              <Separator color="separatorTertiary" thickness={1} />
-              <Inline alignVertical="center" alignHorizontal="justify">
-                <Inline alignVertical="center" space={{ custom: 7 }}>
-                  {!offers.length ? (
-                    <AccentColorProvider color={colors.skeleton}>
-                      <Box
-                        background="accent"
-                        height={{ custom: 14 }}
-                        width={{ custom: 157 }}
-                        borderRadius={7}
-                      />
-                    </AccentColorProvider>
-                  ) : (
-                    <>
-                      <Text color="label" weight="heavy" size="20pt">
-                        {offers.length === 1
-                          ? i18n.t(i18n.l.nft_offers.card.title.singular)
-                          : i18n.t(i18n.l.nft_offers.card.title.plural, {
-                              numOffers: offers.length,
-                            })}
-                      </Text>
-                      <Bleed vertical="4px">
+    <Inset vertical="10px">
+      <Bleed horizontal="20px">
+        <Box style={{ overflow: 'hidden' }}>
+          <Inset horizontal="20px">
+            <Box as={Animated.View} width="full" style={[animatedStyle]}>
+              <Stack space="20px">
+                <Separator color="separatorTertiary" thickness={1} />
+                <Inline alignVertical="center" alignHorizontal="justify">
+                  <Inline alignVertical="center" space={{ custom: 7 }}>
+                    {!offers.length ? (
+                      <AccentColorProvider color={colors.skeleton}>
                         <Box
-                          style={{
-                            borderWidth: 1,
-                            borderColor,
-                            borderRadius: 7,
-                          }}
-                          justifyContent="center"
-                          alignItems="center"
-                          padding={{ custom: 5 }}
-                        >
-                          <Text
-                            align="center"
-                            color="labelTertiary"
-                            size="13pt"
-                            weight="semibold"
+                          background="accent"
+                          height={{ custom: 14 }}
+                          width={{ custom: 157 }}
+                          borderRadius={7}
+                        />
+                      </AccentColorProvider>
+                    ) : (
+                      <>
+                        <Text color="label" weight="heavy" size="20pt">
+                          {offers.length === 1
+                            ? i18n.t(i18n.l.nft_offers.card.title.singular)
+                            : i18n.t(i18n.l.nft_offers.card.title.plural, {
+                                numOffers: offers.length,
+                              })}
+                        </Text>
+                        <Bleed vertical="4px">
+                          <Box
+                            style={{
+                              borderWidth: 1,
+                              borderColor,
+                              borderRadius: 7,
+                            }}
+                            justifyContent="center"
+                            alignItems="center"
+                            padding={{ custom: 5 }}
                           >
-                            {totalValue}
-                          </Text>
-                        </Box>
-                      </Bleed>
-                    </>
-                  )}
+                            <Text
+                              align="center"
+                              color="labelTertiary"
+                              size="13pt"
+                              weight="semibold"
+                            >
+                              {totalValue}
+                            </Text>
+                          </Box>
+                        </Bleed>
+                      </>
+                    )}
+                  </Inline>
+                  <SortMenu type="card" />
                 </Inline>
-                <SortMenu type="card" />
-              </Inline>
-              <Bleed horizontal="20px" vertical="10px">
-                <Box height={{ custom: OFFER_CELL_HEIGHT }}>
-                  {offers.length ? (
-                    <FlashList
-                      data={offers}
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ paddingHorizontal: 13 }}
-                      estimatedItemSize={OFFER_CELL_WIDTH}
-                      horizontal
-                      estimatedListSize={{
-                        height: OFFER_CELL_HEIGHT,
-                        width: deviceWidth * 2,
-                      }}
-                      style={{ flex: 1 }}
-                      renderItem={({ item }) => <Offer offer={item} />}
-                      keyExtractor={offer =>
-                        offer.nft.uniqueId + offer.createdAt
-                      }
-                    />
-                  ) : (
-                    // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ paddingHorizontal: 13 }}
-                    >
-                      <FakeOffer />
-                      <FakeOffer />
-                      <FakeOffer />
-                      <FakeOffer />
-                      <FakeOffer />
-                    </ScrollView>
-                  )}
-                </Box>
-              </Bleed>
-              <Columns space="10px">
-                <Column>
-                  {/* @ts-ignore js component */}
-                  <Box
-                    as={ButtonPressAnimation}
-                    background="fillSecondary"
-                    height="36px"
-                    width="full"
-                    borderRadius={99}
-                    justifyContent="center"
-                    alignItems="center"
-                    style={{ overflow: 'hidden' }}
-                    onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersOpenedOffersSheet,
-                        { entryPoint: 'NFTOffersCard' }
-                      );
-                      navigate(Routes.NFT_OFFERS_SHEET);
-                    }}
-                  >
-                    {/* unfortunately shimmer width must be hardcoded */}
-                    <ShimmerAnimation
-                      color={buttonColor}
-                      // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
-                      width={deviceWidth - 86}
-                    />
-                    <Text
-                      color="label"
-                      align="center"
-                      size="15pt"
-                      weight="bold"
-                    >
-                      {i18n.t(i18n.l.nft_offers.card.button)}
-                    </Text>
-                  </Box>
-                </Column>
-                <Column width="content">
-                  <Box
-                    as={ButtonPressAnimation}
-                    // @ts-ignore
-                    disabled={!canRefresh}
-                    onPress={() => {
-                      setCanRefresh(false);
-                      queryClient.invalidateQueries(
-                        nftOffersQueryKey({
-                          address: accountAddress,
-                        })
-                      );
-                    }}
-                    justifyContent="center"
-                    alignItems="center"
-                    borderRadius={18}
-                    style={{
-                      borderWidth: isFetching ? 0 : 1,
-                      borderColor: borderColor,
-                      width: 36,
-                      height: 36,
-                    }}
-                  >
-                    {isFetching ? (
-                      <LoadingSpinner
-                        color={colorMode === 'light' ? 'black' : 'white'}
-                        size={20}
+                <Bleed horizontal="20px" vertical="10px">
+                  <Box height={{ custom: OFFER_CELL_HEIGHT }}>
+                    {offers.length ? (
+                      <FlashList
+                        data={offers}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 13 }}
+                        estimatedItemSize={OFFER_CELL_WIDTH}
+                        horizontal
+                        estimatedListSize={{
+                          height: OFFER_CELL_HEIGHT,
+                          width: deviceWidth * 2,
+                        }}
+                        style={{ flex: 1 }}
+                        renderItem={({ item }) => <Offer offer={item} />}
+                        keyExtractor={offer =>
+                          offer.nft.uniqueId + offer.createdAt
+                        }
                       />
                     ) : (
-                      <Text
-                        align="center"
-                        color="label"
-                        size="17pt"
-                        weight="bold"
+                      // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 13 }}
                       >
-                        􀅈
-                      </Text>
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                        <FakeOffer />
+                      </ScrollView>
                     )}
                   </Box>
-                </Column>
-              </Columns>
-              <Separator color="separatorTertiary" thickness={1} />
-            </Stack>
-          </Box>
-        </Inset>
-      </Box>
-    </Bleed>
+                </Bleed>
+                <Columns space="10px">
+                  <Column>
+                    {/* @ts-ignore js component */}
+                    <Box
+                      as={ButtonPressAnimation}
+                      background="fillSecondary"
+                      height="36px"
+                      width="full"
+                      borderRadius={99}
+                      justifyContent="center"
+                      alignItems="center"
+                      style={{ overflow: 'hidden' }}
+                      onPress={() => {
+                        analyticsV2.track(
+                          analyticsV2.event.nftOffersOpenedOffersSheet,
+                          { entryPoint: 'NFTOffersCard' }
+                        );
+                        navigate(Routes.NFT_OFFERS_SHEET);
+                      }}
+                    >
+                      {/* unfortunately shimmer width must be hardcoded */}
+                      <ShimmerAnimation
+                        color={buttonColor}
+                        // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
+                        width={deviceWidth - 86}
+                      />
+                      <Text
+                        color="label"
+                        align="center"
+                        size="15pt"
+                        weight="bold"
+                      >
+                        {i18n.t(i18n.l.nft_offers.card.button)}
+                      </Text>
+                    </Box>
+                  </Column>
+                  <Column width="content">
+                    <Box
+                      as={ButtonPressAnimation}
+                      // @ts-ignore
+                      disabled={!canRefresh}
+                      onPress={() => {
+                        setCanRefresh(false);
+                        queryClient.invalidateQueries(
+                          nftOffersQueryKey({
+                            address: accountAddress,
+                          })
+                        );
+                      }}
+                      justifyContent="center"
+                      alignItems="center"
+                      borderRadius={18}
+                      style={{
+                        borderWidth: isFetching ? 0 : 1,
+                        borderColor: borderColor,
+                        width: 36,
+                        height: 36,
+                      }}
+                    >
+                      {isFetching ? (
+                        <LoadingSpinner
+                          color={colorMode === 'light' ? 'black' : 'white'}
+                          size={20}
+                        />
+                      ) : (
+                        <Text
+                          align="center"
+                          color="label"
+                          size="17pt"
+                          weight="bold"
+                        >
+                          􀅈
+                        </Text>
+                      )}
+                    </Box>
+                  </Column>
+                </Columns>
+                <Separator color="separatorTertiary" thickness={1} />
+              </Stack>
+            </Box>
+          </Inset>
+        </Box>
+      </Bleed>
+    </Inset>
   );
 };

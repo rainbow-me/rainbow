@@ -1,68 +1,135 @@
 import { analyticsV2 } from '@/analytics';
-import {
-  Filter,
-  mintDotFunFilterAtom,
-} from '@/components/cards/MintDotFunCard/Menu';
+import { useCallback, useMemo } from 'react';
 import { MINT_DOT_FUN, useExperimentalFlag } from '@/config';
 import { IS_PROD } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
 import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
+import { atom, useRecoilState } from 'recoil';
+import { MMKV } from 'react-native-mmkv';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
+const mmkv = new MMKV();
 
-export const mintableCollectionsQueryKey = ({ address }: { address: string }) =>
-  createQueryKey('mintableCollections', { address }, { persisterVersion: 1 });
+const MINTABLE_COLLECTIONS_FILTER_MMKV_KEY = 'mintableCollectionsFilter';
+
+export enum MintableCollectionsFilter {
+  All = 'all',
+  Paid = 'paid',
+  Free = 'free',
+}
+
+const mintableCollectionsFilterAtom = atom<MintableCollectionsFilter>({
+  default:
+    (mmkv.getString(MINTABLE_COLLECTIONS_FILTER_MMKV_KEY) as
+      | MintableCollectionsFilter
+      | undefined) ?? MintableCollectionsFilter.All,
+  key: MINTABLE_COLLECTIONS_FILTER_MMKV_KEY,
+});
+
+export function mintableCollectionsQueryKey({ address }: { address: string }) {
+  return createQueryKey(
+    'mintableCollections',
+    { address },
+    { persisterVersion: 1 }
+  );
+}
 
 /**
- * React Query hook that returns the the most profitable `NftOffer` for each NFT owned by the given wallet address.
- * @param walletAddress The wallet address to query for.
- * @param sortBy How the offers should be sorted. Defaults to `SortCriterion.TopBidValue`.
- * @returns an NftOffer[] located at `returnValue.data.nftOffers`.
+ * Gets the label for a given `MintableCollectionsFilter`.
+ */
+export function getMintableCollectionsFilterLabel(
+  filter: MintableCollectionsFilter
+) {
+  switch (filter) {
+    case MintableCollectionsFilter.All:
+      return 'All';
+    case MintableCollectionsFilter.Paid:
+      return 'Paid';
+    case MintableCollectionsFilter.Free:
+      return 'Free';
+  }
+}
+
+/**
+ * Hook that returns the current `MintableCollectionsFilter` and a function to set it.
+ */
+export function useMintableCollectionsFilter() {
+  const [filterState, setFilterState] = useRecoilState(
+    mintableCollectionsFilterAtom
+  );
+
+  const setFilter = useCallback(
+    (filter: MintableCollectionsFilter) => {
+      setFilterState(filter);
+      mmkv.set(MINTABLE_COLLECTIONS_FILTER_MMKV_KEY, filter);
+    },
+    [setFilterState]
+  );
+
+  return { filter: filterState, setFilter };
+}
+
+/**
+ * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMintableCollections({
   walletAddress,
-  chainId,
 }: {
   walletAddress: string;
-  chainId: number;
 }) {
   const mintDotFunEnabled = useExperimentalFlag(MINT_DOT_FUN);
-  const filter = useRecoilValue(mintDotFunFilterAtom);
+  const { filter } = useMintableCollectionsFilter();
   const queryKey = mintableCollectionsQueryKey({
     address: walletAddress,
   });
 
   const query = useQuery<GetMintableCollectionsQuery>(
     queryKey,
-    async () =>
-      await graphqlClient.getMintableCollections({
+    async () => {
+      console.log('OKOK');
+      const x = await graphqlClient.getMintableCollections({
         walletAddress,
-        chain: chainId,
-      }),
+        chain: 7777777, // zora
+      });
+      console.log('ZEEP');
+      console.log(x);
+      return x;
+    },
     {
       enabled: mintDotFunEnabled && !!walletAddress,
-      staleTime: 300_000, // 5 minutes
-      cacheTime: 1_800_000, // 30 minutes
-      refetchInterval: 600_000, // 10 minutes
+      staleTime: 0, // 5 minutes
+      cacheTime: 0, // 30 minutes
+      refetchInterval: 0, // 10 minutes
     }
+  );
+
+  const freeMints = useMemo(
+    () =>
+      query.data?.getMintableCollections?.collections.filter(
+        collection => collection.mintStatus.price === '0'
+      ),
+    [query.data?.getMintableCollections?.collections]
+  );
+
+  const paidMints = useMemo(
+    () =>
+      query.data?.getMintableCollections?.collections.filter(
+        collection => collection.mintStatus.price !== '0'
+      ),
+    [query.data?.getMintableCollections?.collections]
   );
 
   let filteredMints;
   switch (filter) {
-    case Filter.Free:
-      filteredMints = query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price === '0'
-      );
+    case MintableCollectionsFilter.Free:
+      filteredMints = freeMints;
       break;
-    case Filter.Paid:
-      filteredMints = query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price !== '0'
-      );
+    case MintableCollectionsFilter.Paid:
+      filteredMints = paidMints;
       break;
-    case Filter.All:
+    case MintableCollectionsFilter.All:
     default:
       filteredMints = query.data?.getMintableCollections?.collections;
       break;

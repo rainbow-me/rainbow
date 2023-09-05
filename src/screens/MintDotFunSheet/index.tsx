@@ -1,112 +1,126 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
+  AccentColorProvider,
   BackgroundProvider,
-  Inline,
+  Box,
+  Column,
+  Columns,
   Inset,
   Separator,
   Stack,
   Text,
 } from '@/design-system';
-import { CarouselCard } from '@/components/cards/CarouselCard';
-import { RecentMintCell, NFT_IMAGE_SIZE, Placeholder } from './RecentMintCell';
-import { useAccountSettings } from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import { useMintableCollections } from '@/resources/mintdotfun';
-import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
-import { getTimeElapsedFromDate } from './utils';
-import { Linking } from 'react-native';
-
-function Card({ collection }: { collection: MintableCollection }) {
-  const [timeElapsed, setTimeElapsed] = useState(
-    getTimeElapsedFromDate(new Date(collection.firstEvent))
-  );
-
-  // update elapsed time every minute if it's less than an hour
-  useEffect(() => {
-    if (timeElapsed[timeElapsed.length - 1] === 'm') {
-      const interval = setInterval(() => {
-        setTimeElapsed(getTimeElapsedFromDate(new Date(collection.firstEvent)));
-      }, 60_000);
-      return () => clearInterval(interval);
-    }
-  });
-
-  return (
-    <CarouselCard
-      title={
-        <Stack space="12px">
-          <Text size="20pt" weight="bold" color="label">
-            {collection.name}
-          </Text>
-          <Inline space="3px" alignVertical="center">
-            <Text size="11pt" weight="semibold" color="labelQuaternary">
-              􀐫
-            </Text>
-            <Inline alignVertical="center">
-              <Text size="13pt" weight="semibold" color="labelTertiary">
-                {`${timeElapsed} ago`}
-              </Text>
-              <Text size="13pt" weight="semibold" color="labelTertiary">
-                {` · ${collection.mintsLastHour} mint${
-                  collection.mintsLastHour !== 1 ? 's' : ''
-                } past hour`}
-              </Text>
-            </Inline>
-          </Inline>
-        </Stack>
-      }
-      data={collection.recentMints}
-      carouselItem={{
-        renderItem: ({ item }) => (
-          <RecentMintCell recentMint={item} collection={collection} />
-        ),
-        keyExtractor: (item: NftSample) => item.tokenID,
-        placeholder: <Placeholder />,
-        width: NFT_IMAGE_SIZE,
-        height: NFT_IMAGE_SIZE + 20,
-        padding: 10,
-      }}
-      button={{
-        text: 'Mint',
-        style: 'fill',
-        onPress: () => Linking.openURL(collection.externalURL),
-      }}
-    />
-  );
-}
+import { ButtonPressAnimation } from '@/components/animations';
+import { ImgixImage } from '@/components/images';
+import { TabBar } from './TabBar';
+import { Card } from './card';
+import { FlashList } from '@shopify/flash-list';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ContactAvatar } from '@/components/contacts';
 
 export function MintDotFunSheet() {
-  const { accountAddress } = useAccountSettings();
-  const { data } = useMintableCollections({
+  const {
+    accountAddress,
+    accountImage,
+    accountColor,
+    accountSymbol,
+  } = useAccountProfile();
+  const {
+    data: {
+      getMintableCollections: { collections },
+    },
+  } = useMintableCollections({
     walletAddress: accountAddress,
-    chainId: 8453,
   });
+  const { width: deviceWidth, height: deviceHeight } = useDimensions();
+  const { navigate } = useNavigation();
+
+  const data = collections ?? [];
 
   return (
-    <BackgroundProvider color="surfaceSecondaryElevated">
-      {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string}>
-          <Inset top={{ custom: 31 }} bottom="52px" horizontal="20px">
-            <Stack space="24px">
-              <Text color="label" size="20pt" align="center" weight="heavy">
-                All Mints
-              </Text>
-              <Separator color="separatorTertiary" />
-              <Stack
-                space="24px"
-                separator={<Separator color="separatorTertiary" />}
-              >
-                {data?.getMintableCollections.collections?.map(collection => (
-                  <Card
-                    key={collection.contractAddress + collection.chainId}
-                    collection={collection}
-                  />
-                ))}
+    <>
+      <BackgroundProvider color="surfaceSecondaryElevated">
+        {({ backgroundColor }) => (
+          <SimpleSheet backgroundColor={backgroundColor as string}>
+            <Inset top="20px" bottom={{ custom: 120 }}>
+              <Stack space="20px">
+                <Inset horizontal="20px">
+                  <Stack space="10px">
+                    <Columns alignVertical="center">
+                      <Column width="content">
+                        <AccentColorProvider color={accountColor}>
+                          <ButtonPressAnimation
+                            onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
+                          >
+                            {accountImage ? (
+                              <Box
+                                as={ImgixImage}
+                                background="surfaceSecondaryElevated"
+                                size={36}
+                                source={{ uri: accountImage }}
+                                width={{ custom: 36 }}
+                                height="36px"
+                                borderRadius={36}
+                                shadow="12px accent"
+                              />
+                            ) : (
+                              <Box
+                                as={ContactAvatar}
+                                background="surfacePrimary"
+                                shadow="12px accent"
+                                color={accountColor}
+                                size="smedium"
+                                value={accountSymbol}
+                              />
+                            )}
+                          </ButtonPressAnimation>
+                        </AccentColorProvider>
+                      </Column>
+                      <Column>
+                        <Text
+                          color="label"
+                          size="20pt"
+                          align="center"
+                          weight="heavy"
+                        >
+                          Mints
+                        </Text>
+                      </Column>
+                      <Column width="content">
+                        <Box width={{ custom: 36 }} />
+                      </Column>
+                    </Columns>
+                    <Separator thickness={1} color="separatorTertiary" />
+                  </Stack>
+                </Inset>
+                <FlashList
+                  data={[...data, ...data, ...data, ...data, ...data]}
+                  estimatedItemSize={222}
+                  estimatedListSize={{
+                    height: deviceHeight,
+                    width: deviceWidth,
+                  }}
+                  // style={{ overflow: 'visible', marginHorizontal: -20 }}
+                  renderItem={({ item }) => <Card collection={item} />}
+                  ItemSeparatorComponent={() => (
+                    <Inset vertical="20px">
+                      <Separator thickness={1} color="separatorTertiary" />
+                    </Inset>
+                  )}
+                  keyExtractor={(item, index) =>
+                    item.contractAddress + item.chainId + index
+                  }
+                />
               </Stack>
-            </Stack>
-          </Inset>
-        </SimpleSheet>
-      )}
-    </BackgroundProvider>
+            </Inset>
+          </SimpleSheet>
+        )}
+      </BackgroundProvider>
+      <TabBar />
+    </>
   );
 }

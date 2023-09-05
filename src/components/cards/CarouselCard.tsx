@@ -4,7 +4,6 @@ import {
   Column,
   Columns,
   Inline,
-  Inset,
   Stack,
   Text,
   useColorMode,
@@ -12,10 +11,7 @@ import {
 } from '@/design-system';
 import React from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import {
-  ButtonPressAnimation,
-  ShimmerAnimation,
-} from '@/components/animations';
+import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
@@ -33,12 +29,7 @@ type CarouselItem<T> = {
   width: number;
   height: number; // make sure to include extra 20px to accommodate for vertical bleed
   padding: number;
-};
-
-type Button = {
-  onPress: () => void;
-  text: string;
-  style: 'fill' | 'outline';
+  verticalOverflow?: number;
 };
 
 export function CarouselCard<T>({
@@ -54,16 +45,18 @@ export function CarouselCard<T>({
   title: string | React.ReactNode;
   data: T[] | null | undefined;
   carouselItem: CarouselItem<T>;
-  button: Button;
+  button: React.ReactNode;
   menu?: React.ReactNode;
   refresh?: () => void;
   canRefresh?: boolean;
   isRefreshing?: boolean;
 }) {
   const borderColor = useForegroundColor('separator');
-  const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
   const { colorMode } = useColorMode();
+
+  const actualItemHeight =
+    carouselItem.height + (carouselItem.verticalOverflow ?? 0) * 2;
 
   return (
     <Stack space="20px">
@@ -81,8 +74,11 @@ export function CarouselCard<T>({
       so we need to manually add vertical padding to the recycled component.
       The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 
       See https://github.com/Shopify/flash-list/issues/723*/}
-      <Bleed horizontal="20px" vertical="10px">
-        <Box height={{ custom: carouselItem.height }}>
+      <Bleed
+        horizontal="20px"
+        vertical={{ custom: carouselItem.verticalOverflow ?? 0 }}
+      >
+        <Box height={{ custom: actualItemHeight }}>
           {data?.length ? (
             <FlashList
               data={data}
@@ -93,11 +89,20 @@ export function CarouselCard<T>({
               estimatedItemSize={carouselItem.width}
               horizontal
               estimatedListSize={{
-                height: carouselItem.height,
+                height: actualItemHeight,
                 width: deviceWidth * 2,
               }}
               style={{ flex: 1 }}
-              renderItem={carouselItem.renderItem}
+              renderItem={info => (
+                <View
+                  style={{
+                    paddingVertical: carouselItem.verticalOverflow,
+                    alignItems: 'center',
+                  }}
+                >
+                  {carouselItem.renderItem(info)}
+                </View>
+              )}
               ItemSeparatorComponent={() => (
                 <View style={{ width: carouselItem.padding }} />
               )}
@@ -124,38 +129,7 @@ export function CarouselCard<T>({
         </Box>
       </Bleed>
       <Columns space="10px">
-        <Column>
-          {/* @ts-ignore js component */}
-          <Box
-            as={ButtonPressAnimation}
-            background={button.style === 'fill' ? 'fillSecondary' : undefined}
-            height="36px"
-            width="full"
-            borderRadius={99}
-            justifyContent="center"
-            alignItems="center"
-            style={{
-              overflow: 'hidden',
-              borderWidth: button.style === 'outline' ? 1 : undefined,
-              borderColor: button.style === 'outline' ? 'blue' : undefined,
-            }}
-            onPress={button.onPress}
-          >
-            {/* unfortunately shimmer width must be hardcoded */}
-            <ShimmerAnimation
-              color={buttonColor}
-              width={
-                deviceWidth -
-                2 * HORIZONTAL_PADDING -
-                // 46 = 36px refresh button width + 10px spacing
-                (refresh ? 46 : 0)
-              }
-            />
-            <Text color="label" align="center" size="15pt" weight="bold">
-              {button.text}
-            </Text>
-          </Box>
-        </Column>
+        <Column>{button}</Column>
         {!!refresh && (
           <Column width="content">
             <Box

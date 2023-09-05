@@ -28,7 +28,7 @@ export async function rainbowFetch(
 
   const requestBody =
     body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
-
+  console.log(url);
   const response = await fetch(`${url}${createParams(params)}`, {
     ...otherOpts,
     body: requestBody,
@@ -39,6 +39,11 @@ export async function rainbowFetch(
     },
     signal: controller.signal,
   });
+
+  if (typeof url === 'string' && url?.includes('mintable')) {
+    console.log('MINTABLE');
+    console.log(response);
+  }
 
   clearTimeout(id);
 
