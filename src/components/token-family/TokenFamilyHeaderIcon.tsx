@@ -9,6 +9,7 @@ import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon, initials } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
+import * as i18n from '@/languages';
 
 type Props = {
   familyName: string;
@@ -39,7 +40,7 @@ export default React.memo(function TokenFamilyHeaderIcon({
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
-  if (familyName === 'Showcase') {
+  if (familyName === i18n.t(i18n.l.account.tab_showcase)) {
     return (
       <View style={sx.trophy}>
         <Text

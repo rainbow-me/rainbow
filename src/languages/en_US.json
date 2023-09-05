@@ -21,6 +21,7 @@
       "tab_interactions_tooltip": "Smart Contract Interactions",
       "tab_investments": "Pools",
       "tab_savings": "Savings",
+      "tab_showcase": "Showcase",
       "tab_positions": "Positions",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions and Token Transfers",
@@ -433,7 +434,14 @@
     "discover": {
       "lists": {
         "lists_title": "Lists",
-        "this_list_is_empty": "This list is empty!"
+        "this_list_is_empty": "This list is empty!",
+        "types": {
+          "trending": "Trending",
+          "watchlist": "Watchlist",
+          "favorites": "Favorites",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
       },
       "pulse": {
         "pulse_description": "All the top DeFi tokens in one",
@@ -1663,12 +1671,19 @@
         "sending": "Sending",
         "sent": "Sent",
         "speeding up": "Speeding up",
+        "selling": "Selling",
+        "sold": "Sold",
         "swapped": "Swapped",
         "swapping": "Swapping",
         "unknown": "Unknown",
         "withdrawing": "Withdrawing",
         "withdrew": "Withdrew"
-      }
+      },
+      "savings": "Savings",
+      "signed": "Signed",
+      "contract_interaction": "Contract Interaction",
+      "deposited_with_token": "Deposited %{name}",
+      "withdrew_with_token": "Withdrew %{name}"
     },
     "transaction_details": {
       "from": "From",
@@ -1692,10 +1707,10 @@
       }
     },
     "time": {
-      "today_caps": "Today :)",
-      "today": "today :)",
+      "today_caps": "Today",
+      "today": "today",
       "yesterday_caps": "Yesterday",
-      "yesterday": "yesterday :)",
+      "yesterday": "yesterday",
       "this_month_caps": "This Month",
       "days": {
         "long": {
