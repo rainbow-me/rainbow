@@ -28,21 +28,18 @@ import {
 import { getTransactionMethodName } from '@/handlers/transactions';
 import { isL2Network } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import {
-  ETH_ADDRESS,
-  savingsAssetsList,
-  supportedNativeCurrencies,
-} from '@/references';
+import { ETH_ADDRESS, savingsAssetsList } from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils, getTokenMetadata, isLowerCaseMatch } from '@/utils';
+import { ethereumUtils, getTokenMetadata } from '@/utils';
 import {
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
 } from '@rainbow-me/swaps';
 import { RainbowTransactionFee } from '@/entities/transactions/transaction';
+import * as i18n from '@/languages';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -349,11 +346,11 @@ const parseTransactionWithEmptyChanges = async (
       balance: isL2Network(network)
         ? { amount: '', display: '-' }
         : convertRawAmountToBalance(valueUnit, updatedAsset),
-      description: methodName || 'Signed',
+      description: methodName || i18n.t(i18n.l.transactions.signed),
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
       minedAt: txn.mined_at,
-      name: methodName || 'Signed',
+      name: methodName || i18n.t(i18n.l.transactions.signed),
       native: nativeDisplay,
       network,
       nonce: txn.nonce,
@@ -361,7 +358,7 @@ const parseTransactionWithEmptyChanges = async (
       protocol: txn.protocol,
       status: TransactionStatus.contract_interaction,
       symbol: 'contract',
-      title: `Contract Interaction`,
+      title: i18n.t(i18n.l.transactions.contract_interaction),
       to: txn.address_to,
       type: TransactionType.contract_interaction,
       fee,
@@ -523,7 +520,7 @@ export const getTitle = ({
       status === TransactionStatus.received
     ) {
       if (protocol === ProtocolType.compound) {
-        return 'Savings';
+        return i18n.t(i18n.l.transactions.savings);
       } else {
         return ProtocolTypeNames?.[protocol];
       }
@@ -546,12 +543,12 @@ export const getDescription = ({
       return status === TransactionStatus.depositing ||
         status === TransactionStatus.sending
         ? name
-        : `Deposited ${name}`;
+        : i18n.t(i18n.l.transactions.deposited_with_token, { name: name! });
     case TransactionType.withdraw:
       return status === TransactionStatus.withdrawing ||
         status === TransactionStatus.receiving
         ? name
-        : `Withdrew ${name}`;
+        : i18n.t(i18n.l.transactions.withdrew_with_token, { name: name! });
     default:
       return name;
   }

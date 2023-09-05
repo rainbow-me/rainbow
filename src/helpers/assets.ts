@@ -240,7 +240,7 @@ export const buildUniqueTokenList = (
     rows = [
       {
         childrenAmount: showcaseTokens.length,
-        familyName: 'Showcase',
+        familyName: i18n.t(i18n.l.account.tab_showcase),
         isHeader: true,
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
@@ -298,7 +298,7 @@ export const buildBriefUniqueTokenList = (
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
       // @ts-expect-error "name" does not exist in type.
-      name: 'Showcase',
+      name: i18n.t(i18n.l.account.tab_showcase),
       total: uniqueTokensInShowcaseIds.length,
       type: 'FAMILY_HEADER',
       uid: 'showcase',
