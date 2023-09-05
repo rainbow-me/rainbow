@@ -210,7 +210,7 @@
         "insufficient_bnb": "BNB Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
-        "fee_on_transfer":  "􀅵 Fee on Transfer Token",
+        "fee_on_transfer": "􀅵 Fee on Transfer Token",
         "no_route_found": "􀅵 No route found :)",
         "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
