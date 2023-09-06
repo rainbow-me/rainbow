@@ -21,9 +21,10 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { ImgixImage } from '../images';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { BlurView } from '@react-native-community/blur';
-import { Linking, View } from 'react-native';
+import { Image, Linking, View } from 'react-native';
 import { IS_IOS } from '@/env';
 import c from 'chroma-js';
+import { maybeSignUri } from '@/handlers/imgix';
 
 const IMAGE_SIZE = 111;
 
@@ -283,9 +284,12 @@ export function FeaturedMintCard() {
                                   }
                             }
                           >
-                            <ImgixImage
-                              size={IMAGE_SIZE}
-                              source={{ uri: imageUrl }}
+                            <Image
+                              source={{
+                                uri: maybeSignUri(imageUrl, {
+                                  w: IMAGE_SIZE,
+                                }),
+                              }}
                               style={{
                                 width: IMAGE_SIZE,
                                 height: IMAGE_SIZE,

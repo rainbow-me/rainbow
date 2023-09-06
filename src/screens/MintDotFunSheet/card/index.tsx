@@ -38,7 +38,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
   });
 
   return (
-    <View style={{ paddingHorizontal: 20 }}>
+    <View style={{ paddingHorizontal: 20, marginTop: 1 }}>
       <CarouselCard
         title={
           <Stack space="12px">
@@ -62,7 +62,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
             </Inline>
           </Stack>
         }
-        data={collection.recentMints}
+        data={collection.recentMints.reverse()}
         carouselItem={{
           renderItem: ({ item }) => <RecentMintCell recentMint={item} />,
           keyExtractor: (item: NftSample) => item.tokenID,

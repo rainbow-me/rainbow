@@ -99,9 +99,9 @@ export function useMintableCollections({
       }),
     {
       enabled: mintDotFunEnabled && !!walletAddress,
-      staleTime: 0, // 5 minutes
-      cacheTime: 0, // 30 minutes
-      refetchInterval: 0, // 10 minutes
+      staleTime: 300_000, // 5 minutes
+      cacheTime: 1_800_000, // 30 minutes
+      refetchInterval: 600_000, // 10 minutes
     }
   );
 

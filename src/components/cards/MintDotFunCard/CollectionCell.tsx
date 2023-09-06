@@ -1,6 +1,5 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
-import { ImgixImage } from '@/components/images';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
@@ -15,11 +14,11 @@ import {
 } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
-import { CardSize } from '@/components/unique-token/CardSize';
-import { Linking, View } from 'react-native';
+import { Image, Linking, View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
+import { maybeSignUri } from '@/handlers/imgix';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -74,7 +73,7 @@ export function CollectionCell({
   const surfaceSecondaryElevated = useBackgroundColor(
     'surfaceSecondaryElevated'
   );
-  const [loaded, setLoaded] = useReducer(() => true, false);
+  const [loaded, setLoaded] = useState(false);
 
   const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
     .nativeCurrency;
@@ -86,7 +85,9 @@ export function CollectionCell({
   const imageUrl =
     collection.imageURL ||
     collection?.recentMints?.find(m => m.imageURI)?.imageURI;
-  console.log(imageUrl);
+
+  useEffect(() => setLoaded(false), [imageUrl]);
+
   return (
     <ButtonPressAnimation
       onPress={() => Linking.openURL(collection.externalURL)}
@@ -135,18 +136,22 @@ export function CollectionCell({
           )}
           {!!imageUrl && (
             <Cover>
-              <ImgixImage
+              <Image
                 source={{
-                  uri: imageUrl,
+                  uri: maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }),
                 }}
+                // onError={e => {
+                //   console.log('Error');
+                //   console.log(e);
+                //   console.log(imageUrl);
+                //   console.log(maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }));
+                // }}
                 style={{
                   width: NFT_IMAGE_SIZE,
                   height: NFT_IMAGE_SIZE,
                   borderRadius: 12,
                 }}
-                retryOnError
-                onLoad={setLoaded}
-                size={CardSize}
+                onLoad={() => setLoaded(true)}
               />
             </Cover>
           )}

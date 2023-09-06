@@ -1,6 +1,5 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
-import { ImgixImage } from '@/components/images';
 import {
   AccentColorProvider,
   Bleed,
@@ -12,9 +11,9 @@ import {
   useBackgroundColor,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { CardSize } from '@/components/unique-token/CardSize';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
+import { maybeSignUri } from '@/handlers/imgix';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -66,7 +65,9 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
     'surfaceSecondaryElevated'
   );
 
-  const [loaded, setLoaded] = useReducer(() => true, false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => setLoaded(false), [recentMint.imageURI]);
 
   return (
     <View
@@ -112,18 +113,16 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
         )}
         {!!recentMint?.imageURI && (
           <Cover>
-            <ImgixImage
+            <Image
               source={{
-                uri: recentMint.imageURI,
+                uri: maybeSignUri(recentMint.imageURI, { w: NFT_IMAGE_SIZE }),
               }}
-              fm="png"
               style={{
                 width: NFT_IMAGE_SIZE,
                 height: NFT_IMAGE_SIZE,
-                borderRadius: 16,
+                borderRadius: 12,
               }}
-              onLoad={setLoaded}
-              size={CardSize}
+              onLoad={() => setLoaded(true)}
             />
           </Cover>
         )}
