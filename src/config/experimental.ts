@@ -37,7 +37,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },
   [L2_TXS]: { needsRestart: true, settings: true, value: true },
-  [LANGUAGE_SETTINGS]: { settings: false, value: false },
+  [LANGUAGE_SETTINGS]: { settings: true, value: false },
   [NOTIFICATIONS]: { needsRestart: true, settings: true, value: true },
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },

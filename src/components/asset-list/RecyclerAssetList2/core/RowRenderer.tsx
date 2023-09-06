@@ -37,6 +37,7 @@ import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
+import * as lang from '@/languages';
 
 function rowRenderer(
   type: CellType,
@@ -152,7 +153,7 @@ function rowRenderer(
     case CellType.NFTS_HEADER:
       return (
         // @ts-expect-error JavaScript component
-        <AssetListHeader title="Collectibles" />
+        <AssetListHeader title={lang.t(lang.l.account.tab_collectibles)} />
       );
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;

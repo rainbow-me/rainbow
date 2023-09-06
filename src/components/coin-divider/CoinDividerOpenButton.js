@@ -12,6 +12,7 @@ import { Text } from '../text';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { magicMemo } from '@/utils';
+import * as i18n from '@/languages';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -91,8 +92,12 @@ const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
       <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
         <View paddingHorizontal={19} paddingVertical={5}>
           <Content style={wrapperStyle}>
-            <LabelText style={allLabelStyle}>All</LabelText>
-            <LabelText style={lessLabelStyle}>Less</LabelText>
+            <LabelText style={allLabelStyle}>
+              {i18n.t(i18n.l.button.all)}
+            </LabelText>
+            <LabelText style={lessLabelStyle}>
+              {i18n.t(i18n.l.button.less)}
+            </LabelText>
             <Animated.View style={style}>
               <CaretIcon />
             </Animated.View>

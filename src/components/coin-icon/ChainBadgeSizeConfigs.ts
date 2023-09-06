@@ -11,6 +11,10 @@ export const ChainBadgeSizeConfigs = {
     containerSize: 44,
     iconSize: 20,
   },
+  gas: {
+    containerSize: 36,
+    iconSize: 18,
+  },
   tiny: {
     containerSize: 30,
     iconSize: 14,

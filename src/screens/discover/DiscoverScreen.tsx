@@ -9,6 +9,7 @@ import DiscoverSheetContext from './DiscoverScreenContext';
 import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import * as i18n from '@/languages';
 
 export default function DiscoverScreen() {
   const {
@@ -48,7 +49,11 @@ export default function DiscoverScreen() {
           testID={
             isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
           }
-          title={isSearchModeEnabled ? 'Search' : 'Discover'}
+          title={
+            isSearchModeEnabled
+              ? i18n.t(i18n.l.discover.search.search)
+              : i18n.t(i18n.l.discover.search.discover)
+          }
         />
         <Box
           as={ScrollView}

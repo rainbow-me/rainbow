@@ -3,6 +3,7 @@ import toUpper from 'lodash/toUpper';
 import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
+import * as i18n from '@/languages';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
@@ -38,7 +39,7 @@ const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, '')
 
 export const parseAssetName = (metadata, name) => {
   if (metadata?.name) return metadata?.name;
-  return name ? sanitize(name) : 'Unknown Token';
+  return name ? sanitize(name) : i18n.t(i18n.l.assets.unkown_token);
 };
 
 export const parseAssetSymbol = (metadata, symbol) => {

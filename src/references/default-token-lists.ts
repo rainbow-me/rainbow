@@ -1,27 +1,29 @@
+import * as i18n from '@/languages';
+
 export default {
   mainnet: [
     {
       emoji: 'fire',
       id: 'trending',
-      name: 'Trending',
+      name: i18n.t(i18n.l.discover.lists.types.trending),
       tokens: [],
     },
     {
       emoji: 'television',
       id: 'watchlist',
-      name: 'Watchlist',
+      name: i18n.t(i18n.l.discover.lists.types.watchlist),
       tokens: [],
     },
     {
       emoji: 'star',
       id: 'favorites',
-      name: 'Favorites',
+      name: i18n.t(i18n.l.discover.lists.types.favorites),
       tokens: [],
     },
     {
       emoji: 'roller_coaster',
       id: 'defi',
-      name: 'DeFi',
+      name: i18n.t(i18n.l.discover.lists.types.defi),
       tokens: [
         '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI
         '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9', // AAVE
@@ -38,7 +40,7 @@ export default {
     {
       emoji: 'dollar_banknote',
       id: 'stablecoins',
-      name: 'Stablecoins',
+      name: i18n.t(i18n.l.discover.lists.types.stablecoins),
       tokens: [
         '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC

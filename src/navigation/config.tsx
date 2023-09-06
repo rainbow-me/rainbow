@@ -518,17 +518,7 @@ export const exchangeTabNavigatorConfig = {
   sceneContainerStyle: {
     backgroundColor: 'transparent',
   },
-  springConfig: {
-    damping: 30,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.01,
-    restSpeedThreshold: 0.01,
-    stiffness: 300,
-  },
   swipeDistanceMinimum: 0,
-  swipeVelocityImpact: 1,
-  swipeVelocityScale: 1,
   tabBar: () => null,
   transparentCard: true,
 };
@@ -604,7 +594,6 @@ export const settingsOptions = (colors: any) => ({
     overflow: 'visible',
   },
   gestureEnabled: ios,
-  gestureResponseDistance: { horizontal: deviceUtils.dimensions.width },
   ...(ios && { headerBackImage: BackImage }),
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,

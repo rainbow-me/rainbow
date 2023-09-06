@@ -45,6 +45,7 @@ import {
   estimateUnlockAndCrosschainSwap,
 } from './unlockAndCrosschainSwap';
 import { Source, SwapModalField } from '@/redux/swap';
+import * as i18n from '@/languages';
 
 const {
   commitENS,
@@ -363,15 +364,16 @@ const getRapFullName = (actions: RapAction[]) => {
   return actionTypes.join(' + ');
 };
 
+// i18n
 const parseError = (error: EthersError): string => {
   const errorCode = error?.code;
   switch (errorCode) {
     case Logger.errors.UNPREDICTABLE_GAS_LIMIT:
-      return 'Oh no! We were unable to estimate the gas limit. Please try again.';
+      return i18n.t(i18n.l.wallet.transaction.errors.unpredictable_gas);
     case Logger.errors.INSUFFICIENT_FUNDS:
-      return 'Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.';
+      return i18n.t(i18n.l.wallet.transaction.errors.insufficient_funds);
     default:
-      return 'Oh no! There was a problem submitting the transaction. Please try again.';
+      return i18n.t(i18n.l.wallet.transaction.errors.generic);
   }
 };
 
