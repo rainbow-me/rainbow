@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import {
   AccentColorProvider,
@@ -11,9 +11,9 @@ import {
   useBackgroundColor,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
-import { maybeSignUri } from '@/handlers/imgix';
+import { ImgixImage } from '@/components/images';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -113,10 +113,12 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
         )}
         {!!recentMint?.imageURI && (
           <Cover>
-            <Image
+            <ImgixImage
               source={{
-                uri: maybeSignUri(recentMint.imageURI, { w: NFT_IMAGE_SIZE }),
+                uri: recentMint.imageURI,
               }}
+              size={NFT_IMAGE_SIZE}
+              fm="png"
               style={{
                 width: NFT_IMAGE_SIZE,
                 height: NFT_IMAGE_SIZE,

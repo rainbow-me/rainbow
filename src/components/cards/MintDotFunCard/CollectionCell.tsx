@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
@@ -14,11 +14,11 @@ import {
 } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
-import { Image, Linking, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
-import { maybeSignUri } from '@/handlers/imgix';
+import { ImgixImage } from '@/components/images';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -136,16 +136,11 @@ export function CollectionCell({
           )}
           {!!imageUrl && (
             <Cover>
-              <Image
+              <ImgixImage
                 source={{
-                  uri: maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }),
+                  uri: imageUrl,
                 }}
-                // onError={e => {
-                //   console.log('Error');
-                //   console.log(e);
-                //   console.log(imageUrl);
-                //   console.log(maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }));
-                // }}
+                size={NFT_IMAGE_SIZE}
                 style={{
                   width: NFT_IMAGE_SIZE,
                   height: NFT_IMAGE_SIZE,
