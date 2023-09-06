@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
 import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
@@ -7,6 +7,7 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  Cover,
   Inline,
   Inset,
   Text,
@@ -73,7 +74,7 @@ export function CollectionCell({
   const surfaceSecondaryElevated = useBackgroundColor(
     'surfaceSecondaryElevated'
   );
-  const [imageError, setImageError] = useReducer(() => true, false);
+  const [loaded, setLoaded] = useReducer(() => true, false);
 
   const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
     .nativeCurrency;
@@ -82,9 +83,9 @@ export function CollectionCell({
 
   const isFree = amount === '0';
 
-  const onError = useCallback(() => {
-    setImageError();
-  }, []);
+  const imageUrl =
+    collection.imageURL ||
+    collection?.recentMints?.find(m => m.imageURI)?.imageURI;
 
   return (
     <ButtonPressAnimation
@@ -105,25 +106,11 @@ export function CollectionCell({
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
+            width: NFT_IMAGE_SIZE,
+            height: NFT_IMAGE_SIZE,
           }}
         >
-          {!imageError ? (
-            <ImgixImage
-              source={{
-                uri: collection.imageURL,
-              }}
-              style={{
-                width: NFT_IMAGE_SIZE,
-                height: NFT_IMAGE_SIZE,
-                borderRadius: 12,
-                backgroundColor: isDarkMode
-                  ? surfaceSecondaryElevated
-                  : surfacePrimaryElevated,
-              }}
-              onError={onError}
-              size={CardSize}
-            />
-          ) : (
+          {!loaded && (
             <Box
               style={{
                 width: NFT_IMAGE_SIZE,
@@ -145,6 +132,23 @@ export function CollectionCell({
                 􀣵
               </Text>
             </Box>
+          )}
+          {!!imageUrl && (
+            <Cover>
+              <ImgixImage
+                source={{
+                  uri: imageUrl,
+                }}
+                style={{
+                  width: NFT_IMAGE_SIZE,
+                  height: NFT_IMAGE_SIZE,
+                  borderRadius: 12,
+                }}
+                retryOnError
+                onLoad={setLoaded}
+                size={CardSize}
+              />
+            </Cover>
           )}
         </View>
       </View>

@@ -35,6 +35,7 @@ type CarouselItem<T> = {
 export function CarouselCard<T>({
   title,
   data,
+  isLoading,
   carouselItem,
   button,
   menu,
@@ -44,6 +45,7 @@ export function CarouselCard<T>({
 }: {
   title: string | React.ReactNode;
   data: T[] | null | undefined;
+  isLoading?: boolean;
   carouselItem: CarouselItem<T>;
   button: React.ReactNode;
   menu?: React.ReactNode;
@@ -108,7 +110,7 @@ export function CarouselCard<T>({
               )}
               keyExtractor={carouselItem.keyExtractor}
             />
-          ) : (
+          ) : isLoading ? (
             // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
             <ScrollView
               horizontal
@@ -125,6 +127,17 @@ export function CarouselCard<T>({
                 {carouselItem.placeholder}
               </Inline>
             </ScrollView>
+          ) : (
+            <Box alignItems="center" justifyContent="center" height="full">
+              <Text
+                color="labelSecondary"
+                size="17pt"
+                weight="bold"
+                align="center"
+              >
+                No data found
+              </Text>
+            </Box>
           )}
         </Box>
       </Bleed>

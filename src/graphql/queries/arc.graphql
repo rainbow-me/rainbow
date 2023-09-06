@@ -141,15 +141,12 @@ fragment mintableCollectionsResult on MintableCollectionsResult {
   collections {
     ...mintableCollection
   }
-  cursor
-  error
 }
 
 fragment mintableCollectionResult on MintableCollectionResult {
   collection {
     ...mintableCollection
   }
-  error
 }
 
 query getMintableCollections($walletAddress: String!, $chain: Int!) {
@@ -157,7 +154,5 @@ query getMintableCollections($walletAddress: String!, $chain: Int!) {
     collections {
       ...mintableCollection
     }
-    cursor
-    error
   }
 }

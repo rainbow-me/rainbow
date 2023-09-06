@@ -5,6 +5,7 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  Cover,
   Inline,
   Inset,
   Text,
@@ -65,7 +66,7 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
     'surfaceSecondaryElevated'
   );
 
-  const [imageError, setImageError] = useReducer(() => true, false);
+  const [loaded, setLoaded] = useReducer(() => true, false);
 
   return (
     <View
@@ -82,36 +83,21 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: 0.24,
           shadowRadius: 9,
+          width: NFT_IMAGE_SIZE,
+          height: NFT_IMAGE_SIZE,
         }}
       >
-        {!imageError ? (
-          <ImgixImage
-            source={{
-              uri: recentMint.imageURI ?? '',
-            }}
-            fm="png"
-            style={{
-              width: NFT_IMAGE_SIZE,
-              height: NFT_IMAGE_SIZE,
-              borderRadius: 16,
-              backgroundColor: isDarkMode
-                ? surfaceSecondaryElevated
-                : surfacePrimaryElevated,
-            }}
-            onError={setImageError}
-            size={CardSize}
-          />
-        ) : (
+        {!loaded && (
           <Box
             style={{
               width: NFT_IMAGE_SIZE,
               height: NFT_IMAGE_SIZE,
               borderRadius: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
               backgroundColor: isDarkMode
                 ? surfaceSecondaryElevated
                 : surfacePrimaryElevated,
-              alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <Text
@@ -123,6 +109,23 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
               􀣵
             </Text>
           </Box>
+        )}
+        {!!recentMint?.imageURI && (
+          <Cover>
+            <ImgixImage
+              source={{
+                uri: recentMint.imageURI,
+              }}
+              fm="png"
+              style={{
+                width: NFT_IMAGE_SIZE,
+                height: NFT_IMAGE_SIZE,
+                borderRadius: 16,
+              }}
+              onLoad={setLoaded}
+              size={CardSize}
+            />
+          </Cover>
         )}
       </View>
     </View>

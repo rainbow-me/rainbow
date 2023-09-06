@@ -72,6 +72,11 @@ export function useMintableCollectionsFilter() {
 }
 
 /**
+ * Hook that returns the featured mintable collection.
+ */
+export function useFeaturedMintableCollection() {}
+
+/**
  * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMintableCollections({
@@ -87,16 +92,11 @@ export function useMintableCollections({
 
   const query = useQuery<GetMintableCollectionsQuery>(
     queryKey,
-    async () => {
-      console.log('OKOK');
-      const x = await graphqlClient.getMintableCollections({
+    async () =>
+      await graphqlClient.getMintableCollections({
         walletAddress,
         chain: 7777777, // zora
-      });
-      console.log('ZEEP');
-      console.log(x);
-      return x;
-    },
+      }),
     {
       enabled: mintDotFunEnabled && !!walletAddress,
       staleTime: 0, // 5 minutes
@@ -105,20 +105,44 @@ export function useMintableCollections({
     }
   );
 
+  const featuredCollection = query.data?.getMintableCollections?.collections[0];
+
   const freeMints = useMemo(
     () =>
       query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price === '0'
+        collection =>
+          collection.mintStatus.price === '0' &&
+          collection.contractAddress !== featuredCollection?.contractAddress
       ),
-    [query.data?.getMintableCollections?.collections]
+    [
+      featuredCollection?.contractAddress,
+      query.data?.getMintableCollections?.collections,
+    ]
   );
 
   const paidMints = useMemo(
     () =>
       query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price !== '0'
+        collection =>
+          collection.mintStatus.price !== '0' &&
+          collection.contractAddress !== featuredCollection?.contractAddress
       ),
-    [query.data?.getMintableCollections?.collections]
+    [
+      featuredCollection?.contractAddress,
+      query.data?.getMintableCollections?.collections,
+    ]
+  );
+
+  const allMints = useMemo(
+    () =>
+      query.data?.getMintableCollections?.collections.filter(
+        collection =>
+          collection.contractAddress !== featuredCollection?.contractAddress
+      ),
+    [
+      featuredCollection?.contractAddress,
+      query.data?.getMintableCollections?.collections,
+    ]
   );
 
   let filteredMints;
@@ -131,7 +155,7 @@ export function useMintableCollections({
       break;
     case MintableCollectionsFilter.All:
     default:
-      filteredMints = query.data?.getMintableCollections?.collections;
+      filteredMints = allMints;
       break;
   }
 
@@ -142,6 +166,7 @@ export function useMintableCollections({
       getMintableCollections: {
         ...query.data?.getMintableCollections,
         collections: filteredMints,
+        featuredCollection,
       },
     },
   };

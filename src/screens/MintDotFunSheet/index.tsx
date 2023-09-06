@@ -12,7 +12,10 @@ import {
   Text,
 } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
-import { useMintableCollections } from '@/resources/mintdotfun';
+import {
+  mintableCollectionsQueryKey,
+  useMintableCollections,
+} from '@/resources/mintdotfun';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import { TabBar } from './TabBar';
@@ -21,6 +24,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
+import { queryClient } from '@/react-query';
 
 export function MintDotFunSheet() {
   const {
@@ -33,6 +37,8 @@ export function MintDotFunSheet() {
     data: {
       getMintableCollections: { collections },
     },
+    isFetching,
+    dataUpdatedAt,
   } = useMintableCollections({
     walletAddress: accountAddress,
   });
@@ -40,6 +46,8 @@ export function MintDotFunSheet() {
   const { navigate } = useNavigation();
 
   const data = collections ?? [];
+
+  const isNoData = !data.length && !isFetching;
 
   return (
     <>
@@ -97,29 +105,69 @@ export function MintDotFunSheet() {
                     <Separator thickness={1} color="separatorTertiary" />
                   </Stack>
                 </Inset>
-                <FlashList
-                  data={[...data, ...data, ...data, ...data, ...data]}
-                  estimatedItemSize={222}
-                  estimatedListSize={{
-                    height: deviceHeight,
-                    width: deviceWidth,
-                  }}
-                  // style={{ overflow: 'visible', marginHorizontal: -20 }}
-                  renderItem={({ item }) => <Card collection={item} />}
-                  ItemSeparatorComponent={() => (
-                    <Inset vertical="20px">
-                      <Separator thickness={1} color="separatorTertiary" />
-                    </Inset>
-                  )}
-                  keyExtractor={(item, index) =>
-                    item.contractAddress + item.chainId + index
-                  }
-                />
+                {!isNoData && (
+                  <FlashList
+                    data={data}
+                    estimatedItemSize={222}
+                    estimatedListSize={{
+                      height: deviceHeight,
+                      width: deviceWidth,
+                    }}
+                    renderItem={({ item }) => <Card collection={item} />}
+                    ItemSeparatorComponent={() => (
+                      <Inset vertical="20px">
+                        <Separator thickness={1} color="separatorTertiary" />
+                      </Inset>
+                    )}
+                    keyExtractor={item => item.contractAddress + item.chainId}
+                  />
+                )}
               </Stack>
             </Inset>
           </SimpleSheet>
         )}
       </BackgroundProvider>
+      {isNoData && (
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          height="full"
+          position="absolute"
+          width="full"
+        >
+          <Stack space="20px">
+            <Text
+              size="17pt"
+              weight="bold"
+              align="center"
+              color="labelSecondary"
+            >
+              No data found.
+            </Text>
+            <ButtonPressAnimation
+              onPress={() => {
+                // only allow refresh if data is at least 30 seconds old
+                if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
+                  queryClient.invalidateQueries({
+                    queryKey: mintableCollectionsQueryKey({
+                      address: accountAddress,
+                    }),
+                  });
+                }
+              }}
+            >
+              <Text
+                align="center"
+                color="labelSecondary"
+                size="34pt"
+                weight="bold"
+              >
+                􀅈
+              </Text>
+            </ButtonPressAnimation>
+          </Stack>
+        </Box>
+      )}
       <TabBar />
     </>
   );

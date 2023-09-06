@@ -20,7 +20,7 @@ import { Box, Inset, Text, useForegroundColor } from '@/design-system';
 export function MintDotFunCard() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
-  const { data } = useMintableCollections({
+  const { data, isFetching } = useMintableCollections({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
@@ -45,6 +45,7 @@ export function MintDotFunCard() {
   return (
     <Inset top={{ custom: 22 }} bottom="10px">
       <CarouselCard
+        isLoading={isFetching}
         title="Mints"
         data={mints}
         carouselItem={{

@@ -18,11 +18,10 @@ exports.config = {
     schema: {
       method: 'GET',
       // url: 'https://arc-graphql.rainbow.me/graphql',
-      // url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
-      url: 'http://0.0.0.0:8787/graphql',
-      // headers: {
-      //   'x-api-key': 'ARC_GRAPHQL_API_KEY',
-      // },
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
+      headers: {
+        'x-api-key': 'ARC_GRAPHQL_API_KEY',
+      },
     },
   },
   arcDev: {
@@ -30,8 +29,7 @@ exports.config = {
     document: './queries/arc.graphql',
     schema: {
       method: 'GET',
-      url: 'http://0.0.0.0:8787/graphql',
-      // url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
+      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
       headers: {},
     },
   },

@@ -13,7 +13,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import React, { useMemo, useReducer } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { useMintableCollections } from '@/resources/mintdotfun';
 import { useAccountProfile, useDimensions } from '@/hooks';
@@ -31,25 +31,24 @@ export function FeaturedMintCard() {
   const { accountAddress } = useAccountProfile();
   const {
     data: {
-      getMintableCollections: { collections },
+      getMintableCollections: { featuredCollection },
     },
   } = useMintableCollections({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
-  const [imageError, setImageError] = useReducer(() => true, false);
+  const [loaded, setLoaded] = useState(false);
   const { colorMode } = useColorMode();
   const isDarkMode = colorMode === 'dark';
 
-  // TODO: should be remotely configurable
-  const featuredMint = collections?.[0];
-
   const labelSecondary = useForegroundColor('labelSecondary');
-  const accentColor = usePersistentDominantColorFromImage(
-    featuredMint?.imageURL
-  );
-  const hasImage = featuredMint?.imageURL && !imageError;
-  const secondaryTextColor = hasImage ? 'accent' : 'labelSecondary';
+  const imageUrl =
+    featuredCollection?.imageURL ??
+    featuredCollection?.recentMints.find(m => m.imageURI)?.imageURI;
+  const accentColor = usePersistentDominantColorFromImage(imageUrl);
+  const secondaryTextColor = imageUrl ? 'accent' : 'labelSecondary';
+
+  useEffect(() => setLoaded(false), [imageUrl]);
 
   // from nft expanded state
   const primaryTextColor = useMemo(() => {
@@ -66,7 +65,7 @@ export function FeaturedMintCard() {
     }
   }, [accentColor]);
 
-  return featuredMint ? (
+  return featuredCollection ? (
     <Inset vertical="10px">
       <ColorModeProvider value="darkTinted">
         <AccentColorProvider color={accentColor ?? labelSecondary}>
@@ -98,22 +97,40 @@ export function FeaturedMintCard() {
                     }
               }
             >
-              <Box
-                as={ButtonPressAnimation}
-                padding="12px"
-                width="full"
-                borderRadius={24}
+              <ButtonPressAnimation
                 style={{
+                  padding: 12,
+                  borderRadius: 24,
                   borderWidth: 1,
                   borderColor: 'rgba(245, 248, 255, 0.08)',
-                  backgroundColor: hasImage
-                    ? isDarkMode
-                      ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
-                      : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
-                    : '#272829',
                 }}
-                onPress={() => Linking.openURL(featuredMint.externalURL)}
+                onPress={() => Linking.openURL(featuredCollection.externalURL)}
               >
+                <Cover>
+                  <ImgixImage
+                    resizeMode="cover"
+                    style={{
+                      borderRadius: 24,
+                      height: '100%',
+                      width: '100%',
+                      backgroundColor: globalColors.grey100,
+                    }}
+                    source={{ uri: imageUrl ?? undefined }}
+                    size={deviceWidth - 40}
+                    fm="png"
+                  />
+                </Cover>
+                <Cover>
+                  <BlurView
+                    blurAmount={100}
+                    blurType="light"
+                    style={{
+                      borderRadius: 24,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                </Cover>
                 <Columns>
                   <Column>
                     <Box
@@ -147,7 +164,7 @@ export function FeaturedMintCard() {
                           color={{ custom: primaryTextColor }}
                           numberOfLines={1}
                         >
-                          {featuredMint.name}
+                          {featuredCollection.name}
                         </Text>
                       </Stack>
                       <Stack space={{ custom: 14 }}>
@@ -166,8 +183,10 @@ export function FeaturedMintCard() {
                             color={{ custom: primaryTextColor }}
                           >
                             {`${abbreviateNumber(
-                              featuredMint.totalMints
-                            )} mint${featuredMint.totalMints === 1 ? '' : 's'}`}
+                              featuredCollection.totalMints
+                            )} mint${
+                              featuredCollection.totalMints === 1 ? '' : 's'
+                            }`}
                           </Text>
                         </Inline>
                         <Inline space="6px" alignVertical="center">
@@ -185,7 +204,7 @@ export function FeaturedMintCard() {
                             color={{ custom: primaryTextColor }}
                           >
                             {`${abbreviateNumber(
-                              featuredMint.mintsLastHour
+                              featuredCollection.mintsLastHour
                             )} past hour`}
                           </Text>
                         </Inline>
@@ -193,54 +212,7 @@ export function FeaturedMintCard() {
                     </Box>
                   </Column>
                   <Column width="content">
-                    {hasImage ? (
-                      <View
-                        style={
-                          IS_IOS
-                            ? {
-                                shadowColor: globalColors.grey100,
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.02,
-                                shadowRadius: 3,
-                              }
-                            : {}
-                        }
-                      >
-                        <View
-                          style={
-                            IS_IOS
-                              ? {
-                                  shadowColor:
-                                    isDarkMode || !accentColor
-                                      ? globalColors.grey100
-                                      : accentColor,
-                                  shadowOffset: { width: 0, height: 4 },
-                                  shadowOpacity: 0.16,
-                                  shadowRadius: 6,
-                                }
-                              : {
-                                  shadowColor:
-                                    isDarkMode || !accentColor
-                                      ? globalColors.grey100
-                                      : accentColor,
-                                  elevation: 8,
-                                  opacity: 1,
-                                }
-                          }
-                        >
-                          <ImgixImage
-                            size={IMAGE_SIZE}
-                            source={{ uri: featuredMint.imageURL }}
-                            style={{
-                              width: IMAGE_SIZE,
-                              height: IMAGE_SIZE,
-                              borderRadius: 12,
-                            }}
-                            onError={setImageError}
-                          />
-                        </View>
-                      </View>
-                    ) : (
+                    {!loaded ? (
                       <Box
                         background="fillSecondary"
                         width={{ custom: IMAGE_SIZE }}
@@ -258,52 +230,69 @@ export function FeaturedMintCard() {
                           􀣵
                         </Text>
                       </Box>
+                    ) : (
+                      <Box
+                        width={{ custom: IMAGE_SIZE }}
+                        height={{ custom: IMAGE_SIZE }}
+                      />
                     )}
+                    <Cover>
+                      {!!imageUrl && (
+                        <View
+                          style={
+                            IS_IOS
+                              ? {
+                                  shadowColor: globalColors.grey100,
+                                  shadowOffset: { width: 0, height: 2 },
+                                  shadowOpacity: 0.02,
+                                  shadowRadius: 3,
+                                }
+                              : {}
+                          }
+                        >
+                          <View
+                            style={
+                              IS_IOS
+                                ? {
+                                    shadowColor:
+                                      isDarkMode || !accentColor
+                                        ? globalColors.grey100
+                                        : accentColor,
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.16,
+                                    shadowRadius: 6,
+                                  }
+                                : {
+                                    shadowColor:
+                                      isDarkMode || !accentColor
+                                        ? globalColors.grey100
+                                        : accentColor,
+                                    elevation: 8,
+                                    opacity: 1,
+                                  }
+                            }
+                          >
+                            <ImgixImage
+                              size={IMAGE_SIZE}
+                              source={{ uri: imageUrl }}
+                              style={{
+                                width: IMAGE_SIZE,
+                                height: IMAGE_SIZE,
+                                borderRadius: 12,
+                              }}
+                              onLoad={() => setLoaded(true)}
+                            />
+                          </View>
+                        </View>
+                      )}
+                    </Cover>
                   </Column>
                 </Columns>
-              </Box>
+              </ButtonPressAnimation>
             </View>
           </View>
         </AccentColorProvider>
       </ColorModeProvider>
-      {/* image blur mask */}
-      {hasImage && (
-        <Box
-          borderRadius={24}
-          position="absolute"
-          left="0px"
-          right="0px"
-          top="0px"
-          bottom="0px"
-          style={{
-            zIndex: -1,
-          }}
-        >
-          <ImgixImage
-            resizeMode="cover"
-            fm="png"
-            shouldRasterizeIOS
-            style={{
-              borderRadius: 24,
-              height: '100%',
-              width: '100%',
-            }}
-            source={{ uri: featuredMint.imageURL }}
-            size={deviceWidth - 40}
-          />
-          <Cover>
-            <BlurView
-              blurAmount={100}
-              blurType="light"
-              style={{
-                borderRadius: 24,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          </Cover>
-        </Box>
-      )}
     </Inset>
   ) : (
     <></>
