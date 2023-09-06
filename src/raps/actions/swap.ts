@@ -22,12 +22,13 @@ import { parseGasParamsForTransaction } from '@/parsers';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { greaterThan } from '@/helpers/utilities';
+import { add, greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { REFERRER } from '@/references';
 
 export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
@@ -115,7 +116,14 @@ export const executeSwap = async ({
       permit,
       chainId
     );
-    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId);
+    return fillQuote(
+      tradeDetails,
+      transactionParams,
+      wallet,
+      permit,
+      chainId,
+      REFERRER
+    );
   }
 };
 
@@ -148,10 +156,12 @@ const swap = async (
     : !gasParams.maxFeePerGas || !gasParams.maxPriorityFeePerGas;
 
   if (currentRap.actions.length - 1 > index || emptyGasFee) {
-    const fastMaxFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
     const fastMaxPriorityFeePerGas =
       gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+    const fastMaxFeePerGas = add(
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount,
+      fastMaxPriorityFeePerGas
+    );
 
     if (greaterThan(fastMaxFeePerGas, gasParams?.maxFeePerGas || 0)) {
       gasParams.maxFeePerGas = fastMaxFeePerGas;

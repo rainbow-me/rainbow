@@ -1,10 +1,12 @@
+import * as i18n from '@/languages';
+
 export const TransactionActions = {
-  addToContacts: 'Add to Contacts',
-  cancel: '☠️ Cancel',
-  close: 'Close',
-  speedUp: '🚀 Speed Up',
-  trySwapAgain: 'Try Swap Again',
-  viewContact: 'View Contact',
+  addToContacts: i18n.t(i18n.l.transactions.actions.addToContacts),
+  cancel: i18n.t(i18n.l.transactions.actions.cancel),
+  close: i18n.t(i18n.l.transactions.actions.close),
+  speedUp: i18n.t(i18n.l.transactions.actions.speedUp),
+  trySwapAgain: i18n.t(i18n.l.transactions.actions.trySwapAgain),
+  viewContact: i18n.t(i18n.l.transactions.actions.viewContact),
 };
 
 export function getShortTransactionActionId(name: string): string {

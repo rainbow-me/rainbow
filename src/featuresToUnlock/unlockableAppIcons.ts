@@ -34,8 +34,12 @@ const POOLY_NFT_ADDRESS_2: EthereumAddress =
   '0x90b3832e2f2ade2fe382a911805b6933c056d6ed';
 
 // finiliar app icon unlocking NFTs
-const FINILIAR_NFT_ADDRESS: EthereumAddress =
+const FINI_NFT_ADDRESS: EthereumAddress =
+  '0x5a0121a0a21232ec0d024dab9017314509026480';
+const RAINBOW_FINI_NFT_ADDRESS: EthereumAddress =
   '0xc5f18a7bf825c2b0433102da5bc79c9edfc3fa89';
+const BASE_WARS_FINI_NFT_ADDRESS: EthereumAddress =
+  '0x34e817d631b7fb79a54638c01c03421d124e35a7';
 
 // zorb app icon unlocking NFTs
 const ZORB_NFT_ADDRESS: EthereumAddress =
@@ -114,7 +118,15 @@ export const FiniliarIcon: UnlockableAppIcon = {
   key: 'finiliar',
   explainSheetType: 'finiliar_app_icon',
   network: Network.mainnet,
-  unlockingNfts: [FINILIAR_NFT_ADDRESS],
+  unlockingNfts: [FINI_NFT_ADDRESS, RAINBOW_FINI_NFT_ADDRESS],
+  unlockKey: 'finiliar_nft_app_icon',
+};
+
+export const FiniliarIconBase: UnlockableAppIcon = {
+  key: 'finiliar',
+  explainSheetType: 'finiliar_app_icon',
+  network: Network.base,
+  unlockingNfts: [BASE_WARS_FINI_NFT_ADDRESS],
   unlockKey: 'finiliar_nft_app_icon',
 };
 

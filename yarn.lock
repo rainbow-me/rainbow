@@ -3694,10 +3694,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.5.0.tgz#7823fc9b052ce8af730c7685b6839e7da309dbda"
-  integrity sha512-MU9YnFM+KU3esjtDYW6Ts/uESN+Zb8WhkhM/o5L5/HEhsDYyNEpl5KhI6/sxkehEH8eE2POeFSzNDX76OU98Ew==
+"@rainbow-me/swaps@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.6.0.tgz#0bebde8a45d4f523288b990f72bacafad5c21a6c"
+  integrity sha512-JrTa8s6HeIb9yCUQuxFCLGX+FXY6K97Vos18+CdkTkpYpmwRk8k/3zlzoBIUyGAFzo3Z/E4cPMlo3EbTAUV8ww==
   dependencies:
     "@ethersproject/abi" "5.7.0"
     "@ethersproject/abstract-signer" "5.7.0"
@@ -4054,10 +4054,10 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@reservoir0x/reservoir-sdk@1.1.24":
-  version "1.1.24"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.1.24.tgz#69b8eb52ec11dc087fe715d2e70c22fe66b972a7"
-  integrity sha512-8CUJi/ut1Ts0HpMazLaAu2u1Rht6pLN/nfNvKhk2+ago4Y7VAxfEbYCLR47r8/urO9Qj2roFUm2gQsS/up1h7g==
+"@reservoir0x/reservoir-sdk@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.2.1.tgz#8f1a1330c06c658b98e4fd66d0de994c398197ba"
+  integrity sha512-+FN4mN5m5zEPAW41ZkO23NBc1ANQA8gIJr7bWE44fOm7T0dMtbBKEHuGsLtwbuKUx+IslbjmdhytkXRfFTPMqQ==
   dependencies:
     axios "^0.27.2"
 

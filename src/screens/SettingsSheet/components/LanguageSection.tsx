@@ -13,7 +13,7 @@ const languagesWithWalletTranslations = Object.keys(
 
 const languageListItems = languagesWithWalletTranslations.map(code => ({
   code,
-  name: (supportedLanguages as any)[code],
+  name: (supportedLanguages as any)[code].label,
 }));
 
 const LanguageSection = () => {
