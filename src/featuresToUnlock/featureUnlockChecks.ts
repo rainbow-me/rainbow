@@ -1,4 +1,3 @@
-import { IS_IOS } from '@/env';
 import { unlockableAppIconCheck } from './unlockableAppIconCheck';
 import {
   AdworldIcon,
@@ -44,6 +43,5 @@ export const featureUnlockChecks: FeatureUnlockCheck[] = [
   async (walletsToCheck: EthereumAddress[]) =>
     await unlockableAppIconCheck(PoolboyIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
-    // adworld app icon is only available on iOS at the moment
-    IS_IOS && (await unlockableAppIconCheck(AdworldIcon, walletsToCheck)),
+    await unlockableAppIconCheck(AdworldIcon, walletsToCheck),
 ];

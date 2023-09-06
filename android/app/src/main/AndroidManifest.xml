@@ -217,6 +217,19 @@
           </intent-filter>
       </activity-alias>
       <activity-alias
+          android:name="me.rainbow.MainActivityadworld"
+          android:enabled="false"
+          android:icon="@mipmap/adworld"
+          android:roundIcon="@mipmap/adworld_round"
+          android:targetActivity=".MainActivity"
+          android:exported="true"
+          >
+          <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
+              <category android:name="android.intent.category.LAUNCHER" />
+          </intent-filter>
+      </activity-alias>
+      <activity-alias
           android:name="me.rainbow.MainActivityzorb"
           android:enabled="false"
           android:icon="@mipmap/zorb"
