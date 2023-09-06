@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.8.29-1",
+  "version": "1.9.2-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -97,7 +97,7 @@
     "@metamask/eth-sig-util": "4.0.0",
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.5.0",
+    "@rainbow-me/swaps": "0.6.0",
     "@ratio.me/ratio-react-native-library": "0.8.5",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-camera-roll/camera-roll": "5.7.1",
@@ -115,7 +115,7 @@
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
-    "@reservoir0x/reservoir-sdk": "1.1.24",
+    "@reservoir0x/reservoir-sdk": "1.2.1",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
     "@sentry/react-native": "3.4.1",

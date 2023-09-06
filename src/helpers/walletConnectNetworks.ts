@@ -2,6 +2,7 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { Network } from '@/networks/types';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
+import * as i18n from '@/languages';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
@@ -40,7 +41,7 @@ export const changeConnectionMenuItems = ({
   const baseOptions = [
     {
       actionKey: 'disconnect',
-      actionTitle: 'Disconnect',
+      actionTitle: i18n.t(i18n.l.walletconnect.menu_options.disconnect),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'xmark.square',
@@ -49,7 +50,7 @@ export const changeConnectionMenuItems = ({
     },
     {
       actionKey: 'switch-account',
-      actionTitle: 'Switch Wallet',
+      actionTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_wallet),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'rectangle.stack.person.crop',
@@ -66,7 +67,7 @@ export const changeConnectionMenuItems = ({
           iconValue: 'network',
         },
         menuItems: networksMenuItems(),
-        menuTitle: 'Switch Network',
+        menuTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_network),
       },
     ];
   }
@@ -78,7 +79,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     {
       options: androidNetworkActions(),
       showSeparators: true,
-      title: `Available Networks`,
+      title: i18n.t(i18n.l.walletconnect.menu_options.available_networks),
     },
     (idx: any) => {
       if (idx !== undefined) {

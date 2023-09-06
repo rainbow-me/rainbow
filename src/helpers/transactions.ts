@@ -5,6 +5,7 @@ import {
   TransactionType,
   TransactionTypes,
 } from '@/entities';
+import { getDateFnsLocale } from '@/languages';
 
 export const buildTransactionUniqueIdentifier = ({
   hash,
@@ -47,6 +48,7 @@ export const thisYearTimestamp = calculateTimestampOfThisYear();
 export function getHumanReadableDate(date: any) {
   const timestamp = new Date(date * 1000);
 
+  // i18n
   return format(
     timestamp,
     // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'Date' and... Remove this comment to see the full error message
@@ -56,7 +58,8 @@ export function getHumanReadableDate(date: any) {
       timestamp > yesterdayTimestamp
       ? `'Yesterday'`
       : // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'Date' and... Remove this comment to see the full error message
-        `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+        `'on' MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`,
+    { locale: getDateFnsLocale() }
   );
 }
 

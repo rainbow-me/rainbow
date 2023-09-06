@@ -93,7 +93,7 @@ export function AddCashSheet() {
       >
         <Box paddingHorizontal="20px">
           <Text size="26pt" weight="heavy" color="label" align="center">
-            Choose a payment option to buy crypto
+            {lang.t(lang.l.wallet.add_cash_v2.sheet_title)}
           </Text>
         </Box>
 

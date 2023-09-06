@@ -79,7 +79,7 @@ const shouldSignUri = (
         height: updatedOptions.h,
         width: updatedOptions.w,
       });
-      const signature = `${externalImageUri}-${options?.w}`;
+      const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
       staticSignatureLRU.set(signature, signedExternalImageUri);
       return signedExternalImageUri;
     }
@@ -97,7 +97,7 @@ const shouldSignUri = (
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature into the LRU for future use.
-        const signature = `${externalImageUri}-${options?.w}`;
+        const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
         !staticSignatureLRU.has(signature) &&
           staticSignatureLRU.set(signature, signedExternalImageUri);
         // Return the signed image.

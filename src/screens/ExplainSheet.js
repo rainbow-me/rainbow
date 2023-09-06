@@ -575,7 +575,14 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.floor_price.title'),
   },
   gas: {
-    emoji: '⛽️',
+    logo: (
+      <CoinIcon
+        address={params?.nativeAsset?.address}
+        size={40}
+        symbol={params?.nativeAsset?.symbol}
+        type={params?.network?.toLowerCase()}
+      />
+    ),
     extraHeight: 2,
     text: gasExplainer(params?.network),
     title: lang.t('explain.gas.title', {
@@ -925,6 +932,42 @@ export const explainers = (params, colors) => ({
           {lang.t('explain.insufficient_liquidity.fragment2')}
         </Text>
         {lang.t('explain.insufficient_liquidity.fragment3')}
+      </Text>
+    ),
+  },
+  feeOnTransfer: {
+    extraHeight: -70,
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+      </RowWithMargins>
+    ),
+    title: lang.t('explain.fee_on_transfer.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.fee_on_transfer.fragment1', {
+          tokenName: params?.inputCurrency?.symbol,
+        })}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              buildRainbowLearnUrl({
+                url:
+                  'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+                query: {
+                  campaign: 'explain',
+                },
+              })
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.fee_on_transfer.fragment2')}
+        </Text>
+        {lang.t('explain.fee_on_transfer.fragment3')}
       </Text>
     ),
   },
