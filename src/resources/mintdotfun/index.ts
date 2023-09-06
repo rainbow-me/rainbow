@@ -1,5 +1,5 @@
 import { analyticsV2 } from '@/analytics';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { MINT_DOT_FUN, useExperimentalFlag } from '@/config';
 import { IS_PROD } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
@@ -62,6 +62,7 @@ export function useMintableCollectionsFilter() {
 
   const setFilter = useCallback(
     (filter: MintableCollectionsFilter) => {
+      analyticsV2.track(analyticsV2.event.mintDotFunChangedFilter, { filter });
       setFilterState(filter);
       mmkv.set(MINTABLE_COLLECTIONS_FILTER_MMKV_KEY, filter);
     },
@@ -158,6 +159,16 @@ export function useMintableCollections({
       filteredMints = allMints;
       break;
   }
+
+  useEffect(
+    () =>
+      analyticsV2.identify({
+        numberOfMints: allMints?.length ?? 0,
+        numberOfFreeMints: freeMints?.length ?? 0,
+        numberOfPaidMints: paidMints?.length ?? 0,
+      }),
+    [allMints?.length, freeMints?.length, paidMints?.length]
+  );
 
   return {
     ...query,

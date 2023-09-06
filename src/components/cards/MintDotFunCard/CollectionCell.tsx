@@ -19,6 +19,7 @@ import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { ImgixImage } from '@/components/images';
+import { analyticsV2 } from '@/analytics';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -90,7 +91,14 @@ export function CollectionCell({
 
   return (
     <ButtonPressAnimation
-      onPress={() => Linking.openURL(collection.externalURL)}
+      onPress={() => {
+        analyticsV2.track(analyticsV2.event.mintDotFunPressedCollectionCell, {
+          contractAddress: collection.contractAddress,
+          chainId: collection.chainId,
+          priceInNativeCurrency: parseFloat(amount),
+        });
+        Linking.openURL(collection.externalURL);
+      }}
       style={{ width: NFT_IMAGE_SIZE }}
     >
       <View

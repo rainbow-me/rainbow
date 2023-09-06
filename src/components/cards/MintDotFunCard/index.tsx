@@ -16,6 +16,7 @@ import {
   ShimmerAnimation,
 } from '@/components/animations';
 import { Box, Inset, Text, useForegroundColor } from '@/design-system';
+import { analyticsV2 } from '@/analytics';
 
 export function MintDotFunCard() {
   const { navigate } = useNavigation();
@@ -39,15 +40,12 @@ export function MintDotFunCard() {
     }
   }, [canRefresh]);
 
-  // remove featured mint
-  const mints = data?.getMintableCollections.collections?.slice(1);
-
   return (
     <Inset top={{ custom: 22 }} bottom="10px">
       <CarouselCard
         isLoading={isFetching}
         title="Mints"
-        data={mints}
+        data={data?.getMintableCollections.collections}
         carouselItem={{
           renderItem: ({ item }) => <CollectionCell collection={item} />,
           keyExtractor: (item: MintableCollection) =>
@@ -70,7 +68,12 @@ export function MintDotFunCard() {
             style={{
               overflow: 'hidden',
             }}
-            onPress={() => navigate(Routes.MINT_DOT_FUN_SHEET)}
+            onPress={() => {
+              analyticsV2.track(
+                analyticsV2.event.mintDotFunPressedViewAllMintsButton
+              );
+              navigate(Routes.MINT_DOT_FUN_SHEET);
+            }}
           >
             {/* unfortunately shimmer width must be hardcoded */}
             <ShimmerAnimation

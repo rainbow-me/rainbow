@@ -10,6 +10,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { NFT_IMAGE_SIZE, Placeholder, RecentMintCell } from './RecentMintCell';
 import { Linking, View } from 'react-native';
 import { useTheme } from '@/theme';
+import { analyticsV2 } from '@/analytics';
 
 export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
@@ -74,7 +75,19 @@ export function Card({ collection }: { collection: MintableCollection }) {
         }}
         button={
           <ButtonPressAnimation
-            onPress={() => Linking.openURL(collection.externalURL)}
+            onPress={() => {
+              analyticsV2.track(
+                analyticsV2.event.mintDotFunPressedCollectionCell,
+                {
+                  contractAddress: collection.contractAddress,
+                  chainId: collection.chainId,
+                  priceInNativeCurrency: parseFloat(
+                    convertRawAmountToDecimalFormat(collection.mintStatus.price)
+                  ),
+                }
+              );
+              Linking.openURL(collection.externalURL);
+            }}
             style={{
               borderRadius: 99,
               borderWidth: 1,
