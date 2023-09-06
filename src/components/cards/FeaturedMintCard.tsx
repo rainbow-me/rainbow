@@ -113,11 +113,22 @@ export function FeaturedMintCard() {
                       borderRadius: 24,
                       height: '100%',
                       width: '100%',
-                      backgroundColor: globalColors.grey100,
                     }}
                     source={{ uri: imageUrl ?? undefined }}
                     size={deviceWidth - 40}
                     fm="png"
+                  />
+                </Cover>
+                <Cover>
+                  <View
+                    style={{
+                      borderRadius: 24,
+                      height: '100%',
+                      width: '100%',
+                      backgroundColor: isDarkMode
+                        ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
+                        : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`,
+                    }}
                   />
                 </Cover>
                 <Cover>

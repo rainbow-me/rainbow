@@ -86,7 +86,7 @@ export function CollectionCell({
   const imageUrl =
     collection.imageURL ||
     collection?.recentMints?.find(m => m.imageURI)?.imageURI;
-
+  console.log(imageUrl);
   return (
     <ButtonPressAnimation
       onPress={() => Linking.openURL(collection.externalURL)}
