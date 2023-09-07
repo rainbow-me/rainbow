@@ -89,6 +89,8 @@ export function CollectionCell({
 
   useEffect(() => setLoaded(false), [imageUrl]);
 
+  console.log(imageUrl);
+
   return (
     <ButtonPressAnimation
       onPress={() => {
@@ -146,7 +148,8 @@ export function CollectionCell({
             <Cover>
               <ImgixImage
                 source={{
-                  uri: imageUrl,
+                  uri:
+                    'https://lh3.googleusercontent.com/G19wC1T8R7iJB5jbEni3dzZidlrda68_wi1r2XAYJ6BB4H88XvJt0NMFQ3dhywYuY-oLn2Gyi9i_yxt6WPEaAVuSObQh-K7Ubw',
                 }}
                 size={NFT_IMAGE_SIZE}
                 style={{
