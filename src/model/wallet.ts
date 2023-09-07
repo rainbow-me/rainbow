@@ -466,11 +466,7 @@ export const signPersonalMessage = async (
     }
     try {
       if (!wallet) return null;
-      const result = await wallet.signMessage(
-        typeof message === 'string' && isHexString(addHexPrefix(message))
-          ? arrayify(addHexPrefix(message))
-          : message
-      );
+      const result = await wallet.signMessage(message);
       return { result };
     } catch (error) {
       if (isHardwareWallet) {
