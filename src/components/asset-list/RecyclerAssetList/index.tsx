@@ -45,6 +45,7 @@ import {
 } from '@/hooks';
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
+import * as i18n from '@/languages';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -727,10 +728,12 @@ function RecyclerAssetList({
       if (
         collectibles.data &&
         prevCollectibles.data &&
-        collectibles.data[0]?.familyName === 'Showcase' &&
+        collectibles.data[0]?.familyName ===
+          i18n.t(i18n.l.account.tab_showcase) &&
         (collectibles.data[0]?.childrenAmount >
           prevCollectibles.data[0]?.childrenAmount ||
-          prevCollectibles.data[0]?.familyName !== 'Showcase')
+          prevCollectibles.data[0]?.familyName !==
+            i18n.t(i18n.l.account.tab_showcase))
       ) {
         const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
         setTimeout(

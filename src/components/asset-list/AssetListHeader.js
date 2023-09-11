@@ -17,6 +17,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
+import * as lang from '@/languages';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -142,35 +143,37 @@ const AssetListHeader = ({
   }, [accountName]);
 
   return (
-    <ListHeader
-      contextMenuOptions={contextMenuOptions}
-      isCoinListEdited={isCoinListEdited}
-      showDivider={false}
-      title={title}
-      totalValue={totalValue}
-      {...props}
-    >
-      {!title && (
-        <WalletSelectButtonWrapper>
-          <WalletSelectButton
-            accountName={accountName}
-            deviceWidth={deviceWidth}
-            maxWidth={maxWidth}
-            onChangeWallet={onChangeWallet}
-            textWidth={textWidth}
-          />
-        </WalletSelectButtonWrapper>
-      )}
-      {isLoadingAssets ? (
-        <TotalAmountSkeleton>
-          <FakeText height={16} width={placeholderWidth} />
-        </TotalAmountSkeleton>
-      ) : totalValue ? (
-        <H1 align="right" letterSpacing="roundedTight" weight="semibold">
-          {totalValue}
-        </H1>
-      ) : null}
-    </ListHeader>
+    <StickyHeader name={title}>
+      <ListHeader
+        contextMenuOptions={contextMenuOptions}
+        isCoinListEdited={isCoinListEdited}
+        title={title}
+        totalValue={totalValue}
+        {...props}
+      >
+        {!title && (
+          <WalletSelectButtonWrapper>
+            <WalletSelectButton
+              accountName={accountName}
+              deviceWidth={deviceWidth}
+              maxWidth={maxWidth}
+              onChangeWallet={onChangeWallet}
+              textWidth={textWidth}
+            />
+          </WalletSelectButtonWrapper>
+        )}
+        {isLoadingAssets &&
+        title !== lang.t(lang.l.account.tab_collectibles) ? (
+          <TotalAmountSkeleton>
+            <FakeText height={16} width={placeholderWidth} />
+          </TotalAmountSkeleton>
+        ) : totalValue ? (
+          <H1 align="right" letterSpacing="roundedTight" weight="semibold">
+            {totalValue}
+          </H1>
+        ) : null}
+      </ListHeader>
+    </StickyHeader>
   );
 };
 

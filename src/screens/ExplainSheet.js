@@ -26,6 +26,7 @@ import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
+import AppIconAdworld from '@/assets/appIconAdworld.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -239,6 +240,23 @@ const PoolboyAppIcon = () => {
   );
 };
 
+const AdworldAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.adworldRed}>
+      <Box
+        as={ImgixImage}
+        source={AppIconAdworld}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
 const TheMergeIcon = () => {
   return (
     <Box
@@ -372,6 +390,10 @@ const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
 const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.poolboy_text');
 
 const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.poolboy_title');
+
+const ADWORLD_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.adworld_text');
+
+const ADWORLD_APP_ICON_TITLE = lang.t('explain.icon_unlock.adworld_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
@@ -525,6 +547,18 @@ export const explainers = (params, colors) => ({
       bgColor: colors?.poolboyPink06,
     },
   },
+  adworld_app_icon: {
+    logo: <AdworldAppIcon />,
+    extraHeight: -90,
+    text: ADWORLD_APP_ICON_EXPLAINER,
+    title: ADWORLD_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.adworldRed,
+      bgColor: colors?.adworldRed06,
+    },
+  },
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
@@ -574,7 +608,14 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.floor_price.title'),
   },
   gas: {
-    emoji: '⛽️',
+    logo: (
+      <CoinIcon
+        address={params?.nativeAsset?.address}
+        size={40}
+        symbol={params?.nativeAsset?.symbol}
+        type={params?.network?.toLowerCase()}
+      />
+    ),
     extraHeight: 2,
     text: gasExplainer(params?.network),
     title: lang.t('explain.gas.title', {
@@ -924,6 +965,42 @@ export const explainers = (params, colors) => ({
           {lang.t('explain.insufficient_liquidity.fragment2')}
         </Text>
         {lang.t('explain.insufficient_liquidity.fragment3')}
+      </Text>
+    ),
+  },
+  feeOnTransfer: {
+    extraHeight: -70,
+    logo: (
+      <RowWithMargins justify="center" margin={35} marginBottom={10}>
+        <CoinIcon size={40} {...params?.inputCurrency} />
+      </RowWithMargins>
+    ),
+    title: lang.t('explain.fee_on_transfer.title'),
+    stillCurious: (
+      <Text {...getBodyTextPropsWithColor(colors)}>
+        {lang.t('explain.fee_on_transfer.fragment1', {
+          tokenName: params?.inputCurrency?.symbol,
+        })}
+        <Text
+          color={colors?.appleBlue}
+          onPress={() =>
+            Linking.openURL(
+              buildRainbowLearnUrl({
+                url:
+                  'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+                query: {
+                  campaign: 'explain',
+                },
+              })
+            )
+          }
+          size="large"
+          suppressHighlighting
+          weight="semibold"
+        >
+          {lang.t('explain.fee_on_transfer.fragment2')}
+        </Text>
+        {lang.t('explain.fee_on_transfer.fragment3')}
       </Text>
     ),
   },

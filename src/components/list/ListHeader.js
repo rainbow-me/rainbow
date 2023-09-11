@@ -18,6 +18,7 @@ import {
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import * as i18n from '@/languages';
 
 export const ListHeaderHeight = 50;
 
@@ -115,7 +116,7 @@ export default function ListHeader({
             <Row align="center">
               {/* eslint-disable-next-line react/no-children-prop */}
               {createElement(titleRenderer, { children: title })}
-              {title === 'Collectibles' && (
+              {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
                   <ShareCollectiblesButton
                     onPress={() =>

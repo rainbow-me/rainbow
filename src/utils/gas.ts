@@ -1,4 +1,5 @@
 import { colors } from '@/styles';
+import * as i18n from '@/languages';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';
@@ -29,12 +30,40 @@ const GAS_EMOJIS = {
   [URGENT]: '🚨',
 };
 
+// i18n
 const GAS_TRENDS = {
-  [FALLING]: { color: colors.green, label: '􀄱 Falling' },
+  [FALLING]: {
+    color: colors.green,
+    label: `􀄱 ${i18n.t(i18n.l.gas.card.falling)}`,
+  },
   [NO_TREND]: { color: colors.appleBlue, label: '' },
-  [RISING]: { color: colors.orange, label: '􀰾 Rising' },
-  [STABLE]: { color: colors.yellowFavorite, label: '􀆮 Stable' },
-  [SURGING]: { color: colors.red, label: '􀇿 Surging' },
+  [RISING]: {
+    color: colors.orange,
+    label: `􀰾  ${i18n.t(i18n.l.gas.card.rising)}`,
+  },
+  [STABLE]: {
+    color: colors.yellowFavorite,
+    label: `􀆮  ${i18n.t(i18n.l.gas.card.stable)}`,
+  },
+  [SURGING]: {
+    color: colors.red,
+    label: `􀇿  ${i18n.t(i18n.l.gas.card.surging)}`,
+  },
+};
+
+const getGasLabel = (speed: string) => {
+  switch (speed) {
+    case CUSTOM:
+      return i18n.t(i18n.l.gas.speeds.custom);
+    case URGENT:
+      return i18n.t(i18n.l.gas.speeds.urgent);
+    case FAST:
+      return i18n.t(i18n.l.gas.speeds.fast);
+    case SLOW:
+      return i18n.t(i18n.l.gas.speeds.slow);
+    default:
+      return i18n.t(i18n.l.gas.speeds.normal);
+  }
 };
 
 const FLASHBOTS_MIN_TIP = 6;
@@ -43,6 +72,7 @@ export default {
   CUSTOM,
   FAST,
   FLASHBOTS_MIN_TIP,
+  getGasLabel,
   GAS_EMOJIS,
   GAS_ICONS,
   GAS_TRENDS,
