@@ -1,14 +1,4 @@
-import { Contract } from '@ethersproject/contracts';
-import { captureException } from '@sentry/react-native';
-import {
-  concat,
-  isEmpty,
-  isNil,
-  keyBy,
-  keys,
-  mapValues,
-  toLower,
-} from 'lodash';
+import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
@@ -20,14 +10,10 @@ import {
   DEFAULT_CHART_TYPE,
 } from './charts';
 import {
-  addressAssetsReceived,
-  AddressAssetsReceivedMessage,
   assetPricesChanged,
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
-  DISPERSION_SUCCESS_CODE,
-  MessageMeta,
   portfolioReceived,
   PortfolioReceivedMessage,
   transactionsReceived,
@@ -35,49 +21,27 @@ import {
 } from './data';
 import { AppGetState, AppState } from './store';
 import { disableCharts } from '@/config/debug';
-import { ZerionAsset } from '@/entities';
-import {
-  getProviderForNetwork,
-  isHardHat,
-  web3Provider,
-} from '@/handlers/web3';
+import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
 import {
-  balanceCheckerContractAbi,
   BNB_MAINNET_ADDRESS,
-  chainAssets,
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
   OP_ADDRESS,
 } from '@/references';
-import { ethereumUtils, TokensListenedCache } from '@/utils';
+import { TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
-import { getNetworkObj } from '@/networks';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
 const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 
-let hardhatAndTestnetHandle: ReturnType<typeof setTimeout> | null = null;
-
-const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
-  '0x0000000000000000000000000000000000000000';
-const HARDHAT_TESTNET_BALANCE_FREQUENCY = 30000;
 const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
-  ADDRESS_ASSETS: {
-    RECEIVED: 'received address assets',
-    RECEIVED_ARBITRUM: 'received address arbitrum-assets',
-    RECEIVED_OPTIMISM: 'received address optimism-assets',
-    RECEIVED_POLYGON: 'received address polygon-assets',
-    RECEIVED_BSC: 'received address bsc-assets',
-    RECEIVED_ZORA: 'received address zora-assets',
-    RECEIVED_BASE: 'received address base-assets',
-  },
   ADDRESS_PORTFOLIO: {
     RECEIVED: 'received address portfolio',
   },
@@ -116,26 +80,6 @@ interface ExplorerState {
 
   // A socket for the assets endpoint.
   assetsSocket: Socket | null;
-}
-
-// A `ZerionAsset` with additional fields available for L2 assets.
-type ZerionAsseWithL2Fields = ZerionAsset & {
-  mainnet_address: string;
-  network: string;
-};
-
-/**
- * A message from the Zerion API indicating that L2 assets were received.
- * Note, unlike a `AddressAssetsReceivedMessage`, the `payload.assets` field is
- * an array, not an object.
- */
-interface L2AddressAssetsReceivedMessage {
-  payload?: {
-    assets?: {
-      asset: ZerionAsseWithL2Fields;
-    }[];
-  };
-  meta?: MessageMeta;
 }
 
 /**
@@ -178,11 +122,6 @@ type SocketGetActionType = 'get';
  */
 type SocketEmitArguments = Parameters<Socket['emit']>;
 
-/**
- * An ordering option, either ascending or descending.
- */
-type OrderType = 'asc' | 'desc';
-
 // -- Actions ---------------------------------------- //
 
 /**
@@ -220,31 +159,7 @@ const addressSubscription = (
       currency: toLower(currency),
       transactions_limit: TRANSACTIONS_LIMIT,
     },
-    scope: ['assets', 'transactions'],
-  },
-];
-
-/**
- * Configures a subscription to get asset balances for a network
- *
- * @param address The address.
- * @param currency The currency to use.
- * @param action The subscription asset.
- * @returns The arguments for the `emit` function call.
- */
-const addressAssetBalanceSubscription = (
-  address: string,
-  currency: string,
-  network: Network,
-  action: SocketSubscriptionActionType = 'subscribe'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: [`${network === Network.mainnet ? '' : `${network}-`}assets`],
+    scope: ['transactions'],
   },
 ];
 
@@ -341,27 +256,6 @@ const ethUSDSubscription: SocketEmitArguments = [
       currency: currencyTypes.usd,
     },
     scope: ['prices'],
-  },
-];
-
-/**
- * Configures an asset request.
- *
- * @param address The wallet address.
- * @param currency The currency to use.
- * @returns The arguments for an `emit` function call.
- */
-const addressAssetsRequest = (
-  address: string,
-  currency: string
-): SocketEmitArguments => [
-  'get',
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-    },
-    scope: ['assets'],
   },
 ];
 
@@ -465,30 +359,6 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
     );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.bsc,
-        'unsubscribe'
-      )
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.zora,
-        'unsubscribe'
-      )
-    );
-    addressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        addressSubscribed!,
-        nativeCurrency,
-        Network.base,
-        'unsubscribe'
-      )
-    );
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
@@ -500,142 +370,13 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
 };
 
 /**
- * Checks whether or not a response message from Zerion is valid.
- *
- * @param msg The Zerion asset message.
- * @returns Whether or not the response is valid.
- */
-const isValidAssetsResponseFromZerion = (msg: AddressAssetsReceivedMessage) => {
-  // Check that the payload meta is valid
-  if (msg?.meta?.status === DISPERSION_SUCCESS_CODE) {
-    // Check that there's an assets property in the payload
-    if (msg.payload?.assets) {
-      const assets = keys(msg.payload.assets);
-      // Check that we have assets
-      if (assets.length > 0) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-/**
  * Clears the explorer's state and unsubscribes from listeners.
  */
 export const explorerClearState = () => (
   dispatch: ThunkDispatch<AppState, unknown, ExplorerClearStateAction>
 ) => {
-  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
-};
-
-/**
- * Fetches balances for tokens for a given address.
- *
- * @param tokens The tokens to find balances for.
- * @param address The account address.
- * @param network The network to use.
- * @returns An object mapping token addresses to balances, or `null` if an error
- * occurs.
- */
-const fetchTestnetOrHardhatBalancesWithBalanceChecker = async (
-  tokens: string[],
-  address: string,
-  network: Network
-): Promise<{ [tokenAddress: string]: string } | null> => {
-  const balanceCheckerContract = new Contract(
-    getNetworkObj(network).balanceCheckerAddress,
-    balanceCheckerContractAbi,
-    web3Provider
-  );
-  try {
-    const values = await balanceCheckerContract.balances([address], tokens);
-    const balances: {
-      [address: string]: { [tokenAddress: string]: string };
-    } = {};
-    [address].forEach((addr, addrIdx) => {
-      balances[addr] = {};
-      tokens.forEach((tokenAddr, tokenIdx) => {
-        const balance = values[addrIdx * tokens.length + tokenIdx];
-        balances[addr][tokenAddr] = balance.toString();
-      });
-    });
-    return balances[address];
-  } catch (e) {
-    logger.sentry(
-      'Error fetching balances from balanceCheckerContract',
-      network,
-      e
-    );
-    captureException(new Error('fallbackExplorer::balanceChecker failure'));
-    return null;
-  }
-};
-
-const fetchTestnetOrHardhatBalances = (
-  accountAddress: string,
-  network: Network,
-  nativeCurrency: string
-) => async (dispatch: ThunkDispatch<AppState, unknown, never>) => {
-  const chainAssetsMap = keyBy(
-    chainAssets[network as keyof typeof chainAssets],
-    'asset.asset_code'
-  );
-
-  const tokenAddresses = Object.values(
-    chainAssetsMap
-  ).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : asset_code.toLowerCase()
-  );
-  const balances = await fetchTestnetOrHardhatBalancesWithBalanceChecker(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-  if (!balances) return;
-
-  const updatedAssets = mapValues(chainAssetsMap, assetAndQuantity => {
-    const assetCode = assetAndQuantity.asset.asset_code.toLowerCase();
-    return {
-      asset: {
-        ...assetAndQuantity.asset,
-        asset_code:
-          assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            ? ETH_ADDRESS
-            : assetCode,
-      },
-      quantity:
-        balances[
-          assetCode === ETH_ADDRESS
-            ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-            : assetCode
-        ],
-    };
-  });
-
-  const newPayload = { assets: updatedAssets };
-  const updatedMessage = {
-    meta: {
-      address: accountAddress,
-      currency: nativeCurrency,
-      status: DISPERSION_SUCCESS_CODE,
-    },
-    payload: newPayload,
-  };
-
-  dispatch(addressAssetsReceived(updatedMessage, network));
-  hardhatAndTestnetHandle && clearTimeout(hardhatAndTestnetHandle);
-  hardhatAndTestnetHandle = setTimeout(
-    () =>
-      dispatch(
-        fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
-      ),
-    HARDHAT_TESTNET_BALANCE_FREQUENCY
-  );
 };
 
 /**
@@ -657,9 +398,6 @@ export const explorerInit = () => async (
   const provider = await getProviderForNetwork(network);
   const providerUrl = provider?.connection?.url;
   if (isHardHat(providerUrl) || network !== Network.mainnet) {
-    dispatch(
-      fetchTestnetOrHardhatBalances(accountAddress, network, nativeCurrency)
-    );
     return;
   }
 
@@ -679,27 +417,6 @@ export const explorerInit = () => async (
   newAddressSocket.on(messages.CONNECT, () => {
     newAddressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency)
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.bsc
-      )
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.zora
-      )
-    );
-    newAddressSocket.emit(
-      ...addressAssetBalanceSubscription(
-        accountAddress,
-        nativeCurrency,
-        Network.base
-      )
     );
   });
 
@@ -847,76 +564,6 @@ const listenOnAssetMessages = (socket: Socket) => (
 };
 
 /**
- * Fetches the current wallet's assets. The result is handled by a listener
- * in `listenOnAddressMessages`.
- */
-export const fetchAssetsFromRefraction = () => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
-  const { addressSocket } = getState().explorer;
-  if (addressSocket) {
-    addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
-  }
-};
-
-/**
- * Handles an incoming Zerion message for address asset information on a
- * layer-2 network.
- *
- * @param message The Zerion message.
- * @param network The network/
- */
-const l2AddressAssetsReceived = (
-  message: L2AddressAssetsReceivedMessage,
-  network: Network
-) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
-  const { genericAssets } = getState().data;
-
-  const newAssets:
-    | { asset: ZerionAsseWithL2Fields }[]
-    | undefined = message?.payload?.assets?.map(asset => {
-    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
-    const fallbackAsset =
-      mainnetAddress &&
-      (ethereumUtils.getAccountAsset(mainnetAddress) ||
-        genericAssets[mainnetAddress]);
-
-    if (fallbackAsset) {
-      return {
-        ...asset,
-        asset: {
-          ...asset?.asset,
-          price: {
-            ...asset?.asset?.price,
-            ...fallbackAsset.price,
-          } as ZerionAsseWithL2Fields['price'],
-        },
-      };
-    }
-    return asset;
-  });
-
-  // temporary until backend supports sending back map for L2 data
-  const newAssetsMap = keyBy(
-    newAssets,
-    asset => `${asset.asset.asset_code}_${asset.asset.network}`
-  );
-  const updatedMessage = {
-    ...message,
-    payload: {
-      ...message?.payload,
-      assets: newAssetsMap,
-    },
-  };
-  dispatch(addressAssetsReceived(updatedMessage, network));
-};
-
-/**
  * Adds listeners for address information messages to a given socket.
  *
  * @param socket The socket to add listeners to.
@@ -994,60 +641,6 @@ const listenOnAddressMessages = (socket: Socket) => (
     (message: TransactionsReceivedMessage) => {
       logger.log('txns appended', message?.payload?.transactions);
       dispatch(transactionsReceived(message, true));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.arbitrum));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_OPTIMISM,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.optimism));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_POLYGON,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.polygon));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_BSC,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.bsc));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_ZORA,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.zora));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED_BASE,
-    (message: L2AddressAssetsReceivedMessage) => {
-      dispatch(l2AddressAssetsReceived(message, Network.base));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_ASSETS.RECEIVED,
-    (message: AddressAssetsReceivedMessage) => {
-      dispatch(addressAssetsReceived(message, Network.mainnet));
-      if (isValidAssetsResponseFromZerion(message)) {
-        logger.log(
-          '😬 Cancelling fallback data provider listener. Zerion is good!'
-        );
-      }
     }
   );
 };

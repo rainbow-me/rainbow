@@ -10,6 +10,7 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Inline } from '@/design-system';
 import {
@@ -40,6 +41,7 @@ import { AppState } from '@/redux/store';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
+import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 type RouteParams = {
   WalletScreen: {
@@ -71,6 +73,16 @@ export const WalletScreen: React.FC<Props> = ({ navigation, route }) => {
   } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   usePositions({ address: accountAddress, currency: nativeCurrency });
+
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+  useUserAssets({
+    address: accountAddress,
+    currency: nativeCurrency,
+    connectedToHardhat,
+  });
+
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
