@@ -2,8 +2,10 @@ import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from 'react';
 import Animated, {
-  interpolate,
   useAnimatedStyle,
+  useSharedValue,
+  interpolate,
+  Extrapolate,
 } from 'react-native-reanimated';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
@@ -66,33 +68,34 @@ export function SwipeNavigator() {
 
   const TabBar = ({ state, descriptors, navigation, position }) => {
     const { width: deviceWidth } = useDimensions();
-
-
+    const reanimatedPosition = useSharedValue(1);
     const tabWidth = deviceWidth / NUMBER_OF_TABS;
     const tabPillStartPosition = (tabWidth - 72) / 2;
+    console.log('reanimatedposition', reanimatedPosition.value);
 
     const tabStyle = useAnimatedStyle(() => {
+      const pos1 = tabPillStartPosition;
+      const pos2 = tabPillStartPosition + tabWidth;
+      const pos3 = tabPillStartPosition + tabWidth * 2;
+      console.log('pos1', pos1, pos2);
+      const translateX = interpolate(
+        reanimatedPosition.value,
+        [1, 2, 3],
+        [pos1, pos2, pos3],
+        Extrapolate.CLAMP
+      );
       return {
-        transform: [
-          {
-            translateX:
-              tabPillStartPosition +
-              (position
-                ? (Math.max(position.value, 1) - 1) * tabWidth
-                : 0),
-          },
-        ],
+        transform: [{ translateX }],
         width: 72,
       };
     });
 
     const offScreenTabBar = useAnimatedStyle(() => {
       const translateX = interpolate(
-        position.value,
-        [0, 1, 10],
+        reanimatedPosition.value,
+        [0, 1, 2],
         [deviceWidth, 0, 0]
       );
-
       return {
         transform: [
           {
@@ -101,7 +104,6 @@ export function SwipeNavigator() {
         ],
       };
     });
-
     return (
       <Box
         as={Animated.View}
@@ -196,6 +198,7 @@ export function SwipeNavigator() {
 
                     if (!isFocused && !event.defaultPrevented) {
                       navigation.navigate(route.name);
+                      reanimatedPosition.value = index;
                     } else if (
                       isFocused &&
                       options.tabBarIcon === 'tabDiscover'
@@ -209,6 +212,7 @@ export function SwipeNavigator() {
                       type: 'tabLongPress',
                       target: route.key,
                     });
+                    reanimatedPosition.value = index;
 
                     if (options.tabBarIcon === 'tabHome') {
                       navigation.navigate(Routes.CHANGE_WALLET_SHEET);
@@ -250,6 +254,7 @@ export function SwipeNavigator() {
                                 icon={options.tabBarIcon}
                                 index={index}
                                 rawScrollPosition={position}
+                                reanimatedPosition={reanimatedPosition}
                               />
                             </Box>
                           </Stack>
@@ -272,7 +277,6 @@ export function SwipeNavigator() {
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
           initialRouteName={Routes.WALLET_SCREEN}
-
           swipeEnabled={!isCoinListEdited}
           tabBar={props => <TabBar {...props} />}
           tabBarPosition="bottom"

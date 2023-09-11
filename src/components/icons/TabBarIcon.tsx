@@ -1,10 +1,12 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Animated, {
   interpolate,
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
+  SharedValue,
 } from 'react-native-reanimated';
 import { Box, Cover } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
@@ -15,7 +17,8 @@ type TabBarIconProps = {
   accentColor: string;
   icon: string;
   index: number;
-  rawScrollPosition: Animated.SharedValue<number>;
+  rawScrollPosition: SharedValue<number>;
+  reanimatedPosition: SharedValue<number>;
 };
 
 export function TabBarIcon({
@@ -23,11 +26,9 @@ export function TabBarIcon({
   icon,
   index,
   rawScrollPosition,
+  reanimatedPosition,
 }: TabBarIconProps) {
   const { colors, isDarkMode } = useTheme();
-  const scrollPosition = useDerivedValue(() => {
-    return Math.max(rawScrollPosition.value, 1);
-  });
 
   const outlineColor = isDarkMode
     ? globalColors.blueGrey60
@@ -35,7 +36,7 @@ export function TabBarIcon({
 
   const iconColor = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [outlineColor, accentColor, accentColor, accentColor, outlineColor]
     );
@@ -47,7 +48,7 @@ export function TabBarIcon({
 
   const iconShadow = useAnimatedStyle(() => {
     const shadowOpacity = interpolate(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [0, 0.2, 0.2, 0.2, 0]
     );
@@ -62,7 +63,7 @@ export function TabBarIcon({
 
   const iconShadowBlack = useAnimatedStyle(() => {
     const shadowOpacity = interpolate(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [0, 0.02, 0.02, 0.02, 0]
     );
@@ -77,7 +78,7 @@ export function TabBarIcon({
 
   const innerFillColor = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [
         isDarkMode ? outlineColor : '#FEFEFE',
@@ -100,7 +101,7 @@ export function TabBarIcon({
       ]
     );
     const opacity = interpolate(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [0, 1, 1, 1, 0]
     );
@@ -113,12 +114,12 @@ export function TabBarIcon({
 
   const discoverTabInnerFillColor = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [accentColor, accentColor, accentColor, accentColor, accentColor]
     );
     const opacity = interpolate(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [0, 0.25, 0.25, 0.25, 0]
     );
@@ -131,7 +132,7 @@ export function TabBarIcon({
 
   const innerIconColor = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
-      scrollPosition.value,
+      reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [
         outlineColor,
