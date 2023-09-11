@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import {
   AccentColorProvider,
@@ -14,6 +14,7 @@ import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
 import { ImgixImage } from '@/components/images';
+import { Media } from '@/components/media';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -69,6 +70,10 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
 
   useEffect(() => setLoaded(false), [recentMint.imageURI]);
 
+  console.log(recentMint.imageURI);
+
+  const [mediaRendered, setMediaRendered] = useState(false);
+
   return (
     <View
       style={{
@@ -76,6 +81,8 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.02,
         shadowRadius: 3,
+        width: NFT_IMAGE_SIZE,
+        height: NFT_IMAGE_SIZE,
       }}
     >
       <View
@@ -88,7 +95,7 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
           height: NFT_IMAGE_SIZE,
         }}
       >
-        {!loaded && (
+        {!mediaRendered && (
           <Box
             style={{
               width: NFT_IMAGE_SIZE,
@@ -111,23 +118,21 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
             </Text>
           </Box>
         )}
-        {!!recentMint?.imageURI && (
-          <Cover>
-            <ImgixImage
-              source={{
-                uri: recentMint.imageURI,
-              }}
-              size={NFT_IMAGE_SIZE}
-              fm="png"
+        <Cover>
+          {!!recentMint?.imageURI && (
+            <Media
+              onLayout={() => setMediaRendered(true)}
+              onError={() => setMediaRendered(false)}
+              url={recentMint.imageURI}
+              mimeType={recentMint.mimeType ?? undefined}
               style={{
                 width: NFT_IMAGE_SIZE,
                 height: NFT_IMAGE_SIZE,
                 borderRadius: 12,
               }}
-              onLoad={() => setLoaded(true)}
             />
-          </Cover>
-        )}
+          )}
+        </Cover>
       </View>
     </View>
   );

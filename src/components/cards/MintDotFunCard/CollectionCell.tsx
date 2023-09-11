@@ -20,6 +20,9 @@ import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
+import { rainbowFetch } from '@/rainbow-fetch';
+import WebView from 'react-native-webview';
+import { maybeSignUri } from '@/handlers/imgix';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -87,9 +90,33 @@ export function CollectionCell({
     collection.imageURL ||
     collection?.recentMints?.find(m => m.imageURI)?.imageURI;
 
+  if (collection.name.includes('WEB3 Spirit')) {
+    console.log(collection.imageURL);
+    console.log(imageUrl);
+    console.log(maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }));
+  }
+
   useEffect(() => setLoaded(false), [imageUrl]);
 
-  console.log(imageUrl);
+  // useEffect(() => {
+  //   const x = async () => {
+  //     if (imageUrl?.includes('mint.fun')) {
+  //       console.log(imageUrl);
+  //       console.log('HELP');
+  //       try {
+  //         let response = await rainbowFetch(imageUrl, {
+  //           method: 'GET',
+  //         });
+  //         console.log('response', response);
+  //       } catch (e) {
+  //         console.log(e);
+  //       }
+  //     }
+  //   };
+  //   x();
+  // }, [collection.imageURL, imageUrl]);
+
+  // console.log(imageUrl);
 
   return (
     <ButtonPressAnimation
@@ -148,8 +175,7 @@ export function CollectionCell({
             <Cover>
               <ImgixImage
                 source={{
-                  uri:
-                    'https://lh3.googleusercontent.com/G19wC1T8R7iJB5jbEni3dzZidlrda68_wi1r2XAYJ6BB4H88XvJt0NMFQ3dhywYuY-oLn2Gyi9i_yxt6WPEaAVuSObQh-K7Ubw',
+                  uri: imageUrl,
                 }}
                 size={NFT_IMAGE_SIZE}
                 style={{
@@ -159,6 +185,11 @@ export function CollectionCell({
                 }}
                 onLoad={() => setLoaded(true)}
               />
+              {/* <WebView
+                source={{
+                  uri: 'https://www.facebook.com',
+                }}
+              /> */}
             </Cover>
           )}
         </View>

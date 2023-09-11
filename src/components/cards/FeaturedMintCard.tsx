@@ -25,6 +25,7 @@ import { Image, Linking, View } from 'react-native';
 import { IS_IOS } from '@/env';
 import c from 'chroma-js';
 import { maybeSignUri } from '@/handlers/imgix';
+import { Media, MimeType } from '../media';
 
 const IMAGE_SIZE = 111;
 
@@ -44,6 +45,7 @@ export function FeaturedMintCard() {
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const imageUrl =
+    'https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/alphachannel.svg' ??
     featuredCollection?.imageURL ??
     featuredCollection?.recentMints.find(m => m.imageURI)?.imageURI;
   const accentColor = usePersistentDominantColorFromImage(imageUrl);
@@ -288,7 +290,7 @@ export function FeaturedMintCard() {
                                   }
                             }
                           >
-                            <Image
+                            {/* <Image
                               source={{
                                 uri: maybeSignUri(imageUrl, {
                                   w: IMAGE_SIZE,
@@ -300,6 +302,16 @@ export function FeaturedMintCard() {
                                 borderRadius: 12,
                               }}
                               onLoad={() => setLoaded(true)}
+                            /> */}
+                            <Media
+                              url={imageUrl}
+                              mimeType={MimeType.SVG}
+                              style={{
+                                width: IMAGE_SIZE,
+                                height: IMAGE_SIZE,
+                                borderRadius: 12,
+                              }}
+                              size={IMAGE_SIZE}
                             />
                           </View>
                         </View>
