@@ -9,6 +9,8 @@ export function convertAPINetworkToInternalNetwork(
     [APINetwork.Arbitrum]: Network.arbitrum,
     [APINetwork.Optimism]: Network.optimism,
     [APINetwork.Polygon]: Network.polygon,
+    [APINetwork.Base]: Network.base,
+    [APINetwork.BSC]: Network.bsc,
   };
 
   // @ts-ignore

@@ -85,6 +85,8 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
+    adworldRed: '#FC0414', // '252, 4, 20'
+    adworldRed06: 'rgba(252, 4, 20, 0.06)',
     appleBlue: '#0E76FD', // '14, 118, 253'
     appleBlue06: 'rgba(14, 118, 253, 0.06)',
     black: '#000000', // '0, 0, 0'

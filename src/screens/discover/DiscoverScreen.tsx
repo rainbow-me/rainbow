@@ -14,6 +14,7 @@ import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
+import * as i18n from '@/languages';
 
 export let discoverScrollToTopFnRef: () => void | null = () => null;
 export default function DiscoverScreen() {
@@ -73,7 +74,11 @@ export default function DiscoverScreen() {
           testID={
             isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
           }
-          title={isSearchModeEnabled ? 'Search' : 'Discover'}
+          title={
+            isSearchModeEnabled
+              ? i18n.t(i18n.l.discover.search.search)
+              : i18n.t(i18n.l.discover.search.discover)
+          }
         />
         <Box
           //@ts-expect-error
