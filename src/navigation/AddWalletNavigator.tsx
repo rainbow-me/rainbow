@@ -62,7 +62,7 @@ export const AddWalletNavigator = () => {
     // wrapping in View prevents keyboard from pushing up sheet on android
     <View
       style={{
-        height: deviceHeight,
+        height: deviceHeight + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0),
       }}
     >
       <BackgroundProvider color="surfaceSecondary">
@@ -83,7 +83,7 @@ export const AddWalletNavigator = () => {
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
                 focus: () => {
-                  setScrollEnabled(!isFirstWallet);
+                  setScrollEnabled(true);
                 },
               }}
             />
