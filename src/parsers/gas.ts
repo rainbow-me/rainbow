@@ -154,7 +154,6 @@ export const parseRainbowMeteorologyData = (
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
-    console.log({ [speed]: parsedFees[speed] });
   });
 
   parsedFees[CUSTOM] = {} as GasFeeParams;
@@ -386,8 +385,6 @@ export const gweiToWei = (gweiAmount: BigNumberish) => {
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  console.log(weiAmount);
   const gweiAmount = divide(weiAmount, ethUnits.gwei);
-  console.log({ gweiAmount });
   return gweiAmount;
 };
