@@ -1,4 +1,4 @@
-import { isEmpty, upperFirst } from 'lodash';
+import { isEmpty } from 'lodash';
 import React from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import { useGas } from '@/hooks';
@@ -13,7 +13,7 @@ const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 type TabPillProps = {
   speed: string;
   isSelected: boolean;
-  handleOnPressTabPill: (label: string) => void;
+  handleOnPressTabPill: (speed: string) => void;
   color: string;
   testID?: string;
 };
