@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
+import React, { useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -52,224 +52,217 @@ const config = {
 
 const Swipe = createMaterialTopTabNavigator();
 
-export function SwipeNavigator() {
-  const { isCoinListEdited } = useCoinListEdited();
-  const { network } = useAccountSettings();
+const TabBar = ({ state, descriptors, navigation, position }) => {
+  const { width: deviceWidth } = useDimensions();
+  const reanimatedPosition = useSharedValue(2);
+  const tabWidth = deviceWidth / NUMBER_OF_TABS;
+  const tabPillStartPosition = (tabWidth - 72) / 2;
 
   const { accentColor } = useAccountAccentColor();
-
+  useEffect(() => {
+    reanimatedPosition.value = state.index;
+  }, [state.index]);
   // ////////////////////////////////////////////////////
   // Colors
 
   const { colors, isDarkMode } = useTheme();
+  const tabStyle = useAnimatedStyle(() => {
+    const pos1 = tabPillStartPosition;
+    const pos2 = tabPillStartPosition + tabWidth;
+    const pos3 = tabPillStartPosition + tabWidth * 2;
+    const translateX = interpolate(
+      reanimatedPosition.value,
+      [1, 2, 3],
+      [pos1, pos2, pos3],
+      Extrapolate.CLAMP
+    );
+    return {
+      transform: [{ translateX }],
+      width: 72,
+    };
+  });
 
-  // ////////////////////////////////////////////////////
-  // Animations
-
-  const TabBar = ({ state, descriptors, navigation, position }) => {
-    const { width: deviceWidth } = useDimensions();
-    const reanimatedPosition = useSharedValue(1);
-    const tabWidth = deviceWidth / NUMBER_OF_TABS;
-    const tabPillStartPosition = (tabWidth - 72) / 2;
-    console.log('reanimatedposition', reanimatedPosition.value);
-
-    const tabStyle = useAnimatedStyle(() => {
-      const pos1 = tabPillStartPosition;
-      const pos2 = tabPillStartPosition + tabWidth;
-      const pos3 = tabPillStartPosition + tabWidth * 2;
-      console.log('pos1', pos1, pos2);
-      const translateX = interpolate(
-        reanimatedPosition.value,
-        [1, 2, 3],
-        [pos1, pos2, pos3],
-        Extrapolate.CLAMP
-      );
-      return {
-        transform: [{ translateX }],
-        width: 72,
-      };
-    });
-
-    const offScreenTabBar = useAnimatedStyle(() => {
-      const translateX = interpolate(
-        reanimatedPosition.value,
-        [0, 1, 2],
-        [deviceWidth, 0, 0]
-      );
-      return {
-        transform: [
-          {
-            translateX,
-          },
-        ],
-      };
-    });
-    return (
+  const offScreenTabBar = useAnimatedStyle(() => {
+    const translateX = interpolate(
+      reanimatedPosition.value,
+      [0, 1, 2],
+      [deviceWidth, 0, 0]
+    );
+    return {
+      transform: [
+        {
+          translateX,
+        },
+      ],
+    };
+  });
+  return (
+    <Box
+      as={Animated.View}
+      style={[
+        offScreenTabBar,
+        {
+          shadowColor: colors.shadowBlack,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: isDarkMode ? 0.2 : 0.04,
+          shadowRadius: 20,
+        },
+      ]}
+    >
       <Box
-        as={Animated.View}
-        style={[
-          offScreenTabBar,
-          {
-            shadowColor: colors.shadowBlack,
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: isDarkMode ? 0.2 : 0.04,
-            shadowRadius: 20,
-          },
-        ]}
+        style={{
+          shadowColor: colors.shadowBlack,
+          shadowOffset: { width: 0, height: -1 },
+          shadowOpacity: isDarkMode ? 0.2 : 0.04,
+          shadowRadius: 3,
+        }}
       >
         <Box
+          height={{ custom: 82 }}
+          position="absolute"
           style={{
-            shadowColor: colors.shadowBlack,
-            shadowOffset: { width: 0, height: -1 },
-            shadowOpacity: isDarkMode ? 0.2 : 0.04,
-            shadowRadius: 3,
+            bottom: 0,
+            overflow: 'hidden',
           }}
+          width="full"
         >
           <Box
-            height={{ custom: 82 }}
-            position="absolute"
-            style={{
-              bottom: 0,
-              overflow: 'hidden',
-            }}
+            as={BlurView}
+            blurAmount={40}
+            blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
             width="full"
+            height={{ custom: 82 }}
           >
             <Box
-              as={BlurView}
-              blurAmount={40}
-              blurType={
-                isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'
-              }
+              height="full"
+              position="absolute"
+              style={{
+                backgroundColor: isDarkMode
+                  ? colors.alpha('#191A1C', 0.7)
+                  : colors.alpha(colors.white, 0.7),
+              }}
               width="full"
-              height={{ custom: 82 }}
-            >
-              <Box
-                height="full"
-                position="absolute"
-                style={{
-                  backgroundColor: isDarkMode
-                    ? colors.alpha('#191A1C', 0.7)
-                    : colors.alpha(colors.white, 0.7),
-                }}
-                width="full"
-              />
-              <Box
-                alignItems="center"
-                as={Animated.View}
-                style={[
-                  tabStyle,
-                  {
-                    backgroundColor: colors.alpha(
-                      accentColor,
-                      isDarkMode ? 0.25 : 0.1
-                    ),
-                    top: 6,
-                  },
-                ]}
-                justifyContent="center"
-                height="36px"
-                borderRadius={18}
-                position="absolute"
-                width="72px"
-              />
-              <Box
-                height="1px"
-                position="absolute"
-                style={{
-                  backgroundColor: isDarkMode
-                    ? colors.alpha('#ffffff', 0.4)
-                    : colors.alpha(colors.white, 0.5),
-                  top: 0,
-                }}
-                width="full"
-              />
-              <Columns alignVertical="center">
-                {state.routes.map((route, index) => {
-                  const { options } = descriptors[route.key];
-                  logger.log('routeKey = ' + route.key);
+            />
+            <Box
+              alignItems="center"
+              as={Animated.View}
+              style={[
+                tabStyle,
+                {
+                  backgroundColor: colors.alpha(
+                    accentColor,
+                    isDarkMode ? 0.25 : 0.1
+                  ),
+                  top: 6,
+                },
+              ]}
+              justifyContent="center"
+              height="36px"
+              borderRadius={18}
+              position="absolute"
+              width="72px"
+            />
+            <Box
+              height="1px"
+              position="absolute"
+              style={{
+                backgroundColor: isDarkMode
+                  ? colors.alpha('#ffffff', 0.4)
+                  : colors.alpha(colors.white, 0.5),
+                top: 0,
+              }}
+              width="full"
+            />
+            <Columns alignVertical="center">
+              {state.routes.map((route, index) => {
+                const { options } = descriptors[route.key];
+                // logger.log('routeKey = ' + route.key);
 
-                  const isFocused = state.index === index;
+                const isFocused = state.index === index;
 
-                  const onPress = () => {
-                    const event = navigation.emit({
-                      type: 'tabPress',
-                      target: route.key,
-                    });
+                const onPress = () => {
+                  const event = navigation.emit({
+                    type: 'tabPress',
+                    target: route.key,
+                  });
 
-                    if (!isFocused && !event.defaultPrevented) {
-                      navigation.navigate(route.name);
-                      reanimatedPosition.value = index;
-                    } else if (
-                      isFocused &&
-                      options.tabBarIcon === 'tabDiscover'
-                    ) {
-                      discoverScrollToTopFnRef?.();
-                    }
-                  };
-
-                  const onLongPress = async () => {
-                    navigation.emit({
-                      type: 'tabLongPress',
-                      target: route.key,
-                    });
+                  if (!isFocused && !event.defaultPrevented) {
+                    navigation.navigate(route.name);
                     reanimatedPosition.value = index;
+                  } else if (
+                    isFocused &&
+                    options.tabBarIcon === 'tabDiscover'
+                  ) {
+                    discoverScrollToTopFnRef?.();
+                  }
+                };
 
-                    if (options.tabBarIcon === 'tabHome') {
-                      navigation.navigate(Routes.CHANGE_WALLET_SHEET);
-                    }
-                    if (options.tabBarIcon === 'tabDiscover') {
-                      navigation.navigate(Routes.DISCOVER_SCREEN);
-                      InteractionManager.runAfterInteractions(() => {
-                        discoverOpenSearchFnRef?.();
-                      });
-                    }
-                  };
+                const onLongPress = async () => {
+                  navigation.emit({
+                    type: 'tabLongPress',
+                    target: route.key,
+                  });
+                  reanimatedPosition.value = index;
 
-                  return (
-                    options.tabBarIcon !== 'none' && (
-                      <Box
-                        key={route.key}
-                        height="full"
-                        width="full"
-                        justifyContent="flex-start"
-                        paddingTop="6px"
+                  if (options.tabBarIcon === 'tabHome') {
+                    navigation.navigate(Routes.CHANGE_WALLET_SHEET);
+                  }
+                  if (options.tabBarIcon === 'tabDiscover') {
+                    navigation.navigate(Routes.DISCOVER_SCREEN);
+                    InteractionManager.runAfterInteractions(() => {
+                      discoverOpenSearchFnRef?.();
+                    });
+                  }
+                };
+
+                return (
+                  options.tabBarIcon !== 'none' && (
+                    <Box
+                      key={route.key}
+                      height="full"
+                      width="full"
+                      justifyContent="flex-start"
+                      paddingTop="6px"
+                    >
+                      <ButtonPressAnimation
+                        onPress={onPress}
+                        onLongPress={onLongPress}
+                        scaleTo={0.75}
                       >
-                        <ButtonPressAnimation
-                          onPress={onPress}
-                          onLongPress={onLongPress}
-                          scaleTo={0.75}
-                        >
-                          <Stack
-                            alignVertical="center"
-                            alignHorizontal="center"
+                        <Stack alignVertical="center" alignHorizontal="center">
+                          <Box
+                            alignItems="center"
+                            justifyContent="center"
+                            height="36px"
+                            borderRadius={20}
                           >
-                            <Box
-                              alignItems="center"
-                              justifyContent="center"
-                              height="36px"
-                              borderRadius={20}
-                            >
-                              <TabBarIcon
-                                accentColor={accentColor}
-                                icon={options.tabBarIcon}
-                                index={index}
-                                rawScrollPosition={position}
-                                reanimatedPosition={reanimatedPosition}
-                              />
-                            </Box>
-                          </Stack>
-                        </ButtonPressAnimation>
-                      </Box>
-                    )
-                  );
-                })}
-              </Columns>
-            </Box>
+                            <TabBarIcon
+                              accentColor={accentColor}
+                              icon={options.tabBarIcon}
+                              index={index}
+                              rawScrollPosition={position}
+                              reanimatedPosition={reanimatedPosition}
+                            />
+                          </Box>
+                        </Stack>
+                      </ButtonPressAnimation>
+                    </Box>
+                  )
+                );
+              })}
+            </Columns>
           </Box>
         </Box>
       </Box>
-    );
-  };
+    </Box>
+  );
+};
+export function SwipeNavigator() {
+  const { isCoinListEdited } = useCoinListEdited();
+  const { network } = useAccountSettings();
+
+  // ////////////////////////////////////////////////////
+  // Animations
 
   return (
     <FlexItem>
@@ -289,6 +282,11 @@ export function SwipeNavigator() {
             }}
           />
           <Swipe.Screen
+            component={ProfileScreen}
+            name={Routes.PROFILE_SCREEN}
+            options={{ tabBarIcon: 'tabActivity' }}
+          />
+          <Swipe.Screen
             component={WalletScreen}
             name={Routes.WALLET_SCREEN}
             options={{
@@ -298,11 +296,6 @@ export function SwipeNavigator() {
                 close: config,
               },
             }}
-          />
-          <Swipe.Screen
-            component={ProfileScreen}
-            name={Routes.PROFILE_SCREEN}
-            options={{ tabBarIcon: 'tabActivity' }}
           />
           <Swipe.Screen
             component={DiscoverScreen}
