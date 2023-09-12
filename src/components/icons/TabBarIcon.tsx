@@ -1,11 +1,9 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Animated, {
   interpolate,
   interpolateColor,
   useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
   SharedValue,
 } from 'react-native-reanimated';
 import { Box, Cover } from '@/design-system';
@@ -17,7 +15,6 @@ type TabBarIconProps = {
   accentColor: string;
   icon: string;
   index: number;
-  rawScrollPosition: SharedValue<number>;
   reanimatedPosition: SharedValue<number>;
 };
 
@@ -25,7 +22,6 @@ export function TabBarIcon({
   accentColor,
   icon,
   index,
-  rawScrollPosition,
   reanimatedPosition,
 }: TabBarIconProps) {
   const { colors, isDarkMode } = useTheme();
