@@ -1,3 +1,4 @@
+import styled from '@/styled-thing';
 import {
   AccentColorProvider,
   Box,
@@ -29,6 +30,18 @@ import { Media, MimeType } from '../media';
 
 const IMAGE_SIZE = 111;
 
+const BlurWrapper = styled(View).attrs({
+  shouldRasterizeIOS: true,
+})({
+  // @ts-expect-error missing theme types
+  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
+  height: '100%',
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  width: '100%',
+});
+
 export function FeaturedMintCard() {
   const { accountAddress } = useAccountProfile();
   const {
@@ -52,21 +65,6 @@ export function FeaturedMintCard() {
   const secondaryTextColor = imageUrl ? 'accent' : 'labelSecondary';
 
   useEffect(() => setLoaded(false), [imageUrl]);
-
-  // from nft expanded state
-  const primaryTextColor = useMemo(() => {
-    if (accentColor) {
-      const contrastWithWhite = c.contrast(accentColor, globalColors.white100);
-
-      if (contrastWithWhite < 2.125) {
-        return globalColors.grey100;
-      } else {
-        return globalColors.white100;
-      }
-    } else {
-      return globalColors.white100;
-    }
-  }, [accentColor]);
 
   return featuredCollection ? (
     <Inset vertical="10px">
@@ -102,52 +100,52 @@ export function FeaturedMintCard() {
             >
               <ButtonPressAnimation
                 style={{
-                  padding: 12,
                   borderRadius: 24,
-                  borderWidth: 1,
-                  borderColor: 'rgba(245, 248, 255, 0.08)',
+                  // borderWidth: 1,
+                  // borderColor: 'rgba(245, 248, 255, 0.08)',
+                  overflow: 'hidden',
+                  padding: 12,
                 }}
                 onPress={() => Linking.openURL(featuredCollection.externalURL)}
+                scaleTo={0.96}
               >
-                {!!imageUrl && (
-                  <Cover>
-                    <ImgixImage
-                      resizeMode="cover"
-                      style={{
-                        borderRadius: 24,
-                        height: '100%',
-                        width: '100%',
-                      }}
-                      source={{ uri: imageUrl }}
-                      size={deviceWidth - 40}
-                      fm="png"
-                    />
-                  </Cover>
-                )}
                 <Cover>
-                  <View
-                    style={{
-                      borderRadius: 24,
-                      height: '100%',
-                      width: '100%',
-                      backgroundColor: !imageUrl
-                        ? globalColors.grey100
-                        : isDarkMode
-                        ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
-                        : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`,
-                    }}
-                  />
-                </Cover>
-                <Cover>
-                  <BlurView
-                    blurAmount={100}
-                    blurType="light"
-                    style={{
-                      borderRadius: 24,
-                      width: '100%',
-                      height: '100%',
-                    }}
-                  />
+                  <BlurWrapper>
+                    {!!imageUrl && (
+                      <Cover>
+                        <ImgixImage
+                          resizeMode="cover"
+                          style={{
+                            borderRadius: 24,
+                            height: '100%',
+                            width: '100%',
+                          }}
+                          source={{ uri: imageUrl }}
+                          size={deviceWidth - 40}
+                          fm="png"
+                        />
+                      </Cover>
+                    )}
+                    <Cover>
+                      <BlurView
+                        blurAmount={100}
+                        blurType="light"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      />
+                    </Cover>
+                    <Cover>
+                      <View
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 1})`,
+                        }}
+                      />
+                    </Cover>
+                  </BlurWrapper>
                 </Cover>
                 <Columns>
                   <Column>
@@ -179,7 +177,7 @@ export function FeaturedMintCard() {
                         <Text
                           size="20pt"
                           weight="heavy"
-                          color={{ custom: primaryTextColor }}
+                          color="label"
                           numberOfLines={1}
                         >
                           {featuredCollection.name}
@@ -195,11 +193,7 @@ export function FeaturedMintCard() {
                           >
                             􀋥
                           </Text>
-                          <Text
-                            size="13pt"
-                            weight="heavy"
-                            color={{ custom: primaryTextColor }}
-                          >
+                          <Text size="13pt" weight="heavy" color="label">
                             {`${abbreviateNumber(
                               featuredCollection.totalMints
                             )} mint${
@@ -216,11 +210,7 @@ export function FeaturedMintCard() {
                           >
                             􀐫
                           </Text>
-                          <Text
-                            size="13pt"
-                            weight="heavy"
-                            color={{ custom: primaryTextColor }}
-                          >
+                          <Text size="13pt" weight="heavy" color="label">
                             {`${abbreviateNumber(
                               featuredCollection.mintsLastHour
                             )} past hour`}
