@@ -72,7 +72,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
     const pos3 = tabPillStartPosition + tabWidth * 2;
     const translateX = interpolate(
       reanimatedPosition.value,
-      [1, 2, 3],
+      [0, 1, 2],
       [pos1, pos2, pos3],
       Extrapolate.CLAMP
     );
@@ -81,26 +81,26 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
       width: 72,
     };
   });
-
-  const offScreenTabBar = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      reanimatedPosition.value,
-      [0, 1, 2],
-      [deviceWidth, 0, 0]
-    );
-    return {
-      transform: [
-        {
-          translateX,
-        },
-      ],
-    };
-  });
+  // for when QRScannerScreen is re-added
+  // const offScreenTabBar = useAnimatedStyle(() => {
+  //   const translateX = interpolate(
+  //     reanimatedPosition.value,
+  //     [0, 1, 2],
+  //     [deviceWidth, 0, 0]
+  //   );
+  //   return {
+  //     transform: [
+  //       {
+  //         translateX,
+  //       },
+  //     ],
+  //   };
+  // });
   return (
     <Box
       as={Animated.View}
       style={[
-        offScreenTabBar,
+        // offScreenTabBar,
         {
           shadowColor: colors.shadowBlack,
           shadowOffset: { width: 0, height: -4 },
@@ -274,13 +274,13 @@ export function SwipeNavigator() {
           tabBar={props => <TabBar {...props} />}
           tabBarPosition="bottom"
         >
-          <Swipe.Screen
+          {/* <Swipe.Screen
             component={QRScannerScreen}
             name={Routes.QR_SCANNER_SCREEN}
             options={{
               tabBarIcon: 'none',
             }}
-          />
+          /> */}
           <Swipe.Screen
             component={ProfileScreen}
             name={Routes.PROFILE_SCREEN}
