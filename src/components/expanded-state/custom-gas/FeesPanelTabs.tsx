@@ -11,7 +11,7 @@ import { IS_ANDROID } from '@/env';
 const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
 type TabPillProps = {
-  label: string;
+  speed: string;
   isSelected: boolean;
   handleOnPressTabPill: (label: string) => void;
   color: string;
@@ -24,17 +24,19 @@ type FeesPanelTabsProps = {
 };
 
 const TabPill = ({
-  label,
+  speed,
   isSelected,
   handleOnPressTabPill,
   color,
   testID,
 }: TabPillProps) => {
   const { isDarkMode } = useTheme();
-  const handleOnPress = () => handleOnPressTabPill(label);
+  const handleOnPress = () => handleOnPressTabPill(speed);
   const shadowColor = isDarkMode
     ? colors.shadowBlack
     : color || colors.appleBlue;
+
+  const label = gasUtils.getGasLabel(speed);
 
   return (
     <Box
@@ -97,15 +99,15 @@ export default function FeesPanelTabs({
     updateToCustomGasFee,
   } = useGas();
 
-  const handleOnPressTabPill = (label: string) => {
-    if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+  const handleOnPressTabPill = (speed: string) => {
+    if (speed === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
       const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
         ...gasFeeParams,
         option: CUSTOM,
       });
     } else {
-      updateGasFeeOption(label);
+      updateGasFeeOption(speed);
     }
   };
 
@@ -117,7 +119,7 @@ export default function FeesPanelTabs({
             color={colorForAsset}
             handleOnPressTabPill={handleOnPressTabPill}
             isSelected={selectedGasFeeOption === speed}
-            label={gasUtils.getGasLabel(speed)}
+            speed={speed}
             testID={`speed-pill-${speed}`}
           />
         </Box>
