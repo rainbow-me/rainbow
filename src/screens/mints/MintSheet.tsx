@@ -70,7 +70,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { MintCollection } from '@/graphql/__generated__/arcDev';
+import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
 import { arcClient, arcDevClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
@@ -145,7 +145,8 @@ const BlurWrapper = styled(View).attrs({
 });
 
 interface MintSheetProps {
-  collection: MintCollection;
+  collection: ReservoirCollection;
+  chainId: number;
 }
 
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
@@ -160,7 +161,7 @@ function MintInfoRow({
   value: React.ReactNode;
 }) {
   return (
-    <Box height="36px" alignItems="center">
+    <Box alignItems="center">
       <Columns>
         <Column>
           <Inline space="4px" alignVertical="center">
@@ -183,17 +184,17 @@ function MintInfoRow({
 
 const MintSheet = () => {
   const params = useRoute();
-  const mintCollection = (params.params as MintSheetProps)?.collection;
+  const { collection: mintCollection } = params.params as MintSheetProps;
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, goBack } = useNavigation();
   const dispatch = useDispatch();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+
   const currentNetwork =
     RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
     Network.mainnet;
-  getNetworkObj(currentNetwork).nativeCurrency;
 
   const didErrorRef = useRef<boolean>(false);
   const didCompleteRef = useRef<boolean>(false);
@@ -246,7 +247,7 @@ const MintSheet = () => {
   } = useLegacyNFTs({
     address: accountAddress,
   });
-  const imageUrl = maybeSignUri(mintCollection.imageURL);
+  const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
 
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(
@@ -258,8 +259,10 @@ const MintSheet = () => {
   const getFormattedDate = (date: string) => {
     return format(new Date(date), 'MMMM dd, yyyy');
   };
-
-  const isTrending = mintCollection.mintsLastHour > 100;
+  const price = mintCollection.mintStages?.find(
+    item => item?.stage === 'public-sale'
+  )?.price?.amount?.raw;
+  const isMinting = mintCollection.isMintingPublicSale;
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -281,9 +284,7 @@ const MintSheet = () => {
     });
 
     getClient()?.actions.buyToken({
-      items: [
-        { fillType: 'mint', collection: mintCollection.contract, quantity },
-      ],
+      items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
       wallet: signer!,
       chainId: networkObj.id,
       onProgress: (steps: Execute['steps']) => {
@@ -296,7 +297,6 @@ const MintSheet = () => {
             //   ...analyticsEventObject,
             // });
             return;
-            console.log(step);
           }
           step.items?.forEach(item => {
             if (
@@ -389,10 +389,10 @@ const MintSheet = () => {
       const ensName = await fetchReverseRecord(address);
       setENSName(ensName);
     };
-    if (mintCollection.deployer) {
-      fetchENSName(mintCollection.deployer);
+    if (mintCollection.creator) {
+      fetchENSName(mintCollection.creator);
     }
-  }, [mintCollection.deployer]);
+  }, [mintCollection.creator]);
 
   // estimate gas
   useEffect(() => {
@@ -420,9 +420,7 @@ const MintSheet = () => {
       });
 
       getClient()?.actions.buyToken({
-        items: [
-          { fillType: 'mint', collection: mintCollection.contract, quantity },
-        ],
+        items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
         wallet: signer!,
         chainId: networkObj.id,
         precheck: true,
@@ -444,10 +442,7 @@ const MintSheet = () => {
                 to: item.data?.to,
                 from: item.data?.from,
                 data: item.data?.data,
-                value: multiply(
-                  mintCollection.mintStatus?.price || '0',
-                  quantity
-                ),
+                value: multiply(price || '0', quantity),
               };
               const gas = await estimateGas(tx, provider);
               if (gas) {
@@ -470,8 +465,8 @@ const MintSheet = () => {
   }, [
     accountAddress,
     currentNetwork,
-    mintCollection.contract,
-    mintCollection.mintStatus?.price,
+    mintCollection.id,
+    price,
     quantity,
     updateTxFee,
   ]);
@@ -483,17 +478,17 @@ const MintSheet = () => {
   });
 
   const deployerDisplay = abbreviations.address(
-    mintCollection.deployer || '',
+    mintCollection.creator || '',
     4,
     6
   );
   const contractAddressDisplay = `${abbreviations.address(
-    mintCollection.contract || '',
+    mintCollection.id || '',
     4,
     6
   )} 􀄯`;
   const mintPriceDisplay = convertRawAmountToBalance(
-    multiply(mintCollection.mintStatus?.price || '0', quantity),
+    multiply(price || '0', quantity),
     {
       decimals: 18,
       symbol: 'ETH',
@@ -529,13 +524,13 @@ const MintSheet = () => {
         yPosition={yPosition}
       >
         <ColorModeProvider value="darkTinted">
-          <Box
-            height={{
-              custom: deviceHeight,
-            }}
-            width={{ custom: deviceWidth }}
-          >
-            <Inset horizontal={'28px'}>
+          <Inset horizontal={'28px'}>
+            <Stack
+              space="28px"
+              separator={
+                <Separator color={'divider40 (Deprecated)'} thickness={1} />
+              }
+            >
               <Stack space="28px" alignHorizontal="center">
                 <Box paddingTop={'28px'}>
                   <Stack space={'28px'} alignHorizontal="center">
@@ -578,9 +573,9 @@ const MintSheet = () => {
                         <ContactAvatar
                           forceDarkMode
                           size="smaller"
-                          value={ensName || mintCollection?.deployer}
+                          value={ensName || mintCollection?.creator}
                           color={addressHashedColorIndex(
-                            mintCollection?.deployer || ''
+                            mintCollection?.creator || ''
                           )}
                         />
                       )}
@@ -634,10 +629,12 @@ const MintSheet = () => {
                   {/* @ts-ignore */}
                   <HoldToAuthorizeButton
                     backgroundColor={imageColor}
-                    disabled={!isSufficientGas || !isValidGas}
+                    disabled={!isSufficientGas || !isValidGas || !isMinting}
                     hideInnerBorder
                     label={
-                      insufficientEth
+                      !isMinting
+                        ? 'Mint Unavailable'
+                        : insufficientEth
                         ? i18n.t(
                             i18n.l.button.confirm_exchange.insufficient_eth
                           )
@@ -667,16 +664,25 @@ const MintSheet = () => {
                           nPress={()=> ethereumUtils.openAddressInBlockExplorer(mintCollection?.contract, currentNetwork)} value={contractAddressDisplay} color={imageColor}
 
                           */}
-
-                <Box style={{ width: deviceWidth - 56 }}>
-                  <Separator color={'divider40 (Deprecated)'} thickness={1} />
-                </Box>
               </Stack>
 
-              <Box height="36px"></Box>
-
-              <Stack>
-                {mintCollection?.totalMints && (
+              {mintCollection.description && (
+                <Stack space={'20px'}>
+                  <Text color="label" align="left" size="17pt" weight="heavy">
+                    {`Description`}
+                  </Text>
+                  <Text
+                    color="labelTertiary"
+                    align="left"
+                    size="17pt"
+                    weight="medium"
+                  >
+                    {mintCollection.description}
+                  </Text>
+                </Stack>
+              )}
+              <Stack space="28px">
+                {mintCollection?.tokenCount && (
                   <MintInfoRow
                     symbol="􀐾"
                     label={i18n.t(i18n.l.mints.total_minted)}
@@ -687,12 +693,12 @@ const MintSheet = () => {
                         size="17pt"
                         weight="medium"
                       >
-                        {`${mintCollection.totalMints} NFTs`}
+                        {`${mintCollection.tokenCount} NFTs`}
                       </Text>
                     }
                   />
                 )}
-                {mintCollection?.firstEvent && (
+                {mintCollection?.createdAt && (
                   <MintInfoRow
                     symbol="􀐫"
                     label={i18n.t(i18n.l.mints.first_event)}
@@ -703,13 +709,13 @@ const MintSheet = () => {
                         size="17pt"
                         weight="medium"
                       >
-                        {getFormattedDate(mintCollection?.firstEvent)}
+                        {getFormattedDate(mintCollection?.createdAt)}
                       </Text>
                     }
                   />
                 )}
 
-                {mintCollection?.lastEvent && (
+                {false && (
                   <MintInfoRow
                     symbol="􀐫"
                     label={i18n.t(i18n.l.mints.last_event)}
@@ -726,7 +732,7 @@ const MintSheet = () => {
                   />
                 )}
 
-                {mintCollection?.maxSupply && (
+                {false && (
                   <MintInfoRow
                     symbol="􀐾"
                     label={i18n.t(i18n.l.mints.max_supply)}
@@ -743,7 +749,7 @@ const MintSheet = () => {
                   />
                 )}
 
-                {mintCollection?.contract && (
+                {mintCollection?.id && (
                   <MintInfoRow
                     symbol="􀉆"
                     label={i18n.t(i18n.l.mints.contract)}
@@ -751,7 +757,7 @@ const MintSheet = () => {
                       <ButtonPressAnimation
                         onPress={() =>
                           ethereumUtils.openAddressInBlockExplorer(
-                            mintCollection.contract,
+                            mintCollection.id!,
                             currentNetwork
                           )
                         }
@@ -809,8 +815,9 @@ const MintSheet = () => {
                   }
                 />
               </Stack>
-            </Inset>
-          </Box>
+            </Stack>
+          </Inset>
+          <Box height={{ custom: 56 }}></Box>
         </ColorModeProvider>
       </SlackSheet>
     </>

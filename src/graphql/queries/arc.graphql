@@ -101,41 +101,47 @@ query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
   }
 }
 
-
-query getSingleCollection($walletAddress: String!, $contractAddress: String!, $chain: Int!) {
-  getSingleCollection(
-    walletAddress: $walletAddress
-    contractAddress: $contractAddress
-    chain: $chain
-  ) {
+query getReservoirCollection($contractAddress: String!, $chainId: Int!) {
+  getReserviorCollection(contractAddress: $contractAddress, chainId: $chainId) {
     collection {
-      # URL on mint fun
-      externalURL
-      contract
-      # {chain id}:{address} (ex. 1:0xabc...) - used as ID
-      contractAddress
+      id
       chainId
-      deployer
+      createdAt
       name
-      # Collection image of project
-      imageURL
-      mintsLastHour
-      addressesLastHour
-      # ISO8601 date
-      lastEvent
-        # ISO8601 date
-      firstEvent
-      totalMints
-      # max supply isn't always known, so can be undefined
-      maxSupply
-
-   
-
-      mintStatus {
-        # the collection endpoint will always return mintable collections
-        isMintable
-        # BigNumber string of amount in ETH
-        price
+      image
+      description
+      sampleImages
+      tokenCount
+      creator
+      ownerCount
+      isMintingPublicSale
+      isMintingPresale
+      mintStages {
+        stage
+        kind
+        price {
+          currency {
+            contract
+            name
+            symbol
+            decimals
+          }
+          amount {
+            raw
+            decimal
+            usd
+            native
+          }
+          netAmount {
+            raw
+            decimal
+            usd
+            native
+          }
+        }
+        startTime
+        endTime
+        maxMintsPerWallet
       }
     }
   }
