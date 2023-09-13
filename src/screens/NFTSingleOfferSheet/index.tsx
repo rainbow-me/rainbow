@@ -49,7 +49,7 @@ import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
-import { nftOffersQueryKey } from '@/resources/nftOffers';
+import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
