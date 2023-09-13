@@ -15,12 +15,14 @@ import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
+import AppIconAdworld from '@/assets/appIconAdworld.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import {
+  AdworldIcon,
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
@@ -123,6 +125,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Rainbow Poolboy',
     source: AppIconPoolboy,
     unlock_key: PoolboyIcon.unlockKey,
+  },
+  adworld: {
+    accentColor: 'adworldRed',
+    key: AdworldIcon.key,
+    name: 'Rainbow World',
+    source: AppIconAdworld,
+    unlock_key: AdworldIcon.unlockKey,
   },
 };
 

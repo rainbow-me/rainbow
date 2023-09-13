@@ -19,7 +19,7 @@ import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
 
-export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
+export const AssetListHeaderHeight = ListHeaderHeight;
 
 const dropdownArrowWidth = 30;
 const placeholderWidth = 120;

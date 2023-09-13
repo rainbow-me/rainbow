@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
+import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import {
   AccentColorProvider,
@@ -23,7 +24,6 @@ import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
   useSwapCurrencyHandlers,
-  useWalletConnectConnections,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
@@ -31,13 +31,11 @@ import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analytics, analyticsV2 } from '@/analytics';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -112,7 +110,12 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} scale={0.8} testID={testID}>
+    <ButtonPressAnimation
+      onPress={onPress}
+      pointerEvents="box-only"
+      scale={0.8}
+      testID={testID}
+    >
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
@@ -164,7 +167,6 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
 
@@ -179,7 +181,7 @@ function BuyButton() {
     });
 
     navigate(Routes.ADD_CASH_SHEET);
-  }, [accountAddress, isDamaged, navigate]);
+  }, [isDamaged, navigate]);
 
   return (
     <Box>
@@ -253,7 +255,7 @@ function SendButton() {
   );
 }
 
-function MoreButton() {
+export function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
@@ -261,9 +263,6 @@ function MoreButton() {
     addressCopiedToastAtom
   );
   const { accountAddress } = useAccountProfile();
-  const { navigate } = useNavigation();
-  const { sessions: activeWCV2Sessions } = useWalletConnectV2Sessions();
-
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {
       setToastActive(true);
@@ -274,70 +273,18 @@ function MoreButton() {
     Clipboard.setString(accountAddress);
   }, [accountAddress, isToastActive, setToastActive]);
 
-  const handlePressQRCode = React.useCallback(() => {
-    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
-      component: 'ProfileActionButtonsRow',
-    });
-
-    navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
-
-  const handlePressConnectedApps = React.useCallback(() => {
-    navigate(Routes.CONNECTED_DAPPS);
-  }, [navigate]);
-
-  // ////////////////////////////////////////////////////
-  // Context Menu
-
-  const { mostRecentWalletConnectors } = useWalletConnectConnections();
-
-  const menuConfig = {
-    menuItems: [
-      {
-        actionKey: 'copy',
-        actionTitle: lang.t('wallet.copy_address'),
-        icon: { iconType: 'SYSTEM', iconValue: 'doc.on.doc' },
-      },
-      {
-        actionKey: 'qrCode',
-        actionTitle: lang.t('button.my_qr_code'),
-        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-      },
-      mostRecentWalletConnectors.length > 0 || activeWCV2Sessions.length > 0
-        ? {
-            actionKey: 'connectedApps',
-            actionTitle: lang.t('wallet.connected_apps'),
-            icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-          }
-        : null,
-    ].filter(Boolean),
-    ...(ios ? { menuTitle: '' } : {}),
-  };
-
-  const handlePressMenuItem = React.useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    e => {
-      if (e.nativeEvent.actionKey === 'copy') {
-        handlePressCopy();
-      }
-      if (e.nativeEvent.actionKey === 'qrCode') {
-        handlePressQRCode();
-      }
-      if (e.nativeEvent.actionKey === 'connectedApps') {
-        handlePressConnectedApps();
-      }
-    },
-    [handlePressConnectedApps, handlePressCopy, handlePressQRCode]
-  );
-
   return (
-    <ContextMenuButton
-      menuConfig={menuConfig}
-      onPressMenuItem={handlePressMenuItem}
-    >
-      <ActionButton icon="􀍡" testID="more-button">
-        {lang.t('button.more')}
-      </ActionButton>
-    </ContextMenuButton>
+    <>
+      {/* @ts-expect-error JavaScript component */}
+      <CopyFloatingEmojis textToCopy={accountAddress}>
+        <ActionButton
+          onPress={handlePressCopy}
+          icon="􀐅"
+          testID="receive-button"
+        >
+          {'Copy'}
+        </ActionButton>
+      </CopyFloatingEmojis>
+    </>
   );
 }

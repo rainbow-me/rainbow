@@ -3,9 +3,14 @@
     {
       "asset": {
         "asset_code": "eth",
+        "colors": {
+          "fallback": "#E8EAF5",
+          "primary": "#808088"
+        },
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
         "name": "Ether",
+        "network": "goerli",
         "price": {
           "changed_at": 1582568575,
           "relative_change_24h": -4.586615622469276,
@@ -20,9 +25,14 @@
     {
       "asset": {
         "asset_code": "eth",
+        "colors": {
+          "fallback": "#E8EAF5",
+          "primary": "#808088"
+        },
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
         "name": "Ether",
+        "network": "mainnet",
         "price": {
           "changed_at": 1582568575,
           "relative_change_24h": -4.586615622469276,
@@ -32,6 +42,5 @@
       },
       "quantity": "0"
     }
-  ],
-  "optimism": []
+  ]
 }

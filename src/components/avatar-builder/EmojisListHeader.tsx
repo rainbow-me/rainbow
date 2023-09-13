@@ -1,6 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  SharedValue,
+} from 'react-native-reanimated';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
 import { magicMemo } from '@/utils';
@@ -8,7 +11,7 @@ import { magicMemo } from '@/utils';
 interface Props {
   title: string;
   showSectionTitles?: boolean;
-  nextCategoryOffset: Animated.SharedValue<number>;
+  nextCategoryOffset: SharedValue<number>;
 }
 
 const EmojisListHeader = ({

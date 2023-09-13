@@ -1,5 +1,6 @@
 import { unlockableAppIconCheck } from './unlockableAppIconCheck';
 import {
+  AdworldIcon,
   FiniliarIcon,
   FiniliarIconBase,
   GoldDogeIcon,
@@ -41,4 +42,6 @@ export const featureUnlockChecks: FeatureUnlockCheck[] = [
     await unlockableAppIconCheck(ZorbIcon, walletsToCheck),
   async (walletsToCheck: EthereumAddress[]) =>
     await unlockableAppIconCheck(PoolboyIcon, walletsToCheck),
+  async (walletsToCheck: EthereumAddress[]) =>
+    await unlockableAppIconCheck(AdworldIcon, walletsToCheck),
 ];

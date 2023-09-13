@@ -42,7 +42,7 @@ const Container = styled(RowWithMargins).attrs({
   ...position.centeredAsObject,
   backgroundColor: color,
   borderRadius: 20,
-  bottom: (insets.bottom || 40) + 3,
+  bottom: (insets.bottom || 40) + 68,
   maxWidth: deviceWidth - 38,
   position: 'absolute',
   zIndex: 100,
@@ -96,7 +96,7 @@ export default function Toast({
   const currentColor = color ?? isDarkMode ? colors.darkModeDark : colors.dark;
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View pointerEvents="none" style={animatedStyle}>
       <Container
         color={currentColor}
         deviceWidth={deviceWidth}

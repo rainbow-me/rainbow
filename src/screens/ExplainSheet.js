@@ -26,6 +26,7 @@ import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
+import AppIconAdworld from '@/assets/appIconAdworld.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -240,6 +241,23 @@ const PoolboyAppIcon = () => {
   );
 };
 
+const AdworldAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.adworldRed}>
+      <Box
+        as={ImgixImage}
+        source={AppIconAdworld}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
 const TheMergeIcon = () => {
   return (
     <Box
@@ -373,6 +391,10 @@ const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
 const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.poolboy_text');
 
 const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.poolboy_title');
+
+const ADWORLD_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.adworld_text');
+
+const ADWORLD_APP_ICON_TITLE = lang.t('explain.icon_unlock.adworld_title');
 
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
@@ -524,6 +546,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.poolboyPink,
       bgColor: colors?.poolboyPink06,
+    },
+  },
+  adworld_app_icon: {
+    logo: <AdworldAppIcon />,
+    extraHeight: -90,
+    text: ADWORLD_APP_ICON_EXPLAINER,
+    title: ADWORLD_APP_ICON_TITLE,
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.adworldRed,
+      bgColor: colors?.adworldRed06,
     },
   },
   output_disabled: {

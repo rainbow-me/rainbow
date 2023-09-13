@@ -52,7 +52,6 @@ import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
-import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
 import { getNetworkObj } from '@/networks';
 import { StaticBottomSheet } from '@/navigation/bottom-sheet-navigator/components/StaticBottomSheet';
 
@@ -289,12 +288,8 @@ export default function ChartExpandedState() {
     config.swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = config.f2c_enabled;
 
-  const isDOG =
-    assetWithPrice.address === DOG_ADDRESS ||
-    assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
     <StaticBottomSheet scrollable fullWindowOverlay={false}>
-      {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
