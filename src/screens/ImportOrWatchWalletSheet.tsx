@@ -11,7 +11,7 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useDimensions, useImportingWallet, useKeyboardHeight } from '@/hooks';
+import { useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
 import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
@@ -19,8 +19,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import { LoadingOverlay } from '@/components/modal';
-import { StatusBar } from 'react-native';
-import { safeAreaInsetValues } from '@/utils';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
@@ -47,7 +45,6 @@ export const ImportOrWatchWalletSheet = () => {
     seedPhrase,
   } = useImportingWallet();
   const keyboardHeight = useKeyboardHeight();
-  const { height: deviceHeight } = useDimensions();
 
   const textStyle = useTextStyle({
     align: 'center',
@@ -60,19 +57,10 @@ export const ImportOrWatchWalletSheet = () => {
   useFocusEffect(useCallback(() => inputRef.current?.focus(), [inputRef]));
 
   const buttonDisabled = seedPhrase && !isSecretValid;
-  const safeAreaTopPadding = IS_ANDROID
-    ? StatusBar?.currentHeight ?? 0
-    : safeAreaInsetValues.top;
 
   return (
     <>
-      <Box
-        height={{
-          custom:
-            deviceHeight - SheetHandleFixedToTopHeight - safeAreaTopPadding,
-        }}
-        background="surfaceSecondary"
-      >
+      <Box height="full" background="surfaceSecondary">
         <Box
           alignItems="center"
           justifyContent="space-between"
