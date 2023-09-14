@@ -389,25 +389,43 @@ export const AddWalletSheet = () => {
                 )}
               </Text>
             </Stack>
-            <Box
-              background="surfaceSecondaryElevated"
-              borderRadius={18}
-              shadow="12px"
-              style={{ flex: 0 }}
+            <View
+              style={{
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.02,
+                shadowRadius: 3,
+              }}
             >
-              <Inset vertical="24px" horizontal="20px">
-                <AddWalletList
-                  totalHorizontalInset={40}
-                  items={[
-                    ...(!isFirstWallet ? [create] : []),
-                    ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
-                    restoreFromSeed,
-                    ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                    watch,
-                  ]}
-                />
-              </Inset>
-            </Box>
+              <View
+                style={{
+                  shadowColor: globalColors.grey100,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.16,
+                  shadowRadius: 6,
+                }}
+              >
+                <Box
+                  paddingVertical="24px"
+                  paddingHorizontal="20px"
+                  background="surfaceSecondaryElevated"
+                  borderRadius={18}
+                >
+                  <AddWalletList
+                    totalHorizontalInset={40}
+                    items={[
+                      ...(!isFirstWallet ? [create] : []),
+                      ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                      restoreFromSeed,
+                      ...(hardwareWalletsEnabled
+                        ? [connectHardwareWallet]
+                        : []),
+                      watch,
+                    ]}
+                  />
+                </Box>
+              </View>
+            </View>
           </Stack>
         </Inset>
       </Wrapper>
