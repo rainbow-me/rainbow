@@ -10,11 +10,9 @@ import {
   GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParams,
-  LegacySelectedGasFee,
   ParsedAddressAsset,
   SelectedGasFee,
 } from '@/entities';
-import { isL2Network } from '@/handlers/web3';
 import networkTypes, { Network } from '@/helpers/networkTypes';
 import {
   fromWei,
@@ -30,14 +28,15 @@ import {
   gasUpdateTxFee,
 } from '@/redux/gas';
 import { ethereumUtils } from '@/utils';
+import { getNetworkObj } from '@/networks';
 
 const checkSufficientGas = (
   txFee: LegacyGasFee | GasFee,
   network: Network,
   nativeAsset?: ParsedAddressAsset
 ) => {
-  const isL2 = isL2Network(network);
-  const txFeeValue = isL2
+  const isLegacyGasNetwork = getNetworkObj(network).gas.gasType === 'legacy';
+  const txFeeValue = isLegacyGasNetwork
     ? (txFee as LegacyGasFee)?.estimatedFee
     : (txFee as GasFee)?.maxFee;
   const networkNativeAsset =
@@ -52,12 +51,12 @@ const checkValidGas = (
   selectedGasParams: LegacyGasFeeParams | GasFeeParams,
   network: Network
 ) => {
-  const isL2 = isL2Network(network);
-  const gasValue = isL2
+  const isLegacyGasNetwork = getNetworkObj(network).gas.gasType === 'legacy';
+  const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
   const isValidGas =
-    Boolean(gasValue?.amount) && greaterThan(gasValue?.amount, 0);
+    Boolean(gasValue?.amount) && greaterThan(gasValue?.amount, 0.00000000001);
   return isValidGas;
 };
 
@@ -66,11 +65,11 @@ const checkGasReady = (
   selectedGasParams: LegacyGasFeeParams | GasFeeParams,
   network: Network
 ) => {
-  const isL2 = isL2Network(network);
-  const gasValue = isL2
+  const isLegacyGasNetwork = getNetworkObj(network).gas.gasType === 'legacy';
+  const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
-  const txFeeValue = isL2
+  const txFeeValue = isLegacyGasNetwork
     ? (txFee as LegacyGasFee)?.estimatedFee
     : (txFee as GasFee)?.maxFee;
   return Boolean(gasValue?.amount) && Boolean(txFeeValue?.value?.amount);

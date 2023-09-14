@@ -17,6 +17,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
+import * as lang from '@/languages';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
@@ -161,7 +162,8 @@ const AssetListHeader = ({
             />
           </WalletSelectButtonWrapper>
         )}
-        {isLoadingAssets && title !== 'Collectibles' ? (
+        {isLoadingAssets &&
+        title !== lang.t(lang.l.account.tab_collectibles) ? (
           <TotalAmountSkeleton>
             <FakeText height={16} width={placeholderWidth} />
           </TotalAmountSkeleton>

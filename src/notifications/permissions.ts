@@ -5,6 +5,7 @@ import lang from 'i18n-js';
 import { saveFCMToken } from '@/notifications/tokens';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { logger, RainbowError } from '@/logger';
+import * as i18n from '@/languages';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
@@ -55,14 +56,16 @@ export const checkPushNotificationPermissions = async () => {
                 resolve(true);
               }
             },
-            text: 'Okay',
+            // i18n
+            text: i18n.t(i18n.l.button.okay),
           },
           {
             onPress: async () => {
               resolve(true);
             },
             style: 'cancel',
-            text: 'Dismiss',
+            // i18n
+            text: i18n.t(i18n.l.button.dismiss),
           },
         ],
         message: lang.t('wallet.push_notifications.please_enable_body'),

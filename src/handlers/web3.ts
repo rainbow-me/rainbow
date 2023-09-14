@@ -174,9 +174,15 @@ export const isTestnetNetwork = (network: Network): boolean => {
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    'https://rpc.flashbots.net',
+    'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
     Network.mainnet
   );
+};
+
+export const getCachedProviderForNetwork = (
+  network: Network = Network.mainnet
+) => {
+  return networkProviders[network]!;
 };
 
 /**
@@ -464,7 +470,7 @@ export const getTransactionCount = async (
 export const getTransactionGasParams = (
   transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput
 ): GasParamsReturned => {
-  return isL2Network(transaction.network)
+  return getNetworkObj(transaction.network).gas.gasType === 'legacy'
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }

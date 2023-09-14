@@ -55,7 +55,6 @@ import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
-import { DOGConfetti } from '@/components/floating-emojis/DOGConfetti';
 import { getNetworkObj } from '@/networks';
 
 const defaultCarouselHeight = 60;
@@ -333,9 +332,6 @@ export default function ChartExpandedState({ asset }) {
     config.swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = config.f2c_enabled;
 
-  const isDOG =
-    assetWithPrice.address === DOG_ADDRESS ||
-    assetWithPrice?.mainnet_address === DOG_ADDRESS;
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -345,7 +341,6 @@ export default function ChartExpandedState({ asset }) {
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
-      {isDOG && <DOGConfetti />}
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}

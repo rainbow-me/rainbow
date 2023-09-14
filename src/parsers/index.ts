@@ -1,5 +1,4 @@
 export {
-  parseAccountAssets,
   parseAssetName,
   parseAssetSymbol,
   parseAsset,

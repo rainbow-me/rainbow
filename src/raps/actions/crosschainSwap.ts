@@ -24,6 +24,7 @@ import logger from '@/utils/logger';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { swapMetadataStorage } from './swap';
+import { REFERRER } from '@/references';
 
 const actionName = 'crosschainSwap';
 
@@ -71,7 +72,7 @@ export const executeCrosschainSwap = async ({
     permit,
     chainId
   );
-  return fillCrosschainQuote(tradeDetails, transactionParams, wallet);
+  return fillCrosschainQuote(tradeDetails, transactionParams, wallet, REFERRER);
 };
 
 const crosschainSwap = async (

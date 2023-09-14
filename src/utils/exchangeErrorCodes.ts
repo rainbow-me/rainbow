@@ -24,6 +24,14 @@ export default function handleSwapErrorCodes(
         ...quoteError,
       };
 
+    case 503: {
+      return {
+        buttonLabel: lang.t('button.confirm_exchange.fee_on_transfer'),
+        explainerType: 'feeOnTransfer',
+        ...quoteError,
+      };
+    }
+
     case 504:
       return {
         buttonLabel: lang.t('button.confirm_exchange.no_route_found'),

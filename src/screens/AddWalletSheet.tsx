@@ -7,7 +7,7 @@ import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet, RainbowWallet } from '@/model/wallet';
@@ -376,25 +376,41 @@ export const AddWalletSheet = () => {
               )}
             </Text>
           </Stack>
-          <Box
-            background="surfaceSecondaryElevated"
-            borderRadius={18}
-            shadow="12px"
-            style={{ height: '100%' }}
+          <View
+            style={{
+              shadowColor: globalColors.grey100,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.02,
+              shadowRadius: 3,
+            }}
           >
-            <Inset vertical="24px" horizontal="20px">
-              <AddWalletList
-                totalHorizontalInset={40}
-                items={[
-                  ...(!isFirstWallet ? [create] : []),
-                  ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
-                  restoreFromSeed,
-                  ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
-                  watch,
-                ]}
-              />
-            </Inset>
-          </Box>
+            <View
+              style={{
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.16,
+                shadowRadius: 6,
+              }}
+            >
+              <Box
+                paddingVertical="24px"
+                paddingHorizontal="20px"
+                background="surfaceSecondaryElevated"
+                borderRadius={18}
+              >
+                <AddWalletList
+                  totalHorizontalInset={40}
+                  items={[
+                    ...(!isFirstWallet ? [create] : []),
+                    ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+                    restoreFromSeed,
+                    ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
+                    watch,
+                  ]}
+                />
+              </Box>
+            </View>
+          </View>
         </Stack>
       </Inset>
     </Box>
