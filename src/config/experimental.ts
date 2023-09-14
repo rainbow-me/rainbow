@@ -18,7 +18,7 @@ export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
-export const MINTS = 'mints';
+export const MINTS = 'Mints';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
