@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.2] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.2)
+
+### Added
+
+- WC Updates
+- Navigation upgrades
+- 1559 for L2s
+- Adworld app icon
+- F2C updates
+
 ## [1.9.1] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.1)
 
 ### Added
