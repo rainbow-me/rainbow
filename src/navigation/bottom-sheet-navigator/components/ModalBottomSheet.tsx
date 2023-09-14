@@ -3,7 +3,7 @@ import { BottomSheet } from './BottomSheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import TouchableBackdrop from '@/components/TouchableBackdrop';
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@/navigation';
 
 type Props = {
   style?: StyleProp<ViewStyle>;
