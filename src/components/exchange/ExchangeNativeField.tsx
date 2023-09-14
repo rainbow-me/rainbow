@@ -64,7 +64,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
   ];
 
   const handleFocusNativeField = useCallback(
-    () => nativeFieldRef?.current?.focus(),
+    () => nativeFieldRef?.current?.focus?.(),
     [nativeFieldRef]
   );
 
@@ -90,7 +90,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
 
   const { colors } = useTheme();
 
-  const isFocused = nativeFieldRef?.current?.isFocused();
+  const isFocused = nativeFieldRef?.current?.isFocused?.();
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists =

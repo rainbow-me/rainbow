@@ -121,7 +121,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
-  const editing = inputRef?.current?.isFocused() ?? false;
+  const editing = inputRef?.current?.isFocused?.() ?? false;
 
   useEffect(() => {
     if (!editing || updateOnFocus) {
