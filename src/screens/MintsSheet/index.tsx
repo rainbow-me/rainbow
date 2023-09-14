@@ -26,6 +26,7 @@ import { queryClient } from '@/react-query';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
+import * as i18n from '@/languages';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -97,7 +98,7 @@ export function MintsSheet() {
                           align="center"
                           weight="heavy"
                         >
-                          Mints
+                          {i18n.t(i18n.l.mints.mints_sheet.mints)}
                         </Text>
                       </Column>
                       <Column width="content">
@@ -145,7 +146,7 @@ export function MintsSheet() {
                 align="center"
                 color="labelSecondary"
               >
-                No data found.
+                {i18n.t(i18n.l.mints.mints_sheet.no_data_found)}
               </Text>
               <ButtonPressAnimation
                 onPress={() => {

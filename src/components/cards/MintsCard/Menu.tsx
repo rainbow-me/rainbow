@@ -3,7 +3,6 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
-import * as i18n from '@/languages';
 import {
   MintsFilter,
   getMintsFilterLabel,

@@ -18,9 +18,9 @@ import { Linking, View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
-import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { Media } from '@/components/media';
+import * as i18n from '@/languages';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -186,7 +186,9 @@ export function CollectionCell({
         )}
         <View style={{ width: NFT_IMAGE_SIZE - 16 }}>
           <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
-            {isFree ? 'FREE' : amount}
+            {isFree
+              ? i18n.t(i18n.l.mints.mints_card.collection_cell.free)
+              : amount}
           </Text>
         </View>
       </View>

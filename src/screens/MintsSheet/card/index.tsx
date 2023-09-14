@@ -11,6 +11,7 @@ import { NFT_IMAGE_SIZE, Placeholder, RecentMintCell } from './RecentMintCell';
 import { Linking, View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
+import * as i18n from '@/languages';
 
 export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
@@ -56,12 +57,15 @@ export function Card({ collection }: { collection: MintableCollection }) {
               </Text>
               <Inline alignVertical="center">
                 <Text size="13pt" weight="semibold" color="labelTertiary">
-                  {`${timeElapsed} ago`}
+                  {i18n.t(i18n.l.mints.mints_sheet.card.x_ago, { timeElapsed })}
                 </Text>
                 <Text size="13pt" weight="semibold" color="labelTertiary">
-                  {` · ${collection.mintsLastHour} mint${
-                    collection.mintsLastHour !== 1 ? 's' : ''
-                  } past hour`}
+                  {' · '}
+                  {collection.mintsLastHour === 1
+                    ? i18n.t(i18n.l.mints.mints_sheet.card.one_mint_past_hour)
+                    : i18n.t(i18n.l.mints.mints_sheet.card.x_mints_past_hour, {
+                        numMints: collection.mintsLastHour,
+                      })}
                 </Text>
               </Inline>
             </Inline>
@@ -102,7 +106,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
                   􀫸
                 </Text>
                 <Text size="15pt" weight="heavy" color="label">
-                  {` Mint`}
+                  {` ${i18n.t(i18n.l.mints.mints_sheet.card.mint)}`}
                 </Text>
               </Inline>
               <Box

@@ -14,6 +14,7 @@ import {
 } from '@/components/animations';
 import { Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { analyticsV2 } from '@/analytics';
+import * as i18n from '@/languages';
 
 export function MintsCard() {
   const { navigate } = useNavigation();
@@ -44,7 +45,7 @@ export function MintsCard() {
     <Inset top={{ custom: 22 }} bottom="10px">
       <CarouselCard
         isLoading={isFetching}
-        title="Mints"
+        title={i18n.t(i18n.l.mints.mints_card.mints)}
         data={mints?.filter(
           c => c.contractAddress !== featuredMint?.contractAddress
         )}
@@ -89,7 +90,7 @@ export function MintsCard() {
               }
             />
             <Text color="label" align="center" size="15pt" weight="bold">
-              View All Mints
+              {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
             </Text>
           </Box>
         }

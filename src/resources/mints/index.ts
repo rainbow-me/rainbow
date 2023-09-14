@@ -8,6 +8,7 @@ import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import * as i18n from '@/languages';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 const mmkv = new MMKV();
@@ -37,11 +38,11 @@ export function mintsQueryKey({ address }: { address: string }) {
 export function getMintsFilterLabel(filter: MintsFilter) {
   switch (filter) {
     case MintsFilter.All:
-      return 'All';
+      return i18n.t(i18n.l.mints.filter.all);
     case MintsFilter.Paid:
-      return 'Paid';
+      return i18n.t(i18n.l.mints.filter.paid);
     case MintsFilter.Free:
-      return 'Free';
+      return i18n.t(i18n.l.mints.filter.free);
   }
 }
 

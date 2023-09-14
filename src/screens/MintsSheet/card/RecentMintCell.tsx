@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import {
   AccentColorProvider,
@@ -13,7 +13,6 @@ import {
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
-import { ImgixImage } from '@/components/images';
 import { Media } from '@/components/media';
 
 export const NFT_IMAGE_SIZE = 111;

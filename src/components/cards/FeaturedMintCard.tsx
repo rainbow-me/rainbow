@@ -29,6 +29,7 @@ import { Linking, View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { Media } from '../media';
 import { analyticsV2 } from '@/analytics';
+import * as i18n from '@/languages';
 
 const IMAGE_SIZE = 111;
 
@@ -190,7 +191,9 @@ export function FeaturedMintCard() {
                             weight="heavy"
                             color={secondaryTextColor}
                           >
-                            Featured Mint
+                            {i18n.t(
+                              i18n.l.mints.featured_mint_card.featured_mint
+                            )}
                           </Text>
                         </Inline>
                         <Text
@@ -213,9 +216,16 @@ export function FeaturedMintCard() {
                             􀋥
                           </Text>
                           <Text size="13pt" weight="heavy" color="label">
-                            {`${abbreviateNumber(
-                              featuredMint.totalMints
-                            )} mint${featuredMint.totalMints === 1 ? '' : 's'}`}
+                            {featuredMint.totalMints === 1
+                              ? i18n.t(i18n.l.mints.featured_mint_card.one_mint)
+                              : i18n.t(
+                                  i18n.l.mints.featured_mint_card.x_mints,
+                                  {
+                                    numMints: abbreviateNumber(
+                                      featuredMint.totalMints
+                                    ),
+                                  }
+                                )}
                           </Text>
                         </Inline>
                         <Inline space="6px" alignVertical="center">
@@ -228,9 +238,14 @@ export function FeaturedMintCard() {
                             􀐫
                           </Text>
                           <Text size="13pt" weight="heavy" color="label">
-                            {`${abbreviateNumber(
-                              featuredMint.mintsLastHour
-                            )} past hour`}
+                            {i18n.t(
+                              i18n.l.mints.featured_mint_card.x_past_hour,
+                              {
+                                numMints: abbreviateNumber(
+                                  featuredMint.mintsLastHour
+                                ),
+                              }
+                            )}
                           </Text>
                         </Inline>
                       </Stack>
