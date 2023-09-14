@@ -46,6 +46,8 @@
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
 		AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */; };
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
+		B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */; };
+		B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */; };
 		B52242E628B1B11F0024D19D /* smol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E428B1B11F0024D19D /* smol@2x.png */; };
 		B52242E728B1B11F0024D19D /* smol@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B52242E528B1B11F0024D19D /* smol@3x.png */; };
 		B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0C29358945007560D9 /* golddoge@3x.png */; };
@@ -257,6 +259,8 @@
 		AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
 		AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
+		B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@3x.png"; sourceTree = "<group>"; };
+		B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@2x.png"; sourceTree = "<group>"; };
 		B52242E428B1B11F0024D19D /* smol@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smol@2x.png"; sourceTree = "<group>"; };
 		B52242E528B1B11F0024D19D /* smol@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smol@3x.png"; sourceTree = "<group>"; };
 		B54C1D0C29358945007560D9 /* golddoge@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "golddoge@3x.png"; sourceTree = "<group>"; };
@@ -433,6 +437,8 @@
 				B52242E428B1B11F0024D19D /* smol@2x.png */,
 				B52242E528B1B11F0024D19D /* smol@3x.png */,
 				15CF49BF2889AFAD005F92C9 /* pixel@2x.png */,
+				B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */,
+				B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */,
 				15CF49BE2889AFAD005F92C9 /* pixel@3x.png */,
 				15CF49BB2889AF7C005F92C9 /* optimism@2x.png */,
 				B54C1D0D29358945007560D9 /* golddoge@2x.png */,
@@ -868,6 +874,7 @@
 				15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */,
 				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
+				B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */,
 				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
 				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,
 				15CF49C12889AFAD005F92C9 /* pixel@2x.png in Resources */,
@@ -880,6 +887,7 @@
 				B54C1D172935A54F007560D9 /* zora@2x.png in Resources */,
 				15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */,
 				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
+				B50C9AEB2A9D18DC00EB0019 /* adworld@3x.png in Resources */,
 				B5C070C62A4A387400D854BA /* zorb@3x.png in Resources */,
 				15C398812880EDFF006033AC /* og@3x.png in Resources */,
 				B52242E728B1B11F0024D19D /* smol@3x.png in Resources */,
