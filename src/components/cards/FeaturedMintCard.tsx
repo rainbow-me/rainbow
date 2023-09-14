@@ -19,39 +19,46 @@ import { useMintableCollections } from '@/resources/mintdotfun';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ImgixImage } from '../images';
-import { abbreviateNumber } from '@/helpers/utilities';
+import {
+  abbreviateNumber,
+  convertRawAmountToRoundedDecimal,
+} from '@/helpers/utilities';
 import { BlurView } from '@react-native-community/blur';
 import { Image, Linking, View } from 'react-native';
 import { IS_IOS } from '@/env';
 import c from 'chroma-js';
 import { maybeSignUri } from '@/handlers/imgix';
 import { Media, MimeType } from '../media';
+import { analyticsV2 } from '@/analytics';
 
 const IMAGE_SIZE = 111;
 
 export function FeaturedMintCard() {
   const { accountAddress } = useAccountProfile();
   const {
-    data: {
-      getMintableCollections: { featuredCollection },
-    },
+    data: { featuredCollection },
   } = useMintableCollections({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
-  const [loaded, setLoaded] = useState(false);
+
+  const [mediaRendered, setMediaRendered] = useState(false);
   const { colorMode } = useColorMode();
   const isDarkMode = colorMode === 'dark';
 
-  const labelSecondary = useForegroundColor('labelSecondary');
   const imageUrl =
-    'https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/alphachannel.svg' ??
-    featuredCollection?.imageURL ??
-    featuredCollection?.recentMints.find(m => m.imageURI)?.imageURI;
+    featuredCollection?.imageURL ||
+    featuredCollection?.recentMints?.find(m => m.imageURI)?.imageURI;
+
+  const mimeType = featuredCollection?.imageURL
+    ? featuredCollection?.imageMimeType
+    : featuredCollection?.recentMints?.find(m => m.imageURI)?.mimeType;
+
+  const labelSecondary = useForegroundColor('labelSecondary');
   const accentColor = usePersistentDominantColorFromImage(imageUrl);
   const secondaryTextColor = imageUrl ? 'accent' : 'labelSecondary';
 
-  useEffect(() => setLoaded(false), [imageUrl]);
+  useEffect(() => setMediaRendered(false), [imageUrl]);
 
   // from nft expanded state
   const primaryTextColor = useMemo(() => {
@@ -107,7 +114,23 @@ export function FeaturedMintCard() {
                   borderWidth: 1,
                   borderColor: 'rgba(245, 248, 255, 0.08)',
                 }}
-                onPress={() => Linking.openURL(featuredCollection.externalURL)}
+                onPress={() => {
+                  analyticsV2.track(
+                    analyticsV2.event.mintDotFunPressedFeaturedMintCard,
+                    {
+                      contractAddress: featuredCollection.contractAddress,
+                      chainId: featuredCollection.chainId,
+                      totalMints: featuredCollection.totalMints,
+                      mintsLastHour: featuredCollection.totalMints,
+                      priceInEth: convertRawAmountToRoundedDecimal(
+                        featuredCollection.mintStatus.price,
+                        18,
+                        6
+                      ),
+                    }
+                  );
+                  Linking.openURL(featuredCollection.externalURL);
+                }}
               >
                 {!!imageUrl && (
                   <Cover>
@@ -230,7 +253,7 @@ export function FeaturedMintCard() {
                     </Box>
                   </Column>
                   <Column width="content">
-                    {!loaded ? (
+                    {!mediaRendered ? (
                       <Box
                         background="fillSecondary"
                         width={{ custom: IMAGE_SIZE }}
@@ -290,28 +313,16 @@ export function FeaturedMintCard() {
                                   }
                             }
                           >
-                            {/* <Image
-                              source={{
-                                uri: maybeSignUri(imageUrl, {
-                                  w: IMAGE_SIZE,
-                                }),
-                              }}
-                              style={{
-                                width: IMAGE_SIZE,
-                                height: IMAGE_SIZE,
-                                borderRadius: 12,
-                              }}
-                              onLoad={() => setLoaded(true)}
-                            /> */}
                             <Media
+                              onLayout={() => setMediaRendered(true)}
+                              onError={() => setMediaRendered(false)}
                               url={imageUrl}
-                              mimeType={MimeType.SVG}
+                              mimeType={mimeType ?? undefined}
                               style={{
                                 width: IMAGE_SIZE,
                                 height: IMAGE_SIZE,
                                 borderRadius: 12,
                               }}
-                              size={IMAGE_SIZE}
                             />
                           </View>
                         </View>

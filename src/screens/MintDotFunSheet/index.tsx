@@ -10,6 +10,7 @@ import {
   Separator,
   Stack,
   Text,
+  useColorMode,
 } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import {
@@ -25,6 +26,11 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
 import { queryClient } from '@/react-query';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { IS_ANDROID } from '@/env';
+import Spinner from '@/components/Spinner';
+
+const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export function MintDotFunSheet() {
   const {
@@ -34,9 +40,7 @@ export function MintDotFunSheet() {
     accountSymbol,
   } = useAccountProfile();
   const {
-    data: {
-      getMintableCollections: { collections },
-    },
+    data: { collections },
     isFetching,
     dataUpdatedAt,
   } = useMintableCollections({
@@ -44,6 +48,7 @@ export function MintDotFunSheet() {
   });
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
+  const { colorMode } = useColorMode();
 
   const data = collections ?? [];
 
@@ -127,7 +132,7 @@ export function MintDotFunSheet() {
           </SimpleSheet>
         )}
       </BackgroundProvider>
-      {isNoData && (
+      {!data.length && (
         <Box
           alignItems="center"
           justifyContent="center"
@@ -135,37 +140,44 @@ export function MintDotFunSheet() {
           position="absolute"
           width="full"
         >
-          <Stack space="20px">
-            <Text
-              size="17pt"
-              weight="bold"
-              align="center"
-              color="labelSecondary"
-            >
-              No data found.
-            </Text>
-            <ButtonPressAnimation
-              onPress={() => {
-                // only allow refresh if data is at least 30 seconds old
-                if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
-                  queryClient.invalidateQueries({
-                    queryKey: mintableCollectionsQueryKey({
-                      address: accountAddress,
-                    }),
-                  });
-                }
-              }}
-            >
+          {!isFetching ? (
+            <Stack space="20px">
               <Text
+                size="17pt"
+                weight="bold"
                 align="center"
                 color="labelSecondary"
-                size="34pt"
-                weight="bold"
               >
-                􀅈
+                No data found.
               </Text>
-            </ButtonPressAnimation>
-          </Stack>
+              <ButtonPressAnimation
+                onPress={() => {
+                  // only allow refresh if data is at least 30 seconds old
+                  if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
+                    queryClient.invalidateQueries({
+                      queryKey: mintableCollectionsQueryKey({
+                        address: accountAddress,
+                      }),
+                    });
+                  }
+                }}
+              >
+                <Text
+                  align="center"
+                  color="labelSecondary"
+                  size="34pt"
+                  weight="bold"
+                >
+                  􀅈
+                </Text>
+              </ButtonPressAnimation>
+            </Stack>
+          ) : (
+            <LoadingSpinner
+              color={colorMode === 'light' ? 'black' : 'white'}
+              size={36}
+            />
+          )}
         </Box>
       )}
       <TabBar />

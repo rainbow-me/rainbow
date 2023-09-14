@@ -66,13 +66,9 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
     'surfaceSecondaryElevated'
   );
 
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => setLoaded(false), [recentMint.imageURI]);
-
-  console.log(recentMint.imageURI);
-
   const [mediaRendered, setMediaRendered] = useState(false);
+
+  useEffect(() => setMediaRendered(false), [recentMint.imageURI]);
 
   return (
     <View
@@ -128,7 +124,7 @@ export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
               style={{
                 width: NFT_IMAGE_SIZE,
                 height: NFT_IMAGE_SIZE,
-                borderRadius: 12,
+                borderRadius: 16,
               }}
             />
           )}

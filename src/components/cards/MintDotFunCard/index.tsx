@@ -21,7 +21,10 @@ import { analyticsV2 } from '@/analytics';
 export function MintDotFunCard() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
-  const { data, isFetching } = useMintableCollections({
+  const {
+    data: { collections, featuredCollection },
+    isFetching,
+  } = useMintableCollections({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
@@ -45,7 +48,9 @@ export function MintDotFunCard() {
       <CarouselCard
         isLoading={isFetching}
         title="Mints"
-        data={data?.getMintableCollections.collections}
+        data={collections?.filter(
+          c => c.contractAddress !== featuredCollection?.contractAddress
+        )}
         carouselItem={{
           renderItem: ({ item }) => <CollectionCell collection={item} />,
           keyExtractor: (item: MintableCollection) =>

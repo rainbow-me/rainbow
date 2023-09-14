@@ -2,7 +2,7 @@ import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import { Box, Inline, Stack, Text, useForegroundColor } from '@/design-system';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { getNetworkObj } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { CarouselCard } from '@/components/cards/CarouselCard';
@@ -22,11 +22,15 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separator = useForegroundColor('separator');
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const price = convertRawAmountToDecimalFormat(collection.mintStatus.price);
+  const price = convertRawAmountToRoundedDecimal(
+    collection.mintStatus.price,
+    18,
+    6
+  );
   const currencySymbol = getNetworkObj(
     getNetworkFromChainId(collection.chainId)
   ).nativeCurrency.symbol;
-  const isFree = price === '0';
+  const isFree = !price;
 
   // update elapsed time every minute if it's less than an hour
   useEffect(() => {
@@ -76,16 +80,11 @@ export function Card({ collection }: { collection: MintableCollection }) {
         button={
           <ButtonPressAnimation
             onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event.mintDotFunPressedCollectionCell,
-                {
-                  contractAddress: collection.contractAddress,
-                  chainId: collection.chainId,
-                  priceInNativeCurrency: parseFloat(
-                    convertRawAmountToDecimalFormat(collection.mintStatus.price)
-                  ),
-                }
-              );
+              analyticsV2.track(analyticsV2.event.mintDotFunPressedMintButton, {
+                contractAddress: collection.contractAddress,
+                chainId: collection.chainId,
+                priceInEth: price,
+              });
               Linking.openURL(collection.externalURL);
             }}
             style={{

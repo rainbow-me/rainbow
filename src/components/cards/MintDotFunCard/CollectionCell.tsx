@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
 import {
   AccentColorProvider,
@@ -20,9 +20,7 @@ import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
-import { rainbowFetch } from '@/rainbow-fetch';
-import WebView from 'react-native-webview';
-import { maybeSignUri } from '@/handlers/imgix';
+import { Media } from '@/components/media';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -77,46 +75,28 @@ export function CollectionCell({
   const surfaceSecondaryElevated = useBackgroundColor(
     'surfaceSecondaryElevated'
   );
-  const [loaded, setLoaded] = useState(false);
+  const [mediaRendered, setMediaRendered] = useState(false);
 
   const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
     .nativeCurrency;
 
-  const amount = convertRawAmountToDecimalFormat(collection.mintStatus.price);
+  const amount = convertRawAmountToRoundedDecimal(
+    collection.mintStatus.price,
+    18,
+    6
+  );
 
-  const isFree = amount === '0';
+  const isFree = !amount;
 
   const imageUrl =
     collection.imageURL ||
     collection?.recentMints?.find(m => m.imageURI)?.imageURI;
 
-  if (collection.name.includes('WEB3 Spirit')) {
-    console.log(collection.imageURL);
-    console.log(imageUrl);
-    console.log(maybeSignUri(imageUrl, { w: NFT_IMAGE_SIZE }));
-  }
+  const mimeType = collection.imageURL
+    ? collection.imageMimeType
+    : collection?.recentMints?.find(m => m.imageURI)?.mimeType;
 
-  useEffect(() => setLoaded(false), [imageUrl]);
-
-  // useEffect(() => {
-  //   const x = async () => {
-  //     if (imageUrl?.includes('mint.fun')) {
-  //       console.log(imageUrl);
-  //       console.log('HELP');
-  //       try {
-  //         let response = await rainbowFetch(imageUrl, {
-  //           method: 'GET',
-  //         });
-  //         console.log('response', response);
-  //       } catch (e) {
-  //         console.log(e);
-  //       }
-  //     }
-  //   };
-  //   x();
-  // }, [collection.imageURL, imageUrl]);
-
-  // console.log(imageUrl);
+  useEffect(() => setMediaRendered(false), [imageUrl]);
 
   return (
     <ButtonPressAnimation
@@ -124,7 +104,7 @@ export function CollectionCell({
         analyticsV2.track(analyticsV2.event.mintDotFunPressedCollectionCell, {
           contractAddress: collection.contractAddress,
           chainId: collection.chainId,
-          priceInNativeCurrency: parseFloat(amount),
+          priceInEth: amount,
         });
         Linking.openURL(collection.externalURL);
       }}
@@ -148,7 +128,7 @@ export function CollectionCell({
             height: NFT_IMAGE_SIZE,
           }}
         >
-          {!loaded && (
+          {!mediaRendered && (
             <Box
               style={{
                 width: NFT_IMAGE_SIZE,
@@ -173,23 +153,17 @@ export function CollectionCell({
           )}
           {!!imageUrl && (
             <Cover>
-              <ImgixImage
-                source={{
-                  uri: imageUrl,
-                }}
-                size={NFT_IMAGE_SIZE}
+              <Media
+                onLayout={() => setMediaRendered(true)}
+                onError={() => setMediaRendered(false)}
+                url={imageUrl}
+                mimeType={mimeType ?? undefined}
                 style={{
                   width: NFT_IMAGE_SIZE,
                   height: NFT_IMAGE_SIZE,
                   borderRadius: 12,
                 }}
-                onLoad={() => setLoaded(true)}
               />
-              {/* <WebView
-                source={{
-                  uri: 'https://www.facebook.com',
-                }}
-              /> */}
             </Cover>
           )}
         </View>

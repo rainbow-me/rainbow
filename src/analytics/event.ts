@@ -86,7 +86,7 @@ export const event = {
 
   mintDotFunPressedFeaturedMintCard: 'Pressed featured mint card',
   mintDotFunPressedCollectionCell: 'Pressed collection cell in mint.fun card',
-  mintDotFunPressedMintNowButton: 'Pressed mint now button in mint.fun sheet',
+  mintDotFunPressedMintButton: 'Pressed mint button in mint.fun sheet',
   mintDotFunPressedViewAllMintsButton:
     'Pressed view all mints button in mint.fun card',
   mintDotFunChangedFilter: 'Changed mints filter',
@@ -316,17 +316,17 @@ export type EventProperties = {
     chainId: number;
     totalMints: number;
     mintsLastHour: number;
-    priceInNativeCurrency: number;
+    priceInEth: number;
   };
   [event.mintDotFunPressedCollectionCell]: {
     contractAddress: string;
     chainId: number;
-    priceInNativeCurrency: number;
+    priceInEth: number;
   };
-  [event.mintDotFunPressedMintNowButton]: {
+  [event.mintDotFunPressedMintButton]: {
     contractAddress: string;
     chainId: number;
-    priceInNativeCurrency: number;
+    priceInEth: number;
   };
   [event.mintDotFunPressedViewAllMintsButton]: undefined;
   [event.mintDotFunChangedFilter]: { filter: string };

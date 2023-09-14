@@ -73,11 +73,6 @@ export function useMintableCollectionsFilter() {
 }
 
 /**
- * Hook that returns the featured mintable collection.
- */
-export function useFeaturedMintableCollection() {}
-
-/**
  * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMintableCollections({
@@ -96,7 +91,6 @@ export function useMintableCollections({
     async () =>
       await graphqlClient.getMintableCollections({
         walletAddress,
-        chain: 7777777, // zora
       }),
     {
       enabled: mintDotFunEnabled && !!walletAddress,
@@ -106,44 +100,29 @@ export function useMintableCollections({
     }
   );
 
-  const featuredCollection = query.data?.getMintableCollections?.collections[0];
+  const featuredCollection = query.data?.getMintableCollections?.collections?.find(
+    c => c.imageURL
+  );
 
   const freeMints = useMemo(
     () =>
       query.data?.getMintableCollections?.collections.filter(
-        collection =>
-          collection.mintStatus.price === '0' &&
-          collection.contractAddress !== featuredCollection?.contractAddress
+        collection => collection.mintStatus.price === '0'
       ),
-    [
-      featuredCollection?.contractAddress,
-      query.data?.getMintableCollections?.collections,
-    ]
+    [query.data?.getMintableCollections?.collections]
   );
 
   const paidMints = useMemo(
     () =>
       query.data?.getMintableCollections?.collections.filter(
-        collection =>
-          collection.mintStatus.price !== '0' &&
-          collection.contractAddress !== featuredCollection?.contractAddress
+        collection => collection.mintStatus.price !== '0'
       ),
-    [
-      featuredCollection?.contractAddress,
-      query.data?.getMintableCollections?.collections,
-    ]
+    [query.data?.getMintableCollections?.collections]
   );
 
   const allMints = useMemo(
-    () =>
-      query.data?.getMintableCollections?.collections.filter(
-        collection =>
-          collection.contractAddress !== featuredCollection?.contractAddress
-      ),
-    [
-      featuredCollection?.contractAddress,
-      query.data?.getMintableCollections?.collections,
-    ]
+    () => query.data?.getMintableCollections?.collections,
+    [query.data?.getMintableCollections?.collections]
   );
 
   let filteredMints;
@@ -173,12 +152,8 @@ export function useMintableCollections({
   return {
     ...query,
     data: {
-      ...query.data,
-      getMintableCollections: {
-        ...query.data?.getMintableCollections,
-        collections: filteredMints,
-        featuredCollection,
-      },
+      collections: filteredMints,
+      featuredCollection,
     },
   };
 }

@@ -123,6 +123,7 @@ fragment mintableCollection on MintableCollection {
   deployer
   name
   imageURL
+  imageMimeType
   mintsLastHour
   addressesLastHour
   lastEvent
@@ -149,8 +150,8 @@ fragment mintableCollectionResult on MintableCollectionResult {
   }
 }
 
-query getMintableCollections($walletAddress: String!, $chain: Int!) {
-  getMintableCollections(walletAddress: $walletAddress, chain: $chain) {
+query getMintableCollections($walletAddress: String!) {
+  getMintableCollections(walletAddress: $walletAddress) {
     collections {
       ...mintableCollection
     }
