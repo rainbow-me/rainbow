@@ -101,7 +101,7 @@ export function CollectionCell({
   return (
     <ButtonPressAnimation
       onPress={() => {
-        analyticsV2.track(analyticsV2.event.mintDotFunPressedCollectionCell, {
+        analyticsV2.track(analyticsV2.event.mintsPressedCollectionCell, {
           contractAddress: collection.contractAddress,
           chainId: collection.chainId,
           priceInEth: amount,

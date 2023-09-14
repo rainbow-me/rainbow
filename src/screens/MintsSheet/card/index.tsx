@@ -80,7 +80,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
         button={
           <ButtonPressAnimation
             onPress={() => {
-              analyticsV2.track(analyticsV2.event.mintDotFunPressedMintButton, {
+              analyticsV2.track(analyticsV2.event.mintsPressedMintButton, {
                 contractAddress: collection.contractAddress,
                 chainId: collection.chainId,
                 priceInEth: price,

@@ -190,7 +190,7 @@ export const nftSingleOfferSheetConfig = {
   }),
 };
 
-export const mintDotFunSheetConfig = {
+export const mintsSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

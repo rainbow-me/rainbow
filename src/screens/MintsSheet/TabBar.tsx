@@ -9,17 +9,17 @@ import {
 } from '@/design-system';
 import { IS_IOS } from '@/env';
 import {
-  MintableCollectionsFilter,
-  getMintableCollectionsFilterLabel,
-  useMintableCollectionsFilter,
-} from '@/resources/mintdotfun';
+  MintsFilter,
+  getMintsFilterLabel,
+  useMintsFilter,
+} from '@/resources/mints';
 import { useTheme } from '@/theme';
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
-function FilterButton({ filter }: { filter: MintableCollectionsFilter }) {
-  const { filter: currentFilter, setFilter } = useMintableCollectionsFilter();
+function FilterButton({ filter }: { filter: MintsFilter }) {
+  const { filter: currentFilter, setFilter } = useMintsFilter();
   const { isDarkMode } = useTheme();
 
   const highlightedBackgroundColor = `rgba(255, 223, 61, ${
@@ -52,7 +52,7 @@ function FilterButton({ filter }: { filter: MintableCollectionsFilter }) {
             currentFilter === filter ? highlightedTextColor : 'labelSecondary'
           }
         >
-          {getMintableCollectionsFilterLabel(filter)}
+          {getMintsFilterLabel(filter)}
         </Text>
       </Box>
     </AccentColorProvider>
@@ -101,9 +101,9 @@ export function TabBar() {
         end={{ x: 0, y: 1 }}
       >
         <Inline space="10px">
-          <FilterButton filter={MintableCollectionsFilter.All} />
-          <FilterButton filter={MintableCollectionsFilter.Free} />
-          <FilterButton filter={MintableCollectionsFilter.Paid} />
+          <FilterButton filter={MintsFilter.All} />
+          <FilterButton filter={MintsFilter.Free} />
+          <FilterButton filter={MintsFilter.Paid} />
         </Inline>
       </Box>
     </Box>

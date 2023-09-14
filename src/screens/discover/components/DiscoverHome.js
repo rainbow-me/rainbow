@@ -4,7 +4,7 @@ import useExperimentalFlag, {
   PROFILES,
   HARDWARE_WALLETS,
   NFT_OFFERS,
-  MINT_DOT_FUN,
+  MINTS,
 } from '@rainbow-me/config/experimentalHooks';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
@@ -25,7 +25,7 @@ import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
-import { MintDotFunCard } from '@/components/cards/MintDotFunCard';
+import { MintsCard } from '@/components/cards/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 
 export default function DiscoverHome() {
@@ -34,7 +34,7 @@ export default function DiscoverHome() {
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  const mintDotFunEnabled = useExperimentalFlag(MINT_DOT_FUN);
+  const mintsEnabled = useExperimentalFlag(MINTS);
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
@@ -57,10 +57,10 @@ export default function DiscoverHome() {
               <GasCard />
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
-            {mintDotFunEnabled && (
+            {mintsEnabled && (
               <Stack>
                 <FeaturedMintCard />
-                <MintDotFunCard />
+                <MintsCard />
               </Stack>
             )}
             {nftOffersEnabled && <NFTOffersCard />}

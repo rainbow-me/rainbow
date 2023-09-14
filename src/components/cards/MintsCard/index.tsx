@@ -4,10 +4,7 @@ import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
 import { Menu } from './Menu';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import {
-  mintableCollectionsQueryKey,
-  useMintableCollections,
-} from '@/resources/mintdotfun';
+import { mintsQueryKey, useMints } from '@/resources/mints';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { queryClient } from '@/react-query';
@@ -18,13 +15,13 @@ import {
 import { Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { analyticsV2 } from '@/analytics';
 
-export function MintDotFunCard() {
+export function MintsCard() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    data: { collections, featuredCollection },
+    data: { mints, featuredMint },
     isFetching,
-  } = useMintableCollections({
+  } = useMints({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
@@ -48,8 +45,8 @@ export function MintDotFunCard() {
       <CarouselCard
         isLoading={isFetching}
         title="Mints"
-        data={collections?.filter(
-          c => c.contractAddress !== featuredCollection?.contractAddress
+        data={mints?.filter(
+          c => c.contractAddress !== featuredMint?.contractAddress
         )}
         carouselItem={{
           renderItem: ({ item }) => <CollectionCell collection={item} />,
@@ -75,9 +72,9 @@ export function MintDotFunCard() {
             }}
             onPress={() => {
               analyticsV2.track(
-                analyticsV2.event.mintDotFunPressedViewAllMintsButton
+                analyticsV2.event.mintsPressedViewAllMintsButton
               );
-              navigate(Routes.MINT_DOT_FUN_SHEET);
+              navigate(Routes.MINTS_SHEET);
             }}
           >
             {/* unfortunately shimmer width must be hardcoded */}
@@ -100,7 +97,7 @@ export function MintDotFunCard() {
         refresh={() => {
           setCanRefresh(false);
           queryClient.invalidateQueries(
-            mintableCollectionsQueryKey({
+            mintsQueryKey({
               address: accountAddress,
             })
           );

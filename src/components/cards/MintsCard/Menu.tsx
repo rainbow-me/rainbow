@@ -5,37 +5,31 @@ import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import * as i18n from '@/languages';
 import {
-  MintableCollectionsFilter,
-  getMintableCollectionsFilterLabel,
-  useMintableCollectionsFilter,
-} from '@/resources/mintdotfun';
+  MintsFilter,
+  getMintsFilterLabel,
+  useMintsFilter,
+} from '@/resources/mints';
 
 export function Menu() {
-  const { filter, setFilter } = useMintableCollectionsFilter();
+  const { filter, setFilter } = useMintsFilter();
 
   const menuConfig = {
     menuTitle: '',
     menuItems: [
       {
-        actionKey: MintableCollectionsFilter.All,
-        actionTitle: getMintableCollectionsFilterLabel(
-          MintableCollectionsFilter.All
-        ),
-        menuState: filter === MintableCollectionsFilter.All ? 'on' : 'off',
+        actionKey: MintsFilter.All,
+        actionTitle: getMintsFilterLabel(MintsFilter.All),
+        menuState: filter === MintsFilter.All ? 'on' : 'off',
       },
       {
-        actionKey: MintableCollectionsFilter.Free,
-        actionTitle: getMintableCollectionsFilterLabel(
-          MintableCollectionsFilter.Free
-        ),
-        menuState: filter === MintableCollectionsFilter.Free ? 'on' : 'off',
+        actionKey: MintsFilter.Free,
+        actionTitle: getMintsFilterLabel(MintsFilter.Free),
+        menuState: filter === MintsFilter.Free ? 'on' : 'off',
       },
       {
-        actionKey: MintableCollectionsFilter.Paid,
-        actionTitle: getMintableCollectionsFilterLabel(
-          MintableCollectionsFilter.Paid
-        ),
-        menuState: filter === MintableCollectionsFilter.Paid ? 'on' : 'off',
+        actionKey: MintsFilter.Paid,
+        actionTitle: getMintsFilterLabel(MintsFilter.Paid),
+        menuState: filter === MintsFilter.Paid ? 'on' : 'off',
       },
     ],
   };
@@ -43,7 +37,7 @@ export function Menu() {
   const onPressMenuItem = ({
     nativeEvent: { actionKey: filter },
   }: {
-    nativeEvent: { actionKey: MintableCollectionsFilter };
+    nativeEvent: { actionKey: MintsFilter };
   }) => {
     haptics.selection();
     setFilter(filter);

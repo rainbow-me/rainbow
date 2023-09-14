@@ -16,7 +16,7 @@ import {
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
-import { useMintableCollections } from '@/resources/mintdotfun';
+import { useMints } from '@/resources/mints';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ImgixImage } from '../images';
@@ -47,8 +47,8 @@ const BlurWrapper = styled(View).attrs({
 export function FeaturedMintCard() {
   const { accountAddress } = useAccountProfile();
   const {
-    data: { featuredCollection },
-  } = useMintableCollections({
+    data: { featuredMint },
+  } = useMints({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
@@ -58,12 +58,12 @@ export function FeaturedMintCard() {
   const isDarkMode = colorMode === 'dark';
 
   const imageUrl =
-    featuredCollection?.imageURL ||
-    featuredCollection?.recentMints?.find(m => m.imageURI)?.imageURI;
+    featuredMint?.imageURL ||
+    featuredMint?.recentMints?.find(m => m.imageURI)?.imageURI;
 
-  const mimeType = featuredCollection?.imageURL
-    ? featuredCollection?.imageMimeType
-    : featuredCollection?.recentMints?.find(m => m.imageURI)?.mimeType;
+  const mimeType = featuredMint?.imageURL
+    ? featuredMint?.imageMimeType
+    : featuredMint?.recentMints?.find(m => m.imageURI)?.mimeType;
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const accentColor = usePersistentDominantColorFromImage(imageUrl);
@@ -71,7 +71,7 @@ export function FeaturedMintCard() {
 
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
-  return featuredCollection ? (
+  return featuredMint ? (
     <Inset vertical="10px">
       <ColorModeProvider value="darkTinted">
         <AccentColorProvider color={accentColor ?? labelSecondary}>
@@ -111,20 +111,20 @@ export function FeaturedMintCard() {
                 }}
                 onPress={() => {
                   analyticsV2.track(
-                    analyticsV2.event.mintDotFunPressedFeaturedMintCard,
+                    analyticsV2.event.mintsPressedFeaturedMintCard,
                     {
-                      contractAddress: featuredCollection.contractAddress,
-                      chainId: featuredCollection.chainId,
-                      totalMints: featuredCollection.totalMints,
-                      mintsLastHour: featuredCollection.totalMints,
+                      contractAddress: featuredMint.contractAddress,
+                      chainId: featuredMint.chainId,
+                      totalMints: featuredMint.totalMints,
+                      mintsLastHour: featuredMint.totalMints,
                       priceInEth: convertRawAmountToRoundedDecimal(
-                        featuredCollection.mintStatus.price,
+                        featuredMint.mintStatus.price,
                         18,
                         6
                       ),
                     }
                   );
-                  Linking.openURL(featuredCollection.externalURL);
+                  Linking.openURL(featuredMint.externalURL);
                 }}
                 scaleTo={0.96}
               >
@@ -199,7 +199,7 @@ export function FeaturedMintCard() {
                           color="label"
                           numberOfLines={1}
                         >
-                          {featuredCollection.name}
+                          {featuredMint.name}
                         </Text>
                       </Stack>
                       <Stack space={{ custom: 14 }}>
@@ -214,10 +214,8 @@ export function FeaturedMintCard() {
                           </Text>
                           <Text size="13pt" weight="heavy" color="label">
                             {`${abbreviateNumber(
-                              featuredCollection.totalMints
-                            )} mint${
-                              featuredCollection.totalMints === 1 ? '' : 's'
-                            }`}
+                              featuredMint.totalMints
+                            )} mint${featuredMint.totalMints === 1 ? '' : 's'}`}
                           </Text>
                         </Inline>
                         <Inline space="6px" alignVertical="center">
@@ -231,7 +229,7 @@ export function FeaturedMintCard() {
                           </Text>
                           <Text size="13pt" weight="heavy" color="label">
                             {`${abbreviateNumber(
-                              featuredCollection.mintsLastHour
+                              featuredMint.mintsLastHour
                             )} past hour`}
                           </Text>
                         </Inline>

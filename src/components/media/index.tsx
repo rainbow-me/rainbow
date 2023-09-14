@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import RemoteSvg from '../svg/RemoteSvg';
-import svgToPngIfNeeded from '@/handlers/svgs';
-import { ImgixImage } from '../images';
-import { SimpleVideo } from '../video';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Box, Cover, Text } from '@/design-system';
-import { Image, View, ImageStyle, ViewStyle } from 'react-native';
+import { Image, ImageStyle } from 'react-native';
+// @ts-ignore
 import Video from 'react-native-video';
 import SvgImage from '../svg/SvgImage';
 

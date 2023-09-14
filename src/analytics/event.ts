@@ -84,12 +84,11 @@ export const event = {
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
 
-  mintDotFunPressedFeaturedMintCard: 'Pressed featured mint card',
-  mintDotFunPressedCollectionCell: 'Pressed collection cell in mint.fun card',
-  mintDotFunPressedMintButton: 'Pressed mint button in mint.fun sheet',
-  mintDotFunPressedViewAllMintsButton:
-    'Pressed view all mints button in mint.fun card',
-  mintDotFunChangedFilter: 'Changed mints filter',
+  mintsPressedFeaturedMintCard: 'Pressed featured mint card',
+  mintsPressedCollectionCell: 'Pressed collection cell in mints card',
+  mintsPressedMintButton: 'Pressed mint button in mints sheet',
+  mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
+  mintsChangedFilter: 'Changed mints filter',
 } as const;
 
 /**
@@ -311,23 +310,23 @@ export type EventProperties = {
   [event.positionsOpenedSheet]: {
     dapp: string;
   };
-  [event.mintDotFunPressedFeaturedMintCard]: {
+  [event.mintsPressedFeaturedMintCard]: {
     contractAddress: string;
     chainId: number;
     totalMints: number;
     mintsLastHour: number;
     priceInEth: number;
   };
-  [event.mintDotFunPressedCollectionCell]: {
+  [event.mintsPressedCollectionCell]: {
     contractAddress: string;
     chainId: number;
     priceInEth: number;
   };
-  [event.mintDotFunPressedMintButton]: {
+  [event.mintsPressedMintButton]: {
     contractAddress: string;
     chainId: number;
     priceInEth: number;
   };
-  [event.mintDotFunPressedViewAllMintsButton]: undefined;
-  [event.mintDotFunChangedFilter]: { filter: string };
+  [event.mintsPressedViewAllMintsButton]: undefined;
+  [event.mintsChangedFilter]: { filter: string };
 };

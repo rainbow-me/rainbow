@@ -150,8 +150,8 @@ fragment mintableCollectionResult on MintableCollectionResult {
   }
 }
 
-query getMintableCollections($walletAddress: String!) {
-  getMintableCollections(walletAddress: $walletAddress) {
+query getMints($walletAddress: String!) {
+  getMints(walletAddress: $walletAddress) {
     collections {
       ...mintableCollection
     }

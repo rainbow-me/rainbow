@@ -13,10 +13,7 @@ import {
   useColorMode,
 } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
-import {
-  mintableCollectionsQueryKey,
-  useMintableCollections,
-} from '@/resources/mintdotfun';
+import { mintsQueryKey, useMints } from '@/resources/mints';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import { TabBar } from './TabBar';
@@ -32,7 +29,7 @@ import Spinner from '@/components/Spinner';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
-export function MintDotFunSheet() {
+export function MintsSheet() {
   const {
     accountAddress,
     accountImage,
@@ -40,17 +37,17 @@ export function MintDotFunSheet() {
     accountSymbol,
   } = useAccountProfile();
   const {
-    data: { collections },
+    data: { mints },
     isFetching,
     dataUpdatedAt,
-  } = useMintableCollections({
+  } = useMints({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
 
-  const data = collections ?? [];
+  const data = mints ?? [];
 
   const isNoData = !data.length && !isFetching;
 
@@ -155,7 +152,7 @@ export function MintDotFunSheet() {
                   // only allow refresh if data is at least 30 seconds old
                   if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
                     queryClient.invalidateQueries({
-                      queryKey: mintableCollectionsQueryKey({
+                      queryKey: mintsQueryKey({
                         address: accountAddress,
                       }),
                     });

@@ -81,7 +81,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
-import { MintDotFunSheet } from '@/screens/MintDotFunSheet';
+import { MintsSheet } from '@/screens/MintsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -392,8 +392,8 @@ function BSNavigator() {
         options={nftSingleOfferSheetPreset}
       />
       <BSStack.Screen
-        name={Routes.MINT_DOT_FUN_SHEET}
-        component={MintDotFunSheet}
+        name={Routes.MINTS_SHEET}
+        component={MintsSheet}
         options={{ ...bottomSheetPreset }}
       />
     </BSStack.Navigator>
