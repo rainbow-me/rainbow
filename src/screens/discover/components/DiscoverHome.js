@@ -25,7 +25,7 @@ import { LedgerCard } from '@/components/cards/LedgerCard';
 import config from '@/model/config';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
-import { MintsCard } from '@/components/cards/MintsCard';
+import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 
 export default function DiscoverHome() {

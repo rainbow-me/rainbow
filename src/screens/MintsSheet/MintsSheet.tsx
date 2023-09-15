@@ -17,7 +17,7 @@ import { mintsQueryKey, useMints } from '@/resources/mints';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import { TabBar } from './TabBar';
-import { Card } from './card';
+import { Card } from './card/Card';
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

@@ -27,7 +27,7 @@ import {
 import { BlurView } from '@react-native-community/blur';
 import { Linking, View } from 'react-native';
 import { IS_IOS } from '@/env';
-import { Media } from '../media';
+import { Media } from '../Media';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 

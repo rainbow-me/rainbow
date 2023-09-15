@@ -19,7 +19,7 @@ import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { analyticsV2 } from '@/analytics';
-import { Media } from '@/components/media';
+import { Media } from '@/components/Media';
 import * as i18n from '@/languages';
 
 export const NFT_IMAGE_SIZE = 111;

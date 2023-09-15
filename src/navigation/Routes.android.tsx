@@ -81,7 +81,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
-import { MintsSheet } from '@/screens/MintsSheet';
+import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();

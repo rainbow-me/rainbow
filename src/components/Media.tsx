@@ -3,7 +3,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { Image, ImageStyle } from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
-import SvgImage from '../svg/SvgImage';
+import SvgImage from './svg/SvgImage';
 
 export enum MimeType {
   MP4 = 'video/mp4',

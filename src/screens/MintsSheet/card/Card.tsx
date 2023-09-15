@@ -20,6 +20,8 @@ import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { CoinIcon } from '@/components/coin-icon';
+import { Network } from '@/helpers';
 
 export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
@@ -41,6 +43,8 @@ export function Card({ collection }: { collection: MintableCollection }) {
   ).nativeCurrency.symbol;
   const isFree = !price;
 
+  const network = getNetworkFromChainId(collection.chainId);
+
   // update elapsed time every minute if it's less than an hour
   useEffect(() => {
     if (timeElapsed[timeElapsed.length - 1] === 'm') {
@@ -61,12 +65,15 @@ export function Card({ collection }: { collection: MintableCollection }) {
                 {collection.name}
               </Text>
               <Bleed vertical="3px">
-                <ChainBadge
-                  assetType={getNetworkFromChainId(collection.chainId)}
-                  // marginBottom={8}
-                  position="relative"
-                  size="medium"
-                />
+                {network !== Network.mainnet ? (
+                  <ChainBadge
+                    assetType={network}
+                    position="relative"
+                    size="medium"
+                  />
+                ) : (
+                  <CoinIcon size={20} />
+                )}
               </Bleed>
             </Inline>
             <Inline space="3px" alignVertical="center">

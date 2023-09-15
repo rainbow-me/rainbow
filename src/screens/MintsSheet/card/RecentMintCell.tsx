@@ -13,7 +13,7 @@ import {
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
-import { Media } from '@/components/media';
+import { Media } from '@/components/Media';
 
 export const NFT_IMAGE_SIZE = 111;
 

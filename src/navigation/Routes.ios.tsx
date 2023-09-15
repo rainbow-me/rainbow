@@ -96,7 +96,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-import { MintsSheet } from '@/screens/MintsSheet';
+import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
