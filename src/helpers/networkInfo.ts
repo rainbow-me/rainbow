@@ -1,5 +1,6 @@
 import networkTypes from './networkTypes';
 
+// TODO: networkInfo is DEPRECATED after the new network support changes
 const networkInfo = {
   [`${networkTypes.mainnet}`]: {
     balance_checker_contract_address:

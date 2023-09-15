@@ -8,31 +8,9 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
-  convertRawAmountToBalance,
 } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
-
-/**
- * @desc parse account assets
- * @param {Object} [data]
- * @return The array of parsed account assets.
- */
-export const parseAccountAssets = data => {
-  const accountAssets = {};
-  for (const assetKey in data) {
-    const assetData = data[assetKey];
-
-    const asset = parseAsset(assetData.asset);
-
-    accountAssets[assetKey] = {
-      ...asset,
-      balance: convertRawAmountToBalance(assetData.quantity, asset),
-    };
-  }
-
-  return accountAssets;
-};
 
 // eslint-disable-next-line no-useless-escape
 const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));

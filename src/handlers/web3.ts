@@ -179,6 +179,12 @@ export const getFlashbotsProvider = async () => {
   );
 };
 
+export const getCachedProviderForNetwork = (
+  network: Network = Network.mainnet
+) => {
+  return networkProviders[network]!;
+};
+
 /**
  * @desc Gets or constructs a web3 provider for the specified network.
  * @param network The network as a `Network` or string.

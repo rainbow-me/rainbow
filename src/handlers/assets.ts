@@ -30,7 +30,7 @@ export function isL2Asset(type: any) {
   }
 }
 
-export function isNativeAsset(address: any, network: any) {
+export function isNativeAsset(address: string, network: string) {
   return (
     getNetworkObj(network as Network).nativeCurrency.address.toLowerCase() ===
     address?.toLowerCase()
