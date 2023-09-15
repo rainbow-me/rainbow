@@ -210,6 +210,7 @@
         "insufficient_bnb": "BNB Insuficiente",
         "insufficient_funds": "Fondos Insuficientes",
         "insufficient_liquidity": "Liquidez Insuficiente",
+        "fee_on_transfer": "Cargo en Token de Transferencia",
         "no_route_found": "No se encontró una ruta",
         "insufficient_matic": "MATIC Insuficiente",
         "insufficient_token": "%{tokenName}Insuficiente",
@@ -719,6 +720,8 @@
         "zorb_title": "¡Has desbloqueado\nEnergías de Rainbow Zorb!",
         "poolboy_text": "Una edición especial de Rainbow x Poolsuite Icon para el verano inmutable.",
         "poolboy_title": "¡Has desbloqueado el\nPoolboy Arcoíris!",
+        "adworld_text": "Como ciudadano del Mundo Rainbow, ahora puedes desbloquear una edición especial del\nIcono de App AdWorld x Rainbow.",
+        "adworld_title": "¡Bienvenidos al Mundo Rainbow!",
         "title": "¡Has desbloqueado el\nArcoíris 􀆄 %{partner}",
         "button": "Captura el icono"
       },
@@ -830,6 +833,12 @@
         "fragment2": "Leer más",
         "fragment3": " sobre los AMM y la liquidez de tokens.",
         "title": "Liquidez insuficiente"
+      },
+      "fee_on_transfer": {
+        "fragment1": "Este intercambio fallará en Rainbow porque el contrato %{tokenName} agrega cargos adicionales.  \n\n Lea ",
+        "fragment2": "nuestra guía",
+        "fragment3": " para obtener ayuda para intercambiar este token!",
+        "title": "Cargo en Token de Transferencia"
       },
       "no_route_found": {
         "fragment1": "No pudimos encontrar una ruta para este intercambio. ",
