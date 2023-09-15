@@ -57,75 +57,71 @@ export function MintsSheet() {
       <BackgroundProvider color="surfaceSecondaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet backgroundColor={backgroundColor as string}>
-            <Inset top="20px" bottom={{ custom: 120 }}>
-              <Stack space="20px">
-                <Inset horizontal="20px">
-                  <Stack space="10px">
-                    <Columns alignVertical="center">
-                      <Column width="content">
-                        <AccentColorProvider color={accountColor}>
-                          <ButtonPressAnimation
-                            onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
-                          >
-                            {accountImage ? (
-                              <Box
-                                as={ImgixImage}
-                                background="surfaceSecondaryElevated"
-                                size={36}
-                                source={{ uri: accountImage }}
-                                width={{ custom: 36 }}
-                                height="36px"
-                                borderRadius={36}
-                                shadow="12px accent"
-                              />
-                            ) : (
-                              <Box
-                                as={ContactAvatar}
-                                background="surfacePrimary"
-                                shadow="12px accent"
-                                color={accountColor}
-                                size="smedium"
-                                value={accountSymbol}
-                              />
-                            )}
-                          </ButtonPressAnimation>
-                        </AccentColorProvider>
-                      </Column>
-                      <Column>
-                        <Text
-                          color="label"
-                          size="20pt"
-                          align="center"
-                          weight="heavy"
+            <Inset top="20px" bottom={{ custom: 110 }}>
+              <Inset horizontal="20px">
+                <Stack space="10px">
+                  <Columns alignVertical="center">
+                    <Column width="content">
+                      <AccentColorProvider color={accountColor}>
+                        <ButtonPressAnimation
+                          onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
                         >
-                          {i18n.t(i18n.l.mints.mints_sheet.mints)}
-                        </Text>
-                      </Column>
-                      <Column width="content">
-                        <Box width={{ custom: 36 }} />
-                      </Column>
-                    </Columns>
+                          {accountImage ? (
+                            <Box
+                              as={ImgixImage}
+                              background="surfaceSecondaryElevated"
+                              size={36}
+                              source={{ uri: accountImage }}
+                              width={{ custom: 36 }}
+                              height="36px"
+                              borderRadius={36}
+                              shadow="12px accent"
+                            />
+                          ) : (
+                            <Box
+                              as={ContactAvatar}
+                              background="surfacePrimary"
+                              shadow="12px accent"
+                              color={accountColor}
+                              size="smedium"
+                              value={accountSymbol}
+                            />
+                          )}
+                        </ButtonPressAnimation>
+                      </AccentColorProvider>
+                    </Column>
+                    <Column>
+                      <Text
+                        color="label"
+                        size="20pt"
+                        align="center"
+                        weight="heavy"
+                      >
+                        {i18n.t(i18n.l.mints.mints_sheet.mints)}
+                      </Text>
+                    </Column>
+                    <Column width="content">
+                      <Box width={{ custom: 36 }} />
+                    </Column>
+                  </Columns>
+                  <Separator thickness={1} color="separatorTertiary" />
+                </Stack>
+              </Inset>
+              {!isNoData && (
+                <FlashList
+                  data={data}
+                  estimatedItemSize={222}
+                  estimatedListSize={{
+                    height: deviceHeight,
+                    width: deviceWidth,
+                  }}
+                  renderItem={({ item }) => <Card collection={item} />}
+                  ItemSeparatorComponent={() => (
                     <Separator thickness={1} color="separatorTertiary" />
-                  </Stack>
-                </Inset>
-                {!isNoData && (
-                  <FlashList
-                    data={data}
-                    estimatedItemSize={222}
-                    estimatedListSize={{
-                      height: deviceHeight,
-                      width: deviceWidth,
-                    }}
-                    renderItem={({ item }) => <Card collection={item} />}
-                    ItemSeparatorComponent={() => (
-                      <Inset vertical="20px">
-                        <Separator thickness={1} color="separatorTertiary" />
-                      </Inset>
-                    )}
-                    keyExtractor={item => item.contractAddress + item.chainId}
-                  />
-                )}
-              </Stack>
+                  )}
+                  keyExtractor={item => item.contractAddress + item.chainId}
+                />
+              )}
             </Inset>
           </SimpleSheet>
         )}

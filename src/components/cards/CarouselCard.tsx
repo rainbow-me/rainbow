@@ -62,16 +62,20 @@ export function CarouselCard<T>({
 
   return (
     <Stack space="20px">
-      <Inline alignVertical="center" alignHorizontal="justify">
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
         {typeof title === 'string' ? (
           <Text color="label" weight="heavy" size="20pt">
             {title}
           </Text>
         ) : (
-          title
+          <Box width="full">{title}</Box>
         )}
         {menu}
-      </Inline>
+      </Box>
       {/* FlashList vertical visible overflow does not work due to a bug,
       so we need to manually add vertical padding to the recycled component.
       The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 

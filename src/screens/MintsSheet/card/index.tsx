@@ -1,7 +1,14 @@
 import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
-import { Box, Inline, Stack, Text, useForegroundColor } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  Inline,
+  Stack,
+  Text,
+  useForegroundColor,
+} from '@/design-system';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { getNetworkObj } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
@@ -12,6 +19,7 @@ import { Linking, View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
 
 export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
@@ -44,20 +52,32 @@ export function Card({ collection }: { collection: MintableCollection }) {
   });
 
   return (
-    <View style={{ paddingHorizontal: 20, marginTop: 1 }}>
+    <View style={{ paddingHorizontal: 20, marginVertical: 20 }}>
       <CarouselCard
         title={
           <Stack space="12px">
-            <Text size="20pt" weight="heavy" color="label" numberOfLines={2}>
-              {collection.name}
-            </Text>
+            <Inline alignVertical="center" alignHorizontal="justify">
+              <Text size="20pt" weight="heavy" color="label" numberOfLines={2}>
+                {collection.name}
+              </Text>
+              <Bleed vertical="3px">
+                <ChainBadge
+                  assetType={getNetworkFromChainId(collection.chainId)}
+                  // marginBottom={8}
+                  position="relative"
+                  size="medium"
+                />
+              </Bleed>
+            </Inline>
             <Inline space="3px" alignVertical="center">
               <Text size="11pt" weight="semibold" color="labelQuaternary">
                 􀐫
               </Text>
               <Inline alignVertical="center">
                 <Text size="13pt" weight="semibold" color="labelTertiary">
-                  {i18n.t(i18n.l.mints.mints_sheet.card.x_ago, { timeElapsed })}
+                  {i18n.t(i18n.l.mints.mints_sheet.card.x_ago, {
+                    timeElapsed,
+                  })}
                 </Text>
                 <Text size="13pt" weight="semibold" color="labelTertiary">
                   {' · '}
