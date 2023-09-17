@@ -32,7 +32,6 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 import { Network } from '@/networks/types';
-import { getNetworkObj } from '@/networks';
 
 type BigNumberish = number | string | BigNumber;
 
