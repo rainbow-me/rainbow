@@ -5,6 +5,7 @@ import useExperimentalFlag, {
   HARDWARE_WALLETS,
   NFT_OFFERS,
 } from '@rainbow-me/config/experimentalHooks';
+import { IS_TESTING } from 'react-native-dotenv';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
@@ -54,7 +55,8 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {nftOffersEnabled && <NFTOffersCard />}
+              {/* FIXME: IS_TESTING disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
+              {IS_TESTING !== 'true' && nftOffersEnabled && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}

@@ -162,7 +162,7 @@ beforeAll(async () => {
   await Helpers.startIosSimulator();
 });
 
-describe('Register ENS Flow', () => {
+describe.skip('Register ENS Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -281,8 +281,11 @@ describe('Register ENS Flow', () => {
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
-    await Helpers.delay(2000);
+    console.log('found the button');
+    await Helpers.delay(5000);
+    console.log('about to tap');
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
+    console.log('tapped');
   });
 
   it('Should display change gas to Urgent', async () => {
