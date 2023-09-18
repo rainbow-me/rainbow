@@ -26,7 +26,6 @@ const Routes = {
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
-  EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   EXPLAIN_SHEET: 'ExplainSheet',
   PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
