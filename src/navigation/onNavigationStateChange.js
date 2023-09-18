@@ -40,20 +40,17 @@ export function onHandleStatusBar(currentState, prevState) {
     prevState?.routes.length > currentState?.routes.length;
   switch (routeName) {
     case Routes.EXPANDED_ASSET_SHEET:
-    case Routes.EXPANDED_ASSET_SHEET_POOLS:
       // handles the status bar when opening nested modals
       if (
         isRoutesLengthDecrease &&
         isFromWalletScreen &&
-        (routeName === Routes.EXPANDED_ASSET_SHEET_POOLS ||
-          routeName === Routes.EXPANDED_ASSET_SHEET)
+        routeName === Routes.EXPANDED_ASSET_SHEET
       ) {
         StatusBarHelper.setDarkContent();
         break;
       } else if (
         !android &&
         isFromWalletScreen &&
-        routeName !== Routes.EXPANDED_ASSET_SHEET_POOLS &&
         memRouteName !== Routes.WALLET_SCREEN
       ) {
         StatusBarHelper.setLightContent();
