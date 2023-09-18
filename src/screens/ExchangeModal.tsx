@@ -517,7 +517,7 @@ export default function ExchangeModal({
         tradeDetails: tradeDetails!,
       };
 
-      const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
+      const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
       if (gasLimit) {
         if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
@@ -730,7 +730,7 @@ export default function ExchangeModal({
           },
         };
 
-        const rapType = getSwapRapTypeByExchangeType(type, isCrosschainSwap);
+        const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
         await executeRap(wallet, rapType, swapParameters, callback);
 
         // if the transaction was not successful, we need to bubble that up to the caller
