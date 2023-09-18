@@ -78,9 +78,13 @@ export const event = {
   nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
   nftOffersAcceptedOffer: 'Accepted NFT Offer',
 
+  nftMintsOpenedSheet: 'Opened NFT Mint Sheet',
+  nftMintsMintedNFT: 'Minted NFT',
+
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
   poapsMintedPoap: 'Minted POAP',
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
+
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
 } as const;
