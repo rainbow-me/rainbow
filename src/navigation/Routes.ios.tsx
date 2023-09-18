@@ -16,7 +16,6 @@ import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
@@ -329,11 +328,6 @@ function NativeStackNavigator() {
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
-      />
-      <NativeStack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={TransactionConfirmationScreen}

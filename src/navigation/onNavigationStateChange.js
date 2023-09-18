@@ -63,7 +63,6 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
-    case Routes.SAVINGS_SHEET:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
       StatusBarHelper.setDarkContent();
