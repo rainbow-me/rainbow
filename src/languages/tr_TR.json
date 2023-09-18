@@ -210,6 +210,7 @@
         "insufficient_bnb": "Yetersiz BNB",
         "insufficient_funds": "Yetersiz Bakiye",
         "insufficient_liquidity": "􀅵 Yetersiz Likidite",
+        "fee_on_transfer": "􀅵 Transfer Token Üzerinden Ücret",
         "no_route_found": "􀅵 Rota Bulunamadı",
         "insufficient_matic": "Yetersiz MATIC",
         "insufficient_token": "Yetersiz %{tokenName}",
@@ -719,6 +720,8 @@
         "zorb_title": "\nRainbow Zorb Enerjisi'nin kilidini açtınız!",
         "poolboy_text": "Onchain yazı için özel bir Rainbow x Poolsuite İkonu.",
         "poolboy_title": "\nGökkuşağı Poolboy'un kilidini açtınız!",
+        "adworld_text": "Bir Rainbow Dünya Vatandaşı olarak, artık özel baskı bir\nAdWorld x Rainbow Uygulama Simgesini açabilirsiniz.",
+        "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
         "title": "\nGökkuşağı 􀆄 %{partner}kilidini açtınız.",
         "button": "Simgeyi kap"
       },
@@ -830,6 +833,12 @@
         "fragment2": "Daha fazla oku",
         "fragment3": " AMM'ler ve token likiditesi hakkında.",
         "title": "Yetersiz Likidite"
+      },
+      "fee_on_transfer": {
+        "fragment1": "Bu değiş tokuş, %{tokenName} sözleşmesi ek ücretler eklediği için Rainbow'da başarısız olacak.  \n\n Oku ",
+        "fragment2": "rehberimiz",
+        "fragment3": " bu token'ı değiştirmek için yardım alın!",
+        "title": "Transfer Tokeni Üzerinden Ücret"
       },
       "no_route_found": {
         "fragment1": "Bu takas için bir rota bulamadık. ",

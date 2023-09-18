@@ -210,7 +210,7 @@
         "insufficient_bnb": "BNB Insuffisants",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "􀅵 Insufficient Liquidity :)",
-        "fee_on_transfer": "􀅵 Fee on Transfer Token",
+        "fee_on_transfer": "Frais sur le jeton de transfert",
         "no_route_found": "􀅵 No route found :)",
         "insufficient_matic": "MATIC Insuffisants",
         "insufficient_token": "Insufficient %{tokenName} :)",
@@ -720,8 +720,8 @@
         "zorb_title": "You've unlocked\nRainbow Zorb Energy! :)",
         "poolboy_text": "A special edition Rainbow x Poolsuite Icon for onchain summer. :)",
         "poolboy_title": "You've unlocked the\nRainbow Poolboy! :)",
-        "adworld_text": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon. :)",
-        "adworld_title": "Welcome to Rainbow World! :)",
+        "adworld_text": "En tant que citoyen du monde Rainbow, vous pouvez maintenant débloquer une édition spéciale\nAdWorld x Icone d'Application Rainbow.",
+        "adworld_title": "Bienvenue sur Rainbow World!",
         "title": "You've unlocked\nRainbow 􀆄 %{partner} :)",
         "button": "Snag the icon :)"
       },
@@ -835,10 +835,10 @@
         "title": "Liquidité insuffisante"
       },
       "fee_on_transfer": {
-        "fragment1": "This swap will fail in Rainbow because the %{tokenName} contract adds extra fees.  \n\n Read ",
-        "fragment2": "our guide",
-        "fragment3": " for help swapping this token!",
-        "title": "Fee on Transfer Token"
+        "fragment1": "Cet échange échouera dans Rainbow car le contrat %{tokenName} ajoute des frais supplémentaires.  \n\n Lisez ",
+        "fragment2": "notre guide",
+        "fragment3": " pour obtenir de l'aide pour échanger ce jeton!",
+        "title": "Frais sur le Jeton de Transfert"
       },
       "no_route_found": {
         "fragment1": "Nous n'avons pas pu trouver de route pour cet échange. ",

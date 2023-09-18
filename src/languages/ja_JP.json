@@ -210,6 +210,7 @@
         "insufficient_bnb": "BNBが不足しています",
         "insufficient_funds": "資金が不足しています",
         "insufficient_liquidity": "􀅵 決済が不十分です",
+        "fee_on_transfer": "􀅵 トランスファートークンの手数料",
         "no_route_found": "􀅵 ルートが見つかりません",
         "insufficient_matic": "MATICが不足しています",
         "insufficient_token": "不足している %{tokenName}",
@@ -719,6 +720,8 @@
         "zorb_title": "\nRainbow Zorbエネルギーがロック解除されました！",
         "poolboy_text": "オンチェーンの夏のための特別なエディション、レインボーxプールスイートアイコンです。",
         "poolboy_title": "\nレインボー Poolboyをアンロックしました！",
+        "adworld_text": "あなたは雨虹世界市民として、特別版の\nAdWorld x Rainbowアプリアイコンを解除できるようになりました。",
+        "adworld_title": "Rainbow Worldへようこそ！",
         "title": "\nレインボー 􀆄 %{partner}をアンロックしました！",
         "button": "アイコンをゲット"
       },
@@ -830,6 +833,12 @@
         "fragment2": "続きを読む",
         "fragment3": " について",
         "title": "流動性不足"
+      },
+      "fee_on_transfer": {
+        "fragment1": "%{tokenName} 契約には追加手数料が発生するため、このスワップはRainbowで失敗します。  \n\n 読む ",
+        "fragment2": "私たちのガイド",
+        "fragment3": " このトークンの交換方法を確認してください！",
+        "title": "トランスファートークンの手数料"
       },
       "no_route_found": {
         "fragment1": "このスワップのルートが見つかりませんでした。 ",
