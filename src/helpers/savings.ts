@@ -1,9 +1,7 @@
-import BigNumber from 'bignumber.js';
 import { memoFn } from '../utils/memoFn';
 
 const STABLECOINS = ['DAI', 'USDC', 'USDT'];
 const APPROX_BLOCK_TIME = 15;
-const MAX_DECIMALS_TO_SHOW = 10;
 const BLOCKS_PER_YEAR = (60 / APPROX_BLOCK_TIME) * 60 * 24 * 365;
 
 const calculateAPY = (supplyRate: any) => {
@@ -34,12 +32,6 @@ const calculateCompoundInterestInDays = memoFn((principal, apr, days) => {
   return principal * Math.pow(1 + periodicRate, periods);
 });
 
-const formatSavingsAmount = memoFn(amount => {
-  // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
-  const amountBN = BigNumber(amount);
-  return amountBN.toFixed(MAX_DECIMALS_TO_SHOW);
-});
-
 // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
 const isSymbolStablecoin = memoFn(symbol => STABLECOINS.indexOf(symbol) !== -1);
 
@@ -53,7 +45,6 @@ export {
   calculateAPY,
   calculateCompoundInterestInDays,
   calculateEarningsInDays,
-  formatSavingsAmount,
   isSymbolStablecoin,
   isSymbolStablecoinWorklet,
 };
