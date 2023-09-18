@@ -143,6 +143,10 @@ const StatusProps = {
       marginTop: ios ? -3 : -5,
     },
   },
+  [TransactionStatusTypes.minting]: {
+    marginRight: 4,
+    marginTop: ios ? 1 : 0,
+  },
 };
 
 const sx = StyleSheet.create({
