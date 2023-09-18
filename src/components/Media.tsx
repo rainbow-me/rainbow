@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Image, ImageStyle } from 'react-native';
+import { Image, ImageStyle, View } from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
 import SvgImage from './svg/SvgImage';
@@ -50,7 +50,7 @@ export function Media({
           onError={onError}
           muted
           resizeMode="cover"
-          poster={fallbackUrl}
+          poster={signedFallbackUrl}
           posterResizeMode="cover"
           setLoading={setLoading}
           repeat
@@ -61,13 +61,15 @@ export function Media({
       );
     case MimeType.SVG:
       return (
-        <SvgImage
-          fallbackUri={signedFallbackUrl}
-          onLayout={onLayout}
-          onError={onError}
-          style={style}
-          source={{ uri: signedUrl }}
-        />
+        <View style={{ ...style, overflow: 'hidden' }}>
+          <SvgImage
+            fallbackUri={signedFallbackUrl}
+            onLayout={onLayout}
+            onError={onError}
+            style={style}
+            source={{ uri: signedUrl }}
+          />
+        </View>
       );
     case MimeType.GIF:
     case MimeType.PNG:

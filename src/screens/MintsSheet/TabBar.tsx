@@ -16,6 +16,7 @@ import {
 import { useTheme } from '@/theme';
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {
@@ -31,30 +32,62 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
 
   return (
     <AccentColorProvider color={highlightedBackgroundColor}>
-      <Box
-        as={ButtonPressAnimation}
-        height="full"
-        width={{ custom: 64 }}
-        borderRadius={17}
-        alignItems="center"
-        justifyContent="center"
-        background={currentFilter === filter ? 'accent' : undefined}
-        onPress={() => {
-          setFilter(filter);
-        }}
-        shadow="12px accent"
+      <View
+        style={
+          IS_IOS
+            ? {
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 2 },
+                shadowRadius: 3,
+                shadowOpacity: 0.02,
+              }
+            : {}
+        }
       >
-        <Text
-          size="17pt"
-          weight="heavy"
-          align="center"
-          color={
-            currentFilter === filter ? highlightedTextColor : 'labelSecondary'
-          }
+        <View
+          style={{
+            ...(IS_IOS
+              ? {
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowRadius: 6,
+                  shadowOpacity: 0.24,
+                }
+              : {
+                  elevation: 8,
+                  shadowOpacity: 1,
+                }),
+            shadowColor: isDarkMode
+              ? globalColors.grey100
+              : highlightedBackgroundColor,
+          }}
         >
-          {getMintsFilterLabel(filter)}
-        </Text>
-      </Box>
+          <Box
+            as={ButtonPressAnimation}
+            height="full"
+            width={{ custom: 64 }}
+            borderRadius={17}
+            alignItems="center"
+            justifyContent="center"
+            background={currentFilter === filter ? 'accent' : undefined}
+            onPress={() => {
+              setFilter(filter);
+            }}
+          >
+            <Text
+              size="17pt"
+              weight="heavy"
+              align="center"
+              color={
+                currentFilter === filter
+                  ? highlightedTextColor
+                  : 'labelSecondary'
+              }
+            >
+              {getMintsFilterLabel(filter)}
+            </Text>
+          </Box>
+        </View>
+      </View>
     </AccentColorProvider>
   );
 }
@@ -77,11 +110,19 @@ export function TabBar() {
       borderRadius={23}
     >
       <Cover>
-        <BlurView
-          blurAmount={15}
-          blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
-          style={{ height: '100%', width: '100%', borderRadius: 23 }}
-        />
+        <Box
+          style={{
+            borderRadius: 23,
+            flex: 1,
+            overflow: 'hidden',
+          }}
+        >
+          <BlurView
+            blurAmount={15}
+            blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
+            style={{ height: '100%', width: '100%', borderRadius: 23 }}
+          />
+        </Box>
       </Cover>
       {/* @ts-ignore */}
       <Box

@@ -8,12 +8,12 @@ import {
   Inline,
   Inset,
   Text,
-  useBackgroundColor,
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { NftSample } from '@/graphql/__generated__/arc';
 import { Media } from '@/components/Media';
+import { IS_IOS } from '@/env';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -60,75 +60,78 @@ export const Placeholder = () => {
 export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
   const { isDarkMode } = useTheme();
 
-  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
-  const surfaceSecondaryElevated = useBackgroundColor(
-    'surfaceSecondaryElevated'
-  );
-
   const [mediaRendered, setMediaRendered] = useState(false);
 
   useEffect(() => setMediaRendered(false), [recentMint.imageURI]);
 
   return (
-    <View
-      style={{
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.02,
-        shadowRadius: 3,
-        width: NFT_IMAGE_SIZE,
-        height: NFT_IMAGE_SIZE,
-      }}
-    >
-      <View
-        style={{
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.24,
-          shadowRadius: 9,
-          width: NFT_IMAGE_SIZE,
-          height: NFT_IMAGE_SIZE,
-        }}
-      >
-        {!mediaRendered && (
-          <Box
-            style={{
-              width: NFT_IMAGE_SIZE,
-              height: NFT_IMAGE_SIZE,
-              borderRadius: 16,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: isDarkMode
-                ? surfaceSecondaryElevated
-                : surfacePrimaryElevated,
-            }}
+    <Box style={{ width: NFT_IMAGE_SIZE, height: NFT_IMAGE_SIZE }}>
+      {!mediaRendered && (
+        <Box
+          style={{
+            width: NFT_IMAGE_SIZE,
+            height: NFT_IMAGE_SIZE,
+          }}
+          alignItems="center"
+          justifyContent="center"
+          borderRadius={16}
+          background="fillSecondary"
+        >
+          <Text
+            align="center"
+            color="labelQuaternary"
+            size="20pt"
+            weight="semibold"
           >
-            <Text
-              align="center"
-              color="labelQuaternary"
-              size="20pt"
-              weight="semibold"
-            >
-              􀣵
-            </Text>
-          </Box>
-        )}
+            􀣵
+          </Text>
+        </Box>
+      )}
+      {!!recentMint?.imageURI && (
         <Cover>
-          {!!recentMint?.imageURI && (
-            <Media
-              onLayout={() => setMediaRendered(true)}
-              onError={() => setMediaRendered(false)}
-              url={recentMint.imageURI}
-              mimeType={recentMint.mimeType ?? undefined}
-              style={{
-                width: NFT_IMAGE_SIZE,
-                height: NFT_IMAGE_SIZE,
-                borderRadius: 16,
-              }}
-            />
-          )}
+          <View
+            style={
+              IS_IOS
+                ? {
+                    shadowColor: globalColors.grey100,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.02,
+                    shadowRadius: 3,
+                  }
+                : {}
+            }
+          >
+            <View
+              style={
+                IS_IOS
+                  ? {
+                      shadowColor: globalColors.grey100,
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: isDarkMode ? 0.24 : 0.08,
+                      shadowRadius: 9,
+                    }
+                  : {
+                      shadowColor: globalColors.grey100,
+                      elevation: 12,
+                      shadowOpacity: isDarkMode ? 1 : 0.6,
+                    }
+              }
+            >
+              <Media
+                onLayout={() => setMediaRendered(true)}
+                onError={() => setMediaRendered(false)}
+                url={recentMint.imageURI}
+                mimeType={recentMint.mimeType ?? undefined}
+                style={{
+                  width: NFT_IMAGE_SIZE,
+                  height: NFT_IMAGE_SIZE,
+                  borderRadius: 16,
+                }}
+              />
+            </View>
+          </View>
         </Cover>
-      </View>
-    </View>
+      )}
+    </Box>
   );
 }

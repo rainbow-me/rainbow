@@ -4,7 +4,12 @@ import { getTimeElapsedFromDate } from '../utils';
 import {
   Bleed,
   Box,
+  Column,
+  Columns,
+  Cover,
+  DebugLayout,
   Inline,
+  Inset,
   Stack,
   Text,
   useForegroundColor,
@@ -55,27 +60,41 @@ export function Card({ collection }: { collection: MintableCollection }) {
     }
   });
 
+  if (collection.name.includes('Baby Burn')) {
+    console.log(collection.recentMints[0].imageURI);
+    console.log(collection.recentMints[0].mimeType);
+  }
+
   return (
     <View style={{ paddingHorizontal: 20, marginVertical: 20 }}>
       <CarouselCard
         title={
           <Stack space="12px">
-            <Inline alignVertical="center" alignHorizontal="justify">
-              <Text size="20pt" weight="heavy" color="label" numberOfLines={2}>
-                {collection.name}
-              </Text>
-              <Bleed vertical="3px">
-                {network !== Network.mainnet ? (
-                  <ChainBadge
-                    assetType={network}
-                    position="relative"
-                    size="medium"
-                  />
-                ) : (
-                  <CoinIcon size={20} />
-                )}
-              </Bleed>
-            </Inline>
+            <Box>
+              <Inset right={{ custom: 28 }}>
+                <Text
+                  size="20pt"
+                  weight="heavy"
+                  color="label"
+                  numberOfLines={2}
+                >
+                  {collection.name}
+                </Text>
+              </Inset>
+              <Cover alignVertical="top" alignHorizontal="right">
+                <Bleed vertical="3px">
+                  {network !== Network.mainnet ? (
+                    <ChainBadge
+                      assetType={network}
+                      position="relative"
+                      size="medium"
+                    />
+                  ) : (
+                    <CoinIcon size={20} />
+                  )}
+                </Bleed>
+              </Cover>
+            </Box>
             <Inline space="3px" alignVertical="center">
               <Text size="11pt" weight="semibold" color="labelQuaternary">
                 􀐫

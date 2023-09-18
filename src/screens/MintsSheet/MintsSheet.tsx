@@ -24,7 +24,7 @@ import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
 import { queryClient } from '@/react-query';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import Spinner from '@/components/Spinner';
 import * as i18n from '@/languages';
 
@@ -57,7 +57,7 @@ export function MintsSheet() {
       <BackgroundProvider color="surfaceSecondaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet backgroundColor={backgroundColor as string}>
-            <Inset top="20px" bottom={{ custom: 110 }}>
+            <Inset top="20px" bottom={{ custom: IS_IOS ? 110 : 150 }}>
               <Inset horizontal="20px">
                 <Stack space="10px">
                   <Columns alignVertical="center">
