@@ -46,13 +46,10 @@ describe('New Wallet flow', () => {
     await Helpers.checkIfVisible('copy-address-button');
   });
 
-  it.skiop(
-    'should show "No transactions yet" in the activity list',
-    async () => {
-      await Helpers.waitAndTap('activity-button');
-      await Helpers.checkIfElementByTextIsVisible('No transactions yet');
-    }
-  );
+  it.skip('should show "No transactions yet" in the activity list', async () => {
+    await Helpers.waitAndTap('activity-button');
+    await Helpers.checkIfElementByTextIsVisible('No transactions yet');
+  });
 
   afterAll(async () => {
     // Reset the app state
