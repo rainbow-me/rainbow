@@ -5,10 +5,8 @@ import {
   SmallBalancesWrapper,
 } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
-import { SavingsCoinRowHeight } from '../coin-row/SavingsCoinRow';
 import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
-import SavingsListWrapper from '../savings/SavingsListWrapper';
 import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
@@ -19,11 +17,6 @@ const lastCoinRowAdditionalHeight = 1;
 
 const openSmallBalancesAdditionalHeight = 15;
 const closedSmallBalancesAdditionalHeight = 18;
-
-const savingsOpenAdditionalHeight = -7.5;
-const savingsClosedAdditionalHeight = -5;
-const savingsLastOpenAdditionalHeight = -13;
-const savingsLastClosedAdditionalHeight = -10;
 
 const firstUniqueTokenMarginTop = 4;
 const extraSpaceForDropShadow = 19;
@@ -44,7 +37,7 @@ export const ViewTypes = {
 
   SHOWCASE_HEADER: {
     calculateHeight: () => 380,
-    index: 8,
+    index: 6,
     renderComponent: data => {
       return <Header {...data} />;
     },
@@ -115,28 +108,6 @@ export const ViewTypes = {
     visibleDuringCoinEdit: true,
   },
 
-  COIN_SAVINGS: {
-    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
-      isOpen
-        ? TokenFamilyHeaderHeight +
-          (isLast
-            ? ListFooter.height + savingsLastOpenAdditionalHeight
-            : savingsOpenAdditionalHeight) +
-          SavingsCoinRowHeight * amountOfRows
-        : TokenFamilyHeaderHeight +
-          (isLast
-            ? ListFooter.height + savingsLastClosedAdditionalHeight
-            : savingsClosedAdditionalHeight),
-    index: 4,
-    renderComponent: ({ data }) => {
-      const { item = {} } = data;
-      return (
-        <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
-      );
-    },
-    visibleDuringCoinEdit: false,
-  },
-
   UNIQUE_TOKEN_ROW: {
     calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
       const SectionHeaderHeight = isHeader ? TokenFamilyHeaderHeight : 0;
@@ -151,7 +122,7 @@ export const ViewTypes = {
           : 0);
       return height;
     },
-    index: 6,
+    index: 4,
     renderComponent: ({ type, data, index, sections }) => {
       const { item = {}, renderItem } = data;
       return renderItem({
@@ -175,7 +146,7 @@ export const ViewTypes = {
   FOOTER: {
     calculateHeight: ({ paddingBottom }) =>
       paddingBottom - FloatingActionButtonSize / 2,
-    index: 7,
+    index: 5,
     visibleDuringCoinEdit: false,
   },
   UNKNOWN: {

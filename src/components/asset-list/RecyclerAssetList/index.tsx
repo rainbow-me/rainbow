@@ -37,7 +37,6 @@ import { EthereumAddress } from '@/entities';
 import {
   useCoinListEdited,
   useOpenFamilies,
-  useOpenSavings,
   useOpenSmallBalances,
   usePrevious,
   useRefreshAccountData,
@@ -105,9 +104,6 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
     // coinDivider
   } else if (r1.item?.coinDivider) {
     return r1.item?.value === r2.item?.value;
-    // Savings
-  } else if (r1.item?.savingsContainer) {
-    return isEqual(r1.item.assets, r2.item?.assets);
     // Family sections
   } else if (r1.familySectionIndex === 0 || r1.familySectionIndex > 0) {
     const nftsRow1 = extractCollectiblesIdFromRow(r1);
@@ -224,7 +220,6 @@ function RecyclerAssetList({
 }: RecyclerAssetListProps): JSX.Element {
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const { refresh, isRefreshing } = useRefreshAccountData();
-  const { isSavingsOpen: openSavings } = useOpenSavings();
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
   const { openFamilies: openFamilyTabs } = useOpenFamilies();
   const { ref, handleRef } = useRecyclerListViewRef();
@@ -377,10 +372,6 @@ function RecyclerAssetList({
         return ViewTypes.COIN_SMALL_BALANCES.renderComponent({
           data,
         });
-      } else if (type.index === ViewTypes.COIN_SAVINGS.index) {
-        return ViewTypes.COIN_SAVINGS.renderComponent({
-          data,
-        });
       } else if (type.index === ViewTypes.UNIQUE_TOKEN_ROW.index) {
         return ViewTypes.UNIQUE_TOKEN_ROW.renderComponent({
           data,
@@ -483,22 +474,6 @@ function RecyclerAssetList({
               };
             }
           }
-          if (index === lastBalanceIndex) {
-            if (
-              sections[balancesIndex].data[lastBalanceIndex - 1]
-                .savingsContainer
-            ) {
-              return {
-                height: ViewTypes.COIN_SAVINGS.calculateHeight({
-                  amountOfRows:
-                    sections[balancesIndex].data[index - 1].assets?.length || 0,
-                  isLast: true,
-                  isOpen: openSavings,
-                }),
-                index: ViewTypes.COIN_SAVINGS.index,
-              };
-            }
-          }
           const firstBalanceIndex = sectionsIndices[balancesIndex] + 1;
           const isFirst =
             index === firstBalanceIndex &&
@@ -565,7 +540,6 @@ function RecyclerAssetList({
     items,
     itemsCount,
     openFamilyTabs,
-    openSavings,
     openSmallBalances,
     paddingBottom,
     sections,
@@ -611,7 +585,6 @@ function RecyclerAssetList({
     let prevCollectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let balances: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let smallBalances: any = {};
-    let savings: any = {};
 
     if (sections) {
       sections.forEach(section => {
@@ -629,8 +602,6 @@ function RecyclerAssetList({
       balances?.data?.forEach(element => {
         if (element?.smallBalancesContainer) {
           smallBalances = element;
-        } else if (element?.savingsContainer) {
-          savings = element;
         } else if (element?.coinDivider) {
           coinDividerHeight = CoinDividerHeight;
         } else {
@@ -648,14 +619,7 @@ function RecyclerAssetList({
         coinDividerHeight -
         3;
 
-      const savingsHeight = ViewTypes.COIN_SAVINGS.calculateHeight({
-        amountOfRows: savings?.assets?.length || 0,
-        isLast: false,
-        isOpen: openSavings,
-      });
-
-      const colleciblesStartHeight =
-        balancesHeight + smallBalancesHeight + savingsHeight;
+      const colleciblesStartHeight = balancesHeight + smallBalancesHeight;
 
       lastSections.forEach(section => {
         if (section.collectibles) {
@@ -694,7 +658,6 @@ function RecyclerAssetList({
     sections,
     isCoinListEdited,
     openFamilyTabs,
-    openSavings,
     openSmallBalances,
     paddingBottom,
     showcase,

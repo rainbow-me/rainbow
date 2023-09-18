@@ -92,7 +92,6 @@ export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenENSNFTHandler } from './useOpenENSNFTHandler';
-export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';
 export { default as useOpenFamilies } from './useOpenFamilies';
 export { default as usePrevious } from './usePrevious';
