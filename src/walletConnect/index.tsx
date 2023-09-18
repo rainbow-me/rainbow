@@ -437,159 +437,173 @@ async function subscribeToEchoServer({
 export async function onSessionProposal(
   proposal: Web3WalletTypes.SessionProposal
 ) {
-  logger.debug(
-    `WC v2: session_proposal`,
-    { proposal },
-    logger.DebugContext.walletconnect
-  );
+  try {
+    logger.debug(
+      `WC v2: session_proposal`,
+      { proposal },
+      logger.DebugContext.walletconnect
+    );
 
-  const receivedTimestamp = Date.now();
-  const { proposer, requiredNamespaces, optionalNamespaces } = proposal.params;
+    const receivedTimestamp = Date.now();
+    const {
+      proposer,
+      requiredNamespaces,
+      optionalNamespaces,
+    } = proposal.params;
 
-  const { chains: requiredChains } = requiredNamespaces.eip155;
-  const { chains: optionalChains } = optionalNamespaces.eip155;
+    const requiredChains = requiredNamespaces.eip155?.chains || [];
+    const optionalChains = optionalNamespaces.eip155?.chains || [];
 
-  const chains = uniq([...(requiredChains || []), ...(optionalChains || [])]);
+    const chains = uniq([...requiredChains, ...optionalChains]);
 
-  // we already checked for eip155 namespace above
-  const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-  const supportedChainIds = chainIds.filter(isSupportedChain);
+    // we already checked for eip155 namespace above
+    const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
+    const supportedChainIds = chainIds.filter(isSupportedChain);
 
-  const peerMeta = proposer.metadata;
-  const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
+    const peerMeta = proposer.metadata;
+    const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
 
-  const routeParams: WalletconnectApprovalSheetRouteParams = {
-    receivedTimestamp,
-    meta: {
-      chainIds: supportedChainIds,
-      dappName,
-      dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
-      dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
-      imageUrl: maybeSignUri(peerMeta?.icons?.[0], { w: 200 }),
-      peerId: proposer.publicKey,
-      isWalletConnectV2: true,
-    },
-    timedOut: false,
-    callback: async (approved, approvedChainId, accountAddress) => {
-      const client = await web3WalletClient;
-      const { id, proposer, requiredNamespaces } = proposal.params;
+    const routeParams: WalletconnectApprovalSheetRouteParams = {
+      receivedTimestamp,
+      meta: {
+        chainIds: supportedChainIds,
+        dappName,
+        dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
+        dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
+        imageUrl: maybeSignUri(peerMeta?.icons?.[0], { w: 200 }),
+        peerId: proposer.publicKey,
+        isWalletConnectV2: true,
+      },
+      timedOut: false,
+      callback: async (approved, approvedChainId, accountAddress) => {
+        const client = await web3WalletClient;
+        const { id, proposer, requiredNamespaces } = proposal.params;
 
-      if (approved) {
-        logger.debug(
-          `WC v2: session approved`,
-          {
-            approved,
-            approvedChainId,
-            accountAddress,
-          },
-          logger.DebugContext.walletconnect
-        );
-
-        // we only support EVM chains rn
-        const requiredNamespace = requiredNamespaces.eip155;
-        /** @see https://chainagnostic.org/CAIPs/caip-2 */
-        const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
-        const namespaces = getApprovedNamespaces({
-          proposal: proposal.params,
-          supportedNamespaces: {
-            eip155: {
-              chains: caip2ChainIds,
-              methods: [
-                ...SUPPORTED_SIGNING_METHODS,
-                ...SUPPORTED_TRANSACTION_METHODS,
-              ],
-              events: requiredNamespace.events,
-              accounts: caip2ChainIds.map(id => `${id}:${accountAddress}`),
+        if (approved) {
+          logger.debug(
+            `WC v2: session approved`,
+            {
+              approved,
+              approvedChainId,
+              accountAddress,
             },
-          },
-        });
+            logger.DebugContext.walletconnect
+          );
 
-        logger.debug(
-          `WC v2: session approved namespaces`,
-          { namespaces },
-          logger.DebugContext.walletconnect
-        );
+          // we only support EVM chains rn
+          const requiredNamespace = requiredNamespaces.eip155;
+          /** @see https://chainagnostic.org/CAIPs/caip-2 */
+          const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(
+            id => `eip155:${id}`
+          );
+          const namespaces = getApprovedNamespaces({
+            proposal: proposal.params,
+            supportedNamespaces: {
+              eip155: {
+                chains: caip2ChainIds,
+                methods: [
+                  ...SUPPORTED_SIGNING_METHODS,
+                  ...SUPPORTED_TRANSACTION_METHODS,
+                ],
+                events: requiredNamespace.events,
+                accounts: caip2ChainIds.map(id => `${id}:${accountAddress}`),
+              },
+            },
+          });
 
-        try {
-          if (namespaces.success) {
-            /**
-             * This is equivalent handling of setPendingRequest and
-             * walletConnectApproveSession, since setPendingRequest is only used
-             * within the /redux/walletconnect handlers
-             *
-             * WC v2 stores existing _pairings_ itself, so we don't need to persist
-             * ourselves
-             */
-            await client.approveSession({
-              id,
-              namespaces: namespaces.result,
+          logger.debug(
+            `WC v2: session approved namespaces`,
+            { namespaces },
+            logger.DebugContext.walletconnect
+          );
+
+          try {
+            if (namespaces.success) {
+              /**
+               * This is equivalent handling of setPendingRequest and
+               * walletConnectApproveSession, since setPendingRequest is only used
+               * within the /redux/walletconnect handlers
+               *
+               * WC v2 stores existing _pairings_ itself, so we don't need to persist
+               * ourselves
+               */
+              await client.approveSession({
+                id,
+                namespaces: namespaces.result,
+              });
+
+              // let the ConnectedDappsSheet know we've got a new one
+              events.emit('walletConnectV2SessionCreated');
+
+              logger.debug(
+                `WC v2: session created`,
+                {},
+                logger.DebugContext.walletconnect
+              );
+
+              analytics.track(analytics.event.wcNewSessionApproved, {
+                dappName: proposer.metadata.name,
+                dappUrl: proposer.metadata.url,
+              });
+
+              maybeGoBackAndClearHasPendingRedirect();
+            } else {
+              await rejectProposal({
+                proposal,
+                reason: 'INVALID_SESSION_SETTLE_REQUEST',
+              });
+
+              showErrorSheet({
+                title: lang.t(T.errors.generic_title),
+                body: `${lang.t(T.errors.generic_error)} \n \n ${
+                  namespaces.error.message
+                }`,
+                sheetHeight: 400,
+                onClose: maybeGoBackAndClearHasPendingRedirect,
+              });
+            }
+          } catch (e) {
+            setHasPendingDeeplinkPendingRedirect(false);
+
+            Alert({
+              buttons: [
+                {
+                  style: 'cancel',
+                  text: lang.t(lang.l.walletconnect.go_back),
+                },
+              ],
+              message: lang.t(lang.l.walletconnect.failed_to_connect_to, {
+                appName: dappName,
+              }),
+              title: lang.t(lang.l.walletconnect.connection_failed),
             });
 
-            // let the ConnectedDappsSheet know we've got a new one
-            events.emit('walletConnectV2SessionCreated');
-
-            logger.debug(
-              `WC v2: session created`,
-              {},
-              logger.DebugContext.walletconnect
-            );
-
-            analytics.track(analytics.event.wcNewSessionApproved, {
-              dappName: proposer.metadata.name,
-              dappUrl: proposer.metadata.url,
-            });
-
-            maybeGoBackAndClearHasPendingRedirect();
-          } else {
-            await rejectProposal({
-              proposal,
-              reason: 'INVALID_SESSION_SETTLE_REQUEST',
-            });
-
-            showErrorSheet({
-              title: lang.t(T.errors.generic_title),
-              body: `${lang.t(T.errors.generic_error)} \n \n ${
-                namespaces.error.message
-              }`,
-              sheetHeight: 400,
-              onClose: maybeGoBackAndClearHasPendingRedirect,
+            logger.error(new RainbowError(`WC v2: session approval failed`), {
+              error: (e as Error).message,
             });
           }
-        } catch (e) {
-          setHasPendingDeeplinkPendingRedirect(false);
-
-          Alert({
-            buttons: [
-              {
-                style: 'cancel',
-                text: lang.t(lang.l.walletconnect.go_back),
-              },
-            ],
-            message: lang.t(lang.l.walletconnect.failed_to_connect_to, {
-              appName: dappName,
-            }),
-            title: lang.t(lang.l.walletconnect.connection_failed),
-          });
-
-          logger.error(new RainbowError(`WC v2: session approval failed`), {
-            error: (e as Error).message,
-          });
+        } else if (!approved) {
+          await rejectProposal({ proposal, reason: 'USER_REJECTED' });
         }
-      } else if (!approved) {
-        await rejectProposal({ proposal, reason: 'USER_REJECTED' });
-      }
-    },
-  };
+      },
+    };
 
-  /**
-   * We might see this at any point in the app, so only use `replace`
-   * sometimes if the user is already looking at the approval sheet.
-   */
-  Navigation.handleAction(
-    Routes.WALLET_CONNECT_APPROVAL_SHEET,
-    routeParams,
-    getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-  );
+    /**
+     * We might see this at any point in the app, so only use `replace`
+     * sometimes if the user is already looking at the approval sheet.
+     */
+    Navigation.handleAction(
+      Routes.WALLET_CONNECT_APPROVAL_SHEET,
+      routeParams,
+      getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+    );
+  } catch (error) {
+    logger.error(
+      new RainbowError(`WC v2: session request catch all`, {
+        ...(error as Error),
+      })
+    );
+  }
 }
 
 export async function onSessionRequest(
