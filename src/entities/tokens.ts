@@ -30,10 +30,6 @@ export interface ZerionAsset {
   price?: ZerionAssetPrice | null;
 }
 
-export interface SavingsAsset extends Asset {
-  contractAddress: string;
-}
-
 export interface AssetContract {
   address?: string;
   name?: string;
