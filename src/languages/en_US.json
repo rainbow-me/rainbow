@@ -1059,6 +1059,7 @@
           "x_ago": "%{timeElapsed} ago",
           "one_mint_past_hour": "1 mint past hour",
           "x_mints_past_hour": "%{numMints} mints past hour",
+          "x_mints": "%{numMints} mints",
           "mint": "Mint",
           "free": "FREE"
         }

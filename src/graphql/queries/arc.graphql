@@ -106,7 +106,7 @@ fragment mintStatus on MintStatus {
   price
 }
 
-fragment nftSample on NFTSample {
+fragment mintedNFT on MintedNFT {
   tokenID
   imageURI
   mimeType
@@ -131,7 +131,7 @@ fragment mintableCollection on MintableCollection {
   totalMints
   maxSupply
   recentMints {
-    ...nftSample
+    ...mintedNFT
   }
   mintStatus {
     ...mintStatus
@@ -150,8 +150,8 @@ fragment mintableCollectionResult on MintableCollectionResult {
   }
 }
 
-query getMints($walletAddress: String!) {
-  getMints(walletAddress: $walletAddress) {
+query getMintableCollections($walletAddress: String!) {
+  getMintableCollections(walletAddress: $walletAddress) {
     collections {
       ...mintableCollection
     }

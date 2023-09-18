@@ -11,7 +11,7 @@ import {
 } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
-import { NftSample } from '@/graphql/__generated__/arc';
+import { MintedNft } from '@/graphql/__generated__/arc';
 import { Media } from '@/components/Media';
 import { IS_IOS } from '@/env';
 
@@ -57,7 +57,7 @@ export const Placeholder = () => {
   );
 };
 
-export function RecentMintCell({ recentMint }: { recentMint: NftSample }) {
+export function RecentMintCell({ recentMint }: { recentMint: MintedNft }) {
   const { isDarkMode } = useTheme();
 
   const [mediaRendered, setMediaRendered] = useState(false);

@@ -1,20 +1,20 @@
-import { MintableCollection, NftSample } from '@/graphql/__generated__/arc';
+import { MintableCollection, MintedNft } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import {
   Bleed,
   Box,
-  Column,
-  Columns,
   Cover,
-  DebugLayout,
   Inline,
   Inset,
   Stack,
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import {
+  abbreviateNumber,
+  convertRawAmountToRoundedDecimal,
+} from '@/helpers/utilities';
 import { getNetworkObj } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { CarouselCard } from '@/components/cards/CarouselCard';
@@ -32,7 +32,9 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
 
   const [timeElapsed, setTimeElapsed] = useState(
-    getTimeElapsedFromDate(new Date(collection.firstEvent))
+    collection.firstEvent
+      ? getTimeElapsedFromDate(new Date(collection.firstEvent))
+      : undefined
   );
 
   const separator = useForegroundColor('separator');
@@ -52,18 +54,13 @@ export function Card({ collection }: { collection: MintableCollection }) {
 
   // update elapsed time every minute if it's less than an hour
   useEffect(() => {
-    if (timeElapsed[timeElapsed.length - 1] === 'm') {
+    if (timeElapsed && timeElapsed[timeElapsed.length - 1] === 'm') {
       const interval = setInterval(() => {
         setTimeElapsed(getTimeElapsedFromDate(new Date(collection.firstEvent)));
       }, 60_000);
       return () => clearInterval(interval);
     }
   });
-
-  if (collection.name.includes('Baby Burn')) {
-    console.log(collection.recentMints[0].imageURI);
-    console.log(collection.recentMints[0].mimeType);
-  }
 
   return (
     <View style={{ paddingHorizontal: 20, marginVertical: 20 }}>
@@ -101,12 +98,16 @@ export function Card({ collection }: { collection: MintableCollection }) {
               </Text>
               <Inline alignVertical="center">
                 <Text size="13pt" weight="semibold" color="labelTertiary">
-                  {i18n.t(i18n.l.mints.mints_sheet.card.x_ago, {
-                    timeElapsed,
-                  })}
-                </Text>
-                <Text size="13pt" weight="semibold" color="labelTertiary">
-                  {' · '}
+                  {timeElapsed
+                    ? `${i18n.t(i18n.l.mints.mints_sheet.card.x_ago, {
+                        timeElapsed,
+                      })} · `
+                    : ''}
+                  {collection.totalMints
+                    ? `${i18n.t(i18n.l.mints.mints_sheet.card.x_mints, {
+                        numMints: abbreviateNumber(collection.totalMints),
+                      })} · `
+                    : ''}
                   {collection.mintsLastHour === 1
                     ? i18n.t(i18n.l.mints.mints_sheet.card.one_mint_past_hour)
                     : i18n.t(i18n.l.mints.mints_sheet.card.x_mints_past_hour, {
@@ -120,7 +121,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
         data={collection.recentMints}
         carouselItem={{
           renderItem: ({ item }) => <RecentMintCell recentMint={item} />,
-          keyExtractor: (item: NftSample) => item.tokenID,
+          keyExtractor: (item: MintedNft) => item.tokenID,
           placeholder: <Placeholder />,
           width: NFT_IMAGE_SIZE,
           height: NFT_IMAGE_SIZE,

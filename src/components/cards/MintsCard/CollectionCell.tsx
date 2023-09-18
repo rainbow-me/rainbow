@@ -106,68 +106,73 @@ export function CollectionCell({
       }}
       style={{ width: NFT_IMAGE_SIZE }}
     >
-      {!mediaRendered && (
-        <Box
-          style={{
-            width: NFT_IMAGE_SIZE,
-            height: NFT_IMAGE_SIZE,
-          }}
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={12}
-          background="fillSecondary"
-        >
-          <Text
-            align="center"
-            color="labelQuaternary"
-            size="20pt"
-            weight="semibold"
+      <View
+        style={{
+          width: NFT_IMAGE_SIZE,
+          height: NFT_IMAGE_SIZE,
+        }}
+      >
+        {!mediaRendered && (
+          <Box
+            width="full"
+            height="full"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius={12}
+            background="fillSecondary"
           >
-            􀣵
-          </Text>
-        </Box>
-      )}
-      {!!imageUrl && (
-        <Cover>
-          <View
-            style={{
-              shadowColor: globalColors.grey100,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.02,
-              shadowRadius: 3,
-            }}
-          >
-            <View
-              style={
-                IS_IOS
-                  ? {
-                      shadowColor: globalColors.grey100,
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: 0.24,
-                      shadowRadius: 9,
-                    }
-                  : {
-                      shadowColor: globalColors.grey100,
-                      elevation: 12,
-                      shadowOpacity: isDarkMode ? 1 : 0.6,
-                    }
-              }
+            <Text
+              align="center"
+              color="labelQuaternary"
+              size="20pt"
+              weight="semibold"
             >
-              <Media
-                onLayout={() => setMediaRendered(true)}
-                onError={() => setMediaRendered(false)}
-                url={imageUrl}
-                mimeType={mimeType ?? undefined}
-                style={{
-                  width: NFT_IMAGE_SIZE,
-                  height: NFT_IMAGE_SIZE,
-                  borderRadius: 12,
-                }}
-              />
+              􀣵
+            </Text>
+          </Box>
+        )}
+        {!!imageUrl && (
+          <Cover>
+            <View
+              style={{
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.02,
+                shadowRadius: 3,
+              }}
+            >
+              <View
+                style={
+                  IS_IOS
+                    ? {
+                        shadowColor: globalColors.grey100,
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.24,
+                        shadowRadius: 9,
+                      }
+                    : {
+                        shadowColor: globalColors.grey100,
+                        elevation: 12,
+                        shadowOpacity: isDarkMode ? 1 : 0.6,
+                      }
+                }
+              >
+                <Media
+                  onLayout={() => setMediaRendered(true)}
+                  onError={() => setMediaRendered(false)}
+                  url={imageUrl}
+                  mimeType={mimeType ?? undefined}
+                  style={{
+                    width: NFT_IMAGE_SIZE,
+                    height: NFT_IMAGE_SIZE,
+                    borderRadius: 12,
+                  }}
+                />
+              </View>
             </View>
-          </View>
-        </Cover>
-      )}
+          </Cover>
+        )}
+      </View>
       <View
         style={{
           paddingBottom: 10,
