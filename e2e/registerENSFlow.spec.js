@@ -262,6 +262,9 @@ describe.skip('Register ENS Flow', () => {
     await Helpers.checkIfVisible('ens-registration-price');
   });
 
+  // FIXME: This is the problem with a review button being tapped but detox not
+  // registering the action and timing out and leaving the state of the app in
+  // a place where all following tests are failing.
   it('Should go to view to set records', async () => {
     await Helpers.checkIfVisible('ens-search-continue-action-button');
     await Helpers.waitAndTap('ens-search-continue-action-button');
@@ -281,11 +284,8 @@ describe.skip('Register ENS Flow', () => {
     await Helpers.tapByText('CryptoKitties');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.checkIfVisible('ens-assign-records-review-action-button');
-    console.log('found the button');
-    await Helpers.delay(5000);
-    console.log('about to tap');
+    await Helpers.delay(2000);
     await Helpers.waitAndTap('ens-assign-records-review-action-button');
-    console.log('tapped');
   });
 
   it('Should display change gas to Urgent', async () => {
