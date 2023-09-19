@@ -29,18 +29,6 @@ export const compoundClientDeprecated = new ApolloClient({
   }),
 });
 
-/**
- * @deprecated Use the `@/graphql` module for new GraphQL queries.
- * @link https://github.com/rainbow-me/rainbow/blob/develop/src/graphql/README.md
- * */
-export const uniswapClientDeprecated = new ApolloClient({
-  ...defaultOptions,
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
-  }),
-});
-
 export class ApolloClientWithTimeout extends ApolloClient<any> {
   queryWithTimeout<T = any, TVariables = OperationVariables>(
     options: QueryOptions<TVariables, T>,

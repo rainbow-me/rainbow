@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
-import { updatePositions } from '@/redux/usersPositions';
 import logger from '@/utils/logger';
 
 export default function useInitializeAccountData() {
@@ -14,11 +13,6 @@ export default function useInitializeAccountData() {
       InteractionManager.runAfterInteractions(() => {
         logger.sentry('Initialize account data');
         dispatch(explorerInit());
-      });
-
-      InteractionManager.runAfterInteractions(async () => {
-        logger.sentry('Initialize pool positions');
-        dispatch(updatePositions());
       });
     } catch (error) {
       logger.sentry('Error initializing account data');

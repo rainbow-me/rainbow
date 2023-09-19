@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import NetworkTypes from '../helpers/networkTypes';
-import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
@@ -57,7 +56,6 @@ export default function useRefreshAccountData() {
         ? dispatch(fetchWalletENSAvatars())
         : null;
       const wc = dispatch(walletConnectLoadState());
-      const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
@@ -65,7 +63,6 @@ export default function useRefreshAccountData() {
         // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'true' is not assignable to param... Remove this comment to see the full error message
         refetchSavings(true),
         wc,
-        uniswapPositions,
       ]);
     } catch (error) {
       logger.log('Error refreshing data', error);
