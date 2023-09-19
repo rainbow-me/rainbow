@@ -1,6 +1,7 @@
 import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
 import networkTypes from '@/helpers/networkTypes';
+import { Language } from '@/languages';
 
 export const IMAGE_METADATA = 'imageMetadata';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
@@ -31,7 +32,7 @@ export const getPinAuthAttemptsLeft = () =>
 export const savePinAuthAttemptsLeft = (amount: any) =>
   saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
 
-export const getLanguage = () => getGlobal(LANGUAGE, 'en');
+export const getLanguage = () => getGlobal(LANGUAGE, Language.EN_US);
 
 export const saveLanguage = (language: any) => saveGlobal(LANGUAGE, language);
 

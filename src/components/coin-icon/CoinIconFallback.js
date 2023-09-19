@@ -1,151 +1,131 @@
-import React, { useMemo } from 'react';
-import { Image } from 'react-native';
-import { useTheme } from '../../theme/ThemeContext';
-import { Centered } from '../layout';
-import EthIcon from '@/assets/eth-icon.png';
-import { AssetTypes } from '@/entities';
-import { useBooleanState, useColorForAsset } from '@/hooks';
-import { ImageWithCachedMetadata } from '@/components/images';
-import styled from '@/styled-thing';
-import { borders, fonts, position, shadow } from '@/styles';
-import {
-  FallbackIcon,
-  getUrlForTrustIconFallback,
-  isETH,
-  magicMemo,
-} from '@/utils';
+import React, { useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { AssetType } from '@/entities';
+import { useForceUpdate } from '@/hooks';
+import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
+import { ThemeContextProps } from '@/theme';
+import { getUrlForTrustIconFallback } from '@/utils';
 
-const fallbackTextStyles = {
-  fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold,
-  letterSpacing: fonts.letterSpacing.roundedTight,
-  marginBottom: 0.5,
-  textAlign: 'center',
+const ImageState = {
+  ERROR: 'ERROR',
+  LOADED: 'LOADED',
+  NOT_FOUND: 'NOT_FOUND',
 };
 
-const FallbackImage = styled(ImageWithCachedMetadata)(
-  ({
-    size,
-    layoutSize,
-    theme: { colors },
-    shadowColor: color,
-    shadowOffset: { height: y, width: x },
-    shadowOpacity: opacity,
-    shadowRadius: radius,
-    showImage,
-  }) => ({
-    height: layoutSize ?? size,
-    width: layoutSize ?? size,
-    ...position.coverAsObject,
-    ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
-    backgroundColor: showImage ? colors.white : colors.transparent,
-    borderRadius: size / 2,
-    overflow: 'visible',
-  })
-);
+const imagesCache = {};
 
-// If th size is e.g., 20, we can use 40 that is the default icon size in the (used in discover and wallet list)
-const getIconSize = size => {
-  if (40 % size === 0) {
-    return 40;
-  }
-  return size;
-};
-
-function WrappedFallbackImage({
-  color,
-  elevation = 6,
-  shadowOpacity,
-  showImage,
-  size,
-  eth,
-  type,
-  ...props
-}) {
-  const { colors } = useTheme();
-  return (
-    <Centered
-      {...props}
-      {...position.coverAsObject}
-      {...borders.buildCircleAsObject(size)}
-      backgroundColor={colors.alpha(color || colors.dark, shadowOpacity || 0.3)}
-      elevation={showImage ? elevation : 0}
-      style={{ overflow: 'hidden' }}
-    >
-      <FallbackImage
-        as={eth ? Image : undefined}
-        source={EthIcon}
-        {...props}
-        overlayColor={color || colors.dark}
-        shadowOpacity={shadowOpacity}
-        showImage={showImage}
-        size={getIconSize(size)}
-        type={type}
-      />
-    </Centered>
-  );
-}
-
-const FallbackImageElement = android ? WrappedFallbackImage : FallbackImage;
-
-const CoinIconFallback = fallbackProps => {
+export const CoinIconFallback = fallbackProps => {
   const {
-    address = '',
-    mainnet_address,
+    address,
+    assetType,
     height,
     symbol,
+    shadowColor,
+    theme,
+    children,
+    size = 40,
     width,
-    type,
   } = fallbackProps;
 
-  const [showImage, showFallbackImage, hideFallbackImage] = useBooleanState(
-    false
-  );
+  const { colors } = theme;
+  const imageUrl = getUrlForTrustIconFallback(address, assetType);
 
-  const fallbackIconColor = useColorForAsset({
-    address: mainnet_address || address,
-    type: mainnet_address ? AssetTypes.token : type,
-  });
-  const imageUrl = useMemo(
-    () =>
-      getUrlForTrustIconFallback(
-        mainnet_address || address,
-        mainnet_address ? AssetTypes.token : type
-      ),
-    [address, mainnet_address, type]
-  );
+  const key = `${symbol}-${imageUrl}`;
 
-  const eth = isETH(address);
+  const shouldShowImage = imagesCache[key] !== ImageState.NOT_FOUND;
+  const isLoaded = imagesCache[key] === ImageState.LOADED;
+
+  // we store data inside the object outside the component
+  // so we can share it between component instances
+  // but we still want the component to pick up new changes
+  const forceUpdate = useForceUpdate();
+
+  const onLoad = useCallback(() => {
+    if (imagesCache[key] === ImageState.LOADED) {
+      return;
+    }
+
+    imagesCache[key] = ImageState.LOADED;
+    forceUpdate();
+  }, [key, forceUpdate]);
+  const onError = useCallback(
+    // @ts-expect-error passed to an untyped JS component
+    err => {
+      const newError = err?.nativeEvent?.message?.includes('404')
+        ? ImageState.NOT_FOUND
+        : ImageState.ERROR;
+
+      if (imagesCache[key] === newError) {
+        return;
+      } else {
+        imagesCache[key] = newError;
+      }
+
+      forceUpdate();
+    },
+    [key, forceUpdate]
+  );
 
   return (
-    <Centered height={height} width={width}>
-      {!showImage && (
-        <FallbackIcon
+    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor }]}>
+      {shouldShowImage && (
+        <ImageWithCachedMetadata
+          cache={ImgixImage.cacheControl.immutable}
+          imageUrl={imageUrl}
+          onError={onError}
+          onLoad={onLoad}
+          size={size}
+          style={[
+            sx.coinIconFallback,
+            isLoaded && { backgroundColor: colors.white },
+            { height, width, borderRadius: height / 2 },
+          ]}
           {...fallbackProps}
-          color={fallbackIconColor}
-          showImage={showImage}
-          symbol={symbol || ''}
-          textStyles={fallbackTextStyles}
         />
       )}
-      <FallbackImageElement
-        {...fallbackProps}
-        color={fallbackIconColor}
-        eth={eth}
-        imageUrl={imageUrl}
-        onError={hideFallbackImage}
-        onLoad={showFallbackImage}
-        showImage={showImage}
-        {...(ios && { layoutSize: width })}
-        size={ios ? getIconSize(width) : width}
-      />
-    </Centered>
+
+      {!isLoaded && <View style={sx.fallbackWrapper}>{children?.()}</View>}
+    </View>
   );
 };
 
-export default magicMemo(CoinIconFallback, [
-  'address',
-  'type',
-  'style',
-  'symbol',
-]);
+const sx = StyleSheet.create({
+  coinIconContainer: {
+    alignItems: 'center',
+
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  coinIconFallback: {
+    overflow: 'hidden',
+  },
+  container: {
+    elevation: 6,
+
+    overflow: 'visible',
+    paddingTop: 9,
+  },
+  contract: {},
+  fallbackWrapper: {
+    left: 0,
+    position: 'absolute',
+    top: 0,
+  },
+  reactCoinIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reactCoinIconImage: {
+    height: '100%',
+    width: '100%',
+  },
+  withShadow: {
+    elevation: 6,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+});

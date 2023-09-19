@@ -33,7 +33,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       txHistory: true,
       flashbots: false,
       walletconnect: true,
-      swaps: config.base_swaps_enabled,
+      swaps: true,
       nfts: true,
       savings: false,
       pools: false,
@@ -41,9 +41,14 @@ export const getBaseNetworkObject = (): NetworkProperties => {
     },
 
     gas: {
-      speeds: [gasUtils.NORMAL],
+      speeds: [
+        gasUtils.NORMAL,
+        gasUtils.FAST,
+        gasUtils.URGENT,
+        gasUtils.CUSTOM,
+      ],
       // ?
-      gasType: 'legacy',
+      gasType: 'eip1559',
       roundGasDisplay: true,
       OptimismTxFee: true,
 

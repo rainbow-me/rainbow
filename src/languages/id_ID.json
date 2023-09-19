@@ -1,0 +1,2248 @@
+{
+  "translation": {
+    "account": {
+      "hide": "Sembunyikan",
+      "label_24h": "24h",
+      "label_asset": "Aset",
+      "label_price": "Harga",
+      "label_quantity": "Kuantitas",
+      "label_status": "Status",
+      "label_total": "Total",
+      "low_market_value": "dengan nilai pasar rendah",
+      "no_market_value": "tanpa nilai pasar",
+      "show": "Tampilkan",
+      "show_all": "Tampilkan semua",
+      "show_less": "Tampilkan lebih sedikit",
+      "tab_balances": "Saldo",
+      "tab_balances_empty_state": "Saldo",
+      "tab_balances_tooltip": "Saldo Ethereum dan Token",
+      "tab_collectibles": "Koleksi",
+      "tab_interactions": "Interaksi",
+      "tab_interactions_tooltip": "Interaksi Kontrak Cerdas",
+      "tab_investments": "Kolam",
+      "tab_savings": "Tabungan",
+      "tab_showcase": "Pameran",
+      "tab_positions": "Posisi",
+      "tab_transactions": "Transaksi",
+      "tab_transactions_tooltip": "Transaksi dan Transfer Token",
+      "tab_uniquetokens": "Token Unik",
+      "tab_uniquetokens_tooltip": "Token Unik",
+      "token": "token",
+      "tokens": "token",
+      "tx_failed": "Gagal",
+      "tx_fee": "Biaya",
+      "tx_from": "Dari",
+      "tx_from_lowercase": "dari",
+      "tx_hash": "Hash Transaksi",
+      "tx_pending": "Tertunda",
+      "tx_received": "Diterima",
+      "tx_self": "Sendiri",
+      "tx_sent": "Dikirim",
+      "tx_timestamp": "Timestamp",
+      "tx_to": "Ke",
+      "tx_to_lowercase": "ke",
+      "unknown_token": "Token Tidak Dikenal"
+    },
+    "activity_list": {
+      "empty_state": {
+        "default_label": "Belum ada transaksi",
+        "recycler_label": "Belum ada transaksi",
+        "testnet_label": "Riwayat transaksi testnet Anda dimulai sekarang!"
+      }
+    },
+    "add_funds": {
+      "eth": {
+        "or_send_eth": "atau kirim ETH ke dompet Anda",
+        "send_from_another_source": "Kirim dari Coinbase atau bursa lainnya—atau minta dari seorang teman!"
+      },
+      "limit_left_this_week": "$%{remainingLimit} tersisa minggu ini",
+      "limit_left_this_year": "$%{remainingLimit} tersisa tahun ini",
+      "test_eth": {
+        "add_from_faucet": "Tambahkan dari keran",
+        "or_send_test_eth": "atau kirim ETH uji ke dompet Anda",
+        "request_test_eth": "Minta uji coba ETH melalui %{testnetName} keran",
+        "send_test_eth_from_another_source": "Kirim uji coba ETH dari dompet %{testnetName} lainnya—atau minta teman Anda!"
+      },
+      "to_get_started_android": "Untuk memulai, beli beberapa ETH",
+      "to_get_started_ios": "Untuk memulai, beli beberapa ETH dengan Apple Pay",
+      "weekly_limit_reached": "Batas mingguan telah tercapai",
+      "yearly_limit_reached": "Batas tahunan telah tercapai"
+    },
+    "assets": {
+      "unkown_token": "Token Tidak Dikenal"
+    },
+    "avatar_builder": {
+      "emoji_categories": {
+        "activities": "Aktivitas",
+        "animals": "Hewan & Alam",
+        "flags": "Bendera",
+        "food": "Makanan & Minuman",
+        "objects": "Objek",
+        "smileys": "Smileys & Orang",
+        "symbols": "Simbol",
+        "travel": "Perjalanan & Tempat"
+      }
+    },
+    "back_up": {
+      "errors": {
+        "keychain_access": "Anda perlu otentikasi untuk melanjutkan proses Backup",
+        "decrypting_data": "Password salah! Silakan coba lagi.",
+        "no_backups_found": "Kami tidak dapat menemukan backup Anda sebelumnya!",
+        "cant_get_encrypted_data": "Kami tidak dapat mengakses backup Anda pada saat ini. Silakan coba lagi nanti.",
+        "missing_pin": "Terjadi kesalahan saat memproses kode PIN Anda. Silakan coba lagi nanti.",
+        "generic": "Kesalahan saat mencoba untuk cadangan. kode kesalahan: %{errorCodes}"
+      },
+      "wrong_pin": "Kode PIN yang anda masukkan salah dan kami tidak bisa membuat cadangan. Silahkan coba lagi dengan kode yang benar.",
+      "already_backed_up": {
+        "backed_up": "Dibackup",
+        "backed_up_manually": "Dibackup secara manual",
+        "backed_up_message": "Dompet anda telah dibackup",
+        "imported": "Diimport",
+        "imported_message": "Dompet anda telah diimport"
+      },
+      "backup_deleted_successfully": "Backup Dihapus dengan Sukses",
+      "cloud": {
+        "back_up_to_platform": "Backup ke %{cloudPlatformName}",
+        "manage_platform_backups": "Kelola %{cloudPlatformName} Backup",
+        "password": {
+          "a_password_youll_remember": "Silahkan gunakan kata sandi yang akan anda ingat.",
+          "backup_password": "Kata Sandi Backup",
+          "choose_a_password": "Pilih sebuah password",
+          "confirm_backup": "Konfirmasi Backup",
+          "confirm_password": "Konfirmasi password",
+          "confirm_placeholder": "Konfirmasi Password",
+          "it_cant_be_recovered": "Ini tidak bisa dipulihkan!",
+          "minimum_characters": "Minimum %{minimumLength} karakter",
+          "passwords_dont_match": "Password tidak cocok",
+          "strength": {
+            "level1": "Password lemah",
+            "level2": "Password baik",
+            "level3": "Password hebat",
+            "level4": "Password kuat"
+          },
+          "use_a_longer_password": "Gunakan password yang lebih panjang"
+        }
+      },
+      "confirm_password": {
+        "add_to_cloud_platform": "Tambahkan ke %{cloudPlatformName} Cadangan",
+        "backup_password_placeholder": "Kata Sandi Backup",
+        "confirm_backup": "Konfirmasi Cadangan",
+        "enter_backup_description": "Untuk menambahkan dompet ini ke cadangan %{cloudPlatformName} Anda, masukkan kata sandi cadangan yang ada",
+        "enter_backup_password": "Masukkan kata sandi cadangan"
+      },
+      "explainers": {
+        "backup": "Jangan lupa kata sandi ini! Ini berbeda dari kata sandi %{cloudPlatformName} Anda, dan Anda harus menyimpannya di lokasi yang aman.\n\nAnda akan membutuhkannya untuk memulihkan dompet Anda dari cadangan di masa depan.",
+        "if_lose_cloud": "Jika Anda kehilangan perangkat ini, Anda dapat memulihkan cadangan dompet terenkripsi Anda dari %{cloudPlatformName}.",
+        "if_lose_imported": "Jika Anda kehilangan perangkat ini, Anda dapat memulihkan dompet Anda dengan kunci yang Anda impor sebelumnya.",
+        "if_lose_manual": "Jika Anda kehilangan perangkat ini, Anda dapat memulihkan dompet Anda dengan frase rahasia yang Anda simpan."
+      },
+      "manual": {
+        "label": "Frase rahasia Anda",
+        "pkey": {
+          "confirm_save": "Saya telah menyimpan kunci saya",
+          "save_them": "Salin dan simpan di manajer kata sandi Anda, atau di tempat lain yang aman.",
+          "these_keys": "Ini adalah kunci untuk dompet Anda!"
+        },
+        "seed": {
+          "confirm_save": "Saya telah menyimpan kata-kata ini",
+          "save_them": "Tuliskan atau simpan di manajer sandi Anda.",
+          "these_keys": "Kata-kata ini adalah kunci dompet Anda!"
+        }
+      },
+      "needs_backup": {
+        "back_up_your_wallet": "Cadangkan dompet Anda",
+        "dont_risk": "Jangan resikokan uang Anda! Cadangkan dompet Anda sehingga Anda dapat memulihkannya jika Anda kehilangan perangkat ini.",
+        "not_backed_up": "Belum dicadangkan"
+      },
+      "restore_cloud": {
+        "backup_password_placeholder": "Kata Sandi Backup",
+        "confirm_backup": "Konfirmasi Cadangan",
+        "enter_backup_password": "Masukkan kata sandi cadangan",
+        "enter_backup_password_description": "Untuk memulihkan dompet Anda, masukkan sandi cadangan yang Anda buat",
+        "error_while_restoring": "Kesalahan saat memulihkan cadangan",
+        "incorrect_pin_code": "Kode PIN tidak benar",
+        "incorrect_password": "Kata Sandi tidak benar",
+        "restore_from_cloud_platform": "Pulihkan dari %{cloudPlatformName}"
+      },
+      "secret": {
+        "anyone_who_has_these": "Siapa pun yang memiliki kata-kata ini dapat mengakses seluruh dompet Anda!",
+        "biometrically_secured": "Akun Anda telah diamankan dengan data biometrik, seperti sidik jari atau identifikasi wajah. Untuk melihat frase pemulihan Anda, hidupkan biometrik di pengaturan ponsel Anda.",
+        "no_seed_phrase": "Kami tidak bisa mengambil frase seed Anda. Pastikan Anda telah diautentikasi dengan benar menggunakan data biometrik, seperti sidik jari Anda atau identifikasi wajah, atau memasukkan kode PIN Anda dengan benar.",
+        "copy_to_clipboard": "Salin ke papan klip",
+        "for_your_eyes_only": "Hanya untuk mata Anda saja",
+        "private_key_title": "Kunci Pribadi",
+        "secret_phrase_title": "Frase Rahasia",
+        "show_recovery": "Tampilkan Pemulihan %{typeName}",
+        "view_private_key": "Lihat kunci pribadi",
+        "view_secret_phrase": "Lihat frase rahasia",
+        "you_need_to_authenticate": "Anda perlu otentikasi untuk mengakses pemulihan Anda %{typeName}"
+      }
+    },
+    "bluetooth": {
+      "powered_off_alert": {
+        "title": "Bluetooth mati",
+        "message": "Silahkan hidupkan Bluetooth untuk menggunakan fitur ini",
+        "open_settings": "Buka Pengaturan",
+        "cancel": "Batal"
+      },
+      "permissions_alert": {
+        "title": "Izin Bluetooth",
+        "message": "Silahkan aktifkan izin Bluetooth di pengaturan Anda untuk menggunakan fitur ini",
+        "open_settings": "Buka Pengaturan",
+        "cancel": "Batal"
+      }
+    },
+    "button": {
+      "add": "Tambah",
+      "add_cash": "Tambahkan Uang",
+      "add_to_list": "Tambahkan ke Daftar",
+      "all": "Semua",
+      "attempt_cancellation": "Coba Batalkan",
+      "buy_eth": "Beli Ethereum",
+      "cancel": "Batal",
+      "close": "Tutup",
+      "confirm": "Konfirmasi",
+      "confirm_exchange": {
+        "deposit": "Tahan untuk Deposit",
+        "enter_amount": "Masukkan Jumlah",
+        "fetching_quote": "Mengambil Kutipan",
+        "insufficient_eth": "ETH Tidak Cukup",
+        "insufficient_bnb": "BNB Tidak Cukup",
+        "insufficient_funds": "Dana Tidak Cukup",
+        "insufficient_liquidity": "􀅵 Likuiditas Tidak Cukup",
+        "fee_on_transfer": "􀅵 Biaya pada Token Transfer",
+        "no_route_found": "􀅵 Tidak ada rute yang ditemukan",
+        "insufficient_matic": "MATIC Tidak Cukup",
+        "insufficient_token": "Tidak Cukup %{tokenName}",
+        "invalid_fee": "Biaya Tidak Valid",
+        "invalid_fee_lowercase": "biaya tidak valid",
+        "loading": "Memuat...",
+        "no_quote_available": "􀅵 Tidak Ada Kutipan Tersedia",
+        "review": "Tinjau",
+        "submitting": "Mengajukan",
+        "swap": "Tahan untuk Tukar",
+        "bridge": "Tahan untuk Jembatan",
+        "swap_anyway": "Tukar Saja",
+        "symbol_balance_too_low": "%{symbol} saldo terlalu rendah",
+        "view_details": "Lihat Detail",
+        "withdraw": "Tahan untuk Tarik"
+      },
+      "connect": "Hubungkan",
+      "connect_walletconnect": "Gunakan WalletConnect",
+      "continue": "Lanjutkan",
+      "delete": "Hapus",
+      "dismiss": "Tutup",
+      "disconnect_account": "Keluar",
+      "donate": "Donasi ETH",
+      "done": "Selesai",
+      "edit": "Edit",
+      "exchange": "Pertukaran",
+      "exchange_again": "Tukar Lagi",
+      "exchange_search_placeholder": "Cari token",
+      "exchange_search_placeholder_network": "Cari token pada %{network}",
+      "go_back": "Kembali",
+      "go_back_lowercase": "Kembali",
+      "got_it": "Mengerti",
+      "hide": "Sembunyikan",
+      "hold_to_authorize": {
+        "authorizing": "Mengotorisasi",
+        "confirming_on_ledger": "Mengkonfirmasi di Ledger",
+        "hold_keyword": "Tahan",
+        "tap_keyword": "Ketuk"
+      },
+      "hold_to_send": "Tahan untuk Mengirim",
+      "import": "Impor",
+      "learn_more": "Pelajari lebih lanjut",
+      "less": "Kurang",
+      "loading": "Memuat",
+      "more": "Lebih",
+      "my_qr_code": "Kode QR Saya",
+      "next": "Selanjutnya",
+      "no_thanks": "Tidak, terima kasih",
+      "notify_me": "Dapatkan notifikasi",
+      "offline": "Offline",
+      "ok": "OK",
+      "okay": "Baik",
+      "paste": "Tempel",
+      "paste_address": "Tempel",
+      "paste_seed_phrase": "Tempel",
+      "pin": "Pin",
+      "proceed": "Lanjutkan",
+      "proceed_anyway": "Lanjutkan Saja",
+      "receive": "Terima",
+      "remove": "Hapus",
+      "save": "Simpan",
+      "send": "Kirim",
+      "send_another": "Kirim Lagi",
+      "share": "Bagikan",
+      "swap": "Tukar",
+      "try_again": "Coba lagi",
+      "unhide": "Batal Sembunyikan",
+      "unpin": "Lepaskan Pin",
+      "view": "Lihat",
+      "watch_this_wallet": "Pantau Dompet ini",
+      "hidden": "Tersembunyi"
+    },
+    "cards": {
+      "dpi": {
+        "title": "Indeks DeFi Pulse",
+        "body": "Semua token keuangan terdesentralisasi teratas dalam satu. Lacak industri.",
+        "view": "Lihat"
+      },
+      "ens_create_profile": {
+        "title": "Buat profil ENS Anda",
+        "body": "Ganti alamat dompet Anda dengan profil yang sepenuhnya dimiliki oleh Anda."
+      },
+      "ens_search": {
+        "mini_title": "ENS",
+        "title": "Daftarkan nama .eth"
+      },
+      "eth": {
+        "today": "hari ini"
+      },
+      "gas": {
+        "average": "Rata-rata",
+        "gwei": "Gwei",
+        "high": "Tinggi",
+        "loading": "Memuat…",
+        "low": "Rendah",
+        "network_fees": "Biaya jaringan",
+        "surging": "Meningkat tajam",
+        "very_low": "Sangat rendah"
+      },
+      "learn": {
+        "learn": "Belajar",
+        "cards": {
+          "get_started": {
+            "title": "Mulai dengan Rainbow",
+            "description": "Selamat datang di Rainbow! Kami sangat senang Anda berada di sini. Kami telah membuat panduan ini untuk membantu Anda memahami dasar-dasar Rainbow dan memulai perjalanan Web3 dan Ethereum baru Anda."
+          },
+          "backups": {
+            "title": "Pentingnya Backup",
+            "description": "Menjaga dompet Anda aman, terlindungi, dan di-backup adalah hal yang penting dalam kepemilikan dompet. Di sini kami akan membahas mengapa penting untuk membackup dompet Anda dan metode-metode berbeda yang bisa Anda gunakan untuk membackup."
+          },
+          "crypto_and_wallets": {
+            "title": "Crypto dan Dompet",
+            "description": "Pada level yang sangat sederhana, dompet hanyalah kunci kriptografi yang unik dan pribadi (seperti yang ditunjukkan di bawah). Aplikasi dompet seperti Rainbow adalah antarmuka pengguna yang memungkinkan Anda untuk membuat, menyimpan, dan mengelola kunci kriptografi tanpa harus memiliki keterampilan atau pengetahuan teknis."
+          },
+          "protect_wallet": {
+            "title": "Lindungi Dompet Anda",
+            "description": "Salah satu bagian terbaik dari memiliki dompet Ethereum seperti Rainbow adalah Anda memiliki kendali penuh atas uang Anda. Tidak seperti rekening bank dari Wells Fargo atau bursa kripto seperti Coinbase, kami tidak menahan aset Anda atas nama Anda."
+          },
+          "connect_to_dapp": {
+            "title": "Terhubung ke Situs Web atau Aplikasi",
+            "description": "Sekarang bahwa Anda memiliki dompet Ethereum, Anda dapat login ke beberapa situs web menggunakan dompet ini. Alih-alih membuat akun dan kata sandi baru untuk setiap situs web yang Anda akses, Anda hanya akan terhubung dengan dompet Anda saja."
+          },
+          "avoid_scams": {
+            "title": "Hindari Penipuan Kripto",
+            "description": "Di sini di Rainbow, salah satu tujuan kami adalah membuat penjelajahan dunia baru Ethereum menjadi menyenangkan, ramah, dan aman. Taukah Anda apa yang bukan dari salah satu hal tersebut? Penipuan. Mereka jahat, dan tidak ada yang menyukainya. Kami ingin membantu Anda menghindarinya, jadi kami menulis panduan singkat ini untuk membantu Anda melakukan hal itu!"
+          },
+          "understanding_web3": {
+            "title": "Memahami Web3",
+            "description": "Internet telah terus berkembang sejak diciptakan, dan telah melalui banyak era. Web1 dimulai pada tahun 1990an, dan ini adalah periode yang ditandai dengan orang-orang yang terhubung ke internet dan membaca apa yang ada di sana, tetapi tidak mempublikasikan atau berkontribusi sendiri."
+          },
+          "manage_connections": {
+            "title": "Kelola Koneksi dan Jaringan",
+            "description": "Banyak situs web atau aplikasi yang Anda hubungkan ke dompet Anda membutuhkan Anda untuk menggunakan jaringan tertentu. Saat ini, sebagian besar situs web menggunakan jaringan Ethereum utama dan koneksi baru ke dompet Anda biasanya default ke jaringan ini."
+          },
+          "supported_networks": {
+            "title": "Jaringan yang Didukung",
+            "description": "Hingga baru-baru ini, Rainbow dan banyak proyek blockchain lainnya hanya kompatibel dengan Ethereum — buku besar publik desentralisasi dunia. Ethereum sangat aman dan sangat handal, tetapi tidak selalu cocok untuk kecepatan dan efisiensi."
+          },
+          "collect_nfts": {
+            "title": "Kumpulkan NFTs di OpenSea",
+            "description": "NFT adalah barang koleksi digital yang dapat dimiliki dan diperdagangkan. Akronim \"NFT\" adalah singkatan dari non-fungible token, dan mereka bisa datang dalam bentuk apa saja mulai dari kartu perdagangan digital hingga seni digital. Ada bahkan NFT yang bertindak seperti sertifikat keaslian untuk barang fisik."
+          }
+        },
+        "categories": {
+          "essentials": "Dasar-dasar",
+          "staying_safe": "Tetap Aman",
+          "beginners_guides": "Panduan bagi Pemula",
+          "blockchains_and_fees": "Blockchain dan Biaya",
+          "what_is_web3": "Apa itu Web3?",
+          "apps_and_connections": "Aplikasi dan Koneksi",
+          "navigating_your_wallet": "Menavigasi Dompet Anda"
+        }
+      },
+      "ledger": {
+        "title": "Pasangkan Dompet Perangkat Keras",
+        "body": "Hubungkan Ledger Nano X Anda ke Rainbow melalui Bluetooth."
+      },
+      "receive": {
+        "receive_assets": "Terima aset",
+        "copy_address": "Salin Alamat",
+        "description": "Anda juga bisa menekan lama alamat\ndi atas untuk menyalinnya."
+      }
+    },
+    "cloud": {
+      "backup_success": "Dompet Anda telah berhasil dicadangkan!"
+    },
+    "contacts": {
+      "contact_row": {
+        "balance_eth": "%{balanceEth} ETH"
+      },
+      "contacts_title": "Kontak",
+      "input_placeholder": "Nama",
+      "my_wallets": "Dompet saya",
+      "options": {
+        "add": "Tambah Kontak",
+        "cancel": "Batal",
+        "delete": "Hapus Kontak",
+        "edit": "Edit Kontak",
+        "view": "Lihat Profil"
+      },
+      "send_header": "Kirim",
+      "suggestions": "Saran",
+      "to_header": "Ke",
+      "watching": "Menonton"
+    },
+    "deeplinks": {
+      "couldnt_recognize_url": "Uh oh! Kami tidak bisa mengenali URL ini!",
+      "tried_to_use_android": "Mencoba menggunakan bundel Android",
+      "tried_to_use_ios": "Mencoba menggunakan bundel iOS"
+    },
+    "developer_settings": {
+      "alert": "Peringatan",
+      "applied": "DITERAPKAN",
+      "backups_deleted_successfully": "Backup berhasil dihapus",
+      "clear_async_storage": "Hapus penyimpanan async",
+      "clear_pending_txs": "Hapus Transaksi Tertunda",
+      "clear_image_cache": "Hapus Cache Gambar",
+      "clear_image_metadata_cache": "Hapus Cache Metadata Gambar",
+      "clear_local_storage": "Hapus penyimpanan lokal",
+      "clear_mmkv_storage": "Hapus penyimpanan MMKV",
+      "connect_to_hardhat": "Hubungkan ke hardhat",
+      "crash_app_render_error": "Aplikasi crash (kesalahan render)",
+      "enable_testnets": "Aktifkan Testnets",
+      "installing_update": "Menginstal pembaruan",
+      "navigation_entry_point": "Titik masuk navigasi",
+      "no_update": "Tidak ada pembaruan",
+      "not_applied": "TIDAK DITERAPKAN",
+      "notifications_debug": "Debug Notifikasi",
+      "remove_all_backups": "Hapus semua cadangan",
+      "keychain": {
+        "menu_title": "Reset Rantai Kunci",
+        "delete_wallets": "Hapus semua dompet",
+        "alert_title": "Hati-hati!",
+        "alert_body": "🚨🚨🚨 \nIni akan menghapus secara permanen semua kunci pribadi & data dompet Anda, pastikan Anda telah mencadangkan semuanya sebelum melanjutkan!! \n🚨🚨🚨"
+      },
+      "restart_app": "Mulai ulang aplikasi",
+      "reset_experimental_config": "Reset konfigurasi eksperimental",
+      "status": "Status",
+      "sync_codepush": "Sinkronkan codepush"
+    },
+    "discover": {
+      "lists": {
+        "lists_title": "Daftar",
+        "this_list_is_empty": "Daftar ini kosong!",
+        "types": {
+          "trending": "Trending",
+          "watchlist": "Daftar Tontonan",
+          "favorites": "Favorit",
+          "defi": "DeFi",
+          "stablecoins": "Stablecoins"
+        }
+      },
+      "pulse": {
+        "pulse_description": "Semua token DeFi top dalam satu",
+        "today_suffix": "hari ini",
+        "trading_at_prefix": "Trading di"
+      },
+      "search": {
+        "profiles": "Profil",
+        "search_ethereum": "Cari semua Ethereum",
+        "search_ethereum_short": "Cari Ethereum",
+        "search": "Cari",
+        "discover": "Temukan"
+      },
+      "strategies": {
+        "strategies_title": "Strategi",
+        "yearn_finance_description": "Strategi hasil cerdas dari yearn.finance"
+      },
+      "title_discover": "Temukan",
+      "title_search": "Cari",
+      "top_movers": {
+        "disabled_testnets": "Penggerak teratas dinonaktifkan di Testnets",
+        "top_movers_title": "Penggerak Teratas"
+      },
+      "uniswap": {
+        "data": {
+          "annualized_fees": "Biaya tahunan",
+          "pool_size": "Ukuran kolam",
+          "profit_30_days": "Keuntungan 30d",
+          "volume_24_hours": "Volume 24h"
+        },
+        "disabled_testnets": "Kolam dinonaktifkan di Testnets",
+        "error_loading_uniswap": "Ada kesalahan saat memuat data kolam Uniswap",
+        "show_more": "Tampilkan lebih banyak",
+        "title_pools": "Kolam Uniswap"
+      },
+      "op_rewards": {
+        "card_subtitle": "Dapatkan token OP setiap kali Anda melakukan bridge ke atau swap di Optimism.",
+        "card_title": "$OP Hadiah",
+        "button_title": "􀐚 Lihat Pendapatan Saya"
+      }
+    },
+    "error_boundary": {
+      "error_boundary_oops": "Ups!",
+      "restart_rainbow": "Mulai ulang Rainbow",
+      "something_went_wrong": "Ada yang salah.",
+      "wallets_are_safe": "Jangan khawatir, dompet Anda aman! Cukup mulai ulang aplikasi untuk kembali berbisnis."
+    },
+    "exchange": {
+      "coin_row": {
+        "expires_in": "Kadaluarsa dalam %{minutes}m",
+        "from_divider": "dari",
+        "to_divider": "ke",
+        "view_on": "Tampilkan di %{blockExplorerName}",
+        "view_on_etherscan": "Tampilkan di Etherscan"
+      },
+      "flip": "Balik",
+      "max": "Maks",
+      "movers": {
+        "loser": "Pecundang",
+        "mover": "Pindah"
+      },
+      "long_wait": {
+        "prefix": "Tunggu Lama",
+        "time": "Hingga %{estimatedWaitTime} untuk ditukarkan"
+      },
+      "no_results": {
+        "description": "Beberapa token tidak memiliki cukup likuiditas untuk melaksanakan pertukaran yang sukses.",
+        "description_l2": "Beberapa token tidak memiliki cukup likuiditas lapisan 2 untuk melakukan pertukaran yang berhasil.",
+        "description_no_assets": "Anda tidak memiliki token untuk %{action}.",
+        "nothing_found": "Tidak ada yang ditemukan",
+        "nothing_here": "Tidak ada di sini!",
+        "nothing_to_send": "Tidak ada yang dikirim"
+      },
+      "price_impact": {
+        "losing_prefix": "Kalah",
+        "small_market": "Pasar Kecil",
+        "label": "Kemungkinan kerugian"
+      },
+      "source": {
+        "rainbow": "Otomatis",
+        "0x": "0x",
+        "1inch": "1inch"
+      },
+      "settings": "Pengaturan",
+      "use_defaults": "Gunakan Default",
+      "done": "Selesai",
+      "losing": "Kalah",
+      "high": "Tinggi",
+      "slippage_tolerance": "Slippage Maksimum",
+      "source_picker": "Rute Pertukaran melalui",
+      "use_flashbots": "Gunakan Flashbots",
+      "swapping_for_prefix": "Menukar untuk",
+      "view_details": "Lihat Detail",
+      "token_sections": {
+        "bridgeTokenSection": "􀊝 Jembatan",
+        "crosschainMatchSection": "􀤆 Di jaringan lain",
+        "favoriteTokenSection": "􀋃 Favorit",
+        "lowLiquidityTokenSection": "􀇿 Likuiditas Rendah",
+        "unverifiedTokenSection": "􀇿 Tidak terverifikasi",
+        "verifiedTokenSection": "􀇻 Terverifikasi",
+        "unswappableTokenSection": "􀘰 Tidak ada rute perdagangan"
+      }
+    },
+    "expanded_state": {
+      "asset": {
+        "about_asset": "Sekitar %{assetName}",
+        "balance": "Saldo",
+        "get_asset": "Dapatkan %{assetSymbol}",
+        "market_cap": "Kap pasar",
+        "read_more_button": "Baca lebih lanjut",
+        "available_networks": "Tersedia di %{availableNetworks} jaringan",
+        "available_network": "Tersedia di jaringan %{availableNetwork}",
+        "available_networkv2": "Juga tersedia di %{availableNetwork}",
+        "social": {
+          "facebook": "Facebook",
+          "homepage": "Halaman Utama",
+          "reddit": "Reddit",
+          "telegram": "Telegram",
+          "twitter": "Twitter"
+        },
+        "uniswap_liquidity": "Likuiditas Uniswap",
+        "value": "Nilai",
+        "volume_24_hours": "Volume 24h"
+      },
+      "chart": {
+        "all_time": "Sepanjang Waktu",
+        "date": {
+          "months": {
+            "month_00": "Jan",
+            "month_01": "Feb",
+            "month_02": "Mar",
+            "month_03": "Apr",
+            "month_04": "Mei",
+            "month_05": "Jun",
+            "month_06": "Jul",
+            "month_07": "Agu",
+            "month_08": "Sep",
+            "month_09": "Okt",
+            "month_10": "Nov",
+            "month_11": "Des"
+          }
+        },
+        "no_price_data": "Tidak ada data harga",
+        "past_timespan": "Masa Lalu %{formattedTimespan}",
+        "today": "Hari Ini",
+        "token_pool": "%{tokenName} Kolam"
+      },
+      "contact_profile": {
+        "name": "Nama"
+      },
+      "liquidity_pool": {
+        "annualized_fees": "Biaya tahunan",
+        "fees_earned": "Biaya yang diperoleh",
+        "half": "Setengah",
+        "pool_makeup": "Komposisi kolam",
+        "pool_shares": "Bagian kolam",
+        "pool_size": "Ukuran kolam",
+        "pool_volume_24h": "Volume kolam 24 jam",
+        "total_value": "Total nilai",
+        "underlying_tokens": "Token yang mendasari"
+      },
+      "nft_brief_token_info": {
+        "for_sale": "Dijual",
+        "last_sale": "Harga jual terakhir"
+      },
+      "swap": {
+        "swap": "Tukar",
+        "bridge": "Jembatan",
+        "flashbots_protect": "Pelindung Flashbots",
+        "losing": "Kalah",
+        "on": "On",
+        "price_impact": "Dampak harga",
+        "price_row_per_token": "per",
+        "slippage_message": "Ini adalah pasar kecil, jadi Anda mendapatkan harga yang buruk. Coba perdagangan yang lebih kecil!",
+        "swapping_via": "Menukar via",
+        "unicorn_one": "yang satu unicorn",
+        "uniswap_v2": "Uniswap v2",
+        "view_on": "Tampilkan di %{blockExplorerName}",
+        "network_switcher": "Menukar di jaringan %{network}",
+        "settling_time": "Perkiraan waktu penyelesaian",
+        "swap_max_alert": {
+          "title": "Apakah Anda yakin?",
+          "message": "Anda akan menukar semua %{inputCurrencyAddress} yang tersedia di dompet Anda. Jika Anda ingin menukar kembali ke %{inputCurrencyAddress}, Anda mungkin tidak bisa membayar biayanya.\n\nApakah Anda ingin menyesuaikan keseimbangan secara otomatis untuk meninggalkan beberapa %{inputCurrencyAddress}?",
+          "no_thanks": "Tidak, terima kasih",
+          "auto_adjust": "Penyesuaian otomatis"
+        },
+        "swap_max_insufficient_alert": {
+          "title": "Kurang %{symbol}",
+          "message": "Anda tidak memiliki cukup %{symbol} untuk menutupi biaya untuk menukar jumlah maksimum."
+        }
+      },
+      "swap_details": {
+        "exchange_rate": "Nilai tukar",
+        "rainbow_fee": "Biaya Rainbow yang sudah termasuk",
+        "refuel": "Token jaringan extra",
+        "review": "Tinjau",
+        "show_details": "Lebih banyak detail",
+        "hide_details": "Sembunyikan detail",
+        "price_impact": "Perbedaan nilai",
+        "minimum_received": "Minimum diterima",
+        "maximum_sold": "Maksimum dijual",
+        "token_contract": "%{token} kontrak",
+        "number_of_exchanges": "%{number} Bursa",
+        "number_of_steps": "%{number} Langkah",
+        "input_exchange_rate": "1 %{inputSymbol} untuk %{executionRate} %{outputSymbol}",
+        "output_exchange_rate": "1 %{outputSymbol} untuk %{executionRate} %{inputSymbol}"
+      },
+      "token_index": {
+        "get_token": "Dapatkan %{assetSymbol}",
+        "makeup_of_token": "Komposisi dari 1 %{assetSymbol}",
+        "underlying_tokens": "Token yang mendasari"
+      },
+      "unique": {
+        "save": {
+          "access_to_photo_library_was_denied": "Akses ke perpustakaan foto ditolak",
+          "failed_to_save_image": "Gagal menyimpan Gambar",
+          "image_download_permission": "Izin Unduhan Gambar",
+          "nft_image": "Gambar NFT",
+          "your_permission_is_required": "Izin Anda diperlukan untuk menyimpan gambar ke perangkat Anda"
+        }
+      },
+      "unique_expanded": {
+        "about": "Tentang %{assetFamilyName}",
+        "attributes": "Atribut",
+        "collection_website": "Situs Koleksi",
+        "configuration": "Konfigurasi",
+        "copy": "Salin",
+        "copy_token_id": "Salin ID Token",
+        "description": "Deskripsi",
+        "discord": "Discord",
+        "edit": "Edit",
+        "expires_in": "Kadaluarsa dalam",
+        "expires_on": "Kadaluarsa pada",
+        "floor_price": "Harga dasar",
+        "for_sale": "Dijual",
+        "in_showcase": "Dalam Showcase",
+        "last_sale_price": "Harga jual terakhir",
+        "manager": "Manajer",
+        "open_in_web_browser": "Buka di Web Browser",
+        "owner": "Pemilik",
+        "profile_info": "Info Profil",
+        "properties": "Properti",
+        "registrant": "Pendaftar",
+        "resolver": "Resolver",
+        "save_to_photos": "Simpan ke Foto",
+        "set_primary_name": "Atur sebagai nama ENS saya",
+        "share_token_info": "Bagikan %{uniqueTokenName} Info",
+        "showcase": "Pameran",
+        "toast_added_to_showcase": "Ditambahkan ke pameran",
+        "toast_removed_from_showcase": "Dihapus dari pameran",
+        "twitter": "Twitter",
+        "view_all_with_property": "Lihat Semua dengan Properti",
+        "view_collection": "Lihat Koleksi",
+        "view_on_marketplace": "Lihat di Marketplace...",
+        "view_on_block_explorer": "Tampilkan di %{blockExplorerName}",
+        "view_on_marketplace_name": "Lihat di %{marketplaceName}",
+        "view_on_platform": "Lihat di %{platform}",
+        "view_on_web": "Lihat di Web",
+        "refresh": "Segarkan Metadata",
+        "hide": "Sembunyikan",
+        "unhide": "Batal Sembunyikan"
+      }
+    },
+    "explain": {
+      "icon_unlock": {
+        "smol_text": "Anda menemukan Harta Karun! Karena Anda memiliki NFT Smolverse, Anda telah membuka Ikoni Khusus!",
+        "optimism_text": "Untuk merayakan NFT di Optimism, Rainbow dan Optimism bekerja sama untuk meluncurkan Ikon Aplikasi edisi terbatas untuk Para penjelajah optimis seperti Anda!",
+        "zora_text": "Edisi khusus ikon Rainbow Zorb yang dibuat untuk merenung ajaib.",
+        "finiliar_text": "Edisi khusus ikon Rainbow Fini yang menjaga Anda tetap up to date tentang harga gas, hujan atau terang.",
+        "finiliar_title": "Anda telah membuka\nRainbow Fini",
+        "golddoge_text": "Edisi terbatas ikon aplikasi Rainbow emas dalam perayaan ulang tahun Kabosu ke-17.",
+        "raindoge_text": "Edisi terbatas ikon aplikasi Rainbow dalam perayaan ulang tahun Kabosu ke-17.",
+        "pooly_text": "Sebuah edisi khusus ikon Rainbow Pooly untuk pendukung kebebasan.",
+        "pooly_title": "Anda telah membuka\nRainbow Pooly",
+        "zorb_text": "Edisi khusus Rainbow Zorb:\n100% dari apa yang Anda cintai, lebih cepat dan lebih efisien.",
+        "zorb_title": "Anda telah membuka\nEnergi Rainbow Zorb!",
+        "poolboy_text": "Edisi khusus Rainbow x Poolsuite Icon untuk summer onchain.",
+        "poolboy_title": "Anda telah membuka\nRainbow Poolboy!",
+        "adworld_text": "Sebagai Warga Dunia Rainbow, Anda sekarang bisa membuka edisi khusus\nAdWorld x Rainbow Icon Aplikasi.",
+        "adworld_title": "Selamat datang di Dunia Rainbow!",
+        "title": "Anda telah membuka\nRainbow 􀆄 %{partner}",
+        "button": "Dapatkan ikon"
+      },
+      "output_disabled": {
+        "text": "Untuk %{fromNetwork}, Rainbow tidak bisa menyiapkan tukaran berdasarkan jumlah %{outputToken} yang ingin Anda terima. \n\n Coba masukkan jumlah %{inputToken} yang ingin Anda tukar.",
+        "title": "Masukkan %{inputToken} Sebagai Gantinya",
+        "title_crosschain": "Masukkan %{fromNetwork} %{inputToken} Sebagai Gantinya",
+        "text_crosschain": "Rainbow tidak dapat menyiapkan pertukaran berdasarkan jumlah %{outputToken} yang ingin Anda terima. \n\n Coba masukkan jumlah %{inputToken} yang ingin Anda tukar.",
+        "text_bridge": "Rainbow tidak dapat menyiapkan jembatan berdasarkan jumlah %{outputToken} yang ingin Anda terima di tujuan %{toNetwork} . \n\n Coba masukkan jumlah %{fromNetwork} %{inputToken} yang ingin Anda jembatani.",
+        "title_empty": "Pilih Token"
+      },
+      "available_networks": {
+        "text": "%{tokenSymbol} tersedia di %{networks}. Untuk memindahkan %{tokenSymbol} antar jaringan, gunakan Jembatan seperti Hop.",
+        "title_plural": "Tersedia di %{length} Jaringan",
+        "title_singular": "Tersedia di Jaringan %{network}"
+      },
+      "arbitrum": {
+        "text": "Arbitrum adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan lebih cepat sambil tetap mendapatkan keuntungan dari keamanan dasar Ethereum.\n\nIni mengelompokkan banyak transaksi bersama dalam suatu \"roll up\" sebelum mengirimkannya ke bawah untuk tinggal secara permanen di Ethereum.",
+        "title": "Apa itu Arbitrum?"
+      },
+      "backup": {
+        "title": "Penting"
+      },
+      "base_fee": {
+        "text_falling": "\n\nBiaya sedang turun sekarang!",
+        "text_prefix": "Biaya dasar ditetapkan oleh jaringan Ethereum dan berubah tergantung seberapa sibuk jaringan tersebut.",
+        "text_rising": "\n\nBiaya sedang naik sekarang! Lebih baik menggunakan biaya dasar maksimal yang lebih tinggi untuk menghindari transaksi yang terjebak.",
+        "text_stable": "\n\nLalu lintas jaringan stabil sekarang. Selamat bersenang-senang!",
+        "text_surging": "\n\nBiaya sangat tinggi saat ini! Kecuali transaksi Anda mendesak, lebih baik menunggu biaya turun.",
+        "title": "Biaya dasar saat ini"
+      },
+      "failed_walletconnect": {
+        "text": "Uh oh, ada yang salah! Situs mungkin mengalami gangguan koneksi. Silakan coba lagi nanti atau hubungi tim situs untuk lebih jelasnya.",
+        "title": "Koneksi gagal"
+      },
+      "failed_wc_invalid_methods": {
+        "text": "Dapp meminta metode penandatanganan dompet (RPC) yang tidak didukung oleh Rainbow.",
+        "title": "Koneksi gagal"
+      },
+      "failed_wc_invalid_chains": {
+        "text": "Dapp meminta jaringan yang tidak didukung oleh Rainbow.",
+        "title": "Koneksi gagal"
+      },
+      "failed_wc_invalid_chain": {
+        "text": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
+        "title": "Penanganan gagal"
+      },
+      "floor_price": {
+        "text": "Harga lantai koleksi adalah harga permintaan terendah di antara semua item yang saat ini dijual dalam suatu koleksi.",
+        "title": "Harga lantai koleksi"
+      },
+      "gas": {
+        "text": "Ini adalah \"biaya gas\" yang digunakan oleh blockchain %{networkName} untuk memvalidasi transaksi Anda dengan aman.\n\nBiaya ini bervariasi tergantung pada kompleksitas transaksi Anda dan seberapa sibuk jaringan tersebut!",
+        "title": "Biaya jaringan %{networkName}"
+      },
+      "max_base_fee": {
+        "text": "Ini adalah biaya dasar maksimum yang Anda bersedia bayar untuk transaksi ini.\n\nMengatur biaya dasar maksimum yang lebih tinggi mencegah transaksi Anda macet jika biaya naik.",
+        "title": "Biaya dasar maksimum"
+      },
+      "miner_tip": {
+        "text": "Tip penambang langsung menuju ke penambang yang mengonfirmasi transaksi Anda di jaringan.\n\nTip yang lebih tinggi membuat transaksi Anda lebih mungkin untuk dikonfirmasi dengan cepat.",
+        "title": "Tip penambang"
+      },
+      "optimism": {
+        "text": "Optimisme adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan lebih cepat sambil masih mendapat manfaat dari keamanan dasar Ethereum.\n\nPenggabungan banyak transaksi bersama dalam \"roll up\" sebelum mengirimkannya ke Ethereum untuk ditetapkan secara permanen.",
+        "title": "Apa itu Optimisme?"
+      },
+      "base": {
+        "text": "Base adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
+        "title": "Apa itu Base"
+      },
+      "zora": {
+        "text": "Zora adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
+        "title": "Apa itu Zora?"
+      },
+      "polygon": {
+        "text": "Polygon adalah sidechain, jaringan berbeda yang berjalan sejajar dengan Ethereum dan kompatibel dengannya.\n\nIt memungkinkan untuk transaksi yang lebih murah dan cepat, tetapi tidak seperti Jaringan Layer 2, Polygon memiliki mekanisme keamanan dan konsensus sendiri yang berbeda dari Ethereum.",
+        "title": "Apa itu Polygon?"
+      },
+      "bsc": {
+        "text": "Binance Smart Chain (BSC) adalah blockchain untuk platform perdagangan Binance. \n\nBSC memungkinkan untuk transaksi yang lebih murah dan cepat, tetapi tidak seperti Jaringan Layer 2, ia memiliki mekanisme keamanan dan konsensusnya sendiri yang berbeda dari Ethereum.",
+        "title": "Apa itu Binance Smart Chain?"
+      },
+      "read_more": "Baca Lebih Lanjut",
+      "learn_more": "Pelajari Lebih Lanjut",
+      "sending_to_contract": {
+        "text": "Alamat yang Anda masukkan adalah untuk kontrak pintar.\n\nKecuali pada situasi langka, Anda mungkin tidak seharusnya melakukan ini. Anda bisa kehilangan aset Anda atau mereka mungkin pergi ke tempat yang salah.\n\nPeriksa kembali alamat, verifikasikan dengan penerima, atau hubungi dukungan terlebih dahulu.",
+        "title": "Tahan dulu!"
+      },
+      "verified": {
+        "text": "Token dengan lencana terverifikasi berarti mereka telah muncul di setidaknya 3 daftar token lainnya.\n\nSelalu lakukan penelitian Anda sendiri untuk memastikan Anda berinteraksi dengan token yang Anda percayai.",
+        "title": "Token Terverifikasi"
+      },
+      "unverified": {
+        "fragment1": "Rainbow menampilkan sebanyak mungkin token, tetapi siapa saja bisa membuat token, atau mengklaim mewakili proyek dengan kontrak palsu. \n\n Harap tinjau ",
+        "fragment2": "kontrak token",
+        "fragment3": " dan selalu melakukan penelitian untuk memastikan bahwa Anda berinteraksi dengan token yang Anda percaya.",
+        "title": "%{symbol} Belum diverifikasi",
+        "go_back": "Kembali"
+      },
+      "obtain_l2_asset": {
+        "fragment1": "Anda harus mendapatkan token lain di %{networkName} untuk ditukar dengan %{networkName} %{tokenName}. \n\n Membuat jembatan untuk token ke %{networkName} itu mudah menggunakan jembatan seperti Hop. Masih penasaran? ",
+        "fragment2": "Baca lebih lanjut",
+        "fragment3": " tentang jembatan.",
+        "title": "Tidak ada Token di %{networkName}"
+      },
+      "insufficient_liquidity": {
+        "fragment1": "Bursa tidak memiliki cukup token yang Anda minta untuk menyelesaikan transaksi ini. \n\n Masih penasaran? ",
+        "fragment2": "Baca lebih lanjut",
+        "fragment3": " tentang AMM dan likuiditas token.",
+        "title": "Likuiditas Tidak Cukup"
+      },
+      "fee_on_transfer": {
+        "fragment1": "Pertukaran ini akan gagal di Rainbow karena kontrak %{tokenName} menambahkan biaya ekstra.  \n\n Baca ",
+        "fragment2": "panduan kami",
+        "fragment3": " untuk membantu pertukaran token ini!",
+        "title": "Biaya pada Token Transfer"
+      },
+      "no_route_found": {
+        "fragment1": "Kami tidak dapat menemukan rute untuk penukaran ini. ",
+        "fragment2": "Rute mungkin tidak ada untuk penukaran ini, atau jumlahnya terlalu kecil.",
+        "title": "Tidak ada rute yang ditemukan"
+      },
+      "no_quote": {
+        "title": "Tidak ada penawaran yang tersedia",
+        "text": "Kami tidak dapat menemukan penawaran untuk penukaran ini. Ini bisa karena tidak cukup likuiditas untuk penukaran atau ada masalah dengan implementasi token."
+      },
+      "cross_chain_swap": {
+        "title": "Harapkan Keterlambatan Jembatan",
+        "text": "Penukaran ini mungkin membutuhkan waktu lebih lama dari yang diharapkan untuk diselesaikan. \n\n Penukaran lintas rantai memerlukan pendanaan jembatan ke jaringan tujuan, dan jembatan kadang-kadang membutuhkan waktu lebih lama dari yang diharapkan untuk mentransfer dana. Dana Anda akan tetap aman selama waktu ini."
+      },
+      "go_to_hop_with_icon": {
+        "text": "Pergi ke Jembatan Hop 􀮶"
+      },
+      "rainbow_fee": {
+        "text": "Rainbow mengambil biaya %{feePercentage} dari swap. Itu adalah bagian dari apa yang memungkinkan kami memberikan Anda pengalaman Ethereum terbaik yang mungkin."
+      },
+      "swap_routing": {
+        "text": "Secara default, Rainbow memilih rute termurah yang mungkin untuk swap Anda. Jika Anda lebih suka menggunakan 0x atau 1inch secara spesifik, Anda juga bisa melakukan itu.",
+        "title": "Rute Swap",
+        "still_curious": {
+          "fragment1": "Masih penasaran? ",
+          "fragment2": "Baca lebih lanjut",
+          "fragment3": " tentang pendekatan kami dalam merutekan swaps."
+        }
+      },
+      "slippage": {
+        "text": "Slippage terjadi ketika harga sebuah swap berubah dalam waktu antara Anda mengajukan transaksi dan konfirmasinya. \n\nMenetapkan toleransi slippage yang lebih tinggi meningkatkan kemungkinan swap Anda akan berhasil, tetapi mungkin mengakibatkan Anda mendapatkan harga yang lebih buruk.",
+        "title": "Slippage",
+        "still_curious": {
+          "fragment1": "Masih penasaran? ",
+          "fragment2": "Baca lebih lanjut",
+          "fragment3": " tentang slippage dan bagaimana dampaknya pada swap."
+        }
+      },
+      "flashbots": {
+        "text": "Flashbots melindungi transaksi Anda dari frontrunning dan serangan sandwich yang mungkin mengakibatkan Anda mendapatkan harga yang lebih buruk atau transaksi Anda gagal.",
+        "title": "Flashbots",
+        "still_curious": {
+          "fragment1": "Masih penasaran? ",
+          "fragment2": "Baca lebih lanjut",
+          "fragment3": " tentang Flashbots dan perlindungan yang ditawarkannya."
+        }
+      },
+      "swap_refuel": {
+        "title": "Tidak ada %{networkName} %{gasToken} terdeteksi",
+        "text": "Anda tidak akan dapat menggunakan %{networkName} tanpa %{networkName} %{gasToken}. Kami dapat menyatukannya dengan jembatan ini menggunakan sekitar $3 ETH dari dompet Anda.",
+        "button": "Tambahkan $3 dari %{networkName} %{gasToken}"
+      },
+      "swap_refuel_deduct": {
+        "title": "Tidak ada %{networkName} %{gasToken} terdeteksi",
+        "text": "Anda tidak akan bisa menggunakan %{networkName} tanpa %{networkName} %{gasToken}. Kami dapat dengan mulus membundelnya dengan jembatan ini menggunakan sekitar $3 ETH yang dikurangi dari swap ini.",
+        "button": "Sesuaikan dan tambahkan $3 dari %{gasToken}"
+      },
+      "swap_refuel_notice": {
+        "title": "Tidak ada %{networkName} %{gasToken} terdeteksi",
+        "text": "Anda tidak akan bisa menggunakan %{networkName} tanpa %{networkName} %{gasToken}. Jika Anda melanjutkan transaksi ini, Anda tidak akan bisa swap, bridge, atau transfer token %{networkName} Anda tanpa menambahkan %{networkName} %{gasToken} ke dompet Anda.",
+        "button": "Lanjutkan saja"
+      }
+    },
+    "fedora": {
+      "cannot_verify_bundle": "Tidak bisa memverifikasi bundel! Ini mungkin adalah penipuan. Penginstalan diblokir.",
+      "error": "GALAT",
+      "fedora": "Fedora",
+      "this_will_override_bundle": "Ini akan menimpa bundel Anda. Hati-hati. Apakah Anda seorang karyawan Rainbow?",
+      "wait": "tunggu"
+    },
+    "fields": {
+      "address": {
+        "long_placeholder": "Nama, ENS, atau alamat",
+        "short_placeholder": "ENS atau alamat"
+      }
+    },
+    "gas": {
+      "card": {
+        "falling": "Menurun",
+        "rising": "Meningkat",
+        "stable": "Stabil",
+        "surging": "Meningkat tajam"
+      },
+      "speeds": {
+        "slow": "Lambat",
+        "normal": "Normal",
+        "fast": "Cepat",
+        "urgent": "Mendesak",
+        "custom": "Kustom"
+      },
+      "network_fee": "Biaya jaringan Est.",
+      "current_base_fee": "Biaya dasar saat ini",
+      "max_base_fee": "Biaya dasar maksimum",
+      "miner_tip": "Tip penambang",
+      "max_transaction_fee": "Biaya transaksi maksimum",
+      "warning_separator": "·",
+      "lower_than_suggested": "Rendah · mungkin terjebak",
+      "higher_than_suggested": "Tinggi · membayar lebih",
+      "max_base_fee_too_low_error": "Rendah · cenderung gagal",
+      "tip_too_low_error": "Rendah · cenderung gagal",
+      "alert_message_higher_miner_tip_needed": "Mengatur tip penambang yang lebih tinggi direkomendasikan untuk menghindari masalah.",
+      "alert_message_higher_max_base_fee_needed": "Menetapkan nilai maksimal base fee yang lebih tinggi disarankan untuk menghindari masalah.",
+      "alert_message_lower": "Periksa dua kali bahwa Anda telah memasukkan jumlah yang benar—Anda kemungkinan membayar lebih dari yang Anda butuhkan!",
+      "alert_title_higher_max_base_fee_needed": "Max base fee rendah–transaksi mungkin macet!",
+      "alert_title_higher_miner_tip_needed": "Miner tip rendah–transaksi mungkin macet!",
+      "alert_title_lower_max_base_fee_needed": "Max base fee tinggi!",
+      "alert_title_lower_miner_tip_needed": "Miner tip tinggi!",
+      "proceed_anyway": "Lanjutkan Saja",
+      "edit_max_bass_fee": "Edit Max Base Fee",
+      "edit_miner_tip": "Edit Miner Tip"
+    },
+    "homepage": {
+      "back": "Kembali ke rainbow.me",
+      "coming_soon": "Segera hadir.",
+      "connect_ledger": {
+        "button": "Hubungkan ke Ledger",
+        "description": "Hubungkan dan tanda tangani dengan ",
+        "link_text": "Dompet perangkat keras Ledger",
+        "link_title": "Beli dompet keras Ledger"
+      },
+      "connect_metamask": {
+        "button": "Hubungkan ke MetaMask",
+        "description": "Hubungkan ke ",
+        "link_text": "Dompet browser MetaMask",
+        "link_title": "Dompet browser MetaMask"
+      },
+      "connect_trezor": {
+        "button": "Hubungkan ke Trezor",
+        "description": "Hubungkan dan tanda tangani dengan ",
+        "link_text": "Dompet keras Trezor",
+        "link_title": "Beli dompet keras Trezor"
+      },
+      "connect_trustwallet": {
+        "button": "Hubungkan ke Trust Wallet",
+        "description_part_one": "Gunakan ",
+        "description_part_three": " aplikasi untuk terhubung.",
+        "description_part_two": " Ethereum ",
+        "link_text_browser": "browser dapp",
+        "link_text_wallet": "Trust Wallet",
+        "link_title_browser": "Temukan Browser DApp Trust",
+        "link_title_wallet": "Temukan Trust Wallet"
+      },
+      "connect_walletconnect": {
+        "button": "Gunakan WalletConnect",
+        "button_mobile": "Hubungkan dengan WalletConnect",
+        "description": "Pindai kode QR untuk menghubungkan dompet mobile Anda ",
+        "description_mobile": "Hubungkan ke dompet apa pun yang mendukung ",
+        "link_text": "menggunakan WalletConnect",
+        "link_text_mobile": "WalletConnect",
+        "link_title": "Gunakan WalletConnect",
+        "link_title_mobile": "Hubungkan dengan WalletConnect"
+      },
+      "reassurance": {
+        "access_link": "Tidak ada akses ke dana Anda",
+        "assessment": "Hasil dari penilaian keamanan kami",
+        "security": "Kami bekerja sangat keras untuk memastikan dana Anda aman. Alat ini tidak pernah menyentuh kunci pribadi Anda, sehingga sangat mengurangi area serangan. Jika anda familiar dengan pemrograman, anda bisa mengecek kode kami di GitHub.",
+        "security_title": "Seberapa aman Manager ini?",
+        "source": "Lihat kode sumber kami",
+        "text_mobile": "Anda perlu menggunakan Wallet Ethereum untuk mengakses Balance Manager untuk melihat, mengirim, dan menukarkan Ether dan token berbasis Ethereum Anda.",
+        "tracking_link": "Kami tidak melacak Anda",
+        "work": "Ini adalah alat berbasis web untuk membantu Anda mengelola dana di dompet Anda. Alat ini melakukan ini dengan terhubung ke dompet Anda melalui Antarmuka Pemrograman Aplikasinya (API). Berikut adalah beberapa poin penting tentang bagaimana kami merancang Manajer Saldo:",
+        "work_title": "Bagaimana Manager bekerja?"
+      },
+      "discover_web3": "Temukan Web3"
+    },
+    "image_picker": {
+      "cancel": "Batal",
+      "confirm": "Aktifkan akses perpustakaan",
+      "message": "Ini memungkinkan Rainbow untuk menggunakan foto Anda dari perpustakaan Anda",
+      "title": "Rainbow ingin mengakses foto Anda"
+    },
+    "input": {
+      "asset_amount": "Jumlah",
+      "donation_address": "Alamat Manajer Saldo",
+      "email": "Email",
+      "email_placeholder": "your@email.com",
+      "input_placeholder": "Ketik di sini",
+      "input_text": "Masukan",
+      "password": "Kata Sandi",
+      "password_placeholder": "••••••••••",
+      "private_key": "Kunci Pribadi",
+      "recipient_address": "Alamat Penerima"
+    },
+    "list": {
+      "share": {
+        "check_out_my_wallet": "Lihat kolektibel saya di 🌈 Rainbow di %{showcaseUrl}",
+        "check_out_this_wallet": "Lihat kolektibel dompet ini di 🌈 Rainbow di %{showcaseUrl}"
+      }
+    },
+    "message": {
+      "click_to_copy_to_clipboard": "Klik untuk menyalin ke clipboard",
+      "coming_soon": "Segera hadir...",
+      "exchange_not_available": "Kami tidak lagi mendukung Shapeshift karena persyaratan KYC baru mereka. Kami sedang mengupayakan dukungan untuk berbagai penyedia pertukaran lainnya.",
+      "failed_ledger_connection": "Gagal terhubung ke Ledger, silakan periksa perangkat Anda",
+      "failed_request": "Permintaan gagal, silakan segarkan",
+      "failed_trezor_connection": "Gagal terhubung ke Trezor, silakan periksa perangkat Anda",
+      "failed_trezor_popup_blocked": "Silakan izinkan popup pada Balance untuk menggunakan Trezor Anda",
+      "learn_more": "Pelajari lebih lanjut",
+      "no_interactions": "Tidak ada interaksi yang ditemukan untuk akun ini",
+      "no_transactions": "Tidak ada transaksi yang ditemukan untuk akun ini",
+      "no_unique_tokens": "Tidak ada token unik yang ditemukan untuk akun ini",
+      "opensea_footer": " adalah pasar untuk token unik (atau 'non-fungible'). Orang berdagang di pasar dan itu memberi mereka nilai. Anda bisa gadai token Anda untuk mendapatkan uang. Semuanya ini berjalan di Ethereum. ",
+      "opensea_header": "Bagaimana ini bekerja di balik layar?",
+      "page_not_found": "404 Halaman Tidak Ditemukan",
+      "please_connect_ledger": "Silakan hubungkan dan buka kunci Ledger lalu pilih Ethereum",
+      "please_connect_trezor": "Harap hubungkan Trezor Anda dan ikuti instruksinya",
+      "power_by": "Didukung oleh",
+      "walletconnect_not_unlocked": "Harap hubungkan menggunakan WalletConnect",
+      "web3_not_available": "Harap pasang ekstensi Chrome MetaMask",
+      "web3_not_unlocked": "Harap buka kunci dompet MetaMask Anda",
+      "web3_unknown_network": "Jaringan tidak dikenal, silakan beralih ke yang lain"
+    },
+    "modal": {
+      "approve_tx": "Setujui transaksi di %{walletType}",
+      "back_up": {
+        "alerts": {
+          "cloud_not_enabled": {
+            "description": "Sepertinya iCloud drive tidak diaktifkan di perangkat Anda.\n\n Apakah Anda ingin melihat cara mengaktifkannya?",
+            "label": "iCloud Tidak Diaktifkan",
+            "no_thanks": "Tidak, terima kasih",
+            "show_me": "Ya, Tunjukkan kepada saya"
+          }
+        },
+        "default": {
+          "button": {
+            "cloud": "Cadangkan dompet Anda",
+            "cloud_platform": "Backup ke %{cloudPlatformName}",
+            "manual": "Cadangkan secara manual"
+          },
+          "description": "Jangan hilangkan dompet Anda! Simpan salinan terenkripsi ke %{cloudPlatformName}",
+          "title": "Cadangkan dompet Anda"
+        },
+        "existing": {
+          "button": {
+            "later": "Mungkin nanti",
+            "now": "Cadangkan sekarang"
+          },
+          "description": "Anda memiliki dompet yang belum dicadangkan. Cadangkan mereka untuk jaga-jaga jika Anda kehilangan perangkat ini.",
+          "title": "Apakah Anda ingin mencadangkan?"
+        },
+        "imported": {
+          "button": {
+            "back_up": "Backup ke %{cloudPlatformName}",
+            "no_thanks": "Tidak, terima kasih"
+          },
+          "description": "Jangan hilangkan dompet Anda! Simpan salinan terenkripsi ke %{cloudPlatformName}.",
+          "title": "Apakah Anda ingin membuat cadangan?"
+        }
+      },
+      "confirm_tx": "Konfirmasi transaksi dari %{walletName}",
+      "default_wallet": " Dompet",
+      "deposit_dropdown_label": "Tukar milik saya",
+      "deposit_input_label": "Bayar",
+      "donate_title": "Kirim dari %{walletName} ke Manajer Saldo",
+      "exchange_fee": "Biaya Pertukaran",
+      "exchange_max": "Maksimal Pertukaran",
+      "exchange_title": "Tukar dari %{walletName}",
+      "external_link_warning": {
+        "go_back": "Kembali",
+        "visit_external_link": "Kunjungi tautan eksternal?",
+        "you_are_attempting_to_visit": "Anda sedang mencoba mengunjungi tautan yang tidak berafiliasi dengan Rainbow."
+      },
+      "gas_average": "Rata-rata",
+      "gas_fast": "Cepat",
+      "gas_fee": "Biaya",
+      "gas_slow": "Lambat",
+      "helper_max": "Maks",
+      "helper_min": "Min",
+      "helper_price": "Harga",
+      "helper_rate": "Rate",
+      "helper_value": "Nilai",
+      "invalid_address": "Alamat tidak valid",
+      "new": "Baru",
+      "previous_short": "Sebelumnya.",
+      "receive_title": "Terima ke %{walletName}",
+      "send_max": "Maksimal Kirim",
+      "send_title": "Kirim dari %{walletName}",
+      "tx_confirm_amount": "Jumlah",
+      "tx_confirm_fee": "Biaya Transaksi",
+      "tx_confirm_recipient": "Penerima",
+      "tx_confirm_sender": "Pengirim",
+      "tx_fee": "Biaya Transaksi",
+      "tx_hash": "Hash Transaksi",
+      "tx_verify": "Verifikasi transaksi Anda di sini",
+      "withdrawal_dropdown_label": "Untuk",
+      "withdrawal_input_label": "Dapatkan"
+    },
+    "nfts": {
+      "selling": "Menjual"
+    },
+    "nft_offers": {
+      "card": {
+        "title": {
+          "singular": "1 Penawaran",
+          "plural": "%{numOffers} Penawaran"
+        },
+        "button": "Lihat Semua Penawaran",
+        "expired": "Kadaluarsa"
+      },
+      "sheet": {
+        "title": "Penawaran",
+        "total": "Total",
+        "above_floor": "di atas lantai",
+        "below_floor": "di bawah lantai",
+        "no_offers_found": "Tidak ada penawaran yang ditemukan"
+      },
+      "sort_menu": {
+        "highest": "Tertinggi",
+        "from_floor": "Dari Lantai",
+        "recent": "Baru-baru ini"
+      },
+      "single_offer_sheet": {
+        "title": "Penawaran",
+        "expires_in": "Kadaluarsa dalam %{timeLeft}",
+        "floor_price": "Harga Dasar",
+        "marketplace": "Pasar",
+        "marketplace_fees": "%{marketplace} Biaya",
+        "creator_royalties": "Royalti Pencipta",
+        "receive": "Terima",
+        "proceeds": "Hasil",
+        "view_offer": "Lihat Penawaran",
+        "offer_expired": "Penawaran Kedaluwarsa",
+        "expired": "Kadaluarsa",
+        "hold_to_sell": "Tahan untuk Menjual",
+        "error": {
+          "title": "Kesalahan menjual NFT",
+          "message": "Silakan hubungi dukungan Rainbow untuk bantuan."
+        }
+      }
+    },
+    "notification": {
+      "error": {
+        "failed_get_account_tx": "Gagal mendapatkan transaksi Akun",
+        "failed_get_gas_prices": "Gagal mendapatkan harga Gas Ethereum",
+        "failed_get_tx_fee": "Gagal mengestimasi biaya Transaksi",
+        "failed_scanning_qr_code": "Gagal memindai kode QR, silahkan coba lagi",
+        "generic_error": "Terjadi kesalahan, silahkan coba lagi",
+        "insufficient_balance": "Saldo tidak cukup di akun ini",
+        "insufficient_for_fees": "Saldo tidak cukup untuk menutupi biaya transaksi",
+        "invalid_address": "Alamat tidak valid, silahkan periksa lagi",
+        "invalid_address_scanned": "Alamat yang dipindai tidak valid, silahkan coba lagi",
+        "invalid_private_key_scanned": "Kunci Pribadi yang dipindai tidak valid, silahkan coba lagi",
+        "no_accounts_found": "Tidak ada Akun Ethereum yang ditemukan"
+      },
+      "info": {
+        "address_copied_to_clipboard": "Alamat disalin ke papan klip"
+      }
+    },
+    "pools": {
+      "deposit": "Deposit",
+      "pools_title": "Kolam",
+      "withdraw": "Tarik"
+    },
+    "profiles": {
+      "actions": {
+        "edit_profile": "Ubah profil",
+        "unwatch_ens": "Tidak ditonton %{ensName}",
+        "unwatch_ens_title": "Apakah Anda yakin ingin tidak ditonton lagi %{ensName}?",
+        "watch": "Menonton",
+        "watching": "Menonton"
+      },
+      "banner": {
+        "register_name": "Buat profil ENS Anda",
+        "and_create_ens_profile": "Cari nama .eth yang tersedia"
+      },
+      "select_ens_name": "Nama ENS Saya",
+      "confirm": {
+        "confirm_registration": "Konfirmasi Pendaftaran",
+        "confirm_updates": "Konfirmasi Pembaruan",
+        "duration_plural": "%{content} tahun",
+        "duration_singular": "1 tahun",
+        "estimated_fees": "Estimasi biaya jaringan",
+        "estimated_total": "Estimasi total",
+        "estimated_total_eth": "Estimasi total dalam ETH",
+        "extend_by": "Diperpanjang oleh",
+        "extend_registration": "Perpanjang Pendaftaran",
+        "hold_to_begin": "Tahan untuk Memulai",
+        "hold_to_confirm": "Tahan untuk Konfirmasi",
+        "hold_to_extend": "Tahan untuk Perpanjang",
+        "hold_to_register": "Tahan untuk Mendaftar",
+        "insufficient_bnb": "BNB Tidak Cukup",
+        "insufficient_eth": "ETH Tidak Cukup",
+        "last_step": "Satu langkah lagi",
+        "last_step_description": "Konfirmasikan di bawah untuk mendaftarkan nama Anda dan mengkonfigurasi profil Anda",
+        "new_expiration_date": "Tanggal kedaluwarsa baru",
+        "registration_cost": "Biaya pendaftaran",
+        "registration_details": "Detail Pendaftaran",
+        "registration_duration": "Daftarkan nama untuk",
+        "requesting_register": "Meminta untuk Mendaftar",
+        "reserving_name": "Menyimpan Nama Anda",
+        "set_ens_name": "Tetapkan sebagai nama ENS utama saya",
+        "set_name_registration": "Tetapkan sebagai Nama Utama",
+        "speed_up": "Percepat",
+        "suggestion": "Beli lebih banyak tahun sekarang untuk hemat biaya",
+        "transaction_pending": "Transaksi tertunda",
+        "transaction_pending_description": "Anda akan dibawa ke langkah berikutnya secara otomatis saat transaksi ini dikonfirmasi di blockchain",
+        "wait_one_minute": "Tunggu selama satu menit",
+        "wait_one_minute_description": "Periode tunggu ini menjamin bahwa orang lain tidak dapat mendaftarkan nama ini sebelum Anda"
+      },
+      "create": {
+        "add_cover": "Tambah Penutup",
+        "back": "􀆉 Kembali",
+        "bio": "Bio",
+        "bio_placeholder": "Tambahkan bio ke profil Anda",
+        "btc": "Bitcoin",
+        "cancel": "Batal",
+        "choose_nft": "Pilih sebuah NFT",
+        "content": "Konten",
+        "content_placeholder": "Tambahkan hash konten",
+        "discord": "Discord",
+        "doge": "Dogecoin",
+        "email": "Email",
+        "invalid_email": "Email tidak valid",
+        "email_placeholder": "Tambahkan email Anda",
+        "invalid_username": "Nama pengguna %{app} tidak valid",
+        "eth": "Ethereum",
+        "github": "GitHub",
+        "instagram": "Instagram",
+        "invalid_asset": "Alamat %{coin} tidak valid",
+        "invalid_content_hash": "Hash konten tidak valid",
+        "keywords": "Kata kunci",
+        "keywords_placeholder": "Tambahkan kata kunci",
+        "label": "Buat profil Anda",
+        "ltc": "Litecoin",
+        "name": "Nama",
+        "name_placeholder": "Tambahkan nama tampilan",
+        "notice": "Pemberitahuan",
+        "notice_placeholder": "Tambahkan pemberitahuan",
+        "pronouns": "Pronouns",
+        "pronouns_placeholder": "Tambahkan pronouns",
+        "reddit": "Reddit",
+        "remove": "Hapus",
+        "review": "Tinjau",
+        "skip": "Lewat",
+        "snapchat": "Snapchat",
+        "telegram": "Telegram",
+        "twitter": "Twitter",
+        "upload_photo": "Unggah Foto",
+        "uploading": "Mengunggah",
+        "username_placeholder": "nama pengguna",
+        "wallet_placeholder": "Tambahkan alamat %{coin}",
+        "website": "Situs Web",
+        "invalid_website": "URL Tidak Valid",
+        "website_placeholder": "Tambahkan situs web anda"
+      },
+      "details": {
+        "add_to_contacts": "Tambahkan ke Kontak",
+        "copy_address": "Salin Alamat",
+        "open_wallet": "Buka Dompet",
+        "remove_from_contacts": "Hapus dari Kontak",
+        "share": "Bagikan",
+        "view_on_etherscan": "Tampilkan di Etherscan"
+      },
+      "edit": {
+        "label": "Edit profil anda"
+      },
+      "intro": {
+        "choose_another_name": "Pilih nama ENS lainnya",
+        "create_your": "Buat Milik Anda",
+        "ens_profile": "Profil ENS",
+        "find_your_name": "Temukan nama anda",
+        "my_ens_names": "Nama ENS Saya",
+        "portable_identity_info": {
+          "description": "Bawa nama dan profil ENS anda di antara situs web. Tidak perlu lagi mendaftar.",
+          "title": "Identitas digital yang portabel"
+        },
+        "search_new_ens": "Temukan Nama Baru",
+        "search_new_name": "Cari nama ENS baru",
+        "stored_on_blockchain_info": {
+          "description": "Profil Anda disimpan langsung di Ethereum dan dimiliki oleh Anda.",
+          "title": "Disimpan di Ethereum"
+        },
+        "edit_name": "Edit %{name}",
+        "use_existing_name": "Gunakan nama ENS yang telah ada",
+        "use_name": "Gunakan %{name}",
+        "wallet_address_info": {
+          "description": "Kirim ke nama ENS bukan ke alamat dompet yang sulit diingat.",
+          "title": "Alamat dompet yang lebih baik"
+        }
+      },
+      "pending_registrations": {
+        "alert_cancel": "Batal",
+        "alert_confirm": "Lanjutkan Saja",
+        "alert_message": "`Anda akan menghentikan proses pendaftaran.\n  Anda perlu memulainya lagi yang berarti Anda perlu mengirim transaksi tambahan.`",
+        "alert_title": "Apakah Anda yakin?",
+        "finish": "Selesai",
+        "in_progress": "Sedang Berlangsung"
+      },
+      "profile_avatar": {
+        "choose_from_library": "Pilih dari Perpustakaan",
+        "create_profile": "Buat Profil",
+        "edit_profile": "Edit Profil",
+        "pick_emoji": "Pilih Emoji",
+        "shuffle_emoji": "Acak Emoji",
+        "remove_photo": "Hapus Foto",
+        "view_profile": "Lihat Profil"
+      },
+      "search": {
+        "header": "Temukan nama anda",
+        "description": "Cari Nama ENS yang tersedia",
+        "available": "🥳 Tersedia",
+        "taken": "😭 Sudah diambil",
+        "registered_on": "Nama ini terakhir kali didaftarkan pada %{content}",
+        "price": "%{content} / Tahun",
+        "expiration": "Sampai %{content}",
+        "3_char_min": "Minimum 3 karakter",
+        "already_registering_name": "Anda sudah mendaftarkan nama ini",
+        "estimated_total_cost_1": "Perkiraan total biaya dari",
+        "estimated_total_cost_2": "dengan biaya jaringan saat ini",
+        "loading_fees": "Memuat biaya jaringan…",
+        "clear": "􀅉 Hapus",
+        "continue": "Lanjutkan 􀆊",
+        "finish": "Selesai 􀆊",
+        "and_create_ens_profile": "Cari nama .eth yang tersedia",
+        "register_name": "Buat profil ENS Anda"
+      },
+      "search_validation": {
+        "invalid_domain": "Ini adalah domain yang tidak valid",
+        "tld_not_supported": "TLD ini tidak didukung",
+        "subdomains_not_supported": "Subdomain tidak didukung",
+        "invalid_length": "Nama Anda harus memiliki setidaknya 3 karakter",
+        "invalid_special_characters": "Nama Anda tidak bisa mengandung karakter khusus"
+      },
+      "records": {
+        "since": "Sejak"
+      }
+    },
+    "promos": {
+      "swaps_launch": {
+        "primary_button": "􀖅 Coba tukar",
+        "secondary_button": "Mungkin nanti",
+        "info_row_1": {
+          "title": "Tukar semua token favorit Anda",
+          "description": "Rainbow mencari di mana-mana untuk menemukan tingkat terbaik untuk perdagangan Anda."
+        },
+        "info_row_2": {
+          "title": "Tukar langsung di L2",
+          "description": "Pertukaran cepat dan murah di Arbitrum, Optimism, Polygon dan BSC."
+        },
+        "info_row_3": {
+          "title": "Perlindungan Flashbots",
+          "description": "Perlindungan harga, plus tidak ada biaya pada pertukaran yang gagal. Aktifkan di pengaturan pertukaran."
+        },
+        "header": "Pertukaran di Rainbow",
+        "subheader": "MEMPERKENALKAN KEMBALI"
+      },
+      "notifications_launch": {
+        "primary_button": {
+          "permissions_enabled": "Konfigurasi",
+          "permissions_not_enabled": "Aktifkan"
+        },
+        "secondary_button": "Bukan Sekarang",
+        "info_row_1": {
+          "title": "Untuk semua aktivitas dompet Anda",
+          "description": "Dapatkan pemberitahuan tentang aktivitas di dompet Anda atau dompet yang Anda pantau."
+        },
+        "info_row_2": {
+          "title": "Sangat cepat",
+          "description": "Ketahui saat transaksi dikonfirmasi di blockchain."
+        },
+        "info_row_3": {
+          "title": "Dapat disesuaikan",
+          "description": "Kirim, terima, jual, cetak, tukar, dan lainnya. Pilih apa yang Anda inginkan."
+        },
+        "header": "Notifikasi",
+        "subheader": "MEMPERKENALKAN"
+      }
+    },
+    "review": {
+      "alert": {
+        "are_you_enjoying_rainbow": "Apakah Anda menikmati Rainbow? 🥰",
+        "leave_a_review": "Tinggalkan ulasan di App Store!",
+        "no": "Tidak",
+        "yes": "Ya"
+      }
+    },
+    "poaps": {
+      "title": "Anda menemukan POAP!",
+      "view_on_poap": "Lihat di POAP 􀮶",
+      "mint_poap": "􀑒 Mint POAP",
+      "minting": "Minting...",
+      "minted": "POAP Dicetak!",
+      "error": "Kesalahan Mencetak",
+      "error_messages": {
+        "limit_exceeded": "POAP ini sudah sepenuhnya dicetak!",
+        "event_expired": "Cetakan POAP ini sudah kedaluwarsa!",
+        "unknown": "Kesalahan Tidak Diketahui"
+      }
+    },
+    "rewards": {
+      "total_earnings": "Total Penghasilan",
+      "you_earned": "Anda telah menghasilkan ",
+      "pending_earnings": "Penghasilan Tertunda",
+      "next_airdrop": "Airdrop Selanjutnya",
+      "last_airdrop": "Airdrop Terakhir",
+      "my_stats": "Statistik Saya",
+      "swapped": "Ditukar",
+      "bridged": "Dijembatani",
+      "position": "Posisi",
+      "leaderboard": "Papan Peringkat",
+      "leaderboard_data_refresh_notice": "Diperbarui secara berkala sepanjang hari. Periksa kembali segera jika aktivitas terkini Anda tidak terpantulkan.",
+      "program_paused": "􀊗 Dijeda",
+      "program_paused_description": "Kontes saat ini sedang dijeda dan akan dilanjutkan lagi segera. Periksa kembali nanti untuk pembaruan.",
+      "program_finished": "􀜪 Berakhir",
+      "program_finished_description": "Kontes pertama telah berakhir. Papan peringkat akhir dan bonus hadiah ditampilkan di bawah ini.",
+      "days_left": "%{days} hari tersisa",
+      "data_powered_by": "Data didukung oleh",
+      "current_value": "Nilai Saat Ini",
+      "rewards_claimed": "Hadiah Mingguan Diklaim",
+      "refreshes_next_week": "Diperbarui minggu depan",
+      "all_rewards_claimed": "Semua hadiah telah diklaim minggu ini",
+      "rainbow_users_claimed": "Pengguna Rainbow mengklaim %{amount}",
+      "refreshes_in_with_days": "Menyegarkan dalam %{days} hari %{hours} jam",
+      "refreshes_in_without_days": "Menyegarkan dalam %{hours} jam",
+      "percent": "%{percent}% hadiah",
+      "error_title": "Ada yang salah",
+      "error_text": "Harap periksa koneksi internet Anda dan cek kembali nanti.",
+      "ended_title": "Program berakhir",
+      "ended_text": "Tetap sintonik untuk apa yang kami siapkan untuk Anda selanjutnya!",
+      "op": {
+        "airdrop_timing": {
+          "title": "Airdrops Setiap Minggu",
+          "text": "Tukar pada Optimisme atau jembatan ke Optimisme untuk mendapatkan hadiah OP. Pada akhir setiap minggu, hadiah yang Anda dapatkan akan di-airdrop ke dompet Anda."
+        },
+        "amount_distributed": {
+          "title": "67,850 OP Setiap Minggu",
+          "text": "Hingga 67,850 OP dalam hadiah akan dibagikan setiap minggu. Jika hadiah mingguan habis, hadiah akan sementara ditunda dan dilanjutkan minggu berikutnya."
+        },
+        "bridge": {
+          "title": "Dapatkan 0.125% di Bridging",
+          "text": "Sementara hadiah masih berlangsung, menjembatani token yang telah diverifikasi ke Optimism akan memberi Anda sekitar 0.125% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penjembatan terakhir Anda tercetak di sini."
+        },
+        "swap": {
+          "title": "Dapatkan 0.425% pada Swaps",
+          "text": "Sementara hadiah masih berlangsung, menukar token yang telah diverifikasi di Optimism akan memberi Anda sekitar 0.425% kembali dalam OP.\n\nStatistik diperbarui secara berkala sepanjang hari. Periksa kembali segera jika Anda tidak melihat penukaran terakhir Anda tercetak di sini."
+        },
+        "position": {
+          "title": "Posisi Leaderboard",
+          "text": "Semakin banyak OP yang Anda dapatkan dengan penukaran dan penjembatan, semakin tinggi Anda akan naik di leaderboard. Jika Anda berada di top 100 di akhir kontes, Anda akan mendapatkan bonus hadiah hingga 8,000 OP."
+        }
+      }
+    },
+    "positions": {
+      "open_dapp": "Buka 􀮶",
+      "deposits": "Deposit",
+      "borrows": "Meminjam",
+      "rewards": "Hadiah"
+    },
+    "savings": {
+      "deposit": "Deposit",
+      "deposit_from_wallet": "Deposit dari Dompet",
+      "earned_lifetime_interest": "Diperoleh %{lifetimeAccruedInterest}",
+      "earnings": {
+        "100_year": "100-Tahun",
+        "10_year": "10-Tahun",
+        "20_year": "20-Tahun",
+        "50_year": "50-Tahun",
+        "5_year": "5-Tahun",
+        "est": "Est.",
+        "label": "Pendapatan",
+        "monthly": "Bulanan",
+        "yearly": "Tahunan"
+      },
+      "get_prefix": "Dapatkan",
+      "label": "Tabungan",
+      "on_your_dollars_suffix": "pada dolar anda",
+      "percentage": "%{percentage}%",
+      "percentage_apy": "%{percentage}% APY",
+      "with_digital_dollars_line_1": "Dengan dolar digital seperti Dai, menabung",
+      "with_digital_dollars_line_2": "menghasilkan lebih banyak daripada sebelumnya",
+      "withdraw": "Tarik",
+      "zero_currency": "$0.00"
+    },
+    "send_feedback": {
+      "copy_email": "Salin alamat email",
+      "email_error": {
+        "description": "Apakah Anda ingin menyalin alamat email umpan balik kita ke papan klip Anda secara manual?",
+        "title": "Kesalahan membuka klien email"
+      },
+      "no_thanks": "Tidak, terima kasih"
+    },
+    "settings": {
+      "backup": "Cadangan",
+      "google_account_used": "Akun Google yang digunakan untuk cadangan",
+      "backup_switch_google_account": "Ganti Akun Google",
+      "backup_sign_out": "Keluar",
+      "backup_sign_in": "Masuk",
+      "backup_loading": "Memuat...",
+      "backup_google_account": "Akun Google",
+      "currency": "Mata Uang",
+      "app_icon": "Ikon Aplikasi",
+      "dev": "Pengembang",
+      "developer": "Pengaturan Pengembang",
+      "done": "Selesai",
+      "feedback_and_reports": "Umpan Balik & Laporan Bug",
+      "feedback_and_support": "Masukan dan Dukungan",
+      "follow_us_on_twitter": "Ikuti kami di Twitter",
+      "hey_friend_message": "👋️ Hai teman! Anda harus mengunduh Rainbow, dompet Ethereum favorit saya 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
+      "label": "Pengaturan",
+      "language": "Bahasa",
+      "learn": "Pelajari tentang Ethereum",
+      "network": "Jaringan",
+      "notifications": "Notifikasi",
+      "notifications_section": {
+        "my_wallets": "Dompet Saya",
+        "watched_wallets": "Dompet yang Diawasi",
+        "allow_notifications": "Izinkan Notifikasi",
+        "sent": "Dikirim",
+        "received": "Diterima",
+        "purchased": "Dibeli",
+        "sold": "Dijual",
+        "minted": "Dicetak",
+        "swapped": "Ditukar",
+        "approvals": "Disetujui",
+        "other": "Kontrak & Lainnya",
+        "all": "Semua",
+        "off": "Mati",
+        "plus_n_more": "+ %{n} lebih",
+        "no_permissions": "Sepertinya izin notifikasi Anda dinonaktifkan. Harap aktifkan mereka di Pengaturan untuk menerima notifikasi dari Rainbow.",
+        "no_watched_wallets": "Anda tidak sedang mengawasi dompet apa pun.",
+        "no_owned_wallets": "Anda tidak memiliki dompet apa pun di Rainbow. Buat dompet atau impor satu dengan frasa rahasia Anda.",
+        "open_system_settings": "Buka Pengaturan",
+        "unsupported_network": "Notifikasi hanya tersedia untuk transaksi Ethereum Mainnet saat ini.",
+        "change_network": "Ubah Jaringan Anda",
+        "no_first_time_permissions": "Harap izinkan Rainbow untuk mengirimkan notifikasi kepada Anda.",
+        "first_time_allow_notifications": "Izinkan Notifikasi",
+        "error_alert_title": "Berlangganan Gagal",
+        "error_alert_content": "Silakan coba lagi nanti.",
+        "offline_alert_content": "Sepertinya Anda tidak memiliki koneksi internet.\n\nSilakan coba lagi nanti.",
+        "no_settings_for_address_title": "Tidak ada pengaturan untuk dompet ini",
+        "no_settings_for_address_content": "Tidak ada pengaturan untuk dompet ini.\nSilakan coba memulai ulang aplikasi atau coba lagi nanti."
+      },
+      "privacy": "Privasi",
+      "privacy_section": {
+        "public_showcase": "Pameran Publik",
+        "when_public": "Ketika publik, Pameran NFT Anda akan terlihat di profil Rainbow Anda!",
+        "when_public_prefix": "Ketika publik, Pameran NFT Anda akan terlihat di profil web Rainbow Anda! Anda dapat melihat profil Anda di",
+        "view_profile": "Lihat profil Anda",
+        "analytics_toggle": "Analitik",
+        "analytics_toggle_description": "Bantu Rainbow meningkatkan produk dan layanannya dengan memungkinkan analitik dari data penggunaan. Data yang dikumpulkan tidak terkait dengan Anda atau akun Anda."
+      },
+      "restore": "Kembalikan ke penyebaran asli",
+      "review": "Ulas Rainbow",
+      "share_rainbow": "Bagikan Rainbow",
+      "theme": "Tema",
+      "theme_section": {
+        "system": "Sistem",
+        "dark": "Gelap",
+        "light": "Terang"
+      },
+      "icon_change": {
+        "title": "Konfirmasi perubahan ikon",
+        "warning": "Mengubah ikon Anda mungkin menyebabkan Rainbow untuk restart.",
+        "confirm": "Konfirmasi",
+        "cancel": "Batal"
+      }
+    },
+    "subscribe_form": {
+      "email_already_subscribed": "Maaf, Anda sudah mendaftar dengan email ini",
+      "generic_error": "Ups, ada yang salah",
+      "sending": "Mengirim...",
+      "successful": "Periksa email Anda",
+      "too_many_signup_request": "Terlalu banyak permintaan pendaftaran, silakan coba lagi nanti"
+    },
+    "swap": {
+      "choose_token": "Pilih Token",
+      "gas": {
+        "custom": "Kustom",
+        "edit_price": "Edit Harga Gas",
+        "enter_price": "Masukkan Harga Gas",
+        "estimated_fee": "Perkiraan biaya",
+        "fast": "Cepat",
+        "network_fee": "Biaya Jaringan",
+        "normal": "Normal",
+        "slow": "Lambat"
+      },
+      "loading": "Memuat...",
+      "modal_types": {
+        "confirm": "Konfirmasi",
+        "deposit": "Deposit",
+        "receive": "Terima",
+        "swap": "Tukar",
+        "get_symbol_with": "Dapatkan %{symbol} dengan",
+        "withdraw": "Tarik",
+        "withdraw_symbol": "Tarik %{symbol}"
+      },
+      "warning": {
+        "cost": {
+          "are_you_sure_title": "Apakah Anda yakin?",
+          "this_transaction_will_cost_you_more": "Transaksi ini akan biaya lebih dari nilai yang Anda tukar, yakin ingin melanjutkan?"
+        },
+        "edit_price": "Edit Harga Gas",
+        "invalid_price": {
+          "message": "Anda perlu memasukkan jumlah yang valid",
+          "title": "Harga Gas Tidak Valid"
+        },
+        "too_high": {
+          "message": "Periksa dua kali bahwa Anda telah memasukkan jumlah yang benar—Anda kemungkinan membayar lebih dari yang Anda butuhkan!",
+          "title": "Harga gas tinggi!"
+        },
+        "too_low": {
+          "message": "Direkomendasikan untuk menetapkan harga gas yang lebih tinggi untuk menghindari masalah.",
+          "title": "Harga gas rendah–transaksi mungkin macet!"
+        }
+      }
+    },
+    "transactions": {
+      "actions": {
+        "addToContacts": "Tambahkan ke Kontak",
+        "cancel": "☠️ Batalkan",
+        "close": "Tutup",
+        "speedUp": "🚀 Percepat",
+        "trySwapAgain": "Coba Tukar Lagi",
+        "viewContact": "Lihat Kontak"
+      },
+      "pending_title": "Tertunda",
+      "dropped_title": "Dibatalkan",
+      "type": {
+        "approved": "Disetujui",
+        "approving": "Menyetujui",
+        "bridging": "Membangun Jembatan",
+        "bridged": "Dijembatani",
+        "cancelled": "Dibatalkan",
+        "cancelling": "Membatalkan",
+        "contract interaction": "Interaksi Kontrak",
+        "deposited": "Ditabungkan",
+        "depositing": "Menabung",
+        "dropped": "Dibatalkan",
+        "failed": "Gagal",
+        "purchased": "Dibeli",
+        "purchasing": "Membeli",
+        "received": "Diterima",
+        "receiving": "Menerima",
+        "self": "Sendiri",
+        "sending": "Mengirim",
+        "sent": "Dikirim",
+        "speeding up": "Mempercepat",
+        "selling": "Menjual",
+        "sold": "Dijual",
+        "swapped": "Ditukar",
+        "swapping": "Menukar",
+        "unknown": "Tidak Diketahui",
+        "withdrawing": "Mengambil",
+        "withdrew": "Mengambil"
+      },
+      "savings": "Tabungan",
+      "signed": "Ditandatangani",
+      "contract_interaction": "Interaksi Kontrak",
+      "deposited_with_token": "Menyetor %{name}",
+      "withdrew_with_token": "Menarik %{name}"
+    },
+    "transaction_details": {
+      "from": "Dari",
+      "to": "Ke",
+      "value": "Nilai",
+      "hash": "Tx Hash",
+      "network_fee": "Biaya Jaringan",
+      "hash_copied": "􀁣 Hash transaksi disalin",
+      "address_copied": "􀁣 Alamat disalin",
+      "try_again": "􀅉 Coba lagi",
+      "context_menu": {
+        "copy_address": "Salin Alamat",
+        "send": "Kirim",
+        "add_contact": "Tambahkan ke Kontak",
+        "edit_contact": "Edit Kontak"
+      },
+      "actions_menu": {
+        "speed_up": "Percepat",
+        "cancel": "Batal",
+        "remove": "Hapus"
+      }
+    },
+    "time": {
+      "today_caps": "Hari Ini",
+      "today": "hari ini",
+      "yesterday_caps": "Kemarin",
+      "yesterday": "kemarin",
+      "this_month_caps": "Bulan Ini",
+      "days": {
+        "long": {
+          "plural": "hari",
+          "singular": "hari"
+        },
+        "micro": "d",
+        "short": {
+          "plural": "hari",
+          "singular": "hari"
+        }
+      },
+      "hours": {
+        "long": {
+          "plural": "jam",
+          "singular": "jam"
+        },
+        "micro": "h",
+        "short": {
+          "plural": "jam",
+          "singular": "jam"
+        }
+      },
+      "milliseconds": {
+        "long": {
+          "plural": "milidetik",
+          "singular": "milidetik"
+        },
+        "micro": "ms",
+        "short": {
+          "plural": "ms",
+          "singular": "ms"
+        }
+      },
+      "minutes": {
+        "long": {
+          "plural": "menit",
+          "singular": "menit"
+        },
+        "micro": "m",
+        "short": {
+          "plural": "menit",
+          "singular": "menit"
+        }
+      },
+      "now": "Sekarang",
+      "seconds": {
+        "long": {
+          "plural": "detik",
+          "singular": "detik"
+        },
+        "micro": "s",
+        "short": {
+          "plural": "dtk",
+          "singular": "dtk"
+        }
+      }
+    },
+    "toasts": {
+      "copied": "Salin \"%{copiedText}\"",
+      "invalid_paste": "Anda tidak bisa menempelkan itu di sini"
+    },
+    "hardware_wallets": {
+      "pair_your_nano": "Pasangkan Nano X Anda",
+      "connect_your_ledger": "Hubungkan Ledger Nano X Anda ke Rainbow melalui Bluetooth. Jika ini adalah kali pertama Anda, Rainbow akan meminta akses Bluetooth.",
+      "learn_more_about_ledger": "Pelajari lebih lanjut tentang Ledger",
+      "pair_a_new_ledger": "Pasangkan Ledger baru",
+      "looking_for_devices": "Mencari perangkat",
+      "confirm_on_device": "Konfirmasi di perangkat",
+      "transaction_rejected": "Transaksi ditolak",
+      "please_try_again": "Silahkan coba lagi jika Anda ingin melanjutkan",
+      "connected_and_ready": "Buku besar Anda terhubung, silakan tinjau dan konfirmasi transaksi pada perangkat Anda.",
+      "make_sure_bluetooth_enabled": "Pastikan Anda telah mengaktifkan Bluetooth dan Ledger Nano X Anda terbuka.",
+      "device_connected": "Perangkat terhubung",
+      "almost_done": "Hampir selesai. Sebelum Anda menyelesaikan, Anda perlu mengaktifkan penandatanganan buta di perangkat Ledger Anda.",
+      "enable_blind_signing": "Aktifkan penandatanganan buta",
+      "blind_signing_enabled": "Penandatanganan buta diaktifkan",
+      "blind_signing_description": "Penandatanganan buta memungkinkan perangkat Anda untuk menyetujui penandatanganan transaksi kontrak pintar.",
+      "learn_more": "Pelajari Lebih Lanjut",
+      "finish_importing": "Selesaikan import",
+      "blind_signing_instructions": {
+        "step_1": {
+          "title": "Di Ledger, buka aplikasi ETH",
+          "description": "Hubungkan dan buka kunci perangkat Anda dan buka aplikasi Ethereum (ETH)."
+        },
+        "step_2": {
+          "title": "Menuju ke pengaturan",
+          "description": "Tekan tombol kanan untuk navigasi ke Pengaturan. Lalu tekan kedua tombol untuk mengesahkan perangkat Ledger Anda menampilkan Tanda Tangan Buta."
+        },
+        "step_3": {
+          "title": "Aktifkan penandatanganan buta",
+          "description": "Tekan kedua tombol untuk mengaktifkan tanda tangan buta untuk transaksi. Jika perangkat menampilkan Diaktifkan, Anda siap untuk melanjutkan."
+        }
+      },
+      "unlock_ledger": "Buka Ledger",
+      "open_eth_app": "Buka aplikasi ETH",
+      "open_eth_app_description": "Aplikasi Ethereum perlu dibuka pada Ledger Anda untuk melanjutkan transaksi.",
+      "enter_passcode": "Masukkan kode sandi Anda untuk membuka Ledger Anda. Setelah dibuka, buka aplikasi Ethereum dengan menekan kedua tombol sekaligus.",
+      "errors": {
+        "off_or_locked": "Pastikan perangkat Anda tidak dikunci",
+        "no_eth_app": "Buka aplikasi Eth di perangkat Anda",
+        "unknown": "Kesalahan tidak diketahui, tutup dan buka kembali lembar ini"
+      },
+      "pairing_error_alert": {
+        "title": "Kesalahan Menghubungkan",
+        "body": "Silakan coba lagi, jika masalah terus berlanjut tutup aplikasi dan coba lagi"
+      }
+    },
+    "wallet": {
+      "action": {
+        "add_another": "Tambahkan dompet lain",
+        "cancel": "Batal",
+        "copy_contract_address": "Salin Alamat Kontrak",
+        "delete": "Hapus Dompet",
+        "delete_confirm": "Anda yakin ingin menghapus dompet ini?",
+        "edit": "Edit Dompet",
+        "hide": "Sembunyikan",
+        "import_wallet": "Tambah Dompet",
+        "input": "Input Transaksi",
+        "notifications": {
+          "action_title": "Pengaturan Notifikasi",
+          "alert_title": "Tidak ada pengaturan untuk dompet ini",
+          "alert_message": "Tidak ada pengaturan untuk dompet ini.\nSilakan coba memulai ulang aplikasi atau coba lagi nanti."
+        },
+        "pair_hardware_wallet": "Pasangkan Ledger Nano X",
+        "paste": "Tempel",
+        "pin": "Pin",
+        "reject": "Tolak",
+        "remove": "Hapus Dompet",
+        "remove_confirm": "Anda yakin ingin menghapus dompet ini?",
+        "send": "Kirim",
+        "to": "Ke",
+        "unhide": "Batal Sembunyikan",
+        "unpin": "Lepaskan Pin",
+        "value": "Nilai",
+        "view_on": "Tampilkan di %{blockExplorerName}"
+      },
+      "add_cash": {
+        "card_notice": "Bekerja dengan sebagian besar kartu debit",
+        "interstitial": {
+          "other_amount": "Jumlah lain"
+        },
+        "need_help_button_email_subject": "dukungan",
+        "need_help_button_label": "Dapatkan Dukungan",
+        "on_the_way_line_1": "Your %{currencySymbol} dalam perjalanan",
+        "on_the_way_line_2": "dan akan tiba sebentar lagi",
+        "purchase_failed_order_id": "ID Pesanan: %{orderId}",
+        "purchase_failed_subtitle": "Anda tidak dikenakan biaya.",
+        "purchase_failed_support_subject": "Pembelian Gagal",
+        "purchase_failed_support_subject_with_order_id": "Pembelian Gagal - Pesanan %{orderId}",
+        "purchase_failed_title": "Maaf, pembelian anda gagal.",
+        "purchasing_dai_requires_eth_message": "Sebelum Anda dapat membeli DAI, Anda harus memiliki beberapa ETH di dompet Anda!",
+        "purchasing_dai_requires_eth_title": "Anda tidak memiliki ETH sama sekali!",
+        "running_checks": "Menjalankan pemeriksaan...",
+        "success_message": "Itu di sini 🥳",
+        "watching_mode_confirm_message": "Dompet yang Anda buka hanya bisa dibaca, jadi Anda tidak bisa mengontrol apa yang ada di dalamnya. Anda yakin ingin menambahkan uang ke %{truncatedAddress}?",
+        "watching_mode_confirm_title": "Anda sedang dalam Modus Melihat"
+      },
+      "add_cash_v2": {
+        "sheet_title": "Pilih opsi pembayaran untuk membeli kripto",
+        "fees_title": "Biaya",
+        "instant_title": "Instan",
+        "method_title": "Metode",
+        "methods_title": "Metode",
+        "network_title": "Jaringan",
+        "networks_title": "Jaringan",
+        "generic_error": {
+          "title": "Ada yang salah",
+          "message": "Tim kami telah diberitahu dan akan segera menyelidiki.",
+          "button": "OK"
+        },
+        "unauthenticated_ratio_error": {
+          "title": "Kami minta maaf, autentikasi Anda gagal",
+          "message": "Demi keamanan Anda, Anda harus melakukan autentikasi sebelum Anda dapat membeli kripto dengan Ratio."
+        },
+        "support_emails": {
+          "help": "Saya Butuh Bantuan Membeli Kripto Dengan %{provider}",
+          "account_recovery": "Pemulihan Akun untuk Pembelian Kripto"
+        },
+        "sheet_empty_state": {
+          "title": "Tidak dapat menemukan penyedia pilihan Anda?",
+          "description": "Cek kembali segera untuk pilihan lebih banyak"
+        },
+        "explain_sheet": {
+          "semi_supported": {
+            "title": "Pembelian sukses!",
+            "text": "Kami belum sepenuhnya mendukung aset ini, tetapi kami sedang mengerjakannya! Anda seharusnya melihatnya muncul di dompet Anda segera."
+          }
+        }
+      },
+      "alert": {
+        "finish_importing": "Selesaikan Impor",
+        "looks_like_imported_public_address": "\nSepertinya Anda mengimpor dompet ini hanya dengan alamat publiknya. Untuk mengendalikan apa yang ada di dalamnya, Anda perlu mengimpor kunci pribadi atau frasa rahasia terlebih dahulu.",
+        "nevermind": "Tidak apa-apa",
+        "this_wallet_in_watching_mode": "Dompet ini saat ini dalam mode \"Pemantauan\"!"
+      },
+      "alerts": {
+        "dont_have_asset_in_wallet": "Kelihatannya Anda tidak memiliki aset itu di dompet Anda...",
+        "invalid_ethereum_url": "Url ethereum tidak valid",
+        "ooops": "Ups!",
+        "this_action_not_supported": "Tindakan ini saat ini tidak didukung :("
+      },
+      "assets": {
+        "no_price": "Saldo Kecil"
+      },
+      "authenticate": {
+        "alert": {
+          "current_authentication_not_secure_enough": "Metode autentikasi Anda saat ini (Pengenalan Wajah) tidak cukup aman, silakan pergi ke \"Pengaturan > Biometrik & Keamanan\" dan aktifkan metode biometrik alternatif seperti Sidik Jari atau Iris.",
+          "error": "Kesalahan"
+        },
+        "please": "Silakan otentifikasi",
+        "please_seed_phrase": "Harap otentikasi untuk melihat kunci privat"
+      },
+      "back_ups": {
+        "and_1_more_wallet": "Dan 1 dompet lagi",
+        "and_more_wallets": "Dan %{moreWalletCount} dompet lagi",
+        "backed_up": "Dibackup",
+        "backed_up_manually": "Dibackup secara manual",
+        "imported": "Diimport"
+      },
+      "balance_title": "Saldo",
+      "buy": "Beli",
+      "change_wallet": {
+        "balance_eth": "%{balanceEth} ETH",
+        "watching": "Menonton",
+        "ledger": "Ledger"
+      },
+      "connected_apps": "Aplikasi Terhubung",
+      "copy": "Salin",
+      "copy_address": "Salin Alamat",
+      "diagnostics": {
+        "authenticate_with_pin": "Otentikasi dengan PIN",
+        "restore": {
+          "address": "Alamat",
+          "created_at": "Dibuat pada",
+          "heads_up_title": "Perhatian!",
+          "key": "Kunci",
+          "label": "Label",
+          "restore": "Pulihkan",
+          "secret": "Rahasia",
+          "this_action_will_completely_replace": "Tindakan ini akan sepenuhnya menggantikan dompet ini. Anda yakin?",
+          "type": "Jenis",
+          "yes_i_understand": "Ya, saya mengerti"
+        },
+        "secret": {
+          "copy_secret": "Salin Rahasia",
+          "okay_i_understand": "Oke, saya mengerti",
+          "reminder_title": "Pengingat",
+          "these_words_are_for_your_eyes_only": "Kata-kata ini hanya untuk mata Anda saja. Frase rahasia Anda memberikan akses ke seluruh dompet Anda. \n\n       Berhati-hatilah dengan itu."
+        },
+        "uuid": "UUID Anda",
+        "uuid_copied": "􀁣 UUID disalin",
+        "uuid_description": "Pengidentifikasi ini memungkinkan kami untuk menemukan laporan kesalahan aplikasi dan crash Anda.",
+        "loading": "Memuat...",
+        "app_state_diagnostics_title": "Kondisi Aplikasi",
+        "app_state_diagnostics_description": "Memungkinkan Anda untuk mengambil foto instant dari kondisi aplikasi sehingga Anda dapat membagikannya dengan tim dukungan kami.",
+        "wallet_diagnostics_title": "Dompet",
+        "sheet_title": "Diagnostik",
+        "pin_auth_title": "Otentikasi PIN",
+        "you_need_to_authenticate_with_your_pin": "Anda perlu mengautentikasi dengan PIN Anda untuk mengakses rahasia Dompet Anda",
+        "share_application_state": "Bagikan status aplikasi dump",
+        "wallet_details_title": "Detail Dompet",
+        "wallet_details_description": "Di bawah ini adalah detail dari semua dompet yang ditambahkan ke Rainbow."
+      },
+      "error_displaying_address": "Kesalahan menampilkan alamat",
+      "feedback": {
+        "cancel": "Tidak, terima kasih",
+        "choice": "Apakah Anda ingin menyalin alamat email umpan balik kita ke papan klip Anda secara manual?",
+        "copy_email_address": "Salin alamat email",
+        "email_subject": "📱 Masukan Beta Rainbow",
+        "error": "Kesalahan membuka klien email",
+        "send": "Kirim Masukan"
+      },
+      "import_failed_invalid_private_key": "Impor gagal karena kunci pribadi tidak valid. Silakan coba lagi.",
+      "intro": {
+        "create_wallet": "Buat Dompet",
+        "instructions": "Harap jangan menyimpan lebih banyak di dompet Anda daripada yang Anda bersedia untuk kehilangan.",
+        "warning": "Ini adalah perangkat lunak alpha.",
+        "welcome": "Selamat datang di Rainbow"
+      },
+      "invalid_ens_name": "Ini bukan nama ENS yang valid",
+      "invalid_unstoppable_name": "Ini bukan nama Unstoppable yang valid",
+      "label": "Dompet",
+      "loading": {
+        "error": "Telah terjadi kesalahan saat memuat dompet. Silakan tutup aplikasi dan coba lagi.",
+        "message": "Memuat"
+      },
+      "message_signing": {
+        "failed_signing": "Gagal menanda tangani pesan",
+        "message": "Pesan",
+        "request": "Permintaan Penandatanganan Pesan",
+        "sign": "Tandatangan Pesan"
+      },
+      "my_account_address": "Alamat akun saya:",
+      "network_title": "Jaringan",
+      "new": {
+        "add_wallet_sheet": {
+          "options": {
+            "cloud": {
+              "description_android": "Jika Anda sebelumnya telah mencadangkan dompet Anda di Google Drive, ketuk di sini untuk memulihkannya.",
+              "description_ios_one_wallet": "Anda memiliki 1 cadangan dompet",
+              "description_ios_multiple_wallets": "Anda memiliki %{walletCount} cadangan dompet",
+              "title": "Pulihkan dari %{platform}",
+              "no_backups": "Tidak ada cadangan yang ditemukan",
+              "no_google_backups": "Kami tidak dapat menemukan cadangan apa pun di Google Drive. Pastikan Anda masuk dengan akun yang benar."
+            },
+            "create_new": {
+              "description": "Buat dompet baru di salah satu frase seed Anda",
+              "title": "Buat dompet baru"
+            },
+            "hardware_wallet": {
+              "description": "Tambahkan akun dari dompet hardware Bluetooth Anda",
+              "title": "Hubungkan dompet hardware Anda"
+            },
+            "seed": {
+              "description": "Gunakan frasa pemulihan Anda dari Rainbow atau dompet kripto lainnya",
+              "title": "Pulihkan dengan frasa pemulihan atau kunci pribadi"
+            },
+            "watch": {
+              "description": "Pantau alamat publik atau nama ENS",
+              "title": "Pantau alamat Ethereum"
+            }
+          },
+          "first_wallet": {
+            "description": "Impor dompet Anda sendiri atau pantau milik orang lain",
+            "title": "Tambahkan dompet pertama Anda"
+          },
+          "additional_wallet": {
+            "description": "Buat dompet baru atau tambahkan yang sudah ada",
+            "title": "Tambahkan dompet lain"
+          }
+        },
+        "import_or_watch_wallet_sheet": {
+          "paste": "Tempel",
+          "continue": "Lanjutkan",
+          "import": {
+            "title": "Pulihkan dompet",
+            "description": "Pulihkan dengan frase pemulihan atau kunci pribadi dari Rainbow atau dompet kripto lainnya",
+            "placeholder": "Masukkan frase pemulihan atau kunci pribadi",
+            "button": "Impor"
+          },
+          "watch": {
+            "title": "Pantau alamat",
+            "placeholder": "Masukkan alamat Ethereum atau nama ENS",
+            "button": "Menonton"
+          },
+          "watch_or_import": {
+            "title": "Tambahkan dompet",
+            "placeholder": "Masukkan frase rahasia, kunci pribadi, alamat Ethereum, atau nama ENS"
+          }
+        },
+        "alert": {
+          "looks_like_already_imported": "Sepertinya Anda sudah mengimpor dompet ini!",
+          "oops": "Ups!"
+        },
+        "already_have_wallet": "Saya sudah memiliki satu",
+        "create_wallet": "Buat Dompet",
+        "enter_seeds_placeholder": "Frase rahasia, kunci pribadi, alamat Ethereum, atau nama ENS",
+        "get_new_wallet": "Dapatkan dompet baru",
+        "import_wallet": "Impor Dompet",
+        "name_wallet": "Berikan nama dompet Anda",
+        "terms": "Dengan melanjutkan, Anda setuju dengan Rainbow’s ",
+        "terms_link": "Syarat Penggunaan"
+      },
+      "pin_authentication": {
+        "choose_your_pin": "Pilih PIN Anda",
+        "confirm_your_pin": "Konfirmasi PIN Anda",
+        "still_blocked": "Masih diblokir",
+        "too_many_tries": "Terlalu banyak percobaan!",
+        "type_your_pin": "Ketik PIN Anda",
+        "you_need_to_wait_minutes_plural": "Anda perlu menunggu %{minutesCount} menit sebelum mencoba lagi",
+        "you_still_need_to_wait": "Anda masih perlu menunggu ~ %{timeAmount} %{unitName} sebelum mencoba lagi"
+      },
+      "push_notifications": {
+        "please_enable_body": "Sepertinya Anda menggunakan WalletConnect. Tolong aktifkan notifikasi push untuk mendapatkan pemberitahuan permintaan transaksi dari WalletConnect.",
+        "please_enable_title": "Rainbow ingin mengirimkan notifikasi push kepada Anda"
+      },
+      "qr": {
+        "camera_access_needed": "Akses kamera diperlukan untuk memindai!",
+        "enable_camera_access": "Aktifkan akses kamera",
+        "error_mounting_camera": "Kesalahan saat memasang kamera",
+        "find_a_code": "Temukan kode untuk dipindai",
+        "qr_1_app_connected": "1 Aplikasi Terhubung",
+        "qr_multiple_apps_connected": "%{appsConnectedCount} Aplikasi Terhubung",
+        "scan_to_pay_or_connect": "Pindai untuk membayar atau terhubung",
+        "simulator_mode": "Mode Simulator",
+        "sorry_could_not_be_recognized": "Maaf, kode QR ini tidak bisa dikenali.",
+        "unrecognized_qr_code_title": "Kode QR Tidak Dikenali"
+      },
+      "settings": {
+        "copy_address": "Salin alamat",
+        "copy_address_capitalized": "Salin Alamat",
+        "copy_seed_phrase": "Salin Frasa Rahasia",
+        "hide_seed_phrase": "Sembunyikan Frasa Rahasia",
+        "show_seed_phrase": "Tampilkan Frasa Rahasia"
+      },
+      "something_went_wrong_importing": "Ada kesalahan saat mengimpor. Silahkan coba lagi!",
+      "sorry_cannot_add_ens": "Maaf, kami tidak bisa menambahkan nama ENS ini saat ini. Silahkan coba lagi nanti!",
+      "sorry_cannot_add_unstoppable": "Maaf, kami tidak bisa menambahkan nama Unstoppable ini saat ini. Silahkan coba lagi nanti!",
+      "speed_up": {
+        "problem_while_fetching_transaction_data": "Ada masalah saat mengambil data transaksi. Silakan coba lagi...",
+        "unable_to_speed_up": "Tidak bisa mempercepat transaksi"
+      },
+      "transaction": {
+        "alert": {
+          "authentication": "Otentikasi Gagal",
+          "cancelled_transaction": "Gagal mengirim transaksi yang dibatalkan ke WalletConnect",
+          "connection_expired": "Koneksi Berakhir",
+          "failed_sign_message": "Gagal menanda tangani pesan",
+          "failed_transaction": "Gagal mengirim transaksi",
+          "failed_transaction_status": "Gagal mengirim status transaksi yang gagal",
+          "invalid_transaction": "Transaksi tidak valid",
+          "please_go_back_and_reconnect": "Silakan kembali ke dapp dan sambungkan kembali ke dompet Anda",
+          "transaction_status": "Gagal mengirim status transaksi"
+        },
+        "speed_up": {
+          "speed_up_title": "Percepat transaksi",
+          "cancel_tx_title": "Batalkan transaksi",
+          "speed_up_text": "Ini akan mencoba untuk membatalkan transaksi tertunda Anda. Butuh penyiaran transaksi lain!",
+          "cancel_tx_text": "Ini akan mempercepat transaksi tertunda Anda dengan menggantikannya. Masih ada kemungkinan transaksi asli Anda akan dikonfirmasi terlebih dahulu!"
+        },
+        "checkboxes": {
+          "clear_profile_information": "Hapus informasi profil",
+          "point_name_to_recipient": "Arahkan nama ini ke alamat dompet penerima",
+          "transfer_control": "Alihkan kontrol ke penerima",
+          "has_a_wallet_that_supports": "Orang yang saya kirimkan memiliki dompet yang mendukung %{networkName}",
+          "im_not_sending_to_an_exchange": "Saya tidak mengirim ke bursa"
+        },
+        "errors": {
+          "unpredictable_gas": "Oh tidak! Kami tidak dapat memperkirakan batas gas. Silakan coba lagi.",
+          "insufficient_funds": "Oh tidak! Harga gas berubah dan Anda tidak lagi memiliki dana cukup untuk transaksi ini. Silakan coba lagi dengan jumlah yang lebih rendah.",
+          "generic": "Oh tidak! Ada masalah saat mengirimkan transaksi. Silakan coba lagi."
+        },
+        "complete_checks": "Pemeriksaan lengkap",
+        "ens_configuration_options": "Pilihan konfigurasi ENS",
+        "confirm": "Konfirmasi transaksi",
+        "max": "Maks",
+        "placeholder_title": "Placeholder",
+        "request": "Permintaan Transaksi",
+        "send": "Kirim Transaksi",
+        "sending_title": "Mengirim"
+      },
+      "wallet_connect": {
+        "error": "Kesalahan saat menginisialisasi dengan WalletConnect",
+        "failed_to_disconnect": "Gagal memutuskan semua sesi WalletConnect",
+        "failed_to_send_request_status": "Gagal mengirim status permintaan ke WalletConnect.",
+        "missing_fcm": "Tidak dapat menginisialisasi WalletConnect: token notifikasi push hilang. Silakan coba lagi.",
+        "walletconnect_session_has_expired_while_trying_to_send": "Sesi WalletConnect telah kadaluarsa saat mencoba mengirim status permintaan. Silakan sambungkan kembali."
+      },
+      "wallet_title": "Dompet"
+    },
+    "support": {
+      "error_alert": {
+        "copy_email_address": "Salin alamat email",
+        "no_thanks": "Tidak, terima kasih",
+        "message": "Apakah Anda ingin menyalin manual alamat email dukungan kami ke clipboard Anda?",
+        "title": "Kesalahan membuka klien email",
+        "subject": "Dukungan Rainbow"
+      },
+      "wallet_alert": {
+        "message_support": "Pesan Dukungan",
+        "close": "Tutup",
+        "message": "Untuk bantuan, silakan hubungi dukungan! \nKami akan segera menghubungi Anda!",
+        "title": "Terjadi kesalahan"
+      }
+    },
+    "walletconnect": {
+      "available_networks": "Jaringan yang Tersedia",
+      "change_network": "Ubah Jaringan",
+      "connected_apps": "Aplikasi yang Terhubung",
+      "disconnect": "Putuskan Sambungan",
+      "go_back_to_your_browser": "Kembali ke browser Anda",
+      "paste_uri": {
+        "button": "Tempel URI sesi",
+        "message": "Tempelkan URI WalletConnect di bawah ini",
+        "title": "Sesi WalletConnect Baru"
+      },
+      "switch_network": "Ganti Jaringan",
+      "switch_wallet": "Ganti Dompet",
+      "titles": {
+        "connect": "Anda sudah terhubung!",
+        "reject": "Koneksi dibatalkan",
+        "sign": "Pesan ditandatangani!",
+        "sign_canceled": "Transaksi dibatalkan!",
+        "transaction_canceled": "Transaksi dibatalkan!",
+        "transaction_sent": "Transaksi telah dikirim!"
+      },
+      "unknown_application": "Aplikasi Tidak Diketahui",
+      "connection_failed": "Koneksi gagal",
+      "failed_to_connect_to": "Gagal terhubung ke %{appName}",
+      "go_back": "Kembali",
+      "requesting_network": "Minta %{num} jaringan",
+      "requesting_networks": "Minta %{num} jaringan",
+      "unknown_dapp": "Dapp Tidak Diketahui",
+      "unknown_url": "URL Tidak Diketahui",
+      "approval_sheet_network": "Jaringan",
+      "approval_sheet_networks": "%{length} Jaringan",
+      "auth": {
+        "signin_title": "Masuk",
+        "signin_prompt": "Apakah Anda ingin masuk ke %{name} dengan dompet Anda?",
+        "signin_with": "Masuk dengan",
+        "signin_button": "Lanjutkan",
+        "signin_notice": "Dengan melanjutkan, Anda akan menandatangani pesan gratis yang membuktikan Anda memiliki dompet ini",
+        "error_alert_title": "Autentikasi gagal",
+        "error_alert_description": "Ada yang salah. Silakan coba lagi, atau hubungi tim dukungan kami."
+      },
+      "menu_options": {
+        "disconnect": "Putuskan Sambungan",
+        "switch_wallet": "Ganti Dompet",
+        "switch_network": "Ganti Jaringan",
+        "available_networks": "Jaringan yang Tersedia"
+      },
+      "errors": {
+        "go_back": "Kembali",
+        "generic_title": "Koneksi gagal",
+        "generic_error": "Ada yang salah. Silakan coba lagi, atau hubungi tim dukungan kami.",
+        "pairing_timeout": "Sesi ini habis waktu sebelum koneksi dapat dibuat. Biasanya ini disebabkan oleh kesalahan jaringan. Silakan coba lagi.",
+        "pairing_unsupported_methods": "Beranda meminta metode RPC dompet yang tidak didukung oleh Rainbow.",
+        "pairing_unsupported_networks": "Dapp meminta jaringan yang tidak didukung oleh Rainbow.",
+        "request_invalid": "Permintaan berisi parameter yang tidak valid. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau beranda.",
+        "request_unsupported_network": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
+        "request_unsupported_methods": "Metode RPC yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow."
+      }
+    },
+    "warning": {
+      "user_is_offline": "Koneksi offline, silakan periksa koneksi internet Anda",
+      "user_is_online": "Terkoneksi! Anda sudah kembali online"
+    }
+  }
+}

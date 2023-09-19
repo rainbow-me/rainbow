@@ -37,7 +37,11 @@ import {
   runFeatureAndCampaignChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
-import { isL2Network } from './handlers/web3';
+import {
+  getCachedProviderForNetwork,
+  isHardHat,
+  isL2Network,
+} from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
@@ -55,11 +59,11 @@ import {
   queryClient,
 } from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
-import { fetchAssetsFromRefraction } from './redux/explorer';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
 import { branchListener } from './utils/branch';
@@ -221,7 +225,13 @@ class OldApp extends Component {
       ? ethereumUtils.getNetworkFromChainId(tx.chainId)
       : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
+
+    const provider = getCachedProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    const connectedToHardhat = isHardHat(providerUrl);
+
     const updateBalancesAfter = (timeout, isL2, network) => {
+      const { accountAddress, nativeCurrency } = store.getState().settings;
       setTimeout(() => {
         logger.debug('Reloading balances for network', network);
         if (isL2) {
@@ -229,10 +239,22 @@ class OldApp extends Component {
             store.dispatch(additionalDataUpdateL2AssetBalance(tx));
           } else if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
-            store.dispatch(fetchAssetsFromRefraction());
+            queryClient.invalidateQueries({
+              queryKey: userAssetsQueryKey({
+                address: accountAddress,
+                currency: nativeCurrency,
+                connectedToHardhat,
+              }),
+            });
           }
         } else {
-          store.dispatch(fetchAssetsFromRefraction());
+          queryClient.invalidateQueries({
+            queryKey: userAssetsQueryKey({
+              address: accountAddress,
+              currency: nativeCurrency,
+              connectedToHardhat,
+            }),
+          });
         }
       }, timeout);
     };

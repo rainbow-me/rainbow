@@ -4,7 +4,7 @@ import { View, ViewProps } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
-import CoinIconFallback from './CoinIconFallback';
+import { CoinIconFallback } from './CoinIconFallback';
 import { AssetTypes } from '@/entities';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -69,6 +69,8 @@ const CoinIcon: React.FC<Props> = ({
     symbol,
   ]);
 
+  const theme = useTheme();
+
   return (
     <View>
       {isNotContractInteraction ? (
@@ -87,6 +89,8 @@ const CoinIcon: React.FC<Props> = ({
           size={size}
           symbol={symbol}
           type={mainnet_address ? AssetTypes.token : type}
+          assetType={mainnet_address ? AssetTypes.token : type}
+          theme={theme}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />

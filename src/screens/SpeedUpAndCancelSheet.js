@@ -53,6 +53,7 @@ import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
+import * as i18n from '@/languages';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -100,15 +101,17 @@ const GasSpeedButtonContainer = styled(Row).attrs({
 
 const CANCEL_TX = 'cancel';
 const SPEED_UP = 'speed_up';
+// i18n
 
 const title = {
-  [CANCEL_TX]: 'Cancel transaction',
-  [SPEED_UP]: 'Speed up transaction',
+  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_title),
+  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_title),
 };
+// i18n
 
 const text = {
-  [CANCEL_TX]: `This will attempt to cancel your pending transaction. It requires broadcasting another transaction!`,
-  [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
+  [CANCEL_TX]: i18n.t(i18n.l.wallet.transaction.speed_up.cancel_tx_text),
+  [SPEED_UP]: i18n.t(i18n.l.wallet.transaction.speed_up.speed_up_text),
 };
 
 const calcGasParamRetryValue = prevWeiValue => {

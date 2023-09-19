@@ -3,42 +3,21 @@ import toUpper from 'lodash/toUpper';
 import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
+import * as i18n from '@/languages';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
-  convertRawAmountToBalance,
 } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
-
-/**
- * @desc parse account assets
- * @param {Object} [data]
- * @return The array of parsed account assets.
- */
-export const parseAccountAssets = data => {
-  const accountAssets = {};
-  for (const assetKey in data) {
-    const assetData = data[assetKey];
-
-    const asset = parseAsset(assetData.asset);
-
-    accountAssets[assetKey] = {
-      ...asset,
-      balance: convertRawAmountToBalance(assetData.quantity, asset),
-    };
-  }
-
-  return accountAssets;
-};
 
 // eslint-disable-next-line no-useless-escape
 const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));
 
 export const parseAssetName = (metadata, name) => {
   if (metadata?.name) return metadata?.name;
-  return name ? sanitize(name) : 'Unknown Token';
+  return name ? sanitize(name) : i18n.t(i18n.l.assets.unkown_token);
 };
 
 export const parseAssetSymbol = (metadata, symbol) => {

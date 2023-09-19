@@ -3,9 +3,10 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Text } from '@/design-system';
-import { TransactionStatusTypes } from '@/entities';
+import { TransactionStatus, TransactionStatusTypes } from '@/entities';
 import { position } from '@/styles';
 import { ThemeContextProps } from '@/theme';
+import * as lang from '@/languages';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
@@ -207,7 +208,8 @@ export default React.memo(function FastTransactionStatusBadge({
         size="14px / 19px (Deprecated)"
         weight="semibold"
       >
-        {title}
+        {/* @ts-expect-error cant get keys*/}
+        {lang.t(lang.l.transactions.type[status])}
       </Text>
     </View>
   );

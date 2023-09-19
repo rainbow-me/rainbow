@@ -266,6 +266,7 @@ export default function useSwapCurrencyHandlers({
     (chainId: number) => {
       InteractionManager.runAfterInteractions(() => {
         setParams({ focused: false });
+        delayNext();
         navigate(Routes.CURRENCY_SELECT_SCREEN, {
           callback: outputFieldRef?.current?.clear,
           chainId,

@@ -2,7 +2,7 @@
 
 // This script reads language keys from a file and generates a TypeScript
 // declaration file to type `lang.t` calls. The language file to use within
-// `src/languages/` defaults to `_english.json`, and can be specified as an
+// `src/languages/` defaults to `en_US.json`, and can be specified as an
 // argument.
 //
 // This script can be invoked as
@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const languageFilename = process.argv[2] ?? '_english.json';
+const languageFilename = process.argv[2] ?? 'en_US.json';
 const maxLineLength = 80;
 
 /**
