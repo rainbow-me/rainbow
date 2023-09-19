@@ -35,7 +35,6 @@ export type {
   Asset,
   AssetContract,
   IndexToken,
-  SavingsAsset,
   ParsedAddressAsset,
   RainbowToken,
   SwappableAsset,
