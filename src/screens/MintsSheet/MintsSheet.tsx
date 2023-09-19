@@ -10,6 +10,7 @@ import {
   Separator,
   Stack,
   Text,
+  globalColors,
   useColorMode,
 } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
@@ -62,7 +63,9 @@ export function MintsSheet() {
                 <Stack space="10px">
                   <Columns alignVertical="center">
                     <Column width="content">
-                      <AccentColorProvider color={accountColor}>
+                      <AccentColorProvider
+                        color={accountColor ?? globalColors.grey100}
+                      >
                         <ButtonPressAnimation
                           onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
                         >
