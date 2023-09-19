@@ -1,5 +1,14 @@
 platform :ios, '13.0'
-use_modular_headers!
+#use_modular_headers!
+
+pod 'Firebase', :modular_headers => true
+pod 'FirebaseCore', :modular_headers => true
+pod 'FirebaseCoreExtension', :modular_headers => true
+pod 'FirebaseInstallations', :modular_headers => true
+pod 'GoogleDataTransport', :modular_headers => true
+pod 'GoogleUtilities', :modular_headers => true
+pod 'nanopb', :modular_headers => true
+
 install! 'cocoapods', :deterministic_uuids => false
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -16,7 +25,7 @@ target 'SelectTokenIntent' do
 end
 
 target 'ImageNotification' do
-  pod 'Firebase/Messaging', '~> 10.12.0'
+  pod 'Firebase/Messaging', '~> 10.12.0', :modular_headers => true
 end
 
 target 'Rainbow' do
@@ -31,8 +40,8 @@ target 'Rainbow' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
     :fabric_enabled => flags[:fabric_enabled],
-    # Enables Flipper.
-    #
+    # Enables Flipper
+    :flipper_configuration => FlipperConfiguration.enabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
