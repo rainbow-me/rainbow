@@ -1126,7 +1126,7 @@
       "withdrawal_dropdown_label": "For",
       "withdrawal_input_label": "Get"
     },
-    "mints":{
+    "mints": {
       "hold_to_mint": "Hold To Mint",
       "minting": "Minting...",
       "minted": "Minted",

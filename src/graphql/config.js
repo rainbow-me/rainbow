@@ -18,8 +18,7 @@ exports.config = {
     schema: {
       method: 'GET',
       url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
-      headers: {
-      },
+      headers: {},
     },
   },
   arcDev: {

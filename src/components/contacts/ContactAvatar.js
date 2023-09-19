@@ -118,7 +118,10 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
   ]);
   const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(() => buildShadows(color, size, props?.forceDarkMode || isDarkMode, colors), [color, size, props?.forceDarkMode, isDarkMode, colors]);
+  const shadows = useMemo(
+    () => buildShadows(color, size, props?.forceDarkMode || isDarkMode, colors),
+    [color, size, props?.forceDarkMode, isDarkMode, colors]
+  );
 
   const backgroundColor =
     typeof color === 'number'

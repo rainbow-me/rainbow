@@ -215,7 +215,7 @@ function NativeStackNavigator() {
         name={Routes.POAP_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
-        <NativeStack.Screen
+      <NativeStack.Screen
         component={MintSheet}
         name={Routes.MINT_SHEET}
         {...expandedAssetSheetConfigWithLimit}

@@ -2,7 +2,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import { isNaN, truncate } from 'lodash';
+import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
   Easing,
@@ -12,8 +12,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Routes from '@/navigation/routesNames';
-
 import {
   AccentColorProvider,
   Box,
@@ -22,33 +20,15 @@ import {
   Text,
 } from '@/design-system';
 import { add } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
+import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
 import { GenericCard, SQUARE_CARD_SIZE } from './GenericCard';
-import { arcClient, arcDevClient } from '@/graphql';
-import { getZoraNetworkObject } from '@/networks/zora';
-import { useNavigation } from '@/navigation';
-import { getOptimismNetworkObject } from '@/networks/optimism';
 
 type AnimationConfigOptions = {
   duration: number;
   easing: Animated.EasingFunction;
 };
 
-const mints = {
-  OP: {
-    addy: '0xcB0Bb5D835A47584fdA53F57bb4193B28d2738dB',
-    chain: getOptimismNetworkObject().id
-  },
-  Zora: {
-    addy: '0x81eCE04F2aFadCfb1c06f8331de8cba253564Ec1',
-    chain: getZoraNetworkObject().id
-  },
-  Eth: {
-    addy: '0x932261f9Fc8DA46C4a22e31B45c4De60623848bF',
-    chain: 1
-  }
-}
 const TRANSLATIONS = i18n.l.cards.gas;
 
 const containerConfig = {
@@ -67,34 +47,56 @@ const fadeOutConfig: AnimationConfigOptions = {
 };
 
 export const GasCard = () => {
+  const {
+    currentBlockParams,
+    gasFeeParamsBySpeed,
+    startPollingGasFees,
+    stopPollingGasFees,
+  } = useGas();
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
-  const { accountAddress} = useAccountSettings();
-  const { navigate} = useNavigation();
 
   const container = useSharedValue(1);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0);
 
-
+  // Listen to gas prices
+  useEffect(() => {
+    if (isFocused) {
+      startPollingGasFees();
+    } else {
+      stopPollingGasFees();
+    }
+  }, [isFocused, startPollingGasFees, stopPollingGasFees]);
 
   const { NORMAL } = gasUtils;
 
-
-
+  const currentGwei = useMemo(
+    () =>
+      add(
+        currentBlockParams?.baseFeePerGas?.gwei,
+        gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei
+      ),
+    [NORMAL, currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed]
+  );
+  const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
   const renderGweiText = useCallback(
     // @ts-expect-error passed to an untyped JS component
     animatedNumber => {
       const priceText =
-       'lol'
+        animatedNumber === 0
+          ? isCurrentGweiLoaded
+            ? Math.round(Number(currentGwei))
+            : Math.round(Number(lastKnownGwei)) || '􀖇'
+          : animatedNumber;
       return (
         <Text color="accent" size="44pt" weight="bold">
           {priceText}
         </Text>
       );
     },
-    []
+    [currentGwei, isCurrentGweiLoaded, lastKnownGwei]
   );
 
   // @ts-expect-error passed to an untyped JS component
@@ -106,21 +108,24 @@ export const GasCard = () => {
     }
   }, []);
 
-  const handlePress = useCallback(async () => {
-    try{ 
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR);
-     // navigate(Routes.NOTIFICATIONS_PROMO_SHEET);
-      // const res = await arcDevClient.getSingleCollection({walletAddress: accountAddress, contractAddress: mints.Zora.addy, chain: mints.Zora.chain})
-      // console.log('posty');
-      // console.log({res});
-      // navigate(Routes.MINT_SHEET, {collection: res.getSingleCollection?.collection})
-
-    } catch (e)
-{
-  console.log(e)
-}
-
-  }, [accountAddress, navigate]);
+  const handlePress = useCallback(() => {
+    opacity.value = 0;
+    scale.value = 0;
+    container.value = withSequence(
+      withSpring(1.04, containerConfig),
+      withSpring(1, pulseConfig)
+    );
+    opacity.value = withSequence(
+      withSpring(1, pulseConfig),
+      withTiming(0, fadeOutConfig),
+      withTiming(0, { duration: 0 })
+    );
+    scale.value = withSequence(
+      withSpring(1, pulseConfig),
+      withTiming(1, fadeOutConfig),
+      withTiming(0, { duration: 0 })
+    );
+  }, [container, opacity, scale]);
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
     'worklet';
@@ -164,9 +169,10 @@ export const GasCard = () => {
 
   useEffect(() => {
     if (
-    true
+      isCurrentGweiLoaded &&
+      Math.round(Number(currentGwei)) !== Math.round(Number(lastKnownGwei))
     ) {
-      setLastKnownGwei('66');
+      setLastKnownGwei(currentGwei);
       opacity.value = 0;
       scale.value = 0;
       container.value = withSequence(
@@ -186,6 +192,8 @@ export const GasCard = () => {
     }
   }, [
     container,
+    currentGwei,
+    isCurrentGweiLoaded,
     lastKnownGwei,
     opacity,
     scale,
@@ -199,10 +207,10 @@ export const GasCard = () => {
         },
       ],
     };
-  }, [ lastKnownGwei]);
+  }, [currentGwei, lastKnownGwei]);
 
   const pulseStyle = useAnimatedStyle(() => {
-    const color = getColorForGwei('66', lastKnownGwei);
+    const color = getColorForGwei(currentGwei, lastKnownGwei);
 
     return {
       backgroundColor: color,
@@ -216,13 +224,13 @@ export const GasCard = () => {
       ],
       width: SQUARE_CARD_SIZE,
     };
-  }, [ lastKnownGwei]);
+  }, [currentGwei, lastKnownGwei]);
 
   return (
     <Animated.View style={containerStyle}>
       <GenericCard onPress={handlePress} testID="gas-button" type="square">
         <AccentColorProvider
-          color={getColorForGwei('66', lastKnownGwei)}
+          color={getColorForGwei(currentGwei, lastKnownGwei)}
         >
           <Box as={Animated.View} position="absolute" style={pulseStyle} />
           <Box
@@ -237,10 +245,10 @@ export const GasCard = () => {
                 interval={2}
                 renderContent={renderGweiText}
                 timing={(t: number) => 1 - --t * t * t * t}
-                value={'66' || lastKnownGwei}
+                value={currentGwei || lastKnownGwei}
               />
               <Text color="accent" size="17pt" weight="bold">
-                { !lastKnownGwei
+                {!isCurrentGweiLoaded && !lastKnownGwei
                   ? ''
                   : i18n.t(TRANSLATIONS.gwei)}
               </Text>
@@ -251,14 +259,14 @@ export const GasCard = () => {
               </Text>
               <Text
                 color={
-                !lastKnownGwei
+                  !isCurrentGweiLoaded && !lastKnownGwei
                     ? 'labelTertiary'
                     : 'labelSecondary'
                 }
                 size="20pt"
                 weight="bold"
               >
-                {getCurrentPriceComparison('66', lastKnownGwei)}
+                {getCurrentPriceComparison(currentGwei, lastKnownGwei)}
               </Text>
             </Stack>
           </Box>

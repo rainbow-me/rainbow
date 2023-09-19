@@ -41,7 +41,7 @@ export default {
   depositing: 'depositing',
   dropped: 'dropped',
   failed: 'failed',
-  minted:'minted',
+  minted: 'minted',
   minting: 'minting',
   purchased: 'purchased',
   purchasing: 'purchasing',

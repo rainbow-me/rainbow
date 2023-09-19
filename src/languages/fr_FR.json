@@ -1126,7 +1126,7 @@
       "withdrawal_dropdown_label": "pour",
       "withdrawal_input_label": "Obtenir"
     },
-    "mints":{
+    "mints": {
       "hold_to_mint": "Hold To Mint",
       "mint_price": "Mint Price",
       "total_minted": "Total Minted",

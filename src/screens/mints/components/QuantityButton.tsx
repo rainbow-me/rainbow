@@ -20,16 +20,14 @@ const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
   scaleTo: 0.75,
 }))({});
 
-
-
 type StepButtonProps = {
-    type: 'plus' | 'minus',
-    onLongPress: () => void,
-    onLongPressEnded: () => void,
-    onPress: () => void,
-    shouldLongPressHoldPress: boolean,
-    buttonColor: string
-}
+  type: 'plus' | 'minus';
+  onLongPress: () => void;
+  onLongPressEnded: () => void;
+  onPress: () => void;
+  shouldLongPressHoldPress: boolean;
+  buttonColor: string;
+};
 const StepButton = ({
   type,
   onLongPress,
@@ -47,23 +45,35 @@ const StepButton = ({
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       useLateHaptic={false}
     >
-      <Box alignItems='center' justifyContent='center' width={{custom: 36}} height={{custom: 36}} style={{backgroundColor: colors.alpha(buttonColor, 0.1), borderRadius: 18}}>
-      <Text align='center' size="17pt" weight='bold'  color={{custom: colors.alpha(buttonColor,0.25)}}>
-        {type === 'plus' ? '􀅼' : '􀅽'}
-      </Text>
+      <Box
+        alignItems="center"
+        justifyContent="center"
+        width={{ custom: 36 }}
+        height={{ custom: 36 }}
+        style={{
+          backgroundColor: colors.alpha(buttonColor, 0.1),
+          borderRadius: 18,
+        }}
+      >
+        <Text
+          align="center"
+          size="17pt"
+          weight="bold"
+          color={{ custom: colors.alpha(buttonColor, 0.25) }}
+        >
+          {type === 'plus' ? '􀅼' : '􀅽'}
+        </Text>
       </Box>
-      
     </StepButtonWrapper>
   );
 };
 
-
 type StepButtonInputProps = {
-    value: number,
-    plusAction: ()=> void,
-    minusAction: ()=> void,
-    buttonColor: string
-}
+  value: number;
+  plusAction: () => void;
+  minusAction: () => void;
+  buttonColor: string;
+};
 export function QuantityButton({
   value,
   plusAction,
@@ -130,34 +140,37 @@ export function QuantityButton({
 
   return (
     <Wrapper>
-      <Inline alignHorizontal='center' alignVertical="center" horizontalSpace={'6px'}>
-
-    
-      <StepButton
-        buttonColor={buttonColor}
-        onLongPress={onMinusLongPress}
-        onLongPressEnded={onLongPressEnded}
-        onPress={onMinusPress}
-        shouldLongPressHoldPress
-        type={MINUS_ACTION_TYPE}
-      />
-      <Text    color="label"
-                         align="center"
-                         size="22pt"
-                         weight="bold"
-                         tabularNumbers={true}>
-                            {value}
-
-      </Text>
-      <StepButton
-        buttonColor={buttonColor}
-        onLongPress={onPlusLongPress}
-        onLongPressEnded={onLongPressEnded}
-        onPress={onPlusPress}
-        shouldLongPressHoldPress
-        type={PLUS_ACTION_TYPE}
-      />
-        </Inline>
+      <Inline
+        alignHorizontal="center"
+        alignVertical="center"
+        horizontalSpace={'6px'}
+      >
+        <StepButton
+          buttonColor={buttonColor}
+          onLongPress={onMinusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={onMinusPress}
+          shouldLongPressHoldPress
+          type={MINUS_ACTION_TYPE}
+        />
+        <Text
+          color="label"
+          align="center"
+          size="22pt"
+          weight="bold"
+          tabularNumbers={true}
+        >
+          {value}
+        </Text>
+        <StepButton
+          buttonColor={buttonColor}
+          onLongPress={onPlusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={onPlusPress}
+          shouldLongPressHoldPress
+          type={PLUS_ACTION_TYPE}
+        />
+      </Inline>
     </Wrapper>
   );
 }
