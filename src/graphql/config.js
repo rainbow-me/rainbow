@@ -17,8 +17,10 @@ exports.config = {
     document: './queries/arc.graphql',
     schema: {
       method: 'GET',
-      url: 'https://arc-graphql.rainbowdotme.workers.dev/graphql',
-      headers: {},
+      url: 'https://arc-graphql.rainbow.me/graphql',
+      headers: {
+        'x-api-key': 'ARC_GRAPHQL_API_KEY',
+      },
     },
   },
   arcDev: {
