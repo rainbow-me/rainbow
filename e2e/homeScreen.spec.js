@@ -47,7 +47,7 @@ describe('Home Screen', () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow', 0.4);
     await Helpers.checkIfVisible('profile-sticky-header');
     await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
-    await Helpers.swipe('wallet-screen', 'down');
+    await Helpers.swipe('wallet-screen', 'down', 'slow', 0.4);
   });
 
   it('tapping "Swap" opens the swap screen', async () => {
