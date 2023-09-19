@@ -49,5 +49,5 @@
   "gether": 1000000000000000000000000000,
   "tether": 1000000000000000000000000000000,
   "mainnet_nft_offer_gas_fee_fallback": 600000,
-  "polygon_nft_offer_gas_fee_fallback": 1500000
+  "l2_nft_offer_gas_fee_fallback": 2000000
 }
