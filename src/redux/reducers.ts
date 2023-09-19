@@ -20,7 +20,6 @@ import swap from './swap';
 import transactionSignatures from './transactionSignatures';
 import uniswap from './uniswap';
 import userLists from './userLists';
-import usersPositions from './usersPositions';
 import walletconnect from './walletconnect';
 import wallets from './wallets';
 
@@ -45,7 +44,6 @@ export default combineReducers({
   transactionSignatures,
   uniswap,
   userLists,
-  usersPositions,
   walletconnect,
   wallets,
 });

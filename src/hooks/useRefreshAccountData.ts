@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import NetworkTypes from '../helpers/networkTypes';
-import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
@@ -54,13 +53,11 @@ export default function useRefreshAccountData() {
         ? dispatch(fetchWalletENSAvatars())
         : null;
       const wc = dispatch(walletConnectLoadState());
-      const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getWalletENSAvatars,
         wc,
-        uniswapPositions,
       ]);
     } catch (error) {
       logger.log('Error refreshing data', error);
