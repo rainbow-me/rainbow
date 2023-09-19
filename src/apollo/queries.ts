@@ -1,25 +1,5 @@
 import gql from 'graphql-tag';
 
-export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
-  pairAddress: string,
-  block: number
-) => {
-  const queryString = `
-    fragment PairFields on Pair {
-      volumeUSD
-  }
-  query pairs {
-    pairs(${
-      block ? `block: {number: ${block}}` : ``
-    } where: { id: "${pairAddress}"} ) {
-      ...PairFields
-    }
-  }`;
-  return gql`
-    ${queryString}
-  `;
-};
-
 export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   query account($id: ID!) {
     markets {
@@ -47,31 +27,6 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
     }
   }
 `;
-
-export const UNISWAP_ADDITIONAL_POOL_DATA = gql`
-  query pairs($address: String!) {
-    pairs(where: { id: $address }) {
-      volumeUSD
-      reserveUSD
-      trackedReserveETH
-    }
-  }
-`;
-
-export const GET_BLOCKS_QUERY = (timestamps: any) => {
-  let queryString = 'query blocks {';
-  queryString += timestamps.map((timestamp: any) => {
-    return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
-      timestamp + 600
-    } }) {
-        number
-      }`;
-  });
-  queryString += '}';
-  return gql`
-    ${queryString}
-  `;
-};
 
 export const USER_POSITIONS = gql`
   query liquidityPositions($user: Bytes!) {
