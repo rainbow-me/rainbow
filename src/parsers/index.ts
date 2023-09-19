@@ -12,6 +12,7 @@ export {
   parseLegacyGasFeesBySpeed,
   gweiToWei,
   weiToGwei,
+  parseGasParamAmounts,
   parseGasParamsForTransaction,
   parseGasFeeParam,
   parseGasFees,

@@ -6,7 +6,7 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords } from '@/entities';
+import { ENSRegistrationRecords, TransactionGasParamAmounts } from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,
@@ -26,7 +26,8 @@ import {
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
-import { parseGasParamsForTransaction } from '@/parsers';
+import { parseGasParamAmounts } from '@/parsers';
+
 const executeCommit = async (
   name?: string,
   duration?: number,
@@ -377,7 +378,9 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    const gasParams = parseGasParamAmounts(
+      selectedGasFee
+    ) as TransactionGasParamAmounts;
     maxFeePerGas = gasParams.maxFeePerGas;
     maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
