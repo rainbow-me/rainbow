@@ -25,7 +25,7 @@ import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
-import AppIconZkSync from '@/assets/appIconzkSync.png';
+import AppIconzkSync from '@/assets/appIconzkSync.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -213,7 +213,7 @@ const ZkSyncAppIcon = () => {
     <AccentColorProvider color={colors.lightGrey}>
       <Box
         as={ImgixImage}
-        source={AppIconZkSync}
+        source={AppIconzkSync}
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}

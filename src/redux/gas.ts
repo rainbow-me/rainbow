@@ -416,7 +416,7 @@ export const getZoraGasPrices = async () => {
   return priceData;
 };
 
-export const getZkSyncGasPrices = async () => {
+export const getzkSyncGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.zkSync);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());

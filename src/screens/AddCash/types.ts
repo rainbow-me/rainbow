@@ -16,7 +16,7 @@ export enum Network {
   BNBChain = 'bnb_chain',
   Bitcoin = 'bitcoin',
   Celo = 'celo',
-  ZKSync = 'zkSync',
+  zKSync = 'zkSync',
   Dogecoin = 'dogecoin',
   Polkadot = 'polkadot',
   MultverseX = 'multiverse_x',

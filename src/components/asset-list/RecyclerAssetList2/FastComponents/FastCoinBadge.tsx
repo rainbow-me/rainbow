@@ -12,8 +12,8 @@ import ZoraBadge from '@/assets/badges/zoraBadge.png';
 import ZoraBadgeDark from '@/assets/badges/zoraBadgeDark.png';
 import BaseBadge from '@/assets/badges/baseBadge.png';
 import BaseBadgeDark from '@/assets/badges/baseBadgeDark.png';
-import ZkSyncBadge from '@/assets/badges/zkSyncBadge.png';
-import ZkSyncBadgeDark from '@/assets/badges/zkSyncBadgeDark.png';
+import zkSyncBadge from '@/assets/badges/zkSyncBadge.png';
+import zkSyncBadgeDark from '@/assets/badges/zkSyncBadgeDark.png';
 import { AssetType } from '@/entities';
 
 interface FastChainBadgeProps {
@@ -52,8 +52,8 @@ const AssetIconsByTheme: {
     light: BaseBadge,
   },
   [AssetType.zkSync]: {
-    dark: ZkSyncBadgeDark,
-    light: ZkSyncBadge,
+    dark: zkSyncBadgeDark,
+    light: zkSyncBadge,
   },
 };
 
