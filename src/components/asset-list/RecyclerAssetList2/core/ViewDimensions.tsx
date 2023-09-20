@@ -1,6 +1,5 @@
 import { CoinDividerContainerHeight } from '../../../coin-divider';
-import { CoinRowHeight, SavingsCoinRowHeight } from '../../../coin-row';
-import { SavingsListHeader } from '../../../savings';
+import { CoinRowHeight } from '../../../coin-row';
 import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
@@ -36,9 +35,6 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
-  [CellType.SAVINGS_HEADER_SPACE_BEFORE]: { height: 7 },
-  [CellType.SAVINGS_HEADER]: { height: SavingsListHeader.height },
-  [CellType.SAVINGS]: { height: SavingsCoinRowHeight },
   [CellType.PROFILE_ACTION_BUTTONS_ROW]: {
     height: ProfileActionButtonsRowHeight - ProfileStickyHeaderHeight,
   },

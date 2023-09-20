@@ -18,7 +18,6 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
@@ -352,7 +351,6 @@ function BSNavigator() {
         name={Routes.DIAGNOSTICS_SHEET}
         options={{ ...bottomSheetPreset }}
       />
-      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}

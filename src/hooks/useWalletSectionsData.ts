@@ -4,7 +4,6 @@ import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
@@ -41,10 +40,6 @@ export default function useWalletSectionsData({
     pinnedCoinsObj: pinnedCoins,
   } = useCoinListEditOptions();
 
-  const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
-    true
-  );
-
   const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
@@ -55,7 +50,6 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
-      savings,
       sendableUniqueTokens,
       ...sortedAccountData,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
@@ -76,8 +70,6 @@ export default function useWalletSectionsData({
       hasNFTs,
       isEmpty,
       isWalletEthZero,
-      refetchSavings,
-      shouldRefetchSavings,
       briefSectionsData,
     };
   }, [
@@ -91,9 +83,6 @@ export default function useWalletSectionsData({
     nativeCurrency,
     network,
     pinnedCoins,
-    refetchSavings,
-    savings,
-    shouldRefetchSavings,
     showcaseTokens,
     sortedAccountData,
     type,

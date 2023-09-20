@@ -7,7 +7,6 @@ import {
   useCoinListEditOptions,
   useExternalWalletSectionsData,
   useOpenFamilies,
-  useOpenSavings,
   useOpenSmallBalances,
   useWalletSectionsData,
 } from '@/hooks';
@@ -54,7 +53,6 @@ export default function useMemoBriefSectionData({
   }
 
   const { isSmallBalancesOpen } = useOpenSmallBalances();
-  const { isSavingsOpen } = useOpenSavings();
   const { isPositionCardsOpen } = useOpenPositionCards();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
@@ -129,10 +127,6 @@ export default function useMemoBriefSectionData({
           }
         }
 
-        if (data.type === CellType.SAVINGS && !isSavingsOpen) {
-          return false;
-        }
-
         if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
           isGroupOpen = openFamilies[name];
@@ -162,7 +156,6 @@ export default function useMemoBriefSectionData({
     isCoinListEdited,
     isSmallBalancesOpen,
     hiddenCoinsObj,
-    isSavingsOpen,
     isPositionCardsOpen,
     openFamilies,
   ]);
