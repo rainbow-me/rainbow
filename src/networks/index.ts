@@ -6,6 +6,7 @@ import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
 import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
+import { getZkSyncNetworkObject } from './zksync';
 import { getGnosisNetworkObject } from './gnosis';
 import { getBaseNetworkObject } from './base';
 import store from '@/redux/store';
@@ -22,6 +23,7 @@ export const RainbowNetworks = [
   getOptimismNetworkObject(),
   getPolygonNetworkObject(),
   getZoraNetworkObject(),
+  getZkSyncNetworkObject(),
   getGnosisNetworkObject(),
   getGoerliNetworkObject(),
   getBSCNetworkObject(),
@@ -45,6 +47,8 @@ export function getNetworkObj(network: Network): NetworkProperties {
       return getPolygonNetworkObject();
     case Network.zora:
       return getZoraNetworkObject();
+    case Network.zkSync:
+      return getZkSyncNetworkObject();
     case Network.gnosis:
       return getGnosisNetworkObject();
 

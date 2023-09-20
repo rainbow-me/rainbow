@@ -114,6 +114,7 @@ export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
   rpcEndpoints[Network.bsc] = config.bsc_mainnet_rpc;
   rpcEndpoints[Network.zora] = config.zora_mainnet_rpc;
+  rpcEndpoints[Network.zkSync] = config.zkSync_mainnet_rpc;
   rpcEndpoints[Network.base] = config.base_mainnet_rpc;
 };
 

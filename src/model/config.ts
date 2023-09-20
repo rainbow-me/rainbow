@@ -15,6 +15,7 @@ import {
   BASE_MAINNET_RPC_DEV,
   BSC_MAINNET_RPC,
   ZORA_MAINNET_RPC,
+  ZKSYNC_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
   getNetwork,
@@ -41,6 +42,7 @@ export interface RainbowConfig
   optimism_mainnet_rpc: string;
   polygon_mainnet_rpc: string;
   zora_mainnet_rpc: string;
+  zkSync_mainnet_rpc: string;
   base_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
@@ -51,6 +53,7 @@ export interface RainbowConfig
   polygon_enabled: boolean;
   optimism_enabled: boolean;
   zora_enabled: boolean;
+  zkSync_enabled: boolean;
   base_enabled: boolean;
   op_chains_enabled: boolean;
   mainnet_enabled: boolean;
@@ -62,6 +65,7 @@ export interface RainbowConfig
   polygon_tx_enabled: boolean;
   optimism_tx_enabled: boolean;
   zora_tx_enabled: boolean;
+  zkSync_tx_enabled: boolean;
   op_chains_tx_enabled: boolean;
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
@@ -82,6 +86,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
     bsc: 200,
     base: 200,
     zora: 200,
+    zkSync: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__
@@ -95,6 +100,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
   zora_mainnet_rpc: ZORA_MAINNET_RPC,
+  zkSync_mainnet_rpc: ZKSYNC_MAINNET_RPC,
   base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
@@ -105,6 +111,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   polygon_enabled: true,
   optimism_enabled: true,
   zora_enabled: true,
+  zkSync_enabled: true,
   base_enabled: true,
   op_chains_enabled: true,
 
@@ -118,6 +125,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   polygon_tx_enabled: true,
   optimism_tx_enabled: true,
   zora_tx_enabled: true,
+  zkSync_tx_enabled: true,
   op_chains_tx_enabled: true,
 
   mainnet_tx_enabled: true,
@@ -165,6 +173,7 @@ const init = async () => {
         key === 'polygon_tx_enabled' ||
         key === 'optimism_tx_enabled' ||
         key === 'zora_tx_enabled' ||
+        key === 'zkSync_tx_enabled' ||
         key === 'base_tx_enabled' ||
         key === 'op_chains_tx_enabled' ||
         key === 'goerli_tx_enabled' ||
@@ -174,6 +183,7 @@ const init = async () => {
         key === 'polygon_enabled' ||
         key === 'optimism_enabled' ||
         key === 'zora_enabled' ||
+        key === 'zkSync_enabled' ||
         key === 'base_enabled' ||
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled' ||

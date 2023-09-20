@@ -7,6 +7,7 @@ export enum Network {
   base = 'base',
   bsc = 'bsc',
   zora = 'zora',
+  zkSync = 'zkSync',
   gnosis = 'gnosis',
 }
 
@@ -21,5 +22,6 @@ export default {
   base: 'base' as Network,
   bsc: 'bsc' as Network,
   zora: 'zora' as Network,
+  zkSync: 'zkSync' as Network,
   gnosis: 'gnosis' as Network,
 };

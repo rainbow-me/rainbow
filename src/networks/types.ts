@@ -13,6 +13,7 @@ export enum Network {
   bsc = 'bsc',
   zora = 'zora',
   gnosis = 'gnosis',
+  zkSync = 'zkSync',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
