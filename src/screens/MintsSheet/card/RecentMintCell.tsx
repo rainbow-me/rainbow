@@ -14,8 +14,11 @@ import { View } from 'react-native';
 import { MintedNft } from '@/graphql/__generated__/arc';
 import { Media } from '@/components/Media';
 import { IS_IOS } from '@/env';
+import { deviceUtils } from '@/utils';
 
-export const NFT_IMAGE_SIZE = 111;
+const NUM_NFTS = 3;
+export const NFT_IMAGE_SIZE =
+  (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
 
 export const Placeholder = () => {
   const { colors } = useTheme();

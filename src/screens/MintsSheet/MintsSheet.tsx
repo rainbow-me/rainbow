@@ -28,6 +28,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import Spinner from '@/components/Spinner';
 import * as i18n from '@/languages';
+import { FlatList } from 'react-native';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -111,13 +112,9 @@ export function MintsSheet() {
                 </Stack>
               </Inset>
               {!isNoData && (
-                <FlashList
+                <FlatList
                   data={data}
-                  estimatedItemSize={222}
-                  estimatedListSize={{
-                    height: deviceHeight,
-                    width: deviceWidth,
-                  }}
+                  initialNumToRender={3}
                   renderItem={({ item }) => <Card collection={item} />}
                   ItemSeparatorComponent={() => (
                     <Separator thickness={1} color="separatorTertiary" />
