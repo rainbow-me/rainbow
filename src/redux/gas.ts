@@ -425,7 +425,7 @@ export const getZkSyncGasPrices = async () => {
     fast: normalGasPrice,
     fastWait: 0.05,
     normal: normalGasPrice,
-    // 20 secs
+    // 2 blocks, 6 secs
     normalWait: 0.1,
     urgent: normalGasPrice,
     urgentWait: 0.05,
