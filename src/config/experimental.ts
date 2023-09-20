@@ -46,7 +46,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
-  [MINTS]: { settings: true, value: true },
+  [MINTS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';
