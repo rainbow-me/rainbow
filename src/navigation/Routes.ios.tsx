@@ -18,7 +18,7 @@ import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import SendConfirmationSheet from '../screens/SendConfirmationSheet';
+import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
