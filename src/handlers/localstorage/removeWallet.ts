@@ -3,17 +3,13 @@ import { keys } from 'lodash';
 import NetworkTypes from '../../helpers/networkTypes';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
-import { uniswapAccountLocalKeys } from './uniswap';
 import { walletConnectAccountLocalKeys } from './walletconnectRequests';
 import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings';
 
 export const removeWalletData = async (accountAddress: any) => {
   logger.debug('[remove wallet]', { accountAddress });
-  const allPrefixes = accountLocalKeys.concat(
-    uniswapAccountLocalKeys,
-    walletConnectAccountLocalKeys
-  );
+  const allPrefixes = accountLocalKeys.concat(walletConnectAccountLocalKeys);
   logger.debug('[remove wallet] - all prefixes', { allPrefixes });
   const networks = keys(NetworkTypes);
   const allKeysWithNetworks = allPrefixes.map(prefix =>

@@ -1,7 +1,6 @@
 export { default as ChartExpandedState } from './asset/ChartExpandedState';
 export { default as ContactProfileState } from './ContactProfileState';
 export { default as CustomGasState } from './CustomGasState';
-export { default as LiquidityPoolExpandedState } from './LiquidityPoolExpandedState';
 export { default as SwapDetailsState } from './SwapDetailsState';
 export { default as SwapSettingsState } from './swap-settings/SwapSettingsState';
 export { default as TokenIndexExpandedState } from './TokenIndexExpandedState';

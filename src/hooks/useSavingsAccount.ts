@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import { isEmpty, isNil, keyBy, orderBy } from 'lodash';
 import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
@@ -12,7 +12,6 @@ import { AssetTypes } from '@/entities';
 import { multiply } from '@/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@/parsers';
 import { emitAssetRequest } from '@/redux/explorer';
-import { AppState } from '@/redux/store';
 import { CDAI_CONTRACT, DAI_ADDRESS, ETH_ADDRESS } from '@/references';
 import { ethereumUtils, getTokenMetadata } from '@/utils';
 
@@ -100,10 +99,6 @@ export default function useSavingsAccount(includeDefaultDai: boolean) {
   );
 
   const hasAccountAddress = !!accountAddress;
-
-  const shouldRefetchSavings = useSelector(
-    ({ data: { shouldRefetchSavings } }: AppState) => shouldRefetchSavings
-  );
 
   const { data, error, loading, refetch: refetchSavings } = useQuery(
     COMPOUND_ACCOUNT_AND_MARKET_QUERY,
@@ -224,6 +219,5 @@ export default function useSavingsAccount(includeDefaultDai: boolean) {
   return {
     refetchSavings,
     savings: memoizedSavings,
-    shouldRefetchSavings,
   };
 }

@@ -26,7 +26,6 @@ const Routes = {
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
-  EXPANDED_ASSET_SHEET_POOLS: 'ExpandedAssetSheetPools',
   EXPLAIN_SHEET: 'ExplainSheet',
   PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
@@ -64,9 +63,6 @@ const Routes = {
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   RESTORE_SHEET: 'RestoreSheet',
-  SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
-  SAVINGS_SHEET: 'SavingsSheet',
-  SAVINGS_WITHDRAW_MODAL: 'SavingsWithdrawModal',
   SELECT_ENS_SHEET: 'SelectENSSheet',
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',
   SEND_CONFIRMATION_SHEET: 'SendConfirmationSheet',
@@ -112,9 +108,6 @@ export const NATIVE_ROUTES = [
   Routes.TOKEN_INDEX_SHEET,
   Routes.CHANGE_WALLET_SHEET,
   Routes.MODAL_SCREEN,
-  Routes.SAVINGS_SHEET,
-  Routes.SAVINGS_WITHDRAW_MODAL,
-  Routes.SAVINGS_DEPOSIT_MODAL,
   ...(IS_IOS
     ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR]
     : []),
