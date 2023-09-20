@@ -25,6 +25,7 @@ import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconSmol from '@/assets/appIconSmol.png';
 import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
+import AppIconZkSync from '@/assets/appIconzkSync.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import TheMergePng from '@/assets/theMerge.png';
@@ -206,6 +207,22 @@ const ZoraAppIcon = () => {
   );
 };
 
+const ZkSyncAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.lightGrey}>
+      <Box
+        as={ImgixImage}
+        source={AppIconZkSync}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+      />
+    </AccentColorProvider>
+  );
+};
+
 const ZorbAppIcon = () => {
   const { colors } = useTheme();
   return (
@@ -332,6 +349,8 @@ const BASE_EXPLAINER = lang.t('explain.base.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
+const ZKSYNC_EXPLAINER = lang.t('explain.zksync.text');
+
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
@@ -374,6 +393,8 @@ const RAINDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.raindoge_text');
 const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
 
 const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
+
+const ZKSYNC_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zksync_text');
 
 const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
 
@@ -521,6 +542,18 @@ export const explainers = (params, colors) => ({
       label: lang.t('explain.icon_unlock.button'),
       textColor: colors?.appleBlue,
       bgColor: colors?.appleBlue06,
+    },
+  },
+  zksync_app_icon: {
+    logo: <ZkSyncAppIcon />,
+    extraHeight: -90,
+    text: ZKSYNC_APP_ICON_EXPLAINER,
+    title: lang.t('explain.icon_unlock.title', { partner: 'ZkSync' }),
+    button: {
+      onPress: navigateToAppIconSettings,
+      label: lang.t('explain.icon_unlock.button'),
+      textColor: colors?.black,
+      bgColor: colors?.white,
     },
   },
   zorb_app_icon: {
@@ -847,6 +880,26 @@ export const explainers = (params, colors) => ({
     }),
     text: ZORA_EXPLAINER,
     title: lang.t('explain.zora.title'),
+  },
+  zksync: {
+    emoji: '⛽️',
+    extraHeight: 120,
+    logo: (
+      <ChainBadge
+        assetType={networkTypes.zkSync}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
+    ),
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+    text: ZKSYNC_EXPLAINER,
+    title: lang.t('explain.zksync.title'),
   },
   base: {
     emoji: '⛽️',

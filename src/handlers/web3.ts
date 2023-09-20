@@ -28,6 +28,7 @@ import {
   smartContractMethods,
   CRYPTO_KITTIES_NFT_ADDRESS,
   CRYPTO_PUNKS_NFT_ADDRESS,
+  ZKSYNC_ETH_ADDRESS,
 } from '@/references';
 import {
   addBuffer,
@@ -652,7 +653,8 @@ export const createSignableTransaction = async (
     transaction.asset.address === ARBITRUM_ETH_ADDRESS ||
     transaction.asset.address === OPTIMISM_ETH_ADDRESS ||
     transaction.asset.address === MATIC_POLYGON_ADDRESS ||
-    transaction.asset.address === BNB_BSC_ADDRESS
+    transaction.asset.address === BNB_BSC_ADDRESS ||
+    transaction.asset.address === ZKSYNC_ETH_ADDRESS
   ) {
     return getTxDetails(transaction);
   }

@@ -18,6 +18,9 @@ import ZoraBadgeNoShadow from '../assets/badges/zoraBadgeNoShadow.png';
 import BaseBadge from '../assets/badges/baseBadge.png';
 import BaseBadgeDark from '../assets/badges/baseBadgeDark.png';
 import BaseBadgeNoShadow from '../assets/badges/baseBadgeNoShadow.png';
+import ZkSyncBadge from '../assets/badges/zksyncBadge.png';
+import ZkSyncBadgeDark from '../assets/badges/zksyncBadgeDark.png';
+import ZkSyncBadgeNoShadow from '../assets/badges/zksyncBadgeNoShadow.png';
 import { Centered } from './layout';
 import networkTypes from '@/helpers/networkTypes';
 import styled from '@/styled-thing';
@@ -79,6 +82,12 @@ export default function ChainLogo({
           ? BaseBadgeDark
           : BaseBadge
         : BaseBadgeNoShadow;
+    } else if (network === networkTypes.zksync) {
+      val = withShadows
+        ? isDarkMode
+          ? ZkSyncBadgeDark
+          : ZkSyncBadge
+        : ZkSyncBadgeNoShadow;
     }
     return val;
   }, [isDarkMode, network, withShadows]);

@@ -380,6 +380,7 @@ const GasSpeedButton = ({
       case networkTypes.arbitrum:
       case networkTypes.zora:
       case networkTypes.base:
+      case networkTypes.zkSync:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }

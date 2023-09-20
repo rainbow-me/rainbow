@@ -805,6 +805,10 @@
         "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Binance Smart Chain?"
       },
+      "zksync": {
+        "text": "zkSync is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's zkSync"
+      },
       "read_more": "Read More",
       "learn_more": "Learn More",
       "sending_to_contract": {
@@ -1373,7 +1377,7 @@
         },
         "info_row_2": {
           "title": "Swap directly on L2",
-          "description": "Fast and cheap swaps on Arbitrum, Optimism, Polygon and BSC."
+          "description": "Fast and cheap swaps on Arbitrum, Optimism, Polygon, BSC, and zkSync."
         },
         "info_row_3": {
           "title": "Flashbots protection",

@@ -12,6 +12,7 @@ export enum AssetType {
   trash = 'trash',
   uniswap = 'uniswap',
   uniswapV2 = 'uniswap-v2',
+  zksync = 'zksync',
 }
 
 export default {
@@ -28,4 +29,5 @@ export default {
   trash: 'trash',
   uniswap: 'uniswap',
   uniswapV2: 'uniswap-v2',
+  zksync: 'zksync',
 } as const;

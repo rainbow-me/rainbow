@@ -54,6 +54,7 @@ const messages = {
     RECEIVED_BSC: 'received address bsc-transactions',
     RECEIVED_ZORA: 'received address zora-transactions',
     RECEIVED_BASE: 'received address base-transactions',
+    RECEIVED_ZKSYNC: 'received address zksync-transactions',
   },
   ASSET_CHARTS: {
     RECEIVED: 'received assets charts',
@@ -284,6 +285,7 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.bsc}-transactions`,
       `${Network.zora}-transactions`,
       `${Network.base}-transactions`,
+      `${Network.zkSync}-transactions`,
     ],
   },
 ];
@@ -632,6 +634,13 @@ const listenOnAddressMessages = (socket: Socket) => (
     messages.ADDRESS_TRANSACTIONS.RECEIVED_BASE,
     (message: TransactionsReceivedMessage) => {
       // logger.log('base txns received', message?.payload?.transactions);
+      dispatch(transactionsReceived(message));
+    }
+  );
+  socket.on(
+    messages.ADDRESS_TRANSACTIONS.RECEIVED_ZKSYNC,
+    (message: TransactionsReceivedMessage) => {
+      // logger.log('zksync txns received', message?.payload?.transactions);
       dispatch(transactionsReceived(message));
     }
   );

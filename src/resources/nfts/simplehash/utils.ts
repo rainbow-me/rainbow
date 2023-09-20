@@ -94,6 +94,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.zora;
     case SimpleHashChain.Base:
       return Network.base;
+    case SimpleHashChain.zkSync:
+      return Network.zkSync;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this
