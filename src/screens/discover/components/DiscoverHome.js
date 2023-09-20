@@ -35,8 +35,7 @@ export default function DiscoverHome() {
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  const mintsLocalFlagEnabled = useExperimentalFlag(MINTS);
-  const mintsRemoteFlagEnabled = config.mints_enabled;
+  const mintsEnabled = useExperimentalFlag(MINTS) || config.mints_enabled;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
@@ -59,7 +58,7 @@ export default function DiscoverHome() {
               <GasCard />
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
-            {(mintsRemoteFlagEnabled || mintsLocalFlagEnabled) && (
+            {mintsEnabled && (
               <Stack>
                 <FeaturedMintCard />
                 <MintsCard />

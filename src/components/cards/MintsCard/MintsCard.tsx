@@ -41,7 +41,7 @@ export function MintsCard() {
     }
   }, [canRefresh]);
 
-  return (
+  return mints?.length || isFetching ? (
     <Inset top={{ custom: 22 }} bottom="10px">
       <CarouselCard
         isLoading={isFetching}
@@ -107,5 +107,7 @@ export function MintsCard() {
         isRefreshing={isRefreshing}
       />
     </Inset>
+  ) : (
+    <></>
   );
 }
