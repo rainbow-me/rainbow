@@ -94,7 +94,7 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.zora;
     case SimpleHashChain.Base:
       return Network.base;
-    case SimpleHashChain.zkSync:
+    case SimpleHashChain.ZkSync:
       return Network.zkSync;
     default:
       /*

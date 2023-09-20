@@ -24,7 +24,7 @@ export function isL2Asset(type: any) {
     case AssetTypes.bsc:
     case AssetTypes.zora:
     case AssetTypes.base:
-    case AssetTypes.zksync:
+    case AssetTypes.zkSync:
       return true;
     default:
       return false;

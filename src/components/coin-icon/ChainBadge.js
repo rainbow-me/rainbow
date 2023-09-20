@@ -24,10 +24,10 @@ import BaseBadge from '../../assets/badges/baseBadge.png';
 import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
 import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
 import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
-import ZkSyncBadge from '../../assets/badges/zksyncBadge.png';
-import ZkSyncBadgeDark from '../../assets/badges/zksyncBadgeDark.png';
-import ZkSyncBadgeLarge from '../../assets/badges/zksyncBadgeLarge.png';
-import ZkSyncBadgeLargeDark from '../../assets/badges/zksyncBadgeLargeDark.png';
+import ZkSyncBadge from '../../assets/badges/zkSyncBadge.png';
+import ZkSyncBadgeDark from '../../assets/badges/zkSyncBadgeDark.png';
+import ZkSyncBadgeLarge from '../../assets/badges/zkSyncBadgeLarge.png';
+import ZkSyncBadgeLargeDark from '../../assets/badges/zkSyncBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
@@ -82,7 +82,7 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
       } else if (assetType === AssetType.base) {
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
-      } else if (assetType === AssetType.zksync) {
+      } else if (assetType === AssetType.zkSync) {
         val = isDarkMode ? ZkSyncBadgeLargeDark : ZkSyncBadgeLarge;
       }
     } else {
@@ -98,7 +98,7 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
       } else if (assetType === AssetType.base) {
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
-      } else if (assetType === AssetType.zksync) {
+      } else if (assetType === AssetType.zkSync) {
         val = isDarkMode ? ZkSyncBadgeDark : ZkSyncBadge;
       }
     }

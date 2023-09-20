@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "zksyncBadgeLarge.png",
+      "filename" : "zkSyncBadgeLarge.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "zksyncBadgeLarge@2x.png",
+      "filename" : "zkSyncBadgeLarge@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "zksyncBadgeLarge@3x.png",
+      "filename" : "zkSyncBadgeLarge@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -54,7 +54,7 @@ const messages = {
     RECEIVED_BSC: 'received address bsc-transactions',
     RECEIVED_ZORA: 'received address zora-transactions',
     RECEIVED_BASE: 'received address base-transactions',
-    RECEIVED_ZKSYNC: 'received address zksync-transactions',
+    RECEIVED_ZKSYNC: 'received address zkSync-transactions',
   },
   ASSET_CHARTS: {
     RECEIVED: 'received assets charts',
@@ -640,7 +640,7 @@ const listenOnAddressMessages = (socket: Socket) => (
   socket.on(
     messages.ADDRESS_TRANSACTIONS.RECEIVED_ZKSYNC,
     (message: TransactionsReceivedMessage) => {
-      // logger.log('zksync txns received', message?.payload?.transactions);
+      // logger.log('zkSync txns received', message?.payload?.transactions);
       dispatch(transactionsReceived(message));
     }
   );

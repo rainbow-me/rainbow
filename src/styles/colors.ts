@@ -210,7 +210,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     polygon: '#8247E5',
     bsc: '#F0B90B',
     zora: '#2B5DF0',
-    zksync: '#E540F1',
+    zkSync: '#E540F1',
   };
 
   let gradients = {
@@ -396,7 +396,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       polygon: '#A275EE',
       bsc: '#F0B90B',
       zora: '#6183F0',
-      zksync: '#E540F1',
+      zkSync: '#E540F1',
     };
   }
 
