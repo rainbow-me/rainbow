@@ -27,7 +27,7 @@ export const getZkSyncNetworkObject = (): NetworkProperties => {
     rpc: config.zkSync_mainnet_rpc,
     getProvider: getProviderForNetwork(Network.zkSync),
     // TODO: not sure what this is
-    balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
+    balanceCheckerAddress: '',
 
     // features
     features: {
