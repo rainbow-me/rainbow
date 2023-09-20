@@ -5,7 +5,6 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
   CustomGasState,
-  LiquidityPoolExpandedState,
   SwapDetailsState,
   SwapSettingsState,
   TokenIndexExpandedState,
@@ -24,7 +23,6 @@ const ScreenTypes = {
   token: ChartExpandedState,
   token_index: TokenIndexExpandedState,
   unique_token: UniqueTokenExpandedState,
-  uniswap: LiquidityPoolExpandedState,
 };
 
 const Container = styled(Centered).attrs({

@@ -7,24 +7,12 @@ import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
 } from '../../references';
-import {
-  getAccountLocal,
-  getGlobal,
-  saveAccountLocal,
-  saveGlobal,
-} from './common';
+import { getGlobal, saveGlobal } from './common';
 import { Network } from '@/helpers/networkTypes';
 
-const ASSETS = 'uniswapassets';
-const LIQUIDITY = 'uniswapliquidity';
-const UNISWAP_POSITIONS = 'uniswapPositions';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
 const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetadata';
-const uniswapLiquidityVersion = '0.2.0';
-const uniswapPositionsVersion = '0.1.0';
 const uniswapFavoritesMetadataVersion = '0.1.0';
-
-export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, UNISWAP_POSITIONS];
 
 export const getUniswapFavorites = (
   network: Network
@@ -48,58 +36,3 @@ export const saveUniswapFavoritesMetadata = (
   data: Record<EthereumAddress, RainbowToken>
 ) =>
   saveGlobal(UNISWAP_FAVORITES_METADATA, data, uniswapFavoritesMetadataVersion);
-
-export const getUniswapPositions = (accountAddress: any, network: Network) =>
-  getAccountLocal(
-    UNISWAP_POSITIONS,
-    accountAddress,
-    network,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
-    {},
-    uniswapPositionsVersion
-  );
-
-export const saveUniswapPositions = (
-  positions: any,
-  accountAddress: any,
-  network: Network
-) =>
-  saveAccountLocal(
-    UNISWAP_POSITIONS,
-    positions,
-    accountAddress,
-    network,
-    uniswapPositionsVersion
-  );
-
-export const getLiquidity = (accountAddress: any, network: Network) =>
-  getAccountLocal(
-    LIQUIDITY,
-    accountAddress,
-    network,
-    [],
-    uniswapLiquidityVersion
-  );
-
-export const saveLiquidity = (
-  liquidity: any,
-  accountAddress: any,
-  network: Network
-) =>
-  saveAccountLocal(
-    LIQUIDITY,
-    liquidity,
-    accountAddress,
-    network,
-    uniswapLiquidityVersion
-  );
-
-export const getUniswapAssets = (accountAddress: any, network: Network) =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
-  getAccountLocal(ASSETS, accountAddress, network, {});
-
-export const saveUniswapAssets = (
-  assets: any,
-  accountAddress: any,
-  network: Network
-) => saveAccountLocal(ASSETS, assets, accountAddress, network);

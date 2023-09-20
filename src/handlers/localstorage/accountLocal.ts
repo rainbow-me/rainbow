@@ -7,7 +7,6 @@ const accountAssetsDataVersion = '0.2.0';
 const assetsVersion = '0.3.0';
 const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
-const savingsVersion = '0.2.0';
 const transactionsVersion = '0.3.0';
 const uniqueTokensVersion = '0.2.1';
 
@@ -17,7 +16,6 @@ const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSETS = 'assets';
 const PENDING_TRANSACTIONS = 'pendingTransactions';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
-const SAVINGS = 'savings';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const HIDDEN_TOKENS = 'hiddenTokens';
 const TRANSACTIONS = 'transactions';
@@ -37,7 +35,6 @@ export const accountLocalKeys = [
   ASSETS,
   ENS_REGISTRATIONS,
   PURCHASE_TRANSACTIONS,
-  SAVINGS,
   SHOWCASE_TOKENS,
   TRANSACTIONS,
   UNIQUE_TOKENS,
@@ -45,25 +42,6 @@ export const accountLocalKeys = [
   HIDDEN_COINS,
   WEB_DATA_ENABLED,
 ];
-
-/**
- * @desc get savings
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getSavings = (accountAddress: any, network: any) =>
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
-  getAccountLocal(SAVINGS, accountAddress, network, {}, savingsVersion);
-
-/**
- * @desc save savings
- * @param  {String}   [address]
- * @param  {Array}    [savings]
- * @param  {String}   [network]
- */
-export const saveSavings = (savings: any, accountAddress: any, network: any) =>
-  saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
 
 /**
  * @desc get account empty state
