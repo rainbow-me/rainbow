@@ -26,6 +26,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 import { DefaultTokenLists } from '@/references';
+import { useFavorites } from '@/hooks/useFavorites';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -66,7 +67,7 @@ export default function ListSection() {
   const { network, nativeCurrency } = useAccountSettings();
   const { navigate } = useNavigation();
   const {
-    favorites,
+    // favorites,
     lists,
     updateList,
     ready,
@@ -79,6 +80,9 @@ export default function ListSection() {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
+
+  const favorites = useFavorites();
+  console.log(favorites);
 
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);

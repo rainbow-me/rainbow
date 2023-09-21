@@ -26,11 +26,7 @@ import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@/helpers';
-import {
-  useAndroidScrollViewGestureHandler,
-  usePrevious,
-  useUserLists,
-} from '@/hooks';
+import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
@@ -42,6 +38,7 @@ import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from './ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
+import { useFavorites } from '@/hooks/useFavorites';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -154,7 +151,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     copyCount,
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
-  const { updateList } = useUserLists();
+  const { addToFavorites } = useFavorites();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
