@@ -214,15 +214,15 @@ const MintSheet = () => {
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  useEffect(() => {
-    // const nft = nfts.find(
-    //   item => item.image_original_url === poapEvent.imageUrl
-    // );
-    // if (nft) {
-    //   setClaimStatus('claimed');
-    //   setNft(nft);
-    // }
-  }, [imageUrl, nfts]);
+  useFocusEffect(() => {
+    if (mintCollection.name && mintCollection.id) {
+      analyticsV2.track(event.nftMintsOpenedSheet, {
+        collectionName: mintCollection?.name,
+        contract: mintCollection.id,
+        network: currentNetwork,
+      });
+    }
+  });
 
   useEffect(() => {
     const fetchENSName = async (address: string) => {
@@ -334,7 +334,6 @@ const MintSheet = () => {
       decimals: 18,
       symbol: 'ETH',
     }
-    // abbreviate if amount is >= 10,000
   );
 
   const actionOnPress = useCallback(async () => {
@@ -344,6 +343,12 @@ const MintSheet = () => {
     }
 
     logger.info('Minting NFT', { name: mintCollection.name });
+    analyticsV2.track(event.nftMintsMintingNFT, {
+      collectionName: mintCollection.name || '',
+      contract: mintCollection.id || '',
+      network: currentNetwork,
+      quantity,
+    });
     setMintStatus('minting');
 
     const privateKey = await loadPrivateKey(accountAddress, false);
@@ -364,12 +369,7 @@ const MintSheet = () => {
         steps.forEach(step => {
           if (step.error) {
             logger.error(new RainbowError(`Error minting NFT: ${step.error}`));
-            // show alert
             setMintStatus('error');
-            // analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
-            //   status: 'failed',
-            //   ...analyticsEventObject,
-            // });
             return;
           }
           step.items?.forEach(item => {
@@ -404,6 +404,12 @@ const MintSheet = () => {
 
               // @ts-ignore TODO: fix when we overhaul tx list, types are not good
               dispatch(dataAddNewTransaction(tx));
+              analyticsV2.track(event.nftMintsMintedNFT, {
+                collectionName: mintCollection.name || '',
+                contract: mintCollection.id || '',
+                network: currentNetwork,
+                quantity,
+              });
               navigate(Routes.PROFILE_SCREEN);
               setMintStatus('minted');
             }

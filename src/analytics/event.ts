@@ -1,6 +1,7 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
+import { Network } from '@/networks/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -79,6 +80,7 @@ export const event = {
   nftOffersAcceptedOffer: 'Accepted NFT Offer',
 
   nftMintsOpenedSheet: 'Opened NFT Mint Sheet',
+  nftMintsMintingNFT: 'Minting NFT',
   nftMintsMintedNFT: 'Minted NFT',
 
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
@@ -289,6 +291,23 @@ export type EventProperties = {
     floorDifferencePercentage: number;
     rainbowFee: number;
     offerCurrency: { symbol: string; contractAddress: string };
+  };
+  [event.nftMintsMintingNFT]: {
+    contract: string;
+    network: Network;
+    quantity: number;
+    collectionName: string;
+  };
+  [event.nftMintsMintedNFT]: {
+    contract: string;
+    network: Network;
+    quantity: number;
+    collectionName: string;
+  };
+  [event.nftMintsOpenedSheet]: {
+    contract: string;
+    network: Network;
+    collectionName: string;
   };
   [event.poapsMintedPoap]: {
     eventId: number;
