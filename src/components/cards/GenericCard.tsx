@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Box, AccentColorProvider, Inset, Space } from '@/design-system';
+import { Box, AccentColorProvider, Space } from '@/design-system';
 import React, { PropsWithChildren } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import LinearGradient from 'react-native-linear-gradient';
@@ -48,58 +48,56 @@ export const GenericCard = ({
   ignoreShadow = false,
   testID,
 }: PropsWithChildren<GenericCardProps>) => (
-  <Inset vertical="10px">
+  <ConditionalWrap
+    condition={!!onPress}
+    wrap={(children: React.ReactNode) => (
+      <ButtonPressAnimation
+        onPress={onPress}
+        disabled={disabled}
+        scaleTo={0.96}
+        overflowMargin={50}
+        skipTopMargin
+      >
+        {children}
+      </ButtonPressAnimation>
+    )}
+  >
     <ConditionalWrap
-      condition={!!onPress}
+      condition={color !== undefined && color !== 'accent'}
       wrap={(children: React.ReactNode) => (
-        <ButtonPressAnimation
-          onPress={onPress}
-          disabled={disabled}
-          scaleTo={0.96}
-          overflowMargin={50}
-          skipTopMargin
-        >
-          {children}
-        </ButtonPressAnimation>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <AccentColorProvider color={color!}>{children}</AccentColorProvider>
       )}
     >
-      <ConditionalWrap
-        condition={color !== undefined && color !== 'accent'}
-        wrap={(children: React.ReactNode) => (
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          <AccentColorProvider color={color!}>{children}</AccentColorProvider>
-        )}
+      <Box
+        background={color ? 'accent' : 'surfacePrimaryElevated'}
+        // @ts-ignore overloaded props
+        as={LinearGradient}
+        colors={gradient.colors}
+        end={gradient.end}
+        start={gradient.start}
+        width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
+        height={
+          type === 'square'
+            ? {
+                custom: SQUARE_CARD_SIZE,
+              }
+            : undefined
+        }
+        borderRadius={24}
+        {...(!ignoreShadow && {
+          shadow: color ? '18px accent' : '18px',
+        })}
+        style={{
+          flex: IS_IOS ? 0 : undefined,
+          borderColor: borderColor ?? undefined,
+          borderWidth: borderColor ? 1 : undefined,
+        }}
+        padding={padding}
+        testID={testID}
       >
-        <Box
-          background={color ? 'accent' : 'surfacePrimaryElevated'}
-          // @ts-ignore overloaded props
-          as={LinearGradient}
-          colors={gradient.colors}
-          end={gradient.end}
-          start={gradient.start}
-          width={type === 'square' ? { custom: SQUARE_CARD_SIZE } : 'full'}
-          height={
-            type === 'square'
-              ? {
-                  custom: SQUARE_CARD_SIZE,
-                }
-              : undefined
-          }
-          borderRadius={24}
-          {...(!ignoreShadow && {
-            shadow: color ? '18px accent' : '18px',
-          })}
-          style={{
-            flex: IS_IOS ? 0 : undefined,
-            borderColor: borderColor ?? undefined,
-            borderWidth: borderColor ? 1 : undefined,
-          }}
-          padding={padding}
-          testID={testID}
-        >
-          {children}
-        </Box>
-      </ConditionalWrap>
+        {children}
+      </Box>
     </ConditionalWrap>
-  </Inset>
+  </ConditionalWrap>
 );

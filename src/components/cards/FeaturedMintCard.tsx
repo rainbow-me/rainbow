@@ -7,7 +7,6 @@ import {
   Columns,
   Cover,
   Inline,
-  Inset,
   Stack,
   Text,
   globalColors,
@@ -73,268 +72,260 @@ export function FeaturedMintCard() {
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
   return featuredMint ? (
-    <Inset vertical="10px">
-      <ColorModeProvider value="darkTinted">
-        <AccentColorProvider color={accentColor ?? labelSecondary}>
+    <ColorModeProvider value="darkTinted">
+      <AccentColorProvider color={accentColor ?? labelSecondary}>
+        <View
+          style={
+            IS_IOS
+              ? {
+                  shadowColor: globalColors.grey100,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.02,
+                  shadowRadius: 3,
+                }
+              : {}
+          }
+        >
           <View
             style={
               IS_IOS
                 ? {
                     shadowColor: globalColors.grey100,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.02,
-                    shadowRadius: 3,
+                    shadowOffset: { width: 0, height: 6 },
+                    shadowOpacity: isDarkMode ? 0.24 : 0.08,
+                    shadowRadius: 9,
                   }
-                : {}
+                : {
+                    shadowColor: globalColors.grey100,
+                    elevation: 12,
+                    shadowOpacity: 1,
+                  }
             }
           >
-            <View
-              style={
-                IS_IOS
-                  ? {
-                      shadowColor: globalColors.grey100,
-                      shadowOffset: { width: 0, height: 6 },
-                      shadowOpacity: isDarkMode ? 0.24 : 0.08,
-                      shadowRadius: 9,
-                    }
-                  : {
-                      shadowColor: globalColors.grey100,
-                      elevation: 12,
-                      shadowOpacity: 1,
-                    }
-              }
+            <ButtonPressAnimation
+              style={{
+                borderRadius: 24,
+                overflow: 'hidden',
+                padding: 12,
+              }}
+              onPress={() => {
+                analyticsV2.track(
+                  analyticsV2.event.mintsPressedFeaturedMintCard,
+                  {
+                    contractAddress: featuredMint.contractAddress,
+                    chainId: featuredMint.chainId,
+                    totalMints: featuredMint.totalMints,
+                    mintsLastHour: featuredMint.totalMints,
+                    priceInEth: convertRawAmountToRoundedDecimal(
+                      featuredMint.mintStatus.price,
+                      18,
+                      6
+                    ),
+                  }
+                );
+                Linking.openURL(featuredMint.externalURL);
+              }}
+              scaleTo={0.96}
             >
-              <ButtonPressAnimation
-                style={{
-                  borderRadius: 24,
-                  overflow: 'hidden',
-                  padding: 12,
-                }}
-                onPress={() => {
-                  analyticsV2.track(
-                    analyticsV2.event.mintsPressedFeaturedMintCard,
-                    {
-                      contractAddress: featuredMint.contractAddress,
-                      chainId: featuredMint.chainId,
-                      totalMints: featuredMint.totalMints,
-                      mintsLastHour: featuredMint.totalMints,
-                      priceInEth: convertRawAmountToRoundedDecimal(
-                        featuredMint.mintStatus.price,
-                        18,
-                        6
-                      ),
-                    }
-                  );
-                  Linking.openURL(featuredMint.externalURL);
-                }}
-                scaleTo={0.96}
-              >
-                <Cover>
-                  <BlurWrapper>
-                    {!!imageUrl && (
-                      <Cover>
-                        <ImgixImage
-                          resizeMode="cover"
-                          style={{
-                            borderRadius: 24,
-                            height: '100%',
-                            width: '100%',
-                          }}
-                          source={{ uri: imageUrl }}
-                          size={deviceWidth - 40}
-                          fm="png"
-                        />
-                      </Cover>
-                    )}
+              <Cover>
+                <BlurWrapper>
+                  {!!imageUrl && (
                     <Cover>
-                      <BlurView
-                        blurAmount={100}
-                        blurType="light"
+                      <ImgixImage
+                        resizeMode="cover"
                         style={{
-                          width: '100%',
-                          height: '100%',
-                        }}
-                      />
-                    </Cover>
-                    <Cover>
-                      <View
-                        style={{
+                          borderRadius: 24,
                           height: '100%',
                           width: '100%',
-                          backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 1})`,
                         }}
+                        source={{ uri: imageUrl }}
+                        size={deviceWidth - 40}
+                        fm="png"
                       />
                     </Cover>
-                  </BlurWrapper>
-                </Cover>
-                <Columns>
-                  <Column>
-                    <Box
-                      alignItems="flex-start"
-                      justifyContent="space-between"
-                      flexGrow={1}
-                      flexBasis={0}
-                      padding="8px"
-                    >
-                      <Stack space="10px">
-                        <Inline space="6px" alignVertical="center">
-                          <Text
-                            size="11pt"
-                            align="center"
-                            weight="heavy"
-                            color={secondaryTextColor}
-                          >
-                            􀫸
-                          </Text>
-                          <Text
-                            size="13pt"
-                            weight="heavy"
-                            color={secondaryTextColor}
-                          >
-                            {i18n.t(
-                              i18n.l.mints.featured_mint_card.featured_mint
-                            )}
-                          </Text>
-                        </Inline>
+                  )}
+                  <Cover>
+                    <BlurView
+                      blurAmount={100}
+                      blurType="light"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                    />
+                  </Cover>
+                  <Cover>
+                    <View
+                      style={{
+                        height: '100%',
+                        width: '100%',
+                        backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 1})`,
+                      }}
+                    />
+                  </Cover>
+                </BlurWrapper>
+              </Cover>
+              <Columns>
+                <Column>
+                  <Box
+                    alignItems="flex-start"
+                    justifyContent="space-between"
+                    flexGrow={1}
+                    flexBasis={0}
+                    padding="8px"
+                  >
+                    <Stack space="10px">
+                      <Inline space="6px" alignVertical="center">
                         <Text
-                          size="20pt"
-                          weight="heavy"
-                          color="label"
-                          numberOfLines={1}
-                        >
-                          {featuredMint.name}
-                        </Text>
-                      </Stack>
-                      <Stack space={{ custom: 14 }}>
-                        <Inline space="6px" alignVertical="center">
-                          <Text
-                            size="11pt"
-                            align="center"
-                            weight="heavy"
-                            color={secondaryTextColor}
-                          >
-                            􀋥
-                          </Text>
-                          <Text size="13pt" weight="heavy" color="label">
-                            {featuredMint.totalMints === 1
-                              ? i18n.t(i18n.l.mints.featured_mint_card.one_mint)
-                              : i18n.t(
-                                  i18n.l.mints.featured_mint_card.x_mints,
-                                  {
-                                    numMints: abbreviateNumber(
-                                      featuredMint.totalMints
-                                    ),
-                                  }
-                                )}
-                          </Text>
-                        </Inline>
-                        <Inline space="6px" alignVertical="center">
-                          <Text
-                            size="11pt"
-                            align="center"
-                            weight="heavy"
-                            color={secondaryTextColor}
-                          >
-                            􀐫
-                          </Text>
-                          <Text size="13pt" weight="heavy" color="label">
-                            {i18n.t(
-                              i18n.l.mints.featured_mint_card.x_past_hour,
-                              {
-                                numMints: abbreviateNumber(
-                                  featuredMint.mintsLastHour
-                                ),
-                              }
-                            )}
-                          </Text>
-                        </Inline>
-                      </Stack>
-                    </Box>
-                  </Column>
-                  <Column width="content">
-                    {!mediaRendered ? (
-                      <Box
-                        background="fillSecondary"
-                        width={{ custom: IMAGE_SIZE }}
-                        height={{ custom: IMAGE_SIZE }}
-                        borderRadius={12}
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <Text
-                          size="20pt"
-                          weight="semibold"
-                          color="labelQuaternary"
+                          size="11pt"
                           align="center"
+                          weight="heavy"
+                          color={secondaryTextColor}
                         >
-                          􀣵
+                          􀫸
                         </Text>
-                      </Box>
-                    ) : (
-                      <Box
-                        width={{ custom: IMAGE_SIZE }}
-                        height={{ custom: IMAGE_SIZE }}
-                      />
-                    )}
-                    <Cover>
-                      {!!imageUrl && (
+                        <Text
+                          size="13pt"
+                          weight="heavy"
+                          color={secondaryTextColor}
+                        >
+                          {i18n.t(
+                            i18n.l.mints.featured_mint_card.featured_mint
+                          )}
+                        </Text>
+                      </Inline>
+                      <Text
+                        size="20pt"
+                        weight="heavy"
+                        color="label"
+                        numberOfLines={1}
+                      >
+                        {featuredMint.name}
+                      </Text>
+                    </Stack>
+                    <Stack space={{ custom: 14 }}>
+                      <Inline space="6px" alignVertical="center">
+                        <Text
+                          size="11pt"
+                          align="center"
+                          weight="heavy"
+                          color={secondaryTextColor}
+                        >
+                          􀋥
+                        </Text>
+                        <Text size="13pt" weight="heavy" color="label">
+                          {featuredMint.totalMints === 1
+                            ? i18n.t(i18n.l.mints.featured_mint_card.one_mint)
+                            : i18n.t(i18n.l.mints.featured_mint_card.x_mints, {
+                                numMints: abbreviateNumber(
+                                  featuredMint.totalMints
+                                ),
+                              })}
+                        </Text>
+                      </Inline>
+                      <Inline space="6px" alignVertical="center">
+                        <Text
+                          size="11pt"
+                          align="center"
+                          weight="heavy"
+                          color={secondaryTextColor}
+                        >
+                          􀐫
+                        </Text>
+                        <Text size="13pt" weight="heavy" color="label">
+                          {i18n.t(i18n.l.mints.featured_mint_card.x_past_hour, {
+                            numMints: abbreviateNumber(
+                              featuredMint.mintsLastHour
+                            ),
+                          })}
+                        </Text>
+                      </Inline>
+                    </Stack>
+                  </Box>
+                </Column>
+                <Column width="content">
+                  {!mediaRendered ? (
+                    <Box
+                      background="fillSecondary"
+                      width={{ custom: IMAGE_SIZE }}
+                      height={{ custom: IMAGE_SIZE }}
+                      borderRadius={12}
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Text
+                        size="20pt"
+                        weight="semibold"
+                        color="labelQuaternary"
+                        align="center"
+                      >
+                        􀣵
+                      </Text>
+                    </Box>
+                  ) : (
+                    <Box
+                      width={{ custom: IMAGE_SIZE }}
+                      height={{ custom: IMAGE_SIZE }}
+                    />
+                  )}
+                  <Cover>
+                    {!!imageUrl && (
+                      <View
+                        style={
+                          IS_IOS
+                            ? {
+                                shadowColor: globalColors.grey100,
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.02,
+                                shadowRadius: 3,
+                              }
+                            : {}
+                        }
+                      >
                         <View
                           style={
                             IS_IOS
                               ? {
-                                  shadowColor: globalColors.grey100,
-                                  shadowOffset: { width: 0, height: 2 },
-                                  shadowOpacity: 0.02,
-                                  shadowRadius: 3,
+                                  shadowColor:
+                                    isDarkMode || !accentColor
+                                      ? globalColors.grey100
+                                      : accentColor,
+                                  shadowOffset: { width: 0, height: 4 },
+                                  shadowOpacity: 0.16,
+                                  shadowRadius: 6,
                                 }
-                              : {}
+                              : {
+                                  shadowColor:
+                                    isDarkMode || !accentColor
+                                      ? globalColors.grey100
+                                      : accentColor,
+                                  elevation: 8,
+                                  opacity: 1,
+                                }
                           }
                         >
-                          <View
-                            style={
-                              IS_IOS
-                                ? {
-                                    shadowColor:
-                                      isDarkMode || !accentColor
-                                        ? globalColors.grey100
-                                        : accentColor,
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.16,
-                                    shadowRadius: 6,
-                                  }
-                                : {
-                                    shadowColor:
-                                      isDarkMode || !accentColor
-                                        ? globalColors.grey100
-                                        : accentColor,
-                                    elevation: 8,
-                                    opacity: 1,
-                                  }
-                            }
-                          >
-                            <Media
-                              onLayout={() => setMediaRendered(true)}
-                              onError={() => setMediaRendered(false)}
-                              url={imageUrl}
-                              mimeType={mimeType ?? undefined}
-                              style={{
-                                width: IMAGE_SIZE,
-                                height: IMAGE_SIZE,
-                                borderRadius: 12,
-                              }}
-                            />
-                          </View>
+                          <Media
+                            onLayout={() => setMediaRendered(true)}
+                            onError={() => setMediaRendered(false)}
+                            url={imageUrl}
+                            mimeType={mimeType ?? undefined}
+                            style={{
+                              width: IMAGE_SIZE,
+                              height: IMAGE_SIZE,
+                              borderRadius: 12,
+                            }}
+                          />
                         </View>
-                      )}
-                    </Cover>
-                  </Column>
-                </Columns>
-              </ButtonPressAnimation>
-            </View>
+                      </View>
+                    )}
+                  </Cover>
+                </Column>
+              </Columns>
+            </ButtonPressAnimation>
           </View>
-        </AccentColorProvider>
-      </ColorModeProvider>
-    </Inset>
+        </View>
+      </AccentColorProvider>
+    </ColorModeProvider>
   ) : (
     <></>
   );

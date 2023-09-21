@@ -12,7 +12,7 @@ import {
   ButtonPressAnimation,
   ShimmerAnimation,
 } from '@/components/animations';
-import { Box, Inset, Text, useForegroundColor } from '@/design-system';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 
@@ -21,7 +21,6 @@ export function MintsCard() {
   const { accountAddress } = useAccountSettings();
   const {
     data: { mints, featuredMint },
-    isFetching,
   } = useMints({
     walletAddress: accountAddress,
   });
@@ -41,72 +40,66 @@ export function MintsCard() {
     }
   }, [canRefresh]);
 
-  return mints?.length || isFetching ? (
-    <Inset top={{ custom: 22 }} bottom="10px">
-      <CarouselCard
-        title={i18n.t(i18n.l.mints.mints_card.mints)}
-        data={mints?.filter(
-          c => c.contractAddress !== featuredMint?.contractAddress
-        )}
-        carouselItem={{
-          renderItem: ({ item }) => <CollectionCell collection={item} />,
-          keyExtractor: (item: MintableCollection) =>
-            item.contractAddress + item.chainId,
-          placeholder: <Placeholder />,
-          width: NFT_IMAGE_SIZE,
-          height: 147,
-          padding: 10,
-          verticalOverflow: 10,
-        }}
-        button={
-          <Box
-            as={ButtonPressAnimation}
-            background="fillSecondary"
-            height="36px"
-            width="full"
-            borderRadius={99}
-            justifyContent="center"
-            alignItems="center"
-            style={{
-              overflow: 'hidden',
-            }}
-            onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event.mintsPressedViewAllMintsButton
-              );
-              navigate(Routes.MINTS_SHEET);
-            }}
-          >
-            {/* unfortunately shimmer width must be hardcoded */}
-            <ShimmerAnimation
-              color={fillSecondary}
-              width={
-                deviceWidth -
-                // 40 = 20px padding on each side
-                40 -
-                // 46 = 36px refresh button width + 10px spacing
-                46
-              }
-            />
-            <Text color="label" align="center" size="15pt" weight="bold">
-              {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
-            </Text>
-          </Box>
-        }
-        menu={<Menu />}
-        refresh={() => {
-          setCanRefresh(false);
-          queryClient.invalidateQueries(
-            mintsQueryKey({
-              address: accountAddress,
-            })
-          );
-        }}
-        canRefresh={canRefresh}
-        isRefreshing={isRefreshing}
-      />
-    </Inset>
-  ) : (
-    <></>
+  return (
+    <CarouselCard
+      title={i18n.t(i18n.l.mints.mints_card.mints)}
+      data={mints?.filter(
+        c => c.contractAddress !== featuredMint?.contractAddress
+      )}
+      carouselItem={{
+        renderItem: ({ item }) => <CollectionCell collection={item} />,
+        keyExtractor: (item: MintableCollection) =>
+          item.contractAddress + item.chainId,
+        placeholder: <Placeholder />,
+        width: NFT_IMAGE_SIZE,
+        height: 147,
+        padding: 10,
+        verticalOverflow: 10,
+      }}
+      button={
+        <Box
+          as={ButtonPressAnimation}
+          background="fillSecondary"
+          height="36px"
+          width="full"
+          borderRadius={99}
+          justifyContent="center"
+          alignItems="center"
+          style={{
+            overflow: 'hidden',
+          }}
+          onPress={() => {
+            analyticsV2.track(analyticsV2.event.mintsPressedViewAllMintsButton);
+            navigate(Routes.MINTS_SHEET);
+          }}
+        >
+          {/* unfortunately shimmer width must be hardcoded */}
+          <ShimmerAnimation
+            color={fillSecondary}
+            width={
+              deviceWidth -
+              // 40 = 20px padding on each side
+              40 -
+              // 46 = 36px refresh button width + 10px spacing
+              46
+            }
+          />
+          <Text color="label" align="center" size="15pt" weight="bold">
+            {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
+          </Text>
+        </Box>
+      }
+      menu={<Menu />}
+      refresh={() => {
+        setCanRefresh(false);
+        queryClient.invalidateQueries(
+          mintsQueryKey({
+            address: accountAddress,
+          })
+        );
+      }}
+      canRefresh={canRefresh}
+      isRefreshing={isRefreshing}
+    />
   );
 }

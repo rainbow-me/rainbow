@@ -3,8 +3,8 @@ import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
   HARDWARE_WALLETS,
-  NFT_OFFERS,
   MINTS,
+  NFT_OFFERS,
 } from '@rainbow-me/config/experimentalHooks';
 import { IS_TESTING } from 'react-native-dotenv';
 import Lists from './ListsSection';
@@ -28,9 +28,10 @@ import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
+import { useMints } from '@/resources/mints';
 
 export default function DiscoverHome() {
-  const { network } = useAccountSettings();
+  const { accountAddress, network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -43,6 +44,10 @@ export default function DiscoverHome() {
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
+  const {
+    data: { mints, featuredMint },
+    isFetching,
+  } = useMints({ walletAddress: accountAddress });
 
   const hasHardwareWallets =
     Object.keys(wallets || {}).filter(
@@ -50,42 +55,47 @@ export default function DiscoverHome() {
     ).length > 0;
 
   return (
-    <Inset top="10px" bottom={{ custom: 150 }}>
-      <Inset horizontal="20px">
-        {!testNetwork ? (
-          <Stack>
-            <Inline space="20px">
-              <GasCard />
-              {isProfilesEnabled && <ENSSearchCard />}
-            </Inline>
-            {mintsEnabled && (
-              <Stack>
-                <FeaturedMintCard />
-                <MintsCard />
-              </Stack>
-            )}
-            {IS_TESTING !== 'true' && nftOffersEnabled && <NFTOffersCard />}
-            {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
-            {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
-            {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
-            {isProfilesEnabled && <ENSCreateProfileCard />}
-            <Inline space="20px">
-              <LearnCard cardDetails={backupsCard} type="square" />
-              <LearnCard cardDetails={avoidScamsCard} type="square" />
-            </Inline>
-            <DPICard />
-          </Stack>
-        ) : (
-          <Stack>
-            <Inline space="20px">
-              <GasCard />
-              <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
-            </Inline>
-            <DPICard />
-          </Stack>
-        )}
-      </Inset>
-      <Lists />
+    <Inset top="20px" bottom={{ custom: 150 }}>
+      <Stack space="20px">
+        <Inset horizontal="20px">
+          {!testNetwork ? (
+            <Stack space="20px">
+              <Inline space="20px">
+                <GasCard />
+                {isProfilesEnabled && <ENSSearchCard />}
+              </Inline>
+              {mintsEnabled && (mints.length || isFetching) && (
+                <Stack space="20px">
+                  {!!featuredMint && <FeaturedMintCard />}
+                  <Inset top="12px">
+                    <MintsCard />
+                  </Inset>
+                </Stack>
+              )}
+              {/* FIXME: IS_TESTING disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
+              {IS_TESTING !== 'true' && nftOffersEnabled && <NFTOffersCard />}
+              {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
+              {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
+              {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
+              {isProfilesEnabled && <ENSCreateProfileCard />}
+              <Inline space="20px">
+                <LearnCard cardDetails={backupsCard} type="square" />
+                <LearnCard cardDetails={avoidScamsCard} type="square" />
+              </Inline>
+              <DPICard />
+            </Stack>
+          ) : (
+            <Stack space="20px">
+              <Inline space="20px">
+                <GasCard />
+                <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
+              </Inline>
+              <DPICard />
+            </Stack>
+          )}
+        </Inset>
+        <Lists />
+      </Stack>
     </Inset>
   );
 }
