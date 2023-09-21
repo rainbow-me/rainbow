@@ -1,62 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
-import {
-  AccentColorProvider,
-  Bleed,
-  Box,
-  Cover,
-  Inline,
-  Inset,
-  Text,
-} from '@/design-system';
+import { Box, Cover, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintedNft } from '@/graphql/__generated__/arc';
 import { Media } from '@/components/Media';
 import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
+import { NUM_NFTS } from './Card';
 
-const NUM_NFTS = 3;
-export const NFT_IMAGE_SIZE =
+const NFT_IMAGE_SIZE =
   (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
 
 export const Placeholder = () => {
-  const { colors } = useTheme();
   return (
-    <AccentColorProvider color={colors.skeleton}>
-      <Inset vertical="10px">
-        <Box
-          background="accent"
-          width={{ custom: NFT_IMAGE_SIZE }}
-          height={{ custom: NFT_IMAGE_SIZE }}
-          borderRadius={12}
-        />
-        <Box paddingBottom="10px" paddingTop="12px">
-          <Inline space="4px" alignVertical="center">
-            <Bleed vertical="4px">
-              <Box
-                background="accent"
-                width={{ custom: 12 }}
-                height={{ custom: 12 }}
-                borderRadius={6}
-              />
-            </Bleed>
-            <Box
-              background="accent"
-              width={{ custom: 50 }}
-              height={{ custom: 8 }}
-              borderRadius={4}
-            />
-          </Inline>
-        </Box>
-        <Box
-          background="accent"
-          width={{ custom: 50 }}
-          height={{ custom: 8 }}
-          borderRadius={4}
-        />
-      </Inset>
-    </AccentColorProvider>
+    <Box
+      style={{
+        width: NFT_IMAGE_SIZE,
+        height: NFT_IMAGE_SIZE,
+      }}
+      alignItems="center"
+      justifyContent="center"
+      borderRadius={16}
+      background="fillSecondary"
+    >
+      <Text
+        align="center"
+        color="labelQuaternary"
+        size="20pt"
+        weight="semibold"
+      >
+        􀣵
+      </Text>
+    </Box>
   );
 };
 
@@ -69,27 +45,7 @@ export function RecentMintCell({ recentMint }: { recentMint: MintedNft }) {
 
   return (
     <Box style={{ width: NFT_IMAGE_SIZE, height: NFT_IMAGE_SIZE }}>
-      {!mediaRendered && (
-        <Box
-          style={{
-            width: NFT_IMAGE_SIZE,
-            height: NFT_IMAGE_SIZE,
-          }}
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={16}
-          background="fillSecondary"
-        >
-          <Text
-            align="center"
-            color="labelQuaternary"
-            size="20pt"
-            weight="semibold"
-          >
-            􀣵
-          </Text>
-        </Box>
-      )}
+      {!mediaRendered && <Placeholder />}
       {!!recentMint?.imageURI && (
         <Cover>
           <View
