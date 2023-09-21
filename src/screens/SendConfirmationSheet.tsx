@@ -525,14 +525,17 @@ export const SendConfirmationSheet = () => {
     shouldShowChecks,
   });
 
-  let message;
-  if (isSendingToUserAccount) {
-    message = 'You own this wallet';
-  } else if (alreadySentTransactionsTotal === 0) {
-    message = 'First time send';
-  } else {
-    message = `${alreadySentTransactionsTotal} previous sends`;
-  }
+  const getMessage = () => {
+    let message;
+    if (isSendingToUserAccount) {
+      message = 'You own this wallet';
+    } else if (alreadySentTransactionsTotal === 0) {
+      message = 'First time send';
+    } else {
+      message = `${alreadySentTransactionsTotal} previous sends`;
+    }
+    return message;
+  };
 
   return (
     <Container
@@ -665,7 +668,7 @@ export const SendConfirmationSheet = () => {
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
-                    {message}
+                    {getMessage()}
                   </Text>
                 </Row>
               </Column>
