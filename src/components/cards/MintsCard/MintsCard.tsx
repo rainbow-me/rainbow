@@ -44,7 +44,6 @@ export function MintsCard() {
   return mints?.length || isFetching ? (
     <Inset top={{ custom: 22 }} bottom="10px">
       <CarouselCard
-        isLoading={isFetching}
         title={i18n.t(i18n.l.mints.mints_card.mints)}
         data={mints?.filter(
           c => c.contractAddress !== featuredMint?.contractAddress
