@@ -1059,7 +1059,12 @@ export default function TransactionConfirmationScreen() {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          address={request?.asset?.mainnet_address || request?.asset?.address}
+          address={
+            request?.asset?.mainnet_address ||
+            request?.asset?.address ||
+            request?.nativeAsset?.mainnet_address ||
+            request?.nativeAsset?.address
+          }
           amount={amount}
           method={method}
           name={request?.asset?.name}
