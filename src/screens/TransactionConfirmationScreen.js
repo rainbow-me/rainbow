@@ -340,7 +340,7 @@ export default function TransactionConfirmationScreen() {
   const request = useMemo(() => {
     return isMessageRequest
       ? { message: displayDetails.request }
-      : { ...displayDetails.request, asset: nativeAsset };
+      : { ...displayDetails.request, nativeAsset: nativeAsset };
   }, [displayDetails.request, nativeAsset, isMessageRequest]);
 
   const openAutomatically = routeParams?.openAutomatically;
@@ -1048,7 +1048,9 @@ export default function TransactionConfirmationScreen() {
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
       const nativeAssetPrice =
-        genericNativeAsset?.price?.value || nativeAsset?.price?.value;
+        request?.asset?.price?.value ||
+        genericNativeAsset?.price?.value ||
+        nativeAsset?.price?.value;
       const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
