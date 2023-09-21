@@ -1067,9 +1067,9 @@ export default function TransactionConfirmationScreen() {
           }
           amount={amount}
           method={method}
-          name={request?.asset?.name}
+          name={request?.asset?.name || request?.nativeAsset?.name}
           nativeAmountDisplay={!nativeAssetPrice ? null : nativeAmountDisplay}
-          symbol={request?.asset?.symbol}
+          symbol={request?.asset?.symbol || request?.nativeAsset?.symbol}
         />
       );
     }
