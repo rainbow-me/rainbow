@@ -113,7 +113,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
           </Inline>
         </Stack>
         <Inline space="10px">
-          {collection.recentMints.map((mint: MintedNft) => (
+          {collection.recentMints.slice(0, 3).map((mint: MintedNft) => (
             <RecentMintCell key={mint.tokenID} recentMint={mint} />
           ))}
           {Array.from({
