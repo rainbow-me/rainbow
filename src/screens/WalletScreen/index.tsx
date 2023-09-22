@@ -238,9 +238,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       }}
     >
       <WalletPage testID="wallet-screen">
-        <Box
-          style={{ flex: 1, marginTop: ios ? -(navbarHeight + insets.top) : 0 }}
-        >
+        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
           {/* @ts-expect-error JavaScript component */}
           <AssetList
             accentColor={accentColor}

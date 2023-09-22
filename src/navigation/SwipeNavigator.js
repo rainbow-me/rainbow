@@ -34,7 +34,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import logger from 'logger';
 import WalletScreen from '@/screens/WalletScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
+import { IS_IOS } from '@/env';
 
 const NUMBER_OF_TABS = 3;
 
@@ -51,6 +52,7 @@ const config = {
 };
 
 const Swipe = createMaterialTopTabNavigator();
+const HEADER_HEIGHT = IS_IOS ? 82 : 62;
 
 const TabBar = ({ state, descriptors, navigation, position }) => {
   const { width: deviceWidth } = useDimensions();
@@ -118,7 +120,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
         }}
       >
         <Box
-          height={{ custom: 82 }}
+          height={{ custom: HEADER_HEIGHT }}
           position="absolute"
           style={{
             bottom: 0,
@@ -127,11 +129,12 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
           width="full"
         >
           <Box
-            as={BlurView}
+            // as={ BlurView }
+            as={IS_IOS ? BlurView : View}
             blurAmount={40}
             blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
             width="full"
-            height={{ custom: 82 }}
+            height={{ custom: HEADER_HEIGHT }}
           >
             <Box
               height="full"
@@ -139,7 +142,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
               style={{
                 backgroundColor: isDarkMode
                   ? colors.alpha('#191A1C', 0.7)
-                  : colors.alpha(colors.white, 0.7),
+                  : colors.alpha(colors.white, IS_IOS ? 0.7 : 0.92),
               }}
               width="full"
             />

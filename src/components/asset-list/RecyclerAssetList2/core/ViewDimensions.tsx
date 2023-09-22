@@ -19,6 +19,7 @@ import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
 import { DISCOVER_MORE_BUTTON_HEIGHT } from './DiscoverMoreButton';
+import { IS_IOS } from '@/env';
 
 type Dim = {
   width?: number;
@@ -46,7 +47,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.PROFILE_AVATAR_ROW]: { height: ProfileAvatarRowHeight },
   [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: {
-    height: ios ? ProfileAvatarRowTopInset : 0,
+    height: IS_IOS ? ProfileAvatarRowTopInset : ProfileAvatarRowTopInset * 2,
   },
   [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
   [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },

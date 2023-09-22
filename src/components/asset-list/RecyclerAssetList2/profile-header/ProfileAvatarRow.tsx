@@ -91,11 +91,7 @@ export function ProfileAvatarRow({
       transform: [
         {
           translateY: position!.interpolate({
-            inputRange: [
-              -insets.top,
-              IS_ANDROID ? 0 : -insets.top + 1,
-              navbarHeight,
-            ],
+            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
             outputRange: [0, 0, 12],
           }),
         },
