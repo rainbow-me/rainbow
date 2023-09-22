@@ -88,10 +88,6 @@ export function CollectionCell({
     collection.imageURL ||
     collection?.recentMints?.find(m => m.imageURI)?.imageURI;
 
-  const mimeType = collection.imageURL
-    ? collection.imageMimeType
-    : collection?.recentMints?.find(m => m.imageURI)?.mimeType;
-
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
   return (
