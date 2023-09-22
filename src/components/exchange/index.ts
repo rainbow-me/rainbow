@@ -1,7 +1,6 @@
 export { default as ConfirmExchangeButton } from './ConfirmExchangeButton';
 export { default as CurrencySelectionList } from './CurrencySelectionList';
 export { default as CurrencySelectModalHeader } from './CurrencySelectModalHeader';
-export { default as DepositInfo } from './DepositInfo';
 export { default as ExchangeAssetList } from './ExchangeAssetList';
 export { default as ExchangeDetailsButton } from './ExchangeDetailsButton';
 export { default as ExchangeDetailsRow } from './ExchangeDetailsRow';

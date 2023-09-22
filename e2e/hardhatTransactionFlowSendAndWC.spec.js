@@ -107,7 +107,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
-  it('Should send (Cryptokitties)', async () => {
+  // FIXME: This is the problem with a review button being tapped but detox not
+  // registering the action and timing out and leaving the state of the app in
+  // a place where all following tests are failing.
+  it.skip('Should send (Cryptokitties)', async () => {
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
@@ -117,6 +120,9 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('gas-speed-custom');
     await Helpers.waitAndTap('speed-pill-urgent');
     await Helpers.waitAndTap('gas-speed-done-button');
+    await Helpers.checkIfVisible('send-sheet-confirm-action-button');
+    // FIXME: This taps in the sim, but test never picks up the action
+    // confirmation
     await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     if (android) {
@@ -131,7 +137,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send NFT (Cryptokitties)', async () => {
+  it.skip('Should show completed send NFT (Cryptokitties)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
     } catch (e) {
@@ -143,7 +149,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should send ERC20 (BAT)', async () => {
+  it.skip('Should send ERC20 (BAT)', async () => {
     const preSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
@@ -172,7 +178,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send ERC20 (BAT)', async () => {
+  it.skip('Should show completed send ERC20 (BAT)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
     } catch (e) {
@@ -181,7 +187,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should send ETH', async () => {
+  it.skip('Should send ETH', async () => {
     await Helpers.waitAndTap('send-button');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
@@ -210,7 +216,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send ETH', async () => {
+  it.skip('Should show completed send ETH', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
     } catch (e) {
@@ -219,6 +225,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
   });
 
+  // FIXME: we have converted to V2 - review and re-enable
   /* Disabling until we can convert this to v2
   if (ios) {
     // TODO important

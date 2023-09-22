@@ -28,7 +28,6 @@ import {
   useUserAccounts,
   useWalletSectionsData,
 } from '@/hooks';
-import { updateRefetchSavings } from '@/redux/data';
 import { emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import { position } from '@/styles';
@@ -109,8 +108,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   );
   const {
     isWalletEthZero,
-    refetchSavings,
-    shouldRefetchSavings,
     isEmpty: isSectionsEmpty,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
@@ -139,16 +136,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   );
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  useEffect(() => {
-    const fetchAndResetFetchSavings = async () => {
-      await refetchSavings();
-      dispatch(updateRefetchSavings(false));
-    };
-    if (shouldRefetchSavings) {
-      fetchAndResetFetchSavings();
-    }
-  }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {

@@ -12,11 +12,13 @@ import {
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
+  LegacyTransactionGasParamAmounts,
   MaxPriorityFeeSuggestions,
   NativeCurrencyKey,
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
+  TransactionGasParamAmounts,
 } from '@/entities';
 import { toHex } from '@/handlers/web3';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
@@ -32,7 +34,6 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 import { Network } from '@/networks/types';
-import { getNetworkObj } from '@/networks';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -154,7 +155,6 @@ export const parseRainbowMeteorologyData = (
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
-    console.log({ [speed]: parsedFees[speed] });
   });
 
   parsedFees[CUSTOM] = {} as GasFeeParams;
@@ -361,7 +361,7 @@ const getTxFee = (
 
 export const parseGasParamsForTransaction = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee
-) => {
+): TransactionGasParamAmounts | LegacyTransactionGasParamAmounts => {
   const legacyGasFeeParams = (selectedGasFee as LegacySelectedGasFee)
     .gasFeeParams;
   const gasPrice = legacyGasFeeParams?.gasPrice;
@@ -380,14 +380,31 @@ export const parseGasParamsForTransaction = (
   };
 };
 
+export const parseGasParamAmounts = (
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee
+): TransactionGasParamAmounts | LegacyTransactionGasParamAmounts => {
+  const legacyGasFeeParams = (selectedGasFee as LegacySelectedGasFee)
+    .gasFeeParams;
+  const gasPrice = legacyGasFeeParams?.gasPrice;
+  if (gasPrice) {
+    return { gasPrice: gasPrice.amount };
+  }
+  const gasFeeParams = (selectedGasFee as SelectedGasFee).gasFeeParams;
+  return {
+    maxFeePerGas: add(
+      gasFeeParams.maxBaseFee.amount,
+      gasFeeParams.maxPriorityFeePerGas.amount
+    ),
+    maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas.amount,
+  };
+};
+
 export const gweiToWei = (gweiAmount: BigNumberish) => {
   const weiAmount = multiply(gweiAmount, ethUnits.gwei);
   return weiAmount;
 };
 
 export const weiToGwei = (weiAmount: BigNumberish) => {
-  console.log(weiAmount);
   const gweiAmount = divide(weiAmount, ethUnits.gwei);
-  console.log({ gweiAmount });
   return gweiAmount;
 };

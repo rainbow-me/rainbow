@@ -6,9 +6,13 @@ module.exports = {
   maxWorkers: 1,
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
+
+  globalSetup: 'detox/runners/jest/globalSetup',
+  globalTeardown: 'detox/runners/jest/globalTeardown',
+  reporters: ['detox/runners/jest/reporter'],
+
   testTimeout: 240000,
   testRegex: '\\.spec\\.[jt]sx?$',
-  reporters: ['detox/runners/jest/streamlineReporter'],
   verbose: true,
   transform: {
     '\\.[jt]sx?$': 'ts-jest',

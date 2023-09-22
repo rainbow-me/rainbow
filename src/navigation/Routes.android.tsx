@@ -18,10 +18,9 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import SendConfirmationSheet from '../screens/SendConfirmationSheet';
+import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
@@ -253,11 +252,6 @@ function BSNavigator() {
       />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
       />
@@ -357,7 +351,6 @@ function BSNavigator() {
         name={Routes.DIAGNOSTICS_SHEET}
         options={{ ...bottomSheetPreset }}
       />
-      <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}

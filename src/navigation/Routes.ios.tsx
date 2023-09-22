@@ -16,10 +16,9 @@ import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import SendConfirmationSheet from '../screens/SendConfirmationSheet';
+import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
@@ -233,11 +232,6 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET_POOLS}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
@@ -329,11 +323,6 @@ function NativeStackNavigator() {
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
-      />
-      <NativeStack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={TransactionConfirmationScreen}

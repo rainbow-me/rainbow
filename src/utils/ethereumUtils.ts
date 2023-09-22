@@ -301,7 +301,10 @@ const getAssetTypeFromNetwork = (network: Network) => {
  * @param  {String} type
  */
 const getNetworkFromType = (type: string) => {
-  return type === 'token' ? Network.mainnet : (type as Network);
+  if (type === AssetType.token || type === AssetType.compound) {
+    return Network.mainnet;
+  }
+  return type as Network;
 };
 
 /**

@@ -16,12 +16,13 @@ import {
 } from '../common';
 import { Asset, TransactionStatus, TransactionType } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
-import { parseGasParamsForTransaction } from '@/parsers';
+import { parseGasParamAmounts } from '@/parsers';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
-import { AllowancesCache, ethereumUtils, gasUtils } from '@/utils';
+import { AllowancesCache, ethereumUtils } from '@/utils';
+import { overrideWithFastSpeedIfNeeded } from '../utils';
 import logger from '@/utils/logger';
 
 export const estimateApprove = async (
@@ -158,52 +159,34 @@ const unlock = async (
     throw e;
   }
   let approval;
-  const gasParams = parseGasParamsForTransaction(selectedGasFee);
-  // if swap isn't the last action, use fast gas or custom (whatever is faster)
-  if (
-    !gasParams.maxFeePerGas ||
-    !gasParams.maxPriorityFeePerGas ||
-    !gasParams.gasPrice
-  ) {
-    try {
-      // approvals should always use fast gas or custom (whatever is faster)
-      const fastMaxFeePerGas =
-        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
-      const fastMaxPriorityFeePerGas =
-        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+  let gasParams = parseGasParamAmounts(selectedGasFee);
 
-      if (greaterThan(fastMaxFeePerGas, gasParams?.maxFeePerGas || 0)) {
-        gasParams.maxFeePerGas = fastMaxFeePerGas;
-      }
-      if (
-        greaterThan(
-          fastMaxPriorityFeePerGas,
-          gasParams?.maxPriorityFeePerGas || 0
-        )
-      ) {
-        gasParams.maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
-      }
+  try {
+    gasParams = overrideWithFastSpeedIfNeeded({
+      gasParams,
+      chainId,
+      gasFeeParamsBySpeed,
+    });
 
-      logger.sentry(`[${actionName}] about to approve`, {
-        assetAddress,
-        contractAddress,
-        gasLimit,
-      });
-      const nonce = baseNonce ? baseNonce + index : null;
-      approval = await executeApprove(
-        assetAddress,
-        contractAddress,
-        gasLimit,
-        gasParams,
-        wallet,
-        nonce,
-        chainId
-      );
-    } catch (e) {
-      logger.sentry(`[${actionName}] Error approving`);
-      captureException(e);
-      throw e;
-    }
+    logger.sentry(`[${actionName}] about to approve`, {
+      assetAddress,
+      contractAddress,
+      gasLimit,
+    });
+    const nonce = baseNonce ? baseNonce + index : null;
+    approval = await executeApprove(
+      assetAddress,
+      contractAddress,
+      gasLimit,
+      gasParams,
+      wallet,
+      nonce,
+      chainId
+    );
+  } catch (e) {
+    logger.sentry(`[${actionName}] Error approving`);
+    captureException(e);
+    throw e;
   }
   const walletAddress = await wallet.getAddress();
   const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();

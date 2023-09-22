@@ -1,17 +1,14 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { readableUniswapSelector } from '@/helpers/uniswapLiquidityTokenInfoSelector';
 import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
@@ -34,7 +31,6 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
   });
-  const uniswap = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
@@ -43,10 +39,6 @@ export default function useWalletSectionsData({
     hiddenCoinsObj: hiddenCoins,
     pinnedCoinsObj: pinnedCoins,
   } = useCoinListEditOptions();
-
-  const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
-    true
-  );
 
   const { isCoinListEdited } = useCoinListEdited();
 
@@ -58,10 +50,8 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
-      savings,
       sendableUniqueTokens,
       ...sortedAccountData,
-      ...uniswap,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -80,8 +70,6 @@ export default function useWalletSectionsData({
       hasNFTs,
       isEmpty,
       isWalletEthZero,
-      refetchSavings,
-      shouldRefetchSavings,
       briefSectionsData,
     };
   }, [
@@ -95,14 +83,10 @@ export default function useWalletSectionsData({
     nativeCurrency,
     network,
     pinnedCoins,
-    refetchSavings,
-    savings,
-    shouldRefetchSavings,
     showcaseTokens,
     sortedAccountData,
     type,
     sendableUniqueTokens,
-    uniswap,
   ]);
   return walletSections;
 }

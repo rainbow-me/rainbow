@@ -3,10 +3,6 @@ import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
-import WrappedPoolRow from '../WrappedPoolRow';
-import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
-import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
-import WrappedSavingsRow from '../WrappedSavingsRow';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { ExtendedState } from './RawRecyclerList';
 import {
@@ -16,12 +12,8 @@ import {
   CoinExtraData,
   NFTExtraData,
   NFTFamilyExtraData,
-  PoolsHeaderExtraData,
   PositionExtraData,
   PositionHeaderExtraData,
-  SavingExtraData,
-  SavingsHeaderExtraData,
-  UniswapPoolExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -56,7 +48,6 @@ function rowRenderer(
     case CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE:
     case CellType.PROFILE_BALANCE_ROW_SPACE_AFTER:
     case CellType.PROFILE_NAME_ROW_SPACE_AFTER:
-    case CellType.SAVINGS_HEADER_SPACE_BEFORE:
     case CellType.EMPTY_WALLET_SPACER:
     case CellType.BIG_EMPTY_WALLET_SPACER:
     case CellType.EMPTY_ROW:
@@ -107,19 +98,6 @@ function rowRenderer(
           uniqueId={(data as CoinExtraData).uniqueId}
         />
       );
-    case CellType.SAVINGS_HEADER:
-      return (
-        <WrappedSavingsListHeader
-          // @ts-ignore
-          value={(data as SavingsHeaderExtraData).value}
-        />
-      );
-    case CellType.SAVINGS:
-      return <WrappedSavingsRow address={(data as SavingExtraData).address} />;
-    case CellType.POOLS_HEADER:
-      return (
-        <WrappedPoolsListHeader value={(data as PoolsHeaderExtraData).value} />
-      );
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -145,10 +123,6 @@ function rowRenderer(
         <ProfileRowWrapper>
           <ProfileNameRow testIDPrefix="profile-name" />
         </ProfileRowWrapper>
-      );
-    case CellType.UNISWAP_POOL:
-      return (
-        <WrappedPoolRow address={(data as UniswapPoolExtraData).address} />
       );
     case CellType.NFTS_HEADER:
       return (
