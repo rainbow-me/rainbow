@@ -118,8 +118,8 @@ export function Card({ collection }: { collection: MintableCollection }) {
           ))}
           {Array.from({
             length: Math.max(NUM_NFTS - collection.recentMints.length, 0),
-          }).map(_ => (
-            <Placeholder />
+          }).map((_, index) => (
+            <Placeholder key={index} />
           ))}
         </Inline>
         <ButtonPressAnimation
