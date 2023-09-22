@@ -64,14 +64,16 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {mintsEnabled && (mints.length || isFetching) && (
-                <Stack space="20px">
-                  {!!featuredMint && <FeaturedMintCard />}
-                  <Inset top="12px">
-                    <MintsCard />
-                  </Inset>
-                </Stack>
-              )}
+              {IS_TESTING !== 'true' &&
+                mintsEnabled &&
+                (mints.length || isFetching) && (
+                  <Stack space="20px">
+                    {!!featuredMint && <FeaturedMintCard />}
+                    <Inset top="12px">
+                      <MintsCard />
+                    </Inset>
+                  </Stack>
+                )}
               {/* FIXME: IS_TESTING disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
               {IS_TESTING !== 'true' && nftOffersEnabled && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
