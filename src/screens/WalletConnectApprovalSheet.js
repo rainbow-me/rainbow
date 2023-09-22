@@ -162,7 +162,7 @@ const NetworkPill = ({ chainIds }) => {
                       zIndex: availableNetworks.length - index,
                       borderRadius: 30,
                       borderWidth: 2,
-                      borderColor: 'white',
+                      borderColor: colors.white,
                     }}
                   >
                     {network !== Network.mainnet ? (
