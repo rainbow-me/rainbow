@@ -6,7 +6,6 @@ import useExperimentalFlag, {
   MINTS,
   NFT_OFFERS,
 } from '@rainbow-me/config/experimentalHooks';
-import { IS_TESTING } from 'react-native-dotenv';
 import Lists from './ListsSection';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
@@ -29,6 +28,7 @@ import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { useMints } from '@/resources/mints';
+import { IS_TEST } from '@/env';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
@@ -36,7 +36,8 @@ export default function DiscoverHome() {
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  const mintsEnabled = useExperimentalFlag(MINTS) || config.mints_enabled;
+  const mintsEnabled =
+    (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = config.op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
@@ -64,18 +65,16 @@ export default function DiscoverHome() {
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
-              {IS_TESTING !== 'true' &&
-                mintsEnabled &&
-                (mints?.length || isFetching) && (
-                  <Stack space="20px">
-                    {!!featuredMint && <FeaturedMintCard />}
-                    <Inset top="12px">
-                      <MintsCard />
-                    </Inset>
-                  </Stack>
-                )}
+              {mintsEnabled && (mints?.length || isFetching) && (
+                <Stack space="20px">
+                  {!!featuredMint && <FeaturedMintCard />}
+                  <Inset top="12px">
+                    <MintsCard />
+                  </Inset>
+                </Stack>
+              )}
               {/* FIXME: IS_TESTING disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
-              {IS_TESTING !== 'true' && nftOffersEnabled && <NFTOffersCard />}
+              {!IS_TEST && nftOffersEnabled && <NFTOffersCard />}
               {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}

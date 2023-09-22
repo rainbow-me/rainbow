@@ -1,7 +1,7 @@
 import { analyticsV2 } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
-import { IS_PROD } from '@/env';
+import { IS_PROD, IS_TEST } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
 import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
@@ -69,7 +69,8 @@ export function useMintsFilter() {
  * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMints({ walletAddress }: { walletAddress: string }) {
-  const mintsEnabled = useExperimentalFlag(MINTS) || config.mints_enabled;
+  const mintsEnabled =
+    (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
   const { filter } = useMintsFilter();
   const queryKey = mintsQueryKey({
     address: walletAddress,
