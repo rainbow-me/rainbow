@@ -7,7 +7,7 @@ import { MintedNft } from '@/graphql/__generated__/arc';
 import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
 import { NUM_NFTS } from './Card';
-import { Media } from '@/components/Media';
+import { ImgixImage } from '@/components/images';
 
 const NFT_IMAGE_SIZE =
   (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
@@ -76,17 +76,15 @@ export function RecentMintCell({ recentMint }: { recentMint: MintedNft }) {
                     }
               }
             >
-              <Media
-                onLayout={() => setMediaRendered(true)}
-                onError={() => setMediaRendered(false)}
-                url={recentMint.imageURI}
-                mimeType={recentMint.mimeType ?? undefined}
+              <ImgixImage
                 style={{
                   width: NFT_IMAGE_SIZE,
                   height: NFT_IMAGE_SIZE,
                   borderRadius: 16,
                 }}
                 size={NFT_IMAGE_SIZE}
+                source={{ uri: recentMint.imageURI }}
+                fm="png"
               />
             </View>
           </View>

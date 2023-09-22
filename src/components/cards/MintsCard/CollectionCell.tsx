@@ -18,9 +18,9 @@ import { MintableCollection } from '@/graphql/__generated__/arc';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { analyticsV2 } from '@/analytics';
-import { Media } from '@/components/Media';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
+import { ImgixImage } from '@/components/images';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -157,17 +157,15 @@ export function CollectionCell({
                       }
                 }
               >
-                <Media
-                  onLayout={() => setMediaRendered(true)}
-                  onError={() => setMediaRendered(false)}
-                  url={imageUrl}
-                  mimeType={mimeType ?? undefined}
+                <ImgixImage
                   style={{
                     width: NFT_IMAGE_SIZE,
                     height: NFT_IMAGE_SIZE,
                     borderRadius: 12,
                   }}
                   size={NFT_IMAGE_SIZE}
+                  source={{ uri: imageUrl }}
+                  fm="png"
                 />
               </View>
             </View>
