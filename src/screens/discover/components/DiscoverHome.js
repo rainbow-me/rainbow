@@ -66,7 +66,7 @@ export default function DiscoverHome() {
               </Inline>
               {IS_TESTING !== 'true' &&
                 mintsEnabled &&
-                (mints.length || isFetching) && (
+                (mints?.length || isFetching) && (
                   <Stack space="20px">
                     {!!featuredMint && <FeaturedMintCard />}
                     <Inset top="12px">
