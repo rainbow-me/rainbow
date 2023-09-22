@@ -167,6 +167,7 @@ export function CollectionCell({
                     height: NFT_IMAGE_SIZE,
                     borderRadius: 12,
                   }}
+                  size={NFT_IMAGE_SIZE}
                 />
               </View>
             </View>

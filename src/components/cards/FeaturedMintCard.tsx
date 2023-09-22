@@ -314,6 +314,7 @@ export function FeaturedMintCard() {
                               height: IMAGE_SIZE,
                               borderRadius: 12,
                             }}
+                            size={IMAGE_SIZE}
                           />
                         </View>
                       </View>

@@ -31,6 +31,7 @@ export function Media({
   onError?: () => void;
 }) {
   const [loading, setLoading] = useState(false);
+
   const signedUrl = maybeSignUri(url, {
     // resizing breaks svg
     w: mimeType === MimeType.SVG ? undefined : size,
