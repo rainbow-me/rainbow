@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
 import { IS_PROD, IS_TEST } from '@/env';
 import { arcClient, arcDevClient } from '@/graphql';
-import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
+import {
+  GetFeaturedCollectionQuery,
+  GetMintableCollectionsQuery,
+} from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
@@ -31,6 +34,10 @@ const mintsFilterAtom = atom<MintsFilter>({
 
 export function mintsQueryKey({ address }: { address: string }) {
   return createQueryKey('mints', { address }, { persisterVersion: 1 });
+}
+
+export function featuredMintQueryKey({ address }: { address: string }) {
+  return createQueryKey('featuredMint', { address }, { persisterVersion: 1 });
 }
 
 /**
@@ -65,12 +72,44 @@ export function useMintsFilter() {
   return { filter: filterState, setFilter };
 }
 
+export function useFeaturedMint({ walletAddress }: { walletAddress: string }) {
+  const mintsEnabled =
+    (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
+  const queryKey = featuredMintQueryKey({
+    address: walletAddress,
+  });
+
+  const query = useQuery<GetFeaturedCollectionQuery>(
+    queryKey,
+    async () =>
+      await graphqlClient.getFeaturedCollection({
+        walletAddress,
+      }),
+    {
+      enabled: mintsEnabled && !!walletAddress,
+      staleTime: 300_000, // 5 minutes
+      cacheTime: 1_800_000, // 30 minutes
+      refetchInterval: 600_000, // 10 minutes
+    }
+  );
+
+  return {
+    ...query,
+    data: {
+      featuredMint: query.data?.getFeaturedCollection?.collection,
+    },
+  };
+}
+
 /**
  * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMints({ walletAddress }: { walletAddress: string }) {
   const mintsEnabled =
     (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
+  const {
+    data: { featuredMint },
+  } = useFeaturedMint({ walletAddress });
   const { filter } = useMintsFilter();
   const queryKey = mintsQueryKey({
     address: walletAddress,
@@ -90,9 +129,9 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
     }
   );
 
-  const featuredMint = query.data?.getMintableCollections?.collections?.find(
-    c => c.imageURL
-  );
+  const featuredMintWithFallback =
+    featuredMint ??
+    query.data?.getMintableCollections?.collections?.find(c => c.imageURL);
 
   const freeMints = useMemo(
     () =>
@@ -143,7 +182,7 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
     ...query,
     data: {
       mints: filteredMints,
-      featuredMint,
+      featuredMint: featuredMintWithFallback,
     },
   };
 }

@@ -150,9 +150,23 @@ fragment mintableCollectionResult on MintableCollectionResult {
   }
 }
 
+fragment featuredCollectionResult on FeaturedCollectionResult {
+  collection {
+    ...mintableCollection
+  }
+}
+
 query getMintableCollections($walletAddress: String!) {
   getMintableCollections(walletAddress: $walletAddress) {
     collections {
+      ...mintableCollection
+    }
+  }
+}
+
+query getFeaturedCollection($walletAddress: String!) {
+  getFeaturedCollection(walletAddress: $walletAddress) {
+    collection {
       ...mintableCollection
     }
   }
