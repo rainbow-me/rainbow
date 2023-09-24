@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
+import { Alert } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import { Prompt } from '../alerts';
 import { Button } from '../buttons';
 import { useWalletConnectConnections } from '@/hooks';
 
@@ -16,12 +16,12 @@ export default function EmulatorPasteUriButton() {
   );
 
   const handlePressPasteSessionUri = useCallback(() => {
-    Prompt({
-      buttons: [{ onPress: handlePastedUri, text: lang.t('button.confirm') }],
-      message: lang.t('walletconnect.paste_uri.message'),
-      title: lang.t('walletconnect.paste_uri.title'),
-      type: 'plain-text',
-    });
+    Alert.prompt(
+      lang.t('walletconnect.paste_uri.title'),
+      lang.t('walletconnect.paste_uri.message'),
+      [{ onPress: handlePastedUri, text: lang.t('button.confirm') }],
+      'plain-text'
+    );
   }, [handlePastedUri]);
 
   return isEmulator ? (
