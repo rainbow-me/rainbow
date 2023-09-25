@@ -111,7 +111,6 @@ export default function QRCodeScanner({
   }, []);
 
   useFocusEffect(() => {
-    console.log('triggered');
     setTimeout(() => askForPermissions(), 200);
   });
 
