@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
-import { analytics } from '@/analytics';
+import { analyticsV2 as analytics } from '@/analytics';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
@@ -58,7 +58,7 @@ interface SettingsState {
   accountAddress: string;
   chainId: number;
   flashbotsEnabled: boolean;
-  language: string;
+  language: Language;
   nativeCurrency: NativeCurrencyKey;
   network: Network;
   testnetsEnabled: boolean;
@@ -142,7 +142,7 @@ export const settingsLoadState = () => async (
 
     const flashbotsEnabled = await getFlashbotsEnabled();
 
-    analytics.identify(undefined, {
+    analytics.identify({
       currency: nativeCurrency,
       enabledFlashbots: flashbotsEnabled,
       enabledTestnets: testnetsEnabled,
@@ -182,6 +182,9 @@ export const settingsLoadLanguage = () => async (
     dispatch({
       payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
+    });
+    analytics.identify({
+      language,
     });
   } catch (error) {
     logger.log('Error loading language settings', error);
@@ -271,17 +274,17 @@ export const settingsUpdateNetwork = (network: Network) => async (
   }
 };
 
-export const settingsChangeLanguage = (language: string) => async (
+export const settingsChangeLanguage = (language: Language) => async (
   dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
 ) => {
-  updateLanguageLocale(language as Language);
+  updateLanguageLocale(language);
   try {
     dispatch({
       payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
-    analytics.identify(undefined, { language: language });
+    analytics.identify({ language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -305,7 +308,7 @@ export const settingsChangeNativeCurrency = (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
-    analytics.identify(undefined, { currency: nativeCurrency });
+    analytics.identify({ currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }
@@ -317,7 +320,7 @@ export const INITIAL_STATE: SettingsState = {
   appIcon: 'og',
   chainId: 1,
   flashbotsEnabled: false,
-  language: 'en',
+  language: Language.EN_US,
   nativeCurrency: NativeCurrencyKeys.USD,
   network: Network.mainnet,
   testnetsEnabled: false,
