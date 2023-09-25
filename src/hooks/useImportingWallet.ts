@@ -275,7 +275,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ? resolvedAddress
           : sanitizeSeedPhrase(seedPhrase);
 
-        console.log('!!!!!!!!!!! 1/2');
         if (!showImportModal) {
           await walletInit(
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
@@ -288,12 +287,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          console.log('!!!!!!!!!!! 1');
           await dispatch(walletsLoadState(profilesEnabled));
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
-          console.log('!!!!!!!!!!! 2');
           initializeWallet(
             input,
             // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
@@ -306,7 +303,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image
           )
             .then(success => {
-              console.log('!!!!!!!!!!! 3');
               ios && handleSetImporting(false);
               if (success) {
                 dangerouslyGetParent?.()?.goBack();
