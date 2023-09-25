@@ -1,10 +1,9 @@
 import { addHexPrefix } from '@walletconnect/legacy-utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { isSignTypedData, PERSONAL_SIGN } from '../../utils/signingMethods';
+import { isSignTypedData } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
-import { isHexString } from '@/handlers/web3';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
@@ -39,13 +38,6 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
       // eslint-disable-next-line no-empty
     } catch (e) {}
     msg = JSON.stringify(msg, null, 4);
-  } else if (method === PERSONAL_SIGN) {
-    if (isHexString(addHexPrefix(msg))) {
-      const normalizedMsg = addHexPrefix(msg);
-      const stripped = normalizedMsg.substring(2);
-      const buff = Buffer.from(stripped, 'hex');
-      msg = buff.toString('utf8');
-    }
   }
 
   return (
