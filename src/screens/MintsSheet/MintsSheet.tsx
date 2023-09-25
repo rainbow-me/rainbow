@@ -68,6 +68,7 @@ export function MintsSheet() {
                       >
                         <ButtonPressAnimation
                           onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
+                          disabled={IS_ANDROID}
                         >
                           {accountImage ? (
                             <Box
