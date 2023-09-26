@@ -202,7 +202,12 @@ export const sentryTransport: Transport = (
   } else {
     /**
      * It's otherwise an Error and should be reported as onReady
+     * We also add a normal message for better readability
      */
+    Sentry.captureMessage(message.message, {
+      tags,
+      extra: metadata,
+    });
     Sentry.captureException(message, {
       tags,
       extra: metadata,
