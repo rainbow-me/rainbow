@@ -163,7 +163,8 @@ const getUpdatedGasFeeParams = (
         currentBaseFee,
         gasLimit,
         nativeTokenPriceUnit,
-        nativeCurrency
+        nativeCurrency,
+        l1GasFeeOptimism
       );
   const selectedGasParams = getSelectedGasFee(
     gasFeeParamsBySpeed,
