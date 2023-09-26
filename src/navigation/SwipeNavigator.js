@@ -6,6 +6,8 @@ import Animated, {
   useSharedValue,
   interpolate,
   Extrapolate,
+  withTiming,
+  Easing,
 } from 'react-native-reanimated';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
@@ -50,6 +52,7 @@ const config = {
     restSpeedThreshold: 0.01,
   },
 };
+const tabConfig = { duration: 500, easing: Easing.elastic(1) };
 
 const Swipe = createMaterialTopTabNavigator();
 const HEADER_HEIGHT = IS_IOS ? 82 : 62;
@@ -61,8 +64,9 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
   const tabPillStartPosition = (tabWidth - 72) / 2;
 
   const { accentColor } = useAccountAccentColor();
+  const animationRef = useRef();
   useEffect(() => {
-    reanimatedPosition.value = state.index;
+    animateTabs(state.index);
   }, [state.index]);
   // ////////////////////////////////////////////////////
   // Colors
@@ -76,13 +80,22 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
       reanimatedPosition.value,
       [0, 1, 2],
       [pos1, pos2, pos3],
-      Extrapolate.CLAMP
+      Extrapolate.EXTEND
     );
     return {
       transform: [{ translateX }],
       width: 72,
     };
   });
+
+  const animateTabs = index => {
+    if (!animationRef.current) {
+      reanimatedPosition.value = withTiming(index, tabConfig, () => {
+        animationRef.current = false;
+      });
+    }
+  };
+
   // for when QRScannerScreen is re-added
   // const offScreenTabBar = useAnimatedStyle(() => {
   //   const translateX = interpolate(
@@ -191,7 +204,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
 
                   if (!isFocused && !event.defaultPrevented) {
                     navigation.navigate(route.name);
-                    reanimatedPosition.value = index;
+                    animateTabs(index);
                   } else if (
                     isFocused &&
                     options.tabBarIcon === 'tabDiscover'
@@ -205,7 +218,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
                     type: 'tabLongPress',
                     target: route.key,
                   });
-                  reanimatedPosition.value = index;
+                  animateTabs(index);
 
                   if (options.tabBarIcon === 'tabHome') {
                     navigation.navigate(Routes.CHANGE_WALLET_SHEET);
