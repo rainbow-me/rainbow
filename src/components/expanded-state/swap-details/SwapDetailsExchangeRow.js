@@ -308,7 +308,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
             <Pill
               height={20}
               style={{
-                lineHeight: android && 18,
+                lineHeight: 20,
               }}
               textColor={defaultColor}
             >{`${protocols[0].part}%`}</Pill>
