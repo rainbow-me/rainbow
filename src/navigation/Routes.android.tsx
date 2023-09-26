@@ -55,6 +55,7 @@ import {
   wcPromptPreset,
   addCashSheet,
   nftSingleOfferSheetPreset,
+  walletconnectBottomSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -121,11 +122,6 @@ function MainNavigator() {
         name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
-      <Stack.Screen
-        component={TransactionConfirmationScreen}
-        name={Routes.CONFIRM_REQUEST}
-        options={exchangePreset}
-      />
 
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
@@ -145,11 +141,7 @@ function MainNavigator() {
         name={Routes.RECEIVE_MODAL}
         options={androidRecievePreset}
       />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={wcPromptPreset}
-      />
+
       <Stack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
@@ -384,10 +376,16 @@ function BSNavigator() {
         component={NFTSingleOfferSheet}
         options={nftSingleOfferSheetPreset}
       />
+      <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen
-        name={Routes.MINTS_SHEET}
-        component={MintsSheet}
-        options={{ ...bottomSheetPreset }}
+        component={TransactionConfirmationScreen}
+        name={Routes.CONFIRM_REQUEST}
+        options={walletconnectBottomSheetPreset}
+      />
+      <Stack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        options={wcPromptPreset}
       />
     </BSStack.Navigator>
   );
