@@ -88,6 +88,7 @@ export function MintsSheet() {
                               shadow="12px accent"
                               color={accountColor}
                               size="smedium"
+                              borderRadius={36}
                               value={accountSymbol}
                             />
                           )}
