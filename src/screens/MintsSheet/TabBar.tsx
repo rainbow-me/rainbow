@@ -23,9 +23,9 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();
   const { isDarkMode } = useTheme();
 
-  const highlightedBackgroundColor = `rgba(255, 223, 61, ${
-    isDarkMode ? 0.07 : 0.6
-  })`;
+  const highlightedBackgroundColor = isDarkMode
+    ? 'rgba(255, 218, 36, 0.2)'
+    : 'rgba(255, 203, 15, 0.6)';
   const highlightedTextColor = isDarkMode
     ? 'yellow'
     : { custom: globalColors.yellow100 };
