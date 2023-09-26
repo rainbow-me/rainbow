@@ -304,7 +304,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
           <SwapDetailsValue>{steps[step].label}</SwapDetailsValue>
         </Column>
         <Column width="content">
-          <Bleed right="6px" vertical="12px">
+          <Bleed right="6px" vertical="10px">
             <Pill
               height={20}
               style={{
