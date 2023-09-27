@@ -7,8 +7,6 @@ import {
   useCoinListEditOptions,
   useExternalWalletSectionsData,
   useOpenFamilies,
-  useOpenInvestmentCards,
-  useOpenSavings,
   useOpenSmallBalances,
   useWalletSectionsData,
 } from '@/hooks';
@@ -55,8 +53,6 @@ export default function useMemoBriefSectionData({
   }
 
   const { isSmallBalancesOpen } = useOpenSmallBalances();
-  const { isSavingsOpen } = useOpenSavings();
-  const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isPositionCardsOpen } = useOpenPositionCards();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
@@ -130,10 +126,6 @@ export default function useMemoBriefSectionData({
           }
         }
 
-        if (data.type === CellType.SAVINGS && !isSavingsOpen) {
-          return false;
-        }
-
         if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
           isGroupOpen = openFamilies[name];
@@ -144,18 +136,6 @@ export default function useMemoBriefSectionData({
           data.type === CellType.NFT_SPACE_AFTER
         ) {
           return isGroupOpen;
-        }
-
-        if (
-          (data.type === CellType.POOLS_HEADER ||
-            data.type === CellType.UNISWAP_POOL) &&
-          isCoinListEdited
-        ) {
-          return false;
-        }
-
-        if (data.type === CellType.UNISWAP_POOL && !isInvestmentCardsOpen) {
-          return false;
         }
 
         if (data.type === CellType.POSITION && !isPositionCardsOpen) {
@@ -175,8 +155,6 @@ export default function useMemoBriefSectionData({
     isCoinListEdited,
     isSmallBalancesOpen,
     hiddenCoinsObj,
-    isSavingsOpen,
-    isInvestmentCardsOpen,
     isPositionCardsOpen,
     openFamilies,
   ]);

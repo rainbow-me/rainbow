@@ -2,12 +2,13 @@ import lang from 'i18n-js';
 import en_US from './en_US.json';
 import es_419 from './es_419.json';
 import fr_FR from './fr_FR.json';
-import hi_IN from './hi_IN.json';
 import ja_JP from './ja_JP.json';
 import pt_BR from './pt_BR.json';
-import ru_RU from './ru_RU.json';
-import tr_TR from './tr_TR.json';
 import zh_CN from './zh_CN.json';
+import id_ID from './id_ID.json';
+import hi_IN from './hi_IN.json';
+import tr_TR from './tr_TR.json';
+import ru_RU from './ru_RU.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
 import { enUS, eo, ru, fr } from 'date-fns/locale';
@@ -25,6 +26,7 @@ export enum Language {
   JA_JP = 'ja_JP',
   PT_BR = 'pt_BR',
   ZH_CN = 'zh_CN',
+  ID_ID = 'id_ID',
   HI_IN = 'hi_IN',
   TR_TR = 'tr_TR',
   RU_RU = 'ru_RU',
@@ -39,6 +41,7 @@ export const resources: {
   ja_JP,
   pt_BR,
   zh_CN,
+  id_ID,
   hi_IN,
   tr_TR,
   ru_RU,
@@ -62,6 +65,9 @@ export const supportedLanguages = {
   },
   [Language.ZH_CN]: {
     label: '中文',
+  },
+  [Language.ID_ID]: {
+    label: 'Bahasa Indonesia',
   },
   [Language.HI_IN]: {
     label: 'हिंदी',

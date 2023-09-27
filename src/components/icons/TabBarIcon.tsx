@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Animated, {
   interpolate,
   interpolateColor,

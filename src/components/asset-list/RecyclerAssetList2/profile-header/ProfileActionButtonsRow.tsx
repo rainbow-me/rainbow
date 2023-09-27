@@ -282,7 +282,7 @@ export function MoreButton() {
           icon="􀐅"
           testID="receive-button"
         >
-          {'Copy'}
+          {lang.t('wallet.copy')}
         </ActionButton>
       </CopyFloatingEmojis>
     </>

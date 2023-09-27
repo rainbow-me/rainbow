@@ -1,9 +1,11 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
+import { Alert } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import { Prompt } from '../alerts';
 import { Button } from '../buttons';
 import { useWalletConnectConnections } from '@/hooks';
+import { pair as pairWalletConnect } from '@/walletConnect';
+import { parseUri } from '@walletconnect/utils';
 
 export default function EmulatorPasteUriButton() {
   const { result: isEmulator } = useIsEmulator();
@@ -11,17 +13,24 @@ export default function EmulatorPasteUriButton() {
   const { colors } = useTheme();
 
   const handlePastedUri = useCallback(
-    async uri => walletConnectOnSessionRequest(uri),
-    [walletConnectOnSessionRequest]
+    uri => {
+      const { version } = parseUri(uri);
+      if (version === 1) {
+        walletConnectOnSessionRequest(uri);
+      } else if (version === 2) {
+        pairWalletConnect({ uri });
+      }
+    },
+    [pairWalletConnect, walletConnectOnSessionRequest]
   );
 
   const handlePressPasteSessionUri = useCallback(() => {
-    Prompt({
-      buttons: [{ onPress: handlePastedUri, text: lang.t('button.confirm') }],
-      message: lang.t('walletconnect.paste_uri.message'),
-      title: lang.t('walletconnect.paste_uri.title'),
-      type: 'plain-text',
-    });
+    Alert.prompt(
+      lang.t('walletconnect.paste_uri.title'),
+      lang.t('walletconnect.paste_uri.message'),
+      [{ onPress: handlePastedUri, text: lang.t('button.confirm') }],
+      'plain-text'
+    );
   }, [handlePastedUri]);
 
   return isEmulator ? (

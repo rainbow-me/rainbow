@@ -77,6 +77,7 @@ const CoinIcon = ({
         {...shadowProps}
         color={color}
         symbol={formattedSymbol}
+        size={size}
         {...props}
       />
     </View>

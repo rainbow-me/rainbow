@@ -1,4 +1,3 @@
-import { convertHexToUtf8 } from '@walletconnect/legacy-utils';
 import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
@@ -9,6 +8,7 @@ import {
   convertRawAmountToDecimalFormat,
   fromWei,
 } from '@/helpers/utilities';
+import { logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
 import {
   isSignTypedData,
@@ -18,6 +18,7 @@ import {
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';
+import { toUtf8String } from '@ethersproject/strings';
 
 export const getRequestDisplayDetails = (
   payload,
@@ -62,10 +63,14 @@ export const getRequestDisplayDetails = (
     let message = payload?.params?.find(p => !isAddress(p));
     try {
       if (isHexString(message)) {
-        message = convertHexToUtf8(message);
+        message = toUtf8String(message);
       }
     } catch (error) {
-      // TODO error handling
+      logger.debug(
+        'WC v2: getting display details, unable to decode hex message to UTF8 string',
+        {},
+        logger.DebugContext.walletconnect
+      );
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }

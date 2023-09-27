@@ -90,7 +90,6 @@ export type Checkbox = {
     | 'clear-records'
     | 'set-address'
     | 'transfer-control'
-    | 'not-sending-to-exchange'
     | 'has-wallet-that-supports';
   label: string;
 };
@@ -151,13 +150,6 @@ export function getDefaultCheckboxes({
   return [
     {
       checked: false,
-      id: 'not-sending-to-exchange',
-      label: lang.t(
-        'wallet.transaction.checkboxes.im_not_sending_to_an_exchange'
-      ),
-    },
-    {
-      checked: false,
       id: 'has-wallet-that-supports',
       label: lang.t(
         'wallet.transaction.checkboxes.has_a_wallet_that_supports',
@@ -181,7 +173,7 @@ export function getSheetHeight({
   checkboxes: Checkbox[];
 }) {
   let height = android ? 400 : 377;
-  if (isL2) height = height + 70;
+  if (isL2) height = height + 35;
   if (shouldShowChecks) height = height + 80;
   if (isENS) {
     height = height + gasOffset + 20;
@@ -223,7 +215,7 @@ const ChevronDown = () => {
   );
 };
 
-export default function SendConfirmationSheet() {
+export const SendConfirmationSheet = () => {
   const { colors, isDarkMode } = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
@@ -254,6 +246,7 @@ export default function SendConfirmationSheet() {
       to,
       toAddress,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useRoute<any>();
 
   const [
@@ -283,9 +276,9 @@ export default function SendConfirmationSheet() {
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
-          sends++;
+          sends += 1;
           if (tx.network === network) {
-            sendsCurrentNetwork++;
+            sendsCurrentNetwork += 1;
           }
         }
       });
@@ -489,13 +482,19 @@ export default function SendConfirmationSheet() {
     return existingAcct;
   }, [toAddress, userAccounts, watchedAccounts]);
 
-  const avatarName =
-    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
-    (isValidDomainFormat(to)
-      ? to
-      : walletNames?.[to]
-      ? walletNames[to]
-      : address(to, 4, 6));
+  let avatarName = removeFirstEmojiFromString(
+    existingAccount?.label || contact?.nickname
+  );
+
+  if (!avatarName) {
+    if (isValidDomainFormat(to)) {
+      avatarName = to;
+    } else if (walletNames?.[to]) {
+      avatarName = walletNames[to];
+    } else {
+      avatarName = address(to, 4, 6) ?? 'default';
+    }
+  }
 
   const avatarValue =
     returnStringFirstEmoji(existingAccount?.label) ||
@@ -525,6 +524,18 @@ export default function SendConfirmationSheet() {
     isL2,
     shouldShowChecks,
   });
+
+  const getMessage = () => {
+    let message;
+    if (isSendingToUserAccount) {
+      message = 'You own this wallet';
+    } else if (alreadySentTransactionsTotal === 0) {
+      message = 'First time send';
+    } else {
+      message = `${alreadySentTransactionsTotal} previous sends`;
+    }
+    return message;
+  };
 
   return (
     <Container
@@ -584,6 +595,7 @@ export default function SendConfirmationSheet() {
                       size={50}
                     />
                   ) : (
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     <CoinIcon size={50} {...asset} />
                   )}
                 </Row>
@@ -656,11 +668,7 @@ export default function SendConfirmationSheet() {
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
-                    {isSendingToUserAccount
-                      ? `You own this wallet`
-                      : alreadySentTransactionsTotal === 0
-                      ? `First time send`
-                      : `${alreadySentTransactionsTotal} previous sends`}
+                    {getMessage()}
                   </Text>
                 </Row>
               </Column>
@@ -778,4 +786,4 @@ export default function SendConfirmationSheet() {
       </SlackSheet>
     </Container>
   );
-}
+};

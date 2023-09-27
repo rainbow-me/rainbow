@@ -16,10 +16,9 @@ import ModalScreen from '../screens/ModalScreen';
 import ProfileSheet from '../screens/ProfileSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import { RestoreSheet } from '../screens/RestoreSheet';
-import SavingsSheet from '../screens/SavingsSheet';
 import SelectENSSheet from '../screens/SelectENSSheet';
 import SelectUniqueTokenSheet from '../screens/SelectUniqueTokenSheet';
-import SendConfirmationSheet from '../screens/SendConfirmationSheet';
+import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
@@ -46,6 +45,7 @@ import {
   expandedAssetSheetConfigWithLimit,
   explainSheetConfig,
   externalLinkWarningSheetConfig,
+  mintsSheetConfig,
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
@@ -95,6 +95,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -197,6 +198,11 @@ export default function NativeStackNavigator() {
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.TOKEN_INDEX_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
@@ -248,11 +254,6 @@ export default function NativeStackNavigator() {
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
-      />
-      <NativeStack.Screen
-        component={SavingsSheet}
-        name={Routes.SAVINGS_SHEET}
-        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={TransactionConfirmationScreen}
@@ -365,6 +366,11 @@ export default function NativeStackNavigator() {
         name={Routes.NFT_SINGLE_OFFER_SHEET}
         component={NFTSingleOfferSheet}
         {...nftSingleOfferSheetConfig}
+      />
+      <NativeStack.Screen
+        name={Routes.MINTS_SHEET}
+        component={MintsSheet}
+        {...mintsSheetConfig}
       />
     </NativeStack.Navigator>
   );

@@ -1,6 +1,5 @@
 import { CoinDividerContainerHeight } from '../../../coin-divider';
-import { CoinRowHeight, SavingsCoinRowHeight } from '../../../coin-row';
-import { SavingsListHeader } from '../../../savings';
+import { CoinRowHeight } from '../../../coin-row';
 import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
@@ -19,6 +18,7 @@ import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
 import { DISCOVER_MORE_BUTTON_HEIGHT } from './DiscoverMoreButton';
+import { IS_IOS } from '@/env';
 
 type Dim = {
   width?: number;
@@ -36,24 +36,19 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
-  [CellType.SAVINGS_HEADER_SPACE_BEFORE]: { height: 7 },
-  [CellType.SAVINGS_HEADER]: { height: SavingsListHeader.height },
-  [CellType.SAVINGS]: { height: SavingsCoinRowHeight },
-  [CellType.POOLS_HEADER]: { height: SavingsListHeader.height },
   [CellType.PROFILE_ACTION_BUTTONS_ROW]: {
     height: ProfileActionButtonsRowHeight - ProfileStickyHeaderHeight,
   },
   [CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER]: { height: 24 },
   [CellType.PROFILE_AVATAR_ROW]: { height: ProfileAvatarRowHeight },
   [CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE]: {
-    height: ios ? ProfileAvatarRowTopInset : 0,
+    height: IS_IOS ? ProfileAvatarRowTopInset : ProfileAvatarRowTopInset * 2,
   },
   [CellType.PROFILE_AVATAR_ROW_SPACE_AFTER]: { height: 15 },
   [CellType.PROFILE_NAME_ROW]: { height: ProfileNameRowHeight },
   [CellType.PROFILE_NAME_ROW_SPACE_AFTER]: { height: 19 },
   [CellType.PROFILE_BALANCE_ROW]: { height: ProfileBalanceRowHeight },
   [CellType.PROFILE_BALANCE_ROW_SPACE_AFTER]: { height: 24 },
-  [CellType.UNISWAP_POOL]: { height: CoinRowHeight },
   [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.NFTS_HEADER_SPACE_BEFORE]: { height: 24 },
   [CellType.NFTS_HEADER_SPACE_AFTER]: { height: 6 },

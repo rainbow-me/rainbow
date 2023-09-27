@@ -6,7 +6,7 @@ import { Keyboard } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
-import { ExchangeModalTypes, NetworkTypes } from '@/helpers';
+import { ExchangeModalTypes } from '@/helpers';
 import {
   useColorForAsset,
   useGas,
@@ -46,12 +46,8 @@ export default function ConfirmExchangeButton({
   const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
   const { isHardwareWallet } = useWallets();
 
-  const isSavings =
-    type === ExchangeModalTypes.withdrawal ||
-    type === ExchangeModalTypes.deposit;
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
-  const shouldOpenSwapDetails =
-    tradeDetails && !isSwapDetailsRoute && !isSavings;
+  const shouldOpenSwapDetails = tradeDetails && !isSwapDetailsRoute;
 
   const { colors, isDarkMode } = useTheme();
 
@@ -112,12 +108,8 @@ export default function ConfirmExchangeButton({
   let label = '';
   let explainerType = null;
 
-  if (type === ExchangeModalTypes.deposit) {
-    label = lang.t('button.confirm_exchange.deposit');
-  } else if (type === ExchangeModalTypes.swap) {
+  if (type === ExchangeModalTypes.swap) {
     label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
-  } else if (type === ExchangeModalTypes.withdrawal) {
-    label = lang.t('button.confirm_exchange.withdraw');
   }
   if (loading) {
     label = lang.t('button.confirm_exchange.fetching_quote');

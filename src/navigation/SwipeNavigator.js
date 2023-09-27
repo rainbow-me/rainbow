@@ -6,6 +6,8 @@ import Animated, {
   useSharedValue,
   interpolate,
   Extrapolate,
+  withTiming,
+  Easing,
 } from 'react-native-reanimated';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
@@ -34,7 +36,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import logger from 'logger';
 import WalletScreen from '@/screens/WalletScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
+import { IS_IOS } from '@/env';
 
 const NUMBER_OF_TABS = 3;
 
@@ -49,8 +52,10 @@ const config = {
     restSpeedThreshold: 0.01,
   },
 };
+const tabConfig = { duration: 500, easing: Easing.elastic(1) };
 
 const Swipe = createMaterialTopTabNavigator();
+const HEADER_HEIGHT = IS_IOS ? 82 : 62;
 
 const TabBar = ({ state, descriptors, navigation, position }) => {
   const { width: deviceWidth } = useDimensions();
@@ -59,9 +64,6 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
   const tabPillStartPosition = (tabWidth - 72) / 2;
 
   const { accentColor } = useAccountAccentColor();
-  useEffect(() => {
-    reanimatedPosition.value = state.index;
-  }, [state.index]);
   // ////////////////////////////////////////////////////
   // Colors
 
@@ -74,13 +76,27 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
       reanimatedPosition.value,
       [0, 1, 2],
       [pos1, pos2, pos3],
-      Extrapolate.CLAMP
+      Extrapolate.EXTEND
     );
     return {
       transform: [{ translateX }],
       width: 72,
     };
   });
+
+  const animationRef = useRef();
+  const animateTabs = index => {
+    if (!animationRef.current) {
+      animationRef.current = true;
+      reanimatedPosition.value = withTiming(index, tabConfig, () => {
+        animationRef.current = false;
+      });
+    }
+  };
+  useEffect(() => {
+    animateTabs(state.index);
+  }, [state.index]);
+
   // for when QRScannerScreen is re-added
   // const offScreenTabBar = useAnimatedStyle(() => {
   //   const translateX = interpolate(
@@ -118,7 +134,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
         }}
       >
         <Box
-          height={{ custom: 82 }}
+          height={{ custom: HEADER_HEIGHT }}
           position="absolute"
           style={{
             bottom: 0,
@@ -127,11 +143,12 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
           width="full"
         >
           <Box
-            as={BlurView}
+            // as={ BlurView }
+            as={IS_IOS ? BlurView : View}
             blurAmount={40}
             blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
             width="full"
-            height={{ custom: 82 }}
+            height={{ custom: HEADER_HEIGHT }}
           >
             <Box
               height="full"
@@ -139,7 +156,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
               style={{
                 backgroundColor: isDarkMode
                   ? colors.alpha('#191A1C', 0.7)
-                  : colors.alpha(colors.white, 0.7),
+                  : colors.alpha(colors.white, IS_IOS ? 0.7 : 0.92),
               }}
               width="full"
             />
@@ -188,7 +205,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
 
                   if (!isFocused && !event.defaultPrevented) {
                     navigation.navigate(route.name);
-                    reanimatedPosition.value = index;
+                    animateTabs(index);
                   } else if (
                     isFocused &&
                     options.tabBarIcon === 'tabDiscover'
@@ -202,7 +219,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
                     type: 'tabLongPress',
                     target: route.key,
                   });
-                  reanimatedPosition.value = index;
+                  animateTabs(index);
 
                   if (options.tabBarIcon === 'tabHome') {
                     navigation.navigate(Routes.CHANGE_WALLET_SHEET);

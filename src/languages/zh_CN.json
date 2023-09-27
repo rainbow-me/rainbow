@@ -210,6 +210,7 @@
         "insufficient_bnb": "BNB不足",
         "insufficient_funds": "资金不足",
         "insufficient_liquidity": "􀅵 流动性不足",
+        "fee_on_transfer": "􀅵 转账代币的费用",
         "no_route_found": "􀅵 未找到路径",
         "insufficient_matic": "MATIC不足",
         "insufficient_token": "%{tokenName}不足",
@@ -719,6 +720,8 @@
         "zorb_title": "您已解锁\n彩虹Zorb能量！",
         "poolboy_text": "一款为链上夏季打造的特别版彩虹x Poolsuite图标。",
         "poolboy_title": "您已解锁\n个彩虹Poolboy！",
+        "adworld_text": "作为彩虹世界公民，您现在可以解锁特别版的\nAdWorld x Rainbow 应用图标。",
+        "adworld_title": "欢迎来到彩虹世界！",
         "title": "你已解锁了\n个Rainbow􀆄 %{partner}",
         "button": "获取图标"
       },
@@ -830,6 +833,12 @@
         "fragment2": "阅读更多",
         "fragment3": " 关于AMMs和代币流动性。",
         "title": "流动性不足"
+      },
+      "fee_on_transfer": {
+        "fragment1": "这次在彩虹中的兑换将会失败，因为 %{tokenName} 合同添加了额外的费用。  \n\n 阅读 ",
+        "fragment2": "我们的指南",
+        "fragment3": " 以获取交换此代币的帮助！",
+        "title": "转账代币的费用"
       },
       "no_route_found": {
         "fragment1": "我们无法为此次兑换找到路径。 ",
