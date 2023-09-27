@@ -26,7 +26,6 @@ import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import {
   getProviderForNetwork,
   isHardHat,
-  isL2Network,
   toHex,
   web3Provider,
 } from '@/handlers/web3';
@@ -42,7 +41,7 @@ import {
   parseRainbowMeteorologyData,
   weiToGwei,
 } from '@/parsers';
-import { ethUnits, supportedNativeCurrencies } from '@/references';
+import { ethUnits } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
@@ -163,7 +162,8 @@ const getUpdatedGasFeeParams = (
         currentBaseFee,
         gasLimit,
         nativeTokenPriceUnit,
-        nativeCurrency
+        nativeCurrency,
+        l1GasFeeOptimism
       );
   const selectedGasParams = getSelectedGasFee(
     gasFeeParamsBySpeed,
@@ -214,6 +214,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     currentBlockParams,
     blocksToConfirmation,
     secondsPerNewBlock,
+    l1GasFeeOptimism,
   } = getState().gas;
 
   const { nativeCurrency } = getState().settings;
@@ -238,7 +239,8 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     currentBlockParams?.baseFeePerGas,
     _gasLimit,
     nativeTokenPriceUnit,
-    nativeCurrency
+    nativeCurrency,
+    l1GasFeeOptimism
   );
   const newGasFeesBySpeed = { ...gasFeesBySpeed };
   const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
@@ -585,7 +587,7 @@ export const gasPricesStartPolling = (
                   nativeCurrency,
                   _selectedGasFeeOption,
                   txNetwork,
-                  null
+                  l1GasFeeOptimism
                 );
 
                 dispatch({
