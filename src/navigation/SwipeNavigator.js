@@ -64,10 +64,6 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
   const tabPillStartPosition = (tabWidth - 72) / 2;
 
   const { accentColor } = useAccountAccentColor();
-  const animationRef = useRef();
-  useEffect(() => {
-    animateTabs(state.index);
-  }, [state.index]);
   // ////////////////////////////////////////////////////
   // Colors
 
@@ -88,6 +84,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
     };
   });
 
+  const animationRef = useRef();
   const animateTabs = index => {
     if (!animationRef.current) {
       reanimatedPosition.value = withTiming(index, tabConfig, () => {
@@ -95,6 +92,9 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
       });
     }
   };
+  useEffect(() => {
+    animateTabs(state.index);
+  }, [state.index]);
 
   // for when QRScannerScreen is re-added
   // const offScreenTabBar = useAnimatedStyle(() => {
