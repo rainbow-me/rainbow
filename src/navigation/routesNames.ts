@@ -39,6 +39,7 @@ const Routes = {
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',
   MAIN_NAVIGATOR: 'MainNavigator',
   MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
+  MINTS_SHEET: 'MintsSheet',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
   NETWORK_SWITCHER: 'NetworkSection',

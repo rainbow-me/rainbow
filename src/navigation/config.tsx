@@ -190,6 +190,16 @@ export const nftSingleOfferSheetConfig = {
   }),
 };
 
+export const mintsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+    }),
+  }),
+};
+
 export const walletDiagnosticsSheetConfig = {
   options: ({ route }: { route: { params: any } }) => {
     return buildCoolModalConfig({
