@@ -15,7 +15,7 @@
     "graphql-codegen:install": "yarn install --cwd src/graphql",
     "graphql-codegen": "cd src/graphql && yarn codegen",
     "check-lockfile": "./scripts/check-lockfile.sh",
-    "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean",
+    "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean && rm -rf ~/.gradle/caches",
     "clean:ios": "rm -rf ios/build && cd ios && pod deintegrate",
     "clean:packager": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-*",
     "clean:node": "rm -rf node_modules",
