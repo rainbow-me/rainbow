@@ -1,8 +1,4 @@
-import {
-  Block,
-  JsonRpcProvider,
-  StaticJsonRpcProvider,
-} from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
   estimateGasWithPadding,
   getProviderForNetwork,
@@ -68,20 +64,24 @@ export const estimateNFTOfferGas = async (
   approval: TxData | undefined,
   sale: TxData | undefined
 ): Promise<string | null> => {
+  // rough gas estimate
+  const fallbackGas =
+    offer.network === Network.mainnet
+      ? ethUnits.mainnet_nft_offer_gas_fee_fallback.toString()
+      : ethUnits.l2_nft_offer_gas_fee_fallback.toString();
   const provider = await getProviderForNetwork(offer.network);
   if (!sale) {
     if (offer.marketplace.name !== 'Blur') {
       // expecting sale tx data for all marketplaces except Blur
       logger.warn('No sale tx data for NFT Offer');
     }
-    return ethUnits.mainnet_nft_offer_gas_fee_fallback.toString();
+    return fallbackGas;
   }
   if (!approval) {
     return await estimateGasWithPadding(sale, null, null, provider);
   }
   if (offer.network !== Network.mainnet) {
-    // rough gas estimate
-    return ethUnits.polygon_nft_offer_gas_fee_fallback.toString();
+    return fallbackGas;
   }
   try {
     const stateDiff = await getStateDiff(provider, approval);
@@ -124,6 +124,5 @@ export const estimateNFTOfferGas = async (
       )
     );
   }
-  // fallback to some reasonable gas limit estimate
-  return ethUnits.mainnet_nft_offer_gas_fee_fallback.toString();
+  return fallbackGas;
 };
