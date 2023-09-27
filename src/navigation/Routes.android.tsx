@@ -55,6 +55,7 @@ import {
   wcPromptPreset,
   addCashSheet,
   nftSingleOfferSheetPreset,
+  walletconnectBottomSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -80,6 +81,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
+import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -120,11 +122,6 @@ function MainNavigator() {
         name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
-      <Stack.Screen
-        component={TransactionConfirmationScreen}
-        name={Routes.CONFIRM_REQUEST}
-        options={exchangePreset}
-      />
 
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
@@ -144,11 +141,7 @@ function MainNavigator() {
         name={Routes.RECEIVE_MODAL}
         options={androidRecievePreset}
       />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={wcPromptPreset}
-      />
+
       <Stack.Screen
         component={WalletConnectRedirectSheet}
         name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
@@ -382,6 +375,17 @@ function BSNavigator() {
         name={Routes.NFT_SINGLE_OFFER_SHEET}
         component={NFTSingleOfferSheet}
         options={nftSingleOfferSheetPreset}
+      />
+      <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
+      <BSStack.Screen
+        component={TransactionConfirmationScreen}
+        name={Routes.CONFIRM_REQUEST}
+        options={walletconnectBottomSheetPreset}
+      />
+      <Stack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        options={wcPromptPreset}
       />
     </BSStack.Navigator>
   );

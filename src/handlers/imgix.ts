@@ -144,7 +144,7 @@ export const maybeSignUri = (
   skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
-  const signature = `${externalImageUri}-${options?.w}`;
+  const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
   if (
     typeof externalImageUri === 'string' &&
     staticSignatureLRU.has(signature as string) &&
