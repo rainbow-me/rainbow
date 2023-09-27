@@ -83,6 +83,12 @@ export const event = {
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
+
+  mintsPressedFeaturedMintCard: 'Pressed featured mint card',
+  mintsPressedCollectionCell: 'Pressed collection cell in mints card',
+  mintsPressedMintButton: 'Pressed mint button in mints sheet',
+  mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
+  mintsChangedFilter: 'Changed mints filter',
 } as const;
 
 /**
@@ -304,4 +310,23 @@ export type EventProperties = {
   [event.positionsOpenedSheet]: {
     dapp: string;
   };
+  [event.mintsPressedFeaturedMintCard]: {
+    contractAddress: string;
+    chainId: number;
+    totalMints: number;
+    mintsLastHour: number;
+    priceInEth: number;
+  };
+  [event.mintsPressedCollectionCell]: {
+    contractAddress: string;
+    chainId: number;
+    priceInEth: number;
+  };
+  [event.mintsPressedMintButton]: {
+    contractAddress: string;
+    chainId: number;
+    priceInEth: number;
+  };
+  [event.mintsPressedViewAllMintsButton]: undefined;
+  [event.mintsChangedFilter]: { filter: string };
 };
