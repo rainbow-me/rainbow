@@ -67,6 +67,7 @@ export interface RainbowConfig
   goerli_tx_enabled: boolean;
 
   base_swaps_enabled: boolean;
+  mints_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -125,6 +126,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   goerli_tx_enabled: true,
 
   base_swaps_enabled: false,
+  mints_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -177,7 +179,8 @@ const init = async () => {
         key === 'base_enabled' ||
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled' ||
-        key === 'base_swaps_enabled'
+        key === 'base_swaps_enabled' ||
+        key === 'mints_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

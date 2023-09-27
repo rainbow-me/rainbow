@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AssetType } from '@/entities';
-import { useForceUpdate } from '@/hooks';
+import { useColorForAsset, useForceUpdate } from '@/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
-import { ThemeContextProps } from '@/theme';
-import { getUrlForTrustIconFallback } from '@/utils';
+import { FallbackIcon, getUrlForTrustIconFallback } from '@/utils';
+import { borders, fonts } from '@/styles';
 
 const ImageState = {
   ERROR: 'ERROR',
@@ -14,6 +13,21 @@ const ImageState = {
 
 const imagesCache = {};
 
+const fallbackTextStyles = {
+  fontFamily: fonts.family.SFProRounded,
+  fontWeight: fonts.weight.bold,
+  letterSpacing: fonts.letterSpacing.roundedTight,
+  marginBottom: 0.5,
+  textAlign: 'center',
+};
+
+const fallbackIconStyle = size => {
+  return {
+    ...borders.buildCircleAsObject(size),
+    position: 'absolute',
+  };
+};
+
 export const CoinIconFallback = fallbackProps => {
   const {
     address,
@@ -22,8 +36,7 @@ export const CoinIconFallback = fallbackProps => {
     symbol,
     shadowColor,
     theme,
-    children,
-    size = 40,
+    size,
     width,
   } = fallbackProps;
 
@@ -34,6 +47,11 @@ export const CoinIconFallback = fallbackProps => {
 
   const shouldShowImage = imagesCache[key] !== ImageState.NOT_FOUND;
   const isLoaded = imagesCache[key] === ImageState.LOADED;
+
+  const fallbackIconColor = useColorForAsset({
+    address,
+    assetType,
+  });
 
   // we store data inside the object outside the component
   // so we can share it between component instances
@@ -54,7 +72,6 @@ export const CoinIconFallback = fallbackProps => {
       const newError = err?.nativeEvent?.message?.includes('404')
         ? ImageState.NOT_FOUND
         : ImageState.ERROR;
-
       if (imagesCache[key] === newError) {
         return;
       } else {
@@ -84,7 +101,16 @@ export const CoinIconFallback = fallbackProps => {
         />
       )}
 
-      {!isLoaded && <View style={sx.fallbackWrapper}>{children?.()}</View>}
+      {!isLoaded && (
+        <FallbackIcon
+          color={fallbackIconColor}
+          height={size}
+          style={fallbackIconStyle(size)}
+          symbol={symbol}
+          textStyles={fallbackTextStyles}
+          width={size}
+        />
+      )}
     </View>
   );
 };

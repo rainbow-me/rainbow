@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { isNativeAsset } from '@/handlers/assets';
-import { ExchangeModalTypes } from '@/helpers';
 import {
   greaterThan,
   multiply,
@@ -25,10 +24,6 @@ export default function useSwapInputHandlers() {
 
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
-  const supplyBalanceUnderlying = useSelector(
-    (state: AppState) =>
-      state.swap.typeSpecificParameters?.supplyBalanceUnderlying
-  );
   const inputCurrency = useSelector(
     (state: AppState) => state.swap.inputCurrency
   );
@@ -40,55 +35,50 @@ export default function useSwapInputHandlers() {
       inputCurrency?.type
     );
 
-    if (type === ExchangeModalTypes.withdrawal) {
-      dispatch(updateSwapInputAmount(supplyBalanceUnderlying, true));
-    } else {
-      const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
-      const oldAmount = accountAsset?.balance?.amount ?? '0';
-      let newAmount = oldAmount;
-      if (
-        isNativeAsset(inputCurrencyAddress, inputCurrencyNetwork) &&
-        accountAsset
-      ) {
-        newAmount = toFixedDecimals(
-          ethereumUtils.getBalanceAmount(
-            selectedGasFee,
-            accountAsset,
-            l1GasFeeOptimism
-          ),
-          6
-        );
-        const transactionFee = subtract(oldAmount, newAmount);
-        const newAmountMinusFee = toFixedDecimals(
-          subtract(newAmount, multiply(transactionFee, 1.5)),
-          6
-        );
+    const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
+    const oldAmount = accountAsset?.balance?.amount ?? '0';
+    let newAmount = oldAmount;
+    if (
+      isNativeAsset(inputCurrencyAddress, inputCurrencyNetwork) &&
+      accountAsset
+    ) {
+      newAmount = toFixedDecimals(
+        ethereumUtils.getBalanceAmount(
+          selectedGasFee,
+          accountAsset,
+          l1GasFeeOptimism
+        ),
+        6
+      );
+      const transactionFee = subtract(oldAmount, newAmount);
+      const newAmountMinusFee = toFixedDecimals(
+        subtract(newAmount, multiply(transactionFee, 1.5)),
+        6
+      );
 
-        if (greaterThan(newAmountMinusFee, 0)) {
-          dispatch(updateSwapInputAmount(newAmountMinusFee));
-        } else {
-          Alert({
-            message: lang.t(
-              'expanded_state.swap.swap_max_insufficient_alert.message',
-              { symbol: accountAsset.symbol }
-            ),
-            title: lang.t(
-              'expanded_state.swap.swap_max_insufficient_alert.title',
-              { symbol: accountAsset.symbol }
-            ),
-          });
-          return;
-        }
+      if (greaterThan(newAmountMinusFee, 0)) {
+        dispatch(updateSwapInputAmount(newAmountMinusFee));
+      } else {
+        Alert({
+          message: lang.t(
+            'expanded_state.swap.swap_max_insufficient_alert.message',
+            { symbol: accountAsset.symbol }
+          ),
+          title: lang.t(
+            'expanded_state.swap.swap_max_insufficient_alert.title',
+            { symbol: accountAsset.symbol }
+          ),
+        });
+        return;
       }
-      dispatch(updateSwapInputAmount(newAmount, true));
     }
+    dispatch(updateSwapInputAmount(newAmount, true));
   }, [
     dispatch,
     inputCurrency?.address,
     inputCurrency?.type,
     inputCurrency?.uniqueId,
     selectedGasFee,
-    supplyBalanceUnderlying,
     type,
   ]);
 

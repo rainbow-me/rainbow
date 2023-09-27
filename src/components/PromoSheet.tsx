@@ -4,7 +4,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/campaigns/campaignChecks';
-import { ImgixImage } from '@/components/images';
 import { analytics } from '@/analytics';
 import {
   AccentColorProvider,

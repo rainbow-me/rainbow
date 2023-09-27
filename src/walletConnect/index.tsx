@@ -138,7 +138,18 @@ export function parseRPCParams({
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
 
-      const decodedMessage = isHex ? toUtf8String(message) : message;
+      let decodedMessage = message;
+      try {
+        if (isHex) {
+          decodedMessage = toUtf8String(message);
+        }
+      } catch (err) {
+        logger.debug(
+          'WC v2: parsing RPC params unable to decode hex message to UTF8 string',
+          {},
+          logger.DebugContext.walletconnect
+        );
+      }
 
       return {
         address: getAddress(address),

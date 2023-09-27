@@ -20,6 +20,11 @@ export interface UserProperties {
   nftOffersMeanOfferVariance?: number;
   nftOffersMedianOfferVariance?: number;
 
+  // mint.fun
+  numberOfMints?: number;
+  numberOfFreeMints?: number;
+  numberOfPaidMints?: number;
+
   // ens
   // TODO: remove ensProfile tracking the entire object
   ensProfile?: Record<any, any>;

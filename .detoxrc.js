@@ -1,15 +1,29 @@
 module.exports = {
-  testRunner: 'jest',
-  runnerConfig: 'e2e/jest.e2e.config.js',
-  skipLegacyWorkersInjection: true,
-  devices: {
-    simulator: {
-      type: 'ios.simulator',
-      device: {
-        type: 'iPhone 11',
-      },
+  testRunner: {
+    $0: 'jest',
+    args: {
+      config: 'e2e/jest.e2e.config.js',
+      _: ['e2e'],
     },
   },
+
+  devices: {
+    'ios.simulator': {
+      type: 'ios.simulator',
+      device: { type: 'iPhone 14 Pro' },
+    },
+    'android.attached': {
+      type: 'android.attached',
+      device: {
+        adbName: '.*', // any attached device
+      },
+    },
+    'android.emulator': {
+      type: 'android.emulator',
+      device: { avdName: 'Pixel_7_Pro_API_34' },
+    },
+  },
+
   apps: {
     'ios.release': {
       type: 'ios.app',
@@ -24,29 +38,37 @@ module.exports = {
       build:
         'xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build',
     },
-  },
-  configurations: {
-    'ios.sim.release': {
-      app: 'ios.release',
-      device: 'simulator',
+    'android.release': {
+      type: 'android.apk',
+      binaryPath: './android/app/build/outputs/apk/release/app-release.apk',
+      build:
+        'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
     },
-    'ios.sim.debug': {
-      app: 'ios.debug',
-      device: 'simulator',
-    },
-    'android.emu.debug': {
+    'android.debug': {
+      type: 'android.apk',
       binaryPath: './android/app/build/outputs/apk/debug/app-debug.apk',
       build:
         'cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..',
-      type: 'android.emulator',
-      name: 'Pixel_5_API_31',
     },
+  },
+
+  configurations: {
+    'ios.sim.release': {
+      app: 'ios.release',
+      device: 'ios.simulator',
+    },
+    'ios.sim.debug': {
+      app: 'ios.debug',
+      device: 'ios.simulator',
+    },
+
     'android.emu.release': {
-      type: 'android.emulator',
-      binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
-      build:
-        'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
-      name: 'Pixel_5_API_31',
+      app: 'android.release',
+      device: 'android.emulator',
+    },
+    'android.emu.debug': {
+      app: 'android.debug',
+      device: 'android.emulator',
     },
   },
 };

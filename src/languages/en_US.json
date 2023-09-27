@@ -1051,6 +1051,32 @@
       "web3_not_unlocked": "Please unlock your MetaMask wallet",
       "web3_unknown_network": "Unknown network, please switch to another one"
     },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Mints",
+        "no_data_found": "No data found.",
+        "card": {
+          "x_ago": "%{timeElapsed} ago",
+          "one_mint_past_hour": "1 mint past hour",
+          "x_mints_past_hour": "%{numMints} mints past hour",
+          "x_mints": "%{numMints} mints",
+          "mint": "Mint",
+          "free": "FREE"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "View All Mints",
+        "mints": "Mints",
+        "collection_cell": { "free": "FREE" }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Featured Mint",
+        "one_mint": "1 mint",
+        "x_mints": "%{numMints} mints",
+        "x_past_hour": "%{numMints} past hour"
+      },
+      "filter": { "all": "All", "free": "Free", "paid": "Paid" }
+    },
     "modal": {
       "approve_tx": "Approve transaction on %{walletType}",
       "back_up": {
@@ -2156,7 +2182,7 @@
           "clear_profile_information": "Clear profile information",
           "point_name_to_recipient": "Point this name to the recipient’s wallet address",
           "transfer_control": "Transfer control to the recipient",
-          "has_a_wallet_that_supports": "The person I’m sending to has a wallet that supports %{networkName}",
+          "has_a_wallet_that_supports": "The address I’m sending to supports %{networkName}",
           "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
         },
         "errors": {
