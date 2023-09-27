@@ -87,6 +87,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
   const animationRef = useRef();
   const animateTabs = index => {
     if (!animationRef.current) {
+      animationRef.current = true;
       reanimatedPosition.value = withTiming(index, tabConfig, () => {
         animationRef.current = false;
       });
