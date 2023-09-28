@@ -1,5 +1,4 @@
 import { BlurView } from '@react-native-community/blur';
-
 import React, {
   useCallback,
   useEffect,
@@ -8,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
@@ -21,6 +20,7 @@ import Routes from '@/navigation/routesNames';
 import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   Box,
   ColorModeProvider,
@@ -73,6 +73,7 @@ import { RainbowError, logger } from '@/logger';
 import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
+import { Alert } from '@/components/alerts';
 
 const NFT_IMAGE_HEIGHT = 250;
 
@@ -109,8 +110,6 @@ interface MintSheetProps {
   collection: ReservoirCollection;
   chainId: number;
 }
-
-type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 function MintInfoRow({
   symbol,
@@ -162,7 +161,6 @@ const MintSheet = () => {
   const maxMintsPerWallet =
     mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
       ?.maxMintsPerWallet || 3;
-  console.log(maxMintsPerWallet);
 
   const [quantity, setQuantity] = useReducer(
     (quantity: number, increment: number) => {
@@ -206,7 +204,18 @@ const MintSheet = () => {
   const price = mintCollection.mintStages?.find(
     item => item?.stage === 'public-sale'
   )?.price?.amount?.raw;
-  const isMintingAvailable = mintCollection.isMintingPublicSale;
+  /* its basically if we we have timestamps we can check a pattern,
+    if they are both null, then if theres a price we are vibing and can mint forever 
+
+*/
+  const isMintingAvailable =
+    mintCollection.isMintingPublicSale ||
+    mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
+      ?.price;
+  console.log(
+    mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
+  );
+  console.log(mintCollection.mintStages);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -246,6 +255,7 @@ const MintSheet = () => {
 
   useEffect(() => {
     const estimateMintGas = async () => {
+      // should disabled this and see if the broken mints will give us a limit
       updateTxFee(
         ethUnits.basic_swap,
         null,
@@ -328,6 +338,7 @@ const MintSheet = () => {
     6
   )} 􀄯`;
 
+  // case where mint isnt eth? prob not with our current entrypoints
   const mintPriceDisplay = convertRawAmountToBalance(
     multiply(price || '0', quantity),
     {
@@ -335,11 +346,43 @@ const MintSheet = () => {
       symbol: 'ETH',
     }
   );
+  const buildMintDotFunUrl = (contract: string, network: Network) => {
+    const MintDotFunNetworks = [
+      Network.mainnet,
+      Network.optimism,
+      Network.base,
+      Network.zora,
+    ];
+    if (!MintDotFunNetworks.includes(network)) {
+      // show alert mint.fun does not support
+      // i18n
+      Alert.alert('Mint.fun does not support this network');
+    }
+
+    let chainSlug = 'ethereum';
+    switch (network) {
+      case Network.optimism:
+        chainSlug = 'op';
+        break;
+      case Network.base:
+        chainSlug = 'base';
+        break;
+      case Network.zora:
+        chainSlug = 'zora';
+        break;
+    }
+    return `https://mint.fun/${chainSlug}/${contract}`;
+  };
 
   const actionOnPress = useCallback(async () => {
     if (isReadOnlyWallet) {
       watchingAlert();
       return;
+    }
+
+    // link to mint.fun if reserviornot supporting
+    if (!isMintingAvailable) {
+      Linking.openURL(buildMintDotFunUrl(mintCollection.id!, currentNetwork));
     }
 
     logger.info('Minting NFT', { name: mintCollection.name });
@@ -373,6 +416,7 @@ const MintSheet = () => {
             return;
           }
           step.items?.forEach(item => {
+            console.log('reservior item :', item);
             if (
               item.txHash &&
               !txsRef.current.includes(item.txHash) &&
@@ -402,7 +446,7 @@ const MintSheet = () => {
 
               txsRef.current.push(tx.hash);
 
-              // @ts-ignore TODO: fix when we overhaul tx list, types are not good
+              // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
               dispatch(dataAddNewTransaction(tx));
               analyticsV2.track(event.nftMintsMintedNFT, {
                 collectionName: mintCollection.name || '',
@@ -423,6 +467,7 @@ const MintSheet = () => {
     dispatch,
     imageColor,
     imageUrl,
+    isMintingAvailable,
     isReadOnlyWallet,
     mintCollection.id,
     mintCollection.name,
@@ -433,7 +478,7 @@ const MintSheet = () => {
 
   const buttonLabel = useMemo(() => {
     if (!isMintingAvailable) {
-      return i18n.t(i18n.l.mints.mint_unavailable);
+      return i18n.t(i18n.l.minting.mint_on_mintdotfun);
     }
 
     if (insufficientEth) {
@@ -441,14 +486,14 @@ const MintSheet = () => {
     }
 
     if (mintStatus === 'minting') {
-      return i18n.t(i18n.l.mints.minting);
+      return i18n.t(i18n.l.minting.minting);
     } else if (mintStatus === 'minted') {
-      return i18n.t(i18n.l.mints.minted);
+      return i18n.t(i18n.l.minting.minted);
     } else if (mintStatus === 'error') {
-      return i18n.t(i18n.l.mints.error_minting);
+      return i18n.t(i18n.l.minting.error_minting);
     }
 
-    return i18n.t(i18n.l.mints.hold_to_mint);
+    return i18n.t(i18n.l.minting.hold_to_mint);
   }, [insufficientEth, isMintingAvailable, mintStatus]);
 
   return (
@@ -516,7 +561,7 @@ const MintSheet = () => {
                     </Text>
                     <Inline alignVertical="center" space={'2px'}>
                       <Text size="15pt" color="labelSecondary" weight="bold">
-                        {`${i18n.t(i18n.l.mints.by)} `}
+                        {`${i18n.t(i18n.l.minting.by)} `}
                       </Text>
 
                       {ensAvatar?.imageUrl ? (
@@ -539,7 +584,7 @@ const MintSheet = () => {
                         {` ${
                           ensName ||
                           deployerDisplay ||
-                          i18n.t(i18n.l.mints.unknown)
+                          i18n.t(i18n.l.minting.unknown)
                         }`}
                       </Text>
                     </Inline>
@@ -560,7 +605,7 @@ const MintSheet = () => {
                           size="13pt"
                           weight="medium"
                         >
-                          {i18n.t(i18n.l.mints.mint_price)}
+                          {i18n.t(i18n.l.minting.mint_price)}
                         </Text>
 
                         <Text
@@ -570,7 +615,7 @@ const MintSheet = () => {
                           weight="bold"
                         >
                           {mintPriceDisplay.amount === '0'
-                            ? i18n.t(i18n.l.mints.free)
+                            ? i18n.t(i18n.l.minting.free)
                             : mintPriceDisplay.display}
                         </Text>
                       </Stack>
@@ -582,6 +627,8 @@ const MintSheet = () => {
                         plusAction={() => setQuantity(1)}
                         minusAction={() => setQuantity(-1)}
                         buttonColor={imageColor}
+                        // i may be being fumb here, need to check infinity mints
+                        maxValue={Number(maxMintsPerWallet)}
                       />
                     </Column>
                   </Columns>
@@ -589,9 +636,7 @@ const MintSheet = () => {
                   {/* @ts-ignore */}
                   <HoldToAuthorizeButton
                     backgroundColor={imageColor}
-                    disabled={
-                      !isSufficientGas || !isValidGas || !isMintingAvailable
-                    }
+                    disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     label={buttonLabel}
                     onLongPress={actionOnPress}
@@ -623,7 +668,7 @@ const MintSheet = () => {
               {mintCollection.description && (
                 <Stack space={'20px'}>
                   <Text color="label" align="left" size="17pt" weight="heavy">
-                    {i18n.t(i18n.l.mints.description)}
+                    {i18n.t(i18n.l.minting.description)}
                   </Text>
                   <Text
                     color="labelTertiary"
@@ -639,7 +684,7 @@ const MintSheet = () => {
                 {mintCollection?.tokenCount && (
                   <MintInfoRow
                     symbol="􀐾"
-                    label={i18n.t(i18n.l.mints.total_minted)}
+                    label={i18n.t(i18n.l.minting.total_minted)}
                     value={
                       <Text
                         color="labelSecondary"
@@ -655,7 +700,7 @@ const MintSheet = () => {
                 {mintCollection?.createdAt && (
                   <MintInfoRow
                     symbol="􀐫"
-                    label={i18n.t(i18n.l.mints.first_event)}
+                    label={i18n.t(i18n.l.minting.first_event)}
                     value={
                       <Text
                         color="labelSecondary"
@@ -672,7 +717,7 @@ const MintSheet = () => {
                 {mintCollection?.id && (
                   <MintInfoRow
                     symbol="􀉆"
-                    label={i18n.t(i18n.l.mints.contract)}
+                    label={i18n.t(i18n.l.minting.contract)}
                     value={
                       <ButtonPressAnimation
                         onPress={() =>
@@ -697,7 +742,7 @@ const MintSheet = () => {
 
                 <MintInfoRow
                   symbol="􀤆"
-                  label={i18n.t(i18n.l.mints.network)}
+                  label={i18n.t(i18n.l.minting.network)}
                   value={
                     <Inset vertical={{ custom: -4 }}>
                       <Inline

@@ -1152,11 +1152,12 @@
       "withdrawal_dropdown_label": "For",
       "withdrawal_input_label": "Get"
     },
-    "mints": {
+    "minting": {
       "hold_to_mint": "Hold To Mint",
       "minting": "Minting...",
       "minted": "Minted",
       "mint_unavailable": "Mint Unavailable",
+      "mint_on_mintdotfun": "􀮶 Mint on Mint.fun",
       "error_minting": "Error Minting",
       "mint_price": "Mint Price",
       "free": "Free",

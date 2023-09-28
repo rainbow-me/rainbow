@@ -102,7 +102,7 @@ query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
 }
 
 query getReservoirCollection($contractAddress: String!, $chainId: Int!) {
-  getReserviorCollection(contractAddress: $contractAddress, chainId: $chainId) {
+  getReservoirCollection(contractAddress: $contractAddress, chainId: $chainId) {
     collection {
       id
       chainId

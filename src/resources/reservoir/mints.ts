@@ -28,14 +28,15 @@ export const navigateToMintCollection = async (
       contractAddress,
       chainId,
     });
-    if (res?.getReserviorCollection?.collection) {
+    if (res?.getReservoirCollection?.collection) {
       Navigation.handleAction(Routes.MINT_SHEET, {
-        collection: res.getReserviorCollection?.collection,
+        collection: res.getReservoirCollection?.collection,
       });
     } else {
       showAlert();
     }
   } catch (e) {
+    console.log(e);
     showAlert();
   }
 };

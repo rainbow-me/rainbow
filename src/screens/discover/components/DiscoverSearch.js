@@ -39,6 +39,7 @@ import {
 } from '@/utils/poaps';
 import { arcDevClient } from '@/graphql';
 import { getNetworkObj } from '@/networks';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -149,6 +150,8 @@ export default function DiscoverSearch() {
   }, [searchQueryForPoap]);
 
   useEffect(() => {
+    // probably dont need this entry point but seems worth keeping?
+    // could do the same with zora, etc
     const checkAndHandleMint = async seachQueryForMint => {
       if (seachQueryForMint.includes('mint.fun')) {
         const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
@@ -160,18 +163,7 @@ export default function DiscoverSearch() {
           network = 'mainnet';
         }
         const contractAddress = query.split('/')[1];
-        const chainID = getNetworkObj(network).id;
-        console.log({ chainID, contractAddress });
-        const res = await arcDevClient.getSingleCollection({
-          walletAddress: accountAddress,
-          contractAddress,
-          chain: chainID,
-        });
-        if (res) {
-          navigate(Routes.MINT_SHEET, {
-            collection: res.getSingleCollection?.collection,
-          });
-        }
+        navigateToMintCollection(contractAddress, network);
       }
     };
     checkAndHandleMint(searchQuery);

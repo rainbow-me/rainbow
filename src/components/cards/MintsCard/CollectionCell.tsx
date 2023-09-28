@@ -15,12 +15,13 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { Linking, View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { ImgixImage } from '@/components/images';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -98,7 +99,9 @@ export function CollectionCell({
           chainId: collection.chainId,
           priceInEth: amount,
         });
-        Linking.openURL(collection.externalURL);
+
+        const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
+        navigateToMintCollection(collection.contract, network);
       }}
       style={{ width: NFT_IMAGE_SIZE }}
     >

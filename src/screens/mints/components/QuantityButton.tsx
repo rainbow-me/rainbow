@@ -27,6 +27,9 @@ type StepButtonProps = {
   onPress: () => void;
   shouldLongPressHoldPress: boolean;
   buttonColor: string;
+  disabled?: boolean;
+  threshold?: number;
+  value: number;
 };
 const StepButton = ({
   type,
@@ -35,7 +38,13 @@ const StepButton = ({
   onPress,
   shouldLongPressHoldPress,
   buttonColor,
+  disabled = false,
+  threshold,
+  value,
 }: StepButtonProps) => {
+  // should prob change the color here maybe :thinky:
+  const atThreshold = type === 'plus' ? value === threshold : value === 0;
+
   return (
     <StepButtonWrapper
       minLongPressDuration={MIN_LONG_PRESS_DELAY_THRESHOLD}
@@ -44,6 +53,7 @@ const StepButton = ({
       onPress={onPress}
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       useLateHaptic={false}
+      disabled={disabled || atThreshold}
     >
       <Box
         alignItems="center"
@@ -73,12 +83,16 @@ type StepButtonInputProps = {
   plusAction: () => void;
   minusAction: () => void;
   buttonColor: string;
+  disabled?: boolean;
+  maxValue: number;
 };
 export function QuantityButton({
   value,
   plusAction,
   minusAction,
   buttonColor,
+  disabled = false,
+  maxValue,
 }: StepButtonInputProps) {
   const longPressHandle = useRef<boolean | null>(null);
   const [trigger, setTrigger] = useState(false);
@@ -152,6 +166,8 @@ export function QuantityButton({
           onPress={onMinusPress}
           shouldLongPressHoldPress
           type={MINUS_ACTION_TYPE}
+          disabled={disabled}
+          value={value}
         />
         <Text
           color="label"
@@ -169,6 +185,9 @@ export function QuantityButton({
           onPress={onPlusPress}
           shouldLongPressHoldPress
           type={PLUS_ACTION_TYPE}
+          disabled={disabled}
+          threshold={maxValue}
+          value={value}
         />
       </Inline>
     </Wrapper>
