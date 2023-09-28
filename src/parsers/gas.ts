@@ -277,7 +277,8 @@ export const parseGasFees = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: NativeCurrencyKey
+  nativeCurrency: NativeCurrencyKey,
+  l1GasFeeOptimism: BigNumber | null = null
 ) => {
   const { maxPriorityFeePerGas, maxBaseFee } = gasFeeParams || {};
   const priorityFee = maxPriorityFeePerGas?.amount || 0;
@@ -296,13 +297,15 @@ export const parseGasFees = (
     add(maxFeePerGasAmount, priorityFee),
     gasLimit,
     priceUnit,
-    nativeCurrency
+    nativeCurrency,
+    l1GasFeeOptimism
   );
   const estimatedFee = getTxFee(
     add(estimatedFeePerGas, priorityFee),
     gasLimit,
     priceUnit,
-    nativeCurrency
+    nativeCurrency,
+    l1GasFeeOptimism
   );
   return {
     estimatedFee,
@@ -315,7 +318,8 @@ export const parseGasFeesBySpeed = (
   baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: NativeCurrencyKey
+  nativeCurrency: NativeCurrencyKey,
+  l1GasFeeOptimism: BigNumber | null = null
 ): GasFeesBySpeed => {
   const gasFeesBySpeed = GasSpeedOrder.map(speed =>
     parseGasFees(
@@ -323,7 +327,8 @@ export const parseGasFeesBySpeed = (
       baseFeePerGas,
       gasLimit,
       priceUnit,
-      nativeCurrency
+      nativeCurrency,
+      l1GasFeeOptimism
     )
   );
   return zipObject(GasSpeedOrder, gasFeesBySpeed);
