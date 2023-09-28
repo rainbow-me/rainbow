@@ -113,7 +113,6 @@ export default React.memo(function FastCurrencySelectionRow({
     uniqueId,
     showBalance,
     showFavoriteButton,
-    showAddButton,
     onPress,
     theme,
     nativeCurrency,
@@ -139,7 +138,7 @@ export default React.memo(function FastCurrencySelectionRow({
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
   }-${type || 'token'}`;
-
+  const showAddButton = network === Network.mainnet;
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
