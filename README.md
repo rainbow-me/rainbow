@@ -8,6 +8,8 @@
 
 🤖 [Android Beta available on Google Play Store](https://play.google.com/store/apps/details?id=me.rainbow)
 
+💻 [Browser extension available on](https://rainbow.me/download), [Chrome](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama), [Brave](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama), [Edge](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama), [FireFox](https://addons.mozilla.org/en-US/firefox/addon/rainbow-extension), and [Arc](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama).
+
 🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
 
 ## Setup
