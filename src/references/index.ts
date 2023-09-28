@@ -1,11 +1,9 @@
 import { savingsAssets } from './compound';
-import { default as DefaultTokenListsSource } from './default-token-lists';
 import { Asset, UniswapFavoriteTokenData } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
-export { DefaultTokenListsSource as DefaultTokenLists };
 export {
   signatureRegistryABI,
   SIGNATURE_REGISTRY_ADDRESS,
@@ -143,18 +141,6 @@ export const AddCashCurrencyInfo: {
     },
   },
 };
-
-/**
- * A `Record` representation of the default token lists. This is useful
- * for instances where a `Network` must be used as a key for the token lists,
- * but the particular network does not actually exist in the data. In that
- * case, we can cast the token lists to `TokenListsExtendedRecord` to get
- * undefined as the value, instead of a TypeScript compilation error.
- */
-export type TokenListsExtendedRecord = Record<
-  Network,
-  typeof DefaultTokenListsSource[keyof typeof DefaultTokenListsSource]
->;
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],

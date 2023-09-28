@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
@@ -14,12 +14,13 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { DefaultTokenLists } from '../references/';
-import { useAccountSettings, useDimensions, useUserLists } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { haptics } from '@/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { uniswapUpdateFavorites } from '../redux/uniswap';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -60,32 +61,36 @@ const ListEmoji = styled(Emoji).attrs({
 
 export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
 
+const uniswapFavoritesSelector = state => state.uniswap.favorites;
+
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
-  const { network } = useAccountSettings();
-  const { favorites, lists, updateList } = useUserLists();
+  const dispatch = useDispatch();
+  const favorites = useSelector(uniswapFavoritesSelector);
   const insets = useSafeAreaInsets();
   const {
     params: { item, isL2 },
   } = useRoute();
-  const writeableLists = isL2 ? ['watchlist'] : ['watchlist', 'favorites'];
 
-  const isTokenInList = useCallback(
-    listId => {
-      if (listId === 'favorites') {
-        return !!favorites?.find(
-          address => address.toLowerCase() === item?.address?.toLowerCase()
-        );
-      } else {
-        const list = lists?.find(list => list?.id === listId);
-        return !!list?.tokens?.find(
-          token => token.toLowerCase() === item?.address?.toLowerCase()
-        );
-      }
-    },
-    [favorites, item.address, lists]
+  const isTokenInFavorites = useMemo(
+    () =>
+      !!favorites?.find(
+        address => address.toLowerCase() === item?.address?.toLowerCase()
+      ),
+    [favorites, item.address]
   );
+
+  const handleAdd = useCallback(() => {
+    if (isTokenInFavorites) return;
+    dispatch(uniswapUpdateFavorites(item.address, true));
+    haptics.notificationSuccess();
+  }, [dispatch, isTokenInFavorites, item.address]);
+
+  const handleRemove = useCallback(() => {
+    dispatch(uniswapUpdateFavorites(item.address, false));
+    haptics.notificationSuccess();
+  }, [dispatch, item.address]);
 
   const { colors } = useTheme();
 
@@ -135,54 +140,38 @@ export default function AddTokenSheet() {
           </Centered>
 
           <Column align="center" marginBottom={isL2 ? 63 : 8}>
-            {DefaultTokenLists[network]
-              .filter(list => writeableLists.includes(list?.id))
-              .map(list => {
-                const alreadyAdded = isTokenInList(list?.id);
-                const handleAdd = () => {
-                  if (alreadyAdded) return;
-                  updateList(item.address, list?.id, !alreadyAdded);
-                  haptics.notificationSuccess();
-                };
-                const handleRemove = () => {
-                  updateList(item.address, list?.id, false);
-                  haptics.notificationSuccess();
-                };
-                return (
-                  <Row align="center" key={`list-${list?.id}`}>
-                    <ListButton
-                      alreadyAdded={alreadyAdded}
-                      onPress={alreadyAdded ? handleRemove : handleAdd}
-                      testID={`add-to-${list?.id}`}
-                    >
-                      <Row>
-                        <ListEmoji name={list.emoji} />
-                        <Text
-                          color={
-                            alreadyAdded
-                              ? colors.alpha(colors.blueGreyDark, 0.6)
-                              : colors.appleBlue
-                          }
-                          size="larger"
-                          weight="bold"
-                        >
-                          {list.name}
-                        </Text>
-                      </Row>
-                    </ListButton>
-                    {alreadyAdded && (
-                      <RemoveButton
-                        onPress={handleRemove}
-                        testID={`remove-from-${list?.id}`}
-                      >
-                        <RemoveButtonContent>
-                          􀈔 {lang.t('button.remove')}
-                        </RemoveButtonContent>
-                      </RemoveButton>
-                    )}
-                  </Row>
-                );
-              })}
+            <Row align="center" key={`list-favorites`}>
+              <ListButton
+                alreadyAdded={isTokenInFavorites}
+                onPress={isTokenInFavorites ? handleRemove : handleAdd}
+                testID={`add-to-favorites`}
+              >
+                <Row>
+                  <ListEmoji name="star" />
+                  <Text
+                    color={
+                      isTokenInFavorites
+                        ? colors.alpha(colors.blueGreyDark, 0.6)
+                        : colors.appleBlue
+                    }
+                    size="larger"
+                    weight="bold"
+                  >
+                    {lang.t('button.favorites')}
+                  </Text>
+                </Row>
+              </ListButton>
+              {isTokenInFavorites && (
+                <RemoveButton
+                  onPress={handleRemove}
+                  testID={`remove-from-favorites`}
+                >
+                  <RemoveButtonContent>
+                    􀈔 {lang.t('button.remove')}
+                  </RemoveButtonContent>
+                </RemoveButton>
+              )}
+            </Row>
           </Column>
 
           <SheetActionButtonRow>

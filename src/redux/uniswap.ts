@@ -240,9 +240,10 @@ export const uniswapUpdateFavorites = (
   dispatch: Dispatch<UniswapUpdateFavoritesAction>,
   getState: AppGetState
 ) => {
+  console.log('EHLLOO:?1');
   const { favorites, favoritesMeta } = getState().uniswap;
   const normalizedFavorites = favorites.map(toLower);
-
+  console.log('EHLLOO:?');
   const updatedFavorites = add
     ? uniq(normalizedFavorites.concat(assetAddress))
     : isArray(assetAddress)

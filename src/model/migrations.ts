@@ -52,11 +52,9 @@ import {
   savePinnedCoins,
 } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
@@ -272,22 +270,25 @@ export default async function runMigrations() {
 
   migrations.push(v5);
 
+  /**
+   * NOTICE: this migration is no longer in use. userLists has been removed.
+   */
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    try {
-      const userLists = await getUserLists();
-      const newLists = userLists.map((list: { id: string }) => {
-        if (list?.id !== 'dollars') {
-          return list;
-        }
-        return DefaultTokenLists['mainnet'].find(
-          ({ id }) => id === 'stablecoins'
-        );
-      });
-      await saveUserLists(newLists);
-    } catch (e) {
-      logger.log('ignoring lists migrations');
-    }
+    // try {
+    //   const userLists = await getUserLists();
+    //   const newLists = userLists.map((list: { id: string }) => {
+    //     if (list?.id !== 'dollars') {
+    //       return list;
+    //     }
+    //     return DefaultTokenLists['mainnet'].find(
+    //       ({ id }) => id === 'stablecoins'
+    //     );
+    //   });
+    //   await saveUserLists(newLists);
+    // } catch (e) {
+    //   logger.log('ignoring lists migrations');
+    // }
   };
 
   migrations.push(v6);

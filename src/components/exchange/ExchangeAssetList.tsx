@@ -26,11 +26,7 @@ import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@/helpers';
-import {
-  useAndroidScrollViewGestureHandler,
-  usePrevious,
-  useUserLists,
-} from '@/hooks';
+import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
@@ -42,6 +38,8 @@ import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from './ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
+import { uniswapUpdateFavorites } from '@/redux/uniswap';
+import { useDispatch } from 'react-redux';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -154,7 +152,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     copyCount,
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
-  const { updateList } = useUserLists();
+  const dispatch = useDispatch();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -305,7 +303,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
             setLocalFavorite(prev => {
               const address = rowData.address;
               const newValue = !prev?.[address];
-              updateList(address, 'favorites', newValue);
+              dispatch(uniswapUpdateFavorites(address, newValue));
               if (newValue) {
                 ios && onNewEmoji();
                 haptics.notificationSuccess();
@@ -322,6 +320,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
         })),
       })),
     [
+      dispatch,
       handleUnverifiedTokenPress,
       itemProps,
       items,
@@ -330,7 +329,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
       onCopySwapDetailsText,
       testID,
       theme,
-      updateList,
     ]
   );
 
