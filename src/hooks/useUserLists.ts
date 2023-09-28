@@ -19,7 +19,8 @@ export default function useUserLists() {
   const ready = useSelector(userListsReadySelector);
   const selectedList = useSelector(userListsSelectedListSelector);
   const favorites = useSelector(uniswapFavoritesSelector);
-
+  console.log('LISTS!!');
+  console.log(lists);
   const updateList = useCallback(
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 2-3 arguments, but got 0 or more.
     (...data) => dispatch(userListsUpdateList(...data)),

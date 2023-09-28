@@ -26,7 +26,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 import { DefaultTokenLists } from '@/references';
-import { Inset } from '@/design-system';
+import { useFavorites } from '@/hooks/useFavorites';
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
@@ -80,6 +80,12 @@ export default function ListSection() {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
+
+  const { favorites: favorites2 } = useFavorites();
+  console.log('FAVORITES');
+  console.log(selectedList);
+  console.log(favorites);
+  console.log(favorites2);
 
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
@@ -242,73 +248,71 @@ export default function ListSection() {
   );
 
   return (
-    <Inset vertical="10px">
-      <Column
-        style={
-          android && {
-            marginTop: -19,
-          }
+    <Column
+      style={
+        android && {
+          marginTop: -19,
         }
-        testID="lists-section"
-      >
-        <Flex paddingHorizontal={19}>
-          <Text size="larger" weight="heavy">
-            {lang.t('discover.lists.lists_title')}
-          </Text>
-        </Flex>
+      }
+      testID="lists-section"
+    >
+      <Flex paddingHorizontal={19}>
+        <Text size="larger" weight="heavy">
+          {lang.t('discover.lists.lists_title')}
+        </Text>
+      </Flex>
 
-        <Fragment>
-          <Column>
-            <FlatList
-              contentContainerStyle={{
-                paddingBottom: 6,
-                paddingHorizontal: 19,
-                paddingTop: 10,
-              }}
-              data={listData}
-              getItemLayout={getItemLayout}
-              horizontal
-              keyExtractor={item => item?.id}
-              ref={listRef}
-              renderItem={renderItem}
-              scrollsToTop={false}
-              showsHorizontalScrollIndicator={false}
-              testID={`lists-section-${selectedList}`}
-            />
-            {IS_TESTING !== 'true' && <EdgeFade />}
-          </Column>
-          <Column>
-            {!ready && IS_TESTING !== 'true' ? (
-              times(2, index => (
-                <AssetListItemSkeleton
-                  animated
-                  descendingOpacity
-                  key={`skeleton-pools-${index}`}
-                />
-              ))
-            ) : listItems?.length ? (
-              listItems.map(item => (
-                <ListCoinRow
-                  item={item}
-                  key={`${selectedList}-list-item-${item.address}`}
-                  onPress={() => handlePress(item)}
-                  showBalance={false}
-                />
-              ))
-            ) : (
-              <Centered marginVertical={42}>
-                <Text
-                  color={colors.alpha(colors.blueGreyDark, 0.3)}
-                  size="large"
-                  weight="semibold"
-                >
-                  {lang.t('discover.lists.this_list_is_empty')}
-                </Text>
-              </Centered>
-            )}
-          </Column>
-        </Fragment>
-      </Column>
-    </Inset>
+      <Fragment>
+        <Column>
+          <FlatList
+            contentContainerStyle={{
+              paddingBottom: 6,
+              paddingHorizontal: 19,
+              paddingTop: 10,
+            }}
+            data={listData}
+            getItemLayout={getItemLayout}
+            horizontal
+            keyExtractor={item => item?.id}
+            ref={listRef}
+            renderItem={renderItem}
+            scrollsToTop={false}
+            showsHorizontalScrollIndicator={false}
+            testID={`lists-section-${selectedList}`}
+          />
+          {IS_TESTING !== 'true' && <EdgeFade />}
+        </Column>
+        <Column>
+          {!ready && IS_TESTING !== 'true' ? (
+            times(2, index => (
+              <AssetListItemSkeleton
+                animated
+                descendingOpacity
+                key={`skeleton-pools-${index}`}
+              />
+            ))
+          ) : listItems?.length ? (
+            listItems.map(item => (
+              <ListCoinRow
+                item={item}
+                key={`${selectedList}-list-item-${item.address}`}
+                onPress={() => handlePress(item)}
+                showBalance={false}
+              />
+            ))
+          ) : (
+            <Centered marginVertical={42}>
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.3)}
+                size="large"
+                weight="semibold"
+              >
+                {lang.t('discover.lists.this_list_is_empty')}
+              </Text>
+            </Centered>
+          )}
+        </Column>
+      </Fragment>
+    </Column>
   );
 }
