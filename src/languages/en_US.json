@@ -2180,6 +2180,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "wants to connect to your wallet",
+      "wants_to_connect_to_network": "wants to connect to the %{network} network",
       "available_networks": "Available Networks",
       "change_network": "Change Network",
       "connected_apps": "Connected apps",
