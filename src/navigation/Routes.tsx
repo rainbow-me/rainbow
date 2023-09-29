@@ -36,10 +36,6 @@ export function Routes() {
         name={RouteNames.TOKEN_INDEX_SHEET}
       />
       <BottomSheet.Screen
-        component={ExpandedAssetSheet}
-        name={RouteNames.EXPANDED_ASSET_SHEET_POOLS}
-      />
-      <BottomSheet.Screen
         component={ExplainSheet}
         name={RouteNames.EXPLAIN_SHEET}
       />
