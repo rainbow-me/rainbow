@@ -84,14 +84,8 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
     };
   });
 
-  const animationRef = useRef();
   const animateTabs = index => {
-    if (!animationRef.current) {
-      animationRef.current = true;
-      reanimatedPosition.value = withTiming(index, tabConfig, () => {
-        animationRef.current = false;
-      });
-    }
+    reanimatedPosition.value = withTiming(index, tabConfig);
   };
   useEffect(() => {
     animateTabs(state.index);
@@ -205,7 +199,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
 
                   if (!isFocused && !event.defaultPrevented) {
                     navigation.navigate(route.name);
-                    animateTabs(index);
+                    // animateTabs(index);
                   } else if (
                     isFocused &&
                     options.tabBarIcon === 'tabDiscover'
@@ -219,7 +213,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
                     type: 'tabLongPress',
                     target: route.key,
                   });
-                  animateTabs(index);
+                  // animateTabs(index);
 
                   if (options.tabBarIcon === 'tabHome') {
                     navigation.navigate(Routes.CHANGE_WALLET_SHEET);
