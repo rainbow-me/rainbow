@@ -42,10 +42,10 @@ const StepButton = ({
   threshold,
   value,
 }: StepButtonProps) => {
-  const { colors } = useTheme();
+  const { colors, darkScheme } = useTheme();
   // should prob change the color here maybe :thinky:
   const atThreshold = type === 'plus' ? value === threshold : value === 1;
-  const color = disabled || atThreshold ? colors.grey : buttonColor;
+  const color = disabled || atThreshold ? darkScheme.grey : buttonColor;
 
   return (
     <StepButtonWrapper
