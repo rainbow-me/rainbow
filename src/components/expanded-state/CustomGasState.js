@@ -10,7 +10,6 @@ import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@/helpers/gas';
 import {
-  useAccountSettings,
   useColorForAsset,
   useDimensions,
   useGas,
@@ -42,12 +41,17 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const {
-    params: { longFormHeight, speeds, openCustomOptions } = {},
+    params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {},
   } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const colorForAsset = useColorForAsset(
+    asset || {},
+    fallbackColor,
+    false,
+    true
+  );
   const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);
