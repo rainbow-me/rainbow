@@ -1169,7 +1169,9 @@
       "last_event": "Last Event",
       "max_supply": "Max Supply",
       "contract": "Contract",
-      "network": "Network"
+      "network": "Network",
+      "could_not_find_collection": "Could not find collection",
+      "unable_to_find_check_again": "We are unable to find this collection, double check the address and network or try again later"
     },
     "nfts": {
       "selling": "Selling"
@@ -1712,6 +1714,8 @@
         "failed": "Failed",
         "purchased": "Purchased",
         "purchasing": "Purchasing",
+        "minting": "Minting",
+        "minted": "Minted",
         "received": "Received",
         "receiving": "Receiving",
         "self": "Self",

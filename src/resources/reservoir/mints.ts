@@ -12,8 +12,8 @@ import * as lang from '@/languages';
 const client = IS_DEV ? arcDevClient : arcClient;
 const showAlert = () => {
   Alert.alert(
-    'Could not find collection',
-    'We are unable to find this collection, double check the address and network or try again later',
+    lang.t(lang.l.minting.could_not_find_collection),
+    lang.t(lang.l.minting.unable_to_find_check_again),
     [{ text: lang.t(lang.l.button.ok) }],
     { cancelable: false }
   );
