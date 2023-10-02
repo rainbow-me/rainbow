@@ -13,7 +13,10 @@ import {
   QueryFunctionArgs,
   QueryFunctionResult,
 } from '@/react-query';
-import { DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS } from '@/redux/data';
+import {
+  DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
+  DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+} from '@/redux/data';
 import store from '@/redux/store';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -144,6 +147,9 @@ async function userAssetsQueryFunction({
 
     return parsedSuccessResults;
   } catch (e) {
+    dispatch({
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
+    });
     return cachedAddressAssets;
   }
 }
