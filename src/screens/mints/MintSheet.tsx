@@ -163,6 +163,7 @@ const MintSheet = () => {
   const [mintStatus, setMintStatus] = useState<
     'none' | 'minting' | 'minted' | 'error'
   >('none');
+  const txRef = useRef<string>();
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
@@ -410,7 +411,11 @@ const MintSheet = () => {
             return;
           }
           step.items?.forEach(item => {
-            if (item.txHash && item.status === 'incomplete') {
+            if (
+              item.txHash &&
+              txRef.current !== item.txHash &&
+              item.status === 'incomplete'
+            ) {
               const tx = {
                 to: item.data?.to,
                 from: item.data?.from,
@@ -433,6 +438,7 @@ const MintSheet = () => {
                 status: TransactionStatus.minting,
               };
 
+              txRef.current = tx.hash;
               // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
               dispatch(dataAddNewTransaction(tx));
               analyticsV2.track(event.nftMintsMintedNFT, {
