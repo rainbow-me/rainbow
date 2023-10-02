@@ -50,32 +50,32 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { useLegacyNFTs } from '@/resources/nfts';
-import {
-  ParsedAddressAsset,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { TransactionStatus, TransactionType } from '@/entities';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
-import { ETH_ADDRESS, ETH_SYMBOL, ethUnits } from '@/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { Network } from '@/networks/types';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ContactAvatar } from '@/components/contacts';
-
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { loadPrivateKey } from '@/model/wallet';
 import { ChainBadge } from '@/components/coin-icon';
-import { convertRawAmountToBalance, multiply } from '@/helpers/utilities';
+import {
+  add,
+  convertRawAmountToBalance,
+  greaterThanOrEqualTo,
+  multiply,
+} from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
 import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
-import { Alert } from '@/components/alerts';
 
 const NFT_IMAGE_HEIGHT = 250;
+// inset * 2 -> 28 *2
+const INSET_OFFSET = 56;
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -142,25 +142,37 @@ function MintInfoRow({
   );
 }
 
+const getFormattedDate = (date: string) => {
+  return format(new Date(date), 'MMMM dd, yyyy');
+};
+
 const MintSheet = () => {
   const params = useRoute();
   const { collection: mintCollection } = params.params as MintSheetProps;
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const dispatch = useDispatch();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-
+  const [insufficientEth, setInsufficientEth] = useState(false);
   const currentNetwork =
     RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
     Network.mainnet;
+  const [ensName, setENSName] = useState<string>('');
+  const [mintStatus, setMintStatus] = useState<
+    'none' | 'minting' | 'minted' | 'error'
+  >('none');
 
-  const txsRef = useRef<string[]>([]);
+  const { data: ensAvatar } = useENSAvatar(ensName, {
+    enabled: Boolean(ensName),
+  });
 
+  // if there is no max mint we fallback to JS max int
   const maxMintsPerWallet =
-    mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
-      ?.maxMintsPerWallet || 3;
+    mintCollection.publicMintInfo?.maxMintsPerWallet || Number.MAX_SAFE_INTEGER;
+
+  const price = mintCollection.publicMintInfo?.price?.amount?.raw;
 
   const [quantity, setQuantity] = useReducer(
     (quantity: number, increment: number) => {
@@ -174,7 +186,6 @@ const MintSheet = () => {
       ) {
         return quantity;
       }
-
       return quantity + increment;
     },
     1
@@ -186,36 +197,14 @@ const MintSheet = () => {
     stopPollingGasFees,
     isSufficientGas,
     isValidGas,
+    getTotalGasPrice,
   } = useGas();
 
-  const insufficientEth = isSufficientGas === false && isValidGas;
-
-  const {
-    data: { nfts },
-  } = useLegacyNFTs({
-    address: accountAddress,
-  });
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
 
-  const getFormattedDate = (date: string) => {
-    return format(new Date(date), 'MMMM dd, yyyy');
-  };
-  const price = mintCollection.mintStages?.find(
-    item => item?.stage === 'public-sale'
-  )?.price?.amount?.raw;
-  /* its basically if we we have timestamps we can check a pattern,
-    if they are both null, then if theres a price we are vibing and can mint forever 
-
-*/
-  const isMintingAvailable =
-    mintCollection.isMintingPublicSale ||
-    mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
-      ?.price;
-  console.log(
-    mintCollection.mintStages?.find(item => item?.stage === 'public-sale')
-  );
-  console.log(mintCollection.mintStages);
+  // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
+  const isMintingAvailable = mintCollection.isMintingPublicSale || price;
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -233,6 +222,28 @@ const MintSheet = () => {
     }
   });
 
+  // check address balance
+  useEffect(() => {
+    const checkInsufficientEth = async () => {
+      const nativeBalance =
+        (
+          await ethereumUtils.getNativeAssetForNetwork(
+            currentNetwork,
+            accountAddress
+          )
+        )?.balance?.amount ?? 0;
+      const txFee = getTotalGasPrice();
+      const totalMintPrice = multiply(price || '0', quantity);
+      // gas price + mint price
+      // TODO: need to double check this when there are paid mints available
+      setInsufficientEth(
+        greaterThanOrEqualTo(add(txFee, totalMintPrice), nativeBalance)
+      );
+    };
+    checkInsufficientEth();
+  }, [accountAddress, currentNetwork, getTotalGasPrice, price, quantity]);
+
+  // resolve ens name
   useEffect(() => {
     const fetchENSName = async (address: string) => {
       const ensName = await fetchReverseRecord(address);
@@ -244,7 +255,7 @@ const MintSheet = () => {
     }
   }, [mintCollection.creator]);
 
-  // estimate gas
+  // start poll gas price
   useEffect(() => {
     startPollingGasFees(currentNetwork);
 
@@ -253,15 +264,9 @@ const MintSheet = () => {
     };
   }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
 
+  // estimate gas limit
   useEffect(() => {
     const estimateMintGas = async () => {
-      // should disabled this and see if the broken mints will give us a limit
-      updateTxFee(
-        ethUnits.basic_swap,
-        null,
-        ethUnits.default_l1_gas_fee_optimism_swap
-      );
-
       const networkObj = getNetworkObj(currentNetwork);
       const provider = await getProviderForNetwork(currentNetwork);
       const signer = createWalletClient({
@@ -276,17 +281,15 @@ const MintSheet = () => {
         chainId: networkObj.id,
         precheck: true,
         onProgress: async (steps: Execute['steps']) => {
+          console.log(steps);
           steps.forEach(step => {
             if (step.error) {
               logger.error(
                 new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`)
               );
-              // analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
-              //   status: 'failed',
-              //   ...analyticsEventObject,
-              // });
               return;
             }
+            console.log({ price, quantity });
             step.items?.forEach(async item => {
               // could add safety here if unable to calc gas limit
               const tx = {
@@ -295,18 +298,16 @@ const MintSheet = () => {
                 data: item.data?.data,
                 value: multiply(price || '0', quantity),
               };
+
               const gas = await estimateGas(tx, provider);
               if (gas) {
                 updateTxFee(gas, null);
-              } else {
-                console.log('ERROR CALCULATING GAS');
               }
             });
           });
         },
       });
     };
-
     estimateMintGas();
   }, [
     accountAddress,
@@ -316,15 +317,6 @@ const MintSheet = () => {
     quantity,
     updateTxFee,
   ]);
-
-  const [ensName, setENSName] = useState<string>('');
-  const [mintStatus, setMintStatus] = useState<
-    'none' | 'minting' | 'minted' | 'error'
-  >('none');
-
-  const { data: ensAvatar } = useENSAvatar(ensName, {
-    enabled: Boolean(ensName),
-  });
 
   const deployerDisplay = abbreviations.address(
     mintCollection.creator || '',
@@ -356,6 +348,7 @@ const MintSheet = () => {
     if (!MintDotFunNetworks.includes(network)) {
       // show alert mint.fun does not support
       // i18n
+      // this isnt possible with our current entry points
       Alert.alert('Mint.fun does not support this network');
     }
 
@@ -380,9 +373,10 @@ const MintSheet = () => {
       return;
     }
 
-    // link to mint.fun if reserviornot supporting
+    // link to mint.fun if reservoir not supporting
     if (!isMintingAvailable) {
       Linking.openURL(buildMintDotFunUrl(mintCollection.id!, currentNetwork));
+      return;
     }
 
     logger.info('Minting NFT', { name: mintCollection.name });
@@ -416,12 +410,7 @@ const MintSheet = () => {
             return;
           }
           step.items?.forEach(item => {
-            console.log('reservior item :', item);
-            if (
-              item.txHash &&
-              !txsRef.current.includes(item.txHash) &&
-              item.status === 'incomplete'
-            ) {
+            if (item.txHash && item.status === 'incomplete') {
               const tx = {
                 to: item.data?.to,
                 from: item.data?.from,
@@ -443,8 +432,6 @@ const MintSheet = () => {
                 type: TransactionType.mint,
                 status: TransactionStatus.minting,
               };
-
-              txsRef.current.push(tx.hash);
 
               // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
               dispatch(dataAddNewTransaction(tx));
@@ -480,7 +467,6 @@ const MintSheet = () => {
     if (!isMintingAvailable) {
       return i18n.t(i18n.l.minting.mint_on_mintdotfun);
     }
-
     if (insufficientEth) {
       return i18n.t(i18n.l.button.confirm_exchange.insufficient_eth);
     }
@@ -592,7 +578,7 @@ const MintSheet = () => {
                 </Box>
 
                 <Stack space={'20px'}>
-                  <Box style={{ width: deviceWidth - 56 }}>
+                  <Box style={{ width: deviceWidth - INSET_OFFSET }}>
                     <Separator color={'divider40 (Deprecated)'} thickness={1} />
                   </Box>
 
@@ -607,7 +593,6 @@ const MintSheet = () => {
                         >
                           {i18n.t(i18n.l.minting.mint_price)}
                         </Text>
-
                         <Text
                           color="label"
                           align="left"
@@ -627,7 +612,7 @@ const MintSheet = () => {
                         plusAction={() => setQuantity(1)}
                         minusAction={() => setQuantity(-1)}
                         buttonColor={imageColor}
-                        // i may be being fumb here, need to check infinity mints
+                        disabled={!isMintingAvailable}
                         maxValue={Number(maxMintsPerWallet)}
                       />
                     </Column>
@@ -644,12 +629,10 @@ const MintSheet = () => {
                     showBiometryIcon={!insufficientEth}
                   />
 
-                  <Box width={{ custom: deviceWidth - 56 }}>
+                  <Box width={{ custom: deviceWidth - INSET_OFFSET }}>
                     {/* @ts-ignore */}
                     <GasSpeedButton
-                      asset={{
-                        color: imageColor,
-                      }}
+                      fallbackColor={imageColor}
                       marginTop={0}
                       horizontalPadding={0}
                       currentNetwork={currentNetwork}
@@ -658,11 +641,6 @@ const MintSheet = () => {
                     />
                   </Box>
                 </Stack>
-
-                {/*
-                          nPress={()=> ethereumUtils.openAddressInBlockExplorer(mintCollection?.contract, currentNetwork)} value={contractAddressDisplay} color={imageColor}
-
-                          */}
               </Stack>
 
               {mintCollection.description && (
@@ -782,7 +760,7 @@ const MintSheet = () => {
               </Stack>
             </Stack>
           </Inset>
-          <Box height={{ custom: 56 }}></Box>
+          <Box height={{ custom: INSET_OFFSET }}></Box>
         </ColorModeProvider>
       </SlackSheet>
     </>
