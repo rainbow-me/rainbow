@@ -186,6 +186,18 @@ export default function useGas({
     [dispatch]
   );
 
+  const getTotalGasPrice = () => {
+    const txFee = gasData?.selectedGasFee?.gasFee;
+    const isLegacyGasNetwork =
+      getNetworkObj(gasData?.txNetwork).gas.gasType === 'legacy';
+    const txFeeValue = isLegacyGasNetwork
+      ? (txFee as LegacyGasFee)?.estimatedFee
+      : (txFee as GasFee)?.maxFee;
+
+    const txFeeAmount = fromWei(txFeeValue?.value?.amount);
+    return txFeeAmount;
+  };
+
   return {
     isGasReady,
     isSufficientGas,
@@ -197,6 +209,7 @@ export default function useGas({
     updateGasFeeOption,
     updateToCustomGasFee,
     updateTxFee,
+    getTotalGasPrice,
     ...gasData,
   };
 }
