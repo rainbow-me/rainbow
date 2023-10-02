@@ -115,8 +115,7 @@ query getReservoirCollection($contractAddress: String!, $chainId: Int!) {
       creator
       ownerCount
       isMintingPublicSale
-      isMintingPresale
-      mintStages {
+      publicMintInfo {
         stage
         kind
         price {
