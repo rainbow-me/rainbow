@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.4-1",
+  "version": "1.9.5-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -15,7 +15,7 @@
     "graphql-codegen:install": "yarn install --cwd src/graphql",
     "graphql-codegen": "cd src/graphql && yarn codegen",
     "check-lockfile": "./scripts/check-lockfile.sh",
-    "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean",
+    "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean && rm -rf ~/.gradle/caches",
     "clean:ios": "rm -rf ios/build && cd ios && pod deintegrate",
     "clean:packager": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-*",
     "clean:node": "rm -rf node_modules",
@@ -426,7 +426,8 @@
     "**/http-cache-semantics": "4.1.1",
     "**/@sideway/formula": "3.0.1",
     "**/@types/react": "18.0.24",
-    "**/socket.io-parser": "4.2.3"
+    "**/socket.io-parser": "4.2.3",
+    "**/get-func-name": "3.0.0"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
