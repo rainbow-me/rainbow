@@ -53,6 +53,7 @@ const EditButton = styled(ButtonPressAnimation).attrs(
     wrapperStyle: {
       width: editMode ? 70 : 58,
     },
+    width: editMode ? 100 : 100,
   })
 )(
   ios
@@ -76,6 +77,8 @@ const EditButtonLabel = styled(Text).attrs(
     letterSpacing: 'roundedMedium',
     size: 'large',
     weight: editMode ? 'bold' : 'semibold',
+    numberOfLines: 1,
+    ellipsizeMode: 'tail',
   })
 )({
   height: 40,

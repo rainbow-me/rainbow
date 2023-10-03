@@ -41,6 +41,7 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { getNetworkObj } from '@/networks';
 
+const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const GAS_FEE_INCREMENT = 3;
@@ -224,20 +225,26 @@ export default function FeesPanel({
           // @ts-ignore overloaded props
           onPress={openHelper}
           backgroundColor="accent"
+          style={{ maxWidth: 175 }}
         >
           <Inline horizontalSpace="4px" alignVertical="center">
             <Text
               color="primary (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="heavy"
+              numberOfLines={2}
             >
-              {label}
-            </Text>
-            <Box marginBottom={IS_ANDROID ? '-4px' : undefined}>
-              <Text size="icon 16px" color={{ custom: color }} weight="bold">
+              {`${label} `}
+              <Text
+                size="icon 16px"
+                color={{ custom: color }}
+                weight="bold"
+                numberOfLines={1}
+              >
                 {text}
               </Text>
-            </Box>
+            </Text>
+            <Box marginBottom={IS_ANDROID ? '-4px' : undefined}></Box>
           </Inline>
         </Box>
       );
@@ -431,11 +438,12 @@ export default function FeesPanel({
 
       return (
         (error && (
-          <Box paddingTop="8px">
+          <Box paddingTop="8px" style={{ maxWidth: MAX_TEXT_WIDTH }}>
             <Text
               color={{ custom: colors.red }}
               size="16px / 22px (Deprecated)"
               weight="heavy"
+              numberOfLines={2}
             >
               {errorPrefix}
               <Text
@@ -449,7 +457,7 @@ export default function FeesPanel({
           </Box>
         )) ||
         (warning && (
-          <Box paddingTop="8px">
+          <Box paddingTop="8px" style={{ maxWidth: MAX_TEXT_WIDTH }}>
             <Text
               color={{ custom: colors.yellowFavorite }}
               size="16px / 22px (Deprecated)"
