@@ -154,7 +154,7 @@ const MintSheet = () => {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
   const { colors, isDarkMode } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
+  const { isReadOnlyWallet, isHardwareWallet } = useWallets();
   const [insufficientEth, setInsufficientEth] = useState(false);
   const currentNetwork =
     RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
@@ -205,7 +205,9 @@ const MintSheet = () => {
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
 
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
-  const isMintingAvailable = mintCollection.isMintingPublicSale || price;
+  const isMintingAvailable =
+    !(isReadOnlyWallet || isHardwareWallet) &&
+    (mintCollection.isMintingPublicSale || price);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -590,37 +592,54 @@ const MintSheet = () => {
 
                   <Columns alignHorizontal="justify">
                     <Column width={'content'}>
-                      <Stack space="10px">
+                      <Stack space={{ custom: 14 }}>
                         <Text
                           color="labelSecondary"
                           align="left"
                           size="13pt"
-                          weight="medium"
+                          weight="semibold"
                         >
                           {i18n.t(i18n.l.minting.mint_price)}
                         </Text>
-                        <Text
-                          color="label"
-                          align="left"
-                          size="22pt"
-                          weight="bold"
-                        >
-                          {mintPriceDisplay.amount === '0'
-                            ? i18n.t(i18n.l.minting.free)
-                            : mintPriceDisplay.display}
-                        </Text>
+                        <Inline alignVertical="center">
+                          <Text
+                            color="label"
+                            align="left"
+                            size="22pt"
+                            weight="bold"
+                          >
+                            {mintPriceDisplay.amount === '0'
+                              ? i18n.t(i18n.l.minting.free)
+                              : mintPriceDisplay.display}
+                          </Text>
+                        </Inline>
                       </Stack>
                     </Column>
 
                     <Column width={'content'}>
-                      <QuantityButton
-                        value={quantity}
-                        plusAction={() => setQuantity(1)}
-                        minusAction={() => setQuantity(-1)}
-                        buttonColor={imageColor}
-                        disabled={!isMintingAvailable}
-                        maxValue={Number(maxMintsPerWallet)}
-                      />
+                      <Stack space="2px">
+                        {
+                          <Text
+                            color="labelSecondary"
+                            align="center"
+                            size="13pt"
+                            weight="semibold"
+                          >
+                            {quantity === Number(maxMintsPerWallet)
+                              ? 'Max'
+                              : ''}
+                          </Text>
+                        }
+
+                        <QuantityButton
+                          value={quantity}
+                          plusAction={() => setQuantity(1)}
+                          minusAction={() => setQuantity(-1)}
+                          buttonColor={imageColor}
+                          disabled={!isMintingAvailable}
+                          maxValue={Number(maxMintsPerWallet)}
+                        />
+                      </Stack>
                     </Column>
                   </Columns>
 
