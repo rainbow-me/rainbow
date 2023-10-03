@@ -110,6 +110,7 @@ export default React.memo(function FastCurrencySelectionRow({
   item: {
     uniqueId,
     showBalance,
+    showFavoriteButton,
     onPress,
     theme,
     nativeCurrency,
@@ -124,7 +125,6 @@ export default React.memo(function FastCurrencySelectionRow({
     testID,
     type,
     disabled,
-    showFavoriteButton,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
