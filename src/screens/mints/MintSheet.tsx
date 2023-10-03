@@ -76,6 +76,7 @@ import { RainbowError, logger } from '@/logger';
 import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
+import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -429,8 +430,16 @@ const MintSheet = () => {
       transport: http(networkObj.rpc),
     });
 
+    const feeAddress = getRainbowFeeAddress(currentNetwork);
     getClient()?.actions.buyToken({
-      items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
+      items: [
+        {
+          fillType: 'mint',
+          collection: mintCollection.id!,
+          quantity,
+          ...(feeAddress && { referrer: feeAddress }),
+        },
+      ],
       wallet: signer!,
       chainId: networkObj.id,
       onProgress: (steps: Execute['steps']) => {
