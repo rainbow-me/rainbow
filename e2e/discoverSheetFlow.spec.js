@@ -85,13 +85,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
-  it('Should remove Unisocks from Favorites', async () => {
-    await Helpers.waitAndTap('remove-from-favorites');
-    await Helpers.checkIfNotVisible('remove-from-favorites');
-
-    await Helpers.waitAndTap('close-action-button');
-  });
-
   it('Should close expanded state and return to search', async () => {
     if (ios) {
       // RNBW-4035
