@@ -530,11 +530,13 @@ export const SendConfirmationSheet = () => {
   const getMessage = () => {
     let message;
     if (isSendingToUserAccount) {
-      message = 'You own this wallet';
+      message = i18n.t(i18n.l.wallet.transaction.you_own_this_wallet);
     } else if (alreadySentTransactionsTotal === 0) {
-      message = 'First time send';
+      message = i18n.t(i18n.l.wallet.transaction.first_time_send);
     } else {
-      message = `${alreadySentTransactionsTotal} previous sends`;
+      message = i18n.t(i18n.l.wallet.transaction.previous_sends, {
+        number: alreadySentTransactionsTotal,
+      });
     }
     return message;
   };
