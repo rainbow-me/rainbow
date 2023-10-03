@@ -60,7 +60,6 @@ import {
 } from './react-query';
 import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import store from './redux/store';
-import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -86,6 +85,7 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/nftOffers/utils';
+import { curatedTokensQueryKey } from './resources/curatedTokens';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -196,7 +196,7 @@ class OldApp extends Component {
   };
 
   async handleTokenListUpdate() {
-    store.dispatch(uniswapPairsInit());
+    queryClient.invalidateQueries(curatedTokensQueryKey);
   }
 
   handleAppStateChange = async nextAppState => {

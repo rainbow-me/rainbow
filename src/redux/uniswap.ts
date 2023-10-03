@@ -5,11 +5,7 @@ import uniq from 'lodash/uniq';
 import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import {
-  EthereumAddress,
-  RainbowToken,
-  UniswapFavoriteTokenData,
-} from '@/entities';
+import { EthereumAddress, UniswapFavoriteTokenData } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import {
   getUniswapFavorites,
@@ -17,13 +13,11 @@ import {
   saveUniswapFavorites,
   saveUniswapFavoritesMetadata,
 } from '@/handlers/localstorage/uniswap';
-import { getTestnetUniswapPairs } from '@/handlers/swap';
 import { Network } from '@/helpers/networkTypes';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
   ETH_ADDRESS,
-  rainbowTokenList,
   WETH_ADDRESS,
 } from '@/references';
 import logger from '@/utils/logger';
@@ -33,8 +27,6 @@ import logger from '@/utils/logger';
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
 const UNISWAP_LOAD_SUCCESS = 'uniswap/UNISWAP_LOAD_SUCCESS';
 const UNISWAP_LOAD_FAILURE = 'uniswap/UNISWAP_LOAD_FAILURE';
-
-const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
 
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
@@ -59,11 +51,6 @@ interface UniswapState {
    * Whether or not data from Uniswap is currently being loaded.
    */
   loadingUniswap: boolean;
-
-  /**
-   * Data for Uniswap pairs as an object mapping addresses to tokens.
-   */
-  pairs: Record<string, RainbowToken>;
 }
 
 /**
@@ -73,7 +60,6 @@ type UniswapAction =
   | UniswapLoadRequestAction
   | UniswapLoadSuccessAction
   | UniswapLoadFailureAction
-  | UniswapUpdatePairsAction
   | UniswapUpdateFavoritesAction
   | UniswapClearStateAction;
 
@@ -100,14 +86,6 @@ interface UniswapLoadSuccessAction {
  */
 interface UniswapLoadFailureAction {
   type: typeof UNISWAP_LOAD_FAILURE;
-}
-
-/**
- * The action for updating Uniswap pair data.
- */
-interface UniswapUpdatePairsAction {
-  type: typeof UNISWAP_UPDATE_PAIRS;
-  payload: UniswapState['pairs'];
 }
 
 /**
@@ -154,25 +132,6 @@ export const uniswapLoadState = () => async (
   } catch (error) {
     dispatch({ type: UNISWAP_LOAD_FAILURE });
   }
-};
-
-/**
- * Updates state to use initial data for Uniswap pairs.
- */
-export const uniswapPairsInit = () => (
-  dispatch: Dispatch<UniswapUpdatePairsAction>,
-  getState: AppGetState
-) => {
-  const { network } = getState().settings;
-  const pairs =
-    network === Network.mainnet
-      ? rainbowTokenList.CURATED_TOKENS
-      : getTestnetUniswapPairs(network);
-  dispatch({
-    // @ts-expect-error
-    payload: pairs,
-    type: UNISWAP_UPDATE_PAIRS,
-  });
 };
 
 /**
@@ -266,9 +225,6 @@ export const INITIAL_UNISWAP_STATE: UniswapState = {
   favorites: DefaultUniswapFavorites[Network.mainnet],
   favoritesMeta: DefaultUniswapFavoritesMeta[Network.mainnet],
   loadingUniswap: false,
-  get pairs() {
-    return rainbowTokenList.CURATED_TOKENS;
-  },
 };
 
 export default (
@@ -279,9 +235,6 @@ export default (
     switch (action.type) {
       case UNISWAP_LOAD_REQUEST:
         draft.loadingUniswap = true;
-        break;
-      case UNISWAP_UPDATE_PAIRS:
-        draft.pairs = action.payload;
         break;
       case UNISWAP_LOAD_SUCCESS:
         draft.favorites = action.payload.favorites;

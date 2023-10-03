@@ -32,6 +32,7 @@ import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
+import { useCuratedTokens } from '@/resources/curatedTokens';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -41,7 +42,6 @@ type swapCurrencyListType =
   | 'favoriteAssets'
   | 'curatedAssets'
   | 'importedAssets';
-const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
 const uniswapFavoriteMetadataSelector = (state: AppState) =>
   state.uniswap.favoritesMeta;
 const uniswapFavoritesSelector = (state: AppState): string[] =>
@@ -108,7 +108,7 @@ const useSwapCurrencyList = (
   );
   const dispatch = useDispatch();
 
-  const curatedMap = useSelector(uniswapCuratedTokensSelector);
+  const curatedMap = useCuratedTokens();
   const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
   const unfilteredFavorites = Object.values(favoriteMap);
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);

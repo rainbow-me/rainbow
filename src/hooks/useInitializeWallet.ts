@@ -12,7 +12,6 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
-import { uniswapPairsInit } from '../redux/uniswap';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
@@ -26,6 +25,8 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from '@/utils/logger';
+import { queryClient } from '@/react-query';
+import { curatedTokensQueryKey } from '@/resources/curatedTokens';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -149,7 +150,7 @@ export default function useInitializeWallet() {
         dispatch(appStateUpdate({ walletReady: true }));
 
         if (!switching) {
-          dispatch(uniswapPairsInit());
+          queryClient.invalidateQueries(curatedTokensQueryKey);
         }
 
         logger.sentry('💰 Wallet initialized');
