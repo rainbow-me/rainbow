@@ -196,7 +196,6 @@ const MintSheet = () => {
   // if there is no max mint info, we fallback to 1 to be safe
   const maxMintsPerWallet =
     mintCollection.publicMintInfo?.maxMintsPerWallet || 1;
-  console.log({ maxMintsPerWallet });
 
   const price = convertRawAmountToBalance(
     mintCollection.publicMintInfo?.price?.amount?.raw || '0',
