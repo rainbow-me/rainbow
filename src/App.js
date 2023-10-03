@@ -85,7 +85,6 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/nftOffers/utils';
-import { curatedTokensQueryKey } from './resources/curatedTokens';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -144,7 +143,6 @@ class OldApp extends Component {
       rainbowTokenList.update();
     });
     AppState?.addEventListener('change', this?.handleAppStateChange);
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
@@ -184,7 +182,6 @@ class OldApp extends Component {
 
   componentWillUnmount() {
     AppState?.removeEventListener('change', this?.handleAppStateChange);
-    rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
     this.branchListener?.();
   }
 
@@ -194,10 +191,6 @@ class OldApp extends Component {
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
   };
-
-  async handleTokenListUpdate() {
-    queryClient.invalidateQueries(curatedTokensQueryKey);
-  }
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG

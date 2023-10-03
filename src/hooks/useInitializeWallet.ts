@@ -26,7 +26,6 @@ import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
-import { curatedTokensQueryKey } from '@/resources/curatedTokens';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -148,10 +147,6 @@ export default function useInitializeWallet() {
         initializeAccountData();
 
         dispatch(appStateUpdate({ walletReady: true }));
-
-        if (!switching) {
-          queryClient.invalidateQueries(curatedTokensQueryKey);
-        }
 
         logger.sentry('💰 Wallet initialized');
         PerformanceTracking.finishMeasuring(
