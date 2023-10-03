@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
@@ -11,19 +11,12 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { useChartData } from '@/react-native-animated-charts/src';
-import { Network } from '@/helpers';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings, useBooleanState, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { FavStar } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
-import { FloatingEmojis } from '@/components/floating-emojis';
 import { useDispatch, useSelector } from 'react-redux';
-import { uniswapUpdateFavorites } from '@/redux/uniswap';
-import ChartAddToFavoritesButton from './ChartAddToFavoritesButton';
-import { View } from 'react-native';
-import { haptics } from '@/utils';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -50,8 +43,6 @@ function useTabularNumsWhileScrubbing() {
   return tabularNums;
 }
 
-const uniswapFavoritesSelector = state => state.uniswap.favorites;
-
 export default function ChartExpandedStateHeader({
   asset,
   color: givenColors,
@@ -66,15 +57,12 @@ export default function ChartExpandedStateHeader({
 }) {
   const theme = useTheme();
   const { colors } = theme;
-  const { width: deviceWidth } = useDimensions();
-  const favorites = useSelector(uniswapFavoritesSelector);
   const color = givenColors || colors.dark;
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing();
-  const dispatch = useDispatch();
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -130,34 +118,6 @@ export default function ChartExpandedStateHeader({
     return firstValue === Number(firstValue) ? lastValue / firstValue : 1;
   }, [data]);
 
-  const [localFavorite, setLocalFavorite] = useState(
-    !!favorites?.find(
-      address => address.toLowerCase() === asset?.address?.toLowerCase()
-    )
-  );
-
-  const isFavorited = useMemo(
-    () =>
-      !!favorites?.find(
-        address => address.toLowerCase() === asset?.address?.toLowerCase()
-      ),
-    [asset?.address, favorites]
-  );
-
-  const toggleFavorite = onNewEmoji => {
-    setLocalFavorite(prevLocalFavorite => {
-      const newLocalFavorite = !prevLocalFavorite;
-      dispatch(uniswapUpdateFavorites(asset.address, !localFavorite));
-      if (newLocalFavorite) {
-        haptics.notificationSuccess();
-        ios && onNewEmoji();
-      } else {
-        haptics.selection();
-      }
-      return newLocalFavorite;
-    });
-  };
-
   return (
     <Container showChart={showChart}>
       <Row
@@ -173,47 +133,7 @@ export default function ChartExpandedStateHeader({
           <CoinIconGroup tokens={tokens} />
         )}
 
-        <Row>
-          {asset.network === Network.mainnet &&
-            !isPool &&
-            (ios ? (
-              // @ts-ignore
-              <FloatingEmojis
-                centerVertically
-                deviceWidth={deviceWidth}
-                disableHorizontalMovement
-                disableVerticalMovement
-                distance={70}
-                duration={400}
-                emojis={['glowing_star']}
-                fadeOut={false}
-                range={[0, 0]}
-                scaleTo={0}
-                size={32}
-                wiggleFactor={0}
-              >
-                {({ onNewEmoji }) => (
-                  <ChartAddToFavoritesButton
-                    favorite={localFavorite}
-                    toggleFavorite={() => toggleFavorite(onNewEmoji)}
-                  />
-                )}
-              </FloatingEmojis>
-            ) : (
-              <FavStar
-                favorite={localFavorite}
-                theme={theme}
-                toggleFavorite={() =>
-                  dispatch(
-                    uniswapUpdateFavorites(asset.address, !localFavorite)
-                  )
-                }
-              />
-            ))}
-          <View style={{ paddingLeft: 10 }}>
-            <ChartContextButton asset={asset} color={color} />
-          </View>
-        </Row>
+        <ChartContextButton asset={asset} color={color} />
       </Row>
       <Column>
         <RowWithMargins
