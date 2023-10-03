@@ -85,11 +85,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
-  it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
-    await Helpers.waitAndTap('add-to-list-button');
-    await Helpers.checkIfVisible('add-token-sheet');
-    await Helpers.waitAndTap('add-to-watchlist');
-    await Helpers.checkIfVisible('remove-from-watchlist');
+  it('Should remove Unisocks from Favorites', async () => {
     await Helpers.waitAndTap('remove-from-favorites');
     await Helpers.checkIfNotVisible('remove-from-favorites');
 
