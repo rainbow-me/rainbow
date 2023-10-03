@@ -104,8 +104,6 @@ class OldApp extends Component {
     eventSubscription: null,
   };
 
-  subscription;
-
   /**
    * There's a race condition in Branch's RN SDK. From a cold start, Branch
    * doesn't always handle an initial URL, so we need to check for it here and
