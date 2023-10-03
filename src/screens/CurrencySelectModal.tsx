@@ -21,7 +21,7 @@ import {
   TextInput,
 } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
@@ -144,14 +144,8 @@ export default function CurrencySelectModal() {
   const searchInputRef = useRef<TextInput>(null);
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
-  const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState<
-    Record<string, unknown>
-  >({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const searchQueryExists = useMemo(() => searchQuery.length > 0, [
-    searchQuery,
-  ]);
   const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
@@ -206,7 +200,6 @@ export default function CurrencySelectModal() {
     crosschainExactMatches,
     swapCurrencyList,
     swapCurrencyListLoading,
-    updateFavorites,
   } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
   const {
@@ -371,23 +364,6 @@ export default function CurrencySelectModal() {
     return list.filter(section => section.data.length > 0);
   }, [activeSwapCurrencyList, getWalletCurrencyList, type]);
 
-  const handleFavoriteAsset = useCallback(
-    (asset: any, isFavorited: any) => {
-      setAssetsToFavoriteQueue(prevFavoriteQueue => ({
-        ...prevFavoriteQueue,
-        [asset.address]: isFavorited,
-      }));
-      analytics.track('Toggled an asset as Favorited', {
-        isFavorited,
-        name: asset.name,
-        symbol: asset.symbol,
-        tokenAddress: asset.address,
-        type,
-      });
-    },
-    [type]
-  );
-
   const handleNavigate = useCallback(
     (item: any) => {
       delayNext();
@@ -527,37 +503,16 @@ export default function CurrencySelectModal() {
   const itemProps = useMemo(() => {
     const isMainnet = currentChainId === ChainId.mainnet;
     return {
-      onActionAsset: handleFavoriteAsset,
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
       showFavoriteButton: type === CurrencySelectionTypes.output && isMainnet,
     };
-  }, [handleFavoriteAsset, handleSelectAsset, type, currentChainId]);
+  }, [handleSelectAsset, type, currentChainId]);
 
   const searchingOnL2Network = useMemo(
     () => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)),
     [currentChainId]
   );
-
-  const handleApplyFavoritesQueue = useCallback(() => {
-    const addresses = Object.keys(assetsToFavoriteQueue);
-    const [assetsToAdd, assetsToRemove] = addresses.reduce(
-      ([add, remove]: string[][], current) => {
-        if (assetsToFavoriteQueue[current]) {
-          add.push(current);
-        } else {
-          remove.push(current);
-        }
-        return [add, remove];
-      },
-      [[], []]
-    );
-
-    /* @ts-expect-error Can't ascertain correct return type */
-    updateFavorites(assetsToAdd, true).then(() =>
-      updateFavorites(assetsToRemove, false)
-    );
-  }, [assetsToFavoriteQueue, updateFavorites]);
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
@@ -566,7 +521,6 @@ export default function CurrencySelectModal() {
         toggleGestureEnabled(!isFocused);
       }
       if (!isFocused && prevIsFocused) {
-        handleApplyFavoritesQueue();
         restoreFocusOnSwapModal?.();
         setTimeout(() => {
           setIsTransitioning(false); // hide list now that we have arrived on main exchange modal
@@ -574,7 +528,6 @@ export default function CurrencySelectModal() {
       }
     }
   }, [
-    handleApplyFavoritesQueue,
     isFocused,
     startInteraction,
     prevIsFocused,
@@ -593,16 +546,6 @@ export default function CurrencySelectModal() {
     });
     setIsTransitioning(true); // continue to display list while transitiong back
   }, [inputCurrency?.type]);
-
-  const shouldUpdateFavoritesRef = useRef(false);
-  useEffect(() => {
-    if (!searchQueryExists && shouldUpdateFavoritesRef.current) {
-      shouldUpdateFavoritesRef.current = false;
-      handleApplyFavoritesQueue();
-    } else if (searchQueryExists) {
-      shouldUpdateFavoritesRef.current = true;
-    }
-  }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   useEffect(() => {
     // check if list has items before attempting to scroll

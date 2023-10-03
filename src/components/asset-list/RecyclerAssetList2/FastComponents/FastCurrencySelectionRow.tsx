@@ -124,6 +124,7 @@ export default React.memo(function FastCurrencySelectionRow({
     testID,
     type,
     disabled,
+    showFavoriteButton,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
@@ -131,7 +132,6 @@ export default React.memo(function FastCurrencySelectionRow({
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
   const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
-  const showFavoriteButton = network === Network.mainnet;
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
   }-${type || 'token'}`;

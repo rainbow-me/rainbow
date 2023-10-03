@@ -109,11 +109,9 @@ interface ExchangeAssetListProps {
   footerSpacer: boolean;
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
   itemProps: {
-    onActionAsset: (asset: any, isFavorited?: any) => void;
     onPress: (item: any) => void;
     showBalance: boolean;
     showFavoriteButton: boolean;
-    showAddButton?: boolean;
   };
   items: { data: EnrichedExchangeAsset[]; title: string }[];
   onLayout?: () => void;
@@ -277,9 +275,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           contextMenuProps: contextMenuProps(rowData, onCopySwapDetailsText),
           nativeCurrency,
           nativeCurrencySymbol,
-          onAddPress: () => {
-            itemProps.onActionAsset(rowData);
-          },
           onCopySwapDetailsText,
           onPress: (givenItem: ReactElement) => {
             if (rowData.ens) {
@@ -294,7 +289,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
               handleUnverifiedTokenPress(rowData || asset);
             }
           },
-          showAddButton: itemProps.showAddButton,
           showBalance: itemProps.showBalance,
           showFavoriteButton: itemProps.showFavoriteButton,
           testID,
