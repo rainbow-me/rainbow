@@ -109,3 +109,8 @@ __generated__/
 
 # Test Coverage
 coverage
+
+# Expo
+.expo
+dist/
+web-build/
