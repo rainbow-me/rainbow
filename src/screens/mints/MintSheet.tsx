@@ -173,7 +173,13 @@ const MintSheet = () => {
   const maxMintsPerWallet =
     mintCollection.publicMintInfo?.maxMintsPerWallet || Number.MAX_SAFE_INTEGER;
 
-  const price = mintCollection.publicMintInfo?.price?.amount?.raw;
+  const price = convertRawAmountToBalance(
+    mintCollection.publicMintInfo?.price?.amount?.raw || '0',
+    {
+      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
+    }
+  );
 
   const [quantity, setQuantity] = useReducer(
     (quantity: number, increment: number) => {
@@ -236,7 +242,7 @@ const MintSheet = () => {
           )
         )?.balance?.amount ?? 0;
       const txFee = getTotalGasPrice();
-      const totalMintPrice = multiply(price || '0', quantity);
+      const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
       // TODO: need to double check this when there are paid mints available
       setInsufficientEth(
@@ -244,7 +250,15 @@ const MintSheet = () => {
       );
     };
     checkInsufficientEth();
-  }, [accountAddress, currentNetwork, getTotalGasPrice, price, quantity]);
+  }, [
+    accountAddress,
+    currentNetwork,
+    getTotalGasPrice,
+    mintCollection.publicMintInfo?.price?.currency?.decimals,
+    mintCollection.publicMintInfo?.price?.currency?.symbol,
+    price,
+    quantity,
+  ]);
 
   // resolve ens name
   useEffect(() => {
@@ -299,7 +313,7 @@ const MintSheet = () => {
                 to: item.data?.to,
                 from: item.data?.from,
                 data: item.data?.data,
-                value: multiply(price || '0', quantity),
+                value: multiply(price.amount || '0', quantity),
               };
 
               const gas = await estimateGas(tx, provider);
@@ -335,7 +349,7 @@ const MintSheet = () => {
 
   // case where mint isnt eth? prob not with our current entrypoints
   const mintPriceDisplay = convertRawAmountToBalance(
-    multiply(price || '0', quantity),
+    multiply(price.amount, quantity),
     {
       decimals: 18,
       symbol: 'ETH',
