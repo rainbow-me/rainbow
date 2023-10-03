@@ -55,8 +55,7 @@ export default function ChartExpandedStateHeader({
   testID,
   chartType,
 }) {
-  const theme = useTheme();
-  const { colors } = theme;
+  const { colors } = useTheme();
   const color = givenColors || colors.dark;
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
