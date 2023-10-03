@@ -34,6 +34,7 @@ import {
 } from '@/design-system';
 import {
   useAccountProfile,
+  useAccountSettings,
   useDimensions,
   useENSAvatar,
   useGas,
@@ -64,8 +65,11 @@ import { loadPrivateKey } from '@/model/wallet';
 import { ChainBadge } from '@/components/coin-icon';
 import {
   add,
+  convertAmountToBalanceDisplay,
+  convertAmountToNativeDisplay,
   convertRawAmountToBalance,
   greaterThanOrEqualTo,
+  isZero,
   multiply,
 } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
@@ -150,12 +154,14 @@ const MintSheet = () => {
   const params = useRoute();
   const { collection: mintCollection } = params.params as MintSheetProps;
   const { accountAddress } = useAccountProfile();
+  const { nativeCurrency } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet, isHardwareWallet } = useWallets();
   const [insufficientEth, setInsufficientEth] = useState(false);
+  const [showNativePrice, setShowNativePrice] = useState(false);
   const currentNetwork =
     RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
     Network.mainnet;
@@ -168,18 +174,6 @@ const MintSheet = () => {
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
   });
-
-  // if there is no max mint we fallback to JS max int
-  const maxMintsPerWallet =
-    mintCollection.publicMintInfo?.maxMintsPerWallet || Number.MAX_SAFE_INTEGER;
-
-  const price = convertRawAmountToBalance(
-    mintCollection.publicMintInfo?.price?.amount?.raw || '0',
-    {
-      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
-      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
-    }
-  );
 
   const [quantity, setQuantity] = useReducer(
     (quantity: number, increment: number) => {
@@ -196,6 +190,36 @@ const MintSheet = () => {
       return quantity + increment;
     },
     1
+  );
+
+  // if there is no max mint info, we fallback to 1 to be safe
+  const maxMintsPerWallet =
+    mintCollection.publicMintInfo?.maxMintsPerWallet || 1;
+  console.log({ maxMintsPerWallet });
+
+  const price = convertRawAmountToBalance(
+    mintCollection.publicMintInfo?.price?.amount?.raw || '0',
+    {
+      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
+    }
+  );
+
+  // case where mint isnt eth? prob not with our current entrypoints
+  const mintPriceAmount = multiply(price.amount, quantity);
+  const mintPriceDisplay = convertAmountToBalanceDisplay(
+    multiply(price.amount, quantity),
+    {
+      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
+    }
+  );
+
+  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
+
+  const nativeMintPriceDisplay = convertAmountToNativeDisplay(
+    parseFloat(multiply(price.amount, quantity)) * priceOfEth,
+    nativeCurrency
   );
 
   const {
@@ -298,7 +322,6 @@ const MintSheet = () => {
         chainId: networkObj.id,
         precheck: true,
         onProgress: async (steps: Execute['steps']) => {
-          console.log(steps);
           steps.forEach(step => {
             if (step.error) {
               logger.error(
@@ -306,7 +329,6 @@ const MintSheet = () => {
               );
               return;
             }
-            console.log({ price, quantity });
             step.items?.forEach(async item => {
               // could add safety here if unable to calc gas limit
               const tx = {
@@ -347,14 +369,6 @@ const MintSheet = () => {
     6
   )} 􀄯`;
 
-  // case where mint isnt eth? prob not with our current entrypoints
-  const mintPriceDisplay = convertRawAmountToBalance(
-    multiply(price.amount, quantity),
-    {
-      decimals: 18,
-      symbol: 'ETH',
-    }
-  );
   const buildMintDotFunUrl = (contract: string, network: Network) => {
     const MintDotFunNetworks = [
       Network.mainnet,
@@ -437,7 +451,7 @@ const MintSheet = () => {
                 from: item.data?.from,
                 hash: item.txHash,
                 network: currentNetwork,
-                amount: mintPriceDisplay.amount,
+                amount: mintPriceAmount,
                 asset: {
                   address: ETH_ADDRESS,
                   symbol: ETH_SYMBOL,
@@ -480,7 +494,7 @@ const MintSheet = () => {
     isReadOnlyWallet,
     mintCollection.id,
     mintCollection.name,
-    mintPriceDisplay.amount,
+    mintPriceAmount,
     navigate,
     quantity,
   ]);
@@ -615,18 +629,25 @@ const MintSheet = () => {
                         >
                           {i18n.t(i18n.l.minting.mint_price)}
                         </Text>
-                        <Inline alignVertical="center">
-                          <Text
-                            color="label"
-                            align="left"
-                            size="22pt"
-                            weight="bold"
-                          >
-                            {mintPriceDisplay.amount === '0'
-                              ? i18n.t(i18n.l.minting.free)
-                              : mintPriceDisplay.display}
-                          </Text>
-                        </Inline>
+                        <ButtonPressAnimation
+                          disabled={isZero(mintPriceAmount)}
+                          onPress={() => setShowNativePrice(!showNativePrice)}
+                        >
+                          <Inline alignVertical="center">
+                            <Text
+                              color="label"
+                              align="left"
+                              size="22pt"
+                              weight="bold"
+                            >
+                              {isZero(mintPriceAmount)
+                                ? i18n.t(i18n.l.minting.free)
+                                : showNativePrice
+                                ? nativeMintPriceDisplay
+                                : mintPriceDisplay}
+                            </Text>
+                          </Inline>
+                        </ButtonPressAnimation>
                       </Stack>
                     </Column>
 
