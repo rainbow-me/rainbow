@@ -238,6 +238,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
                       <ButtonPressAnimation
                         onPress={onPress}
                         onLongPress={onLongPress}
+                        disallowInterruption
                         scaleTo={0.75}
                       >
                         <Stack alignVertical="center" alignHorizontal="center">

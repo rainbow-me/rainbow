@@ -51,6 +51,7 @@ interface BaseProps extends BaseButtonAnimationProps {
   wrapperStyle: StyleProp<ViewStyle>;
   hapticType: HapticFeedbackType;
   enableHapticFeedback: boolean;
+  disallowInterruption?: boolean;
 }
 
 type Props = PropsWithChildren<BaseProps>;
@@ -192,6 +193,7 @@ const SimpleScaleButton = ({
   transformOrigin,
   wrapperStyle,
   testID,
+  disallowInterruption,
 }: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }: any) => {
@@ -252,6 +254,7 @@ const SimpleScaleButton = ({
           shouldLongPressHoldPress={shouldLongPressHoldPress}
           style={sx.overflow}
           transformOrigin={transformOrigin}
+          disallowInterruption={disallowInterruption}
         >
           <View style={sx.transparentBackground}>
             <View
@@ -292,6 +295,7 @@ export default function ButtonPressAnimation({
   wrapperStyle,
   hapticType = 'selection',
   enableHapticFeedback = true,
+  disallowInterruption = false,
 }: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -324,6 +328,7 @@ export default function ButtonPressAnimation({
       testID={testID}
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
+      disallowInterruption={disallowInterruption}
     >
       <View pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}
