@@ -15,6 +15,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.4] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.4)
+
+### Added
+
+- Mints feature
+- detox e2e fixes
+- WC version bumps & fixes
+- Gas fixes
+
 ## [1.9.3] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.3)
 
 ### Added

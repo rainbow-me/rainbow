@@ -158,30 +158,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('discover-header');
   });
 
-  // TODO: seems the test doesn't do sideswipe on the horizonal list
-  //       skipping the test till someone fixes it, apparently it's low
-  //       priority right now
-  it.skip('Should cycle through token lists', async () => {
-    android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
-    await Helpers.swipeUntilVisible(
-      'lists-section',
-      'discover-sheet',
-      'up',
-      100
-    );
-    await Helpers.checkIfVisible('lists-section-favorites');
-    await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-watchlist');
-    await Helpers.checkIfVisible('lists-section-watchlist');
-    await Helpers.checkIfVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-trending');
-    await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.waitAndTap('list-defi');
-    await Helpers.checkIfVisible('lists-section-defi');
-    await Helpers.waitAndTap('list-stablecoins');
-    await Helpers.checkIfVisible('lists-section-stablecoins');
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
