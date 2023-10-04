@@ -5,7 +5,10 @@ import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import { deprecatedRemoveLocal } from '../handlers/localstorage/common';
+import {
+  deprecatedRemoveLocal,
+  getGlobal,
+} from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
@@ -58,6 +61,11 @@ import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
+import { queryClient } from '@/react-query';
+import {
+  favoritesMetadataQueryKey,
+  favoritesQueryKey,
+} from '@/resources/favorites';
 
 export default async function runMigrations() {
   // get current version
@@ -673,6 +681,28 @@ export default async function runMigrations() {
   };
 
   migrations.push(v17);
+
+  /**
+   *************** Migration v18 ******************
+   Move favorites from local storage to react query persistent cache (AsyncStorage)
+   */
+  const v18 = async () => {
+    const favorites = await getGlobal('uniswapFavorites', undefined);
+    const favoritesMetadata = await getGlobal(
+      'uniswapFavoritesMetadata',
+      undefined,
+      '0.1.0'
+    );
+
+    if (favorites) {
+      queryClient.setQueryData(favoritesQueryKey, favorites);
+    }
+    if (favoritesMetadata) {
+      queryClient.setQueryData(favoritesMetadataQueryKey, favoritesMetadata);
+    }
+  };
+
+  migrations.push(v18);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
