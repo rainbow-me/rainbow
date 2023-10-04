@@ -240,19 +240,6 @@ export const getSwapGasLimitWithFakeApproval = async (
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
 };
 
-export const getTestnetUniswapPairs = (
-  network: Network
-): { [key: string]: Asset } => {
-  const pairs: { [address: string]: Asset } =
-    (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
-
-  const loweredPairs = mapKeys(pairs, (_, key) => key.toLowerCase());
-  return mapValues(loweredPairs, value => ({
-    ...value,
-    address: value.address.toLowerCase(),
-  }));
-};
-
 export const estimateSwapGasLimit = async ({
   chainId,
   requiresApprove,

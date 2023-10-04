@@ -248,7 +248,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   const isFocused = useIsFocused();
 
   const theme = useTheme();
-
+  console.log(store.getState().uniswap.favoritesMeta);
+  console.log(store.getState().uniswap.favorites);
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const [localFavorite, setLocalFavorite] = useState<
     Record<string, boolean | undefined> | undefined

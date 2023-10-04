@@ -32,8 +32,6 @@ import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
-import useAccountSettings from './useAccountSettings';
-import { getTestnetUniswapPairs } from '@/handlers/swap';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -108,12 +106,8 @@ const useSwapCurrencyList = (
     [searchChainId, searchQuery]
   );
   const dispatch = useDispatch();
-  const { network } = useAccountSettings();
 
-  const curatedMap =
-    network === Network.mainnet
-      ? rainbowTokenList.CURATED_TOKENS
-      : getTestnetUniswapPairs(network);
+  const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
   const unfilteredFavorites = Object.values(favoriteMap);
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
