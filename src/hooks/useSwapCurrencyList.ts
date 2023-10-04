@@ -32,6 +32,7 @@ import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
+import { useFavorites } from '@/resources/favorites';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -107,11 +108,16 @@ const useSwapCurrencyList = (
   );
   const dispatch = useDispatch();
 
-  const curatedMap = rainbowTokenList.CURATED_TOKENS;
-  const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
-  const unfilteredFavorites = Object.values(favoriteMap);
-  const favoriteAddresses = useSelector(uniswapFavoritesSelector);
+  const {
+    favorites: favoriteAddresses,
+    favoritesMetadata: favoriteMap,
+  } = useFavorites();
 
+  const curatedMap = rainbowTokenList.CURATED_TOKENS;
+  // const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
+  const unfilteredFavorites = Object.values(favoriteMap);
+  // const favoriteAddresses = useSelector(uniswapFavoritesSelector);
+  console.log(favoriteMap);
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [importedAssets, setImportedAssets] = useState<RT[]>([]);

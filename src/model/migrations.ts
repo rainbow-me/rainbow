@@ -66,6 +66,7 @@ import {
   favoritesMetadataQueryKey,
   favoritesQueryKey,
 } from '@/resources/favorites';
+import { UniswapFavoriteTokenData } from '@/entities';
 
 export default async function runMigrations() {
   // get current version
@@ -689,16 +690,27 @@ export default async function runMigrations() {
   const v18 = async () => {
     const favorites = await getGlobal('uniswapFavorites', undefined);
     const favoritesMetadata = await getGlobal(
-      'uniswapFavoritesMetadata',
+      'uniswapjFavoritesMetadata',
       undefined,
       '0.1.0'
     );
 
     if (favorites) {
-      queryClient.setQueryData(favoritesQueryKey, favorites);
+      const lowercasedFavorites = favorites.map((address: string) =>
+        address.toLowerCase()
+      );
+      queryClient.setQueryData(favoritesQueryKey, lowercasedFavorites);
     }
     if (favoritesMetadata) {
-      queryClient.setQueryData(favoritesMetadataQueryKey, favoritesMetadata);
+      const lowercasedFavoritesMetadata: UniswapFavoriteTokenData = {};
+      Object.keys(favoritesMetadata).forEach((address: string) => {
+        lowercasedFavoritesMetadata[address.toLowerCase()] =
+          favoritesMetadata[address];
+      });
+      queryClient.setQueryData(
+        favoritesMetadataQueryKey,
+        lowercasedFavoritesMetadata
+      );
     }
   };
 
@@ -707,7 +719,7 @@ export default async function runMigrations() {
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
-
+  // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.sentry(`Migrations: Nothing to run`);
     return;
