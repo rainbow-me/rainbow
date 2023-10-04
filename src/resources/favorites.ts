@@ -1,7 +1,6 @@
-import { UniswapFavoriteTokenData } from '@/entities';
+import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import { createQueryKey, queryClient } from '@/react-query';
-import { useCallback } from 'react';
 import {
   DAI_ADDRESS,
   ETH_ADDRESS,
@@ -10,7 +9,7 @@ import {
   WETH_ADDRESS,
 } from '@/references';
 import { useQuery } from '@tanstack/react-query';
-import { uniq, without } from 'lodash';
+import { without } from 'lodash';
 
 export const favoritesQueryKey = createQueryKey(
   'favorites',
@@ -18,13 +17,7 @@ export const favoritesQueryKey = createQueryKey(
   { persisterVersion: 1 }
 );
 
-export const favoritesMetadataQueryKey = createQueryKey(
-  'favoritesMetadata',
-  {},
-  { persisterVersion: 1 }
-);
-
-const FAVORITES_METADATA_DEFAULT: UniswapFavoriteTokenData = {
+const DEFAULT: Record<EthereumAddress, RainbowToken> = {
   [DAI_ADDRESS]: {
     address: DAI_ADDRESS,
     color: '#F0B340',
@@ -78,10 +71,8 @@ const FAVORITES_METADATA_DEFAULT: UniswapFavoriteTokenData = {
   },
 };
 
-const FAVORITES_DEFAULT = Object.keys(FAVORITES_METADATA_DEFAULT);
-
-const x = async (addresses: string[]) => {
-  const favoritesMetadata: UniswapFavoriteTokenData = {};
+async function fetchMetadata(addresses: string[]) {
+  const favoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
   const newFavoritesMeta = await getUniswapV2Tokens(
     addresses.map(address => {
       return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
@@ -107,23 +98,42 @@ const x = async (addresses: string[]) => {
     });
   }
   return favoritesMetadata;
-};
+}
+
+export function resetFavorites() {
+  queryClient.setQueryData(favoritesQueryKey, DEFAULT);
+}
+
+export async function refreshFavorites() {
+  const favorites = Object.keys(
+    queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT
+  );
+  const updatedMetadata = await fetchMetadata(favorites);
+  return updatedMetadata;
+}
+
+export async function toggleFavorite(address: string) {
+  const favorites = Object.keys(
+    queryClient.getQueryData(favoritesQueryKey) ?? []
+  );
+  const lowercasedAddress = address.toLowerCase();
+  let updatedFavorites;
+  if (favorites.includes(lowercasedAddress)) {
+    updatedFavorites = without(favorites, lowercasedAddress);
+  } else {
+    updatedFavorites = [...favorites, lowercasedAddress];
+  }
+  const metadata = await fetchMetadata(updatedFavorites);
+  queryClient.setQueryData(favoritesQueryKey, metadata);
+}
 
 export function useFavorites(): {
   favorites: string[];
-  favoritesMetadata: UniswapFavoriteTokenData;
-  toggleFavorite: (address: string) => void;
+  favoritesMetadata: Record<EthereumAddress, RainbowToken>;
 } {
-  const query = useQuery<UniswapFavoriteTokenData>(
-    favoritesMetadataQueryKey,
-    async () => {
-      const favorites = Object.keys(
-        queryClient.getQueryData(favoritesMetadataQueryKey) ??
-          FAVORITES_METADATA_DEFAULT
-      );
-      const updatedMetadata = await x(favorites);
-      return updatedMetadata;
-    },
+  const query = useQuery<Record<EthereumAddress, RainbowToken>>(
+    favoritesQueryKey,
+    refreshFavorites,
     {
       staleTime: Infinity,
       cacheTime: Infinity,
@@ -132,32 +142,9 @@ export function useFavorites(): {
 
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);
-  // console.log(favorites.length);
-
-  const toggleFavorite = useCallback(
-    async (address: string) => {
-      const lowercasedAddress = address.toLowerCase();
-      let updatedFavorites;
-      console.log('???');
-      console.log(favorites);
-      console.log(lowercasedAddress);
-      if (favorites.includes(lowercasedAddress)) {
-        console.log('IN');
-        updatedFavorites = without(favorites, lowercasedAddress);
-      } else {
-        console.log('OUT');
-        updatedFavorites = [...favorites, lowercasedAddress];
-      }
-      const metadata = await x(updatedFavorites);
-      console.log('FDSFDSFDS');
-      queryClient.setQueryData(favoritesMetadataQueryKey, metadata);
-    },
-    [favorites]
-  );
 
   return {
     favorites,
     favoritesMetadata,
-    toggleFavorite,
   };
 }

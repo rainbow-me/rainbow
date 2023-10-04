@@ -4,9 +4,6 @@ import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/store';
-import { uniswapUpdateFavorites } from '../redux/uniswap';
 import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
 import {
@@ -42,10 +39,6 @@ type swapCurrencyListType =
   | 'favoriteAssets'
   | 'curatedAssets'
   | 'importedAssets';
-const uniswapFavoriteMetadataSelector = (state: AppState) =>
-  state.uniswap.favoritesMeta;
-const uniswapFavoritesSelector = (state: AppState): string[] =>
-  state.uniswap.favorites;
 
 type CrosschainVerifiedAssets = {
   [Network.mainnet]: RT[];
@@ -106,7 +99,6 @@ const useSwapCurrencyList = (
     () => searchQuery !== '' || MAINNET_CHAINID !== searchChainId,
     [searchChainId, searchQuery]
   );
-  const dispatch = useDispatch();
 
   const {
     favorites: favoriteAddresses,
@@ -665,17 +657,10 @@ const useSwapCurrencyList = (
     searchQuery,
   ]);
 
-  const updateFavorites = useCallback(
-    (...data: [string | string[], boolean]) =>
-      dispatch(uniswapUpdateFavorites(...data)),
-    [dispatch]
-  );
-
   return {
     crosschainExactMatches,
     swapCurrencyList: currencyList,
     swapCurrencyListLoading: loading,
-    updateFavorites,
   };
 };
 

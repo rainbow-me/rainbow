@@ -65,7 +65,6 @@ export type {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
-export type { UniswapFavoriteTokenData } from './uniswap';
 export type {
   ENSRegistrationRecords,
   ENSRegistrations,

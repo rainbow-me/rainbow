@@ -13,7 +13,7 @@ import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { contactsLoadState } from '@/redux/contacts';
-import { uniswapLoadState } from '@/redux/uniswap';
+import { favoritesQueryKey, refreshFavorites } from '@/resources/favorites';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
@@ -39,7 +39,7 @@ export default function useLoadGlobalLateData() {
     const p2 = loadWalletBalanceNamesToCache();
 
     // favorites
-    const p3 = dispatch(uniswapLoadState());
+    const p3 = queryClient.prefetchQuery(favoritesQueryKey, refreshFavorites);
 
     // contacts
     const p4 = dispatch(contactsLoadState());

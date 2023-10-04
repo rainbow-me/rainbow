@@ -1,5 +1,5 @@
 import { savingsAssets } from './compound';
-import { Asset, UniswapFavoriteTokenData } from '@/entities';
+import { Asset } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
@@ -20,7 +20,6 @@ export { DPI_ADDRESS } from './indexes';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
-export { UNISWAP_TESTNET_TOKEN_LIST } from './uniswap';
 export { rainbowTokenList } from './rainbow-token-list';
 
 export {
@@ -138,69 +137,6 @@ export const AddCashCurrencyInfo: {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
-    },
-  },
-};
-
-export const DefaultUniswapFavorites = {
-  mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],
-};
-
-export const DefaultUniswapFavoritesMeta: Record<
-  string,
-  UniswapFavoriteTokenData
-> = {
-  mainnet: {
-    [DAI_ADDRESS]: {
-      address: DAI_ADDRESS,
-      color: '#F0B340',
-      decimals: 18,
-      favorite: true,
-      highLiquidity: true,
-      isRainbowCurated: true,
-      isVerified: true,
-      name: 'Dai',
-      symbol: 'DAI',
-      type: 'token',
-      uniqueId: DAI_ADDRESS,
-    },
-    [ETH_ADDRESS]: {
-      address: ETH_ADDRESS,
-      color: '#25292E',
-      decimals: 18,
-      favorite: true,
-      highLiquidity: true,
-      isVerified: true,
-      name: 'Ethereum',
-      symbol: 'ETH',
-      type: 'token',
-      uniqueId: ETH_ADDRESS,
-    },
-    [SOCKS_ADDRESS]: {
-      address: SOCKS_ADDRESS,
-      color: '#E15EE5',
-      decimals: 18,
-      favorite: true,
-      highLiquidity: true,
-      isRainbowCurated: true,
-      isVerified: true,
-      name: 'Unisocks',
-      symbol: 'SOCKS',
-      type: 'token',
-      uniqueId: SOCKS_ADDRESS,
-    },
-    [WBTC_ADDRESS]: {
-      address: WBTC_ADDRESS,
-      color: '#FF9900',
-      decimals: 8,
-      favorite: true,
-      highLiquidity: true,
-      isRainbowCurated: true,
-      isVerified: true,
-      name: 'Wrapped Bitcoin',
-      symbol: 'WBTC',
-      type: 'token',
-      uniqueId: WBTC_ADDRESS,
     },
   },
 };
