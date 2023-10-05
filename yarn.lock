@@ -3078,9 +3078,9 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
-"@react-native-community/clipboard@git+https://github.com/rainbow-me/clipboard#01d1c13":
+"@react-native-community/clipboard@git+https://github.com/rainbow-me/clipboard":
   version "1.2.3"
-  resolved "git+https://github.com/rainbow-me/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
+  resolved "git+https://github.com/rainbow-me/clipboard#6a9da11e5fa4bab00fdcf79f84dffb8d1f2a613f"
 
 "@react-native-community/netinfo@9.0.0":
   version "9.0.0"

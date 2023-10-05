@@ -202,7 +202,7 @@ function NavbarOverlay({
         {
           shadowColor: colors.shadowBlack,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          //shadowOpacity: isDarkMode ? 0.4 : 0.004,
+          // shadowOpacity: isDarkMode ? 0.4 : 0.004,
           shadowRadius: isDarkMode ? 20 : 3,
           zIndex: 1,
         },
@@ -245,14 +245,9 @@ function NavbarOverlay({
             </Navbar.Item>
           }
           rightComponent={
-            <ContextMenuButton
-              menuConfig={menuConfig}
-              onPressMenuItem={handlePressMenuItem}
-            >
-              <Navbar.Item>
-                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-              </Navbar.Item>
-            </ContextMenuButton>
+            <Navbar.Item onPress={handlePressSettings}>
+              <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+            </Navbar.Item>
           }
           titleComponent={
             <Box
