@@ -258,7 +258,7 @@ test(`handles https:// protocol for ens profiles`, async () => {
   mocked(checkIsValidAddressOrDomain).mockResolvedValueOnce(true);
   mocked(isENSAddressFormat).mockReturnValueOnce(true);
 
-  await handleDeepLink(`https://rainbow.me/estrattonbailey.eth`);
+  await handleDeepLink(`https://rainbow.me/profile/estrattonbailey.eth`);
 
   expect(fetchReverseRecordWithRetry).toHaveBeenCalledTimes(0);
   expect(Navigation.handleAction).toHaveBeenCalledTimes(1);
@@ -269,7 +269,7 @@ test(`handles https:// protocol for profile addresses`, async () => {
   mocked(isENSAddressFormat).mockReturnValueOnce(false);
   mocked(fetchReverseRecordWithRetry).mockResolvedValue('estrattonbailey.eth');
 
-  await handleDeepLink(`https://rainbow.me/0x123`);
+  await handleDeepLink(`https://rainbow.me/profile/0x123`);
 
   expect(fetchReverseRecordWithRetry).toHaveBeenCalledTimes(1);
   expect(Navigation.handleAction).toHaveBeenCalledTimes(1);
