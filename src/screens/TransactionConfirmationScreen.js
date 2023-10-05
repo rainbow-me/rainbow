@@ -553,7 +553,7 @@ export default function TransactionConfirmationScreen() {
         'maxFeePerGas',
         'maxPriorityFeePerGas',
       ]);
-      let rawGasLimit = await estimateGas(cleanTxPayload, provider);
+      const rawGasLimit = await estimateGas(cleanTxPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
