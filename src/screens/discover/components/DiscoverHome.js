@@ -61,7 +61,7 @@ export default function DiscoverHome() {
         <Inset horizontal="20px">
           {!testNetwork ? (
             <Stack space="20px">
-              <Inline space="20px">
+              <Inline wrap={false} space="20px">
                 <GasCard />
                 {isProfilesEnabled && <ENSSearchCard />}
               </Inline>
