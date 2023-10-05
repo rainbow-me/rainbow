@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Animated as RNAnimated } from 'react-native';
+import { Animated as RNAnimated, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemoOne } from 'use-memo-one';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
@@ -13,6 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
+import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
 import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
@@ -195,6 +196,23 @@ function NavbarOverlay({
     [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
   );
 
+  const handlePressMenuItemAndroid = React.useCallback(
+    (buttonIndex: number) => {
+      switch (buttonIndex) {
+        case 0:
+          handlePressSettings();
+          break;
+        case 1:
+          handlePressQRCode();
+          break;
+        case 2:
+          handlePressConnectedApps();
+          break;
+      }
+    },
+    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
+  );
+
   return (
     <Box
       as={RNAnimated.View}
@@ -245,9 +263,28 @@ function NavbarOverlay({
             </Navbar.Item>
           }
           rightComponent={
-            <Navbar.Item onPress={handlePressSettings}>
-              <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-            </Navbar.Item>
+            IS_ANDROID ? (
+              <AndroidContextMenu
+                options={menuConfig.menuItems.map(item => item?.actionTitle)}
+                cancelButtonIndex={menuConfig.menuItems.length - 1}
+                onPressActionSheet={handlePressMenuItemAndroid}
+              >
+                <View>
+                  <Navbar.Item>
+                    <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                  </Navbar.Item>
+                </View>
+              </AndroidContextMenu>
+            ) : (
+              <ContextMenuButton
+                menuConfig={menuConfig}
+                onPressMenuItem={handlePressMenuItem}
+              >
+                <Navbar.Item>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                </Navbar.Item>
+              </ContextMenuButton>
+            )
           }
           titleComponent={
             <Box
