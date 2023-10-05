@@ -163,6 +163,7 @@ const MintSheet = () => {
   const { isReadOnlyWallet, isHardwareWallet } = useWallets();
   const [insufficientEth, setInsufficientEth] = useState(false);
   const [showNativePrice, setShowNativePrice] = useState(false);
+  const [gasError, setGasError] = useState(false);
   const currentNetwork =
     RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
     Network.mainnet;
@@ -194,8 +195,9 @@ const MintSheet = () => {
   );
 
   // if there is no max mint info, we fallback to 1 to be safe
-  const maxMintsPerWallet =
-    mintCollection.publicMintInfo?.maxMintsPerWallet || 1;
+  const maxMintsPerWallet = Number(
+    mintCollection.publicMintInfo?.maxMintsPerWallet
+  );
 
   const price = convertRawAmountToBalance(
     mintCollection.publicMintInfo?.price?.amount?.raw || '0',
@@ -237,7 +239,8 @@ const MintSheet = () => {
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
   const isMintingAvailable =
     !(isReadOnlyWallet || isHardwareWallet) &&
-    (mintCollection.isMintingPublicSale || price);
+    (mintCollection.isMintingPublicSale || price) &&
+    !gasError;
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -315,37 +318,46 @@ const MintSheet = () => {
         chain: networkObj,
         transport: http(networkObj.rpc),
       });
-
-      getClient()?.actions.buyToken({
-        items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
-        wallet: signer!,
-        chainId: networkObj.id,
-        precheck: true,
-        onProgress: async (steps: Execute['steps']) => {
-          steps.forEach(step => {
-            if (step.error) {
-              logger.error(
-                new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`)
-              );
-              return;
-            }
-            step.items?.forEach(async item => {
-              // could add safety here if unable to calc gas limit
-              const tx = {
-                to: item.data?.to,
-                from: item.data?.from,
-                data: item.data?.data,
-                value: multiply(price.amount || '0', quantity),
-              };
-
-              const gas = await estimateGas(tx, provider);
-              if (gas) {
-                updateTxFee(gas, null);
+      try {
+        await getClient()?.actions.buyToken({
+          items: [
+            { fillType: 'mint', collection: mintCollection.id!, quantity },
+          ],
+          wallet: signer!,
+          chainId: networkObj.id,
+          precheck: true,
+          onProgress: async (steps: Execute['steps']) => {
+            steps.forEach(step => {
+              if (step.error) {
+                logger.error(
+                  new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`)
+                );
+                return;
               }
+              step.items?.forEach(async item => {
+                // could add safety here if unable to calc gas limit
+                const tx = {
+                  to: item.data?.to,
+                  from: item.data?.from,
+                  data: item.data?.data,
+                  value: multiply(price.amount || '0', quantity),
+                };
+
+                const gas = await estimateGas(tx, provider);
+                if (gas) {
+                  setGasError(false);
+                  updateTxFee(gas, null);
+                }
+              });
             });
-          });
-        },
-      });
+          },
+        });
+      } catch (e) {
+        setGasError(true);
+        logger.error(
+          new RainbowError(`NFT Mints: Gas Step Error: ${(e as Error).message}`)
+        );
+      }
     };
     estimateMintGas();
   }, [
@@ -430,68 +442,77 @@ const MintSheet = () => {
     });
 
     const feeAddress = getRainbowFeeAddress(currentNetwork);
-    getClient()?.actions.buyToken({
-      items: [
-        {
-          fillType: 'mint',
-          collection: mintCollection.id!,
-          quantity,
-          ...(feeAddress && { referrer: feeAddress }),
-        },
-      ],
-      wallet: signer!,
-      chainId: networkObj.id,
-      onProgress: (steps: Execute['steps']) => {
-        steps.forEach(step => {
-          if (step.error) {
-            logger.error(new RainbowError(`Error minting NFT: ${step.error}`));
-            setMintStatus('error');
-            return;
-          }
-          step.items?.forEach(item => {
-            if (
-              item.txHash &&
-              txRef.current !== item.txHash &&
-              item.status === 'incomplete'
-            ) {
-              const tx = {
-                to: item.data?.to,
-                from: item.data?.from,
-                hash: item.txHash,
-                network: currentNetwork,
-                amount: mintPriceAmount,
-                asset: {
-                  address: ETH_ADDRESS,
-                  symbol: ETH_SYMBOL,
-                },
-                nft: {
-                  predominantColor: imageColor,
-                  collection: {
-                    image: imageUrl,
-                  },
-                  lowResUrl: imageUrl,
-                  name: mintCollection.name,
-                },
-                type: TransactionType.mint,
-                status: TransactionStatus.minting,
-              };
-
-              txRef.current = tx.hash;
-              // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
-              dispatch(dataAddNewTransaction(tx));
-              analyticsV2.track(event.nftMintsMintedNFT, {
-                collectionName: mintCollection.name || '',
-                contract: mintCollection.id || '',
-                network: currentNetwork,
-                quantity,
-              });
-              navigate(Routes.PROFILE_SCREEN);
-              setMintStatus('minted');
+    try {
+      await getClient()?.actions.buyToken({
+        items: [
+          {
+            fillType: 'mint',
+            collection: mintCollection.id!,
+            quantity,
+            ...(feeAddress && { referrer: feeAddress }),
+          },
+        ],
+        wallet: signer!,
+        chainId: networkObj.id,
+        onProgress: (steps: Execute['steps']) => {
+          steps.forEach(step => {
+            if (step.error) {
+              logger.error(
+                new RainbowError(`Error minting NFT: ${step.error}`)
+              );
+              setMintStatus('error');
+              return;
             }
+            step.items?.forEach(item => {
+              if (
+                item.txHash &&
+                txRef.current !== item.txHash &&
+                item.status === 'incomplete'
+              ) {
+                const tx = {
+                  to: item.data?.to,
+                  from: item.data?.from,
+                  hash: item.txHash,
+                  network: currentNetwork,
+                  amount: mintPriceAmount,
+                  asset: {
+                    address: ETH_ADDRESS,
+                    symbol: ETH_SYMBOL,
+                  },
+                  nft: {
+                    predominantColor: imageColor,
+                    collection: {
+                      image: imageUrl,
+                    },
+                    lowResUrl: imageUrl,
+                    name: mintCollection.name,
+                  },
+                  type: TransactionType.mint,
+                  status: TransactionStatus.minting,
+                };
+
+                txRef.current = tx.hash;
+                // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
+                dispatch(dataAddNewTransaction(tx));
+                analyticsV2.track(event.nftMintsMintedNFT, {
+                  collectionName: mintCollection.name || '',
+                  contract: mintCollection.id || '',
+                  network: currentNetwork,
+                  quantity,
+                });
+                navigate(Routes.PROFILE_SCREEN);
+                setMintStatus('minted');
+              }
+            });
           });
-        });
-      },
-    });
+        },
+      });
+    } catch (e) {
+      setMintStatus('error');
+      logger.error(
+        new RainbowError(`Error minting NFT: ${(e as Error).message}`)
+      );
+    }
   }, [
     accountAddress,
     currentNetwork,
@@ -688,7 +709,9 @@ const MintSheet = () => {
 
                   {/* @ts-ignore */}
                   <HoldToAuthorizeButton
-                    backgroundColor={imageColor}
+                    backgroundColor={
+                      mintStatus === 'error' ? colors.red : imageColor
+                    }
                     disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     label={buttonLabel}
