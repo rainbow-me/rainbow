@@ -106,10 +106,8 @@ const useSwapCurrencyList = (
   } = useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
-  // const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
   const unfilteredFavorites = Object.values(favoriteMap);
-  // const favoriteAddresses = useSelector(uniswapFavoritesSelector);
-  console.log(favoriteMap);
+
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [importedAssets, setImportedAssets] = useState<RT[]>([]);

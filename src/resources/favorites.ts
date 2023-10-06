@@ -100,10 +100,6 @@ async function fetchMetadata(addresses: string[]) {
   return favoritesMetadata;
 }
 
-export function resetFavorites() {
-  queryClient.setQueryData(favoritesQueryKey, DEFAULT);
-}
-
 export async function refreshFavorites() {
   const favorites = Object.keys(
     queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT

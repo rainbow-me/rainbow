@@ -4,7 +4,6 @@ import { dataResetState } from '../redux/data';
 import { explorerClearState } from '../redux/explorer';
 import { requestsResetState } from '../redux/requests';
 import { promiseUtils } from '../utils';
-import { resetFavorites } from '@/resources/favorites';
 
 export default function useResetAccountState() {
   const dispatch = useDispatch();
@@ -14,7 +13,6 @@ export default function useResetAccountState() {
     const p1 = dispatch(dataResetState());
     const p2 = dispatch(requestsResetState());
 
-    resetFavorites();
     // @ts-expect-error ts-migrate(2739) FIXME: Type '(dispatch: any) => void' is missing the foll... Remove this comment to see the full error message
     await promiseUtils.PromiseAllWithFails([p0, p1, p2]);
   }, [dispatch]);

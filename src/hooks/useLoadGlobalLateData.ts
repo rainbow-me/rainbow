@@ -39,7 +39,10 @@ export default function useLoadGlobalLateData() {
     const p2 = loadWalletBalanceNamesToCache();
 
     // favorites
-    const p3 = queryClient.prefetchQuery(favoritesQueryKey, refreshFavorites);
+    const p3 = queryClient.prefetchQuery({
+      queryKey: favoritesQueryKey,
+      queryFn: refreshFavorites,
+    });
 
     // contacts
     const p4 = dispatch(contactsLoadState());
