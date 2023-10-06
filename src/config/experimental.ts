@@ -18,6 +18,7 @@ export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
+export const MINTS = 'Mints';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -45,6 +46,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
+  [MINTS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

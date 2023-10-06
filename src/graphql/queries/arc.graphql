@@ -100,3 +100,60 @@ query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
     error
   }
 }
+
+fragment mintStatus on MintStatus {
+  isMintable
+  price
+}
+
+fragment mintedNFT on MintedNFT {
+  tokenID
+  imageURI
+  mimeType
+  title
+  value
+  mintTime
+}
+
+fragment mintableCollection on MintableCollection {
+  externalURL
+  contract
+  contractAddress
+  chainId
+  deployer
+  name
+  imageURL
+  imageMimeType
+  mintsLastHour
+  addressesLastHour
+  lastEvent
+  firstEvent
+  totalMints
+  maxSupply
+  recentMints {
+    ...mintedNFT
+  }
+  mintStatus {
+    ...mintStatus
+  }
+}
+
+fragment mintableCollectionsResult on MintableCollectionsResult {
+  collections {
+    ...mintableCollection
+  }
+}
+
+fragment mintableCollectionResult on MintableCollectionResult {
+  collection {
+    ...mintableCollection
+  }
+}
+
+query getMintableCollections($walletAddress: String!) {
+  getMintableCollections(walletAddress: $walletAddress) {
+    collections {
+      ...mintableCollection
+    }
+  }
+}

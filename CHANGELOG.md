@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.5] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.5)
+
+### Added
+
+- WC improvements
+- Gas improvements
+- NFT Offers networks support
+- Wallet loading state fix
+- Other bug fixes & improvements
+
+## [1.9.4] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.4)
+
+### Added
+
+- Mints feature
+- detox e2e fixes
+- WC version bumps & fixes
+- Gas fixes
+
 ## [1.9.3] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.3)
 
 ### Added
