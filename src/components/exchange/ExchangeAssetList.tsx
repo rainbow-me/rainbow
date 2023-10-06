@@ -259,7 +259,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
       {}
     )
   );
-  console.log(localFavorite);
+
   const enrichedItems = useMemo(
     () =>
       items.map(({ data, ...item }) => ({
