@@ -71,6 +71,9 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
   },
 };
 
+/**
+ * Returns a map of the given `addresses` to their corresponding `RainbowToken` metadata.
+ */
 async function fetchMetadata(addresses: string[]) {
   const favoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
   const newFavoritesMeta = await getUniswapV2Tokens(
@@ -100,6 +103,9 @@ async function fetchMetadata(addresses: string[]) {
   return favoritesMetadata;
 }
 
+/**
+ * Refreshes the metadata associated with all favorites.
+ */
 export async function refreshFavorites() {
   const favorites = Object.keys(
     queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT
@@ -108,6 +114,9 @@ export async function refreshFavorites() {
   return updatedMetadata;
 }
 
+/**
+ * Toggles the favorited status of the given `address`.
+ */
 export async function toggleFavorite(address: string) {
   const favorites = Object.keys(
     queryClient.getQueryData(favoritesQueryKey) ?? []
@@ -123,6 +132,11 @@ export async function toggleFavorite(address: string) {
   queryClient.setQueryData(favoritesQueryKey, metadata);
 }
 
+/**
+ * Returns `favorites`, an array of favorited addresses, as well as `favoritesMetadata`, a map of these
+ * addresses to their corresponding `RainbowToken`. These values are cached in AsyncStorage and is only
+ * modified/updated when `toggleFavorite` or `refreshFavorites` is called.
+ */
 export function useFavorites(): {
   favorites: string[];
   favoritesMetadata: Record<EthereumAddress, RainbowToken>;
