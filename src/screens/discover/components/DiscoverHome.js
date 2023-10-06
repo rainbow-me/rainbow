@@ -79,7 +79,7 @@ export default function DiscoverHome() {
               {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
               {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
               {isProfilesEnabled && <ENSCreateProfileCard />}
-              <Inline space="20px">
+              <Inline wrap={false} space="20px">
                 <LearnCard cardDetails={backupsCard} type="square" />
                 <LearnCard cardDetails={avoidScamsCard} type="square" />
               </Inline>

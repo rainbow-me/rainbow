@@ -52,12 +52,19 @@ const config = {
     restSpeedThreshold: 0.01,
   },
 };
-const tabConfig = { duration: 500, easing: Easing.elastic(1) };
+const tabConfig = { duration: 250, easing: Easing.elastic(1) };
 
 const Swipe = createMaterialTopTabNavigator();
 const HEADER_HEIGHT = IS_IOS ? 82 : 62;
 
-const TabBar = ({ state, descriptors, navigation, position }) => {
+const TabBar = ({
+  state,
+  descriptors,
+  navigation,
+  position,
+  isTap,
+  setIsTap,
+}) => {
   const { width: deviceWidth } = useDimensions();
   const reanimatedPosition = useSharedValue(2);
   const tabWidth = deviceWidth / NUMBER_OF_TABS;
@@ -84,12 +91,22 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
     };
   });
 
-  const animateTabs = index => {
-    reanimatedPosition.value = withTiming(index, tabConfig);
+  const animateTabs = (index, shouldAnimate = false) => {
+    if (shouldAnimate) {
+      reanimatedPosition.value = withTiming(index, tabConfig);
+      return;
+    }
+    reanimatedPosition.value = index;
   };
+
   useEffect(() => {
-    animateTabs(state.index);
-  }, [state.index]);
+    if (!isTap) {
+      animateTabs(state.index, true);
+    } else {
+      animateTabs(state.index);
+    }
+    setIsTap(false);
+  }, [state.index, isTap]);
 
   // for when QRScannerScreen is re-added
   // const offScreenTabBar = useAnimatedStyle(() => {
@@ -198,6 +215,7 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
                   });
 
                   if (!isFocused && !event.defaultPrevented) {
+                    setIsTap(true);
                     navigation.navigate(route.name);
                     // animateTabs(index);
                   } else if (
@@ -269,9 +287,11 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
     </Box>
   );
 };
+
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
   const { network } = useAccountSettings();
+  const [isTap, setIsTap] = useState(false);
 
   // ////////////////////////////////////////////////////
   // Animations
@@ -283,16 +303,18 @@ export function SwipeNavigator() {
           initialLayout={deviceUtils.dimensions}
           initialRouteName={Routes.WALLET_SCREEN}
           swipeEnabled={!isCoinListEdited}
-          tabBar={props => <TabBar {...props} />}
+          tabBar={props => (
+            <TabBar {...props} isTap={isTap} setIsTap={setIsTap} />
+          )}
           tabBarPosition="bottom"
         >
           {/* <Swipe.Screen
-            component={QRScannerScreen}
-            name={Routes.QR_SCANNER_SCREEN}
-            options={{
-              tabBarIcon: 'none',
-            }}
-          /> */}
+              component={QRScannerScreen}
+              name={Routes.QR_SCANNER_SCREEN}
+              options={{
+                tabBarIcon: 'none',
+              }}
+            /> */}
           <Swipe.Screen
             component={ProfileScreen}
             name={Routes.PROFILE_SCREEN}

@@ -78,7 +78,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { accountAddress } = useAccountSettings();
 
   const topMarginRef = useRef<number>(0);
-
   const ref = useRef<RecyclerListViewRef>();
 
   useEffect(() => {

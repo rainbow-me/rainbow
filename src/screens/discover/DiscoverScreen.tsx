@@ -81,7 +81,7 @@ export default function DiscoverScreen() {
           }
         />
         <Box
-          //@ts-expect-error
+          // @ts-expect-error
           ref={ref}
           as={ScrollView}
           automaticallyAdjustsScrollIndicatorInsets={false}
