@@ -149,8 +149,8 @@ const TabBar = ({ state, descriptors, navigation, position }) => {
               position="absolute"
               style={{
                 backgroundColor: isDarkMode
-                  ? colors.alpha('#191A1C', 0.7)
-                  : colors.alpha(colors.white, IS_IOS ? 0.7 : 0.92),
+                  ? colors.alpha('#191A1C', 1)
+                  : colors.alpha(colors.white, IS_IOS ? 0.7 : 1),
               }}
               width="full"
             />
