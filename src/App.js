@@ -97,7 +97,11 @@ enableScreens();
 const containerStyle = { flex: 1 };
 
 class OldApp extends Component {
-  state = { appState: AppState.currentState, initialRoute: null };
+  state = {
+    appState: AppState.currentState,
+    initialRoute: null,
+    eventSubscription: null,
+  };
 
   /**
    * There's a race condition in Branch's RN SDK. From a cold start, Branch
@@ -142,7 +146,11 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    AppState?.addEventListener('change', this?.handleAppStateChange);
+    const eventSub = AppState?.addEventListener(
+      'change',
+      this?.handleAppStateChange
+    );
+    this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
@@ -181,8 +189,8 @@ class OldApp extends Component {
   }
 
   componentWillUnmount() {
-    AppState?.removeEventListener('change', this?.handleAppStateChange);
-    this.branchListener?.();
+    this.state.eventSubscription.remove();
+    this.branchListener();
   }
 
   identifyFlow = async () => {
