@@ -9,6 +9,9 @@ import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
+import InfoAlert from '@/components/info-alert/info-alert';
+import { Box, Text } from '@/design-system';
+import { colors } from '@/styles';
 
 type Props = {
   assetPrice?: number;
@@ -19,13 +22,53 @@ type Props = {
 
 export const RewardsContent: React.FC<Props> = ({
   assetPrice,
-  data,
+  // data,
   isLoading,
   isLoadingError,
 }) => {
   if (isLoading) {
     return <RewardsFakeContent />;
   }
+
+  const data = {
+    rewards: {
+      meta: {
+        title: 'Optimism Rewards',
+        color: '#FFCC00',
+        distribution: {
+          next: 1634179200,
+          left: 0,
+          total: 0,
+        },
+        token: {
+          asset: {
+            iconURL:
+              'https://assets.coingecko.com/coins/images/12504/small/optimism.png?1620935048',
+            symbol: 'OPT',
+          },
+        },
+      },
+      stats: {
+        actions: [],
+        position: {
+          current: 1,
+          change: {
+            h24: 0,
+          },
+        },
+      },
+      earnings: {
+        pending: {
+          token: 0,
+        },
+        total: {
+          token: 0,
+          usd: 0,
+        },
+      },
+    },
+  };
+
   if (isLoadingError || !data || !data.rewards) {
     return (
       <RewardsProgramStatus
@@ -35,11 +78,21 @@ export const RewardsContent: React.FC<Props> = ({
       />
     );
   }
-  const leaderboardData = data.rewards.leaderboard.accounts ?? [];
 
   return (
     <>
       <RewardsTitle text={data.rewards.meta.title} />
+      <Box paddingBottom="20px">
+        <InfoAlert
+          title="Earn OP for swapping or bridging"
+          description="Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
+          rightIcon={
+            <Text size="20pt" color={{ custom: colors.optimismRed }}>
+              􀫸
+            </Text>
+          }
+        />
+      </Box>
       {data.rewards.earnings && (
         <RewardsEarnings
           assetPrice={assetPrice}
@@ -66,13 +119,6 @@ export const RewardsContent: React.FC<Props> = ({
         position={data.rewards.stats?.position.current ?? 1}
         positionChange={data.rewards.stats?.position.change.h24 ?? 0}
       />
-      <RewardsLeaderboard
-        leaderboard={leaderboardData}
-        programEndTimestamp={data.rewards.meta.end}
-        status={data.rewards.meta.status}
-        tokenSymbol={data.rewards.meta.token.asset.symbol}
-      />
-      <RewardsDuneLogo />
     </>
   );
 };
