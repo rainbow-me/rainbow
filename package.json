@@ -101,7 +101,7 @@
     "@ratio.me/ratio-react-native-library": "0.8.5",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-camera-roll/camera-roll": "5.7.1",
-    "@react-native-community/blur": "4.3.0",
+    "@react-native-community/blur": "4.3.2",
     "@react-native-community/clipboard": "git+https://github.com/rainbow-me/clipboard#01d1c13",
     "@react-native-community/netinfo": "9.0.0",
     "@react-native-firebase/app": "18.3.0",
