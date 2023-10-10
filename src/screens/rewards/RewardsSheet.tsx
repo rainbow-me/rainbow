@@ -4,7 +4,7 @@ import { useDimensions } from '@/hooks';
 import { BackgroundProvider, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { StatusBar } from 'react-native';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';

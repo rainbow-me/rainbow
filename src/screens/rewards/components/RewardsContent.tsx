@@ -8,7 +8,6 @@ import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgra
 import * as i18n from '@/languages';
 import InfoAlert from '@/components/info-alert/info-alert';
 import { Box, Text } from '@/design-system';
-import { colors } from '@/styles';
 
 type Props = {
   assetPrice?: number;

@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { RewardsStatsCard } from './RewardsStatsCard';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import {
   RewardStatsAction,
   RewardStatsActionType,
@@ -14,9 +12,6 @@ import {
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { analyticsV2 } from '@/analytics';
-import { STATS_TITLES } from '@/screens/rewards/constants';
-import { noop } from 'lodash';
 
 type Props = {
   assetPrice?: number;
@@ -29,28 +24,41 @@ export const RewardsStats: React.FC<Props> = ({
   actions,
   color,
 }) => {
-  const { navigate } = useNavigation();
-
   const nativeCurrency = useSelector(
     (state: AppState) => state.settings.nativeCurrency
   );
 
-  const getPressHandlerForType = (type: RewardStatsActionType) => {
-    switch (type) {
-      case RewardStatsActionType.Bridge:
-        return () => {
-          analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
-        };
-      case RewardStatsActionType.Swap:
-        return () => {
-          analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
-        };
-      default:
-        return noop;
+  const swapsData = useMemo(() => {
+    return actions.find(action => action.type === RewardStatsActionType.Swap);
+  }, [actions]);
+
+  const bridgeData = useMemo(() => {
+    return actions.find(action => action.type === RewardStatsActionType.Bridge);
+  }, [actions]);
+
+  const getSwapsValue = useMemo(() => {
+    if (assetPrice) {
+      return convertAmountAndPriceToNativeDisplay(
+        swapsData?.amount?.token || '0',
+        assetPrice,
+        nativeCurrency
+      ).display;
     }
-  };
+
+    return convertAmountToNativeDisplay(swapsData?.amount?.usd || '0', 'USD');
+  }, [swapsData, assetPrice, nativeCurrency]);
+
+  const getBridgeValue = useMemo(() => {
+    if (assetPrice) {
+      return convertAmountAndPriceToNativeDisplay(
+        bridgeData?.amount?.token ?? '0',
+        assetPrice,
+        nativeCurrency
+      ).display;
+    }
+
+    return convertAmountToNativeDisplay(bridgeData?.amount?.usd || '0', 'USD');
+  }, [bridgeData, assetPrice, nativeCurrency]);
 
   return (
     <Box width="full" paddingBottom="12px">
@@ -67,32 +75,29 @@ export const RewardsStats: React.FC<Props> = ({
           style={{ gap: 12 }}
         >
           <Box flexGrow={1}>
-            {actions.map(action => {
-              const value =
-                assetPrice !== undefined
-                  ? convertAmountAndPriceToNativeDisplay(
-                      action.amount.token,
-                      assetPrice,
-                      nativeCurrency
-                    ).display
-                  : convertAmountToNativeDisplay(action.amount.usd, 'USD');
+            <RewardsStatsCard
+              key={RewardStatsActionType.Swap}
+              title={i18n.t(i18n.l.rewards.swapped)}
+              value={getSwapsValue}
+              secondaryValue={`${
+                swapsData?.rewardPercent?.toString() ?? '0'
+              }% reward`}
+              secondaryValueColor={{ custom: color }}
+              secondaryValueIcon={'􀐚'}
+            />
+          </Box>
 
-              return (
-                <RewardsStatsCard
-                  key={action.type}
-                  title={STATS_TITLES[action.type]}
-                  value={value}
-                  secondaryValue={i18n.t(i18n.l.rewards.percent, {
-                    percent: action.rewardPercent,
-                  })}
-                  secondaryValueIcon="􀐚"
-                  secondaryValueColor={{
-                    custom: color,
-                  }}
-                  onPress={getPressHandlerForType(action.type)}
-                />
-              );
-            })}
+          <Box flexGrow={1}>
+            <RewardsStatsCard
+              key={RewardStatsActionType.Bridge}
+              title={i18n.t(i18n.l.rewards.bridged)}
+              value={getBridgeValue}
+              secondaryValue={`${
+                bridgeData?.rewardPercent?.toString() ?? '0'
+              }% reward`}
+              secondaryValueColor={{ custom: color }}
+              secondaryValueIcon={'􀐚'}
+            />
           </Box>
         </Box>
       </Stack>
