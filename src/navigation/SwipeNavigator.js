@@ -64,6 +64,8 @@ const TabBar = ({
   position,
   isTap,
   setIsTap,
+  lastPress,
+  setLastPress,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const reanimatedPosition = useSharedValue(2);
@@ -214,6 +216,11 @@ const TabBar = ({
                     target: route.key,
                   });
 
+                  const time = new Date().getTime();
+                  const delta = time - lastPress;
+
+                  const DOUBLE_PRESS_DELAY = 400;
+
                   if (!isFocused && !event.defaultPrevented) {
                     setIsTap(true);
                     navigation.navigate(route.name);
@@ -222,8 +229,18 @@ const TabBar = ({
                     isFocused &&
                     options.tabBarIcon === 'tabDiscover'
                   ) {
-                    discoverScrollToTopFnRef?.();
+                    if (delta < DOUBLE_PRESS_DELAY) {
+                      discoverOpenSearchFnRef?.();
+                      return;
+                    }
+
+                    if (discoverScrollToTopFnRef?.() === 0) {
+                      discoverOpenSearchFnRef?.();
+                      return;
+                    }
                   }
+
+                  setLastPress(time);
                 };
 
                 const onLongPress = async () => {
@@ -293,6 +310,8 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const [isTap, setIsTap] = useState(false);
 
+  const [lastPress, setLastPress] = useState();
+
   // ////////////////////////////////////////////////////
   // Animations
 
@@ -304,7 +323,13 @@ export function SwipeNavigator() {
           initialRouteName={Routes.WALLET_SCREEN}
           swipeEnabled={!isCoinListEdited}
           tabBar={props => (
-            <TabBar {...props} isTap={isTap} setIsTap={setIsTap} />
+            <TabBar
+              {...props}
+              isTap={isTap}
+              setIsTap={setIsTap}
+              lastPress={lastPress}
+              setLastPress={setLastPress}
+            />
           )}
           tabBarPosition="bottom"
         >
