@@ -84,22 +84,18 @@ export default React.memo(function FastCoinIcon({
     mainnetAddress,
   });
 
-  const tokenMetadata = getTokenMetadata(resolvedAddress);
-
   const fallbackIconColor = useColorForAsset({
     address: resolvedAddress,
     type: resolvedType,
   });
 
-  const shadowColor = theme.isDarkMode
-    ? colors.shadow
-    : tokenMetadata?.shadowColor ?? fallbackIconColor;
+  const shadowColor = theme.isDarkMode ? colors.shadow : fallbackIconColor;
 
   const eth = isETH(resolvedAddress);
 
   const formattedSymbol = formatSymbol(symbol);
 
-  const shouldRenderFallback = !eth && !tokenMetadata;
+  const shouldRenderFallback = !eth;
   const shouldRenderLocalCoinIconImage =
     !shouldRenderFallback && !!CoinIconsImages[formattedSymbol];
   const shouldRenderContract = symbol === 'contract';
