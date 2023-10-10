@@ -591,7 +591,7 @@ PODS:
   - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
-  - react-native-blur (4.3.0):
+  - react-native-blur (4.3.2):
     - React-Core
   - react-native-branch (5.3.1):
     - Branch (= 1.40.2)
@@ -1474,7 +1474,7 @@ SPEC CHECKSUMS:
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
-  react-native-blur: 50c9feabacbc5f49b61337ebc32192c6be7ec3c3
+  react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f

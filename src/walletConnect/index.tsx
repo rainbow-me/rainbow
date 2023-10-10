@@ -58,6 +58,8 @@ const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
 ).map(({ id }) => id);
 
+const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
+
 const T = lang.l.walletconnect;
 
 /**
@@ -462,8 +464,8 @@ export async function onSessionProposal(
       optionalNamespaces,
     } = proposal.params;
 
-    const requiredChains = requiredNamespaces.eip155?.chains || [];
-    const optionalChains = optionalNamespaces.eip155?.chains || [];
+    const requiredChains = requiredNamespaces?.eip155?.chains || [];
+    const optionalChains = optionalNamespaces?.eip155?.chains || [];
 
     const chains = uniq([...requiredChains, ...optionalChains]);
 
@@ -502,7 +504,9 @@ export async function onSessionProposal(
           );
 
           // we only support EVM chains rn
-          const requiredNamespace = requiredNamespaces.eip155;
+          const supportedEvents =
+            requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
+
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
           const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(
             id => `eip155:${id}`
@@ -516,7 +520,7 @@ export async function onSessionProposal(
                   ...SUPPORTED_SIGNING_METHODS,
                   ...SUPPORTED_TRANSACTION_METHODS,
                 ],
-                events: requiredNamespace.events,
+                events: supportedEvents,
                 accounts: caip2ChainIds.map(id => `${id}:${accountAddress}`),
               },
             },
@@ -566,7 +570,7 @@ export async function onSessionProposal(
 
               showErrorSheet({
                 title: lang.t(T.errors.generic_title),
-                body: `${lang.t(T.errors.generic_error)} \n \n ${
+                body: `${lang.t(T.errors.namespaces_invalid)} \n \n ${
                   namespaces.error.message
                 }`,
                 sheetHeight: 400,
@@ -617,6 +621,7 @@ export async function onSessionProposal(
   }
 }
 
+// For WC v2
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
@@ -688,7 +693,8 @@ export async function onSessionRequest(
 
       const selectedWallet = findWalletWithAccount(allWallets, address);
 
-      if (!selectedWallet || selectedWallet?.type === WalletTypes.readOnly) {
+      const isReadOnly = selectedWallet?.type === WalletTypes.readOnly;
+      if (!selectedWallet || isReadOnly) {
         logger.error(
           new RainbowError(
             `WC v2: session_request exited, selectedWallet was falsy or read only`
@@ -698,6 +704,10 @@ export async function onSessionRequest(
           }
         );
 
+        const errorMessageBody = isReadOnly
+          ? lang.t(T.errors.read_only_wallet_on_signing_method)
+          : lang.t(T.errors.generic_error);
+
         await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Wallet is read-only`),
@@ -705,7 +715,7 @@ export async function onSessionRequest(
 
         showErrorSheet({
           title: lang.t(T.errors.generic_title),
-          body: lang.t(T.errors.request_invalid),
+          body: errorMessageBody,
           sheetHeight: 270,
           onClose: maybeGoBackAndClearHasPendingRedirect,
         });

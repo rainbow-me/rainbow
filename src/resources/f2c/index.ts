@@ -1,5 +1,4 @@
 import { create } from 'gretchen';
-import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 import qs from 'query-string';
 
 import { IS_PROD } from '@/env';
@@ -36,18 +35,6 @@ export function ratioGetClientSession({
         signingNetwork: 'ETHEREUM',
       },
     }
-  ).json();
-}
-
-export function ratioGetUserActivityItem({
-  userId,
-  orderId,
-}: {
-  userId: string;
-  orderId: string;
-}) {
-  return gretch<ActivityItem, ErrorResponse>(
-    `/v1/providers/ratio/users/${userId}/activity/${orderId}`
   ).json();
 }
 
