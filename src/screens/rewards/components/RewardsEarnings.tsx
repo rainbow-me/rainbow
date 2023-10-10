@@ -119,7 +119,7 @@ export const RewardsEarnings: React.FC<Props> = ({
 
   return (
     <AccentColorProvider color={color}>
-      <Box paddingBottom="12px">
+      <Box paddingBottom="36px">
         <ButtonPressAnimation
           onPress={navigateToTimingExplainer}
           scaleTo={0.96}

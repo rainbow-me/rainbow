@@ -54,6 +54,7 @@ export const RewardsSheet: React.FC = () => {
           additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
           limitScrollViewContent
           sheetHeightRatio={0.67}
+          sheetHeight={555}
           contentHeight={height - top}
           scrollEnabled={false}
         >

@@ -19,7 +19,6 @@ import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
-import { STATS_TITLES } from '@/screens/rewards/constants';
 
 const getPositionChangeSymbol = (positionChange: number) => {
   if (positionChange > 0) {
@@ -28,7 +27,7 @@ const getPositionChangeSymbol = (positionChange: number) => {
   if (positionChange < 0) {
     return '􁘳';
   }
-  return '􁘶';
+  return '􀐚';
 };
 
 const getPositionChangeColor = (
@@ -59,8 +58,8 @@ type Props = {
 export const RewardsStats: React.FC<Props> = ({
   assetPrice,
   actions,
-  position,
-  positionChange,
+  position = 0,
+  positionChange = 0,
   color,
 }) => {
   const { navigate } = useNavigation();
@@ -89,65 +88,53 @@ export const RewardsStats: React.FC<Props> = ({
         return () => {};
     }
   };
+
   return (
-    <Box paddingBottom="12px">
-      <Stack space="8px">
+    <Box width="full" paddingBottom="12px">
+      <Stack space="16px">
         <Text size="20pt" color="label" weight="heavy">
           {i18n.t(i18n.l.rewards.my_stats)}
         </Text>
-        <Bleed horizontal="20px">
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingTop: 8,
-              paddingHorizontal: 20,
-              paddingBottom: 24,
-            }}
-            horizontal
-          >
-            <Inline space="12px">
-              <RewardsStatsCard
-                key="Position"
-                title={i18n.t(i18n.l.rewards.position)}
-                value={`#${position}`}
-                secondaryValue={Math.abs(positionChange).toString()}
-                secondaryValueColor={getPositionChangeColor(positionChange, {
-                  up: 'green',
-                  down: { custom: color },
-                  noChange: 'labelQuaternary',
-                })}
-                secondaryValueIcon={getPositionChangeSymbol(positionChange)}
-                onPress={navigateToPositionExplainer}
-              />
-              {actions.map(action => {
-                const value =
-                  assetPrice !== undefined
-                    ? convertAmountAndPriceToNativeDisplay(
-                        action.amount.token,
-                        assetPrice,
-                        nativeCurrency
-                      ).display
-                    : convertAmountToNativeDisplay(action.amount.usd, 'USD');
 
-                return (
-                  <RewardsStatsCard
-                    key={action.type}
-                    title={STATS_TITLES[action.type]}
-                    value={value}
-                    secondaryValue={i18n.t(i18n.l.rewards.percent, {
-                      percent: action.rewardPercent,
-                    })}
-                    secondaryValueIcon="􀐚"
-                    secondaryValueColor={{
-                      custom: color,
-                    }}
-                    onPress={getPressHandlerForType(action.type)}
-                  />
-                );
+        <Box
+          alignItems="flex-start"
+          flexDirection="row"
+          justifyContent="flex-start"
+          flexGrow={1}
+          style={{ gap: 12 }}
+        >
+          <Box flexGrow={1}>
+            <RewardsStatsCard
+              key="Swapped"
+              title={i18n.t(i18n.l.rewards.swapped)}
+              value={`$${position}`}
+              secondaryValue={`${Math.abs(positionChange).toString()}% reward`}
+              secondaryValueColor={getPositionChangeColor(positionChange, {
+                up: { custom: color },
+                down: { custom: color },
+                noChange: { custom: color },
               })}
-            </Inline>
-          </ScrollView>
-        </Bleed>
+              secondaryValueIcon={getPositionChangeSymbol(positionChange)}
+              onPress={navigateToPositionExplainer}
+            />
+          </Box>
+
+          <Box flexGrow={1}>
+            <RewardsStatsCard
+              key="Bridged"
+              title={i18n.t(i18n.l.rewards.bridged)}
+              value={`$${position}`}
+              secondaryValue={`${Math.abs(positionChange).toString()}% reward`}
+              secondaryValueColor={getPositionChangeColor(positionChange, {
+                up: { custom: color },
+                down: { custom: color },
+                noChange: { custom: color },
+              })}
+              secondaryValueIcon={getPositionChangeSymbol(positionChange)}
+              onPress={navigateToPositionExplainer}
+            />
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

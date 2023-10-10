@@ -22,52 +22,13 @@ type Props = {
 
 export const RewardsContent: React.FC<Props> = ({
   assetPrice,
-  // data,
+  data,
   isLoading,
   isLoadingError,
 }) => {
   if (isLoading) {
     return <RewardsFakeContent />;
   }
-
-  const data = {
-    rewards: {
-      meta: {
-        title: 'Optimism Rewards',
-        color: '#FFCC00',
-        distribution: {
-          next: 1634179200,
-          left: 0,
-          total: 0,
-        },
-        token: {
-          asset: {
-            iconURL:
-              'https://assets.coingecko.com/coins/images/12504/small/optimism.png?1620935048',
-            symbol: 'OPT',
-          },
-        },
-      },
-      stats: {
-        actions: [],
-        position: {
-          current: 1,
-          change: {
-            h24: 0,
-          },
-        },
-      },
-      earnings: {
-        pending: {
-          token: 0,
-        },
-        total: {
-          token: 0,
-          usd: 0,
-        },
-      },
-    },
-  };
 
   if (isLoadingError || !data || !data.rewards) {
     return (
@@ -79,13 +40,15 @@ export const RewardsContent: React.FC<Props> = ({
     );
   }
 
+  console.log(JSON.stringify(data, null, 2));
+
   return (
     <Box height="full">
       <RewardsTitle text={data.rewards.meta.title} />
       <Box paddingBottom="20px">
         <InfoAlert
-          title="Earn OP for swapping or bridging"
-          description="Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
+          title={i18n.t(i18n.l.rewards.info.title)}
+          description={i18n.t(i18n.l.rewards.info.description)}
           rightIcon={
             <Text size="20pt" color={{ custom: data.rewards.meta.color }}>
               􀫸
@@ -104,20 +67,10 @@ export const RewardsContent: React.FC<Props> = ({
           totalEarnings={data.rewards.earnings.total}
         />
       )}
-      <RewardsClaimed
-        assetPrice={assetPrice}
-        color={data.rewards.meta.color}
-        nextDistributionTimestamp={data.rewards.meta.distribution.next}
-        remainingRewards={data.rewards.meta.distribution.left}
-        tokenSymbol={data.rewards.meta.token.asset.symbol}
-        totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
-      />
       <RewardsStats
         actions={data.rewards.stats?.actions ?? []}
         assetPrice={assetPrice}
         color={data.rewards.meta.color}
-        position={data.rewards.stats?.position.current ?? 1}
-        positionChange={data.rewards.stats?.position.change.h24 ?? 0}
       />
     </Box>
   );

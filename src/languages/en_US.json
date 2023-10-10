@@ -1481,10 +1481,14 @@
       "error_text": "Please check your internet connection and check back later.",
       "ended_title": "Program ended",
       "ended_text": "Stay tuned for what we have in store for you next!",
+      "info": {
+        "title": "Earn OP for swapping and bridging",
+        "description": "Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
+      },
       "op": {
         "airdrop_timing": {
-          "title": "Airdrops Every Week",
-          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet."
+          "title": "Airdrops Every Month",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each month, the rewards you’ve earned will be airdropped to your wallet."
         },
         "amount_distributed": {
           "title": "67,850 OP Every Week",

@@ -39,6 +39,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
     contentHeight,
     deferredHeight,
     deviceHeight,
+    sheetHeight,
     sheetHeightRatio, // Default to 2/3 of the screen
   }) => ({
     ...(deferredHeight || IS_IOS
@@ -59,7 +60,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
     overflow: 'hidden',
     position: 'absolute',
     right: 0,
-    height: contentHeight * sheetHeightRatio, // Set height to a ratio of the device height
+    height: sheetHeight ? sheetHeight : contentHeight * sheetHeightRatio, // Set height to a ratio of the device height
   })
 );
 
@@ -91,14 +92,6 @@ const ContentWrapper = styled.View({
   backgroundColor: ({ backgroundColor }) => backgroundColor,
 });
 
-const Whitespace = styled.View({
-  backgroundColor: ({ backgroundColor }) => backgroundColor,
-  flex: 1,
-  height: ({ deviceHeight, sheetHeightRatio = 0.67 }) =>
-    deviceHeight * sheetHeightRatio, // Set height to a ratio of the device height
-  zIndex: -1,
-});
-
 export default forwardRef(function SlackSheet(
   {
     additionalTopPadding = false,
@@ -121,6 +114,7 @@ export default forwardRef(function SlackSheet(
     removeClippedSubviews = false,
     yPosition: givenYPosition,
     onDismiss,
+    sheetHeight,
     sheetHeightRatio = 1, // Default to full height of screen
     ...props
   },
@@ -194,6 +188,7 @@ export default forwardRef(function SlackSheet(
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
         sheetHeightRatio={sheetHeightRatio}
+        sheetHeight={sheetHeight}
         testID={testID}
         {...props}
       >

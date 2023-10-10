@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react';
-import { Box, Space } from '@/design-system';
+import { View } from 'react-native';
+import { Box, Space, globalColors } from '@/design-system';
 
 type Props = {
   paddingVertical?: Space;
@@ -12,14 +13,33 @@ export function RewardsSectionCard({
   paddingHorizontal = '20px',
 }: PropsWithChildren<Props>) {
   return (
-    <Box
-      background="surfaceSecondaryElevated"
-      borderRadius={18}
-      paddingVertical={paddingVertical}
-      paddingHorizontal={paddingHorizontal}
-      shadow="12px"
+    <View
+      style={{
+        shadowColor: globalColors.grey100,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.02,
+        shadowRadius: 3,
+      }}
     >
-      {children}
-    </Box>
+      <View
+        style={{
+          shadowColor: globalColors.grey100,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+        }}
+      >
+        <Box
+          background="surfaceSecondaryElevated"
+          flexDirection="column"
+          borderRadius={18}
+          width="full"
+          paddingVertical={paddingVertical}
+          paddingHorizontal={paddingHorizontal}
+        >
+          {children}
+        </Box>
+      </View>
+    </View>
   );
 }
