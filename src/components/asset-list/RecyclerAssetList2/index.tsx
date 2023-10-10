@@ -144,7 +144,7 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
+        outputRange: [0, 0, 1],
       }),
     }),
     [position, yOffset]
