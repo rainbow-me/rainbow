@@ -43,28 +43,6 @@ fragment baseQuery on Rewards {
     }
     color
   }
-  leaderboard {
-    accounts {
-      address
-      ens
-      avatarURL
-      earnings {
-        base {
-          ...amount
-        }
-        bonus {
-          ...amount
-        }
-      }
-    }
-    updatedAt
-  }
-}
-
-query getRewardsLeaderboard {
-  rewards(project: OPTIMISM) {
-    ...baseQuery
-  }
 }
 
 query getRewardsDataForWallet($address: String!) {
@@ -84,15 +62,14 @@ query getRewardsDataForWallet($address: String!) {
       pending {
         ...amount
       }
+      daily {
+        day
+        usd
+        token
+      }
       updatedAt
     }
     stats {
-      position {
-        current
-        change {
-          h24
-        }
-      }
       actions {
         type
         amount {
