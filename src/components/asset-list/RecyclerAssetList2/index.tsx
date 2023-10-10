@@ -129,13 +129,22 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
+        outputRange: [0, 1, 1],
       }),
       shadowOpacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
+      transform: [
+        {
+          translateY: position!.interpolate({
+            extrapolate: 'clamp',
+            inputRange: [0, yOffset, yOffset + 38],
+            outputRange: [0, 24, 0],
+          }),
+        },
+      ],
     }),
     [isDarkMode, position, yOffset]
   );
@@ -144,7 +153,7 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
+        outputRange: [0, 0, 1],
       }),
     }),
     [position, yOffset]
