@@ -77,6 +77,7 @@ function SwapActionButton({
       onPress={goToSwap}
       testID="swap"
       weight={weight}
+      truncate
     />
   );
 }
