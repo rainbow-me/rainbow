@@ -443,7 +443,7 @@ export default function FeesPanel({
               color={{ custom: colors.red }}
               size="16px / 22px (Deprecated)"
               weight="heavy"
-              numberOfLines={2}
+              numberOfLines={1}
             >
               {errorPrefix}
               <Text
