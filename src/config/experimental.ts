@@ -42,7 +42,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [PROFILES]: { settings: true, value: true },
   [REVIEW_ANDROID]: { settings: false, value: false },
   [CROSSCHAIN_SWAPS]: { settings: true, value: true },
-  [OP_REWARDS]: { settings: true, value: true },
+  [OP_REWARDS]: { settings: true, value: false },
   [LOG_PUSH]: { settings: true, value: false },
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
