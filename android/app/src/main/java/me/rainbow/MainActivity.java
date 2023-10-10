@@ -10,7 +10,6 @@ import io.branch.rnbranch.*;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.Internals.*;
 import android.webkit.WebView;
-import com.facebook.react.ReactActivityDelegate;
 import com.zoontek.rnbootsplash.RNBootSplash;
 
 import android.content.Intent;
@@ -19,7 +18,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
+      super.onCreate(null);
       WebView.setWebContentsDebuggingEnabled(false);
   }
 

@@ -247,11 +247,6 @@
       <!-- Branch init -->
       <meta-data android:name="io.branch.sdk.BranchKey" android:value="${BRANCH_KEY}" />
       <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
-      <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
-        <intent-filter>
-          <action android:name="com.android.vending.INSTALL_REFERRER" />
-        </intent-filter>
-      </receiver>
     </application>
 
 </manifest>

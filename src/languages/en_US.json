@@ -2262,6 +2262,8 @@
         "pairing_timeout": "This session timed-out before a connection could be established. This is usually due to a network error. Please try again.",
         "pairing_unsupported_methods": "The dapp requested wallet RPC methods that are unsupported by Rainbow.",
         "pairing_unsupported_networks": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "read_only_wallet_on_signing_method": "It looks like you're using a read-only wallet, which is not allowed for this request.",
+        "namespaces_invalid": "There was an issue with the namespaces requested by the dapp. Please try again or contact Rainbow and/or dapp support teams.",
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
         "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
