@@ -1457,10 +1457,6 @@
       "pending_earnings": "Pending Earnings",
       "next_airdrop": "Next Airdrop",
       "last_airdrop": "Last Airdrop",
-      "no_stats": {
-        "title": "No Stats",
-        "description": "You don't have any stats yet. Start swapping and bridging to earn OP rewards."
-      },
       "my_stats": "My Stats",
       "swapped": "Swapped",
       "bridged": "Bridged",

@@ -35,26 +35,15 @@ const AndroidBackground = styled.View({
 const Container = styled(Centered).attrs({ direction: 'column' })(
   ({
     backgroundColor,
-    additionalTopPadding,
     borderRadius,
     contentHeight,
-    deferredHeight,
-    deviceHeight,
     sheetHeight,
     sheetHeightRatio, // Default to 2/3 of the screen
   }) => ({
-    ...(deferredHeight || IS_IOS
-      ? {}
-      : {
-          top:
-            typeof additionalTopPadding === 'number'
-              ? additionalTopPadding
-              : contentHeight && additionalTopPadding
-              ? deviceHeight - contentHeight
-              : 0,
-        }),
     borderTopLeftRadius: borderRadius,
     borderTopRightRadius: borderRadius,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
     backgroundColor: backgroundColor,
     bottom: 0,
     left: 0,
