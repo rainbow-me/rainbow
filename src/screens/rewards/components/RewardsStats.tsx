@@ -1,15 +1,13 @@
 import React from 'react';
-import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { ScrollView } from 'react-native';
 import { RewardsStatsCard } from './RewardsStatsCard';
-import { capitalize } from 'lodash';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import {
   RewardStatsAction,
   RewardStatsActionType,
 } from '@/graphql/__generated__/metadata';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
@@ -17,40 +15,11 @@ import {
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
-import { TextColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
-
-const getPositionChangeSymbol = (positionChange: number) => {
-  if (positionChange > 0) {
-    return '􀑁';
-  }
-  if (positionChange < 0) {
-    return '􁘳';
-  }
-  return '􀐚';
-};
-
-const getPositionChangeColor = (
-  positionChange: number,
-  colors: {
-    up: TextColor | CustomColor;
-    down: TextColor | CustomColor;
-    noChange: TextColor | CustomColor;
-  }
-): TextColor | CustomColor => {
-  if (positionChange > 0) {
-    return colors.up;
-  }
-  if (positionChange < 0) {
-    return colors.down;
-  }
-  return colors.noChange;
-};
+import { STATS_TITLES } from '@/screens/rewards/constants';
+import { noop } from 'lodash';
 
 type Props = {
   assetPrice?: number;
-  position: number;
-  positionChange: number;
   actions: RewardStatsAction[];
   color: string;
 };
@@ -58,20 +27,14 @@ type Props = {
 export const RewardsStats: React.FC<Props> = ({
   assetPrice,
   actions,
-  position = 0,
-  positionChange = 0,
   color,
 }) => {
   const { navigate } = useNavigation();
+
   const nativeCurrency = useSelector(
     (state: AppState) => state.settings.nativeCurrency
   );
-  const navigateToPositionExplainer = () => {
-    analyticsV2.track(analyticsV2.event.rewardsPressedPositionCard, {
-      position,
-    });
-    navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_position' });
-  };
+
   const getPressHandlerForType = (type: RewardStatsActionType) => {
     switch (type) {
       case RewardStatsActionType.Bridge:
@@ -85,7 +48,7 @@ export const RewardsStats: React.FC<Props> = ({
           navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
         };
       default:
-        return () => {};
+        return noop;
     }
   };
 
@@ -104,35 +67,32 @@ export const RewardsStats: React.FC<Props> = ({
           style={{ gap: 12 }}
         >
           <Box flexGrow={1}>
-            <RewardsStatsCard
-              key="Swapped"
-              title={i18n.t(i18n.l.rewards.swapped)}
-              value={`$${position}`}
-              secondaryValue={`${Math.abs(positionChange).toString()}% reward`}
-              secondaryValueColor={getPositionChangeColor(positionChange, {
-                up: { custom: color },
-                down: { custom: color },
-                noChange: { custom: color },
-              })}
-              secondaryValueIcon={getPositionChangeSymbol(positionChange)}
-              onPress={navigateToPositionExplainer}
-            />
-          </Box>
+            {actions.map(action => {
+              const value =
+                assetPrice !== undefined
+                  ? convertAmountAndPriceToNativeDisplay(
+                      action.amount.token,
+                      assetPrice,
+                      nativeCurrency
+                    ).display
+                  : convertAmountToNativeDisplay(action.amount.usd, 'USD');
 
-          <Box flexGrow={1}>
-            <RewardsStatsCard
-              key="Bridged"
-              title={i18n.t(i18n.l.rewards.bridged)}
-              value={`$${position}`}
-              secondaryValue={`${Math.abs(positionChange).toString()}% reward`}
-              secondaryValueColor={getPositionChangeColor(positionChange, {
-                up: { custom: color },
-                down: { custom: color },
-                noChange: { custom: color },
-              })}
-              secondaryValueIcon={getPositionChangeSymbol(positionChange)}
-              onPress={navigateToPositionExplainer}
-            />
+              return (
+                <RewardsStatsCard
+                  key={action.type}
+                  title={STATS_TITLES[action.type]}
+                  value={value}
+                  secondaryValue={i18n.t(i18n.l.rewards.percent, {
+                    percent: action.rewardPercent,
+                  })}
+                  secondaryValueIcon="􀐚"
+                  secondaryValueColor={{
+                    custom: color,
+                  }}
+                  onPress={getPressHandlerForType(action.type)}
+                />
+              );
+            })}
           </Box>
         </Box>
       </Stack>

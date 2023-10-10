@@ -25,6 +25,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import TouchableBackdrop from '../TouchableBackdrop';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,
@@ -180,6 +181,8 @@ export default forwardRef(function SlackSheet(
       {IS_ANDROID ? (
         <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
       ) : null}
+      <TouchableBackdrop onPress={goBack} />
+
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}

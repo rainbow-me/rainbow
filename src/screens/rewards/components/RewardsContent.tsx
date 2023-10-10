@@ -1,11 +1,8 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
 import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
-import { RewardsClaimed } from '@/screens/rewards/components/RewardsClaimed';
 import { GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
-import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
-import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
@@ -40,8 +37,6 @@ export const RewardsContent: React.FC<Props> = ({
     );
   }
 
-  console.log(JSON.stringify(data, null, 2));
-
   return (
     <Box height="full">
       <RewardsTitle text={data.rewards.meta.title} />
@@ -67,11 +62,13 @@ export const RewardsContent: React.FC<Props> = ({
           totalEarnings={data.rewards.earnings.total}
         />
       )}
-      <RewardsStats
-        actions={data.rewards.stats?.actions ?? []}
-        assetPrice={assetPrice}
-        color={data.rewards.meta.color}
-      />
+      {data.rewards.stats && (
+        <RewardsStats
+          actions={data.rewards.stats?.actions ?? []}
+          assetPrice={assetPrice}
+          color={data.rewards.meta.color}
+        />
+      )}
     </Box>
   );
 };
