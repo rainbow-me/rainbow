@@ -14,6 +14,7 @@ import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -99,6 +100,8 @@ const ActivityList = ({
   sections,
   transactionsCount,
 }) => {
+  const { setScrollToTopRef } = useSectionListScrollToTopContext();
+
   const pendingTransactionsCount = useMemo(() => {
     let currentPendingTransactionsCount = 0;
     const pendingTxSection = sections[requests?.length ? 1 : 0];
@@ -114,6 +117,11 @@ const ActivityList = ({
     ({ section }) => renderSectionHeader({ colors, section }),
     [colors]
   );
+
+  const handleListRef = ref => {
+    if (!ref) return;
+    setScrollToTopRef(ref);
+  };
 
   if (network === networkTypes.mainnet || sections.length) {
     if (isEmpty && !isLoading) {
@@ -140,6 +148,7 @@ const ActivityList = ({
               />
             )
           }
+          ref={handleListRef}
           ListHeaderComponent={header}
           alwaysBounceVertical={false}
           contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}

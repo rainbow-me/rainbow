@@ -41,6 +41,9 @@ import RecyclerListViewScrollToTopProvider, {
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
 import { IS_IOS } from '@/env';
+import SectionListScrollToTopProvider, {
+  useSectionListScrollToTopContext,
+} from './SectionListScrollToTopContext';
 
 const NUMBER_OF_TABS = 3;
 
@@ -76,7 +79,8 @@ const TabBar = ({
   const tabPillStartPosition = (tabWidth - 72) / 2;
 
   const { accentColor } = useAccountAccentColor();
-  const { scrollToTop } = useRecyclerListViewScrollToTopContext();
+  const recyclerList = useRecyclerListViewScrollToTopContext();
+  const sectionList = useSectionListScrollToTopContext();
   // ////////////////////////////////////////////////////
   // Colors
 
@@ -243,7 +247,12 @@ const TabBar = ({
                       return;
                     }
                   } else if (isFocused && options.tabBarIcon === 'tabHome') {
-                    scrollToTop?.();
+                    recyclerList.scrollToTop?.();
+                  } else if (
+                    isFocused &&
+                    options.tabBarIcon === 'tabActivity'
+                  ) {
+                    sectionList.scrollToTop?.();
                   }
 
                   setLastPress(time);
@@ -254,7 +263,6 @@ const TabBar = ({
                     type: 'tabLongPress',
                     target: route.key,
                   });
-                  // animateTabs(index);
 
                   if (options.tabBarIcon === 'tabHome') {
                     navigation.navigate(Routes.CHANGE_WALLET_SHEET);
@@ -323,54 +331,57 @@ export function SwipeNavigator() {
 
   return (
     <FlexItem>
-      <RecyclerListViewScrollToTopProvider>
-        <ScrollPositionContext.Provider>
-          <Swipe.Navigator
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={Routes.WALLET_SCREEN}
-            swipeEnabled={!isCoinListEdited}
-            tabBar={props => (
-              <TabBar
-                {...props}
-                isTap={isTap}
-                setIsTap={setIsTap}
-                lastPress={lastPress}
-                setLastPress={setLastPress}
+      <SectionListScrollToTopProvider>
+        <RecyclerListViewScrollToTopProvider>
+          <ScrollPositionContext.Provider>
+            <Swipe.Navigator
+              initialLayout={deviceUtils.dimensions}
+              initialRouteName={Routes.WALLET_SCREEN}
+              swipeEnabled={!isCoinListEdited}
+              tabBar={props => (
+                <TabBar
+                  {...props}
+                  isTap={isTap}
+                  setIsTap={setIsTap}
+                  lastPress={lastPress}
+                  setLastPress={setLastPress}
+                />
+              )}
+              tabBarPosition="bottom"
+            >
+              {/* <Swipe.Screen
+                  component={QRScannerScreen}
+                  name={Routes.QR_SCANNER_SCREEN}
+                  options={{
+                    tabBarIcon: 'none',
+                  }}
+                /> */}
+              <Swipe.Screen
+                component={ProfileScreen}
+                name={Routes.PROFILE_SCREEN}
+                options={{ tabBarIcon: 'tabActivity' }}
               />
-            )}
-            tabBarPosition="bottom"
-          >
-            {/* <Swipe.Screen
-                component={QRScannerScreen}
-                name={Routes.QR_SCANNER_SCREEN}
+              <Swipe.Screen
+                component={WalletScreen}
+                name={Routes.WALLET_SCREEN}
                 options={{
-                  tabBarIcon: 'none',
+                  tabBarIcon: 'tabHome',
+                  transitionSpec: {
+                    open: config,
+                    close: config,
+                  },
                 }}
-              /> */}
-            <Swipe.Screen
-              component={ProfileScreen}
-              name={Routes.PROFILE_SCREEN}
-              options={{ tabBarIcon: 'tabActivity' }}
-            />
-            <Swipe.Screen
-              component={WalletScreen}
-              name={Routes.WALLET_SCREEN}
-              options={{
-                tabBarIcon: 'tabHome',
-                transitionSpec: {
-                  open: config,
-                  close: config,
-                },
-              }}
-            />
-            <Swipe.Screen
-              component={DiscoverScreen}
-              name={Routes.DISCOVER_SCREEN}
-              options={{ tabBarIcon: 'tabDiscover' }}
-            />
-          </Swipe.Navigator>
-        </ScrollPositionContext.Provider>
-      </RecyclerListViewScrollToTopProvider>
+              />
+              <Swipe.Screen
+                component={DiscoverScreen}
+                name={Routes.DISCOVER_SCREEN}
+                options={{ tabBarIcon: 'tabDiscover' }}
+              />
+            </Swipe.Navigator>
+          </ScrollPositionContext.Provider>
+        </RecyclerListViewScrollToTopProvider>
+      </SectionListScrollToTopProvider>
+
       <TestnetToast network={network} web3Provider={web3Provider} />
     </FlexItem>
   );
