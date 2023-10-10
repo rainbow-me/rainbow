@@ -22,10 +22,8 @@ import {
 } from '@/entities';
 import appEvents from '@/handlers/appEvents';
 import {
-  getAccountAssetsData,
   getLocalPendingTransactions,
   getLocalTransactions,
-  saveAccountAssetsData,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
@@ -64,8 +62,6 @@ const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
-export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
-  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
@@ -143,7 +139,6 @@ type DataAction =
   | DataLoadTransactionsRequestAction
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
-  | DataLoadAccountAssetsDataRequestAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
   | DataUpdatePendingTransactionSuccessAction
@@ -194,13 +189,6 @@ interface DataLoadTransactionSuccessAction {
  */
 interface DataLoadTransactionsFailureAction {
   type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
-}
-
-/**
- * The action to set `isLoadingAssets` to `true`.
- */
-interface DataLoadAccountAssetsDataRequestAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
 }
 
 /**
@@ -357,7 +345,6 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
     | DataLoadAccountAssetsDataFailureAction
     | DataLoadTransactionSuccessAction
@@ -368,26 +355,6 @@ export const dataLoadState = () => async (
   getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
-  try {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
-    const accountAssetsData = await getAccountAssetsData(
-      accountAddress,
-      network
-    );
-
-    const isCurrentAccountAddress =
-      accountAddress === getState().settings.accountAddress;
-    if (!isCurrentAccountAddress) return;
-
-    if (!isEmpty(accountAssetsData)) {
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
-    }
-  } catch (error) {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
-  }
   try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
@@ -448,7 +415,6 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
     payload: updatedAssetsData,
     type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
   });
-  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
 /**
@@ -1218,11 +1184,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         isLoadingTransactions: false,
-      };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST:
-      return {
-        ...state,
-        isLoadingAssets: true,
       };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
