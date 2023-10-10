@@ -126,7 +126,7 @@ export const RewardsEarnings: React.FC<Props> = ({
           overflowMargin={50}
         >
           <RewardsSectionCard>
-            <Columns>
+            <Columns space="32px">
               <Stack space="32px" alignHorizontal="left">
                 <Stack space="12px">
                   <Text color="labelSecondary" size="15pt" weight="semibold">

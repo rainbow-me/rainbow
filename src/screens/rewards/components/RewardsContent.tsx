@@ -80,14 +80,14 @@ export const RewardsContent: React.FC<Props> = ({
   }
 
   return (
-    <>
+    <Box height="full">
       <RewardsTitle text={data.rewards.meta.title} />
       <Box paddingBottom="20px">
         <InfoAlert
           title="Earn OP for swapping or bridging"
           description="Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
           rightIcon={
-            <Text size="20pt" color={{ custom: colors.optimismRed }}>
+            <Text size="20pt" color={{ custom: data.rewards.meta.color }}>
               􀫸
             </Text>
           }
@@ -119,6 +119,6 @@ export const RewardsContent: React.FC<Props> = ({
         position={data.rewards.stats?.position.current ?? 1}
         positionChange={data.rewards.stats?.position.change.h24 ?? 0}
       />
-    </>
+    </Box>
   );
 };

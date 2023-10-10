@@ -20,26 +20,18 @@ const InfoAlert: React.FC<InfoAlertProps> = ({
   return (
     <Box
       style={{
-        display: 'flex',
-        flexDirection: 'row',
         gap: 12,
-        alignSelf: 'stretch',
         borderWidth: 2,
         borderColor: colors.separatorTertiary,
       }}
+      flexDirection="row"
       borderRadius={20}
-      justifyContent="center"
       alignItems="center"
-      paddingHorizontal="16px"
-      paddingVertical="20px"
+      justifyContent="flex-start"
+      paddingHorizontal="20px"
+      paddingVertical="16px"
     >
-      <Box
-        style={{ display: 'flex' }}
-        width={{ custom: 20 }}
-        height={{ custom: 20 }}
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      <Box width={{ custom: 20 }} height={{ custom: 20 }} alignItems="center">
         {rightIcon ? (
           rightIcon
         ) : (
@@ -51,16 +43,11 @@ const InfoAlert: React.FC<InfoAlertProps> = ({
           />
         )}
       </Box>
-      <Box style={{ display: 'flex', gap: 10 }} flexDirection="column">
+      <Box style={{ gap: 10 }} flexDirection="column">
         <Text color="label" size="15pt" weight="heavy">
           {title}
         </Text>
-        <Text
-          color="labelTertiary"
-          size="13pt"
-          weight="medium"
-          style={{ letterSpacing: '0.54px' }}
-        >
+        <Text color="labelTertiary" size="13pt" weight="medium">
           {description}
         </Text>
       </Box>
