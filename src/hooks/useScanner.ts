@@ -89,7 +89,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       analytics.track('Scanned Rainbow profile url');
 
       const urlObj = new URL(url);
-      const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
+      const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
       const isValid = await checkIsValidAddressOrDomain(addressOrENS);
       if (isValid) {
         const ensName = isENSAddressFormat(addressOrENS)
