@@ -395,29 +395,6 @@ export const dataResetState = () => (
 };
 
 /**
- * Updates account asset data in state for a specific asset and saves to account
- * local storage.
- *
- * @param assetData The updated asset, which replaces or adds to the current
- * account's asset data based on it's `uniqueId`.
- */
-export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  const { accountAssetsData } = getState().data;
-  const updatedAssetsData = {
-    ...accountAssetsData,
-    [assetData.uniqueId]: assetData,
-  };
-  dispatch({
-    payload: updatedAssetsData,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
-};
-
-/**
  * Checks whether or not metadata received from Zerion is valid.
  *
  * @param message The message received from Zerion.
