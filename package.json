@@ -3,6 +3,7 @@
   "version": "1.9.6-1",
   "private": true,
   "scripts": {
+    "eas-build-post-install": "./scripts/postinstall.sh",
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
