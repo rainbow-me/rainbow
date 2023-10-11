@@ -1495,11 +1495,11 @@
           "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
         },
         "bridge": {
-          "title": "Earn from Bridging",
+          "title": "Earn %{percent}% on Bridging",
           "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
         },
         "swap": {
-          "title": "Earn from Swaps",
+          "title": "Earn %{percent}% on Swaps",
           "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
         },
         "position": {

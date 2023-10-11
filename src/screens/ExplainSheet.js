@@ -423,7 +423,9 @@ export const explainers = (params, colors) => ({
   },
   op_rewards_bridge: {
     emoji: '🌉',
-    title: i18n.t(i18n.l.rewards.op.bridge.title),
+    title: i18n.t(i18n.l.rewards.op.bridge.title, {
+      percent: params?.percent || 0,
+    }),
     text: i18n.t(i18n.l.rewards.op.bridge.text, {
       percent: params?.percent || 0,
     }),
@@ -431,7 +433,9 @@ export const explainers = (params, colors) => ({
   },
   op_rewards_swap: {
     emoji: '🔀',
-    title: i18n.t(i18n.l.rewards.op.swap.title),
+    title: i18n.t(i18n.l.rewards.op.swap.title, {
+      percent: params?.percent || 0,
+    }),
     text: i18n.t(i18n.l.rewards.op.swap.text, {
       percent: params?.percent || 0,
     }),
