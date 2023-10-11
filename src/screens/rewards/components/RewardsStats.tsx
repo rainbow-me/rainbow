@@ -6,12 +6,15 @@ import {
   RewardStatsAction,
   RewardStatsActionType,
 } from '@/graphql/__generated__/metadata';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { analyticsV2 } from '@/analytics';
 
 type Props = {
   assetPrice?: number;
@@ -24,6 +27,7 @@ export const RewardsStats: React.FC<Props> = ({
   actions,
   color,
 }) => {
+  const { navigate } = useNavigation();
   const nativeCurrency = useSelector(
     (state: AppState) => state.settings.nativeCurrency
   );
@@ -35,6 +39,23 @@ export const RewardsStats: React.FC<Props> = ({
   const bridgeData = actions.find(
     action => action.type === RewardStatsActionType.Bridge
   );
+
+  const getPressHandlerForType = (type: RewardStatsActionType) => {
+    switch (type) {
+      case RewardStatsActionType.Bridge:
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
+          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
+        };
+      case RewardStatsActionType.Swap:
+        return () => {
+          analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
+          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
+        };
+      default:
+        return () => {};
+    }
+  };
 
   const getSwapsValue = useMemo(() => {
     if (assetPrice) {
@@ -94,6 +115,7 @@ export const RewardsStats: React.FC<Props> = ({
               }% reward`}
               secondaryValueColor={{ custom: color }}
               secondaryValueIcon={'􀐚'}
+              onPress={getPressHandlerForType(RewardStatsActionType.Swap)}
             />
           </Box>
 
@@ -107,6 +129,7 @@ export const RewardsStats: React.FC<Props> = ({
               }% reward`}
               secondaryValueColor={{ custom: color }}
               secondaryValueIcon={'􀐚'}
+              onPress={getPressHandlerForType(RewardStatsActionType.Bridge)}
             />
           </Box>
         </Box>
