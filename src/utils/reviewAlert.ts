@@ -12,16 +12,38 @@ export const REVIEW_ASKED_KEY = 'AppStoreReviewAsked';
 let reviewDisplayedInTheSession = false;
 const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
 
-export default async function maybeReviewAlert() {
+export const enum ReviewPromptAction {
+  FiatToCryptoPurchase = 'FiatToCryptoPurchase',
+  DappConnections = 'DappConnections',
+  NumberOfSwaps = 'NumberOfSwaps',
+  BridgeToL2 = 'BridgeToL2',
+  AddingContact = 'AddingContact',
+  EnsNameSearch = 'EnsNameSearch',
+  EnsNameRegistration = 'EnsNameRegistration',
+  WatchWallet = 'WatchWallet',
+  NftFloorPriceVisitThrice = 'NftFloorPriceVisitThrice',
+}
+
+export const shouldPromptForReview = async () => {
   const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
   if (Number(reviewAsked) > Date.now() - TWO_MONTHS) {
-    return;
+    return false;
   }
 
   const reviewDone = await AsyncStorage.getItem(REVIEW_DONE_KEY);
   if (reviewDone) {
+    return false;
+  }
+
+  return true;
+};
+
+export default async function maybeReviewAlert() {
+  const shouldPrompt = await shouldPromptForReview();
+  if (!shouldPrompt) {
     return;
   }
+
   // update to prevent double showing alert in one session
   if (reviewDisplayedInTheSession) {
     return;
