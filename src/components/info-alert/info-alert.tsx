@@ -1,19 +1,14 @@
 import React from 'react';
-import { Image } from 'react-native';
-import { Box, Text } from '@/design-system';
-import { colors } from '@/styles';
+import { Box, Text, useForegroundColor } from '@/design-system';
 
 type InfoAlertProps = {
   title: string;
   description: string;
-} & (
-  | { rightIcon: React.ReactNode; imageUrl?: never }
-  | { rightIcon?: never; imageUrl: string }
-);
+  rightIcon: React.ReactNode;
+};
 
-const InfoAlert: React.FC<InfoAlertProps> = ({
+export const InfoAlert: React.FC<InfoAlertProps> = ({
   rightIcon,
-  imageUrl,
   title,
   description,
 }) => {
@@ -22,7 +17,7 @@ const InfoAlert: React.FC<InfoAlertProps> = ({
       style={{
         gap: 12,
         borderWidth: 2,
-        borderColor: colors.separatorTertiary,
+        borderColor: useForegroundColor('separatorTertiary'),
       }}
       flexDirection="row"
       borderRadius={20}
@@ -32,16 +27,7 @@ const InfoAlert: React.FC<InfoAlertProps> = ({
       paddingVertical="16px"
     >
       <Box width={{ custom: 20 }} height={{ custom: 20 }} alignItems="center">
-        {rightIcon ? (
-          rightIcon
-        ) : (
-          <Box
-            as={Image}
-            source={{ uri: imageUrl }}
-            width="full"
-            height="full"
-          />
-        )}
+        {rightIcon}
       </Box>
       <Box style={{ gap: 10 }} flexDirection="column">
         <Text color="label" size="15pt" weight="heavy">
@@ -54,5 +40,3 @@ const InfoAlert: React.FC<InfoAlertProps> = ({
     </Box>
   );
 };
-
-export default InfoAlert;

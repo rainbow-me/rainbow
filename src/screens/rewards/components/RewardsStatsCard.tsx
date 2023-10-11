@@ -25,34 +25,13 @@ export const RewardsStatsCard: React.FC<Props> = ({
 }) => {
   const infoIconColor = useInfoIconColor();
 
-  if (!onPress) {
-    return (
-      <RewardsSectionCard>
-        <Stack space="12px">
-          <Inline space="4px" alignVertical="center" wrap={false}>
-            <Text size="15pt" color="labelTertiary" weight="semibold">
-              {title}
-            </Text>
-            <Text size="13pt" weight="heavy" color={{ custom: infoIconColor }}>
-              􀅵
-            </Text>
-          </Inline>
-          <Text size="22pt" color="label" weight="bold">
-            {value}
-          </Text>
-          <Text size="13pt" color={secondaryValueColor} weight="bold">
-            <Text size="12pt" weight="bold" color={secondaryValueColor}>
-              {secondaryValueIcon + ' '}
-            </Text>
-            {secondaryValue}
-          </Text>
-        </Stack>
-      </RewardsSectionCard>
-    );
-  }
-
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} overflowMargin={50}>
+    <ButtonPressAnimation
+      disabled={!onPress}
+      onPress={onPress}
+      scaleTo={0.96}
+      overflowMargin={50}
+    >
       <RewardsSectionCard>
         <Stack space="12px">
           <Inline space="4px" alignVertical="center" wrap={false}>

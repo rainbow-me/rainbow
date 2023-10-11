@@ -50,7 +50,6 @@ export function Stack({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      flexDirection="column"
     >
       {Children.map(children, (child, index) => {
         const isLastChild = index === children.length - 1;

@@ -33,8 +33,6 @@ const darkModeColors = {
   lightestGrey: '#FFFFFF',
   lightGrey: '#333333',
   lightOrange: '#FFA64D',
-  labelTertiary: 'rgba(245, 248, 255, 0.56)',
-  separatorTertiary: 'rgba(245, 248, 255, 0.02)',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
   placeholder: 'rgba(224, 232, 255, 0.4)',
@@ -151,8 +149,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
     rowDividerFaint: 'rgba(60, 66, 82, 0.01)', // '60, 66, 82, 0.01'
     rowDividerLight: 'rgba(60, 66, 82, 0.02)', // '60, 66, 82, 0.02'
-    labelTertiary: 'rgba(27, 29, 31, 0.5)',
-    separatorTertiary: 'rgba(9, 17, 31, 0.02)',
     shadow: '#25292E', // '37, 41, 46'
     shadowBlack: '#000000', // '0, 0, 0'
     shadowGrey: '#6F6F6F', // '111, 111, 111'
