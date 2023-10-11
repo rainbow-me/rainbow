@@ -6,7 +6,7 @@ import { RewardsStats } from './RewardsStats';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
-import InfoAlert from '@/components/info-alert/info-alert';
+import { InfoAlert } from '@/components/info-alert/info-alert';
 import { Box, Text } from '@/design-system';
 
 type Props = {

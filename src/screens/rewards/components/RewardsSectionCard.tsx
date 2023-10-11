@@ -1,6 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import { Box, Space, globalColors } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { useTheme } from '@/theme';
 
 type Props = {
   paddingVertical?: Space;
@@ -12,22 +14,36 @@ export function RewardsSectionCard({
   paddingVertical = '20px',
   paddingHorizontal = '20px',
 }: PropsWithChildren<Props>) {
+  const { isDarkMode } = useTheme();
+
   return (
     <View
-      style={{
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.02,
-        shadowRadius: 3,
-      }}
+      style={
+        IS_IOS
+          ? {
+              shadowColor: globalColors.grey100,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.02,
+              shadowRadius: 3,
+            }
+          : {}
+      }
     >
       <View
-        style={{
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.08,
-          shadowRadius: 6,
-        }}
+        style={
+          IS_IOS
+            ? {
+                shadowColor: globalColors.grey100,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: isDarkMode ? 0.24 : 0.08,
+                shadowRadius: 6,
+              }
+            : {
+                shadowColor: globalColors.grey100,
+                elevation: 8,
+                shadowOpacity: isDarkMode ? 1 : 0.55,
+              }
+        }
       >
         <Box
           background="surfaceSecondaryElevated"

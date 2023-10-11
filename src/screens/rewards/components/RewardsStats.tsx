@@ -28,13 +28,13 @@ export const RewardsStats: React.FC<Props> = ({
     (state: AppState) => state.settings.nativeCurrency
   );
 
-  const swapsData = useMemo(() => {
-    return actions.find(action => action.type === RewardStatsActionType.Swap);
-  }, [actions]);
+  const swapsData = actions.find(
+    action => action.type === RewardStatsActionType.Swap
+  );
 
-  const bridgeData = useMemo(() => {
-    return actions.find(action => action.type === RewardStatsActionType.Bridge);
-  }, [actions]);
+  const bridgeData = actions.find(
+    action => action.type === RewardStatsActionType.Bridge
+  );
 
   const getSwapsValue = useMemo(() => {
     if (assetPrice) {
@@ -46,7 +46,12 @@ export const RewardsStats: React.FC<Props> = ({
     }
 
     return convertAmountToNativeDisplay(swapsData?.amount?.usd || '0', 'USD');
-  }, [swapsData, assetPrice, nativeCurrency]);
+  }, [
+    assetPrice,
+    nativeCurrency,
+    swapsData?.amount?.token,
+    swapsData?.amount?.usd,
+  ]);
 
   const getBridgeValue = useMemo(() => {
     if (assetPrice) {
@@ -58,7 +63,12 @@ export const RewardsStats: React.FC<Props> = ({
     }
 
     return convertAmountToNativeDisplay(bridgeData?.amount?.usd || '0', 'USD');
-  }, [bridgeData, assetPrice, nativeCurrency]);
+  }, [
+    assetPrice,
+    nativeCurrency,
+    bridgeData?.amount?.token,
+    bridgeData?.amount?.usd,
+  ]);
 
   return (
     <Box width="full" paddingBottom="12px">
