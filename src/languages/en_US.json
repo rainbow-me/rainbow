@@ -2186,8 +2186,6 @@
         "you_own_this_wallet": "You own this wallet",
         "first_time_send": "First time send",
         "previous_sends": "%{number} previous sends"
-
-
       },
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
