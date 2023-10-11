@@ -45,12 +45,18 @@ export const RewardsStats: React.FC<Props> = ({
       case RewardStatsActionType.Bridge:
         return () => {
           analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
+          navigate(Routes.EXPLAIN_SHEET, {
+            type: 'op_rewards_bridge',
+            percent: bridgeData?.rewardPercent || 0,
+          });
         };
       case RewardStatsActionType.Swap:
         return () => {
           analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
+          navigate(Routes.EXPLAIN_SHEET, {
+            type: 'op_rewards_swap',
+            percent: swapsData?.rewardPercent || 0,
+          });
         };
       default:
         return () => {};
