@@ -678,8 +678,6 @@ function RecyclerAssetList({
     [isCoinListEdited, setIsCoinListEdited]
   );
 
-  console.log('rendering RecyclerAssetList');
-
   return (
     <StyledContainer onLayout={onLayout}>
       {/* @ts-ignore */}
