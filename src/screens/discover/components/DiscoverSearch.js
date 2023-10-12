@@ -185,21 +185,13 @@ export default function DiscoverSearch() {
     ]
   );
 
-  const handleActionAsset = useCallback(
-    item => {
-      navigate(Routes.ADD_TOKEN_SHEET, { item });
-    },
-    [navigate]
-  );
-
   const itemProps = useMemo(
     () => ({
-      onActionAsset: handleActionAsset,
       onPress: handlePress,
-      showAddButton: true,
+      showFavoriteButton: true,
       showBalance: false,
     }),
-    [handleActionAsset, handlePress]
+    [handlePress]
   );
 
   const addEnsResults = useCallback(

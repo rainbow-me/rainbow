@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -151,11 +150,6 @@ function MainNavigator() {
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
         options={addCashSheet}
-      />
-      <Stack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        options={bottomSheetPreset}
       />
       <Stack.Screen
         component={BackupSheet}

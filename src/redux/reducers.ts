@@ -18,7 +18,6 @@ import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import swap from './swap';
 import transactionSignatures from './transactionSignatures';
-import uniswap from './uniswap';
 import walletconnect from './walletconnect';
 import wallets from './wallets';
 
@@ -41,7 +40,6 @@ export default combineReducers({
   showcaseTokens,
   swap,
   transactionSignatures,
-  uniswap,
   walletconnect,
   wallets,
 });
