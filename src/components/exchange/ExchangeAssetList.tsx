@@ -38,8 +38,7 @@ import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from './ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
-import { uniswapUpdateFavorites } from '@/redux/uniswap';
-import { useDispatch } from 'react-redux';
+import { toggleFavorite, useFavorites } from '@/resources/favorites';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -150,7 +149,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     copyCount,
     onCopySwapDetailsText,
   } = useSwapDetailsClipboardState();
-  const dispatch = useDispatch();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -248,23 +246,19 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   const isFocused = useIsFocused();
 
   const theme = useTheme();
-
+  const { favoritesMetadata } = useFavorites();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const [localFavorite, setLocalFavorite] = useState<
     Record<string, boolean | undefined> | undefined
-  >(() => {
-    const meta = store.getState().uniswap.favoritesMeta;
-    if (!meta) {
-      return;
-    }
-    return Object.keys(meta).reduce(
+  >(() =>
+    Object.keys(favoritesMetadata).reduce(
       (acc: Record<string, boolean | undefined>, curr: string) => {
-        acc[curr] = meta[curr].favorite;
+        acc[curr] = favoritesMetadata[curr].favorite;
         return acc;
       },
       {}
-    );
-  });
+    )
+  );
 
   const enrichedItems = useMemo(
     () =>
@@ -297,7 +291,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
             setLocalFavorite(prev => {
               const address = rowData.address;
               const newValue = !prev?.[address];
-              dispatch(uniswapUpdateFavorites(address, newValue));
+              toggleFavorite(address);
               if (newValue) {
                 ios && onNewEmoji();
                 haptics.notificationSuccess();
@@ -314,7 +308,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
         })),
       })),
     [
-      dispatch,
       handleUnverifiedTokenPress,
       itemProps,
       items,
