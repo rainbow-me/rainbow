@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
@@ -91,18 +91,25 @@ export function CollectionCell({
 
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
+  const handlePress = useCallback(() => {
+    analyticsV2.track(analyticsV2.event.mintsPressedCollectionCell, {
+      contractAddress: collection.contractAddress,
+      chainId: collection.chainId,
+      priceInEth: amount,
+    });
+
+    const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
+    navigateToMintCollection(collection.contract, network);
+  }, [
+    amount,
+    collection.chainId,
+    collection.contract,
+    collection.contractAddress,
+  ]);
+
   return (
     <ButtonPressAnimation
-      onPress={() => {
-        analyticsV2.track(analyticsV2.event.mintsPressedCollectionCell, {
-          contractAddress: collection.contractAddress,
-          chainId: collection.chainId,
-          priceInEth: amount,
-        });
-
-        const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
-        navigateToMintCollection(collection.contract, network);
-      }}
+      onPress={handlePress}
       style={{ width: NFT_IMAGE_SIZE }}
     >
       <View
