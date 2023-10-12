@@ -152,7 +152,6 @@ export function AuthRequest({
         <Box paddingBottom="36px">
           <ButtonPressAnimation
             onPress={() => {
-              console.log('here');
               navigate(Routes.CHANGE_WALLET_SHEET, {
                 watchOnly: true,
                 currentAccountAddress: address,
