@@ -263,7 +263,6 @@ const SimpleScaleButton = ({
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
-              {/* @ts-expect-error TS can't infer types where we use this dynamic wrapper */}
               <Wrapper style={contentContainerStyle}>{children}</Wrapper>
             </View>
           </View>
