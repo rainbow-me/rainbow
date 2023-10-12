@@ -62,11 +62,8 @@ import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
-import {
-  favoritesMetadataQueryKey,
-  favoritesQueryKey,
-} from '@/resources/favorites';
-import { UniswapFavoriteTokenData } from '@/entities';
+import { favoritesQueryKey } from '@/resources/favorites';
+import { EthereumAddress, RainbowToken } from '@/entities';
 
 export default async function runMigrations() {
   // get current version
@@ -688,29 +685,22 @@ export default async function runMigrations() {
    Move favorites from local storage to react query persistent cache (AsyncStorage)
    */
   const v18 = async () => {
-    const favorites = await getGlobal('uniswapFavorites', undefined);
     const favoritesMetadata = await getGlobal(
-      'uniswapjFavoritesMetadata',
+      'uniswapFavoritesMetadata',
       undefined,
       '0.1.0'
     );
 
-    if (favorites) {
-      const lowercasedFavorites = favorites.map((address: string) =>
-        address.toLowerCase()
-      );
-      queryClient.setQueryData(favoritesQueryKey, lowercasedFavorites);
-    }
     if (favoritesMetadata) {
-      const lowercasedFavoritesMetadata: UniswapFavoriteTokenData = {};
+      const lowercasedFavoritesMetadata: Record<
+        EthereumAddress,
+        RainbowToken
+      > = {};
       Object.keys(favoritesMetadata).forEach((address: string) => {
         lowercasedFavoritesMetadata[address.toLowerCase()] =
           favoritesMetadata[address];
       });
-      queryClient.setQueryData(
-        favoritesMetadataQueryKey,
-        lowercasedFavoritesMetadata
-      );
+      queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
     }
   };
 

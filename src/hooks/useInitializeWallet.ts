@@ -25,7 +25,6 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import logger from '@/utils/logger';
-import { queryClient } from '@/react-query';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();

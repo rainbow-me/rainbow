@@ -38,7 +38,7 @@ import { colors, Colors } from '@/styles';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from './ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
-import { useFavorites } from '@/resources/favorites';
+import { toggleFavorite, useFavorites } from '@/resources/favorites';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
@@ -246,7 +246,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   const isFocused = useIsFocused();
 
   const theme = useTheme();
-  const { favoritesMetadata, toggleFavorite } = useFavorites();
+  const { favoritesMetadata } = useFavorites();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const [localFavorite, setLocalFavorite] = useState<
     Record<string, boolean | undefined> | undefined
@@ -316,7 +316,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
       onCopySwapDetailsText,
       testID,
       theme,
-      toggleFavorite,
     ]
   );
 
