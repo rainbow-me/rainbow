@@ -57,14 +57,12 @@ const CoinIcon: React.FC<Props> = ({
   mainnet_address,
   ...props
 }) => {
-  const tokenMetadata = getTokenMetadata(mainnet_address || address);
   const color = useColorForAsset({
     address: mainnet_address || address,
     type: mainnet_address ? AssetTypes.token : type,
   });
   const { colors, isDarkMode } = useTheme();
-  const forceFallback =
-    !isETH(mainnet_address || address) && isNil(tokenMetadata);
+  const forceFallback = !isETH(mainnet_address || address);
   const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
     symbol,
   ]);
@@ -83,8 +81,7 @@ const CoinIcon: React.FC<Props> = ({
           // force update on change symbol due to ImageCache strategy
           key={symbol}
           shadowColor={
-            forcedShadowColor ||
-            (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
+            forcedShadowColor || (isDarkMode ? colors.shadow : color)
           }
           size={size}
           symbol={symbol}
