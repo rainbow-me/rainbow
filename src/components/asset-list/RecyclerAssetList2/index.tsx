@@ -229,7 +229,7 @@ function NavbarOverlay({
         {
           shadowColor: isDarkMode
             ? colors.shadowBlack
-            : colors.separatorTertiary,
+            : colors.rowDividerExtraLight,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
           // shadowOpacity: isDarkMode ? 0.4 : 0.04,
           shadowRadius: isDarkMode ? 20 : 0,
@@ -276,6 +276,8 @@ function NavbarOverlay({
           rightComponent={
             IS_ANDROID ? (
               <AndroidContextMenu
+                // no idea where dynamicOptions is defined as a required prop
+                dynamicOptions={undefined}
                 options={menuConfig.menuItems.map(item => item?.actionTitle)}
                 cancelButtonIndex={menuConfig.menuItems.length - 1}
                 onPressActionSheet={handlePressMenuItemAndroid}
