@@ -1,14 +1,17 @@
 import lang from 'i18n-js';
+import ar_AR from './ar_AR.json';
 import en_US from './en_US.json';
 import es_419 from './es_419.json';
 import fr_FR from './fr_FR.json';
-import ja_JP from './ja_JP.json';
-import pt_BR from './pt_BR.json';
-import zh_CN from './zh_CN.json';
-import id_ID from './id_ID.json';
 import hi_IN from './hi_IN.json';
-import tr_TR from './tr_TR.json';
+import id_ID from './id_ID.json';
+import ja_JP from './ja_JP.json';
+import ko_KR from './ko_KR.json';
+import pt_BR from './pt_BR.json';
 import ru_RU from './ru_RU.json';
+import th_TH from './th_TH.json';
+import tr_TR from './tr_TR.json';
+import zh_CN from './zh_CN.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
 import { enUS, eo, ru, fr } from 'date-fns/locale';
@@ -20,36 +23,48 @@ import { enUS, eo, ru, fr } from 'date-fns/locale';
 export type Translation = typeof en_US;
 
 export enum Language {
+  AR_AR = 'ar_AR',
   EN_US = 'en_US',
   ES_419 = 'es_419',
   FR_FR = 'fr_FR',
-  JA_JP = 'ja_JP',
-  PT_BR = 'pt_BR',
-  ZH_CN = 'zh_CN',
-  ID_ID = 'id_ID',
   HI_IN = 'hi_IN',
-  TR_TR = 'tr_TR',
+  ID_ID = 'id_ID',
+  JA_JP = 'ja_JP',
+  KO_KR = 'ko_KR',
+  PT_BR = 'pt_BR',
   RU_RU = 'ru_RU',
+  TH_TH = 'th_TH',
+  TR_TR = 'tr_TR',
+  ZH_CN = 'zh_CN',
 }
 
 export const resources: {
   [key in Language]: any;
 } = {
+  ar_AR,
   en_US,
   es_419,
   fr_FR,
-  ja_JP,
-  pt_BR,
-  zh_CN,
-  id_ID,
   hi_IN,
-  tr_TR,
+  id_ID,
+  ja_JP,
+  ko_KR,
+  pt_BR,
   ru_RU,
+  th_TH,
+  tr_TR,
+  zh_CN,
 };
 
 export const supportedLanguages = {
   [Language.EN_US]: {
     label: 'English',
+  },
+  [Language.ZH_CN]: {
+    label: '中文',
+  },
+  [Language.HI_IN]: {
+    label: 'हिंदी',
   },
   [Language.ES_419]: {
     label: 'Español',
@@ -57,26 +72,29 @@ export const supportedLanguages = {
   [Language.FR_FR]: {
     label: 'Français',
   },
-  [Language.JA_JP]: {
-    label: '日本語',
+  [Language.AR_AR]: {
+    label: 'العربية',
   },
   [Language.PT_BR]: {
-    label: 'Português',
+    label: 'Português brasileiro',
   },
-  [Language.ZH_CN]: {
-    label: '中文',
+  [Language.RU_RU]: {
+    label: 'Русский',
   },
   [Language.ID_ID]: {
     label: 'Bahasa Indonesia',
   },
-  [Language.HI_IN]: {
-    label: 'हिंदी',
+  [Language.JA_JP]: {
+    label: '日本語',
   },
   [Language.TR_TR]: {
     label: 'Türkçe',
   },
-  [Language.RU_RU]: {
-    label: 'Русский',
+  [Language.KO_KR]: {
+    label: '한국어',
+  },
+  [Language.TH_TH]: {
+    label: 'ภาษาไทย',
   },
 };
 
