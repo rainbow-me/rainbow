@@ -22,6 +22,10 @@ export const navigateToMintCollection = async (
   contractAddress: EthereumAddress,
   network: Network
 ) => {
+  logger.debug('Mints: Navigating to Mint Collection', {
+    contractAddress,
+    network,
+  });
   try {
     const chainId = getNetworkObj(network).id;
     const res = await client.getReservoirCollection({
@@ -33,10 +37,15 @@ export const navigateToMintCollection = async (
         collection: res.getReservoirCollection?.collection,
       });
     } else {
+      logger.warn('Mints: No collection found', { contractAddress, network });
       showAlert();
     }
   } catch (e) {
-    console.log(e);
+    logger.warn('Mints: navigateToMintCollection error', {
+      contractAddress,
+      network,
+      error: e,
+    });
     showAlert();
   }
 };
