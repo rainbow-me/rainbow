@@ -686,7 +686,7 @@ export default async function runMigrations() {
    */
   const v18 = async () => {
     const favoritesMetadata = await getGlobal(
-      'uniswapjFavoritesMetadata',
+      'uniswapFavoritesMetadata',
       undefined,
       '0.1.0'
     );
