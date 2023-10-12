@@ -37,8 +37,6 @@ import {
   getPoapAndOpenSheetWithQRHash,
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
-import { arcDevClient } from '@/graphql';
-import { getNetworkObj } from '@/networks';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 export const SearchContainer = styled(Row)({
@@ -155,12 +153,12 @@ export default function DiscoverSearch() {
     const checkAndHandleMint = async seachQueryForMint => {
       if (seachQueryForMint.includes('mint.fun')) {
         const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
-        console.log(seachQueryForMint);
-        console.log(mintdotfunURL);
         const query = mintdotfunURL[1];
         let network = query.split('/')[0];
         if (network === 'ethereum') {
-          network = 'mainnet';
+          network = Network.mainnet;
+        } else if (network === 'op') {
+          network === Network.optimism;
         }
         const contractAddress = query.split('/')[1];
         navigateToMintCollection(contractAddress, network);
