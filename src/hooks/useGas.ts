@@ -186,7 +186,7 @@ export default function useGas({
     [dispatch]
   );
 
-  const getTotalGasPrice = () => {
+  const getTotalGasPrice = useCallback(() => {
     const txFee = gasData?.selectedGasFee?.gasFee;
     const isLegacyGasNetwork =
       getNetworkObj(gasData?.txNetwork).gas.gasType === 'legacy';
@@ -196,7 +196,7 @@ export default function useGas({
 
     const txFeeAmount = fromWei(txFeeValue?.value?.amount);
     return txFeeAmount;
-  };
+  }, [gasData?.selectedGasFee?.gasFee, gasData?.txNetwork]);
 
   return {
     isGasReady,
