@@ -435,7 +435,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
       externalUrl: collection.external_url ?? undefined,
       floorPrices,
       imageUrl: collection.image_url
-        ? maybeSignUri(collection.image_url, { w: 100 })
+        ? maybeSignUri(collection.image_url)
         : undefined,
       name:
         uniqueTokenType === uniqueTokenTypes.ENS
