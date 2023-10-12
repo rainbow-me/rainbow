@@ -165,7 +165,8 @@ const MintSheet = () => {
   const [showNativePrice, setShowNativePrice] = useState(false);
   const [gasError, setGasError] = useState(false);
   const currentNetwork =
-    RainbowNetworks.find(({ id }) => id === vvv)?.value || Network.mainnet;
+    RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
+    Network.mainnet;
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<
     'none' | 'minting' | 'minted' | 'error'
@@ -249,7 +250,7 @@ const MintSheet = () => {
 
   useFocusEffect(() => {
     if (mintCollection.name && mintCollection.id) {
-      analyticsV2.track(event.nftMintsOpenedSheet, {
+      analyticsV2.track(event.mintsOpenedSheet, {
         collectionName: mintCollection?.name,
         contract: mintCollection.id,
         chainId: mintCollection.chainId,
@@ -494,7 +495,7 @@ const MintSheet = () => {
                 txRef.current = tx.hash;
                 // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
                 dispatch(dataAddNewTransaction(tx));
-                analyticsV2.track(event.nftMintsMintedNFT, {
+                analyticsV2.track(event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
                   chainId: mintCollection.chainId,

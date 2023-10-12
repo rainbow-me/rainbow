@@ -1163,7 +1163,7 @@
       "free": "Free",
       "by": "By",
       "unknown": "unknown",
-      "max" : "Max",
+      "max": "Max",
       "nft_count": "%{number} NFTs",
       "description": "Description",
       "total_minted": "Total Minted",
