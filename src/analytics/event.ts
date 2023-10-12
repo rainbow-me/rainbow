@@ -79,10 +79,6 @@ export const event = {
   nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
   nftOffersAcceptedOffer: 'Accepted NFT Offer',
 
-  nftMintsOpenedSheet: 'Opened NFT Mint Sheet',
-  nftMintsMintingNFT: 'Minting NFT',
-  nftMintsMintedNFT: 'Minted NFT',
-
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
   poapsMintedPoap: 'Minted POAP',
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
@@ -95,6 +91,11 @@ export const event = {
   mintsPressedMintButton: 'Pressed mint button in mints sheet',
   mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
   mintsChangedFilter: 'Changed mints filter',
+
+  mintsOpenedSheet: 'Opened NFT Mint Sheet',
+  mintsOpeningMintDotFun: 'Opening Mintdotfun',
+  mintsMintingNFT: 'Minting NFT',
+  mintsMintedNFT: 'Minted NFT',
 } as const;
 
 /**
@@ -298,21 +299,26 @@ export type EventProperties = {
     rainbowFee: number;
     offerCurrency: { symbol: string; contractAddress: string };
   };
-  [event.nftMintsMintingNFT]: {
+  [event.mintsMintingNFT]: {
     contract: string;
-    network: Network;
+    chainId: number;
     quantity: number;
     collectionName: string;
   };
-  [event.nftMintsMintedNFT]: {
+  [event.mintsMintedNFT]: {
     contract: string;
-    network: Network;
+    chainId: number;
     quantity: number;
     collectionName: string;
   };
-  [event.nftMintsOpenedSheet]: {
+  [event.mintsOpenedSheet]: {
     contract: string;
-    network: Network;
+    chainId: number;
+    collectionName: string;
+  };
+  [event.mintsOpeningMintDotFun]: {
+    contract: string;
+    chainId: number;
     collectionName: string;
   };
   [event.poapsMintedPoap]: {

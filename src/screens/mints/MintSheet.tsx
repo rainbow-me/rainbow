@@ -165,8 +165,7 @@ const MintSheet = () => {
   const [showNativePrice, setShowNativePrice] = useState(false);
   const [gasError, setGasError] = useState(false);
   const currentNetwork =
-    RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
-    Network.mainnet;
+    RainbowNetworks.find(({ id }) => id === vvv)?.value || Network.mainnet;
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<
     'none' | 'minting' | 'minted' | 'error'
@@ -253,7 +252,7 @@ const MintSheet = () => {
       analyticsV2.track(event.nftMintsOpenedSheet, {
         collectionName: mintCollection?.name,
         contract: mintCollection.id,
-        network: currentNetwork,
+        chainId: mintCollection.chainId,
       });
     }
   });
@@ -271,7 +270,6 @@ const MintSheet = () => {
       const txFee = getTotalGasPrice();
       const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
-      // TODO: need to double check this when there are paid mints available
       setInsufficientEth(
         greaterThanOrEqualTo(add(txFee, totalMintPrice), nativeBalance)
       );
@@ -389,10 +387,7 @@ const MintSheet = () => {
       Network.zora,
     ];
     if (!MintDotFunNetworks.includes(network)) {
-      // show alert mint.fun does not support
-      // i18n
-      // this isnt possible with our current entry points
-      Alert.alert('Mint.fun does not support this network');
+      Alert.alert(i18n.t(i18n.l.minting.mintdotfun_unsupported_network));
     }
 
     let chainSlug = 'ethereum';
@@ -418,15 +413,20 @@ const MintSheet = () => {
 
     // link to mint.fun if reservoir not supporting
     if (!isMintingAvailable) {
+      analyticsV2.track(event.mintsOpeningMintDotFun, {
+        collectionName: mintCollection.name || '',
+        contract: mintCollection.id || '',
+        chainId: mintCollection.chainId,
+      });
       Linking.openURL(buildMintDotFunUrl(mintCollection.id!, currentNetwork));
       return;
     }
 
     logger.info('Minting NFT', { name: mintCollection.name });
-    analyticsV2.track(event.nftMintsMintingNFT, {
+    analyticsV2.track(event.mintsMintingNFT, {
       collectionName: mintCollection.name || '',
       contract: mintCollection.id || '',
-      network: currentNetwork,
+      chainId: mintCollection.chainId,
       quantity,
     });
     setMintStatus('minting');
@@ -497,7 +497,7 @@ const MintSheet = () => {
                 analyticsV2.track(event.nftMintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
-                  network: currentNetwork,
+                  chainId: mintCollection.chainId,
                   quantity,
                 });
                 navigate(Routes.PROFILE_SCREEN);
@@ -688,9 +688,10 @@ const MintSheet = () => {
                             align="center"
                             size="13pt"
                             weight="semibold"
+                            numberOfLines={1}
                           >
                             {quantity === Number(maxMintsPerWallet)
-                              ? 'Max'
+                              ? i18n.t(i18n.l.minting.max)
                               : ''}
                           </Text>
                         }
@@ -761,7 +762,9 @@ const MintSheet = () => {
                         size="17pt"
                         weight="medium"
                       >
-                        {`${mintCollection.tokenCount} NFTs`}
+                        {i18n.t(i18n.l.minting.nft_count, {
+                          number: mintCollection.tokenCount,
+                        })}
                       </Text>
                     }
                   />
