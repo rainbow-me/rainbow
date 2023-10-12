@@ -291,7 +291,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<
             setLocalFavorite(prev => {
               const address = rowData.address;
               const newValue = !prev?.[address];
-              // dispatch(uniswapUpdateFavorites(address, newValue));
               toggleFavorite(address);
               if (newValue) {
                 ios && onNewEmoji();
