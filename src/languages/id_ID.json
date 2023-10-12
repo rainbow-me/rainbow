@@ -555,6 +555,9 @@
         "available_networks": "Tersedia di %{availableNetworks} jaringan",
         "available_network": "Tersedia di jaringan %{availableNetwork}",
         "available_networkv2": "Juga tersedia di %{availableNetwork}",
+        "l2_disclaimer": "Ini %{symbol} berada di jaringan %{network}",
+        "l2_disclaimer_send": "Mengirim di jaringan %{network}",
+        "l2_disclaimer_dapp": "Aplikasi ini di jaringan %{network}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Halaman Utama",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "Harap pasang ekstensi Chrome MetaMask",
       "web3_not_unlocked": "Harap buka kunci dompet MetaMask Anda",
       "web3_unknown_network": "Jaringan tidak dikenal, silakan beralih ke yang lain"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Permen",
+        "no_data_found": "Tidak ada data yang ditemukan.",
+        "card": {
+          "x_ago": "%{timeElapsed} lalu",
+          "one_mint_past_hour": "1 permen berlalu jam",
+          "x_mints_past_hour": "%{numMints} permen berlalu jam",
+          "x_mints": "%{numMints} permen",
+          "mint": "Permen",
+          "free": "GRATIS"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "Lihat Semua Permen",
+        "mints": "Permen",
+        "collection_cell": {
+          "free": "GRATIS"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Permen Unggulan",
+        "one_mint": "1 permen",
+        "x_mints": "%{numMints} permen",
+        "x_past_hour": "%{numMints} berlalu jam"
+      },
+      "filter": {
+        "all": "Semua",
+        "free": "Gratis",
+        "paid": "Berbayar"
+      }
     },
     "modal": {
       "approve_tx": "Setujui transaksi di %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "Hapus informasi profil",
           "point_name_to_recipient": "Arahkan nama ini ke alamat dompet penerima",
           "transfer_control": "Alihkan kontrol ke penerima",
-          "has_a_wallet_that_supports": "Orang yang saya kirimkan memiliki dompet yang mendukung %{networkName}",
+          "has_a_wallet_that_supports": "Alamat yang saya kirim mendukung %{networkName}",
           "im_not_sending_to_an_exchange": "Saya tidak mengirim ke bursa"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "Placeholder",
         "request": "Permintaan Transaksi",
         "send": "Kirim Transaksi",
-        "sending_title": "Mengirim"
+        "sending_title": "Mengirim",
+        "you_own_this_wallet": "Anda memiliki dompet ini",
+        "first_time_send": "Pengiriman pertama",
+        "previous_sends": "%{number} pengiriman sebelumnya"
       },
       "wallet_connect": {
         "error": "Kesalahan saat menginisialisasi dengan WalletConnect",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "ingin terhubung ke dompet Anda",
+      "wants_to_connect_to_network": "ingin terhubung ke jaringan %{network}",
       "available_networks": "Jaringan yang Tersedia",
       "change_network": "Ubah Jaringan",
       "connected_apps": "Aplikasi yang Terhubung",
