@@ -27,7 +27,12 @@ import {
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
-import { getProviderForNetwork, web3Provider } from '@/handlers/web3';
+import {
+  getCachedProviderForNetwork,
+  getProviderForNetwork,
+  isHardHat,
+  web3Provider,
+} from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
@@ -47,6 +52,8 @@ import {
 import { SwapType } from '@rainbow-me/swaps';
 import { logger as loggr } from '@/logger';
 import { queryClient } from '@/react-query';
+import { RainbowAddressAssets } from '@/resources/assets/types';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { nftsQueryKey } from '@/resources/nfts';
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
@@ -354,7 +361,32 @@ export const dataLoadState = () => async (
   >,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+
+  const provider = getCachedProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+
+  const userAssetsObj:
+    | RainbowAddressAssets
+    | undefined = queryClient.getQueryData(
+    userAssetsQueryKey({
+      address: accountAddress,
+      connectedToHardhat,
+      currency: nativeCurrency,
+    })
+  );
+  if (userAssetsObj) {
+    dispatch({
+      payload: userAssetsObj,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    });
+  } else {
+    dispatch({
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
+    });
+  }
+
   try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
