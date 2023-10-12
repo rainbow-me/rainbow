@@ -716,7 +716,6 @@ const MintSheet = () => {
                     backgroundColor={
                       mintStatus === 'error' ? colors.red : imageColor
                     }
-                    disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     label={buttonLabel}
                     onLongPress={actionOnPress}
