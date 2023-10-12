@@ -96,6 +96,7 @@ export const event = {
   mintsOpeningMintDotFun: 'Opening Mintdotfun',
   mintsMintingNFT: 'Minting NFT',
   mintsMintedNFT: 'Minted NFT',
+  mintsErrorMintingNFT: 'Error Minting NFT',
 } as const;
 
 /**
@@ -307,6 +308,13 @@ export type EventProperties = {
     priceInEth: string;
   };
   [event.mintsMintedNFT]: {
+    contract: string;
+    chainId: number;
+    quantity: number;
+    collectionName: string;
+    priceInEth: string;
+  };
+  [event.mintsErrorMintingNFT]: {
     contract: string;
     chainId: number;
     quantity: number;

@@ -512,6 +512,13 @@ const MintSheet = () => {
       });
     } catch (e) {
       setMintStatus('error');
+      analyticsV2.track(event.mintsErrorMintingNFT, {
+        collectionName: mintCollection.name || '',
+        contract: mintCollection.id || '',
+        chainId: mintCollection.chainId,
+        quantity,
+        priceInEth: mintPriceAmount,
+      });
       logger.error(
         new RainbowError(`Error minting NFT: ${(e as Error).message}`)
       );
@@ -524,6 +531,7 @@ const MintSheet = () => {
     imageUrl,
     isMintingAvailable,
     isReadOnlyWallet,
+    mintCollection.chainId,
     mintCollection.id,
     mintCollection.name,
     mintPriceAmount,
