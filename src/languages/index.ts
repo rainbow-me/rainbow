@@ -14,7 +14,21 @@ import tr_TR from './tr_TR.json';
 import zh_CN from './zh_CN.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
-import { enUS, eo, ru, fr } from 'date-fns/locale';
+import {
+  enUS,
+  es,
+  fr,
+  hi,
+  id,
+  ja,
+  ptBR,
+  ru,
+  tr,
+  zhCN,
+  ar,
+  th,
+  ko,
+} from 'date-fns/locale';
 
 /**
  * Use English as our "template" for translations. All other translations
@@ -100,8 +114,32 @@ export const supportedLanguages = {
 
 export function getDateFnsLocale() {
   switch (lang.locale) {
+    case Language.AR_AR:
+      return ar;
+    case Language.EN_US:
+      return enUS;
+    case Language.ES_419:
+      return es;
     case Language.FR_FR:
       return fr;
+    case Language.HI_IN:
+      return hi;
+    case Language.ID_ID:
+      return id;
+    case Language.JA_JP:
+      return ja;
+    case Language.KO_KR:
+      return ko;
+    case Language.PT_BR:
+      return ptBR;
+    case Language.RU_RU:
+      return ru;
+    case Language.TH_TH:
+      return th;
+    case Language.TR_TR:
+      return tr;
+    case Language.ZH_CN:
+      return zhCN;
     default:
       return enUS;
   }
