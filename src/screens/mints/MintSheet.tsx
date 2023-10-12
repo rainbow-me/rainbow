@@ -429,6 +429,7 @@ const MintSheet = () => {
       contract: mintCollection.id || '',
       chainId: mintCollection.chainId,
       quantity,
+      priceInEth: mintPriceAmount,
     });
     setMintStatus('minting');
 
@@ -500,6 +501,7 @@ const MintSheet = () => {
                   contract: mintCollection.id || '',
                   chainId: mintCollection.chainId,
                   quantity,
+                  priceInEth: mintPriceAmount,
                 });
                 navigate(Routes.PROFILE_SCREEN);
                 setMintStatus('minted');

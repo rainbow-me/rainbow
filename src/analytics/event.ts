@@ -304,12 +304,14 @@ export type EventProperties = {
     chainId: number;
     quantity: number;
     collectionName: string;
+    priceInEth: string;
   };
   [event.mintsMintedNFT]: {
     contract: string;
     chainId: number;
     quantity: number;
     collectionName: string;
+    priceInEth: string;
   };
   [event.mintsOpenedSheet]: {
     contract: string;
