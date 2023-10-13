@@ -1505,22 +1505,26 @@
       "error_text": "Please check your internet connection and check back later.",
       "ended_title": "Program ended",
       "ended_text": "Stay tuned for what we have in store for you next!",
+      "info": {
+        "title": "Earn OP for swapping and bridging",
+        "description": "Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
+      },
       "op": {
         "airdrop_timing": {
-          "title": "Airdrops Every Week",
-          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet."
+          "title": "Airdrops Every Month",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each month, the rewards you’ve earned will be airdropped to your wallet."
         },
         "amount_distributed": {
           "title": "67,850 OP Every Week",
           "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
         },
         "bridge": {
-          "title": "Earn 0.125% on Bridging",
-          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately 0.125% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
+          "title": "Earn %{percent}% on Bridging",
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
         },
         "swap": {
-          "title": "Earn 0.425% on Swaps",
-          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately 0.425% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
+          "title": "Earn %{percent}% on Swaps",
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
         },
         "position": {
           "title": "Leaderboard Position",
