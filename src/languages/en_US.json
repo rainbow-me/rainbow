@@ -637,6 +637,7 @@
         }
       },
       "swap_details": {
+        "reward": "Reward",
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
         "refuel": "Extra network tokens",
