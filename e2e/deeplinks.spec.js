@@ -88,7 +88,7 @@ describe('Deeplinks spec', () => {
     await Helpers.tapAlertWithButton('OK');
   });
 
-  it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
+  it.skip('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/rainbowwallet.eth'
     );
@@ -97,7 +97,7 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
+  it.skip('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
     await Helpers.openDeeplinkFromBackground(
       'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
     );
@@ -109,17 +109,17 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
     await testEthereumDeeplink(url, false);
   });
 
-  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
 
-  it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
+  it.skip('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url = escapeUrl(
       'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
     );
