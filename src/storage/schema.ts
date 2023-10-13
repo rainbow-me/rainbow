@@ -34,3 +34,32 @@ export type Legacy = {
 export type Account = {
   totalTokens: number;
 };
+
+export const enum ReviewPromptAction {
+  SuccessfulFiatToCryptoPurchase = 'SuccessfulFiatToCryptoPurchase',
+  DappConnections = 'DappConnections',
+  NumberOfSwaps = 'NumberOfSwaps',
+  BridgeToL2 = 'BridgeToL2',
+  AddingContact = 'AddingContact',
+  EnsNameSearch = 'EnsNameSearch',
+  EnsNameRegistration = 'EnsNameRegistration',
+  WatchWallet = 'WatchWallet',
+  NftFloorPriceVisitThrice = 'NftFloorPriceVisitThrice',
+}
+
+export type Action = {
+  id: ReviewPromptAction;
+  timeOfLastDispatch: number;
+  numOfTimesDispatched: number;
+};
+
+/**
+ * Actions that the user can take that we want to track for review purposes
+ * Each action has a specific number of times they must be performed before prompting for review
+ *
+ * NOTE: if a user has already reviewed, we don't want to prompt them again
+ */
+export type Review = {
+  hasReviewed: boolean;
+  actions: Action[];
+};
