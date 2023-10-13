@@ -382,8 +382,12 @@ export const dataLoadState = () => async (
       type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
     });
   } else {
-    dispatch({
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: accountAddress,
+        currency: nativeCurrency,
+        connectedToHardhat,
+      }),
     });
   }
 
