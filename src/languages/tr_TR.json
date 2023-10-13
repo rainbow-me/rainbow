@@ -555,6 +555,9 @@
         "available_networks": "%{availableNetworks} ağında mevcut",
         "available_network": "%{availableNetwork} ağı üzerinde mevcut",
         "available_networkv2": "Ayrıca %{availableNetwork}üzerinde de mevcut",
+        "l2_disclaimer": "Bu %{symbol} %{network} ağı üzerinde",
+        "l2_disclaimer_send": "%{network} ağı üzerinde gönderme yapıyorum",
+        "l2_disclaimer_dapp": "Bu uygulama %{network} ağı üzerinde",
         "social": {
           "facebook": "Facebook",
           "homepage": "Anasayfa",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "Lütfen MetaMask Chrome eklentisini yükleyin",
       "web3_not_unlocked": "Lütfen MetaMask cüzdanınızın kilidini açın",
       "web3_unknown_network": "Bilinmeyen ağ, lütfen başka birine geçin"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Naneler",
+        "no_data_found": "Veri bulunamadı.",
+        "card": {
+          "x_ago": "%{timeElapsed} önce",
+          "one_mint_past_hour": "1 saat önce nane",
+          "x_mints_past_hour": "%{numMints} naneler geçen saat",
+          "x_mints": "%{numMints} naneler",
+          "mint": "Nane",
+          "free": "ÜCRETSİZ"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "Tüm Naneleri Gör",
+        "mints": "Naneler",
+        "collection_cell": {
+          "free": "ÜCRETSİZ"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Öne Çıkan Nane",
+        "one_mint": "1 nane",
+        "x_mints": "%{numMints} naneler",
+        "x_past_hour": "%{numMints} geçen saat"
+      },
+      "filter": {
+        "all": "Tümü",
+        "free": "Ücretsiz",
+        "paid": "Ücretli"
+      }
     },
     "modal": {
       "approve_tx": "İşlemi onayla %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "Profil bilgilerini temizle",
           "point_name_to_recipient": "Bu ismi alıcının cüzdan adresine yönlendir",
           "transfer_control": "Kontrolü alıcıya transfer et",
-          "has_a_wallet_that_supports": "Gönderdiğim kişinin %{networkName}destekleyen bir cüzdanı var",
+          "has_a_wallet_that_supports": "Gönderdiğim adres %{networkName}destekliyor",
           "im_not_sending_to_an_exchange": "Bir borsaya göndermiyorum"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "Yer tutucu",
         "request": "İşlem İsteği",
         "send": "İşlem Gönder",
-        "sending_title": "Gönderiliyor"
+        "sending_title": "Gönderiliyor",
+        "you_own_this_wallet": "Bu cüzdan sizin",
+        "first_time_send": "İlk kez gönderme",
+        "previous_sends": "%{number} önceki göndermeler"
       },
       "wallet_connect": {
         "error": "WalletConnect ile başlatırken hata",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "Cüzdanınıza bağlanmak istiyor",
+      "wants_to_connect_to_network": "%{network} ağına bağlanmak istiyor",
       "available_networks": "Kullanılabilir Ağlar",
       "change_network": "Ağı Değiştir",
       "connected_apps": "Bağlı uygulamalar",

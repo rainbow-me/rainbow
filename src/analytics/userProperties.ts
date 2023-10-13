@@ -1,10 +1,12 @@
 import { NativeCurrencyKey } from '@/entities';
+import { Language } from '@/languages';
 
 // these are all reported seperately so they must be optional
 export interface UserProperties {
   // settings
   currentAddressHash?: string; // NEW
   currency?: NativeCurrencyKey;
+  language?: Language;
   enabledTestnets?: boolean;
   enabledFlashbots?: boolean;
   pinnedCoins?: string[];

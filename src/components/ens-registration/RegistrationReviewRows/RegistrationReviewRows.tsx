@@ -165,6 +165,7 @@ export default function RegistrationReviewRows({
                 color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
+                numberOfLines={2}
               >
                 {lang.t('profiles.confirm.new_expiration_date')}
               </Text>
@@ -188,6 +189,7 @@ export default function RegistrationReviewRows({
               color="secondary80 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
+              numberOfLines={2}
             >
               {lang.t('profiles.confirm.registration_cost')}
             </Text>
@@ -216,6 +218,7 @@ export default function RegistrationReviewRows({
               color="secondary80 (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="bold"
+              numberOfLines={2}
             >
               {lang.t('profiles.confirm.estimated_fees')}
             </Text>
@@ -245,6 +248,7 @@ export default function RegistrationReviewRows({
                 color="secondary80 (Deprecated)"
                 size="16px / 22px (Deprecated)"
                 weight="bold"
+                numberOfLines={2}
               >
                 {lang.t('profiles.confirm.estimated_total_eth')}
               </Text>
@@ -274,6 +278,7 @@ export default function RegistrationReviewRows({
               color="primary (Deprecated)"
               size="16px / 22px (Deprecated)"
               weight="heavy"
+              numberOfLines={2}
             >
               {lang.t('profiles.confirm.estimated_total')}
             </Text>

@@ -1,6 +1,7 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
+import { Network } from '@/networks/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -81,6 +82,7 @@ export const event = {
   poapsOpenedMintSheet: 'Opened POAP mint sheet',
   poapsMintedPoap: 'Minted POAP',
   poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
+
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
 
@@ -89,6 +91,12 @@ export const event = {
   mintsPressedMintButton: 'Pressed mint button in mints sheet',
   mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
   mintsChangedFilter: 'Changed mints filter',
+
+  mintsOpenedSheet: 'Opened NFT Mint Sheet',
+  mintsOpeningMintDotFun: 'Opening Mintdotfun',
+  mintsMintingNFT: 'Minting NFT',
+  mintsMintedNFT: 'Minted NFT',
+  mintsErrorMintingNFT: 'Error Minting NFT',
 } as const;
 
 /**
@@ -291,6 +299,37 @@ export type EventProperties = {
     floorDifferencePercentage: number;
     rainbowFee: number;
     offerCurrency: { symbol: string; contractAddress: string };
+  };
+  [event.mintsMintingNFT]: {
+    contract: string;
+    chainId: number;
+    quantity: number;
+    collectionName: string;
+    priceInEth: string;
+  };
+  [event.mintsMintedNFT]: {
+    contract: string;
+    chainId: number;
+    quantity: number;
+    collectionName: string;
+    priceInEth: string;
+  };
+  [event.mintsErrorMintingNFT]: {
+    contract: string;
+    chainId: number;
+    quantity: number;
+    collectionName: string;
+    priceInEth: string;
+  };
+  [event.mintsOpenedSheet]: {
+    contract: string;
+    chainId: number;
+    collectionName: string;
+  };
+  [event.mintsOpeningMintDotFun]: {
+    contract: string;
+    chainId: number;
+    collectionName: string;
   };
   [event.poapsMintedPoap]: {
     eventId: number;

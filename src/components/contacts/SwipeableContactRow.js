@@ -19,8 +19,8 @@ const styles = [
   position.sizeAsObject(35),
 ];
 
-const RightAction = ({ onPress, progress, text, x }) => {
-  const isEdit = text === 'Edit';
+const RightAction = ({ onPress, progress, text, type, x }) => {
+  const isEdit = type === 'edit';
   const translateX = progress.interpolate({
     inputRange: [0, 1],
     outputRange: [x, 0],
@@ -46,6 +46,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
           letterSpacing="roundedTight"
           size="smaller"
           weight="semibold"
+          numberOfLines={1}
         >
           {text}
         </Text>
@@ -106,12 +107,14 @@ const SwipeableContactRow = (
         <RightAction
           onPress={handleEditContact}
           progress={progress}
+          type="edit"
           text={lang.t('button.edit')}
           x={120}
         />
         <RightAction
           onPress={handleDeleteContact}
           progress={progress}
+          type="text"
           text={lang.t('button.delete')}
           x={90}
         />

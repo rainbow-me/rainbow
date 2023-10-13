@@ -555,6 +555,9 @@
         "available_networks": "在 %{availableNetworks} 网络上可用",
         "available_network": "在 %{availableNetwork} 网络上可用",
         "available_networkv2": "也在 %{availableNetwork}上可用",
+        "l2_disclaimer": "这个 %{symbol} 在 %{network} 网络上",
+        "l2_disclaimer_send": "在 %{network} 网络上发送",
+        "l2_disclaimer_dapp": "这款应用在 %{network} 网络上",
         "social": {
           "facebook": "脸书",
           "homepage": "主页",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "请安装MetaMask Chrome扩展",
       "web3_not_unlocked": "请解锁您的MetaMask钱包",
       "web3_unknown_network": "未知网络，请切换至其它网络"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "薄荷糖",
+        "no_data_found": "未找到数据。",
+        "card": {
+          "x_ago": "%{timeElapsed} 之前",
+          "one_mint_past_hour": "1 个小时前铸币",
+          "x_mints_past_hour": "%{numMints} 个小时前的薄荷糖",
+          "x_mints": "%{numMints} 薄荷糖",
+          "mint": "铸币",
+          "free": "免费"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "查看所有铸币",
+        "mints": "薄荷糖",
+        "collection_cell": {
+          "free": "免费"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "特色铸币",
+        "one_mint": "1 薄荷糖",
+        "x_mints": "%{numMints} 薄荷糖",
+        "x_past_hour": "%{numMints} 过去的小时"
+      },
+      "filter": {
+        "all": "全部",
+        "free": "免费",
+        "paid": "付费"
+      }
     },
     "modal": {
       "approve_tx": "批准在 %{walletType}的交易",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "清除个人资料信息",
           "point_name_to_recipient": "将此名称指向接收者的钱包地址",
           "transfer_control": "将控制权转交给接收者",
-          "has_a_wallet_that_supports": "我正在发送的人有一个支持 %{networkName}的钱包",
+          "has_a_wallet_that_supports": "我发送到的地址支持 %{networkName}",
           "im_not_sending_to_an_exchange": "我没有向交易所发送"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "占位符",
         "request": "交易请求",
         "send": "发送交易",
-        "sending_title": "发送中"
+        "sending_title": "发送中",
+        "you_own_this_wallet": "您拥有这个钱包",
+        "first_time_send": "首次发送",
+        "previous_sends": "%{number} 之前的发送"
       },
       "wallet_connect": {
         "error": "初始化WalletConnect出错",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "愿意连接到您的钱包",
+      "wants_to_connect_to_network": "想要连接到 %{network} 网络",
       "available_networks": "可用网络",
       "change_network": "更改网络",
       "connected_apps": "已连接的应用",
