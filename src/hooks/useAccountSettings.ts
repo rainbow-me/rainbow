@@ -56,7 +56,7 @@ export default function useAccountSettings() {
   );
 
   const settingsChangeLanguage = useCallback(
-    (language: string) => dispatch(changeLanguage(language)),
+    (language: string) => dispatch(changeLanguage(language as Language)),
     [dispatch]
   );
 

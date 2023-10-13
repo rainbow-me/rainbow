@@ -586,6 +586,19 @@ export const getTransactionLabel = ({
   )
     return TransactionStatus.sold;
 
+  if (
+    status === TransactionStatus.minting ||
+    (type === TransactionType.mint && pending)
+  ) {
+    return TransactionStatus.minting;
+  }
+
+  if (
+    status === TransactionStatus.minted ||
+    (type === TransactionType.mint && !pending)
+  )
+    return TransactionStatus.minted;
+
   if (status === TransactionStatus.speeding_up)
     return TransactionStatus.speeding_up;
 

@@ -1,7 +1,5 @@
 import React from 'react';
 import { Box, Stack, Text } from '@/design-system';
-import { useDimensions } from '@/hooks';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   title: string;
@@ -14,13 +12,11 @@ export const RewardsProgramStatus: React.FC<Props> = ({
   text,
   title,
 }) => {
-  const { height } = useDimensions();
-  const { top } = useSafeAreaInsets();
-
   return (
     <Box
+      style={{ display: 'flex' }}
       width="full"
-      height={{ custom: height - top }}
+      height="full"
       justifyContent="center"
       alignItems="center"
     >

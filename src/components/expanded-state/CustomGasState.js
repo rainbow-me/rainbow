@@ -10,7 +10,6 @@ import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@/helpers/gas';
 import {
-  useAccountSettings,
   useColorForAsset,
   useDimensions,
   useGas,
@@ -24,7 +23,7 @@ import { IS_ANDROID } from '@/env';
 import { useSelector } from 'react-redux';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
-const FOOTER_HEIGHT = 76;
+const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
 
 function useAndroidDisableGesturesOnFocus() {
@@ -42,12 +41,17 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const {
-    params: { longFormHeight, speeds, openCustomOptions } = {},
+    params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {},
   } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const colorForAsset = useColorForAsset(
+    asset || {},
+    fallbackColor,
+    false,
+    true
+  );
   const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);

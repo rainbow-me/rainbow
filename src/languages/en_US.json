@@ -545,6 +545,9 @@
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
         "available_networkv2": "Also available on %{availableNetwork}",
+        "l2_disclaimer": "This %{symbol} is on the %{network} network",
+        "l2_disclaimer_send": "Sending on the %{network} network",
+        "l2_disclaimer_dapp": "This app on the %{network} network",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
@@ -624,6 +627,7 @@
         }
       },
       "swap_details": {
+        "reward": "Reward",
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
         "refuel": "Extra network tokens",
@@ -1142,6 +1146,30 @@
       "withdrawal_dropdown_label": "For",
       "withdrawal_input_label": "Get"
     },
+    "minting": {
+      "hold_to_mint": "Hold To Mint",
+      "minting": "Minting...",
+      "minted": "Minted",
+      "mint_unavailable": "Mint Unavailable",
+      "mint_on_mintdotfun": "􀮶 Mint on Mint.fun",
+      "error_minting": "Error Minting",
+      "mint_price": "Mint Price",
+      "free": "Free",
+      "by": "By",
+      "unknown": "unknown",
+      "max": "Max",
+      "nft_count": "%{number} NFTs",
+      "description": "Description",
+      "total_minted": "Total Minted",
+      "first_event": "First Event",
+      "last_event": "Last Event",
+      "max_supply": "Max Supply",
+      "contract": "Contract",
+      "network": "Network",
+      "could_not_find_collection": "Could not find collection",
+      "unable_to_find_check_again": "We are unable to find this collection, double check the address and network or try again later",
+      "mintdotfun_unsupported_network": "Mint.fun does not support this network"
+    },
     "nfts": {
       "selling": "Selling"
     },
@@ -1471,22 +1499,26 @@
       "error_text": "Please check your internet connection and check back later.",
       "ended_title": "Program ended",
       "ended_text": "Stay tuned for what we have in store for you next!",
+      "info": {
+        "title": "Earn OP for swapping and bridging",
+        "description": "Get cash back by swapping on or bridging to Optimism. Rewards distributed monthly."
+      },
       "op": {
         "airdrop_timing": {
-          "title": "Airdrops Every Week",
-          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each week, the rewards you’ve earned will be airdropped to your wallet."
+          "title": "Airdrops Every Month",
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each month, the rewards you’ve earned will be airdropped to your wallet."
         },
         "amount_distributed": {
           "title": "67,850 OP Every Week",
           "text": "Up to 67,850 OP in rewards will be distributed every week. If weekly rewards run out, rewards will temporarily pause and resume the following week."
         },
         "bridge": {
-          "title": "Earn 0.125% on Bridging",
-          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately 0.125% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
+          "title": "Earn %{percent}% on Bridging",
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
         },
         "swap": {
-          "title": "Earn 0.425% on Swaps",
-          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately 0.425% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
+          "title": "Earn %{percent}% on Swaps",
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
         },
         "position": {
           "title": "Leaderboard Position",
@@ -1683,6 +1715,8 @@
         "failed": "Failed",
         "purchased": "Purchased",
         "purchasing": "Purchasing",
+        "minting": "Minting",
+        "minted": "Minted",
         "received": "Received",
         "receiving": "Receiving",
         "self": "Self",
@@ -2169,7 +2203,10 @@
         "placeholder_title": "Placeholder",
         "request": "Transaction Request",
         "send": "Send Transaction",
-        "sending_title": "Sending"
+        "sending_title": "Sending",
+        "you_own_this_wallet": "You own this wallet",
+        "first_time_send": "First time send",
+        "previous_sends": "%{number} previous sends"
       },
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
@@ -2196,6 +2233,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "wants to connect to your wallet",
+      "wants_to_connect_to_network": "wants to connect to the %{network} network",
       "available_networks": "Available Networks",
       "change_network": "Change Network",
       "connected_apps": "Connected apps",
@@ -2248,6 +2287,8 @@
         "pairing_timeout": "This session timed-out before a connection could be established. This is usually due to a network error. Please try again.",
         "pairing_unsupported_methods": "The dapp requested wallet RPC methods that are unsupported by Rainbow.",
         "pairing_unsupported_networks": "The dapp requested network(s) that are unsupported by Rainbow.",
+        "read_only_wallet_on_signing_method": "It looks like you're using a read-only wallet, which is not allowed for this request.",
+        "namespaces_invalid": "There was an issue with the namespaces requested by the dapp. Please try again or contact Rainbow and/or dapp support teams.",
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
         "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."

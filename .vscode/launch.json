@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Launch App",
+            "preLaunchTask": "run build",
+            "appSrcRoot": "${workspaceRoot}/android/app/src/main",
+            "apkFile": "${workspaceRoot}/android/app/build/outputs/apk/debug/app-debug.apk",
+            "adbSocket": "localhost:5037",
+            "autoStartADB": true,
+            "staleBuild": "warn",
+            "targetDevice": "",
+            "manifestFile": "${workspaceRoot}/android/app/src/main/AndroidManifest.xml",
+            "pmInstallArgs": ["-r"],
+            "launchActivity": ".MainActivity",
+            "postLaunchPause": 1000,
+            "trace": false
+        },
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Sync gradle files",
+            "preLaunchTask": "run sync"
+        },
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Gradle clean",
+            "preLaunchTask": "run clean"
+        },
+        {
+            "type": "android",
+            "request": "launch",
+            "name": "Gradle invalidate",
+            "preLaunchTask": "run invalidate"
+        }
+    ]
+}

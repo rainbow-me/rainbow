@@ -157,9 +157,7 @@ export default function CoinDivider({
             }
           >
             <CoinDividerOpenButton
-              coinDividerHeight={CoinDividerHeight}
               isSmallBalancesOpen={isSmallBalancesOpen}
-              isVisible={defaultToEditButton || isCoinListEdited}
               onPress={toggleOpenSmallBalances}
             />
           </View>

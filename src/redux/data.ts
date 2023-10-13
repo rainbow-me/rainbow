@@ -2,7 +2,7 @@ import {
   StaticJsonRpcProvider,
   TransactionResponse,
 } from '@ethersproject/providers';
-import { isEmpty, isNil, mapValues, partition, cloneDeep } from 'lodash';
+import { isEmpty, isNil, mapValues, partition } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -22,14 +22,17 @@ import {
 } from '@/entities';
 import appEvents from '@/handlers/appEvents';
 import {
-  getAccountAssetsData,
   getLocalPendingTransactions,
   getLocalTransactions,
-  saveAccountAssetsData,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
-import { getProviderForNetwork, web3Provider } from '@/handlers/web3';
+import {
+  getCachedProviderForNetwork,
+  getProviderForNetwork,
+  isHardHat,
+  web3Provider,
+} from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
@@ -47,13 +50,11 @@ import {
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
-import { FiatProviderName } from '@/entities/f2c';
-import { logger as loggr, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
+import { logger as loggr } from '@/logger';
 import { queryClient } from '@/react-query';
+import { RainbowAddressAssets } from '@/resources/assets/types';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { nftsQueryKey } from '@/resources/nfts';
-import { QueryClient } from '@tanstack/react-query';
-import { ratioGetUserActivityItem } from '@/resources/f2c';
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
@@ -68,8 +69,6 @@ const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
-export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
-  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
@@ -147,7 +146,6 @@ type DataAction =
   | DataLoadTransactionsRequestAction
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
-  | DataLoadAccountAssetsDataRequestAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
   | DataUpdatePendingTransactionSuccessAction
@@ -198,13 +196,6 @@ interface DataLoadTransactionSuccessAction {
  */
 interface DataLoadTransactionsFailureAction {
   type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
-}
-
-/**
- * The action to set `isLoadingAssets` to `true`.
- */
-interface DataLoadAccountAssetsDataRequestAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
 }
 
 /**
@@ -361,7 +352,6 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
     | DataLoadAccountAssetsDataFailureAction
     | DataLoadTransactionSuccessAction
@@ -371,27 +361,36 @@ export const dataLoadState = () => async (
   >,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
-  try {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
-    const accountAssetsData = await getAccountAssetsData(
-      accountAddress,
-      network
-    );
+  const { accountAddress, nativeCurrency, network } = getState().settings;
 
-    const isCurrentAccountAddress =
-      accountAddress === getState().settings.accountAddress;
-    if (!isCurrentAccountAddress) return;
+  const provider = getCachedProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
 
-    if (!isEmpty(accountAssetsData)) {
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
-    }
-  } catch (error) {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
+  const userAssetsObj:
+    | RainbowAddressAssets
+    | undefined = queryClient.getQueryData(
+    userAssetsQueryKey({
+      address: accountAddress,
+      connectedToHardhat,
+      currency: nativeCurrency,
+    })
+  );
+  if (userAssetsObj) {
+    dispatch({
+      payload: userAssetsObj,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    });
+  } else {
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: accountAddress,
+        currency: nativeCurrency,
+        connectedToHardhat,
+      }),
+    });
   }
+
   try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
@@ -429,30 +428,6 @@ export const dataResetState = () => (
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
 
   dispatch({ type: DATA_CLEAR_STATE });
-};
-
-/**
- * Updates account asset data in state for a specific asset and saves to account
- * local storage.
- *
- * @param assetData The updated asset, which replaces or adds to the current
- * account's asset data based on it's `uniqueId`.
- */
-export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  const { accountAssetsData } = getState().data;
-  const updatedAssetsData = {
-    ...accountAssetsData,
-    [assetData.uniqueId]: assetData,
-  };
-  dispatch({
-    payload: updatedAssetsData,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
-  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
 /**
@@ -618,11 +593,8 @@ export const transactionsReceived = (
     }, 60000);
   }
 
-  const maybeUpdatedPendingTransactions = await maybeFetchF2CHashForPendingTransactions(
-    cloneDeep(pendingTransactions)
-  );
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = maybeUpdatedPendingTransactions.filter(
+  const updatedPendingTransactions = pendingTransactions.filter(
     tx => !txHashes.includes(ethereumUtils.getHash(tx))
   );
 
@@ -656,132 +628,6 @@ export const transactionsReceived = (
       }, BACKUP_SHEET_DELAY_MS);
     }
   }
-};
-
-/**
- * Maps over every pendingTransaction, and if it's a F2C transaction, fetches
- * the transaction has and updates the pendingTransaction with its hash.
- *
- * This method returns all pendingTransactions that were passed in, so 5 go in,
- * 5 come out, but they might have a tx hash added.
- */
-export const maybeFetchF2CHashForPendingTransactions = async (
-  pendingTransactions: RainbowTransaction[]
-) => {
-  loggr.debug(
-    `maybeFetchF2CHashForPendingTransactions`,
-    {},
-    loggr.DebugContext.f2c
-  );
-
-  /**
-   * A CUSTOM query client used for this query only. We don't need to store tx
-   * data on this device.
-   */
-  const queryClient = new QueryClient();
-
-  return Promise.all(
-    pendingTransactions.map(async tx => {
-      // If not from a F2C provider, return the original tx
-      if (!tx.fiatProvider) return tx;
-      if (tx.hash) {
-        /**
-         * Sometimes `transactionsReceived` gets called more than once in quick
-         * succession, which can result it fetching order data more than once.
-         *
-         * So if we already have a tx hash, then we don't need to fetch
-         * anything else.
-         */
-        return tx;
-      }
-
-      // If it is from an F2C provider, see if we can add the tx hash to it
-      switch (tx.fiatProvider?.name) {
-        // handle Ratio case
-        case FiatProviderName.Ratio: {
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions`,
-            { provider: tx.fiatProvider?.name },
-            loggr.DebugContext.f2c
-          );
-
-          const { userId, orderId } = tx.fiatProvider;
-
-          loggr.debug(
-            `maybeFetchF2CHashForPendingTransactions: fetching order`
-          );
-
-          try {
-            const data = await queryClient.fetchQuery({
-              queryKey: ['f2c', 'ratio', 'pending_tx_check'],
-              staleTime: 10_000, // only fetch AT MOST once every 10 seconds
-              async queryFn() {
-                const { data, error } = await ratioGetUserActivityItem({
-                  userId,
-                  orderId,
-                });
-
-                if (!data || error) {
-                  const [{ message }] = error.errors;
-
-                  if (error) {
-                    throw new Error(message);
-                  } else {
-                    throw new Error(
-                      'Ratio API returned no data for this transaction'
-                    );
-                  }
-                }
-
-                return data;
-              },
-            });
-
-            loggr.debug(
-              `maybeFetchF2CHashForPendingTransactions: fetched order`,
-              {
-                hasData: Boolean(data),
-                hasHash: Boolean(data?.crypto?.transactionHash),
-              }
-            );
-
-            if (data.crypto.transactionHash) {
-              tx.hash = data.crypto.transactionHash;
-
-              analyticsV2.track(analyticsV2.event.f2cTransactionReceived, {
-                provider: FiatProviderName.Ratio,
-                sessionId: tx.fiatProvider.analyticsSessionId,
-              });
-
-              loggr.debug(
-                `maybeFetchF2CHashForPendingTransactions: fetched order and updated hash on transaction`
-              );
-            } else {
-              loggr.info(
-                `maybeFetchF2CHashForPendingTransactions: fetcher returned no transaction data`
-              );
-            }
-          } catch (e: any) {
-            loggr.error(
-              new RainbowError(
-                `maybeFetchF2CHashForPendingTransactions: failed to fetch transaction data`
-              ),
-              {
-                message: e.message,
-                provider: tx.fiatProvider.name,
-              }
-            );
-          }
-
-          break;
-        }
-
-        // handle other cases here once we have more providers
-      }
-
-      return tx;
-    })
-  );
 };
 
 const callbacksOnAssetReceived: {
@@ -1351,11 +1197,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         isLoadingTransactions: false,
-      };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST:
-      return {
-        ...state,
-        isLoadingAssets: true,
       };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {

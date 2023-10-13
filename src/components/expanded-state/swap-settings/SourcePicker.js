@@ -90,6 +90,7 @@ export default function SourcePicker({ onSelect, currentSource }) {
           onPress={openRoutesExplainer}
           paddingVertical="12px"
           testID="swap-settings-routes-label"
+          style={{ maxWidth: 200 }}
         >
           <Text
             color="primary (Deprecated)"

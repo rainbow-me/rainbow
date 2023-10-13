@@ -58,7 +58,6 @@ import {
   persistOptions,
   queryClient,
 } from './react-query';
-import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
@@ -84,7 +83,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
-import { initializeReservoirClient } from '@/resources/nftOffers/utils';
+import { initializeReservoirClient } from '@/resources/reservoir/client';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -236,9 +235,7 @@ class OldApp extends Component {
       setTimeout(() => {
         logger.debug('Reloading balances for network', network);
         if (isL2) {
-          if (tx.internalType === TransactionType.trade) {
-            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
-          } else if (tx.internalType !== TransactionType.authorize) {
+          if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
             queryClient.invalidateQueries({
               queryKey: userAssetsQueryKey({

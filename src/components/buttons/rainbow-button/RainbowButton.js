@@ -48,6 +48,7 @@ const ButtonLabel = styled(Text).attrs(
       type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
     size: type === RainbowButtonTypes.small ? 'large' : 'larger',
     weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
+    numberOfLines: 1,
   })
 )({});
 
