@@ -62,13 +62,16 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
       {type === 'square' ? (
         <Box height="full" justifyContent="space-between">
           <Inline alignHorizontal="justify">
-            <Text
-              size="13pt"
-              weight="heavy"
-              color={{ custom: primaryTextColor }}
-            >
-              {`􀫸 ${i18n.t(translations.learn).toUpperCase()}`}
-            </Text>
+            <Box style={{ maxWidth: 80 }}>
+              <Text
+                size="13pt"
+                weight="heavy"
+                color={{ custom: primaryTextColor }}
+                numberOfLines={1}
+              >
+                {`􀫸 ${i18n.t(translations.learn).toUpperCase()}`}
+              </Text>
+            </Box>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
           <Stack space="10px">
@@ -83,6 +86,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
               color={{ custom: primaryTextColor }}
               size="17pt"
               weight="heavy"
+              numberOfLines={2}
             >
               {i18n.t(translations.cards[key].title)}
             </Text>

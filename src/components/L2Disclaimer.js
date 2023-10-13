@@ -12,6 +12,7 @@ import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { ethereumUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
+import * as lang from '@/languages';
 
 const L2Disclaimer = ({
   assetType,
@@ -22,9 +23,8 @@ const L2Disclaimer = ({
   marginHorizontal = 19,
   onPress,
   prominent,
-  sending,
+  customText,
   symbol,
-  verb,
   forceDarkMode,
 }) => {
   const localColors = isNft ? darkModeThemeColors : colors;
@@ -80,9 +80,14 @@ const L2Disclaimer = ({
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {verb ? verb : sending ? `Sending` : `This ${symbol} is`} on the{' '}
-              {getNetworkObj(ethereumUtils.getNetworkFromType(assetType)).name}{' '}
-              network
+              {customText
+                ? customText
+                : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
+                    symbol,
+                    network: getNetworkObj(
+                      ethereumUtils.getNetworkFromType(assetType)
+                    ).name,
+                  })}
             </Text>
           </Column>
           <Column align="end" justify="center">

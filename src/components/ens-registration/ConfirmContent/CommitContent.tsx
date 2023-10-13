@@ -41,6 +41,7 @@ const CommitContent = ({
             color="secondary50 (Deprecated)"
             size="14px / 19px (Deprecated)"
             weight="bold"
+            numberOfLines={1}
           >
             {lang.t('profiles.confirm.suggestion')}
           </Text>

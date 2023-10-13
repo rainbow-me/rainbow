@@ -13,7 +13,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { useMints } from '@/resources/mints';
 import { useAccountProfile, useDimensions } from '@/hooks';
@@ -24,11 +24,13 @@ import {
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
 import { BlurView } from '@react-native-community/blur';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { Media } from '../Media';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { ethereumUtils } from '@/utils';
 
 const IMAGE_SIZE = 111;
 
@@ -71,6 +73,24 @@ export function FeaturedMintCard() {
 
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
+  const handlePress = useCallback(() => {
+    if (featuredMint) {
+      analyticsV2.track(analyticsV2.event.mintsPressedFeaturedMintCard, {
+        contractAddress: featuredMint.contractAddress,
+        chainId: featuredMint.chainId,
+        totalMints: featuredMint.totalMints,
+        mintsLastHour: featuredMint.totalMints,
+        priceInEth: convertRawAmountToRoundedDecimal(
+          featuredMint.mintStatus.price,
+          18,
+          6
+        ),
+      });
+      const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
+      navigateToMintCollection(featuredMint.contract, network);
+    }
+  }, [featuredMint]);
+
   return featuredMint ? (
     <ColorModeProvider value="darkTinted">
       <AccentColorProvider color={accentColor ?? labelSecondary}>
@@ -108,23 +128,7 @@ export function FeaturedMintCard() {
                 overflow: 'hidden',
                 padding: 12,
               }}
-              onPress={() => {
-                analyticsV2.track(
-                  analyticsV2.event.mintsPressedFeaturedMintCard,
-                  {
-                    contractAddress: featuredMint.contractAddress,
-                    chainId: featuredMint.chainId,
-                    totalMints: featuredMint.totalMints,
-                    mintsLastHour: featuredMint.totalMints,
-                    priceInEth: convertRawAmountToRoundedDecimal(
-                      featuredMint.mintStatus.price,
-                      18,
-                      6
-                    ),
-                  }
-                );
-                Linking.openURL(featuredMint.externalURL);
-              }}
+              onPress={handlePress}
               scaleTo={0.96}
             >
               <Cover>

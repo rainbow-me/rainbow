@@ -137,6 +137,7 @@ const GasSpeedButton = ({
   asset,
   currentNetwork,
   horizontalPadding = 19,
+  fallbackColor,
   marginBottom = 20,
   marginTop = 18,
   speeds = null,
@@ -151,7 +152,12 @@ const GasSpeedButton = ({
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const rawColorForAsset = useColorForAsset(
+    asset || {},
+    fallbackColor,
+    false,
+    true
+  );
   const [isLongWait, setIsLongWait] = useState(false);
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
@@ -229,6 +235,7 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      fallbackColor,
       flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
       openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),

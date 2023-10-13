@@ -7,6 +7,7 @@ export enum TransactionType {
   deposit = 'deposit',
   dropped = 'dropped',
   execution = 'execution',
+  mint = 'mint',
   purchase = 'purchase', // Rainbow-specific type
   receive = 'receive',
   repay = 'repay',
@@ -25,6 +26,7 @@ export default {
   deposit: 'deposit',
   dropped: 'dropped',
   execution: 'execution',
+  mint: 'mint',
   purchase: 'purchase',
   receive: 'receive',
   repay: 'repay',

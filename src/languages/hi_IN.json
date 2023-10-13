@@ -555,6 +555,9 @@
         "available_networks": "%{availableNetworks} नेटवर्क्स पर उपलब्ध",
         "available_network": "%{availableNetwork} नेटवर्क पर उपलब्ध",
         "available_networkv2": "%{availableNetwork}पर भी उपलब्ध",
+        "l2_disclaimer": "यह %{symbol} का नेटवर्क पर है %{network}",
+        "l2_disclaimer_send": "भेजना नेटवर्क पर %{network}",
+        "l2_disclaimer_dapp": "यह ऐप नेटवर्क पर %{network}",
         "social": {
           "facebook": "फेसबुक",
           "homepage": "होमपेज",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "कृपया MetaMask क्रोम एक्सटेंशन इंस्टॉल करें",
       "web3_not_unlocked": "कृपया अपना MetaMask वॉलेट अनलॉक करें",
       "web3_unknown_network": "अज्ञात नेटवर्क, कृपया दूसरे पर स्विच करें"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "मिंट्स",
+        "no_data_found": "कोई डेटा नहीं मिला।",
+        "card": {
+          "x_ago": "%{timeElapsed} पहले",
+          "one_mint_past_hour": "1 मिंट पिछले घंटे",
+          "x_mints_past_hour": "%{numMints} मिंट्स पिछले घंटे",
+          "x_mints": "%{numMints} मिंट्स",
+          "mint": "मिंट",
+          "free": "मुफ्त"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "सभी मिंट्स देखें",
+        "mints": "मिंट्स",
+        "collection_cell": {
+          "free": "मुफ्त"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "विशेष रुप से प्रदर्शित मिंट",
+        "one_mint": "1 मिंट",
+        "x_mints": "%{numMints} मिंट्स",
+        "x_past_hour": "%{numMints} पिछले घंटे"
+      },
+      "filter": {
+        "all": "सभी",
+        "free": "मुफ्त",
+        "paid": "भुगतान किया"
+      }
     },
     "modal": {
       "approve_tx": "लेन-देन को मंजूरी दें %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "प्रोफ़ाइल जानकारी साफ़ करें",
           "point_name_to_recipient": "इस नाम को प्राप्तकर्ता के वॉलेट पते की ओर इशारा करें",
           "transfer_control": "प्राप्तकर्ता को नियंत्रण स्थानांतरित करें",
-          "has_a_wallet_that_supports": "व्यक्ति जिसे मैं भेज रहा हूँ, उसके पास एक वॉलेट है जिसे %{networkName}समर्थित करता है",
+          "has_a_wallet_that_supports": "मैं संपर्क कर रहा हूं इसका समर्थन करता है %{networkName}",
           "im_not_sending_to_an_exchange": "मैं एक विनिमय को नहीं भेज रहा"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "प्लेसहोल्डर",
         "request": "लेन-देन अनुरोध",
         "send": "लेन-देन भेजें",
-        "sending_title": "भेज रहा है"
+        "sending_title": "भेज रहा है",
+        "you_own_this_wallet": "आपका यह वॉलेट है",
+        "first_time_send": "पहली बार भेजें",
+        "previous_sends": "%{number} पिछला भेजा गया"
       },
       "wallet_connect": {
         "error": "वॉलेटकनेक्ट के साथ प्रारंभ करने में त्रुटि",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "आपके वॉलेट के साथ कनेक्ट करना चाहता है",
+      "wants_to_connect_to_network": "नेटवर्क %{network} के साथ कनेक्ट करना चाहता है",
       "available_networks": "उपलब्ध नेटवर्क",
       "change_network": "नेटवर्क बदलें",
       "connected_apps": "कनेक्टेड एप्स",
