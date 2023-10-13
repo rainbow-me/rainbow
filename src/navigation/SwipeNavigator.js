@@ -40,7 +40,7 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
@@ -337,7 +337,7 @@ export function SwipeNavigator() {
             <Swipe.Navigator
               initialLayout={deviceUtils.dimensions}
               initialRouteName={Routes.WALLET_SCREEN}
-              swipeEnabled={!isCoinListEdited}
+              swipeEnabled={!isCoinListEdited || IS_TEST}
               tabBar={props => (
                 <TabBar
                   {...props}
