@@ -13,11 +13,6 @@ import {
   QueryFunctionArgs,
   QueryFunctionResult,
 } from '@/react-query';
-import {
-  DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
-  DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-} from '@/redux/data';
-import store from '@/redux/store';
 import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
@@ -84,15 +79,8 @@ async function userAssetsQueryFunction({
     userAssetsQueryKey({ address, currency, connectedToHardhat })
   )?.state?.data || {}) as RainbowAddressAssets;
 
-  const { dispatch } = store;
-
   if (connectedToHardhat) {
     const parsedHardhatResults = await fetchHardhatBalances(address);
-    // Temporary: update data redux with address assets
-    dispatch({
-      payload: parsedHardhatResults,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
     return parsedHardhatResults;
   }
 
@@ -135,17 +123,8 @@ async function userAssetsQueryFunction({
       );
     }
 
-    // Temporary: update data redux with address assets
-    dispatch({
-      payload: parsedSuccessResults,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
-
     return parsedSuccessResults;
   } catch (e) {
-    dispatch({
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE,
-    });
     return cachedAddressAssets;
   }
 }
@@ -192,11 +171,10 @@ const retryErroredChainIds = async (
     ...parsedSuccessResults,
   };
 
-  const { dispatch } = store;
-  dispatch({
-    payload: parsedSuccessResults,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
+  queryClient.setQueryData(
+    userAssetsQueryKey({ address, currency, connectedToHardhat }),
+    parsedSuccessResults
+  );
 };
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
