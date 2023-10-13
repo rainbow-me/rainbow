@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
-import { Centered, InnerBorder } from '../layout';
+import { Centered, InnerBorder, Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import ShadowStack from '@/react-native-shadow-stack';
@@ -14,6 +14,8 @@ const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'looser',
   size: 'larger',
   weight: 'heavy',
+  ellipsizeMode: 'tail',
+  numberOfLines: 1,
 }))({
   bottom: 2,
 });
@@ -48,9 +50,9 @@ export default function ShareButton({ accountAddress, ...props }) {
         borderRadius={28}
         height={56}
         shadows={shadows}
-        width={123}
+        width={200}
       >
-        <Centered cover>
+        <Centered cover style={{ paddingHorizontal: 10 }}>
           <Label>{`􀈂 ${lang.t('button.share')}`}</Label>
         </Centered>
         <InnerBorder />

@@ -555,6 +555,9 @@
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
         "available_networkv2": "Also available on %{availableNetwork}",
+        "l2_disclaimer": "This %{symbol} is on the %{network} network",
+        "l2_disclaimer_send": "Sending on the %{network} network",
+        "l2_disclaimer_dapp": "This app on the %{network} network",
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
@@ -2183,7 +2186,10 @@
         "placeholder_title": "Placeholder",
         "request": "Transaction Request",
         "send": "Send Transaction",
-        "sending_title": "Sending"
+        "sending_title": "Sending",
+        "you_own_this_wallet": "You own this wallet",
+        "first_time_send": "First time send",
+        "previous_sends": "%{number} previous sends"
       },
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
@@ -2210,6 +2216,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "wants to connect to your wallet",
+      "wants_to_connect_to_network": "wants to connect to the %{network} network",
       "available_networks": "Available Networks",
       "change_network": "Change Network",
       "connected_apps": "Connected apps",

@@ -28,10 +28,9 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
   borderRadius: 15,
   height: 30,
   justifyContent: 'center',
-  maxWidth: 90,
   paddingBottom: 5,
   paddingTop: 5,
-  width: 90,
+  paddingHorizontal: 10,
 });
 
 const ShareCollectiblesButton = ({ onPress }) => (
@@ -67,7 +66,6 @@ export default function ListHeader({
   isCoinListEdited,
   showDivider = true,
   title,
-  titleRenderer = H1,
   totalValue,
 }) {
   const deviceDimensions = useDimensions();
@@ -115,7 +113,11 @@ export default function ListHeader({
           {title && (
             <Row align="center">
               {/* eslint-disable-next-line react/no-children-prop */}
-              {createElement(titleRenderer, { children: title })}
+              <Row style={{ maxWidth: 200 }}>
+                <H1 ellipsizeMode="tail" numberOfLines={1}>
+                  {title}
+                </H1>
+              </Row>
               {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
                   <ShareCollectiblesButton

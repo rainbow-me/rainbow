@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -1261,7 +1262,14 @@ export default function TransactionConfirmationScreen() {
                       hideDivider
                       onPress={handleL2DisclaimerPress}
                       prominent
-                      symbol="app"
+                      customText={i18n.t(
+                        i18n.l.expanded_state.asset.l2_disclaimer_dapp,
+                        {
+                          network: getNetworkObj(
+                            ethereumUtils.getNetworkFromType(currentNetwork)
+                          ).name,
+                        }
+                      )}
                     />
                   </Column>
                 )}

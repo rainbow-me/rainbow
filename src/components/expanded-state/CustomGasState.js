@@ -10,7 +10,6 @@ import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@/helpers/gas';
 import {
-  useAccountSettings,
   useColorForAsset,
   useDimensions,
   useGas,
@@ -24,7 +23,7 @@ import { IS_ANDROID } from '@/env';
 import { useSelector } from 'react-redux';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 
-const FOOTER_HEIGHT = 76;
+const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
 
 function useAndroidDisableGesturesOnFocus() {

@@ -555,6 +555,9 @@
         "available_networks": "Disponível em %{availableNetworks} redes",
         "available_network": "Disponível na rede %{availableNetwork}",
         "available_networkv2": "Também disponível em %{availableNetwork}",
+        "l2_disclaimer": "Esse %{symbol} está na rede %{network}",
+        "l2_disclaimer_send": "Enviando na rede %{network}",
+        "l2_disclaimer_dapp": "Este aplicativo na rede %{network}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Página inicial",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "Por favor, instale a extensão MetaMask para Chrome",
       "web3_not_unlocked": "Por favor, desbloqueie sua carteira MetaMask",
       "web3_unknown_network": "Rede desconhecida, por favor mude para outra"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Mintes",
+        "no_data_found": "Nenhum dado encontrado.",
+        "card": {
+          "x_ago": "%{timeElapsed} atrás",
+          "one_mint_past_hour": "1 minte passada hora",
+          "x_mints_past_hour": "%{numMints} mintes passada hora",
+          "x_mints": "%{numMints} mintes",
+          "mint": "Minte",
+          "free": "GRÁTIS"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "Ver Todos os Mintes",
+        "mints": "Mintes",
+        "collection_cell": {
+          "free": "GRÁTIS"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Minte Destacado",
+        "one_mint": "1 minte",
+        "x_mints": "%{numMints} mintes",
+        "x_past_hour": "%{numMints} última hora"
+      },
+      "filter": {
+        "all": "Todos",
+        "free": "Grátis",
+        "paid": "Pago"
+      }
     },
     "modal": {
       "approve_tx": "Aprovar transação em %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "Limpar informações do perfil",
           "point_name_to_recipient": "Apontar esse nome para o endereço da carteira do destinatário",
           "transfer_control": "Transferir controle para o destinatário",
-          "has_a_wallet_that_supports": "A pessoa para quem estou enviando tem uma carteira que suporta %{networkName}",
+          "has_a_wallet_that_supports": "O endereço para o qual estou enviando suporta %{networkName}",
           "im_not_sending_to_an_exchange": "Não estou enviando para uma exchange"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "Espaço reservado",
         "request": "Solicitação de transação",
         "send": "Enviar transação",
-        "sending_title": "Enviando"
+        "sending_title": "Enviando",
+        "you_own_this_wallet": "Você é o proprietário desta carteira",
+        "first_time_send": "Primeiro envio",
+        "previous_sends": "%{number} envios anteriores"
       },
       "wallet_connect": {
         "error": "Erro ao inicializar com WalletConnect",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "deseja conectar-se à sua carteira",
+      "wants_to_connect_to_network": "quer se conectar à rede %{network}",
       "available_networks": "Redes Disponíveis",
       "change_network": "Alterar Rede",
       "connected_apps": "Aplicativos Conectados",
