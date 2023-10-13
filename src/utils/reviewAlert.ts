@@ -1,11 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import { Linking, NativeModules } from 'react-native';
+import * as StoreReview from 'expo-store-review';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 const { RainbowRequestReview } = NativeModules;
 
 export const AppleReviewAddress =
   'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
+export const PlayStoreAddress =
+  'market://details?id=me.rainbow&showAllReviews=true';
 
 export const REVIEW_DONE_KEY = 'AppStoreReviewDone';
 export const REVIEW_ASKED_KEY = 'AppStoreReviewAsked';

@@ -9394,6 +9394,11 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+expo-store-review@6.6.0:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/expo-store-review/-/expo-store-review-6.6.0.tgz#753908f2a98443decb51fb4b11e60474dc750458"
+  integrity sha512-iwo3HD2KBcy8yeXFgTY8gXKtK1HK+Dhvr/M53RwI3eg7d4MwP7vo/8dS4mucRnRsn1me6+LqNG+QxdeRPX05lw==
+
 exponential-backoff@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.1.tgz#64ac7526fe341ab18a39016cd22c787d01e00bf6"
