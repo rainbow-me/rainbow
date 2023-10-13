@@ -88,18 +88,18 @@ describe('Deeplinks spec', () => {
     await Helpers.tapAlertWithButton('OK');
   });
 
-  it.skip('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
+  it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
     await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/rainbowwallet.eth'
+      'https://rainbow.me/profile/rainbowwallet.eth'
     );
     await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it.skip('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
+  it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
     await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
+      'https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
     );
     await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible(
@@ -109,12 +109,12 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
     await testEthereumDeeplink(url, false);
   });
 
-  it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
