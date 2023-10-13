@@ -101,6 +101,51 @@ query claimPoapBySecretWord($walletAddress: String!, $secretWord: String!) {
   }
 }
 
+query getReservoirCollection($contractAddress: String!, $chainId: Int!) {
+  getReservoirCollection(contractAddress: $contractAddress, chainId: $chainId) {
+    collection {
+      id
+      chainId
+      createdAt
+      name
+      image
+      description
+      sampleImages
+      tokenCount
+      creator
+      ownerCount
+      isMintingPublicSale
+      publicMintInfo {
+        stage
+        kind
+        price {
+          currency {
+            contract
+            name
+            symbol
+            decimals
+          }
+          amount {
+            raw
+            decimal
+            usd
+            native
+          }
+          netAmount {
+            raw
+            decimal
+            usd
+            native
+          }
+        }
+        startTime
+        endTime
+        maxMintsPerWallet
+      }
+    }
+  }
+}
+
 fragment mintStatus on MintStatus {
   isMintable
   price

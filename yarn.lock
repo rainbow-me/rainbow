@@ -4069,10 +4069,10 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@reservoir0x/reservoir-sdk@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.2.1.tgz#8f1a1330c06c658b98e4fd66d0de994c398197ba"
-  integrity sha512-+FN4mN5m5zEPAW41ZkO23NBc1ANQA8gIJr7bWE44fOm7T0dMtbBKEHuGsLtwbuKUx+IslbjmdhytkXRfFTPMqQ==
+"@reservoir0x/reservoir-sdk@1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.4.5.tgz#6ff0fd61fea203de4cdde019048fa9d0b0ab08e9"
+  integrity sha512-Yi4Z0c85fUfPB2mo1FdeCpEgrpN36fDV8gU4RDmsl6IuFYD8pwA/SMtxoo5M0uEN3at+VpVV9utyvB8XlHUFMQ==
   dependencies:
     axios "^0.27.2"
 

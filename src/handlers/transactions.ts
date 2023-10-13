@@ -114,6 +114,8 @@ const getConfirmedState = (type?: TransactionType): TransactionStatus => {
       return TransactionStatus.approved;
     case TransactionTypes.sell:
       return TransactionStatus.sold;
+    case TransactionTypes.mint:
+      return TransactionStatus.minted;
     case TransactionTypes.deposit:
       return TransactionStatus.deposited;
     case TransactionTypes.withdraw:

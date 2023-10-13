@@ -95,6 +95,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 type StackNavigatorParams = {
@@ -213,6 +214,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={PoapSheet}
         name={Routes.POAP_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={MintSheet}
+        name={Routes.MINT_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen

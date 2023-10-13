@@ -26,6 +26,7 @@ import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 import { Network } from '@/helpers';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 export const NUM_NFTS = 3;
 
@@ -129,7 +130,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
               chainId: collection.chainId,
               priceInEth: price,
             });
-            Linking.openURL(collection.externalURL);
+            navigateToMintCollection(collection.contract, network);
           }}
           style={{
             borderRadius: 99,
