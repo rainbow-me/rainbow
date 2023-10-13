@@ -1,9 +1,7 @@
-import React from 'react';
-import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import React, { useMemo } from 'react';
+import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { ScrollView } from 'react-native';
 import { RewardsStatsCard } from './RewardsStatsCard';
-import { capitalize } from 'lodash';
 import {
   RewardStatsAction,
   RewardStatsActionType,
@@ -17,41 +15,9 @@ import {
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
-import { TextColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
-import { STATS_TITLES } from '@/screens/rewards/constants';
-
-const getPositionChangeSymbol = (positionChange: number) => {
-  if (positionChange > 0) {
-    return '􀑁';
-  }
-  if (positionChange < 0) {
-    return '􁘳';
-  }
-  return '􁘶';
-};
-
-const getPositionChangeColor = (
-  positionChange: number,
-  colors: {
-    up: TextColor | CustomColor;
-    down: TextColor | CustomColor;
-    noChange: TextColor | CustomColor;
-  }
-): TextColor | CustomColor => {
-  if (positionChange > 0) {
-    return colors.up;
-  }
-  if (positionChange < 0) {
-    return colors.down;
-  }
-  return colors.noChange;
-};
 
 type Props = {
   assetPrice?: number;
-  position: number;
-  positionChange: number;
   actions: RewardStatsAction[];
   color: string;
 };
@@ -59,95 +25,120 @@ type Props = {
 export const RewardsStats: React.FC<Props> = ({
   assetPrice,
   actions,
-  position,
-  positionChange,
   color,
 }) => {
   const { navigate } = useNavigation();
   const nativeCurrency = useSelector(
     (state: AppState) => state.settings.nativeCurrency
   );
-  const navigateToPositionExplainer = () => {
-    analyticsV2.track(analyticsV2.event.rewardsPressedPositionCard, {
-      position,
-    });
-    navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_position' });
-  };
+
+  const swapsData = actions.find(
+    action => action.type === RewardStatsActionType.Swap
+  );
+
+  const bridgeData = actions.find(
+    action => action.type === RewardStatsActionType.Bridge
+  );
+
   const getPressHandlerForType = (type: RewardStatsActionType) => {
     switch (type) {
       case RewardStatsActionType.Bridge:
         return () => {
           analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_bridge' });
+          navigate(Routes.EXPLAIN_SHEET, {
+            type: 'op_rewards_bridge',
+            percent: bridgeData?.rewardPercent || 0,
+          });
         };
       case RewardStatsActionType.Swap:
         return () => {
           analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
-          navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_swap' });
+          navigate(Routes.EXPLAIN_SHEET, {
+            type: 'op_rewards_swap',
+            percent: swapsData?.rewardPercent || 0,
+          });
         };
       default:
         return () => {};
     }
   };
+
+  const getSwapsValue = useMemo(() => {
+    if (assetPrice) {
+      return convertAmountAndPriceToNativeDisplay(
+        swapsData?.amount?.token || '0',
+        assetPrice,
+        nativeCurrency
+      ).display;
+    }
+
+    return convertAmountToNativeDisplay(swapsData?.amount?.usd || '0', 'USD');
+  }, [
+    assetPrice,
+    nativeCurrency,
+    swapsData?.amount?.token,
+    swapsData?.amount?.usd,
+  ]);
+
+  const getBridgeValue = useMemo(() => {
+    if (assetPrice) {
+      return convertAmountAndPriceToNativeDisplay(
+        bridgeData?.amount?.token ?? '0',
+        assetPrice,
+        nativeCurrency
+      ).display;
+    }
+
+    return convertAmountToNativeDisplay(bridgeData?.amount?.usd || '0', 'USD');
+  }, [
+    assetPrice,
+    nativeCurrency,
+    bridgeData?.amount?.token,
+    bridgeData?.amount?.usd,
+  ]);
+
   return (
-    <Box paddingBottom="12px">
-      <Stack space="8px">
+    <Box width="full" paddingBottom="12px">
+      <Stack space="16px">
         <Text size="20pt" color="label" weight="heavy">
           {i18n.t(i18n.l.rewards.my_stats)}
         </Text>
-        <Bleed horizontal="20px">
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingTop: 8,
-              paddingHorizontal: 20,
-              paddingBottom: 24,
-            }}
-            horizontal
-          >
-            <Inline space="12px">
-              <RewardsStatsCard
-                key="Position"
-                title={i18n.t(i18n.l.rewards.position)}
-                value={`#${position}`}
-                secondaryValue={Math.abs(positionChange).toString()}
-                secondaryValueColor={getPositionChangeColor(positionChange, {
-                  up: 'green',
-                  down: { custom: color },
-                  noChange: 'labelQuaternary',
-                })}
-                secondaryValueIcon={getPositionChangeSymbol(positionChange)}
-                onPress={navigateToPositionExplainer}
-              />
-              {actions.map(action => {
-                const value =
-                  assetPrice !== undefined
-                    ? convertAmountAndPriceToNativeDisplay(
-                        action.amount.token,
-                        assetPrice,
-                        nativeCurrency
-                      ).display
-                    : convertAmountToNativeDisplay(action.amount.usd, 'USD');
 
-                return (
-                  <RewardsStatsCard
-                    key={action.type}
-                    title={STATS_TITLES[action.type]}
-                    value={value}
-                    secondaryValue={i18n.t(i18n.l.rewards.percent, {
-                      percent: action.rewardPercent,
-                    })}
-                    secondaryValueIcon="􀐚"
-                    secondaryValueColor={{
-                      custom: color,
-                    }}
-                    onPress={getPressHandlerForType(action.type)}
-                  />
-                );
-              })}
-            </Inline>
-          </ScrollView>
-        </Bleed>
+        <Box
+          alignItems="flex-start"
+          flexDirection="row"
+          justifyContent="flex-start"
+          flexGrow={1}
+          style={{ gap: 12 }}
+        >
+          <Box flexGrow={1}>
+            <RewardsStatsCard
+              key={RewardStatsActionType.Swap}
+              title={i18n.t(i18n.l.rewards.swapped)}
+              value={getSwapsValue}
+              secondaryValue={`${
+                swapsData?.rewardPercent?.toString() ?? '0'
+              }% reward`}
+              secondaryValueColor={{ custom: color }}
+              secondaryValueIcon={'􀐚'}
+              onPress={getPressHandlerForType(RewardStatsActionType.Swap)}
+            />
+          </Box>
+
+          <Box flexGrow={1}>
+            <RewardsStatsCard
+              key={RewardStatsActionType.Bridge}
+              title={i18n.t(i18n.l.rewards.bridged)}
+              value={getBridgeValue}
+              secondaryValue={`${
+                bridgeData?.rewardPercent?.toString() ?? '0'
+              }% reward`}
+              secondaryValueColor={{ custom: color }}
+              secondaryValueIcon={'􀐚'}
+              onPress={getPressHandlerForType(RewardStatsActionType.Bridge)}
+            />
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

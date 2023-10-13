@@ -1,14 +1,13 @@
 import React from 'react';
 import { RewardsTitle } from '@/screens/rewards/components/RewardsTitle';
 import { RewardsEarnings } from '@/screens/rewards/components/RewardsEarnings';
-import { RewardsClaimed } from '@/screens/rewards/components/RewardsClaimed';
 import { GetRewardsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { RewardsStats } from './RewardsStats';
-import { RewardsLeaderboard } from '@/screens/rewards/components/RewardsLeaderboard';
-import { RewardsDuneLogo } from '@/screens/rewards/components/RewardsDuneLogo';
 import { RewardsFakeContent } from '@/screens/rewards/components/RewardsFakeContent';
 import { RewardsProgramStatus } from '@/screens/rewards/components/RewardsProgramStatus';
 import * as i18n from '@/languages';
+import { InfoAlert } from '@/components/info-alert/info-alert';
+import { Box, Text } from '@/design-system';
 
 type Props = {
   assetPrice?: number;
@@ -26,6 +25,7 @@ export const RewardsContent: React.FC<Props> = ({
   if (isLoading) {
     return <RewardsFakeContent />;
   }
+
   if (isLoadingError || !data || !data.rewards) {
     return (
       <RewardsProgramStatus
@@ -35,11 +35,21 @@ export const RewardsContent: React.FC<Props> = ({
       />
     );
   }
-  const leaderboardData = data.rewards.leaderboard.accounts ?? [];
 
   return (
-    <>
+    <Box height="full">
       <RewardsTitle text={data.rewards.meta.title} />
+      <Box paddingBottom="20px">
+        <InfoAlert
+          title={i18n.t(i18n.l.rewards.info.title)}
+          description={i18n.t(i18n.l.rewards.info.description)}
+          rightIcon={
+            <Text size="20pt" color={{ custom: data.rewards.meta.color }}>
+              􀫸
+            </Text>
+          }
+        />
+      </Box>
       {data.rewards.earnings && (
         <RewardsEarnings
           assetPrice={assetPrice}
@@ -51,28 +61,13 @@ export const RewardsContent: React.FC<Props> = ({
           totalEarnings={data.rewards.earnings.total}
         />
       )}
-      <RewardsClaimed
-        assetPrice={assetPrice}
-        color={data.rewards.meta.color}
-        nextDistributionTimestamp={data.rewards.meta.distribution.next}
-        remainingRewards={data.rewards.meta.distribution.left}
-        tokenSymbol={data.rewards.meta.token.asset.symbol}
-        totalAvailableRewardsInToken={data.rewards.meta.distribution.total}
-      />
-      <RewardsStats
-        actions={data.rewards.stats?.actions ?? []}
-        assetPrice={assetPrice}
-        color={data.rewards.meta.color}
-        position={data.rewards.stats?.position.current ?? 1}
-        positionChange={data.rewards.stats?.position.change.h24 ?? 0}
-      />
-      <RewardsLeaderboard
-        leaderboard={leaderboardData}
-        programEndTimestamp={data.rewards.meta.end}
-        status={data.rewards.meta.status}
-        tokenSymbol={data.rewards.meta.token.asset.symbol}
-      />
-      <RewardsDuneLogo />
-    </>
+      {data.rewards.stats && (
+        <RewardsStats
+          actions={data.rewards.stats?.actions ?? []}
+          assetPrice={assetPrice}
+          color={data.rewards.meta.color}
+        />
+      )}
+    </Box>
   );
 };

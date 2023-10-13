@@ -18,9 +18,9 @@ import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import {
+  getProviderForNetwork,
   isValidBluetoothDeviceId,
   resolveUnstoppableDomain,
-  web3Provider,
 } from '@/handlers/web3';
 import {
   isENSAddressFormat,
@@ -151,6 +151,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
+          const web3Provider = await getProviderForNetwork();
           const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
             !avatarUrl &&

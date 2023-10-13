@@ -12,7 +12,7 @@ type Props = {
   secondaryValue: string;
   secondaryValueIcon: string;
   secondaryValueColor: TextColor | CustomColor;
-  onPress: () => void;
+  onPress?: () => void;
 };
 
 export const RewardsStatsCard: React.FC<Props> = ({
@@ -26,7 +26,12 @@ export const RewardsStatsCard: React.FC<Props> = ({
   const infoIconColor = useInfoIconColor();
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} overflowMargin={50}>
+    <ButtonPressAnimation
+      disabled={!onPress}
+      onPress={onPress}
+      scaleTo={0.96}
+      overflowMargin={50}
+    >
       <RewardsSectionCard>
         <Stack space="12px">
           <Inline space="4px" alignVertical="center" wrap={false}>
