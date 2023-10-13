@@ -1,8 +1,11 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
+import { RainbowAddressAssets } from '@/resources/assets/types';
 import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { queryClient } from '@/react-query';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import {
@@ -30,7 +33,9 @@ import {
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import {
+  getCachedProviderForNetwork,
   getProviderForNetwork,
+  isHardHat,
   isL2Network,
   isTestnetNetwork,
   toHex,
@@ -128,11 +133,26 @@ const getAsset = (
   return accountAssets[loweredUniqueId];
 };
 
+const getUserAssetFromCache = (uniqueId: string) => {
+  const { accountAddress, nativeCurrency, network } = store.getState().settings;
+
+  const cache = queryClient.getQueryCache();
+  const provider = getCachedProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+  const cachedAddressAssets = (cache.find(
+    userAssetsQueryKey({
+      address: accountAddress,
+      currency: nativeCurrency,
+      connectedToHardhat,
+    })
+  )?.state?.data || {}) as RainbowAddressAssets;
+  return cachedAddressAssets?.[uniqueId];
+};
+
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
-  const accountAsset = store.getState().data?.accountAssetsData?.[
-    loweredUniqueId
-  ];
+  const accountAsset = getUserAssetFromCache(loweredUniqueId);
   const genericAsset = store.getState().data?.genericAssets?.[loweredUniqueId];
   return accountAsset ?? genericAsset;
 };
@@ -141,9 +161,7 @@ const getAccountAsset = (
   uniqueId: EthereumAddress | undefined
 ): ParsedAddressAsset | undefined => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
-  const accountAsset = store.getState().data?.accountAssetsData?.[
-    loweredUniqueId
-  ];
+  const accountAsset = getUserAssetFromCache(loweredUniqueId);
   return accountAsset;
 };
 
