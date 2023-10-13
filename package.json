@@ -359,6 +359,7 @@
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
     "react-test-renderer": "18.1.0",
+    "resolve": "1.22.8",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
     "ts-jest": "29.1.1",
