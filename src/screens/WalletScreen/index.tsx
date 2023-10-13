@@ -9,14 +9,12 @@ import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { prefetchENSIntroData } from '@/handlers/ens';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
   useAccountEmptyState,
   useAccountSettings,
-  useCoinListEdited,
   useInitializeAccountData,
   useInitializeWallet,
   useLoadAccountData,
@@ -40,7 +38,6 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -58,7 +55,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const initializeWallet = useInitializeWallet();
-  const { isCoinListEdited } = useCoinListEdited();
   const { trackENSProfile } = useTrackENSProfile();
   const {
     network: currentNetwork,
@@ -68,15 +64,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   usePositions({ address: accountAddress, currency: nativeCurrency });
-
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
-  useUserAssets({
-    address: accountAddress,
-    currency: nativeCurrency,
-    connectedToHardhat,
-  });
 
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
