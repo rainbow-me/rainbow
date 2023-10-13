@@ -124,7 +124,6 @@ export { default as useSwapRefuel } from './useSwapRefuel';
 export { default as useTimeout } from './useTimeout';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';
-export { default as useAssetsInWallet } from './useAssetsInWallet';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';

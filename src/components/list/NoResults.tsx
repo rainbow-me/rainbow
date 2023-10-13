@@ -3,8 +3,8 @@ import React from 'react';
 import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import { useAssetsInWallet } from '@/hooks';
 import { logger } from '@/logger';
+import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
 
 export enum NoResultsType {
   Discover = 'discover',
@@ -20,7 +20,7 @@ export const NoResults = ({
   type: NoResultsType;
 }) => {
   const { colors } = useTheme();
-  const assets = useAssetsInWallet();
+  const { data: assetCount } = useUserAssetCount();
 
   let title;
   let description;
@@ -31,7 +31,7 @@ export const NoResults = ({
       break;
     case NoResultsType.Swap:
       title = lang.t('exchange.no_results.nothing_found');
-      if (assets.length) {
+      if (assetCount) {
         description = onL2
           ? lang.t('exchange.no_results.description_l2')
           : lang.t('exchange.no_results.description');
