@@ -126,7 +126,6 @@ export { default as useTimeout } from './useTimeout';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useAssetsInWallet } from './useAssetsInWallet';
-export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useUserLists } from './useUserLists';
 export { default as useWalletBalances } from './useWalletBalances';

@@ -21,7 +21,6 @@ import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
-import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { swapMetadataStorage } from './swap';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
@@ -136,17 +135,6 @@ const crosschainSwap = async (
 
     // @ts-ignore
     swap = await executeCrosschainSwap(swapParams);
-    if (swap?.hash) {
-      dispatch(
-        additionalDataUpdateL2AssetToWatch({
-          hash: swap?.hash,
-          inputCurrency,
-          network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-          outputCurrency,
-          userAddress: accountAddress,
-        })
-      );
-    }
   } catch (e) {
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');

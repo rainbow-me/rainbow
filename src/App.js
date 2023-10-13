@@ -58,7 +58,6 @@ import {
   persistOptions,
   queryClient,
 } from './react-query';
-import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -243,9 +242,7 @@ class OldApp extends Component {
       setTimeout(() => {
         logger.debug('Reloading balances for network', network);
         if (isL2) {
-          if (tx.internalType === TransactionType.trade) {
-            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
-          } else if (tx.internalType !== TransactionType.authorize) {
+          if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
             queryClient.invalidateQueries({
               queryKey: userAssetsQueryKey({

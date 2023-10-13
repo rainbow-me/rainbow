@@ -61,7 +61,6 @@ import {
   useSendSheetInputRefs,
   useSortedAccountAssets,
   useTransactionConfirmation,
-  useUpdateAssetOnchainBalance,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
@@ -126,7 +125,6 @@ export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
-  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { sortedAssets } = useSortedAccountAssets();
   const {
     gasFeeParamsBySpeed,
@@ -372,41 +370,6 @@ export default function SendSheet(props) {
     selected.type,
     sendUpdateSelected,
   ]);
-
-  useEffect(() => {
-    if (isEmpty(selected)) return;
-    if (currentProvider?._network?.chainId) {
-      const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-        Number(currentProvider._network.chainId)
-      );
-
-      const assetNetwork = isNft
-        ? selected.network
-        : ethereumUtils.getNetworkFromType(selected.type);
-
-      if (
-        assetNetwork === currentNetwork &&
-        currentProviderNetwork === currentNetwork &&
-        selected.type !== AssetTypes.nft
-      ) {
-        updateAssetOnchainBalanceIfNeeded(
-          selected,
-          accountAddress,
-          currentNetwork,
-          currentProvider,
-          updatedAsset => {
-            // set selected asset with new balance
-            if (!isEqual(selected, updatedAsset)) {
-              setSelected(updatedAsset);
-              updateMaxInputBalance(updatedAsset);
-              sendUpdateAssetAmount('');
-            }
-          }
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {

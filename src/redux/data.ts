@@ -22,14 +22,17 @@ import {
 } from '@/entities';
 import appEvents from '@/handlers/appEvents';
 import {
-  getAccountAssetsData,
   getLocalPendingTransactions,
   getLocalTransactions,
-  saveAccountAssetsData,
   saveLocalPendingTransactions,
   saveLocalTransactions,
 } from '@/handlers/localstorage/accountLocal';
-import { getProviderForNetwork, web3Provider } from '@/handlers/web3';
+import {
+  getCachedProviderForNetwork,
+  getProviderForNetwork,
+  isHardHat,
+  web3Provider,
+} from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
@@ -49,6 +52,8 @@ import {
 import { SwapType } from '@rainbow-me/swaps';
 import { logger as loggr } from '@/logger';
 import { queryClient } from '@/react-query';
+import { RainbowAddressAssets } from '@/resources/assets/types';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { nftsQueryKey } from '@/resources/nfts';
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
@@ -64,8 +69,6 @@ const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
-export const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
-  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
   'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
 export const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
@@ -143,7 +146,6 @@ type DataAction =
   | DataLoadTransactionsRequestAction
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
-  | DataLoadAccountAssetsDataRequestAction
   | DataLoadAccountAssetsDataSuccessAction
   | DataLoadAccountAssetsDataFailureAction
   | DataUpdatePendingTransactionSuccessAction
@@ -194,13 +196,6 @@ interface DataLoadTransactionSuccessAction {
  */
 interface DataLoadTransactionsFailureAction {
   type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
-}
-
-/**
- * The action to set `isLoadingAssets` to `true`.
- */
-interface DataLoadAccountAssetsDataRequestAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
 }
 
 /**
@@ -357,7 +352,6 @@ export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
     unknown,
-    | DataLoadAccountAssetsDataRequestAction
     | DataLoadAccountAssetsDataSuccessAction
     | DataLoadAccountAssetsDataFailureAction
     | DataLoadTransactionSuccessAction
@@ -367,27 +361,36 @@ export const dataLoadState = () => async (
   >,
   getState: AppGetState
 ) => {
-  const { accountAddress, network } = getState().settings;
-  try {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
-    const accountAssetsData = await getAccountAssetsData(
-      accountAddress,
-      network
-    );
+  const { accountAddress, nativeCurrency, network } = getState().settings;
 
-    const isCurrentAccountAddress =
-      accountAddress === getState().settings.accountAddress;
-    if (!isCurrentAccountAddress) return;
+  const provider = getCachedProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
 
-    if (!isEmpty(accountAssetsData)) {
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
-    }
-  } catch (error) {
-    dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
+  const userAssetsObj:
+    | RainbowAddressAssets
+    | undefined = queryClient.getQueryData(
+    userAssetsQueryKey({
+      address: accountAddress,
+      connectedToHardhat,
+      currency: nativeCurrency,
+    })
+  );
+  if (userAssetsObj) {
+    dispatch({
+      payload: userAssetsObj,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+    });
+  } else {
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: accountAddress,
+        currency: nativeCurrency,
+        connectedToHardhat,
+      }),
+    });
   }
+
   try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
@@ -425,30 +428,6 @@ export const dataResetState = () => (
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
 
   dispatch({ type: DATA_CLEAR_STATE });
-};
-
-/**
- * Updates account asset data in state for a specific asset and saves to account
- * local storage.
- *
- * @param assetData The updated asset, which replaces or adds to the current
- * account's asset data based on it's `uniqueId`.
- */
-export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
-  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
-  getState: AppGetState
-) => {
-  const { accountAddress, network } = getState().settings;
-  const { accountAssetsData } = getState().data;
-  const updatedAssetsData = {
-    ...accountAssetsData,
-    [assetData.uniqueId]: assetData,
-  };
-  dispatch({
-    payload: updatedAssetsData,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
-  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
 /**
@@ -1218,11 +1197,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         isLoadingTransactions: false,
-      };
-    case DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST:
-      return {
-        ...state,
-        isLoadingAssets: true,
       };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS: {
       return {
