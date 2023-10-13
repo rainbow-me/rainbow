@@ -6,9 +6,9 @@ import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
-import useSortedAccountAssets from './useSortedAccountAssets';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function useWalletSectionsData({
@@ -16,7 +16,10 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
-  const sortedAccountData = useSortedAccountAssets();
+  const {
+    isLoading: isLoadingAssets,
+    data: sortedAssets,
+  } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
   const {
@@ -46,12 +49,13 @@ export default function useWalletSectionsData({
     const accountInfo = {
       hiddenCoins,
       isCoinListEdited,
+      isLoadingAssets,
       language,
       nativeCurrency,
       network,
       pinnedCoins,
       sendableUniqueTokens,
-      ...sortedAccountData,
+      sortedAssets,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -77,6 +81,7 @@ export default function useWalletSectionsData({
     hiddenCoins,
     hiddenTokens,
     isCoinListEdited,
+    isLoadingAssets,
     isReadOnlyWallet,
     isWalletEthZero,
     language,
@@ -84,7 +89,7 @@ export default function useWalletSectionsData({
     network,
     pinnedCoins,
     showcaseTokens,
-    sortedAccountData,
+    sortedAssets,
     type,
     sendableUniqueTokens,
   ]);

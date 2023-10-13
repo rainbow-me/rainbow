@@ -5,7 +5,6 @@ export {
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
 export { default as useAccountAsset } from './useAccountAsset';
-export { default as useSortedAccountAssets } from './useSortedAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
 export {
