@@ -5,7 +5,10 @@ import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import { deprecatedRemoveLocal } from '../handlers/localstorage/common';
+import {
+  deprecatedRemoveLocal,
+  getGlobal,
+} from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
@@ -52,14 +55,15 @@ import {
   savePinnedCoins,
 } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
 import logger from '@/utils/logger';
+import { queryClient } from '@/react-query';
+import { favoritesQueryKey } from '@/resources/favorites';
+import { EthereumAddress, RainbowToken } from '@/entities';
 
 export default async function runMigrations() {
   // get current version
@@ -272,22 +276,25 @@ export default async function runMigrations() {
 
   migrations.push(v5);
 
+  /**
+   * NOTICE: this migration is no longer in use. userLists has been removed.
+   */
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    try {
-      const userLists = await getUserLists();
-      const newLists = userLists.map((list: { id: string }) => {
-        if (list?.id !== 'dollars') {
-          return list;
-        }
-        return DefaultTokenLists['mainnet'].find(
-          ({ id }) => id === 'stablecoins'
-        );
-      });
-      await saveUserLists(newLists);
-    } catch (e) {
-      logger.log('ignoring lists migrations');
-    }
+    // try {
+    //   const userLists = await getUserLists();
+    //   const newLists = userLists.map((list: { id: string }) => {
+    //     if (list?.id !== 'dollars') {
+    //       return list;
+    //     }
+    //     return DefaultTokenLists['mainnet'].find(
+    //       ({ id }) => id === 'stablecoins'
+    //     );
+    //   });
+    //   await saveUserLists(newLists);
+    // } catch (e) {
+    //   logger.log('ignoring lists migrations');
+    // }
   };
 
   migrations.push(v6);
@@ -673,10 +680,36 @@ export default async function runMigrations() {
 
   migrations.push(v17);
 
+  /**
+   *************** Migration v18 ******************
+   Move favorites from local storage to react query persistent cache (AsyncStorage)
+   */
+  const v18 = async () => {
+    const favoritesMetadata = await getGlobal(
+      'uniswapFavoritesMetadata',
+      undefined,
+      '0.1.0'
+    );
+
+    if (favoritesMetadata) {
+      const lowercasedFavoritesMetadata: Record<
+        EthereumAddress,
+        RainbowToken
+      > = {};
+      Object.keys(favoritesMetadata).forEach((address: string) => {
+        lowercasedFavoritesMetadata[address.toLowerCase()] =
+          favoritesMetadata[address];
+      });
+      queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
+    }
+  };
+
+  migrations.push(v18);
+
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
-
+  // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.sentry(`Migrations: Nothing to run`);
     return;

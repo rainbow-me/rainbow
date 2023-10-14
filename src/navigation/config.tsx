@@ -222,15 +222,6 @@ export const customGasSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const addTokenSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      longFormHeight: 394,
-    }),
-  }),
-};
-
 export const positionSheetConfig = {
   options: ({ route: { params = {} } }: { route: { params: any } }) => {
     const height = getPositionSheetHeight(params);

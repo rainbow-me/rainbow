@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -34,7 +33,6 @@ import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
-  addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
@@ -259,11 +257,6 @@ function NativeStackNavigator() {
         component={SendConfirmationSheet}
         name={Routes.SEND_CONFIRMATION_SHEET}
         {...sendConfirmationSheetConfig}
-      />
-      <NativeStack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        {...addTokenSheetConfig}
       />
       <NativeStack.Screen
         component={ExplainSheet}

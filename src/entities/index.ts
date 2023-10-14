@@ -60,13 +60,11 @@ export {
   ZerionTransactionStatus,
 } from './transactions';
 export type { EthereumAddress } from './wallet';
-export type { UserList } from './userLists';
 export type {
   TokenSearchThreshold,
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
-export type { UniswapFavoriteTokenData } from './uniswap';
 export type {
   ENSRegistrationRecords,
   ENSRegistrations,

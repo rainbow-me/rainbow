@@ -33,7 +33,7 @@ import {
   subtract,
 } from '@/helpers/utilities';
 import { Network } from '@/helpers/networkTypes';
-import { erc20ABI, ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@/references';
+import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
 
 export enum Field {
@@ -238,19 +238,6 @@ export const getSwapGasLimitWithFakeApproval = async (
     logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
   }
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
-};
-
-export const getTestnetUniswapPairs = (
-  network: Network
-): { [key: string]: Asset } => {
-  const pairs: { [address: string]: Asset } =
-    (UNISWAP_TESTNET_TOKEN_LIST as any)?.[network] ?? {};
-
-  const loweredPairs = mapKeys(pairs, (_, key) => key.toLowerCase());
-  return mapValues(loweredPairs, value => ({
-    ...value,
-    address: value.address.toLowerCase(),
-  }));
 };
 
 export const estimateSwapGasLimit = async ({
