@@ -115,7 +115,6 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const isReviewAvailable = !ls.review.get(['hasReviewed']) ?? true;
   const { wallets, isReadOnlyWallet } = useWallets();
   const {
     language,
@@ -430,15 +429,13 @@ const SettingsSection = ({
             />
           }
         />
-        {isReviewAvailable && (
-          <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
-            onPress={onPressReview}
-            size={52}
-            testID="review-section"
-            titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
-          />
-        )}
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
+          onPress={onPressReview}
+          size={52}
+          testID="review-section"
+          titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
+        />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
           onPress={onPressDev}
