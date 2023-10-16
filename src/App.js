@@ -173,6 +173,17 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
+
+    /**
+     * Launch the review prompt 30 seconds after the app is launched
+     * This is to avoid the review prompt showing up when the app is
+     * launched and not shown yet.
+     */
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+      }, 30_000);
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -351,21 +362,12 @@ function Root() {
           ['actions'],
           Object.values(ReviewPromptAction).map(action => ({
             id: action,
-            timeOfLastDispatch: 0,
+            timeOfLastPrompt: 0,
             numOfTimesDispatched: 0,
           }))
         );
 
         ls.review.set(['initialized'], true);
-      }
-
-      /**
-       * If this is a returning user, increment the number of times the user
-       * has launched the app. This is used to determine if we should show
-       * the review prompt.
-       */
-      if (isReturningUser || !deviceIdWasJustCreated) {
-        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
       }
 
       /**

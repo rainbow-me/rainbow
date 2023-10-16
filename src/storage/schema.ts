@@ -51,7 +51,6 @@ export const enum ReviewPromptAction {
 
 export type Action = {
   id: ReviewPromptAction;
-  timeOfLastDispatch: number;
   numOfTimesDispatched: number;
   promptsBeforeReview: number;
 };
@@ -65,5 +64,6 @@ export type Action = {
 export type Review = {
   initialized: boolean;
   hasReviewed: boolean;
+  timeOfLastPrompt: number;
   actions: Action[];
 };

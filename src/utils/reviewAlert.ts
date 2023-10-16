@@ -4,12 +4,16 @@ import { Linking, NativeModules } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { IS_IOS } from '@/env';
+import { logger } from '@/logger';
+
 const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const AppleReviewAddress =
   'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 export const PlayStoreAddress =
   'market://details?id=me.rainbow&showAllReviews=true';
+
+const TWO_MONTHS = 1000 * 60 * 60 * 24 * 60;
 
 export const numberOfTimesBeforePrompt: {
   [key in ReviewPromptAction]: number;
@@ -23,20 +27,22 @@ export const numberOfTimesBeforePrompt: {
   AddingContact: 1,
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
-  WatchWallet: 2,
+  WatchWallet: 1,
   NftFloorPriceVisit: 1,
 };
 
 export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
+  logger.info(`handleReviewPromptAction: ${action}`);
+
   if (action === ReviewPromptAction.UserPrompt) {
     promptForReview();
     return;
   }
 
-  const hasReviewed = ls.review.get(['hasReviewed']);
-  if (hasReviewed) {
-    return;
-  }
+  // const hasReviewed = ls.review.get(['hasReviewed']);
+  // if (hasReviewed) {
+  //   return;
+  // }
 
   const actions = ls.review.get(['actions']) || [];
   const actionToDispatch = actions.find(a => a.id === action);
@@ -44,14 +50,24 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
     return;
   }
 
+  const timeOfLastPrompt = ls.review.get(['timeOfLastPrompt']) || 0;
+  logger.info(`timeOfLastPrompt: ${timeOfLastPrompt}`);
+
   actionToDispatch.numOfTimesDispatched += 1;
-  actionToDispatch.timeOfLastDispatch = Date.now();
+  logger.info(`numOfTimesDispatched: ${actionToDispatch.numOfTimesDispatched}`);
 
   ls.review.set(['actions'], actions);
 
   if (
-    actionToDispatch.numOfTimesDispatched >= numberOfTimesBeforePrompt[action]
+    actionToDispatch.numOfTimesDispatched >=
+      numberOfTimesBeforePrompt[action] &&
+    timeOfLastPrompt + TWO_MONTHS <= Date.now()
   ) {
+    logger.info(`Prompting for review`);
+
+    actionToDispatch.numOfTimesDispatched = 0;
+    ls.review.set(['actions'], actions);
+    ls.review.set(['timeOfLastPrompt'], Date.now());
     promptForReview();
   }
 };

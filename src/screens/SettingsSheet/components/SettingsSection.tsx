@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, NativeModules, Share } from 'react-native';
+import { Linking, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -41,6 +40,7 @@ import {
 } from '@/utils/buildRainbowUrl';
 import { getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import * as ls from '@/storage';
 import { ReviewPromptAction } from '@/storage/schema';
 
 const SettingsExternalURLs = {
@@ -115,7 +115,7 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const isReviewAvailable = true;
+  const isReviewAvailable = !ls.review.get(['hasReviewed']) ?? true;
   const { wallets, isReadOnlyWallet } = useWallets();
   const {
     language,
