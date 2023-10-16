@@ -417,7 +417,7 @@
     "**/minimist": "1.2.6",
     "react-native/react-devtools-core": "4.24.0",
     "cross-fetch": "3.1.5",
-    "**/undici": "5.19.1",
+    "**/undici": "5.26.2",
     "**/vm2": "3.9.18",
     "**/d3-color": "3.1.0",
     "**/minimatch": "3.0.5",
@@ -428,7 +428,8 @@
     "**/@sideway/formula": "3.0.1",
     "**/@types/react": "18.0.24",
     "**/socket.io-parser": "4.2.3",
-    "**/get-func-name": "3.0.0"
+    "**/get-func-name": "3.0.0",
+    "**/@babel/traverse": "7.23.2"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
