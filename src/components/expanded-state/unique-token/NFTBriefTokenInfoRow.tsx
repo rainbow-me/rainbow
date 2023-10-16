@@ -32,6 +32,7 @@ export default function NFTBriefTokenInfoRow({
 }: {
   asset: UniqueAsset;
 }) {
+  const [hasDispatchedAction, setHasDispatchedAction] = useState(false);
   const { colors } = useTheme();
 
   const { navigate } = useNavigation();
@@ -76,9 +77,17 @@ export default function NFTBriefTokenInfoRow({
 
   const [showFloorInEth, setShowFloorInEth] = useState(true);
   const toggleFloorDisplayCurrency = useCallback(() => {
-    handleReviewPromptAction(ReviewPromptAction.NftFloorPriceVisit);
+    if (!hasDispatchedAction) {
+      handleReviewPromptAction(ReviewPromptAction.NftFloorPriceVisit);
+      setHasDispatchedAction(true);
+    }
     setShowFloorInEth(!showFloorInEth);
-  }, [showFloorInEth, setShowFloorInEth]);
+  }, [
+    showFloorInEth,
+    setShowFloorInEth,
+    hasDispatchedAction,
+    setHasDispatchedAction,
+  ]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
