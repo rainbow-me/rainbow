@@ -10,8 +10,6 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const AppleReviewAddress =
   'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
-export const PlayStoreAddress =
-  'market://details?id=me.rainbow&showAllReviews=true';
 
 const TWO_MONTHS = 1000 * 60 * 60 * 24 * 60;
 
