@@ -1,66 +1,79 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
+import * as ls from '@/storage';
 import { Linking, NativeModules } from 'react-native';
-import * as StoreReview from 'expo-store-review';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-const { RainbowRequestReview } = NativeModules;
+import { ReviewPromptAction } from '@/storage/schema';
+import { IS_IOS } from '@/env';
+const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const AppleReviewAddress =
   'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 export const PlayStoreAddress =
   'market://details?id=me.rainbow&showAllReviews=true';
 
-export const REVIEW_DONE_KEY = 'AppStoreReviewDone';
-export const REVIEW_ASKED_KEY = 'AppStoreReviewAsked';
-let reviewDisplayedInTheSession = false;
-const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
-
-export const shouldPromptForReview = async (shouldPrompt = false) => {
-  // when a user manually prompts for review on their own
-  if (shouldPrompt) return true;
-
-  const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
-  if (Number(reviewAsked) > Date.now() - TWO_MONTHS) {
-    return false;
-  }
-
-  const reviewDone = await AsyncStorage.getItem(REVIEW_DONE_KEY);
-  if (reviewDone) {
-    return false;
-  }
-
-  return true;
+export const numberOfTimesBeforePrompt: {
+  [key in ReviewPromptAction]: number;
+} = {
+  UserPrompt: 0, // this should never increment
+  TimesLaunchedSinceInstall: 5,
+  SuccessfulFiatToCryptoPurchase: 3,
+  DappConnections: 4,
+  NumberOfSwaps: 2,
+  BridgeToL2: 1,
+  AddingContact: 1,
+  EnsNameSearch: 1,
+  EnsNameRegistration: 1,
+  WatchWallet: 2,
+  NftFloorPriceVisit: 1,
 };
 
-export default async function maybeReviewAlert() {
-  const shouldPrompt = await shouldPromptForReview();
-  if (!shouldPrompt) {
+export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
+  if (action === ReviewPromptAction.UserPrompt) {
+    promptForReview();
     return;
   }
 
-  // update to prevent double showing alert in one session
-  if (reviewDisplayedInTheSession) {
+  const hasReviewed = ls.review.get(['hasReviewed']);
+  if (hasReviewed) {
     return;
   }
-  reviewDisplayedInTheSession = true;
 
-  AsyncStorage.setItem(REVIEW_ASKED_KEY, Date.now().toString());
+  const actions = ls.review.get(['actions']) || [];
+  const actionToDispatch = actions.find(a => a.id === action);
+  if (!actionToDispatch) {
+    return;
+  }
 
+  actionToDispatch.numOfTimesDispatched += 1;
+  actionToDispatch.timeOfLastDispatch = Date.now();
+
+  ls.review.set(['actions'], actions);
+
+  if (
+    actionToDispatch.numOfTimesDispatched >= numberOfTimesBeforePrompt[action]
+  ) {
+    promptForReview();
+  }
+};
+
+export const promptForReview = async () => {
   Alert.alert(
     lang.t('review.alert.are_you_enjoying_rainbow'),
     lang.t('review.alert.leave_a_review'),
     [
       {
         onPress: () => {
-          AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-          if (reviewDisplayedInTheSession) {
-            return;
+          ls.review.set(['hasReviewed'], true);
+
+          if (IS_IOS) {
+            RainbowRequestReview?.requestReview((handled: any) => {
+              if (!handled) {
+                Linking.openURL(AppleReviewAddress);
+              }
+            });
+          } else {
+            RNReview.show();
           }
-          RainbowRequestReview?.requestReview((handled: any) => {
-            if (!handled) {
-              Linking.openURL(AppleReviewAddress);
-            }
-          });
         },
         text: lang.t('review.alert.yes'),
       },
@@ -69,4 +82,4 @@ export default async function maybeReviewAlert() {
       },
     ]
   );
-}
+};

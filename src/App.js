@@ -86,6 +86,8 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/nftOffers/utils';
+import { ReviewPromptAction } from './storage/schema';
+import { handleReviewPromptAction } from './utils/reviewAlert';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -341,6 +343,30 @@ function Root() {
        * `analyticsv2` has all it needs to function.
        */
       analyticsV2.identify({});
+
+      const isReviewInitialized = ls.review.get(['initialized']);
+      if (!isReviewInitialized) {
+        ls.review.set(['hasReviewed'], false);
+        ls.review.set(
+          ['actions'],
+          Object.values(ReviewPromptAction).map(action => ({
+            id: action,
+            timeOfLastDispatch: 0,
+            numOfTimesDispatched: 0,
+          }))
+        );
+
+        ls.review.set(['initialized'], true);
+      }
+
+      /**
+       * If this is a returning user, increment the number of times the user
+       * has launched the app. This is used to determine if we should show
+       * the review prompt.
+       */
+      if (isReturningUser || !deviceIdWasJustCreated) {
+        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to

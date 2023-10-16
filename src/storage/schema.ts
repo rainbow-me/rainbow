@@ -36,6 +36,8 @@ export type Account = {
 };
 
 export const enum ReviewPromptAction {
+  UserPrompt = 'UserPrompt', // this is a special action that we use if the user manually prompts for review
+  TimesLaunchedSinceInstall = 'TimesLaunchedSinceInstall',
   SuccessfulFiatToCryptoPurchase = 'SuccessfulFiatToCryptoPurchase',
   DappConnections = 'DappConnections',
   NumberOfSwaps = 'NumberOfSwaps',
@@ -44,13 +46,14 @@ export const enum ReviewPromptAction {
   EnsNameSearch = 'EnsNameSearch',
   EnsNameRegistration = 'EnsNameRegistration',
   WatchWallet = 'WatchWallet',
-  NftFloorPriceVisitThrice = 'NftFloorPriceVisitThrice',
+  NftFloorPriceVisit = 'NftFloorPriceVisit',
 }
 
 export type Action = {
   id: ReviewPromptAction;
   timeOfLastDispatch: number;
   numOfTimesDispatched: number;
+  promptsBeforeReview: number;
 };
 
 /**
@@ -60,6 +63,7 @@ export type Action = {
  * NOTE: if a user has already reviewed, we don't want to prompt them again
  */
 export type Review = {
+  initialized: boolean;
   hasReviewed: boolean;
   actions: Action[];
 };
