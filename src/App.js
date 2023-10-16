@@ -362,11 +362,11 @@ function Root() {
           ['actions'],
           Object.values(ReviewPromptAction).map(action => ({
             id: action,
-            timeOfLastPrompt: 0,
             numOfTimesDispatched: 0,
           }))
         );
 
+        ls.review.set(['timeOfLastPrompt'], 0);
         ls.review.set(['initialized'], true);
       }
 
