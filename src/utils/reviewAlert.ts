@@ -26,7 +26,7 @@ export const numberOfTimesBeforePrompt: {
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
   WatchWallet: 1,
-  NftFloorPriceVisit: 1,
+  NftFloorPriceVisit: 3,
 };
 
 export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
