@@ -104,6 +104,8 @@ import { useTheme } from '@/theme';
 import { logger as loggr } from '@/logger';
 import { getNetworkObj } from '@/networks';
 import Animated from 'react-native-reanimated';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -735,6 +737,15 @@ export default function ExchangeModal({
         });
         // Tell iOS we finished running a rap (for tracking purposes)
         NotificationManager?.postNotification('rapCompleted');
+
+        setTimeout(() => {
+          if (isBridgeSwap) {
+            handleReviewPromptAction(ReviewPromptAction.BridgeToL2);
+          } else {
+            handleReviewPromptAction(ReviewPromptAction.Swap);
+          }
+        }, 500);
+
         return true;
       } catch (error) {
         setIsAuthorizing(false);
@@ -759,6 +770,7 @@ export default function ExchangeModal({
       goBack,
       inputAmount,
       inputCurrency,
+      isBridgeSwap,
       isCrosschainSwap,
       isHardwareWallet,
       navigate,

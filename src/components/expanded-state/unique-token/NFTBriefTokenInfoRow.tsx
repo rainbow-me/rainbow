@@ -14,6 +14,8 @@ import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 const NONE = 'None';
 
@@ -73,10 +75,10 @@ export default function NFTBriefTokenInfoRow({
   );
 
   const [showFloorInEth, setShowFloorInEth] = useState(true);
-  const toggleFloorDisplayCurrency = useCallback(
-    () => setShowFloorInEth(!showFloorInEth),
-    [showFloorInEth, setShowFloorInEth]
-  );
+  const toggleFloorDisplayCurrency = useCallback(() => {
+    handleReviewPromptAction(ReviewPromptAction.NftFloorPriceVisit);
+    setShowFloorInEth(!showFloorInEth);
+  }, [showFloorInEth, setShowFloorInEth]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {

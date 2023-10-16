@@ -22,7 +22,7 @@ export const numberOfTimesBeforePrompt: {
   TimesLaunchedSinceInstall: 5,
   SuccessfulFiatToCryptoPurchase: 3,
   DappConnections: 4,
-  NumberOfSwaps: 2,
+  Swap: 3,
   BridgeToL2: 1,
   AddingContact: 1,
   EnsNameSearch: 1,
@@ -39,10 +39,10 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
     return;
   }
 
-  // const hasReviewed = ls.review.get(['hasReviewed']);
-  // if (hasReviewed) {
-  //   return;
-  // }
+  const hasReviewed = ls.review.get(['hasReviewed']);
+  if (hasReviewed) {
+    return;
+  }
 
   const actions = ls.review.get(['actions']) || [];
   const actionToDispatch = actions.find(a => a.id === action);

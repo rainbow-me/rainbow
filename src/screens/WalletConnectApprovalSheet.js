@@ -12,7 +12,7 @@ import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '../components/coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
@@ -44,11 +44,12 @@ import {
   Text,
 } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -355,6 +356,10 @@ export default function WalletConnectApprovalSheet() {
     handled.current = true;
     goBack();
     handleSuccess(true);
+
+    setTimeout(() => {
+      handleReviewPromptAction(ReviewPromptAction.DappConnections);
+    }, 500);
   }, [handleSuccess, goBack]);
 
   const handleCancel = useCallback(() => {

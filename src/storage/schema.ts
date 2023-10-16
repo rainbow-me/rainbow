@@ -40,7 +40,7 @@ export const enum ReviewPromptAction {
   TimesLaunchedSinceInstall = 'TimesLaunchedSinceInstall',
   SuccessfulFiatToCryptoPurchase = 'SuccessfulFiatToCryptoPurchase',
   DappConnections = 'DappConnections',
-  NumberOfSwaps = 'NumberOfSwaps',
+  Swap = 'Swap',
   BridgeToL2 = 'BridgeToL2',
   AddingContact = 'AddingContact',
   EnsNameSearch = 'EnsNameSearch',
