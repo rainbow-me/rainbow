@@ -1,5 +1,8 @@
 import React, { PropsWithChildren } from 'react';
-import Animated, { useAnimatedProps } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedProps,
+  SharedValue,
+} from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
@@ -57,7 +60,7 @@ const circlePath = (
 };
 
 interface Props {
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
   color?: string;
   progressColor?: string;
   size?: number;
