@@ -406,7 +406,7 @@ export default function WalletConnectApprovalSheet() {
       type: failureExplainSheetVariant || 'failed_wc_connection',
     });
     return;
-  }, [goBack, navigate, timedOut]);
+  }, [failureExplainSheetVariant, goBack, navigate, timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const NetworkSwitcherParent =
@@ -454,10 +454,12 @@ export default function WalletConnectApprovalSheet() {
                   weight="semibold"
                 >
                   {type === WalletConnectApprovalSheetType.connect
-                    ? `wants to connect to your wallet`
-                    : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
-                        Number(chainId)
-                      )} network`}
+                    ? lang.t(lang.l.walletconnect.wants_to_connect)
+                    : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
+                        network: ethereumUtils.getNetworkNameFromChainId(
+                          Number(chainId)
+                        ),
+                      })}
                 </Text>
               </Column>
             </Centered>

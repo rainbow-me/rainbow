@@ -90,7 +90,7 @@ describe('Deeplinks spec', () => {
 
   it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
     await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/rainbowwallet.eth'
+      'https://rainbow.me/profile/rainbowwallet.eth'
     );
     await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
@@ -99,7 +99,7 @@ describe('Deeplinks spec', () => {
 
   it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
     await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
+      'https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
     );
     await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible(
@@ -119,28 +119,36 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url, false);
   });
 
+  // FIXME: when doing open deeplinks with cold start, the account assets state
+  // comes back empty, find a fix and then change these tests to cold-start again
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url = escapeUrl(
       'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
     );
-    await testEthereumDeeplink(url);
+    await testEthereumDeeplink(url, false);
   });
 
-  it.skip('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
+  // FIXME: when doing open deeplinks with cold start, the account assets state
+  // comes back empty, find a fix and then change these tests to cold-start again
+  it('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
-    await testEthereumDeeplink(url);
+    await testEthereumDeeplink(url, false);
   });
 
-  it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
+  // FIXME: when doing open deeplinks with cold start, the account assets state
+  // comes back empty, find a fix and then change these tests to cold-start again
+  it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
     const url = escapeUrl(
       'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
     );
-    await testEthereumDeeplink(url);
+    await testEthereumDeeplink(url, false);
   });
 
-  it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
+  // FIXME: when doing open deeplinks with cold start, the account assets state
+  // comes back empty, find a fix and then change these tests to cold-start again
+  it('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
-    await testEthereumDeeplink(url);
+    await testEthereumDeeplink(url, false);
   });
 
   afterAll(async () => {

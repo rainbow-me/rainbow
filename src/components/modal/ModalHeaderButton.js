@@ -5,6 +5,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
 import styled from '@/styled-thing';
+import { DebugLayout } from '@/design-system';
 
 const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -17,14 +18,15 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
 
 const Container = styled(Row).attrs(({ side }) => ({
   align: 'center',
-  justify: side === 'left' ? 'start' : 'end',
+  justify: 'center',
 }))(({ side, theme: { colors } }) => ({
   ...(side === 'left' ? { left: 0 } : { right: 0 }),
   backgroundColor: colors.transparent,
   bottom: 0,
-  paddingLeft: side === 'left' ? 15 : 48,
-  paddingRight: side === 'left' ? 48 : 15,
+  paddingLeft: side === 'left' ? 15 : 15,
+  paddingRight: side === 'left' ? 15 : 15,
   zIndex: 2,
+  width: 120,
 }));
 
 const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
@@ -32,6 +34,7 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   size: 'large',
   weight: 'medium',
+  numberOfLines: 1,
 }))({
   marginLeft: ({ side }) => (side === 'left' ? 4 : 0),
 });

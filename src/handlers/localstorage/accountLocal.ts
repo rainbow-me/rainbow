@@ -3,14 +3,12 @@ import { getAccountLocal, getKey, saveAccountLocal } from './common';
 import { ENSRegistrations } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
 
-const accountAssetsDataVersion = '0.2.0';
 const assetsVersion = '0.3.0';
 const pendingTransactionsVersion = '0.1.0';
 const purchaseTransactionsVersion = '0.2.0';
 const transactionsVersion = '0.3.0';
 const uniqueTokensVersion = '0.2.1';
 
-const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSETS = 'assets';
@@ -30,7 +28,6 @@ const storage = new MMKV({
 });
 
 export const accountLocalKeys = [
-  ACCOUNT_ASSETS_DATA,
   ACCOUNT_INFO,
   ASSETS,
   ENS_REGISTRATIONS,
@@ -72,41 +69,6 @@ export const saveAccountEmptyState = (
  */
 export const getAssets = (accountAddress: any, network: any) =>
   getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
-
-/**
- * @desc get account assets data
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getAccountAssetsData = (accountAddress: any, network: any) =>
-  getAccountLocal(
-    ACCOUNT_ASSETS_DATA,
-    accountAddress,
-    network,
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
-    {},
-    accountAssetsDataVersion
-  );
-
-/**
- * @desc save account assets data
- * @param  {Object}   [accountAssetsData]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountAssetsData = (
-  accountAssetsData: any,
-  accountAddress: any,
-  network: any
-) =>
-  saveAccountLocal(
-    ACCOUNT_ASSETS_DATA,
-    accountAssetsData,
-    accountAddress,
-    network,
-    accountAssetsDataVersion
-  );
 
 /**
  * @desc get purchase transactions

@@ -19,7 +19,10 @@ import {
   ShimmerAnimation,
 } from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
+import {
+  nftOffersQueryKey,
+  useNFTOffers,
+} from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Animated, {

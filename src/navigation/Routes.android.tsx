@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -81,6 +80,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
+import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
@@ -151,11 +151,6 @@ function MainNavigator() {
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
         options={addCashSheet}
-      />
-      <Stack.Screen
-        component={AddTokenSheet}
-        name={Routes.ADD_TOKEN_SHEET}
-        options={bottomSheetPreset}
       />
       <Stack.Screen
         component={BackupSheet}
@@ -244,6 +239,7 @@ function BSNavigator() {
         name={Routes.EXPANDED_ASSET_SHEET}
       />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
+      <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
       <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}

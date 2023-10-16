@@ -555,6 +555,9 @@
         "available_networks": "Disponible en %{availableNetworks} redes",
         "available_network": "Disponible en la %{availableNetwork} red",
         "available_networkv2": "También disponible en %{availableNetwork}",
+        "l2_disclaimer": "Este %{symbol} está en la red %{network}",
+        "l2_disclaimer_send": "Enviando en la red %{network}",
+        "l2_disclaimer_dapp": "Esta aplicación en la red %{network}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Página de inicio",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "Por favor, instala la extensión de MetaMask para Chrome",
       "web3_not_unlocked": "Por favor, desbloquea tu billetera de MetaMask",
       "web3_unknown_network": "Red desconocida, por favor cambia a otra"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Menta",
+        "no_data_found": "No se encontraron datos.",
+        "card": {
+          "x_ago": "%{timeElapsed} hace",
+          "one_mint_past_hour": "1 menta pasado la hora",
+          "x_mints_past_hour": "%{numMints} mentas pasado la hora",
+          "x_mints": "%{numMints} mentas",
+          "mint": "Menta",
+          "free": "GRATIS"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "Ver todas las mentas",
+        "mints": "Menta",
+        "collection_cell": {
+          "free": "GRATIS"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Menta destacada",
+        "one_mint": "1 menta",
+        "x_mints": "%{numMints} mentas",
+        "x_past_hour": "%{numMints} última hora"
+      },
+      "filter": {
+        "all": "Todos",
+        "free": "Gratis",
+        "paid": "Pago"
+      }
     },
     "modal": {
       "approve_tx": "Aprobar transacción en %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "Borrar información del perfil",
           "point_name_to_recipient": "Apuntar este nombre a la dirección de billetera del destinatario",
           "transfer_control": "Transferir el control al destinatario",
-          "has_a_wallet_that_supports": "La persona a quien envío tiene una billetera que admite %{networkName}",
+          "has_a_wallet_that_supports": "La dirección a la que estoy enviando soporta %{networkName}",
           "im_not_sending_to_an_exchange": "No estoy enviando a un exchange"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "Marcador de posición",
         "request": "Solicitud de transacción",
         "send": "Enviar transacción",
-        "sending_title": "Enviando"
+        "sending_title": "Enviando",
+        "you_own_this_wallet": "Eres el propietario de esta billetera",
+        "first_time_send": "Primera vez enviando",
+        "previous_sends": "%{number} envíos anteriores"
       },
       "wallet_connect": {
         "error": "Error al inicializar con WalletConnect",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "quiere conectarse a tu billetera",
+      "wants_to_connect_to_network": "quiere conectarse a la red %{network}",
       "available_networks": "Redes Disponibles",
       "change_network": "Cambiar Red",
       "connected_apps": "Aplicaciones Conectadas",

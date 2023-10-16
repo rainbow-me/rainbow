@@ -23,7 +23,6 @@ export default React.memo(function ExchangeTokenRow({
     uniqueId,
     showBalance,
     showFavoriteButton,
-    showAddButton,
     onPress,
     theme,
     nativeCurrency,
@@ -126,7 +125,6 @@ export default React.memo(function ExchangeTokenRow({
               {isInfoButtonVisible && (
                 <Info
                   contextMenuProps={contextMenuProps}
-                  showAddButton={showAddButton}
                   showFavoriteButton={showFavoriteButton}
                   theme={theme}
                 />

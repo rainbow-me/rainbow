@@ -16,6 +16,7 @@ describe('Watched showcase and hidden actions flow', () => {
     );
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
+    await Helpers.checkIfVisible('wallet-screen', 80000);
   });
 
   it('opens NFT', async () => {

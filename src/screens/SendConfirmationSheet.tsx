@@ -2,6 +2,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { capitalize, isEmpty } from 'lodash';
 import React, {
   Fragment,
@@ -68,8 +69,9 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -528,11 +530,13 @@ export const SendConfirmationSheet = () => {
   const getMessage = () => {
     let message;
     if (isSendingToUserAccount) {
-      message = 'You own this wallet';
+      message = i18n.t(i18n.l.wallet.transaction.you_own_this_wallet);
     } else if (alreadySentTransactionsTotal === 0) {
-      message = 'First time send';
+      message = i18n.t(i18n.l.wallet.transaction.first_time_send);
     } else {
-      message = `${alreadySentTransactionsTotal} previous sends`;
+      message = i18n.t(i18n.l.wallet.transaction.previous_sends, {
+        number: alreadySentTransactionsTotal,
+      });
     }
     return message;
   };
@@ -701,7 +705,16 @@ export const SendConfirmationSheet = () => {
                       marginHorizontal={0}
                       onPress={handleL2DisclaimerPress}
                       prominent
-                      sending
+                      customText={i18n.t(
+                        i18n.l.expanded_state.asset.l2_disclaimer_send,
+                        {
+                          network: getNetworkObj(
+                            ethereumUtils.getNetworkFromType(
+                              isNft ? asset.network : asset.type
+                            )
+                          ).name,
+                        }
+                      )}
                       symbol={asset.symbol}
                     />
                   </Fragment>

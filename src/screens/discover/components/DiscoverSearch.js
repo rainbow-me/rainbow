@@ -22,6 +22,7 @@ import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@/handlers/ens';
 import {
+  useAccountSettings,
   useHardwareBackOnFocus,
   usePrevious,
   useSwapCurrencyList,
@@ -36,6 +37,7 @@ import {
   getPoapAndOpenSheetWithQRHash,
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
+import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -44,6 +46,7 @@ export const SearchContainer = styled(Row)({
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
+  const { accountAddress } = useAccountSettings();
   const {
     isSearching,
     isFetchingEns,
@@ -144,6 +147,26 @@ export default function DiscoverSearch() {
     checkAndHandlePoaps(searchQueryForPoap);
   }, [searchQueryForPoap]);
 
+  useEffect(() => {
+    // probably dont need this entry point but seems worth keeping?
+    // could do the same with zora, etc
+    const checkAndHandleMint = async seachQueryForMint => {
+      if (seachQueryForMint.includes('mint.fun')) {
+        const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
+        const query = mintdotfunURL[1];
+        let network = query.split('/')[0];
+        if (network === 'ethereum') {
+          network = Network.mainnet;
+        } else if (network === 'op') {
+          network === Network.optimism;
+        }
+        const contractAddress = query.split('/')[1];
+        navigateToMintCollection(contractAddress, network);
+      }
+    };
+    checkAndHandleMint(searchQuery);
+  }, [accountAddress, navigate, searchQuery]);
+
   const handlePress = useCallback(
     item => {
       if (item.ens) {
@@ -185,21 +208,13 @@ export default function DiscoverSearch() {
     ]
   );
 
-  const handleActionAsset = useCallback(
-    item => {
-      navigate(Routes.ADD_TOKEN_SHEET, { item });
-    },
-    [navigate]
-  );
-
   const itemProps = useMemo(
     () => ({
-      onActionAsset: handleActionAsset,
       onPress: handlePress,
-      showAddButton: true,
+      showFavoriteButton: true,
       showBalance: false,
     }),
-    [handleActionAsset, handlePress]
+    [handlePress]
   );
 
   const addEnsResults = useCallback(

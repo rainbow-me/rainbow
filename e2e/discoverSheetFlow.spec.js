@@ -85,17 +85,6 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
-  it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
-    await Helpers.waitAndTap('add-to-list-button');
-    await Helpers.checkIfVisible('add-token-sheet');
-    await Helpers.waitAndTap('add-to-watchlist');
-    await Helpers.checkIfVisible('remove-from-watchlist');
-    await Helpers.waitAndTap('remove-from-favorites');
-    await Helpers.checkIfNotVisible('remove-from-favorites');
-
-    await Helpers.waitAndTap('close-action-button');
-  });
-
   it('Should close expanded state and return to search', async () => {
     if (ios) {
       // RNBW-4035
@@ -167,30 +156,6 @@ describe('Discover Screen Flow', () => {
   it('Should close DPI expanded state and return to Discover Home', async () => {
     await Helpers.swipe('index-expanded-state-header', 'down');
     await Helpers.checkIfVisible('discover-header');
-  });
-
-  // TODO: seems the test doesn't do sideswipe on the horizonal list
-  //       skipping the test till someone fixes it, apparently it's low
-  //       priority right now
-  it.skip('Should cycle through token lists', async () => {
-    android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
-    await Helpers.swipeUntilVisible(
-      'lists-section',
-      'discover-sheet',
-      'up',
-      100
-    );
-    await Helpers.checkIfVisible('lists-section-favorites');
-    await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-watchlist');
-    await Helpers.checkIfVisible('lists-section-watchlist');
-    await Helpers.checkIfVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-trending');
-    await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.waitAndTap('list-defi');
-    await Helpers.checkIfVisible('lists-section-defi');
-    await Helpers.waitAndTap('list-stablecoins');
-    await Helpers.checkIfVisible('lists-section-stablecoins');
   });
 
   afterAll(async () => {

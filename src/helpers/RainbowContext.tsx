@@ -29,14 +29,10 @@ import {
   // @ts-ignore
   IS_TESTING,
 } from 'react-native-dotenv';
-import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
+import { web3SetHttpProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import networkTypes, { Network } from '@/helpers/networkTypes';
+import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
-import { ethereumUtils } from '@/utils';
-import { ETH_ADDRESS } from '@/references';
-import store from '@/redux/store';
-import { useUpdateAssetOnchainBalance } from '@/hooks';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -93,7 +89,6 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   const { isDarkMode, setTheme, colors } = useTheme();
 
   const dispatch = useDispatch();
-  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
 
   const connectToHardhat = useCallback(async () => {
     try {
@@ -111,18 +106,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     }
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-
-    const { accountAddress } = store.getState().settings;
-    const provider = await getProviderForNetwork(Network.mainnet);
-    const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
-    updateAssetOnchainBalanceIfNeeded(
-      ethAsset,
-      accountAddress,
-      Network.mainnet,
-      provider,
-      () => {}
-    );
-  }, [dispatch, updateAssetOnchainBalanceIfNeeded]);
+  }, [dispatch]);
 
   return (
     <RainbowContext.Provider value={initialValue}>

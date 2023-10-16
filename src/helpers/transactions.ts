@@ -99,6 +99,8 @@ export const getConfirmedState = (
       return TransactionStatus.purchased;
     case TransactionTypes.sell:
       return TransactionStatus.sold;
+    case TransactionTypes.mint:
+      return TransactionStatus.minted;
     default:
       return TransactionStatus.sent;
   }
