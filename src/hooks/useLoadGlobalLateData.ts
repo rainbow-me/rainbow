@@ -13,8 +13,7 @@ import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { contactsLoadState } from '@/redux/contacts';
-import { uniswapLoadState } from '@/redux/uniswap';
-import { userListsLoadState } from '@/redux/userLists';
+import { favoritesQueryKey, refreshFavorites } from '@/resources/favorites';
 
 const loadWalletBalanceNamesToCache = () =>
   queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
@@ -39,25 +38,25 @@ export default function useLoadGlobalLateData() {
     // mainnet eth balances for all wallets
     const p2 = loadWalletBalanceNamesToCache();
 
-    // user lists
-    const p3 = dispatch(userListsLoadState());
-
     // favorites
-    const p4 = dispatch(uniswapLoadState());
+    const p3 = queryClient.prefetchQuery({
+      queryKey: favoritesQueryKey,
+      queryFn: refreshFavorites,
+    });
 
     // contacts
-    const p5 = dispatch(contactsLoadState());
+    const p4 = dispatch(contactsLoadState());
 
     // image metadata
-    const p6 = dispatch(imageMetadataCacheLoadState());
+    const p5 = dispatch(imageMetadataCacheLoadState());
 
     // keyboard heights
-    const p7 = dispatch(keyboardHeightsLoadState());
+    const p6 = dispatch(keyboardHeightsLoadState());
 
     // tx method names
-    const p8 = dispatch(transactionSignaturesLoadState());
+    const p7 = dispatch(transactionSignaturesLoadState());
 
-    promises.push(p1, p2, p3, p4, p5, p6, p7, p8);
+    promises.push(p1, p2, p3, p4, p5, p6, p7);
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);

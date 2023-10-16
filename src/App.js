@@ -59,7 +59,6 @@ import {
   queryClient,
 } from './react-query';
 import store from './redux/store';
-import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -151,7 +150,6 @@ class OldApp extends Component {
       this?.handleAppStateChange
     );
     this.setState({ eventSubscription: eventSub });
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
@@ -191,7 +189,6 @@ class OldApp extends Component {
 
   componentWillUnmount() {
     this.state.eventSubscription.remove();
-    rainbowTokenList.off('update', this.handleTokenListUpdate);
     this.branchListener();
   }
 
@@ -201,10 +198,6 @@ class OldApp extends Component {
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
   };
-
-  async handleTokenListUpdate() {
-    store.dispatch(uniswapPairsInit());
-  }
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG

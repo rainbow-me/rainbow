@@ -23,6 +23,11 @@ import { padding } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import { Network } from '@/helpers';
+import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
+import useExperimentalFlag, {
+  OP_REWARDS,
+} from '@rainbow-me/config/experimentalHooks';
+import config from '@/model/config';
 
 const Container = styled(Box).attrs({
   flex: 1,
@@ -55,6 +60,10 @@ export default function SwapDetailsContent({
   const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     outputCurrency?.type
   );
+
+  const hasReward =
+    (useExperimentalFlag(OP_REWARDS) || config.op_rewards_enabled) &&
+    !!tradeDetails.reward?.[0];
 
   return (
     <AccentColorProvider color={colorForAsset}>
@@ -94,6 +103,9 @@ export default function SwapDetailsContent({
               testID="swaps-details-fee-row"
               tradeDetails={tradeDetails}
             />
+          )}
+          {hasReward && (
+            <SwapDetailsRewardRow reward={tradeDetails.reward?.[0]} />
           )}
           {flashbotsEnabled && inputCurrencyNetwork === Network.mainnet && (
             <SwapDetailsRow

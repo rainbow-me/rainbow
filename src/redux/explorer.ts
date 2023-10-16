@@ -31,6 +31,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
   OP_ADDRESS,
+  rainbowTokenList,
 } from '@/references';
 import { TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
@@ -354,7 +355,7 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
     assetsSocket,
   } = getState().explorer;
   const { nativeCurrency } = getState().settings;
-  const { pairs } = getState().uniswap;
+  const pairs = rainbowTokenList.CURATED_TOKENS;
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
@@ -387,7 +388,7 @@ export const explorerInit = () => async (
   getState: AppGetState
 ) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { pairs } = getState().uniswap;
+  const pairs = rainbowTokenList.CURATED_TOKENS;
   const { addressSocket, assetsSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first

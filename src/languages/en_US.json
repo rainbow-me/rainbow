@@ -240,6 +240,7 @@
       "exchange_again": "Exchange Again",
       "exchange_search_placeholder": "Search tokens",
       "exchange_search_placeholder_network": "Search tokens on %{network}",
+      "favorites": "Favorites",
       "go_back": "Go Back",
       "go_back_lowercase": "Go back",
       "got_it": "Got it",
@@ -432,17 +433,6 @@
       "sync_codepush": "Sync codepush"
     },
     "discover": {
-      "lists": {
-        "lists_title": "Lists",
-        "this_list_is_empty": "This list is empty!",
-        "types": {
-          "trending": "Trending",
-          "watchlist": "Watchlist",
-          "favorites": "Favorites",
-          "defi": "DeFi",
-          "stablecoins": "Stablecoins"
-        }
-      },
       "pulse": {
         "pulse_description": "All the top DeFi tokens in one",
         "today_suffix": "today",
@@ -637,6 +627,7 @@
         }
       },
       "swap_details": {
+        "reward": "Reward",
         "exchange_rate": "Exchange rate",
         "rainbow_fee": "Included Rainbow fee",
         "refuel": "Extra network tokens",

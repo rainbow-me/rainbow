@@ -4,9 +4,6 @@ import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/store';
-import { uniswapUpdateFavorites } from '../redux/uniswap';
 import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
 import {
@@ -32,6 +29,7 @@ import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
+import { useFavorites } from '@/resources/favorites';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -41,11 +39,6 @@ type swapCurrencyListType =
   | 'favoriteAssets'
   | 'curatedAssets'
   | 'importedAssets';
-const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
-const uniswapFavoriteMetadataSelector = (state: AppState) =>
-  state.uniswap.favoritesMeta;
-const uniswapFavoritesSelector = (state: AppState): string[] =>
-  state.uniswap.favorites;
 
 type CrosschainVerifiedAssets = {
   [Network.mainnet]: RT[];
@@ -106,12 +99,14 @@ const useSwapCurrencyList = (
     () => searchQuery !== '' || MAINNET_CHAINID !== searchChainId,
     [searchChainId, searchQuery]
   );
-  const dispatch = useDispatch();
 
-  const curatedMap = useSelector(uniswapCuratedTokensSelector);
-  const favoriteMap = useSelector(uniswapFavoriteMetadataSelector);
+  const {
+    favorites: favoriteAddresses,
+    favoritesMetadata: favoriteMap,
+  } = useFavorites();
+
+  const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap);
-  const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
@@ -660,17 +655,10 @@ const useSwapCurrencyList = (
     searchQuery,
   ]);
 
-  const updateFavorites = useCallback(
-    (...data: [string | string[], boolean]) =>
-      dispatch(uniswapUpdateFavorites(...data)),
-    [dispatch]
-  );
-
   return {
     crosschainExactMatches,
     swapCurrencyList: currencyList,
     swapCurrencyListLoading: loading,
-    updateFavorites,
   };
 };
 
