@@ -18,7 +18,7 @@ export const numberOfTimesBeforePrompt: {
 } = {
   UserPrompt: 0, // this should never increment
   TimesLaunchedSinceInstall: 5,
-  SuccessfulFiatToCryptoPurchase: 3,
+  SuccessfulFiatToCryptoPurchase: 1,
   DappConnections: 4,
   Swap: 3,
   BridgeToL2: 1,
