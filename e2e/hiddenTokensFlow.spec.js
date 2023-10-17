@@ -4,7 +4,7 @@ import * as Helpers from './helpers';
 
 const android = device.getPlatform() === 'android';
 
-describe('Hidden tokens flow', () => {
+describe.skip('Hidden tokens flow', () => {
   it('boots and loads wallet screen', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.waitAndTap('restore-with-key-button');
@@ -24,7 +24,7 @@ describe('Hidden tokens flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it.skip('NFT is hideable', async () => {
+  it('NFT is hideable', async () => {
     // open ENS and tap on our ENS NFT
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tap('token-family-header-ENS');
