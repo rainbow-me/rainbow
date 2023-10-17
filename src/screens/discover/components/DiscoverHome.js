@@ -55,7 +55,7 @@ export default function DiscoverHome() {
     ).length > 0;
 
   return (
-    <Inset top="20px" bottom={{ custom: 150 }} horizontal="20px">
+    <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (
         <Stack space="20px">
           <Inline space="20px">
