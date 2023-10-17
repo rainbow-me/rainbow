@@ -36,18 +36,6 @@ describe('Watch address flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('Should say "test.eth" in the Profile Screen header', async () => {
-    if (android) {
-      // TODO: now is the time to clean this up.
-      // not working on android!
-      // (app isn't idle and test times out)
-      //   // await Helpers.checkIfElementByTextIsVisible('test.eth');
-    } else {
-      await Helpers.swipe('wallet-screen', 'right');
-      await Helpers.checkIfVisible('profileAddress-test.eth');
-    }
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();

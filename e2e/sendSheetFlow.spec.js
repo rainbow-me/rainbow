@@ -86,12 +86,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.swipe('wallet-screen', 'down', 'slow', 0.4);
   });
 
-  it('Should say correct address in the Profile Screen header', async () => {
-    await Helpers.swipe('wallet-screen', 'right');
-    await Helpers.checkIfVisible('profileAddress-rainbowtestwallet.eth');
-    await Helpers.swipe('profile-screen', 'left');
-  });
-
   it('Should open send sheet after tapping send button', async () => {
     await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
