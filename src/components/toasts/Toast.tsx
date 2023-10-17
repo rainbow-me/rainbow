@@ -42,7 +42,7 @@ const Container = styled(RowWithMargins).attrs({
   ...position.centeredAsObject,
   backgroundColor: color,
   borderRadius: 20,
-  bottom: (insets.bottom || 40) + 80,
+  bottom: (insets.bottom || 40) + 60,
   maxWidth: deviceWidth - 38,
   position: 'absolute',
   zIndex: 100,
