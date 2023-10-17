@@ -87,7 +87,6 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
-
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) &&
@@ -173,14 +172,14 @@ class OldApp extends Component {
     initWalletConnectListeners();
 
     /**
-     * Launch the review prompt 30 seconds after the app is launched
+     * Launch the review prompt after the app is launched
      * This is to avoid the review prompt showing up when the app is
      * launched and not shown yet.
      */
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
         handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-      }, 30_000);
+      }, 10_000);
     });
   }
 
