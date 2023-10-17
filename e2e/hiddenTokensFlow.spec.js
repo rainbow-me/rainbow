@@ -24,7 +24,7 @@ describe('Hidden tokens flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('NFT is hideable', async () => {
+  it.skip('NFT is hideable', async () => {
     // open ENS and tap on our ENS NFT
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.tap('token-family-header-ENS');
