@@ -12,7 +12,7 @@ import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '../components/coin-icon';
+import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
@@ -44,7 +44,6 @@ import {
   Text,
 } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
@@ -354,8 +353,13 @@ export default function WalletConnectApprovalSheet() {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
+    if (ios) {
+      navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+        type: 'connect',
+      });
+    }
     handleSuccess(true);
-  }, [handleSuccess, goBack]);
+  }, [handleSuccess, goBack, navigate]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
