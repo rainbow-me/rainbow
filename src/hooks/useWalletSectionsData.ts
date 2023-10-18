@@ -17,8 +17,8 @@ export default function useWalletSectionsData({
   type?: string;
 } = {}) {
   const {
-    isLoading: isLoadingAssets,
-    data: sortedAssets,
+    isLoading: isLoadingUserAssets,
+    data: sortedAssets = [],
   } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -49,7 +49,7 @@ export default function useWalletSectionsData({
     const accountInfo = {
       hiddenCoins,
       isCoinListEdited,
-      isLoadingAssets,
+      isLoadingUserAssets,
       language,
       nativeCurrency,
       network,
@@ -81,7 +81,7 @@ export default function useWalletSectionsData({
     hiddenCoins,
     hiddenTokens,
     isCoinListEdited,
-    isLoadingAssets,
+    isLoadingUserAssets,
     isReadOnlyWallet,
     isWalletEthZero,
     language,
