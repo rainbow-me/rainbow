@@ -52,11 +52,6 @@ describe('Import from private key flow', () => {
   //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
   // });
 
-  it('with 0x - Should say "PKEY" in the Profile Screen header', async () => {
-    await Helpers.swipe('wallet-screen', 'right');
-    await Helpers.checkIfExistsByText('PKEY');
-  });
-
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();

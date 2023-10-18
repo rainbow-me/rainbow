@@ -81,14 +81,8 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
   */
   it('Should show all wallet sections', async () => {
-    await Helpers.swipe('wallet-screen', 'up');
+    await Helpers.swipe('wallet-screen', 'up', 'slow', 0.4);
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
-  });
-
-  it('Should say correct address in the Profile Screen header', async () => {
-    await Helpers.swipe('wallet-screen', 'right');
-    await Helpers.checkIfVisible('profileAddress-rainbowtestwallet.eth');
-    await Helpers.swipe('profile-screen', 'left');
   });
 
   it('Should open send sheet after tapping send fab', async () => {

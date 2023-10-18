@@ -32,20 +32,8 @@ describe('Watch address flow', () => {
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
-  });
-
-  it('Should say "test.eth" in the Profile Screen header', async () => {
-    if (android) {
-      // TODO: now is the time to clean this up.
-      // not working on android!
-      // (app isn't idle and test times out)
-      //   // await Helpers.checkIfElementByTextIsVisible('test.eth');
-    } else {
-      await Helpers.swipe('wallet-screen', 'right');
-      await Helpers.checkIfVisible('profileAddress-test.eth');
-    }
+    await Helpers.checkIfVisible('wallet-screen', 200000);
   });
 
   afterAll(async () => {

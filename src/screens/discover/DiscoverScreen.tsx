@@ -1,35 +1,60 @@
-import * as React from 'react';
-import { ScrollView } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect } from 'react';
+
+import { Keyboard, ScrollView } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import DiscoverScreenContent from './components/DiscoverScreenContent';
 import DiscoverSheetContext from './DiscoverScreenContext';
-import CaretLeftIcon from '@/components/icons/svg/CaretLeftIcon';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 
+export let discoverScrollToTopFnRef: () => number | null = () => null;
 export default function DiscoverScreen() {
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute<any>();
+  const ref = React.useRef<ScrollView>(null);
+  const { navigate } = useNavigation();
+  const isFocused = useIsFocused();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+
+  const [scrollY, setScrollY] = React.useState(0);
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
-  const { navigate } = useNavigation();
-
-  const handlePressWallet = React.useCallback(() => {
-    navigate(Routes.WALLET_SCREEN);
+  const onChangeWallet = React.useCallback(() => {
+    navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        setViewPagerSwipeEnabled(true);
-      };
-    }, [setViewPagerSwipeEnabled])
-  );
+  React.useEffect(() => {
+    if (isSearchModeEnabled && !isFocused) {
+      Keyboard.dismiss();
+    }
+  }, [isFocused, isSearchModeEnabled]);
+
+  const scrollToTop = useCallback(() => {
+    if (!ref.current) return -1;
+
+    // detect if scroll was already at top and return 0;
+    if (scrollY === 0) {
+      return 0;
+    }
+
+    ref.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+
+    return 1;
+  }, [scrollY]);
+
+  useEffect(() => {
+    discoverScrollToTopFnRef = scrollToTop;
+  }, [ref, scrollToTop]);
 
   return (
     <DiscoverSheetContext.Provider
@@ -40,11 +65,22 @@ export default function DiscoverScreen() {
         <Navbar
           hasStatusBarInset
           leftComponent={
-            !isSearchModeEnabled ? (
-              <Navbar.Item onPress={handlePressWallet} testID="wallet-button">
-                <Navbar.SvgIcon icon={CaretLeftIcon} />
-              </Navbar.Item>
-            ) : null
+            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
+              {accountImage ? (
+                <ImageAvatar
+                  image={accountImage}
+                  marginRight={10}
+                  size="header"
+                />
+              ) : (
+                <ContactAvatar
+                  color={accountColor}
+                  marginRight={10}
+                  size="small"
+                  value={accountSymbol}
+                />
+              )}
+            </ButtonPressAnimation>
           }
           testID={
             isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
@@ -56,11 +92,18 @@ export default function DiscoverScreen() {
           }
         />
         <Box
+          // @ts-expect-error
+          ref={ref}
+          onScroll={e => {
+            setScrollY(e.nativeEvent.contentOffset.y);
+          }}
           as={ScrollView}
+          automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews
+          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 197 }}
           testID="discover-sheet"
         >
           <DiscoverScreenContent />

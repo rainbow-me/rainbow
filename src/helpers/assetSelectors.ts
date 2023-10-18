@@ -14,7 +14,7 @@ const sortAssetsByNativeAmount = (
   isLoadingAssets: any,
   nativeCurrency: any
 ) => {
-  let assetsNativePrices = Object.values(accountAssetsData);
+  let assetsNativePrices = Object.values(accountAssetsData || {});
 
   if (!isEmpty(assetsNativePrices)) {
     assetsNativePrices = parseAssetsNative(assetsNativePrices, nativeCurrency);
