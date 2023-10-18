@@ -352,11 +352,12 @@ export default function WalletConnectApprovalSheet() {
 
   const handleConnect = useCallback(() => {
     handled.current = true;
-    goBack();
     if (ios) {
       navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
         type: 'connect',
       });
+    } else {
+      goBack();
     }
     handleSuccess(true);
   }, [handleSuccess, goBack, navigate]);
