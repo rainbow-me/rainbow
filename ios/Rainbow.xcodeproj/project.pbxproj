@@ -41,7 +41,6 @@
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
-		A9F312A50F28216E0C2FC393 /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73790DA1833435B55F6617C8 /* libPods-PriceWidgetExtension.a */; };
 		AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
 		AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
