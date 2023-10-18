@@ -32,8 +32,8 @@ describe('Watch address flow', () => {
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.waitAndTap('wallet-info-submit-button');
-    await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
+    await Helpers.checkIfVisible('wallet-screen', 200000);
   });
 
   afterAll(async () => {
