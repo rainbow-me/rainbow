@@ -330,8 +330,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   }
 
                   setTimeout(() => {
-                    handleReviewPromptAction(ReviewPromptAction.WatchWallet);
-                  }, 500);
+                    InteractionManager.runAfterInteractions(() => {
+                      handleReviewPromptAction(ReviewPromptAction.WatchWallet);
+                    });
+                  }, 1_000);
 
                   setTimeout(() => {
                     // If it's not read only or hardware, show the backup sheet

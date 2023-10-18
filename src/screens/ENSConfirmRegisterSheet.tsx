@@ -177,7 +177,9 @@ export default function ENSConfirmRegisterSheet() {
       }, 100);
 
       setTimeout(() => {
-        handleReviewPromptAction(ReviewPromptAction.EnsNameRegistration);
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.EnsNameRegistration);
+        });
       }, 500);
     });
   }, [goBack, navigate]);
