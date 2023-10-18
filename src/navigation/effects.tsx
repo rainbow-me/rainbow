@@ -130,7 +130,7 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-export const expandStyleInterpolator = (targetOpacity: number) => ({
+const expandStyleInterpolator = (targetOpacity: number) => ({
   current: { progress: current },
   layouts: { screen },
 }: any) => {
@@ -322,7 +322,7 @@ export const emojiPreset: StackNavigationOptions = {
         <View
           style={{
             alignItems: 'center',
-            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN + 50,
+            top: HeaderHeightWithStatusBar + AVATAR_CIRCLE_TOP_MARGIN,
           }}
         >
           {/* @ts-ignore */}

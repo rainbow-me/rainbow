@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import RainbowGreyNeon from '../../assets/rainbows/greyneon.png';
 import RainbowLight from '../../assets/rainbows/light.png';
 import RainbowLiquid from '../../assets/rainbows/liquid.png';
@@ -59,7 +59,7 @@ const rainbows = [
 ];
 
 interface Props {
-  shouldAnimate: SharedValue<boolean>;
+  shouldAnimate: Animated.SharedValue<boolean>;
 }
 
 const RainbowsBackgroundComponent = ({ shouldAnimate }: Props) => (

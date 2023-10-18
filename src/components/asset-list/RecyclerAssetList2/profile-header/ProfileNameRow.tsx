@@ -25,11 +25,9 @@ export const ProfileNameRowHeight = 16;
 export function ProfileNameRow({
   disableOnPress,
   testIDPrefix,
-  variant,
 }: {
   disableOnPress?: any;
   testIDPrefix?: string;
-  variant?: string;
 }) {
   // ////////////////////////////////////////////////////
   // Account
@@ -87,17 +85,13 @@ export function ProfileNameRow({
 
   const hitSlop: Space = '16px';
   return (
-    <Box
-      pointerEvents={disableOnPress ? 'none' : 'auto'}
-      position="absolute"
-      style={{ zIndex: 100 }}
-    >
+    <Box pointerEvents={disableOnPress ? 'none' : 'auto'}>
       {name && (
         <Bleed space={hitSlop}>
           <ButtonPressAnimation
             onLongPress={onLongPressName}
             onPress={onPressName}
-            scaleTo={0.84}
+            scale={0.8}
             testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
           >
             <Inset space={hitSlop}>
@@ -106,7 +100,7 @@ export function ProfileNameRow({
                   <Text
                     color="label"
                     numberOfLines={1}
-                    size={variant === 'header' ? '22pt' : '22pt'}
+                    size="23px / 27px (Deprecated)"
                     weight="bold"
                   >
                     {name}

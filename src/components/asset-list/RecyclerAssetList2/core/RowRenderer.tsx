@@ -127,10 +127,7 @@ function rowRenderer(
     case CellType.NFTS_HEADER:
       return (
         // @ts-expect-error JavaScript component
-        <AssetListHeader
-          isSticky={false}
-          title={lang.t(lang.l.account.tab_collectibles)}
-        />
+        <AssetListHeader title={lang.t(lang.l.account.tab_collectibles)} />
       );
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;

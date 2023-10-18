@@ -12,7 +12,7 @@ import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
+import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
@@ -44,6 +44,7 @@ import {
   Text,
 } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { CoinIcon } from '@/components/coin-icon';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
@@ -219,7 +220,7 @@ const NetworkPill = ({ chainIds }) => {
 
 export default function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { goBack, getState } = useNavigation();
+  const { goBack } = useNavigation();
   const { params } = useRoute();
   const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -378,7 +379,7 @@ export default function WalletConnectApprovalSheet() {
         },
         watchOnly: true,
       });
-  }, [approvalAccount.address, goBack, type, getState]);
+  }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;
@@ -412,6 +413,7 @@ export default function WalletConnectApprovalSheet() {
     type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
   return (
+    // <Sheet>
     <Sheet>
       {!Object.keys(meta).length ? (
         <Centered height={sheetHeight}>

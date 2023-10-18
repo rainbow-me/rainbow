@@ -6,7 +6,6 @@ import Animated, {
   useSharedValue,
   withDelay,
   withSpring,
-  SharedValue,
 } from 'react-native-reanimated';
 import { RainbowAnimationDetails } from './types';
 import { ImgixImage } from '@/components/images';
@@ -23,7 +22,7 @@ const RainbowImage = styled(ImgixImage)({
 
 interface Props {
   details: RainbowAnimationDetails;
-  shouldAnimate: SharedValue<boolean>;
+  shouldAnimate: Animated.SharedValue<boolean>;
 }
 
 const SingleRainbow = ({ details, shouldAnimate }: Props) => {

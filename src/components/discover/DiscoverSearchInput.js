@@ -40,11 +40,9 @@ const Container = styled(Row)(({ isSearchModeEnabled, theme: { colors } }) => ({
 }));
 
 const BackgroundGradient = styled(RadialGradient).attrs(
-  ({ isDiscover, theme: { colors } }) => ({
+  ({ theme: { colors } }) => ({
     center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-    colors: isDiscover
-      ? colors.gradients.searchBar
-      : colors.gradients.lightGreyTransparent,
+    colors: colors.gradients.searchBar,
   })
 )({
   height: ExchangeSearchWidth,
@@ -198,7 +196,7 @@ const ExchangeSearch = (
 
   return (
     <Container isSearchModeEnabled={isSearchModeEnabled}>
-      <BackgroundGradient isDiscover={isDiscover} />
+      <BackgroundGradient />
       {isSearchModeEnabled && (
         <>
           <SearchIconWrapper style={searchIconStyle}>

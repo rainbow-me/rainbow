@@ -96,11 +96,7 @@ function MainNavigator() {
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <Stack.Screen
-        component={SwipeNavigator}
-        name={Routes.SWIPE_LAYOUT}
-        options={expandedPreset}
-      />
+      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
       <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
@@ -126,6 +122,7 @@ function MainNavigator() {
         name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
+
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -174,12 +171,7 @@ function MainNavigator() {
       <Stack.Screen
         component={ShowSecretView}
         name="ShowSecretView"
-        // @ts-ignore
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        //@ts-ignore
         options={bottomSheetPreset}
       />
     </Stack.Navigator>
@@ -385,6 +377,11 @@ function BSNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
+      />
+      <Stack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        options={wcPromptPreset}
       />
     </BSStack.Navigator>
   );

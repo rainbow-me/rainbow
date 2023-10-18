@@ -211,8 +211,8 @@ describe.skip('Register ENS Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  it('Should navigate to the Discover sheet screen after swiping left', async () => {
-    await Helpers.swipe('wallet-screen', 'left', 'slow');
+  it('Should navigate to the Discover sheet screen after tapping Discover Button', async () => {
+    await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });
 

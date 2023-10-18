@@ -11,14 +11,13 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  SharedValue,
 } from 'react-native-reanimated';
 import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
 import { useInterval, useTimeout } from '@/hooks';
 
 interface Props {
-  sharedValue: SharedValue<number>;
+  sharedValue: Animated.SharedValue<number>;
   errorIndex: number;
   interval?: number;
   isPaymentComplete?: boolean;

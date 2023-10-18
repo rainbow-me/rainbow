@@ -151,10 +151,9 @@ type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewState
 >;
 
-export function useRecyclerListViewRef(): {
+function useRecyclerListViewRef(): {
   readonly handleRef: (ref: RecyclerListViewRef) => void;
   readonly ref: RecyclerListViewRef | undefined;
-  readonly _ref: React.MutableRefObject<RecyclerListViewRef | undefined>;
 } {
   const ref = useRef<RecyclerListViewRef>();
   const handleRef = React.useCallback(
@@ -165,7 +164,7 @@ export function useRecyclerListViewRef(): {
     [ref]
   );
 
-  return { handleRef, ref: ref.current, _ref: ref };
+  return { handleRef, ref: ref.current };
 }
 
 export type RecyclerAssetListSection = {
@@ -693,7 +692,6 @@ function RecyclerAssetList({
       >
         {/* @ts-ignore */}
         <StyledRecyclerListView
-          automaticallyAdjustsScrollIndicatorInsets={false}
           dataProvider={dataProvider}
           extendedState={extendedState}
           {...(isInsideBottomSheet && {
@@ -705,7 +703,6 @@ function RecyclerAssetList({
           ref={handleRef}
           renderAheadOffset={renderAheadOffset}
           rowRenderer={rowRenderer}
-          scrollIndicatorInsets={{ bottom: 200, top: 300 }}
           scrollViewProps={scrollViewProps}
           {...extras}
         />

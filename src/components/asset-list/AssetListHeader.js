@@ -19,7 +19,7 @@ import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
 
-export const AssetListHeaderHeight = ListHeaderHeight;
+export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
 const dropdownArrowWidth = 30;
 const placeholderWidth = 120;
@@ -112,7 +112,6 @@ const AssetListHeader = ({
   isCoinListEdited,
   title,
   totalValue,
-  isSticky = true,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -143,8 +142,8 @@ const AssetListHeader = ({
     measure();
   }, [accountName]);
 
-  const children = useMemo(() => {
-    return (
+  return (
+    <StickyHeader name={title}>
       <ListHeader
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}
@@ -174,26 +173,8 @@ const AssetListHeader = ({
           </H1>
         ) : null}
       </ListHeader>
-    );
-  }, [
-    accountName,
-    contextMenuOptions,
-    deviceWidth,
-    isCoinListEdited,
-    isLoadingAssets,
-    maxWidth,
-    onChangeWallet,
-    props,
-    textWidth,
-    title,
-    totalValue,
-  ]);
-
-  if (isSticky) {
-    return <StickyHeader name={title}>{children}</StickyHeader>;
-  }
-
-  return children;
+    </StickyHeader>
+  );
 };
 
 export default magicMemo(AssetListHeader, [

@@ -73,11 +73,9 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
       [props.onScroll, y]
     );
 
-    const scrollWorklet = useWorkletCallback(
-      (event: { contentOffset: { y: number } }) => {
-        yPosition.value = event.contentOffset.y;
-      }
-    );
+    const scrollWorklet = useWorkletCallback(event => {
+      yPosition.value = event.contentOffset.y;
+    });
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
 

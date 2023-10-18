@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
 import React, {
-  useState,
   PropsWithChildren,
   useCallback,
   useContext,
@@ -51,7 +50,6 @@ interface BaseProps extends BaseButtonAnimationProps {
   wrapperStyle: StyleProp<ViewStyle>;
   hapticType: HapticFeedbackType;
   enableHapticFeedback: boolean;
-  disallowInterruption?: boolean;
 }
 
 type Props = PropsWithChildren<BaseProps>;
@@ -150,6 +148,7 @@ const ScaleButton = ({
       },
     }
   );
+
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
@@ -193,7 +192,6 @@ const SimpleScaleButton = ({
   transformOrigin,
   wrapperStyle,
   testID,
-  disallowInterruption,
 }: Props) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }: any) => {
@@ -219,12 +217,10 @@ const SimpleScaleButton = ({
   // we won't guess if there are any animated styles in there but we can
   // not render the Animated.View if we don't use that prop at all
   const Wrapper = contentContainerStyle ? Animated.View : View;
-  // hack to lay out BottomTab buttons normally instead of being stacked on top of each other
-  const [overflowMarginHelper, setOverflowMargin] = useState(overflowMargin);
-  const layoutHelper = () => setOverflowMargin(overflowMargin - 1);
+
   return (
     <View
-      onLayout={onLayout || layoutHelper}
+      onLayout={onLayout}
       style={[
         {
           backgroundColor,
@@ -237,7 +233,7 @@ const SimpleScaleButton = ({
     >
       <View
         style={{
-          margin: -overflowMarginHelper,
+          margin: -overflowMargin,
           marginTop: skipTopMargin ? -OVERFLOW_MARGIN : -overflowMargin,
         }}
       >
@@ -254,7 +250,6 @@ const SimpleScaleButton = ({
           shouldLongPressHoldPress={shouldLongPressHoldPress}
           style={sx.overflow}
           transformOrigin={transformOrigin}
-          disallowInterruption={disallowInterruption}
         >
           <View style={sx.transparentBackground}>
             <View
@@ -263,6 +258,7 @@ const SimpleScaleButton = ({
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
+              {/* @ts-expect-error TS can't infer types where we use this dynamic wrapper */}
               <Wrapper style={contentContainerStyle}>{children}</Wrapper>
             </View>
           </View>
@@ -294,7 +290,6 @@ export default function ButtonPressAnimation({
   wrapperStyle,
   hapticType = 'selection',
   enableHapticFeedback = true,
-  disallowInterruption = false,
 }: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -327,7 +322,6 @@ export default function ButtonPressAnimation({
       testID={testID}
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
-      disallowInterruption={disallowInterruption}
     >
       <View pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}

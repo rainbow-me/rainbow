@@ -1,5 +1,5 @@
 import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { Path } from 'react-native-redash';
 
 export const CurveType = {
@@ -50,15 +50,15 @@ export interface ChartData {
   data: DataType;
   width: number;
   height: number;
-  progress: SharedValue<number>;
-  dotScale: SharedValue<number>;
-  originalX: SharedValue<string>;
-  originalY: SharedValue<string>;
-  pathOpacity: SharedValue<number>;
-  state: SharedValue<number>;
-  isActive: SharedValue<boolean>;
-  positionX: SharedValue<number>;
-  positionY: SharedValue<number>;
+  progress: Animated.SharedValue<number>;
+  dotScale: Animated.SharedValue<number>;
+  originalX: Animated.SharedValue<string>;
+  originalY: Animated.SharedValue<string>;
+  pathOpacity: Animated.SharedValue<number>;
+  state: Animated.SharedValue<number>;
+  isActive: Animated.SharedValue<boolean>;
+  positionX: Animated.SharedValue<number>;
+  positionY: Animated.SharedValue<number>;
   previousPath: PathData | null;
   currentPath: PathData | null;
 }

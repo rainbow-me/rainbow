@@ -1,10 +1,10 @@
 import React, { PropsWithChildren, useContext, useMemo } from 'react';
-import { useSharedValue, SharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useCoinListEdited } from '@/hooks';
 
 const Context = React.createContext<
   | {
-      isCoinListEdited: SharedValue<boolean>;
+      isCoinListEdited: Animated.SharedValue<boolean>;
     }
   | undefined
 >(undefined);

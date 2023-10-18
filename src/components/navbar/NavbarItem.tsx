@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 
 type NavbarItemProps = {
   children: React.ReactElement;
-  onPress?: PressableProps['onPress'];
+  onPress: PressableProps['onPress'];
   testID?: string;
 };
 
@@ -18,7 +18,6 @@ export function NavbarItem({ children, onPress, testID }: NavbarItemProps) {
         // @ts-ignore overloaded props
 
         onPress={onPress}
-        pointerEvents="auto"
         scale={0.8}
         testID={testID}
       >

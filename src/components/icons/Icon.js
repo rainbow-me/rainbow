@@ -67,15 +67,6 @@ import SnapchatIcon from './svg/SnapchatIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import StarIcon from './svg/StarIcon';
 import SwapIcon from './svg/SwapIcon';
-import TabActivity from './svg/TabActivity';
-import TabActivityInner from './svg/TabActivityInner';
-import TabActivityInnerFill from './svg/TabActivityInnerFill';
-import TabDiscover from './svg/TabDiscover';
-import TabDiscoverInner from './svg/TabDiscoverInner';
-import TabDiscoverInnerFill from './svg/TabDiscoverInnerFill';
-import TabHome from './svg/TabHome';
-import TabHomeInner from './svg/TabHomeInner';
-import TabHomeInnerFill from './svg/TabHomeInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
@@ -157,15 +148,6 @@ const IconTypes = {
   star: StarIcon,
   sunflower: Emoji,
   swap: SwapIcon,
-  tabActivity: TabActivity,
-  tabActivityInner: TabActivityInner,
-  tabActivityInnerFill: TabActivityInnerFill,
-  tabDiscover: TabDiscover,
-  tabDiscoverInner: TabDiscoverInner,
-  tabDiscoverInnerFill: TabDiscoverInnerFill,
-  tabHome: TabHome,
-  tabHomeInner: TabHomeInner,
-  tabHomeInnerFill: TabHomeInnerFill,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

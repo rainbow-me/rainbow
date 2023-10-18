@@ -12,9 +12,10 @@ import { useNavigation } from '@/navigation';
 import { logger } from '@/logger';
 import { DebugContext } from '@/logger/debugContext';
 // eslint-disable-next-line no-restricted-imports
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/core';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import { Dimensions } from 'react-native';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',

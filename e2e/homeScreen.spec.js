@@ -40,11 +40,12 @@ describe('Home Screen', () => {
     await Helpers.checkIfVisible('buy-button');
     await Helpers.checkIfVisible('swap-button');
     await Helpers.checkIfVisible('send-button');
-    await Helpers.checkIfVisible('receive-button');
+    await Helpers.checkIfVisible('more-button');
   });
 
   it('sticky header shows when scrolling down', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow', 0.4);
+    await Helpers.checkIfVisible('profile-sticky-header');
     await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
     await Helpers.swipe('wallet-screen', 'down', 'slow', 0.4);
   });
@@ -61,9 +62,10 @@ describe('Home Screen', () => {
     await Helpers.swipe('send-asset-form-field', 'down');
   });
 
-  it('tapping "Copy" shows copy address toast', async () => {
-    await Helpers.waitAndTap('receive-button');
-    await Helpers.checkIfVisible('address-copied-toast');
+  it('tapping "More" opens action sheet', async () => {
+    await Helpers.waitAndTap('more-button');
+    await Helpers.checkIfExistsByText('Copy Address');
+    await Helpers.checkIfExistsByText('My QR Code');
   });
 
   afterAll(async () => {

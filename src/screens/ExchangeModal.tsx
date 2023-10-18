@@ -69,7 +69,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { useNavigation } from '@react-navigation/core';
 import {
   executeRap,
   getSwapRapEstimationByType,

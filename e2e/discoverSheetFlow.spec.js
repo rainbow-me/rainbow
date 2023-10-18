@@ -50,9 +50,9 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Discover screen after swiping left twice', async () => {
+  it('Should navigate to Discover screen after tapping Discover Button', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.waitAndTap('discover-button');
     await Helpers.checkIfVisible('discover-header');
   });
 

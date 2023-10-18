@@ -13,7 +13,7 @@ import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
 
 const Button = styled(ButtonPressAnimation).attrs({
-  scaleTo: 1.08,
+  scaleTo: 1.1,
 })({
   ...padding.object(20),
   marginTop: 22,
