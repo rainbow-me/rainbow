@@ -55,10 +55,10 @@ export default function DiscoverHome() {
     ).length > 0;
 
   return (
-    <Inset top="20px" bottom={{ custom: 150 }} horizontal="20px">
+    <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (
         <Stack space="20px">
-          <Inline space="20px">
+          <Inline wrap={false} space="20px">
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
@@ -76,7 +76,7 @@ export default function DiscoverHome() {
           {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
           {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
           {isProfilesEnabled && <ENSCreateProfileCard />}
-          <Inline space="20px">
+          <Inline wrap={false} space="20px">
             <LearnCard cardDetails={backupsCard} type="square" />
             <LearnCard cardDetails={avoidScamsCard} type="square" />
           </Inline>

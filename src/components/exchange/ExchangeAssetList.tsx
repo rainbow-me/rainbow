@@ -182,7 +182,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   );
 
   const { onScroll } = useAndroidScrollViewGestureHandler({
-    navigation: dangerouslyGetParent(),
+    navigation: dangerouslyGetParent?.(),
   });
 
   const openVerifiedExplainer = useCallback(() => {

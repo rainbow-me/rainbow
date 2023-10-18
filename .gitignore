@@ -109,3 +109,6 @@ __generated__/
 
 # Test Coverage
 coverage
+
+# VSCode
+.vscode/

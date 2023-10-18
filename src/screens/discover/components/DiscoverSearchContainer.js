@@ -46,6 +46,8 @@ const sendQueryAnalytics = query => {
   }
 };
 
+export let discoverOpenSearchFnRef = null;
+
 export default forwardRef(function DiscoverSearchContainer(
   { children, showSearch, setShowSearch },
   ref
@@ -61,28 +63,28 @@ export default forwardRef(function DiscoverSearchContainer(
   const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(
     DiscoverSheetContext
   );
-  const {
-    params: { setSwipeEnabled: setViewPagerSwipeEnabled },
-  } = useRoute();
 
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
       setIsSearchModeEnabled(value);
-      setViewPagerSwipeEnabled(!value);
     },
-    [setIsSearchModeEnabled, setShowSearch, setViewPagerSwipeEnabled]
+    [setIsSearchModeEnabled, setShowSearch]
   );
+
+  const scrollToTop = useCallback(() => {
+    sectionListRef.current?.scrollToLocation({
+      animated: true,
+      itemIndex: 0,
+      sectionIndex: 0,
+      viewOffset: 0,
+      viewPosition: 0,
+    });
+  }, []);
 
   const onTapSearch = useCallback(() => {
     if (isSearchModeEnabled) {
-      sectionListRef.current?.scrollToLocation({
-        animated: true,
-        itemIndex: 0,
-        sectionIndex: 0,
-        viewOffset: 0,
-        viewPosition: 0,
-      });
+      scrollToTop();
       searchInputRef.current.focus();
     } else {
       setIsInputFocused(true);
@@ -90,7 +92,11 @@ export default forwardRef(function DiscoverSearchContainer(
         category: 'discover',
       });
     }
-  }, [isSearchModeEnabled, setIsInputFocused]);
+  }, [isSearchModeEnabled, scrollToTop, setIsInputFocused]);
+
+  useEffect(() => {
+    discoverOpenSearchFnRef = onTapSearch;
+  }, [onTapSearch]);
 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();

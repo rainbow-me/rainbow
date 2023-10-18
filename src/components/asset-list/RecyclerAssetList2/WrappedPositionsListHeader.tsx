@@ -5,7 +5,6 @@ import CaretImageSource from '../../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Box, Inline, Text } from '@/design-system';
-import { StickyHeader } from './core/StickyHeaders';
 import * as i18n from '@/languages';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
@@ -64,41 +63,39 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
 
   return (
     <>
-      <StickyHeader name="Positions">
-        <ButtonPressAnimation
-          key={`positions_${isPositionCardsOpen}`}
-          onPress={toggleOpenPositionCards}
-          scaleTo={1.05}
-          testID={`positions-list-header`}
-          {...props}
+      <ButtonPressAnimation
+        key={`positions_${isPositionCardsOpen}`}
+        onPress={toggleOpenPositionCards}
+        scaleTo={1.05}
+        testID={`positions-list-header`}
+        {...props}
+      >
+        <Box
+          height={{ custom: TokenFamilyHeaderHeight }}
+          paddingHorizontal={'19px (Deprecated)'}
+          justifyContent="center"
         >
-          <Box
-            height={{ custom: TokenFamilyHeaderHeight }}
-            paddingHorizontal={'19px (Deprecated)'}
-            justifyContent="center"
-          >
-            <Inline alignHorizontal="justify" alignVertical="center">
-              <Text size="22pt" color={'label'} weight="heavy">
-                {i18n.t(i18n.l.account.tab_positions)}
-              </Text>
-              <Inline horizontalSpace={'8px'} alignVertical="center">
-                {!isPositionCardsOpen && (
-                  <Animated.View style={sumNumberAnimatedStyles}>
-                    <Text size="20pt" color={'label'} weight="regular">
-                      {total}
-                    </Text>
-                  </Animated.View>
-                )}
-                <AnimatedImgixImage
-                  source={CaretImageSource as any}
-                  style={imageAnimatedStyles}
-                  tintColor={colors.dark}
-                />
-              </Inline>
+          <Inline alignHorizontal="justify" alignVertical="center">
+            <Text size="22pt" color={'label'} weight="heavy">
+              {i18n.t(i18n.l.account.tab_positions)}
+            </Text>
+            <Inline horizontalSpace={'8px'} alignVertical="center">
+              {!isPositionCardsOpen && (
+                <Animated.View style={sumNumberAnimatedStyles}>
+                  <Text size="20pt" color={'label'} weight="regular">
+                    {total}
+                  </Text>
+                </Animated.View>
+              )}
+              <AnimatedImgixImage
+                source={CaretImageSource as any}
+                style={imageAnimatedStyles}
+                tintColor={colors.dark}
+              />
             </Inline>
-          </Box>
-        </ButtonPressAnimation>
-      </StickyHeader>
+          </Inline>
+        </Box>
+      </ButtonPressAnimation>
     </>
   );
 };

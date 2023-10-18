@@ -11,6 +11,7 @@ const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 const AssetList = ({
+  accentColor,
   hideHeader,
   isEmpty,
   isLoading,
@@ -43,7 +44,10 @@ const AssetList = ({
       {...props}
     />
   ) : (
-    <RecyclerAssetList2 walletBriefSectionsData={walletBriefSectionsData} />
+    <RecyclerAssetList2
+      accentColor={accentColor}
+      walletBriefSectionsData={walletBriefSectionsData}
+    />
   );
 };
 

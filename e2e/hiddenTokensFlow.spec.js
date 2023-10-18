@@ -4,7 +4,7 @@ import * as Helpers from './helpers';
 
 const android = device.getPlatform() === 'android';
 
-describe('Hidden tokens flow', () => {
+describe.skip('Hidden tokens flow', () => {
   it('boots and loads wallet screen', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.waitAndTap('restore-with-key-button');

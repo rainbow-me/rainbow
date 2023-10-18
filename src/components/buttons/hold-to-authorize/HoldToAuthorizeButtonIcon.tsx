@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  SharedValue,
 } from 'react-native-reanimated';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
@@ -18,7 +19,7 @@ const Container = styled(Centered)({
 });
 
 interface Props {
-  sharedValue: Animated.SharedValue<number>;
+  sharedValue: SharedValue<number>;
 }
 
 export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {

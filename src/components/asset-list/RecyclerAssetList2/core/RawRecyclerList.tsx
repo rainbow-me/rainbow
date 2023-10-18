@@ -23,6 +23,7 @@ import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { UniqueAsset } from '@/entities';
+import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -53,12 +54,14 @@ export type ExtendedState = {
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
   disablePullDownToRefresh,
+  scrollIndicatorInsets,
   extendedState,
   type,
 }: {
   briefSectionsData: BaseCellType[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
+  scrollIndicatorInsets?: object;
   type?: AssetListType;
 }) {
   const currentDataProvider = useMemoOne(
@@ -74,9 +77,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   );
 
   const { accountAddress } = useAccountSettings();
+  const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
-
   const ref = useRef<RecyclerListViewRef>();
 
   useEffect(() => {
@@ -104,6 +107,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     ref.current?.scrollToOffset(0, 0);
     y.setValue(0);
   }, [y, accountAddress]);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    setScrollToTopRef(ref.current);
+  }, [ref, setScrollToTopRef]);
 
   const onLayout = useCallback(
     () => ({ nativeEvent }: LayoutChangeEvent) => {
@@ -152,6 +161,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   return (
     <RecyclerListView
+      automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}
       // @ts-ignore
@@ -169,6 +179,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
+      scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );
 });
