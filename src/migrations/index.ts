@@ -14,6 +14,7 @@ import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCac
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
+import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -34,6 +35,7 @@ const migrations: Migration[] = [
   prepareDefaultNotificationGroupSettingsState(),
   migrateNotificationSettingsToV2(),
   changeLanguageKeys(),
+  fixHiddenUSDC(),
 ];
 
 /**
@@ -90,7 +92,7 @@ export async function runMigrations(migrations: Migration[]) {
   const ranMigrations = [];
 
   for (const migration of migrations) {
-    const migratedAt = storage.get([migration.name]);
+    const migratedAt = false;
     const isDeferable = Boolean(migration.defer);
 
     if (!migratedAt) {
