@@ -33,7 +33,7 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
 const Container = styled(Centered).attrs({
   direction: 'column',
 })({
-  bottom: 16,
+  bottom: 0,
   flex: 1,
 });
 
@@ -83,7 +83,7 @@ export default function ReceiveModal() {
   ]);
 
   return (
-    <Container testID="receive-modal">
+    <Container backgroundColor="rgba(0,0,0,0.85)" testID="receive-modal">
       <TouchableBackdrop onPress={goBack} />
       <Handle />
       <ColumnWithMargins align="center" margin={24}>

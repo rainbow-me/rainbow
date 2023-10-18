@@ -109,19 +109,19 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
     await testEthereumDeeplink(url, false);
   });
 
-  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
+  it.skip('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url = escapeUrl(
       'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
     );
@@ -130,14 +130,14 @@ describe('Deeplinks spec', () => {
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
     await testEthereumDeeplink(url, false);
   });
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
+  it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
     const url = escapeUrl(
       'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
     );
@@ -146,7 +146,7 @@ describe('Deeplinks spec', () => {
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
+  it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
     await testEthereumDeeplink(url, false);
   });

@@ -9,7 +9,7 @@ import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
-import { RouteProp, useRoute } from '@react-navigation/core';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();

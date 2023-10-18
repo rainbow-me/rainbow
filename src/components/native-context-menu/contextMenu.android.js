@@ -46,8 +46,9 @@ export default function ContextMenuAndroid({
   }, [menuItems, menuTitle]);
 
   const onPressAction = useLatestCallback(
-    ({ nativeEvent: { event } }) =>
-      onPressMenuItem({ nativeEvent: { actionKey: event } }),
+    ({ nativeEvent: { event } }) => {
+      return onPressMenuItem({ nativeEvent: { actionKey: event } });
+    },
     [onPressMenuItem]
   );
 

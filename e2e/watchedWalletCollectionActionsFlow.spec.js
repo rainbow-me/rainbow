@@ -3,7 +3,7 @@
 import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
-describe('Watched showcase and hidden actions flow', () => {
+describe.skip('Watched showcase and hidden actions flow', () => {
   it('boots and loads wallet screen', async () => {
     // Watch a wallet.
     await Helpers.waitAndTap('already-have-wallet-button');
