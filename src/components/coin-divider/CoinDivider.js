@@ -15,6 +15,7 @@ import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import {
   useAccountSettings,
   useCoinListEditOptions,
@@ -25,6 +26,7 @@ import {
 import { emitChartsRequest } from '@/redux/explorer';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -61,6 +63,7 @@ const EditButtonWrapper = styled(Row).attrs({
 const useInterpolationRange = isCoinListEdited => {
   const position = useRecyclerAssetListPosition();
   const ref = useRef();
+  const { top: safeAreaInsetTop } = useSafeAreaInsets();
 
   const { scrollViewRef } = useContext(StickyHeaderContext) || {};
   const [range, setRanges] = useState([0, 0]);
@@ -72,7 +75,7 @@ const useInterpolationRange = isCoinListEdited => {
     ref.current?.measureLayout?.(
       nativeScrollRef,
       (_left, top) => {
-        setRanges([top - (ios ? 100 : 50), top]);
+        setRanges([top - (navbarHeight + safeAreaInsetTop), top]);
       },
       () => {}
     );
