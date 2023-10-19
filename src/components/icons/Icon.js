@@ -76,6 +76,9 @@ import TabDiscoverInnerFill from './svg/TabDiscoverInnerFill';
 import TabHome from './svg/TabHome';
 import TabHomeInner from './svg/TabHomeInner';
 import TabHomeInnerFill from './svg/TabHomeInnerFill';
+import TabPoints from './svg/TabPoints';
+import TabPointsInner from './svg/TabPointsInner';
+import TabPointsInnerFill from './svg/TabPointsInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
@@ -166,6 +169,9 @@ const IconTypes = {
   tabHome: TabHome,
   tabHomeInner: TabHomeInner,
   tabHomeInnerFill: TabHomeInnerFill,
+  tabPoints: TabPoints,
+  tabPointsInner: TabPointsInner,
+  tabPointsInnerFill: TabPointsInnerFill,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
