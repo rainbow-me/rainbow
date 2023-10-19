@@ -5,6 +5,7 @@
 
 #import "Firebase.h"
 #import "AppDelegate.h"
+#import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBundleURLProvider.h>
