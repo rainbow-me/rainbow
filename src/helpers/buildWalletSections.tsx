@@ -163,6 +163,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
       value: totalValue,
+      isLoadingUserAssets,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',

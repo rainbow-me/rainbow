@@ -115,6 +115,9 @@ function rowRenderer(
         <ProfileRowWrapper>
           <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
+            isLoadingUserAssets={
+              (data as AssetsHeaderExtraData).isLoadingUserAssets
+            }
           />
         </ProfileRowWrapper>
       );
