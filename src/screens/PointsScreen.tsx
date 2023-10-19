@@ -93,7 +93,7 @@ export default function PointsScreen() {
   }, [progress]);
 
   return (
-    <Box as={Page} flex={1} width="full">
+    <Box as={Page} flex={1} testID="points-screen" width="full">
       <Navbar hasStatusBarInset title={lang.t('account.tab_points')} />
       <Box
         alignItems="center"
