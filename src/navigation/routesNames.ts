@@ -33,6 +33,7 @@ const Routes = {
   IMPORT_SCREEN: 'ImportScreen',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   POAP_SHEET: 'PoapSheet',
+  PROMO_SHEET: 'PromoSheet',
   MINT_SHEET: 'MintSheet',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
