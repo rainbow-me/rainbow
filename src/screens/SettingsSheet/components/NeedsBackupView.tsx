@@ -20,7 +20,7 @@ import { RainbowWallet } from '@/model/wallet';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
-  width: ios ? 221 : 270,
+  width: 270,
 })({});
 
 const TopIcon = styled(ImgixImage).attrs({
@@ -133,13 +133,14 @@ export default function NeedsBackupView() {
             })}`}
             onPress={onIcloudBackup}
           />
-          <Box width={{ custom: ios ? 221 : 270 }}>
+          <Box width={{ custom: 270 }}>
             <SheetActionButton
               color={colors.white}
               // @ts-ignore
               label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
               onPress={onManualBackup}
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+              truncate
             />
           </Box>
         </Stack>

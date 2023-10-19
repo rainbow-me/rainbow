@@ -19,11 +19,7 @@ import {
 } from '@/redux/data';
 import store from '@/redux/store';
 import { useQuery } from '@tanstack/react-query';
-import {
-  filterPositionsData,
-  hideTokensWithUrls,
-  parseAddressAsset,
-} from './assets';
+import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import {
   AddysAccountAssetsMeta,
@@ -226,9 +222,6 @@ const fetchAndParseUserAssetsForChainIds = async (
     parsedSuccessResults
   );
 
-  // add tokens with URLs to hidden list
-  hideTokensWithUrls(parsedSuccessResults, address);
-
   // update account empty state
   if (!isEmpty(parsedSuccessResults)) {
     saveAccountEmptyState(false, address, Network.mainnet);
@@ -278,8 +271,9 @@ export function useUserAssets(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
     userAssetsQueryFunction,
     {
+      enabled: !!address && !!currency,
       staleTime: 60_000, // 1 minute
-      refetchInterval: 300_000, // 5 minutes
+      refetchInterval: 120_000, // 2 minutes
       ...config,
     }
   );

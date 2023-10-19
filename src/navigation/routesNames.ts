@@ -3,7 +3,6 @@ import { IS_IOS } from '@/env';
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
   ADD_CASH_SHEET: 'AddCashSheet',
-  ADD_TOKEN_SHEET: 'AddTokenSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
@@ -34,6 +33,7 @@ const Routes = {
   IMPORT_SCREEN: 'ImportScreen',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   POAP_SHEET: 'PoapSheet',
+  MINT_SHEET: 'MintSheet',
   MAIN_EXCHANGE_NAVIGATOR: 'MainExchangeNavigator',
   MAIN_EXCHANGE_SCREEN: 'MainExchangeScreen',
   MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR: 'MainNativeBottomSheetNavigation',

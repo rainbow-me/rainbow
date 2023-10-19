@@ -2,40 +2,43 @@ import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 
-const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
-
 const Container = styled(Column)({
   alignSelf: 'center',
-  marginTop: verticalOffset,
+  justifyContent: 'center',
   width: 200,
 });
 
 const ActivityListEmptyState = ({ children, emoji, label }) => {
-  const { colors } = useTheme();
+  const { top: topInset } = useSafeAreaInsets();
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <View>
       {children}
-      <Container>
+      <Container
+        height={deviceUtils.dimensions.height - (navbarHeight + topInset) * 2}
+      >
         <Centered>
-          <Text letterSpacing="zero" size="h2">
+          <Text align="center" letterSpacing="zero" size="h2">
             {emoji}
           </Text>
         </Centered>
         <Centered>
           <Text
             align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.35)}
+            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 0.4 : 0.3)}
             letterSpacing="roundedMedium"
             lineHeight={24}
             size="lmedium"
-            weight="semibold"
+            weight="bold"
           >
             {label}
           </Text>

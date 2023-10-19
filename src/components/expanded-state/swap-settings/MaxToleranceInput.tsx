@@ -120,12 +120,14 @@ export const MaxToleranceInput = forwardRef(
               onPress={openSlippageExplainer}
               paddingVertical="12px"
               testID="swap-slippage-label"
+              style={{ maxWidth: 200 }}
             >
               <Inline alignVertical="center">
                 <Text
                   color="primary (Deprecated)"
                   size="16px / 22px (Deprecated)"
                   weight="bold"
+                  numberOfLines={2}
                 >
                   {`${lang.t('exchange.slippage_tolerance')} `}
                   {!hasPriceImpact && (

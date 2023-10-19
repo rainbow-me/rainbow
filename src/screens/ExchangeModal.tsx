@@ -46,7 +46,6 @@ import {
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
-  ParsedAddressAsset,
   SwappableAsset,
 } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
@@ -70,7 +69,7 @@ import {
   useWallets,
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@/navigation';
 import {
   executeRap,
   getSwapRapEstimationByType,
@@ -170,10 +169,6 @@ export default function ExchangeModal({
   const title = lang.t('swap.modal_types.swap');
 
   const priceOfEther = useEthUSDPrice();
-  const [
-    outputNetworkDetails,
-    setOutputNetworkDetails,
-  ] = useState<ParsedAddressAsset>();
   const genericAssets = useSelector<
     { data: { genericAssets: { [address: string]: SwappableAsset } } },
     { [address: string]: SwappableAsset }
@@ -367,18 +362,6 @@ export default function ExchangeModal({
       speedUrgentSelected.current = false;
     }
   }, [currentNetwork, prevTxNetwork]);
-
-  useEffect(() => {
-    const getNativeOutputAsset = async () => {
-      if (!outputNetwork || !accountAddress) return;
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
-        outputNetwork,
-        accountAddress
-      );
-      setOutputNetworkDetails(nativeAsset);
-    };
-    getNativeOutputAsset();
-  }, [outputNetwork, accountAddress]);
 
   const defaultGasLimit = useMemo(() => {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));

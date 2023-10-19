@@ -1,23 +1,21 @@
 import React from 'react';
-import { View } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
+import { magicMemo } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
+import { Row } from '../layout';
+import { Text } from '../text';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import Caret from '../../assets/family-dropdown-arrow.png';
-import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
-import { Text } from '../text';
-import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { magicMemo } from '@/utils';
+import { padding } from '@/styles';
 import * as i18n from '@/languages';
-
-const AnimatedText = Animated.createAnimatedComponent(Text);
-
-const closedWidth = 52.5;
-const openWidth = 78;
+import Caret from '../../assets/family-dropdown-arrow.png';
+import { ImgixImage } from '@/components/images';
+import { IS_ANDROID } from '@/env';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -28,27 +26,20 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 8,
 });
 
-const Content = styled(Animated.View)({
-  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
-  borderRadius: RoundButtonCapSize / 2,
+const AnimatedText = Animated.createAnimatedComponent(Text);
+const AnimatedRow = Animated.createAnimatedComponent(Row);
+
+const ButtonContent = styled(AnimatedRow).attrs({
+  justify: 'center',
+})(({ isActive, theme: { colors, isDarkMode } }) => ({
+  ...padding.object(ios ? 5 : 0, 10, 6),
+  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+  borderRadius: 15,
   height: 30,
-  width: 78,
-});
+}));
 
-const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  letterSpacing: 'roundedTight',
-  lineHeight: 30,
-  size: 'lmedium',
-  weight: 'bold',
-}))({
-  bottom: android ? 0 : 0.5,
-  left: 10,
-  position: 'absolute',
-});
-
-const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
+const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
+  const { colors } = useTheme();
   const isSmallBalancesOpenValue = useSharedValue(0);
 
   isSmallBalancesOpenValue.value = isSmallBalancesOpen;
@@ -63,52 +54,46 @@ const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
 
   const style = useAnimatedStyle(() => {
     return {
-      height: 20,
-      marginTop: 6,
+      paddingLeft: 6,
       opacity: 0.6,
-      position: 'absolute',
       transform: [
-        { translateX: 35 + animation.value * 22 },
-        { translateY: animation.value * -1.25 },
+        { translateX: 0 + animation.value * 5 },
+        { translateY: (IS_ANDROID ? 4 : 0) + animation.value * 1.25 },
         { rotate: animation.value * -90 + 'deg' },
       ],
     };
   });
 
-  const allLabelStyle = useAnimatedStyle(() => ({
-    opacity: 1 - animation.value * 1,
-  }));
-
-  const lessLabelStyle = useAnimatedStyle(() => ({
-    opacity: animation.value * 1,
-  }));
-
-  const wrapperStyle = useAnimatedStyle(() => ({
-    width: closedWidth + animation.value * (openWidth - closedWidth),
+  const containerStyle = useAnimatedStyle(() => ({
+    paddingRight: 10 + animation.value * 5,
   }));
 
   return (
-    <View width={isSmallBalancesOpen ? 116 : 90.5}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
-        <View paddingHorizontal={19} paddingVertical={5}>
-          <Content style={wrapperStyle}>
-            <LabelText style={allLabelStyle}>
-              {i18n.t(i18n.l.button.all)}
-            </LabelText>
-            <LabelText style={lessLabelStyle}>
-              {i18n.t(i18n.l.button.less)}
-            </LabelText>
-            <Animated.View style={style}>
-              <CaretIcon />
-            </Animated.View>
-          </Content>
-        </View>
+    <Row paddingHorizontal={17}>
+      <ButtonPressAnimation onPress={onPress} radiusAndroid={15} scaleTo={0.9}>
+        <ButtonContent style={containerStyle} align="center">
+          <AnimatedText
+            align={'left'}
+            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            letterSpacing="roundedTight"
+            opacity={1}
+            size="lmedium"
+            weight="bold"
+          >
+            {isSmallBalancesOpen
+              ? i18n.t(i18n.l.button.less)
+              : i18n.t(i18n.l.button.all)}
+          </AnimatedText>
+          <Animated.View style={style}>
+            <CaretIcon />
+          </Animated.View>
+        </ButtonContent>
       </ButtonPressAnimation>
-    </View>
+    </Row>
   );
 };
 
-export default magicMemo(CoinDividerOpenButton, [
+export default magicMemo(CoinDividerEditButton, [
   'isSmallBalancesOpen',
   'isVisible',
 ]);

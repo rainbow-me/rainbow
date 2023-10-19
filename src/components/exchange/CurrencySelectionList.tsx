@@ -16,7 +16,6 @@ interface CurrencySelectionListProps {
   footerSpacer: boolean;
   fromDiscover?: boolean;
   itemProps: {
-    onActionAsset: (asset: any, isFavorited?: any) => void;
     onPress: (item: any) => void;
     showBalance: boolean;
     showFavoriteButton: boolean;

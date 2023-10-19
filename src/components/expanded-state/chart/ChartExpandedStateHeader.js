@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import ChartAddToListButton from './ChartAddToListButton';
 import ChartContextButton from './ChartContextButton';
 import {
   ChartDateLabel,
@@ -12,12 +11,12 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { useChartData } from '@/react-native-animated-charts/src';
-import { Network } from '@/helpers';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountSettings, useBooleanState } from '@/hooks';
+import { useAccountSettings, useBooleanState, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { useDispatch, useSelector } from 'react-redux';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -61,7 +60,7 @@ export default function ChartExpandedStateHeader({
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing();
 
   const isNoPriceData = latestPrice === noPriceData;
@@ -133,12 +132,7 @@ export default function ChartExpandedStateHeader({
           <CoinIconGroup tokens={tokens} />
         )}
 
-        <Row>
-          {currentNetwork === Network.mainnet && !isPool && (
-            <ChartAddToListButton asset={asset} />
-          )}
-          <ChartContextButton asset={asset} color={color} />
-        </Row>
+        <ChartContextButton asset={asset} color={color} />
       </Row>
       <Column>
         <RowWithMargins

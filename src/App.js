@@ -58,9 +58,7 @@ import {
   persistOptions,
   queryClient,
 } from './react-query';
-import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import store from './redux/store';
-import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -85,7 +83,7 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
-import { initializeReservoirClient } from '@/resources/nftOffers/utils';
+import { initializeReservoirClient } from '@/resources/reservoir/client';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -152,7 +150,6 @@ class OldApp extends Component {
       this?.handleAppStateChange
     );
     this.setState({ eventSubscription: eventSub });
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
@@ -192,7 +189,6 @@ class OldApp extends Component {
 
   componentWillUnmount() {
     this.state.eventSubscription.remove();
-    rainbowTokenList.off('update', this.handleTokenListUpdate);
     this.branchListener();
   }
 
@@ -202,10 +198,6 @@ class OldApp extends Component {
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
   };
-
-  async handleTokenListUpdate() {
-    store.dispatch(uniswapPairsInit());
-  }
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
@@ -243,9 +235,7 @@ class OldApp extends Component {
       setTimeout(() => {
         logger.debug('Reloading balances for network', network);
         if (isL2) {
-          if (tx.internalType === TransactionType.trade) {
-            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
-          } else if (tx.internalType !== TransactionType.authorize) {
+          if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
             queryClient.invalidateQueries({
               queryKey: userAssetsQueryKey({

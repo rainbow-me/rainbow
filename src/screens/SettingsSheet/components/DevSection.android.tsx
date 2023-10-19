@@ -8,8 +8,6 @@ import {
   HARDHAT_URL_ANDROID,
   // @ts-ignore
   HARDHAT_URL_IOS,
-  // @ts-ignore
-  IS_TESTING,
 } from 'react-native-dotenv';
 // @ts-ignore
 import Restart from 'react-native-restart';
@@ -22,7 +20,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
-import { getProviderForNetwork, web3SetHttpProvider } from '@/handlers/web3';
+import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
 import networkTypes, { Network } from '@/helpers/networkTypes';
@@ -31,7 +29,6 @@ import {
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
-  useUpdateAssetOnchainBalance,
   useWallets,
 } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -43,9 +40,7 @@ import { explorerInit } from '@/redux/explorer';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
-import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
 import logger from 'logger';
 import {
   removeNotificationSettingsForWallet,
@@ -76,7 +71,6 @@ const DevSection = () => {
   } = useAccountSettings();
   const { notificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
-  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
@@ -111,19 +105,7 @@ const DevSection = () => {
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
-
-    if (IS_TESTING === 'true') {
-      const provider = await getProviderForNetwork(Network.mainnet);
-      const ethAsset = ethereumUtils.getAccountAsset(ETH_ADDRESS);
-      updateAssetOnchainBalanceIfNeeded(
-        ethAsset,
-        accountAddress,
-        Network.mainnet,
-        provider,
-        () => {}
-      );
-    }
-  }, [accountAddress, dispatch, navigate, updateAssetOnchainBalanceIfNeeded]);
+  }, [dispatch, navigate]);
 
   const syncCodepush = useCallback(async () => {
     const isUpdate = !!(await codePush.checkForUpdate());

@@ -114,3 +114,6 @@ coverage
 .expo
 dist/
 web-build/
+
+# VSCode
+.vscode/

@@ -72,9 +72,16 @@ export const ReceiveAssetsCard = () => {
               </Box>
             )}
             {accentColorLoaded ? (
-              <Text size="15pt" weight="semibold" color="labelSecondary">
-                {i18n.t(TRANSLATIONS.description)}
-              </Text>
+              <Box style={{ maxWidth: 210 }}>
+                <Text
+                  size="15pt"
+                  weight="semibold"
+                  color="labelSecondary"
+                  numberOfLines={2}
+                >
+                  {i18n.t(TRANSLATIONS.description)}
+                </Text>
+              </Box>
             ) : (
               <Box height={{ custom: 30 }} justifyContent="space-between">
                 <Skeleton>

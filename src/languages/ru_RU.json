@@ -555,6 +555,9 @@
         "available_networks": "Доступна на сетях %{availableNetworks}",
         "available_network": "Доступна на сети %{availableNetwork}",
         "available_networkv2": "Также доступна на %{availableNetwork}",
+        "l2_disclaimer": "Это %{symbol} находится в сети %{network}",
+        "l2_disclaimer_send": "Отправка в сети %{network}",
+        "l2_disclaimer_dapp": "Это приложение в сети %{network}",
         "social": {
           "facebook": "Facebook",
           "homepage": "Домашняя страница",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "Пожалуйста, установите расширение MetaMask для Chrome",
       "web3_not_unlocked": "Пожалуйста, разблокируйте ваш кошелек MetaMask",
       "web3_unknown_network": "Неизвестная сеть, пожалуйста, переключитесь на другую"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "Монеты",
+        "no_data_found": "Данные не найдены.",
+        "card": {
+          "x_ago": "%{timeElapsed} назад",
+          "one_mint_past_hour": "1 монета в прошедший час",
+          "x_mints_past_hour": "%{numMints} монет в прошедший час",
+          "x_mints": "%{numMints} монет",
+          "mint": "Монета",
+          "free": "БЕСПЛАТНО"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "Посмотреть все монеты",
+        "mints": "Монеты",
+        "collection_cell": {
+          "free": "БЕСПЛАТНО"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "Избранная Монета",
+        "one_mint": "1 монета",
+        "x_mints": "%{numMints} монет",
+        "x_past_hour": "%{numMints} в прошедший час"
+      },
+      "filter": {
+        "all": "Все",
+        "free": "Бесплатно",
+        "paid": "Платно"
+      }
     },
     "modal": {
       "approve_tx": "Подтвердите транзакцию на %{walletType}",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "Очистить информацию профиля",
           "point_name_to_recipient": "Указать получателю эту возможность",
           "transfer_control": "Передать управление получателю",
-          "has_a_wallet_that_supports": "Человек, которому я отправляю, имеет кошелек, который поддерживает %{networkName}",
+          "has_a_wallet_that_supports": "Адрес, на который я отправляю, поддерживает %{networkName}",
           "im_not_sending_to_an_exchange": "Я не отправляю на биржу"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "Заполнитель",
         "request": "Запрос транзакции",
         "send": "Отправить транзакцию",
-        "sending_title": "Отправка"
+        "sending_title": "Отправка",
+        "you_own_this_wallet": "Вы владеете этим кошельком",
+        "first_time_send": "Первая отправка",
+        "previous_sends": "%{number} предыдущих отправок"
       },
       "wallet_connect": {
         "error": "Ошибка инициализации с помощью WalletConnect",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "хочет получить доступ к вашему кошельку",
+      "wants_to_connect_to_network": "хочет подключиться к сети %{network}",
       "available_networks": "Доступные сети",
       "change_network": "Изменить сеть",
       "connected_apps": "Подключенные приложения",
