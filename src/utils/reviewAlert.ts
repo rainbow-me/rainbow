@@ -80,7 +80,7 @@ export const promptForReview = async () => {
           ls.review.set(['hasReviewed'], true);
 
           if (IS_IOS) {
-            RainbowRequestReview?.requestReview((handled: any) => {
+            RainbowRequestReview?.requestReview((handled: boolean) => {
               if (!handled) {
                 Linking.openURL(AppleReviewAddress);
               }
