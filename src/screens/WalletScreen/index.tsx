@@ -96,6 +96,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const {
     isWalletEthZero,
     isEmpty: isSectionsEmpty,
+    isLoadingUserAssets,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData();
 
@@ -113,7 +114,10 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     }
   }, [dangerouslyGetState, removeFirst]);
 
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty);
+  const { isEmpty: isAccountEmpty } = useAccountEmptyState(
+    isSectionsEmpty,
+    isLoadingUserAssets
+  );
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }: AppState) => ({
@@ -196,9 +200,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
 
-  const isLoadingAssets =
-    useSelector((state: AppState) => state.data.isLoadingAssets) &&
-    !!accountAddress;
+  const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
 
   const { accentColor } = useAccountAccentColor();
 
@@ -216,9 +218,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           {/* @ts-expect-error JavaScript component */}
           <AssetList
             accentColor={accentColor}
-            disableRefreshControl={isLoadingAssets}
+            disableRefreshControl={isLoadingUserAssetsAndAddress}
             isEmpty={isAccountEmpty || !!params?.emptyWallet}
-            isLoading={android && isLoadingAssets}
+            isLoading={android && isLoadingUserAssetsAndAddress}
             isWalletEthZero={isWalletEthZero}
             network={currentNetwork}
             walletBriefSectionsData={walletBriefSectionsData}

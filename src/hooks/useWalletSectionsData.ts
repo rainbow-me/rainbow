@@ -73,6 +73,7 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
+      isLoadingUserAssets,
       isWalletEthZero,
       briefSectionsData,
     };
