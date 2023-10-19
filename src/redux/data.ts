@@ -92,11 +92,6 @@ export interface DataState {
   };
 
   /**
-   * Whether or not assets are currently being loaded.
-   */
-  isLoadingAssets: boolean;
-
-  /**
    * Whether or not transactions are currently being loaded.
    */
   isLoadingTransactions: boolean;
@@ -1098,7 +1093,6 @@ export const watchPendingTransactions = (
 const INITIAL_STATE: DataState = {
   ethUSDPrice: null,
   genericAssets: {},
-  isLoadingAssets: true,
   isLoadingTransactions: true,
   pendingTransactions: [],
   portfolios: {},
