@@ -126,13 +126,6 @@ export function TabBarIcon({
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [accentColor, accentColor, accentColor, accentColor, accentColor]
     );
-    // const opacity = hideInnerFill
-    //   ? 0
-    //   : interpolate(
-    //       reanimatedPosition.value,
-    //       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
-    //       [0, 0.25, 0.25, 0.25, 0]
-    //     );
     const opacity = interpolate(
       reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],

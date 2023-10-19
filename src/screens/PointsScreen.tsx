@@ -36,6 +36,7 @@ export default function PointsScreen() {
   const { colors, isDarkMode } = useTheme();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
+  const iconState = useSharedValue(1);
   const progress = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -109,7 +110,7 @@ export default function PointsScreen() {
                 hideShadow
                 icon="tabPoints"
                 index={1}
-                reanimatedPosition={{ value: 1 }}
+                reanimatedPosition={iconState}
                 tintBackdrop={colors.white}
                 tintOpacity={isDarkMode ? 0.25 : 0.1}
               />
