@@ -50,6 +50,7 @@ import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { IS_IOS } from '@/env';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -355,12 +356,17 @@ export default function WalletConnectApprovalSheet() {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
+    if (IS_IOS) {
+      navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+        type: 'connect',
+      });
+    }
     handleSuccess(true);
 
     setTimeout(() => {
       handleReviewPromptAction(ReviewPromptAction.DappConnections);
     }, 500);
-  }, [handleSuccess, goBack]);
+  }, [handleSuccess, goBack, navigate]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
