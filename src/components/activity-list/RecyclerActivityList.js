@@ -5,7 +5,6 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -13,9 +12,7 @@ import {
 } from '../coin-row';
 import ListFooter from '../list/ListFooter';
 import { ProfileMasthead } from '../profile';
-import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
-import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@/entities';
 import { buildTransactionUniqueIdentifier } from '@/helpers/transactions';
 import styled from '@/styled-thing';
@@ -104,10 +101,8 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 39;
         } else {
-          dim.height = this.props.isLoading
-            ? deviceUtils.dimensions.height
-            : (this.props.addCashAvailable ? 278 : 203) +
-              (this.props.isEmpty ? 297 : 0);
+          // this handles the inital list height offset atm
+          dim.height = 20;
         }
       }
     );
@@ -167,17 +162,7 @@ export default class RecyclerActivityList extends PureComponent {
           recyclerListRef={this.rlv}
         />
       );
-      return this.props.isLoading ? (
-        <LoadingState>{header}</LoadingState>
-      ) : this.props.isEmpty ? (
-        <ActivityListEmptyState
-          label={lang.t('activity_list.empty_state.recycler_label')}
-        >
-          {header}
-        </ActivityListEmptyState>
-      ) : (
-        header
-      );
+      return null;
     }
     if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
     if (type === ViewTypes.FOOTER) return <ListFooter />;
@@ -192,20 +177,19 @@ export default class RecyclerActivityList extends PureComponent {
   render() {
     return (
       <Wrapper>
-        <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
-          <RecyclerListView
-            dataProvider={this.state.dataProvider}
-            layoutProvider={this.layoutProvider}
-            ref={this.handleListRef}
-            renderAheadOffset={deviceUtils.dimensions.height}
-            rowRenderer={this.rowRenderer}
-            scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-            }}
-            style={{ minHeight: 1 }}
-          />
-        </StickyContainer>
+        <RecyclerListView
+          automaticallyAdjustsScrollIndicatorInsets={false}
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this.layoutProvider}
+          ref={this.handleListRef}
+          renderAheadOffset={deviceUtils.dimensions.height}
+          rowRenderer={this.rowRenderer}
+          scrollEnabled={!(this.props.isEmpty || this.props.isLoading)}
+          scrollIndicatorInsets={{
+            bottom: safeAreaInsetValues.bottom + 48,
+          }}
+          style={{ minHeight: 1 }}
+        />
       </Wrapper>
     );
   }

@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.6] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.6)
+
+### Added
+
+- in app mints
+- i18n support
+- Rainbow Tabs
+- OP Rewards Round 2
+- more user pain points fixes
+
 ## [1.9.5] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.5)
 
 ### Added

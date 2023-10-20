@@ -32,6 +32,7 @@ export default function withSpeed(userConfig: any) {
       }
 
       animation.current = current + (deltaTime / 1000) * animation.speed;
+      return true;
     }
 
     function onStart(animation: any, value: any, now: any) {
