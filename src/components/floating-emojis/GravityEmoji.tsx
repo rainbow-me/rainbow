@@ -38,27 +38,30 @@ const GravityEmoji = ({
   const g = 9.81;
   const scaledGravity = g * timeDilation * timeDilation;
 
-  // Determine initial trajectory angle
+  // Determine initial trajectory angles
+  const xAngle = Math.random() * Math.PI;
+
   const verticalBias = Math.random();
-  let theta: number;
+  let yAngle: number;
 
   if (verticalBias < 0.9) {
     // 90% odds to move upwards
-    theta = (5 * Math.PI) / 3 + (verticalBias - 0.9) * ((2 * Math.PI) / 3);
+    yAngle = (5 * Math.PI) / 3 + (verticalBias - 0.9) * ((2 * Math.PI) / 3);
   } else {
     // 10% odds to move downwards
-    theta = Math.PI / 3 + (verticalBias * 10 - 1) * ((4 * Math.PI) / 3);
+    yAngle = Math.PI / 3 + (verticalBias * 10 - 1) * ((4 * Math.PI) / 3);
   }
 
   // Determine initial velocities
-  const xBoost = 3;
   const yBoost = 9;
-  const v0x = xBoost * randomDistance * Math.cos(theta) * timeDilation;
   const v0y =
     (verticalBias < 0.9 ? yBoost : 0.1) *
     randomDistance *
-    Math.sin(theta) *
+    Math.sin(yAngle) *
     timeDilation;
+
+  const xBoost = 3;
+  const v0x = xBoost * randomDistance * Math.cos(xAngle) * timeDilation;
 
   useLayoutEffect(() => {
     animation.value = withTiming(2, {
