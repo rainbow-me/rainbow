@@ -323,17 +323,6 @@ export default function SendSheet(props) {
     };
   }, [stopPollingGasFees]);
 
-  // Recalculate balance when gas price changes
-  useEffect(() => {
-    if (
-      selected?.isNativeAsset &&
-      (prevSelectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0) !==
-        (selectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0)
-    ) {
-      updateMaxInputBalance(selected);
-    }
-  }, [prevSelectedGasFee, selected, selectedGasFee, updateMaxInputBalance]);
-
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
       const assetNetwork = isNft
@@ -402,10 +391,13 @@ export default function SendSheet(props) {
     [maxEnabled, maxInputBalance, selected.decimals, selected?.price?.value]
   );
 
-  useMemo(async () => {
-    if (maxEnabled) {
+  useEffect(() => {
+    const updateMaxBalance = async () => {
       const newBalanceAmount = await updateMaxInputBalance(selected);
       sendUpdateAssetAmount(newBalanceAmount);
+    };
+    if (maxEnabled) {
+      updateMaxBalance();
     }
     // we want to listen to the gas fee and update when it changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1026,7 +1018,7 @@ export default function SendSheet(props) {
             onChangeNativeAmount={onChangeNativeAmount}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
-            sendMaxBalance={() => setMaxEnabled(!maxEnabled)}
+            sendMaxBalance={() => setMaxEnabled(true)}
             setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
               <GasSpeedButton
