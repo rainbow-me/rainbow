@@ -54,11 +54,6 @@ export const getRequestDisplayDetails = (
       dappNetwork
     );
   }
-  if (payload.method === SIGN) {
-    const message = payload?.params?.find(p => !isAddress(p));
-    const result = getMessageDisplayDetails(message, timestampInMs);
-    return result;
-  }
   if (payload.method === PERSONAL_SIGN) {
     let message = payload?.params?.find(p => !isAddress(p));
     try {
