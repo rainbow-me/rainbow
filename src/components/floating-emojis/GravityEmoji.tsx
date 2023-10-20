@@ -60,7 +60,7 @@ const GravityEmoji = ({
     Math.sin(yAngle) *
     timeDilation;
 
-  const xBoost = 3;
+  const xBoost = 2;
   const v0x = xBoost * randomDistance * Math.cos(xAngle) * timeDilation;
 
   useLayoutEffect(() => {
