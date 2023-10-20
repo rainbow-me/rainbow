@@ -38,7 +38,7 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { IS_DEV, IS_ANDROID } from '@/env';
+import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
@@ -93,7 +93,10 @@ export function maybeGoBackAndClearHasPendingRedirect({
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
         setHasPendingDeeplinkPendingRedirect(false);
-        Minimizer.goBack();
+
+        if (!IS_IOS) {
+          Minimizer.goBack();
+        }
       }, delay);
     });
   }
@@ -561,11 +564,7 @@ export async function onSessionProposal(
                 dappUrl: proposer.metadata.url,
               });
 
-              // NOTE: iOS 17 broke our minimizer.goBack functionality so guard this until we can fix it
-              // ref: https://stackoverflow.com/questions/42516357/how-does-googles-custom-ios-keyboard-gboard-programmatically-dismiss-the-fron
-              if (IS_ANDROID) {
-                maybeGoBackAndClearHasPendingRedirect();
-              }
+              maybeGoBackAndClearHasPendingRedirect();
             } else {
               await rejectProposal({
                 proposal,
@@ -778,7 +777,13 @@ export async function onSessionRequest(
         // @ts-ignore we assign address above
         address, // required by screen
         chainId, // required by screen
-        onComplete() {
+        onComplete(type: string) {
+          if (IS_IOS) {
+            Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+              type,
+            });
+          }
+
           maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
         },
       },

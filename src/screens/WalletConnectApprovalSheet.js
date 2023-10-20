@@ -48,6 +48,7 @@ import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { IS_IOS } from '@/env';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -353,9 +354,11 @@ export default function WalletConnectApprovalSheet() {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
-    navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
-      type: 'connect',
-    });
+    if (IS_IOS) {
+      navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+        type: 'connect',
+      });
+    }
     handleSuccess(true);
   }, [handleSuccess, goBack, navigate]);
 

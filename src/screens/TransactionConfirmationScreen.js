@@ -116,6 +116,7 @@ import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
+import { IS_IOS } from '@/env';
 
 const springConfig = {
   damping: 500,
@@ -419,20 +420,21 @@ export default function TransactionConfirmationScreen() {
       if (!isMessageRequest) {
         stopPollingGasFees();
       }
+
+      let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
+      if (canceled) {
+        type = `${type}-canceled`;
+      }
+
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
-          let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
-
-          if (canceled) {
-            type = `${type}-canceled`;
-          }
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
 
       if (walletConnectV2RequestValues?.onComplete) {
         InteractionManager.runAfterInteractions(() => {
-          walletConnectV2RequestValues.onComplete();
+          walletConnectV2RequestValues.onComplete(type);
         });
       }
     },
@@ -819,6 +821,7 @@ export default function TransactionConfirmationScreen() {
         }
         dispatch(removeRequest(requestId));
       }
+
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
