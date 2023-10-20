@@ -4,13 +4,35 @@ import { Network } from '@/helpers/networkTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import { ethereumUtils, logger } from '@/utils';
+import { ethereumUtils, logger, resolveFirstRejectLast } from '@/utils';
 import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { RainbowNetworks } from '@/networks';
+import { analytics } from '@/analytics';
 
 const mmkv = new MMKV();
+
+type Campaigns = {
+  [key: string]: {
+    actions: Actions[];
+    launchDate: Date;
+  };
+};
+
+// NOTE: Entry points from App.js
+export const runCampaignChecks = async (campaigns: Campaigns) => {
+  logger.log('Campaigns: Running Checks');
+
+  const campaignPromises = Object.keys(campaigns).map(async campaign =>
+    shouldPromptCampaign(campaign, campaigns[campaign].actions)
+  );
+
+  const campaign = await resolveFirstRejectLast(campaignPromises);
+  if (!campaign) return;
+
+  triggerCampaign(campaign);
+};
 
 export const triggerCampaign = async (campaignKey: string) => {
   logger.log(`Campaign: Showing ${campaignKey} Promo`);
@@ -25,7 +47,7 @@ export const triggerCampaign = async (campaignKey: string) => {
   }, 1000);
 };
 
-export const isSelectedWalletReadOnly = (): boolean => {
+export const isSelectedWalletNotReadOnly = (): boolean => {
   const { selected } = store.getState().wallets;
   if (!selected) return false;
 
@@ -83,13 +105,13 @@ export const hasNonZeroTotalBalance = async (): Promise<boolean> => {
 export const shouldPromptCampaign = async (
   campaignKey: string,
   actions: Actions[]
-): Promise<boolean> => {
+): Promise<string | undefined> => {
   const hasViewedCampaign = mmkv.getBoolean(campaignKey);
   const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
-  // If the campaign has been viewed already or it's the first app launch, return false
+  // If the campaign has been viewed already or it's the first app launch, return undefined
   if (hasViewedCampaign || isFirstLaunch) {
-    return false;
+    return;
   }
 
   const shouldPrompt = Object.values(actions).some(async key => {
@@ -102,12 +124,12 @@ export const shouldPromptCampaign = async (
     return result === false;
   });
 
-  // If any action returns false, shouldPrompt will be true, so we return the opposite
-  return !shouldPrompt;
+  // If any action returns false, shouldPrompt will be true, so we return the campaignKey
+  return shouldPrompt ? campaignKey : undefined;
 };
 
 export const enum Actions {
-  isSelectedWalletReadOnly = 'isSelectedWalletReadOnly',
+  isSelectedWalletNotReadOnly = 'isSelectedWalletNotReadOnly',
   hasNonZeroAssetBalance = 'hasNonZeroAssetBalance',
   noCurrentWallet = 'noCurrentWallet',
   isFirstLaunch = 'isFirstLaunch',
@@ -128,7 +150,7 @@ export const __INTERNAL_ACTION_PROPS: { [key in Actions]: ActionProp } = {
     };
   },
   [Actions.hasNonZeroTotalBalance]: null,
-  [Actions.isSelectedWalletReadOnly]: null,
+  [Actions.isSelectedWalletNotReadOnly]: null,
 };
 
 export const __INTERNAL_ACTION_CHECKS: { [key in Actions]: ActionFn } = {
@@ -136,5 +158,5 @@ export const __INTERNAL_ACTION_CHECKS: { [key in Actions]: ActionFn } = {
   [Actions.isFirstLaunch]: isFirstLaunch,
   [Actions.isAfterCampaignLaunch]: isAfterCampaignLaunch,
   [Actions.hasNonZeroTotalBalance]: hasNonZeroTotalBalance,
-  [Actions.isSelectedWalletReadOnly]: isSelectedWalletReadOnly,
+  [Actions.isSelectedWalletNotReadOnly]: isSelectedWalletNotReadOnly,
 };
