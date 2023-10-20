@@ -8,6 +8,7 @@ const CopyFloatingEmojis = ({
   children,
   disabled,
   onPress,
+  scaleTo,
   textToCopy,
   ...props
 }) => {
@@ -30,10 +31,13 @@ const CopyFloatingEmojis = ({
             onPress?.(textToCopy);
             if (!disabled) {
               onNewEmoji();
-              setClipboard(textToCopy);
+              if (textToCopy) {
+                setClipboard(textToCopy);
+              }
             }
           }}
           radiusAndroid={24}
+          scaleTo={scaleTo}
           wrapperProps={{
             containerStyle: {
               padding: 10,

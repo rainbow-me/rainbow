@@ -45,14 +45,24 @@ describe('Discover Screen Flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+  it('Should navigate to Discover screen after swiping left', async () => {
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('discover-header');
+  });
+
+  it('Should navigate to the Profile screen after swiping left', async () => {
+    await Helpers.swipe('discover-home', 'left', 'slow');
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Discover screen after swiping left twice', async () => {
+  it('Should navigate to the Points screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('points-screen');
+  });
+
+  it('Should navigate back to Discover screen after swiping right twice', async () => {
+    await Helpers.swipe('points-screen', 'right', 'slow');
+    await Helpers.swipe('profile-screen', 'right', 'slow');
     await Helpers.checkIfVisible('discover-header');
   });
 

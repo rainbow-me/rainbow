@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -34,6 +34,7 @@ import { Box, Columns, Stack } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 
 import logger from 'logger';
+import PointsScreen from '@/screens/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
@@ -41,13 +42,14 @@ import RecyclerListViewScrollToTopProvider, {
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
+import config from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
 
-const NUMBER_OF_TABS = 3;
+const HORIZONTAL_TAB_BAR_INSET = 6;
 
-const config = {
+const animationConfig = {
   animation: 'spring',
   config: {
     stiffness: 200,
@@ -58,7 +60,6 @@ const config = {
     restSpeedThreshold: 0.01,
   },
 };
-const tabConfig = { duration: 250, easing: Easing.elastic(1) };
 
 const Swipe = createMaterialTopTabNavigator();
 const HEADER_HEIGHT = IS_IOS ? 82 : 62;
@@ -68,31 +69,35 @@ const TabBar = ({
   descriptors,
   navigation,
   position,
-  isTap,
-  setIsTap,
+  jumpTo,
   lastPress,
   setLastPress,
 }) => {
   const { width: deviceWidth } = useDimensions();
-  const reanimatedPosition = useSharedValue(2);
-  const tabWidth = deviceWidth / NUMBER_OF_TABS;
-  const tabPillStartPosition = (tabWidth - 72) / 2;
+  const { colors, isDarkMode } = useTheme();
+
+  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
+  const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
+
+  const tabWidth =
+    (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
+  const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
 
   const { accentColor } = useAccountAccentColor();
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const sectionList = useSectionListScrollToTopContext();
-  // ////////////////////////////////////////////////////
-  // Colors
 
-  const { colors, isDarkMode } = useTheme();
+  const reanimatedPosition = useSharedValue(0);
+
   const tabStyle = useAnimatedStyle(() => {
     const pos1 = tabPillStartPosition;
     const pos2 = tabPillStartPosition + tabWidth;
     const pos3 = tabPillStartPosition + tabWidth * 2;
+    const pos4 = tabPillStartPosition + tabWidth * 3;
     const translateX = interpolate(
       reanimatedPosition.value,
-      [0, 1, 2],
-      [pos1, pos2, pos3],
+      [0, 1, 2, 3],
+      [pos1, pos2, pos3, pos4],
       Extrapolate.EXTEND
     );
     return {
@@ -101,22 +106,14 @@ const TabBar = ({
     };
   });
 
-  const animateTabs = (index, shouldAnimate = false) => {
-    if (shouldAnimate) {
-      reanimatedPosition.value = withTiming(index, tabConfig);
-      return;
+  useLayoutEffect(() => {
+    if (reanimatedPosition.value !== state.index) {
+      reanimatedPosition.value = state.index;
     }
-    reanimatedPosition.value = index;
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.index]);
 
-  useEffect(() => {
-    if (!isTap) {
-      animateTabs(state.index, true);
-    } else {
-      animateTabs(state.index);
-    }
-    setIsTap(false);
-  }, [state.index, isTap]);
+  const [canSwitch, setCanSwitch] = useState(true);
 
   // for when QRScannerScreen is re-added
   // const offScreenTabBar = useAnimatedStyle(() => {
@@ -164,7 +161,6 @@ const TabBar = ({
           width="full"
         >
           <Box
-            // as={ BlurView }
             as={IS_IOS ? BlurView : View}
             blurAmount={40}
             blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
@@ -211,107 +207,115 @@ const TabBar = ({
               }}
               width="full"
             />
-            <Columns alignVertical="center">
-              {state.routes.map((route, index) => {
-                const { options } = descriptors[route.key];
-                // logger.log('routeKey = ' + route.key);
+            <Box paddingHorizontal="6px">
+              <Columns alignVertical="center">
+                {state.routes.map((route, index) => {
+                  const { options } = descriptors[route.key];
+                  const isFocused = state.index === index;
 
-                const isFocused = state.index === index;
+                  const onPress = () => {
+                    if (!canSwitch) return;
 
-                const onPress = () => {
-                  const event = navigation.emit({
-                    type: 'tabPress',
-                    target: route.key,
-                  });
-
-                  const time = new Date().getTime();
-                  const delta = time - lastPress;
-
-                  const DOUBLE_PRESS_DELAY = 400;
-
-                  if (!isFocused && !event.defaultPrevented) {
-                    setIsTap(true);
-                    navigation.navigate(route.name);
-                    // animateTabs(index);
-                  } else if (
-                    isFocused &&
-                    options.tabBarIcon === 'tabDiscover'
-                  ) {
-                    if (delta < DOUBLE_PRESS_DELAY) {
-                      discoverOpenSearchFnRef?.();
-                      return;
-                    }
-
-                    if (discoverScrollToTopFnRef?.() === 0) {
-                      discoverOpenSearchFnRef?.();
-                      return;
-                    }
-                  } else if (isFocused && options.tabBarIcon === 'tabHome') {
-                    recyclerList.scrollToTop?.();
-                  } else if (
-                    isFocused &&
-                    options.tabBarIcon === 'tabActivity'
-                  ) {
-                    sectionList.scrollToTop?.();
-                  }
-
-                  setLastPress(time);
-                };
-
-                const onLongPress = async () => {
-                  navigation.emit({
-                    type: 'tabLongPress',
-                    target: route.key,
-                  });
-
-                  if (options.tabBarIcon === 'tabHome') {
-                    navigation.navigate(Routes.CHANGE_WALLET_SHEET);
-                  }
-                  if (options.tabBarIcon === 'tabDiscover') {
-                    navigation.navigate(Routes.DISCOVER_SCREEN);
-                    InteractionManager.runAfterInteractions(() => {
-                      discoverOpenSearchFnRef?.();
+                    const event = navigation.emit({
+                      type: 'tabPress',
+                      target: route.key,
                     });
-                  }
-                };
 
-                return (
-                  options.tabBarIcon !== 'none' && (
-                    <Box
-                      key={route.key}
-                      height="full"
-                      width="full"
-                      justifyContent="flex-start"
-                      paddingTop="6px"
-                    >
-                      <ButtonPressAnimation
-                        onPress={onPress}
-                        onLongPress={onLongPress}
-                        disallowInterruption
-                        scaleTo={0.75}
+                    const time = new Date().getTime();
+                    const delta = time - lastPress;
+
+                    const DOUBLE_PRESS_DELAY = 400;
+
+                    if (!isFocused && !event.defaultPrevented) {
+                      setCanSwitch(false);
+                      jumpTo(route.key);
+                      reanimatedPosition.value = index;
+                      setTimeout(() => {
+                        setCanSwitch(true);
+                      }, 10);
+                    } else if (
+                      isFocused &&
+                      options.tabBarIcon === 'tabDiscover'
+                    ) {
+                      if (delta < DOUBLE_PRESS_DELAY) {
+                        discoverOpenSearchFnRef?.();
+                        return;
+                      }
+
+                      if (discoverScrollToTopFnRef?.() === 0) {
+                        discoverOpenSearchFnRef?.();
+                        return;
+                      }
+                    } else if (isFocused && options.tabBarIcon === 'tabHome') {
+                      recyclerList.scrollToTop?.();
+                    } else if (
+                      isFocused &&
+                      options.tabBarIcon === 'tabActivity'
+                    ) {
+                      sectionList.scrollToTop?.();
+                    }
+
+                    setLastPress(time);
+                  };
+
+                  const onLongPress = async () => {
+                    navigation.emit({
+                      type: 'tabLongPress',
+                      target: route.key,
+                    });
+
+                    if (options.tabBarIcon === 'tabHome') {
+                      navigation.navigate(Routes.CHANGE_WALLET_SHEET);
+                    }
+                    if (options.tabBarIcon === 'tabDiscover') {
+                      navigation.navigate(Routes.DISCOVER_SCREEN);
+                      InteractionManager.runAfterInteractions(() => {
+                        discoverOpenSearchFnRef?.();
+                      });
+                    }
+                  };
+
+                  return (
+                    options.tabBarIcon !== 'none' && (
+                      <Box
+                        key={route.key}
+                        height="full"
+                        width="full"
+                        justifyContent="flex-start"
+                        paddingTop="6px"
                       >
-                        <Stack alignVertical="center" alignHorizontal="center">
-                          <Box
-                            alignItems="center"
-                            justifyContent="center"
-                            height="36px"
-                            borderRadius={20}
+                        <ButtonPressAnimation
+                          onPress={onPress}
+                          onLongPress={onLongPress}
+                          disallowInterruption
+                          scaleTo={0.75}
+                        >
+                          <Stack
+                            alignVertical="center"
+                            alignHorizontal="center"
                           >
-                            <TabBarIcon
-                              accentColor={accentColor}
-                              icon={options.tabBarIcon}
-                              index={index}
-                              rawScrollPosition={position}
-                              reanimatedPosition={reanimatedPosition}
-                            />
-                          </Box>
-                        </Stack>
-                      </ButtonPressAnimation>
-                    </Box>
-                  )
-                );
-              })}
-            </Columns>
+                            <Box
+                              alignItems="center"
+                              justifyContent="center"
+                              height="36px"
+                              borderRadius={20}
+                            >
+                              <TabBarIcon
+                                accentColor={accentColor}
+                                icon={options.tabBarIcon}
+                                index={index}
+                                rawScrollPosition={position}
+                                reanimatedPosition={reanimatedPosition}
+                              />
+                            </Box>
+                          </Stack>
+                        </ButtonPressAnimation>
+                      </Box>
+                    )
+                  );
+                })}
+              </Columns>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -322,27 +326,30 @@ const TabBar = ({
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
   const { network } = useAccountSettings();
-  const [isTap, setIsTap] = useState(false);
+  const { colors } = useTheme();
 
   const [lastPress, setLastPress] = useState();
+
+  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
 
   // ////////////////////////////////////////////////////
   // Animations
 
   return (
-    <FlexItem>
+    <FlexItem backgroundColor={colors.white}>
       <SectionListScrollToTopProvider>
         <RecyclerListViewScrollToTopProvider>
           <ScrollPositionContext.Provider>
             <Swipe.Navigator
               initialLayout={deviceUtils.dimensions}
               initialRouteName={Routes.WALLET_SCREEN}
+              screenOptions={{
+                animationEnabled: false,
+              }}
               swipeEnabled={!isCoinListEdited || IS_TEST}
               tabBar={props => (
                 <TabBar
                   {...props}
-                  isTap={isTap}
-                  setIsTap={setIsTap}
                   lastPress={lastPress}
                   setLastPress={setLastPress}
                 />
@@ -357,18 +364,13 @@ export function SwipeNavigator() {
                   }}
                 /> */}
               <Swipe.Screen
-                component={ProfileScreen}
-                name={Routes.PROFILE_SCREEN}
-                options={{ tabBarIcon: 'tabActivity' }}
-              />
-              <Swipe.Screen
                 component={WalletScreen}
                 name={Routes.WALLET_SCREEN}
                 options={{
                   tabBarIcon: 'tabHome',
                   transitionSpec: {
-                    open: config,
-                    close: config,
+                    open: animationConfig,
+                    close: animationConfig,
                   },
                 }}
               />
@@ -377,6 +379,18 @@ export function SwipeNavigator() {
                 name={Routes.DISCOVER_SCREEN}
                 options={{ tabBarIcon: 'tabDiscover' }}
               />
+              <Swipe.Screen
+                component={ProfileScreen}
+                name={Routes.PROFILE_SCREEN}
+                options={{ tabBarIcon: 'tabActivity' }}
+              />
+              {showPointsTab && (
+                <Swipe.Screen
+                  component={PointsScreen}
+                  name={Routes.POINTS_SCREEN}
+                  options={{ tabBarIcon: 'tabPoints' }}
+                />
+              )}
             </Swipe.Navigator>
           </ScrollPositionContext.Provider>
         </RecyclerListViewScrollToTopProvider>
