@@ -42,13 +42,14 @@ import RecyclerListViewScrollToTopProvider, {
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
+import config from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
-const config = {
+const animationConfig = {
   animation: 'spring',
   config: {
     stiffness: 200,
@@ -368,8 +369,8 @@ export function SwipeNavigator() {
                 options={{
                   tabBarIcon: 'tabHome',
                   transitionSpec: {
-                    open: config,
-                    close: config,
+                    open: animationConfig,
+                    close: animationConfig,
                   },
                 }}
               />
