@@ -17,6 +17,7 @@ type TabBarIconProps = {
   index: number;
   reanimatedPosition: SharedValue<number>;
   hideShadow?: boolean;
+  size?: number;
   tintBackdrop?: string;
   tintOpacity?: number;
 };
@@ -27,6 +28,7 @@ export function TabBarIcon({
   icon,
   index,
   reanimatedPosition,
+  size,
   tintBackdrop,
   tintOpacity,
 }: TabBarIconProps) {
@@ -171,14 +173,16 @@ export function TabBarIcon({
   return (
     <Animated.View style={hideShadow ? undefined : iconShadowBlack}>
       <Animated.View style={hideShadow ? undefined : iconShadow}>
-        <Box height={{ custom: 28 }} width={{ custom: 28 }}>
+        <Box height={{ custom: size || 28 }} width={{ custom: size || 28 }}>
           <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon + 'InnerFill'} />}>
+            <MaskedView
+              maskElement={<Icon name={icon + 'InnerFill'} size={size} />}
+            >
               <Box
                 as={Animated.View}
-                height={{ custom: 28 }}
+                height={{ custom: size || 28 }}
                 style={innerFillColor}
-                width={{ custom: 28 }}
+                width={{ custom: size || 28 }}
               >
                 {hasTransparentInnerFill && (
                   <Box
@@ -192,23 +196,25 @@ export function TabBarIcon({
             </MaskedView>
           </Cover>
           <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon} />}>
+            <MaskedView maskElement={<Icon name={icon} size={size} />}>
               <Box
                 as={Animated.View}
-                height={{ custom: 28 }}
+                height={{ custom: size || 28 }}
                 style={iconColor}
-                width={{ custom: 28 }}
+                width={{ custom: size || 28 }}
               />
             </MaskedView>
           </Cover>
           {!hasTransparentInnerFill && (
             <Cover alignHorizontal="center" alignVertical="center">
-              <MaskedView maskElement={<Icon name={icon + 'Inner'} />}>
+              <MaskedView
+                maskElement={<Icon name={icon + 'Inner'} size={size} />}
+              >
                 <Box
                   as={Animated.View}
-                  height={{ custom: 28 }}
+                  height={{ custom: size || 28 }}
                   style={innerIconColor}
-                  width={{ custom: 28 }}
+                  width={{ custom: size || 28 }}
                 >
                   <Box
                     as={Animated.View}

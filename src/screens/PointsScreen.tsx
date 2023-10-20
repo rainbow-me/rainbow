@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
   withSequence,
 } from 'react-native-reanimated';
-import { CopyFloatingEmojis } from '@/components/floating-emojis';
+import { FloatingEmojisTapper } from '@/components/floating-emojis';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
@@ -43,7 +43,7 @@ export default function PointsScreen() {
     const scale = interpolate(
       progress.value,
       [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [1.5, 1.4, 1.3, 1.1, 1.5, 1.4, 1.3, 1.1, 1.5]
+      [0.75, 0.7, 0.65, 0.55, 0.75, 0.7, 0.65, 0.55, 0.75]
     );
     const rotate = interpolate(
       progress.value,
@@ -104,13 +104,19 @@ export default function PointsScreen() {
       >
         <Box paddingBottom="104px" width="full">
           <Stack alignHorizontal="center" space="28px">
-            <Box as={Animated.View} style={animatedStyle}>
+            <Box
+              alignItems="center"
+              as={Animated.View}
+              justifyContent="center"
+              style={[{ height: 28, width: 28 }, animatedStyle]}
+            >
               <TabBarIcon
                 accentColor={accentColor}
                 hideShadow
                 icon="tabPoints"
                 index={1}
                 reanimatedPosition={iconState}
+                size={56}
                 tintBackdrop={colors.white}
                 tintOpacity={isDarkMode ? 0.25 : 0.1}
               />
@@ -137,29 +143,27 @@ export default function PointsScreen() {
         </Box>
       </Box>
       <Box
-        as={CopyFloatingEmojis}
+        as={FloatingEmojisTapper}
+        distance={500}
+        duration={4000}
         emojis={[
-          'slot_machine',
-          'slot_machine',
-          'slot_machine',
           'rainbow',
           'rainbow',
+          'rainbow',
+          'slot_machine',
+          'slot_machine',
         ]}
-        height="full"
+        gravityEnabled
         position="absolute"
-        scaleTo={1}
-        style={{
-          left: 60,
-          top: deviceHeight / 2.75,
-          width: deviceWidth - 120,
-        }}
+        range={[0, 0]}
+        size={80}
+        wiggleFactor={0}
+        yOffset={-66}
       >
         <Box
           position="absolute"
           style={{
             height: deviceHeight,
-            left: -60,
-            top: -deviceHeight / 2.75,
             width: deviceWidth,
           }}
         />
