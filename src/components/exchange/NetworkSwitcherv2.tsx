@@ -25,7 +25,7 @@ const NetworkSwitcherv2 = ({
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const networkMenuItems = useMemo(() => {
-    return sortNetworks(ethereumUtils.getNetworkFromChainId(currentChainId))
+    return sortNetworks()
       .filter(network => network.features.swaps)
       .map(network => ({
         chainId: network.id,
@@ -34,7 +34,7 @@ const NetworkSwitcherv2 = ({
         type:
           network.value !== Network.mainnet ? network.value : AssetType.token,
       }));
-  }, [currentChainId]);
+  }, []);
 
   const radialGradientProps = (network: Network) => {
     return {
