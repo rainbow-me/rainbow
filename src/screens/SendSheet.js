@@ -392,12 +392,9 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    const updateMaxBalance = async () => {
-      const newBalanceAmount = await updateMaxInputBalance(selected);
-      sendUpdateAssetAmount(newBalanceAmount);
-    };
     if (maxEnabled) {
-      updateMaxBalance();
+      const newBalanceAmount = updateMaxInputBalance(selected);
+      sendUpdateAssetAmount(newBalanceAmount);
     }
     // we want to listen to the gas fee and update when it changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
