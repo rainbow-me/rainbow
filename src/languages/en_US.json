@@ -22,6 +22,7 @@
       "tab_investments": "Pools",
       "tab_savings": "Savings",
       "tab_showcase": "Showcase",
+      "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions and Token Transfers",
@@ -1227,6 +1228,10 @@
       "info": {
         "address_copied_to_clipboard": "Address copied to clipboard"
       }
+    },
+    "points": {
+      "coming_soon_title": "Coming Soon",
+      "coming_soon_description": "Points are just around the corner.\nStart earning today."
     },
     "pools": {
       "deposit": "Deposit",

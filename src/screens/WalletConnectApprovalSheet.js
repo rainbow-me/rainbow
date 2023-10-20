@@ -48,6 +48,8 @@ import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 import { IS_IOS } from '@/env';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
@@ -360,6 +362,10 @@ export default function WalletConnectApprovalSheet() {
       });
     }
     handleSuccess(true);
+
+    setTimeout(() => {
+      handleReviewPromptAction(ReviewPromptAction.DappConnections);
+    }, 500);
   }, [handleSuccess, goBack, navigate]);
 
   const handleCancel = useCallback(() => {

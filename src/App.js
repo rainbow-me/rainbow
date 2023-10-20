@@ -84,6 +84,8 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
+import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -168,6 +170,17 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
+
+    /**
+     * Launch the review prompt after the app is launched
+     * This is to avoid the review prompt showing up when the app is
+     * launched and not shown yet.
+     */
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+      }, 10_000);
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -331,6 +344,21 @@ function Root() {
        * `analyticsv2` has all it needs to function.
        */
       analyticsV2.identify({});
+
+      const isReviewInitialized = ls.review.get(['initialized']);
+      if (!isReviewInitialized) {
+        ls.review.set(['hasReviewed'], false);
+        ls.review.set(
+          ['actions'],
+          Object.values(ReviewPromptAction).map(action => ({
+            id: action,
+            numOfTimesDispatched: 0,
+          }))
+        );
+
+        ls.review.set(['timeOfLastPrompt'], 0);
+        ls.review.set(['initialized'], true);
+      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to
