@@ -561,7 +561,11 @@ export async function onSessionProposal(
                 dappUrl: proposer.metadata.url,
               });
 
-              maybeGoBackAndClearHasPendingRedirect();
+              // NOTE: iOS 17 broke our minimizer.goBack functionality so guard this until we can fix it
+              // ref: https://stackoverflow.com/questions/42516357/how-does-googles-custom-ios-keyboard-gboard-programmatically-dismiss-the-fron
+              if (IS_ANDROID) {
+                maybeGoBackAndClearHasPendingRedirect();
+              }
             } else {
               await rejectProposal({
                 proposal,
