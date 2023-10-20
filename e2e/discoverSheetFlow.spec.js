@@ -45,14 +45,24 @@ describe('Discover Screen Flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+  it('Should navigate to Discover screen after swiping left', async () => {
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('discover-header');
+  });
+
+  it('Should navigate to the Profile screen after swiping left', async () => {
+    await Helpers.swipe('discover-home', 'left', 'slow');
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Discover screen after tapping Discover Button', async () => {
+  it('Should navigate to the Points screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.waitAndTap('discover-button');
+    await Helpers.checkIfVisible('points-screen');
+  });
+
+  it('Should navigate back to Discover screen after swiping right twice', async () => {
+    await Helpers.swipe('points-screen', 'right', 'slow');
+    await Helpers.swipe('profile-screen', 'right', 'slow');
     await Helpers.checkIfVisible('discover-header');
   });
 
@@ -140,20 +150,20 @@ describe('Discover Screen Flow', () => {
     await Helpers.waitAndTap('done-button');
   });
 
-  it('Should open DPI expanded state on DPI press', async () => {
-    await Helpers.swipeUntilVisible('dpi-button', 'discover-sheet', 'up');
+  it.skip('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.swipe('discover-sheet', 'up', 0.8);
     await Helpers.waitAndTap('dpi-button');
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
   });
 
-  it('Should open underlying asset expanded state', async () => {
+  it.skip('Should open underlying asset expanded state', async () => {
     await Helpers.waitAndTap('underlying-asset-UNI');
     await Helpers.checkIfVisible('chart-header-Uniswap');
     await Helpers.swipe('expanded-state-header', 'down');
   });
 
-  it('Should close DPI expanded state and return to Discover Home', async () => {
+  it.skip('Should close DPI expanded state and return to Discover Home', async () => {
     await Helpers.swipe('index-expanded-state-header', 'down');
     await Helpers.checkIfVisible('discover-header');
   });

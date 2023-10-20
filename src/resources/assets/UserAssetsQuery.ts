@@ -19,11 +19,7 @@ import {
 } from '@/redux/data';
 import store from '@/redux/store';
 import { useQuery } from '@tanstack/react-query';
-import {
-  filterPositionsData,
-  hideTokensWithUrls,
-  parseAddressAsset,
-} from './assets';
+import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import {
   AddysAccountAssetsMeta,
@@ -225,9 +221,6 @@ const fetchAndParseUserAssetsForChainIds = async (
     currency,
     parsedSuccessResults
   );
-
-  // add tokens with URLs to hidden list
-  hideTokensWithUrls(parsedSuccessResults, address);
 
   // update account empty state
   if (!isEmpty(parsedSuccessResults)) {

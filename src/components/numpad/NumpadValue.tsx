@@ -1,7 +1,10 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  SharedValue,
+} from 'react-native-reanimated';
 import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
@@ -53,8 +56,8 @@ const ValueText = styled(Text).attrs(
 )({});
 
 interface Props {
-  scale: Animated.SharedValue<number>;
-  translateX: Animated.SharedValue<number>;
+  scale: SharedValue<number>;
+  translateX: SharedValue<number>;
   value: string | number;
 }
 

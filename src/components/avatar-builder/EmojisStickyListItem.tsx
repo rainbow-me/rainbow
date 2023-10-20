@@ -1,7 +1,10 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  SharedValue,
+} from 'react-native-reanimated';
 import { Categories } from './Categories';
 import { AllEmojiHeaderEntry } from './helpers/getFormattedAllEmojiList';
 import { fonts } from '@/styles';
@@ -11,7 +14,7 @@ const categoryKeys = Object.keys(Categories);
 
 interface Props {
   index: number;
-  scrollPosition: Animated.SharedValue<number>;
+  scrollPosition: SharedValue<number>;
   headerData: AllEmojiHeaderEntry;
 }
 

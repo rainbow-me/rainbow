@@ -30,7 +30,9 @@ const CopyFloatingEmojis = ({
             onPress?.(textToCopy);
             if (!disabled) {
               onNewEmoji();
-              setClipboard(textToCopy);
+              if (textToCopy) {
+                setClipboard(textToCopy);
+              }
             }
           }}
           radiusAndroid={24}

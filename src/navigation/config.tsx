@@ -24,10 +24,7 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/Send
 
 import { onWillPop } from '@/navigation/Navigation';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
-import {
-  StackNavigationOptions,
-  createStackNavigator,
-} from '@react-navigation/stack';
+import { StackNavigationOptions } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 
@@ -474,6 +471,7 @@ export const stackNavigationConfig = {
 export const defaultScreenStackOptions: StackNavigationOptions = {
   animationTypeForReplace: 'pop',
   gestureEnabled: true,
+  presentation: 'transparentModal',
 };
 
 export const closeKeyboardOnClose = {

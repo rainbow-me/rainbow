@@ -462,7 +462,8 @@ export default function CurrencySelectModal() {
           ? { ...item, type: 'token' }
           : {
               ...item,
-              decimals: item?.networks?.[chainId]?.decimals || item.decimals,
+              decimals:
+                item?.networks?.[currentChainId]?.decimals || item.decimals,
             };
 
       const selectAsset = () => {

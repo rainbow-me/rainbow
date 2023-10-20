@@ -88,7 +88,7 @@ const withPositionsSection = () => {
 
   const result: PositionExtraData[] = [];
   const sortedPositions = positionsObj?.positions?.sort((a, b) =>
-    a.dapp.name.localeCompare(b.dapp.name)
+    a.totals.totals.amount > b.totals.totals.amount ? -1 : 1
   );
   sortedPositions?.forEach((position, index) => {
     const listData = {

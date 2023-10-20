@@ -43,7 +43,6 @@ const Sheet = ({
 
 Sheet.propTypes = {
   borderRadius: PropTypes.number,
-  children: PropTypes.node,
   hideHandle: PropTypes.bool,
 };
 

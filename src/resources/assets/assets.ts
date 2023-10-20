@@ -130,21 +130,3 @@ function addHiddenCoins(coins: string[], address: string) {
   dispatch(setHiddenCoins(newHiddenCoins));
   storage.set(storageKey, JSON.stringify(newHiddenCoins));
 }
-
-const getTokenUrlScams = (tokens: RainbowAddressAssets): string[] =>
-  Object.values(tokens)
-    .filter(
-      asset =>
-        ((asset?.name && isValidDomain(asset?.name.replaceAll(' ', ''))) ||
-          (asset?.symbol && isValidDomain(asset.symbol))) &&
-        !asset.isVerified
-    )
-    .map(asset => asset.uniqueId);
-
-export const hideTokensWithUrls = (
-  tokens: RainbowAddressAssets,
-  address: string
-) => {
-  const tokensWithUrls = getTokenUrlScams(tokens);
-  addHiddenCoins(tokensWithUrls, address);
-};

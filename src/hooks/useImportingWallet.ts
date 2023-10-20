@@ -36,6 +36,8 @@ import { sanitizeSeedPhrase } from '@/utils';
 import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -44,6 +46,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const {
     getParent: dangerouslyGetParent,
     navigate,
+    goBack,
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
     replace,
     setParams,
@@ -305,21 +308,32 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
-                dangerouslyGetParent()?.goBack();
+                dangerouslyGetParent?.()?.goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
                     // on Android replacing is not working well, so we navigate and then remove the screen below
-                    const action = ios ? replace : navigate;
+                    const action = navigate;
                     action(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
                   } else {
-                    navigate(Routes.WALLET_SCREEN, { initialized: true });
+                    dangerouslyGetParent?.()?.goBack();
+
+                    navigate(Routes.SWIPE_LAYOUT, {
+                      params: { initialized: true },
+                      screen: Routes.WALLET_SCREEN,
+                    });
                   }
                   if (android) {
                     handleSetImporting(false);
                   }
+
+                  setTimeout(() => {
+                    InteractionManager.runAfterInteractions(() => {
+                      handleReviewPromptAction(ReviewPromptAction.WatchWallet);
+                    });
+                  }, 1_000);
 
                   setTimeout(() => {
                     // If it's not read only or hardware, show the backup sheet
