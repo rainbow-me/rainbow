@@ -48,6 +48,8 @@ import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -354,6 +356,10 @@ export default function WalletConnectApprovalSheet() {
     handled.current = true;
     goBack();
     handleSuccess(true);
+
+    setTimeout(() => {
+      handleReviewPromptAction(ReviewPromptAction.DappConnections);
+    }, 500);
   }, [handleSuccess, goBack]);
 
   const handleCancel = useCallback(() => {
