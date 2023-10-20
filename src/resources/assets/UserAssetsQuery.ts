@@ -9,7 +9,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import {
   createQueryKey,
   queryClient,
-  QueryConfig,
+  QueryConfigWithSelect,
   QueryFunctionArgs,
   QueryFunctionResult,
 } from '@/react-query';
@@ -227,9 +227,14 @@ function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
 // ///////////////////////////////////////////////
 // Query Fetcher (Optional)
 
-export async function fetchUserAssets(
+export async function fetchUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfig<UserAssetsResult, Error, UserAssetsQueryKey> = {}
+  config: QueryConfigWithSelect<
+    UserAssetsResult,
+    Error,
+    TSelectResult,
+    UserAssetsQueryKey
+  > = {}
 ) {
   return await queryClient.fetchQuery(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
@@ -241,9 +246,14 @@ export async function fetchUserAssets(
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useUserAssets(
+export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfig<UserAssetsResult, Error, UserAssetsQueryKey> = {}
+  config: QueryConfigWithSelect<
+    UserAssetsResult,
+    Error,
+    TSelectResult,
+    UserAssetsQueryKey
+  > = {}
 ) {
   return useQuery(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
