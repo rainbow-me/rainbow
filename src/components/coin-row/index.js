@@ -10,5 +10,4 @@ export { default as RequestCoinRow } from './RequestCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';
 export { default as SendSavingsCoinRow } from './SendSavingsCoinRow';
 export { default as FastTransactionCoinRow } from './FastTransactionCoinRow';
-export { default as TransactionCoinRow } from './TransactionCoinRow';
 export { default as UnderlyingAssetCoinRow } from './UnderlyingAssetCoinRow';
