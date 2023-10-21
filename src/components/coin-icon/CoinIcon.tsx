@@ -8,7 +8,12 @@ import { Network } from '@/networks/types';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { isETH, magicMemo, CoinIcon as ReactCoinIcon } from '@/utils';
+import {
+  ethereumUtils,
+  isETH,
+  magicMemo,
+  CoinIcon as ReactCoinIcon,
+} from '@/utils';
 import { ChainBadgeType } from '@/components/coin-icon/ChainBadgeSizeConfigs';
 
 export const CoinIconSize = 40;
@@ -62,6 +67,12 @@ const CoinIcon: React.FC<Props> = ({
 
   const theme = useTheme();
 
+  const network = mainnet_address
+    ? Network.mainnet
+    : type
+    ? ethereumUtils.getNetworkFromType(type)
+    : Network.mainnet;
+
   return (
     <View>
       {isNotContractInteraction ? (
@@ -78,7 +89,7 @@ const CoinIcon: React.FC<Props> = ({
           }
           size={size}
           symbol={symbol}
-          network={mainnet_address ? Network.mainnet : type}
+          network={network}
           theme={theme}
         />
       ) : (

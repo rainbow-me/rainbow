@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
@@ -154,7 +154,7 @@ export default React.memo(function TransactionCoinRow({
           ) : (
             <FastCoinIcon
               address={mainnetAddress || item.address}
-              assetType={item.network}
+              network={item.network}
               mainnetAddress={mainnetAddress}
               symbol={item.symbol}
               theme={theme}
