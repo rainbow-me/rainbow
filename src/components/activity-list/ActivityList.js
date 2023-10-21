@@ -7,11 +7,9 @@ import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { CoinRowHeight } from '../coin-row/CoinRow';
-import { TRANSACTION_COIN_ROW_VERTICAL_PADDING } from '../coin-row/TransactionCoinRow';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
-import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
@@ -24,6 +22,7 @@ const sx = StyleSheet.create({
 });
 
 const ActivityListHeaderHeight = 42;
+const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
 
 const getItemLayout = sectionListGetItemLayout({
   getItemHeight: () =>
@@ -86,16 +85,13 @@ function ListFooterComponent({ label, onPress }) {
 }
 
 const ActivityList = ({
-  addCashAvailable,
   hasPendingTransaction,
   header,
   isEmpty,
   isLoading,
   nativeCurrency,
-  navigation,
   network,
   nextPage,
-  recyclerListView,
   remainingItemsLabel,
   requests,
   sections,
@@ -127,17 +123,6 @@ const ActivityList = ({
   if (network === networkTypes.mainnet || sections.length) {
     if (isEmpty && !isLoading) {
       return <ActivityListEmptyState>{header}</ActivityListEmptyState>;
-    } else if (recyclerListView) {
-      return (
-        <RecyclerActivityList
-          addCashAvailable={addCashAvailable}
-          header={null}
-          isEmpty={isEmpty}
-          isLoading={isLoading}
-          navigation={navigation}
-          sections={sections}
-        />
-      );
     } else {
       return (
         <SectionList
