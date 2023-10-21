@@ -6,15 +6,11 @@ import { FastChainBadge } from './FastCoinBadge';
 import { FastFallbackCoinIconImage } from './FastFallbackCoinIconImage';
 import ContractInteraction from '@/assets/contractInteraction.png';
 import EthIcon from '@/assets/eth-icon.png';
-import { AssetType } from '@/entities';
 import { useColorForAsset } from '@/hooks';
+import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
-import {
-  FallbackIcon as CoinIconTextFallback,
-  getTokenMetadata,
-  isETH,
-} from '@/utils';
+import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -38,55 +34,54 @@ function formatSymbol(symbol: string) {
 /**
  * If mainnet asset is available, get the token under /ethereum/ (token) url.
  * Otherwise let it use whatever type it has
- * @param param0 - optional mainnetAddress, address and optional assetType
+ * @param param0 - optional mainnetAddress, address and network
  * @returns a proper type and address to use for the url
  */
-function resolveTypeAndAddress({
-  mainnetAddress,
+function resolveNetworkAndAddress({
   address,
-  assetType,
+  mainnetAddress,
+  network,
 }: {
   mainnetAddress?: string;
   address: string;
-  assetType?: AssetType;
+  network: Network;
 }) {
   if (mainnetAddress) {
     return {
       resolvedAddress: mainnetAddress,
-      resolvedType: AssetType.token,
+      resolvedNetwork: Network.mainnet,
     };
   }
 
   return {
     resolvedAddress: address,
-    resolvedType: assetType,
+    resolvedNetwork: network,
   };
 }
 
 export default React.memo(function FastCoinIcon({
   address,
   mainnetAddress,
+  network,
   symbol,
-  assetType,
   theme,
 }: {
   address: string;
   mainnetAddress?: string;
+  network: Network;
   symbol: string;
-  assetType?: AssetType;
   theme: ThemeContextProps;
 }) {
   const { colors } = theme;
 
-  const { resolvedType, resolvedAddress } = resolveTypeAndAddress({
+  const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
     address,
-    assetType,
     mainnetAddress,
+    network,
   });
 
   const fallbackIconColor = useColorForAsset({
     address: resolvedAddress,
-    type: resolvedType,
   });
 
   const shadowColor = theme.isDarkMode ? colors.shadow : fallbackIconColor;
@@ -133,7 +128,7 @@ export default React.memo(function FastCoinIcon({
       ) : (
         <FastFallbackCoinIconImage
           address={resolvedAddress}
-          assetType={resolvedType}
+          network={resolvedNetwork}
           shadowColor={shadowColor}
           symbol={symbol}
           theme={theme}
@@ -151,7 +146,7 @@ export default React.memo(function FastCoinIcon({
         </FastFallbackCoinIconImage>
       )}
 
-      {assetType && <FastChainBadge assetType={assetType} theme={theme} />}
+      {network && <FastChainBadge network={network} theme={theme} />}
     </View>
   );
 });

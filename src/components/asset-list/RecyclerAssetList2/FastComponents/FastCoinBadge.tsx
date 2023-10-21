@@ -12,52 +12,52 @@ import ZoraBadge from '@/assets/badges/zoraBadge.png';
 import ZoraBadgeDark from '@/assets/badges/zoraBadgeDark.png';
 import BaseBadge from '@/assets/badges/baseBadge.png';
 import BaseBadgeDark from '@/assets/badges/baseBadgeDark.png';
-import { AssetType } from '@/entities';
+import { Network } from '@/networks/types';
 
 interface FastChainBadgeProps {
-  assetType: AssetType;
+  network: Network;
   theme: any;
 }
 
 const AssetIconsByTheme: {
-  [key in AssetType]?: {
+  [key in Network]?: {
     dark: ImageSourcePropType;
     light: ImageSourcePropType;
   };
 } = {
-  [AssetType.arbitrum]: {
+  [Network.arbitrum]: {
     dark: ArbitrumBadgeDark,
     light: ArbitrumBadge,
   },
-  [AssetType.optimism]: {
+  [Network.optimism]: {
     dark: OptimismBadgeDark,
     light: OptimismBadge,
   },
-  [AssetType.polygon]: {
+  [Network.polygon]: {
     dark: PolygonBadgeDark,
     light: PolygonBadge,
   },
-  [AssetType.bsc]: {
+  [Network.bsc]: {
     dark: BscBadgeDark,
     light: BscBadge,
   },
-  [AssetType.zora]: {
+  [Network.zora]: {
     dark: ZoraBadgeDark,
     light: ZoraBadge,
   },
-  [AssetType.base]: {
+  [Network.base]: {
     dark: BaseBadgeDark,
     light: BaseBadge,
   },
 };
 
 export const FastChainBadge = React.memo(function FastChainBadge({
-  assetType,
+  network,
   theme,
 }: FastChainBadgeProps) {
   const { isDarkMode } = theme;
 
-  const source = AssetIconsByTheme[assetType]?.[isDarkMode ? 'dark' : 'light'];
+  const source = AssetIconsByTheme[network]?.[isDarkMode ? 'dark' : 'light'];
 
   if (!source) return null;
 

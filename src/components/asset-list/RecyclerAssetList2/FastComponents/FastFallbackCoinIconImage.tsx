@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AssetType } from '@/entities';
+import { Network } from '@/networks/types';
 import { useForceUpdate } from '@/hooks';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
@@ -17,7 +17,7 @@ const imagesCache: { [imageUrl: string]: keyof typeof ImageState } = {};
 export const FastFallbackCoinIconImage = React.memo(
   function FastFallbackCoinIconImage({
     address,
-    assetType,
+    network,
     symbol,
     shadowColor,
     theme,
@@ -25,13 +25,13 @@ export const FastFallbackCoinIconImage = React.memo(
   }: {
     theme: ThemeContextProps;
     address: string;
-    assetType?: AssetType;
+    network: Network;
     symbol: string;
     shadowColor: string;
     children: () => React.ReactNode;
   }) {
     const { colors } = theme;
-    const imageUrl = getUrlForTrustIconFallback(address, assetType)!;
+    const imageUrl = getUrlForTrustIconFallback(address, network)!;
 
     const key = `${symbol}-${imageUrl}`;
 
