@@ -4,7 +4,6 @@ export { default as CoinRowAddButton } from './CoinRowAddButton';
 export { default as CoinRowDetailsIcon } from './CoinRowDetailsIcon';
 export { default as CoinRowFavoriteButton } from './CoinRowFavoriteButton';
 export { default as CollectiblesSendRow } from './CollectiblesSendRow';
-export { default as ContractInteractionCoinRow } from './ContractInteractionCoinRow';
 export { default as ListCoinRow } from './ListCoinRow';
 export { default as RequestCoinRow } from './RequestCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';
