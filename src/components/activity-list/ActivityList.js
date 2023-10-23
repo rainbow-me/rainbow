@@ -15,6 +15,7 @@ import RecyclerActivityList from './RecyclerActivityList';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
+import { safeAreaInsetValues } from '@/utils';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -162,6 +163,9 @@ const ActivityList = ({
           keyExtractor={keyExtractor}
           removeClippedSubviews
           renderSectionHeader={renderSectionHeaderWithTheme}
+          scrollIndicatorInsets={{
+            bottom: safeAreaInsetValues.bottom + 14,
+          }}
           sections={sections}
         />
       );

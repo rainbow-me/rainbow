@@ -70,7 +70,10 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
-          scrollIndicatorInsets={{ bottom: 40, top: 132 }}
+          scrollIndicatorInsets={{
+            bottom: insets.bottom + 14,
+            top: 132,
+          }}
           type={type}
         />
       </StickyHeaderManager>
