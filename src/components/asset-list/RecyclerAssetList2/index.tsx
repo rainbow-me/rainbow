@@ -177,13 +177,12 @@ function NavbarOverlay({
           actionTitle: lang.t('button.my_qr_code'),
           icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
         },
-        mostRecentWalletConnectors.length > 0 || activeWCV2Sessions.length > 0
-          ? {
-              actionKey: 'connectedApps',
-              actionTitle: lang.t('wallet.connected_apps'),
-              icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-            }
-          : null,
+
+        {
+          actionKey: 'connectedApps',
+          actionTitle: lang.t('wallet.connected_apps'),
+          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+        },
       ].filter(Boolean),
       ...(ios ? { menuTitle: '' } : {}),
     }),
