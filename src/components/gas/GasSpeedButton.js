@@ -235,7 +235,6 @@ const GasSpeedButton = ({
   const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
-    console.log(gasIsNotReady);
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
@@ -475,7 +474,6 @@ const GasSpeedButton = ({
   ]);
 
   const onDonePress = useCallback(() => {
-    console.log('onDonePress');
     if (canGoBack) {
       goBack();
     } else {
@@ -522,8 +520,6 @@ const GasSpeedButton = ({
         </ContextMenu>
       );
     }
-
-    console.log('rendering context menu');
 
     return (
       <ContextMenuButton

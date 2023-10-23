@@ -52,15 +52,13 @@ export default function ContextMenuAndroid({
     [onPressMenuItem]
   );
 
-  console.log(actions, onPressAction);
-
   return (
     <MenuView
       actions={actions}
       isAnchoredToRight={isAnchoredToRight}
       onPressAction={onPressAction}
       shouldOpenOnLongPress={shouldOpenOnLongPress}
-      style={{ ...style, zIndex: 999 }}
+      style={style}
       testID={testID}
     >
       {children}
