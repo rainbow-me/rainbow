@@ -102,10 +102,11 @@ query reverseResolveENSProfile(
     }
   }
 }
-query getdApp($shortName: String!, $url: String!) {
+
+query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
   dApp(shortName: $shortName, url: $url) {
     name
-    status
+    status @include(if: $status)
     colors {
       primary
       fallback

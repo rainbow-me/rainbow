@@ -40,7 +40,13 @@ type DappMetadataQueryKey = ReturnType<typeof DappMetadataQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
-async function fetchDappMetadata({ url }: { url: string }) {
+async function fetchDappMetadata({
+  url,
+  status,
+}: {
+  url: string;
+  status: boolean;
+}) {
   const appHostName = url && isValidUrl(url) ? getDappHostname(url) : '';
   const hardcodedAppName =
     url && isValidUrl(url)
@@ -50,6 +56,7 @@ async function fetchDappMetadata({ url }: { url: string }) {
   const response = await metadataClient.getdApp({
     shortName: hardcodedAppName,
     url,
+    status,
   });
   console.log({ response });
 
@@ -79,25 +86,18 @@ export async function dappMetadataQueryFunction({
   typeof DappMetadataQueryKey
 >): Promise<DappMetadata | null> {
   if (!url) return null;
-  //const { setDappMetadata } = dappMetadataStore.getState();
-  const appHost = url && isValidUrl(url) ? getDappHost(url) : '';
-  const dappMetadata = await fetchDappMetadata({ url });
-  //setDappMetadata({ host: appHost, dappMetadata });
+  const dappMetadata = await fetchDappMetadata({ url, status: true });
   return dappMetadata;
 }
 
 export async function prefetchDappMetadata({ url }: { url: string }) {
-  // const { dappMetadata } = dappMetadataStore.getState();
-  const appHost = url && isValidUrl(url) ? getDappHost(url) : '';
-  // if (!dappMetadata[appHost]) {
   queryClient.prefetchQuery(
     DappMetadataQueryKey({ url }),
-    async () => fetchDappMetadata({ url }),
+    async () => fetchDappMetadata({ url, status: false }),
     {
       staleTime: 60000,
     }
   );
-  //}
 }
 
 // ///////////////////////////////////////////////
@@ -106,11 +106,6 @@ export async function prefetchDappMetadata({ url }: { url: string }) {
 export function useDappMetadata({ url }: DappMetadataArgs) {
   return useQuery(DappMetadataQueryKey({ url }), dappMetadataQueryFunction, {
     cacheTime: 1000 * 60 * 60 * 24,
-    // initialData: () => {
-    //   const appHost = url && isValidUrl(url) ? getDappHost(url) : '';
-    //   const { getDappMetadata } = dappMetadataStore.getState();
-    //   return getDappMetadata({ host: appHost });
-    // },
     enabled: !!url,
   });
 }
