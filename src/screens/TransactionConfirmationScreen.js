@@ -62,7 +62,6 @@ import {
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -76,7 +75,6 @@ import {
 import {
   loadWallet,
   sendTransaction,
-  signMessage,
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
@@ -102,8 +100,6 @@ import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
-  isSignFirstParamType,
-  isSignSecondParamType,
   isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,

@@ -14,7 +14,6 @@ import {
   isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
-  SIGN,
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';

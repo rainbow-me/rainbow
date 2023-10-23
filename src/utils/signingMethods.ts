@@ -8,8 +8,6 @@ const displayTypes = {
   message: [PERSONAL_SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4],
   transaction: [SEND_TRANSACTION, SIGN_TRANSACTION],
 };
-const firstParamSigning = [PERSONAL_SIGN];
-const secondParamSigning = [SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4];
 
 const allTypes = displayTypes.message.concat(displayTypes.transaction);
 
@@ -20,12 +18,6 @@ export const isMessageDisplayType = (method: string) =>
 
 export const isTransactionDisplayType = (method: string) =>
   displayTypes.transaction.includes(method);
-
-export const isSignSecondParamType = (method: string) =>
-  secondParamSigning.includes(method);
-
-export const isSignFirstParamType = (method: string) =>
-  firstParamSigning.includes(method);
 
 export const isSignTypedData = (method: string) =>
   method.startsWith(SIGN_TYPED_DATA);
