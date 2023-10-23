@@ -51,6 +51,8 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { IS_IOS } from '@/env';
+import { useDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -254,6 +256,12 @@ export default function WalletConnectApprovalSheet() {
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
+  const { data: metadata } = useDappMetadata({ url: dappUrl });
+
+  const isScam = 'SCAM' === DAppStatus.Scam;
+  const isVerified = metadata.status === DAppStatus.Verified;
+
+  const accentColor = isScam ? colors.red : colors.appleBlue;
 
   useEffect(() => {
     return () => {
@@ -470,10 +478,11 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text
-                color="action (Deprecated)"
+                color={{ custom: accentColor }}
                 size="18px / 27px (Deprecated)"
                 weight="heavy"
               >
+                {isScam && '􁅏 '}
                 {formattedDappUrl}
               </Text>
             </Row>
@@ -489,7 +498,7 @@ export default function WalletConnectApprovalSheet() {
               weight="bold"
             />
             <SheetActionButton
-              color={colors.appleBlue}
+              color={accentColor}
               label={lang.t('button.connect')}
               onPress={handleConnect}
               size="big"
