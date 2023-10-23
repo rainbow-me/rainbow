@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
@@ -34,6 +35,8 @@ import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
+import { IS_ANDROID } from '@/env';
+import { ContextMenu } from '../context-menu';
 
 const {
   GAS_EMOJIS,
@@ -232,6 +235,7 @@ const GasSpeedButton = ({
   const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
+    console.log(gasIsNotReady);
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
@@ -249,6 +253,7 @@ const GasSpeedButton = ({
     shouldOpenCustomGasSheet.focusTo,
     flashbotTransaction,
     speeds,
+    fallbackColor,
   ]);
 
   const openCustomOptions = useCallback(
@@ -377,6 +382,25 @@ const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
+  const handlePressActionSheet = useCallback(
+    buttonIndex => {
+      switch (buttonIndex) {
+        case 0:
+          handlePressSpeedOption(NORMAL);
+          break;
+        case 1:
+          handlePressSpeedOption(FAST);
+          break;
+        case 2:
+          handlePressSpeedOption(URGENT);
+          break;
+        case 3:
+          handlePressSpeedOption(CUSTOM);
+      }
+    },
+    [handlePressSpeedOption]
+  );
+
   const nativeFeeCurrency = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
@@ -399,6 +423,8 @@ const GasSpeedButton = ({
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
+      if (IS_ANDROID) return gasOption;
+
       const totalGwei = add(
         gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
@@ -441,6 +467,7 @@ const GasSpeedButton = ({
     gasFeeParamsBySpeed,
     selectedGasFeeOption,
     speedOptions,
+    isL2,
   ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
@@ -448,6 +475,7 @@ const GasSpeedButton = ({
   ]);
 
   const onDonePress = useCallback(() => {
+    console.log('onDonePress');
     if (canGoBack) {
       goBack();
     } else {
@@ -477,6 +505,26 @@ const GasSpeedButton = ({
       />
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
+
+    if (IS_ANDROID) {
+      return (
+        <ContextMenu
+          activeOpacity={0}
+          enableContextMenu
+          isAnchoredToRight
+          isMenuPrimaryAction
+          onPressActionSheet={handlePressActionSheet}
+          options={menuConfig.menuItems}
+          useActionSheetFallback={false}
+          wrapNativeComponent={false}
+        >
+          <Centered>{pager}</Centered>
+        </ContextMenu>
+      );
+    }
+
+    console.log('rendering context menu');
+
     return (
       <ContextMenuButton
         activeOpacity={0}
@@ -543,6 +591,7 @@ const GasSpeedButton = ({
           onPress={openGasHelper}
           scaleTo={0.9}
           testID="estimated-fee-label"
+          disallowInterruption={false}
         >
           <Row>
             <NativeCoinIconWrapper>

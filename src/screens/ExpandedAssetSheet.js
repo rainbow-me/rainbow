@@ -48,6 +48,8 @@ export default function ExpandedAssetSheet(props) {
   // to ensure the user can get the latest metadata of their collectible.
   const selectedAsset = useAsset(params.asset);
 
+  console.log(params.type);
+
   return (
     <Container
       deviceHeight={deviceHeight}
