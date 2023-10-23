@@ -58,7 +58,6 @@ async function fetchDappMetadata({
     url,
     status,
   });
-  console.log({ response });
 
   const appHost = url && isValidUrl(url) ? getDappHost(url) : '';
   const appName = response?.dApp?.name
@@ -76,7 +75,6 @@ async function fetchDappMetadata({
     appLogo: response?.dApp?.iconURL,
     status: response.dApp?.status,
   };
-  console.log(dappMetadata);
   return dappMetadata;
 }
 
