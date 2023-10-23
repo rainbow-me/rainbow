@@ -13,7 +13,6 @@ import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import ContextMenuAndroid from '@/components/native-context-menu/contextMenu.android';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
 import {
   removeFirstEmojiFromString,
@@ -25,6 +24,7 @@ import { abbreviations, deviceUtils, profileUtils } from '@/utils';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
+import { ContextMenu } from '../context-menu';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -219,6 +219,25 @@ export default function AddressRow({
     menuTitle: walletName,
   };
 
+  const handleSelectActionMenuItem = useCallback(
+    (buttonIndex: number) => {
+      switch (buttonIndex) {
+        case 0:
+          contextMenuActions?.edit(walletId, address);
+          break;
+        case 1:
+          contextMenuActions?.notifications(walletName, address);
+          break;
+        case 2:
+          contextMenuActions?.remove(walletId, address);
+          break;
+        default:
+          break;
+      }
+    },
+    [contextMenuActions, walletName, walletId, address]
+  );
+
   const handleSelectMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
@@ -316,14 +335,15 @@ export default function AddressRow({
                   <OptionsIcon onPress={NOOP} />
                 </ContextMenuButton>
               ) : (
-                // @ts-expect-error js component
-                <ContextMenuAndroid
-                  menuConfig={menuConfig}
+                <ContextMenu
+                  options={menuConfig.menuItems.map(item => item.actionTitle)}
                   isAnchoredToRight
-                  onPressMenuItem={handleSelectMenuItem}
+                  onPressActionSheet={handleSelectActionMenuItem}
                 >
-                  <OptionsIcon onPress={NOOP} />
-                </ContextMenuAndroid>
+                  <Centered>
+                    <OptionsIcon onPress={NOOP} />
+                  </Centered>
+                </ContextMenu>
               ))}
           </Column>
         </Row>
