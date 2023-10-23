@@ -287,11 +287,6 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
       formattedAddress={formattedAddress}
       fetchedEnsName={fetchedEnsName}
     >
-      {/* <ContextMenuButton
-      menuConfig={menuConfig}
-      onPressMenuItem={onPressMenuItem}
-      menuAlignmentOverride="left"
-    > */}
       <ButtonPressAnimation scaleTo={0.96}>
         <Box paddingVertical="10px">
           <Columns space="10px" alignVertical="center">
