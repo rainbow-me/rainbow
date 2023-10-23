@@ -53,6 +53,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { IS_IOS } from '@/env';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
+import { InfoAlert } from '@/components/info-alert/info-alert';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -258,7 +259,7 @@ export default function WalletConnectApprovalSheet() {
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
   const { data: metadata } = useDappMetadata({ url: dappUrl });
 
-  const isScam = 'SCAM' === DAppStatus.Scam;
+  const isScam = metadata.status === DAppStatus.Scam;
   const isVerified = metadata.status === DAppStatus.Verified;
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
@@ -483,11 +484,25 @@ export default function WalletConnectApprovalSheet() {
                 weight="heavy"
               >
                 {isScam && '􁅏 '}
+                {isVerified && '􀇻 '}
                 {formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>
+          {isScam && (
+            <Box paddingHorizontal={'16px'}>
+              <InfoAlert
+                rightIcon={
+                  <Text size="15pt" color={{ custom: accentColor }}>
+                    􀘰
+                  </Text>
+                }
+                title="This app is likely malicious"
+                description="Signing messages or transactions from this app could result in losing your assets"
+              />
+            </Box>
+          )}
           <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
