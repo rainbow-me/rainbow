@@ -30,7 +30,7 @@ export const InfoAlert: React.FC<InfoAlertProps> = ({
         {rightIcon}
       </Box>
       <Box style={{ gap: 10 }} flexDirection="column">
-        <Text color="label" size="15pt" weight="heavy">
+        <Text color="label" size="15pt" weight="bold">
           {title}
         </Text>
         <Text color="labelTertiary" size="13pt" weight="medium">
