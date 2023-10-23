@@ -12,7 +12,7 @@ import java.util.List;
 public class RNReviewPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.asList(new RNReviewModule());
+        return Arrays.asList(new RNReviewModule(reactContext));
     }
 
     @Override

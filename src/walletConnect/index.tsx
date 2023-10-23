@@ -53,6 +53,8 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
@@ -783,6 +785,10 @@ export async function onSessionRequest(
               type,
             });
           }
+
+          InteractionManager.runAfterInteractions(() => {
+            handleReviewPromptAction(ReviewPromptAction.DappConnections);
+          });
 
           maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
         },
