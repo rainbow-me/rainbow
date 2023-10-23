@@ -498,8 +498,10 @@ export default function WalletConnectApprovalSheet() {
                     􀘰
                   </Text>
                 }
-                title="This app is likely malicious"
-                description="Signing messages or transactions from this app could result in losing your assets"
+                title={lang.t(lang.l.walletconnect.info_warnings.title)}
+                description={lang.t(
+                  lang.l.walletconnect.info_warnings.description
+                )}
               />
             </Box>
           )}
