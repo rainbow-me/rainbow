@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -117,7 +117,7 @@ const ContextMenuRenderer = ({
         onPressActionSheet={handlePressActionSheet}
         options={menuConfig.menuItems.map(i => i.actionTitle)}
       >
-        {children}
+        <View>{children}</View>
       </ContextMenu>
     );
   }
@@ -151,6 +151,8 @@ export default function ENSIntroSheet() {
   const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
     enabled: Boolean(uniqueDomain?.name),
   });
+
+  console.log(nonPrimaryDomains.length);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
