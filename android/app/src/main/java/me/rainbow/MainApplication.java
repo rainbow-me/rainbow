@@ -61,7 +61,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
 
-          
+
             return packages;
         }
 
