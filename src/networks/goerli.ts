@@ -4,6 +4,7 @@ import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import config from '@/model/config';
+import { proxyRpcEndpoint } from '@/utils/rpc';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
   return {
@@ -25,7 +26,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
 
     // this should be refactored to have less deps
     getProvider: getProviderForNetwork(Network.goerli),
-    rpc: config.ethereum_goerli_rpc,
+    rpc: proxyRpcEndpoint(config.ethereum_goerli_rpc, goerli.id),
     balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
     // features

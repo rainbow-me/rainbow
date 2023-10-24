@@ -43,6 +43,7 @@ import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { getNetworkObj } from '@/networks';
+import { proxyRpcEndpoint } from '@/utils/rpc';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -174,7 +175,10 @@ export const isTestnetNetwork = (network: Network): boolean => {
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
+    proxyRpcEndpoint(
+      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
+      1
+    ),
     Network.mainnet
   );
 };
@@ -193,23 +197,18 @@ export const getCachedProviderForNetwork = (
 export const getProviderForNetwork = async (
   network: Network | string = Network.mainnet
 ): Promise<StaticJsonRpcProvider> => {
-  if (isNetworkEnum(network) && networkProviders[network]) {
-    return networkProviders[network]!;
-  }
-
   if (!isNetworkEnum(network)) {
     const provider = new StaticJsonRpcProvider(network, Network.mainnet);
     networkProviders[Network.mainnet] = provider;
     return provider;
-  } else {
-    const chainId = getNetworkObj(network).id;
-    const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
-    if (!networkProviders[network]) {
-      networkProviders[network] = provider;
-    }
-    await provider.ready;
-    return provider;
   }
+  const networkObj = getNetworkObj(network);
+  const provider = new StaticJsonRpcProvider(networkObj.rpc, networkObj.id);
+  if (!networkProviders[network]) {
+    networkProviders[network] = provider;
+  }
+  await provider.ready;
+  return provider;
 };
 
 /**

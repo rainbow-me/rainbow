@@ -95,6 +95,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       const ready = await web3SetHttpProvider(
         (ios && HARDHAT_URL_IOS) ||
           (android && HARDHAT_URL_ANDROID) ||
+          // what about this
           'http://127.0.0.1:8545'
       );
       logger.debug('connected to hardhat', { ready });

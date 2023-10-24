@@ -5,6 +5,7 @@ import { bsc } from '@wagmi/chains';
 import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
 import config from '@/model/config';
+import { proxyRpcEndpoint } from '@/utils/rpc';
 
 export const getBSCNetworkObject = (): NetworkProperties => {
   return {
@@ -26,7 +27,7 @@ export const getBSCNetworkObject = (): NetworkProperties => {
     },
 
     // this should be refactored to have less deps
-    rpc: config.bsc_mainnet_rpc,
+    rpc: proxyRpcEndpoint(config.bsc_mainnet_rpc, bsc.id),
     getProvider: getProviderForNetwork(Network.bsc),
     balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
 

@@ -4,6 +4,7 @@ import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import config from '@/model/config';
+import { proxyRpcEndpoint } from '@/utils/rpc';
 
 export const getMainnetNetworkObject = (): NetworkProperties => {
   return {
@@ -25,7 +26,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
 
     // this should be refactored to have less deps
     getProvider: getProviderForNetwork(Network.mainnet),
-    rpc: config.ethereum_mainnet_rpc,
+    rpc: proxyRpcEndpoint(config.ethereum_mainnet_rpc, mainnet.id),
     balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
     // features
