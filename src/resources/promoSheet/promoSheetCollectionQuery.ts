@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { createQueryKey, queryClient } from '@/react-query';
 
+import { arcDevClient } from '@/graphql';
+
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).
 const defaultStaleTime = 10_000;
@@ -11,6 +13,18 @@ const defaultStaleTime = 10_000;
 
 const promoSheetCollectionQueryKey = () =>
   createQueryKey('promoSheetCollection', {}, { persisterVersion: 1 });
+
+type PromoSheetCollectionQueryKey = ReturnType<
+  typeof promoSheetCollectionQueryKey
+>;
+
+// ///////////////////////////////////////////////
+// Query Function
+
+async function promoSheetCollectionQueryFunction() {
+  const data = await arcDevClient.promoSheetCollection();
+  return data;
+}
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
