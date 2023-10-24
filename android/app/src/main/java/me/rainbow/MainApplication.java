@@ -18,7 +18,6 @@ import me.rainbow.NativeModules.Haptics.RNRainbowHapticsModule;
 import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
-import me.rainbow.NativeModules.SystemNavigationBar.SystemNavigationBarPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
@@ -54,7 +53,6 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           packages.add(new RNBip39Package());
           packages.add(new RNReviewPackage());
-          packages.add(new SystemNavigationBarPackage());
           packages.add(new RNBackHandlerPackage());
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
@@ -63,7 +61,8 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
 
-          return packages;
+
+            return packages;
         }
 
         @Override
