@@ -86,7 +86,6 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { IS_ANDROID } from './env';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();

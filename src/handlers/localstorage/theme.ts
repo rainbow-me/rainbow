@@ -11,6 +11,4 @@ export const getTheme = () => getGlobal(THEME, 'light');
 /**
  * @desc save theme
  */
-export const saveTheme = (theme: any) => {
-  return saveGlobal(THEME, theme);
-};
+export const saveTheme = (theme: any) => saveGlobal(THEME, theme);
