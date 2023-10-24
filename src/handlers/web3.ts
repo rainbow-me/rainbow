@@ -41,9 +41,8 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { IS_IOS } from '@/env';
+import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
-import { proxyRpcEndpoint } from '@/utils/rpc';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -146,6 +145,14 @@ export const web3SetHttpProvider = async (
 };
 
 /**
+ * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
+ */
+export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) =>
+  `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
+    customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
+  }`;
+
+/**
  * @desc Checks if the given network is a Layer 2.
  * @param network The network to check.
  * @return Whether or not the network is a L2 network.
@@ -176,8 +183,8 @@ export const isTestnetNetwork = (network: Network): boolean => {
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
     proxyRpcEndpoint(
-      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
-      1
+      1,
+      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
     ),
     Network.mainnet
   );
@@ -198,7 +205,10 @@ export const getProviderForNetwork = async (
   network: Network | string = Network.mainnet
 ): Promise<StaticJsonRpcProvider> => {
   if (!isNetworkEnum(network)) {
-    const provider = new StaticJsonRpcProvider(network, Network.mainnet);
+    const provider = new StaticJsonRpcProvider(
+      proxyRpcEndpoint(1, network),
+      Network.mainnet
+    );
     networkProviders[Network.mainnet] = provider;
     return provider;
   }

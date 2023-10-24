@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
@@ -24,7 +24,7 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       address: OPTIMISM_ETH_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(config.optimism_mainnet_rpc, optimism.id),
+    rpc: proxyRpcEndpoint(optimism.id),
     getProvider: getProviderForNetwork(Network.optimism),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
