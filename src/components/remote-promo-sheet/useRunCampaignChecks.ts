@@ -1,25 +1,38 @@
 import { useEffect } from 'react';
+import { InteractionManager } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
-import { EthereumAddress } from '@/entities';
-import { Network } from '@/helpers/networkTypes';
-import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
-import { ethereumUtils, resolveFirstRejectLast } from '@/utils';
-import store from '@/redux/store';
+import { resolveFirstRejectLast } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { RainbowNetworks } from '@/networks';
 import {
   PromoSheetCollectionResult,
   usePromoSheetCollectionQuery,
 } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
-import { InteractionManager } from 'react-native';
 import { PromoSheet } from '@/graphql/__generated__/arc';
+
+import * as fns from './check-fns';
 
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const mmkv = new MMKV();
+
+type ActionObj = {
+  fn: Actions;
+  outcome: boolean;
+  props: any;
+};
+type ActionFn = (props: any) => boolean | Promise<boolean>;
+type ActionProp = (campaign: PromoSheet, props: object) => Promise<object>;
+
+export const enum Actions {
+  hasSelectedWallet = 'hasSelectedWallet',
+  isSelectedWalletReadyOnly = 'isSelectedWalletReadyOnly',
+  hasNonZeroAssetBalance = 'hasNonZeroAssetBalance',
+  isAfterCampaignLaunch = 'isAfterCampaignLaunch',
+  hasNonZeroTotalBalance = 'hasNonZeroTotalBalance',
+}
 
 export type CampaignCheckResult = {
   campaignId: string;
@@ -39,8 +52,6 @@ export const useRunCampaignChecks = () => {
   const isPromoCurrentlyShown = mmkv.getBoolean(
     STORAGE_IDS.PROMO_CURRENTLY_SHOWN
   );
-
-  console.log({ isPromoCurrentlyShown });
 
   const { data, isLoading, error } = usePromoSheetCollectionQuery(
     {},
@@ -101,89 +112,6 @@ export const triggerCampaign = async ({
   }, 1000);
 };
 
-export const isSelectedWalletReadyOnly = (): boolean => {
-  const { selected } = store.getState().wallets;
-
-  // if no selected wallet, we will treat it as a read-only wallet
-  if (!selected || selected.type === WalletTypes.readOnly) {
-    return true;
-  }
-
-  return false;
-};
-
-export const hasNonZeroAssetBalance = async (
-  assetAddress: EthereumAddress
-): Promise<boolean> => {
-  const { selected } = store.getState().wallets;
-  if (!selected) return false;
-
-  const { accountAddress } = store.getState().settings;
-
-  const networks = RainbowNetworks.map(network => network.value);
-
-  // check native asset balances on networks
-  const balancePromises = networks.map(network =>
-    ethereumUtils
-      .getNativeAssetForNetwork(network, accountAddress)
-      .then(nativeAsset => Number(nativeAsset?.balance?.amount) > 0)
-      .catch(error => {
-        console.error(`Failed to get balance for network ${network}: ${error}`);
-        return false;
-      })
-  );
-
-  for (const balancePromise of balancePromises) {
-    // eslint-disable-next-line no-await-in-loop
-    if (await balancePromise) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-export const hasSelectedWallet = (): boolean => {
-  const { selected } = store.getState().wallets;
-  return !!selected;
-};
-
-export const isFirstLaunch = (): boolean => {
-  return mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH) ?? false;
-};
-
-export const isAfterCampaignLaunch = ({ launchDate }: PromoSheet): boolean => {
-  return new Date() > launchDate;
-};
-
-export const hasNonZeroTotalBalance = async (): Promise<boolean> => {
-  const {
-    accountAddress,
-  }: {
-    accountAddress: EthereumAddress;
-    network: Network;
-  } = store.getState().settings;
-
-  const networks: Network[] = RainbowNetworks.map(network => network.value);
-  const balances = await Promise.all(
-    networks.map(async network => {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
-        network,
-        accountAddress
-      );
-      return Number(nativeAsset?.balance?.amount);
-    })
-  );
-
-  return balances.some(balance => balance > 0);
-};
-
-type ActionObj = {
-  fn: Actions;
-  outcome: boolean;
-  props: any;
-};
-
 export const shouldPromptCampaign = async (
   campaign: PromoSheet
 ): Promise<CampaignCheckResult | undefined> => {
@@ -198,7 +126,7 @@ export const shouldPromptCampaign = async (
 
   // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
   const hasViewedCampaign = mmkv.getBoolean(campaignKey as string);
-  const firstLaunch = isFirstLaunch();
+  const firstLaunch = fns.isFirstLaunch(mmkv);
 
   logger.log(`Checking if we should prompt campaign ${campaignKey}`);
   logger.info(`Has Viewed Campaign: ${hasViewedCampaign}`);
@@ -239,12 +167,11 @@ export const shouldPromptCampaign = async (
  * @returns boolean
  */
 export const __INTERNAL_ACTION_CHECKS: { [key in Actions]: ActionFn } = {
-  [Actions.hasSelectedWallet]: hasSelectedWallet,
-  [Actions.isFirstLaunch]: isFirstLaunch,
-  [Actions.isSelectedWalletReadyOnly]: isSelectedWalletReadyOnly,
-  [Actions.hasNonZeroAssetBalance]: hasNonZeroAssetBalance,
-  [Actions.isAfterCampaignLaunch]: isAfterCampaignLaunch,
-  [Actions.hasNonZeroTotalBalance]: hasNonZeroTotalBalance,
+  [Actions.hasSelectedWallet]: fns.hasSelectedWallet,
+  [Actions.isSelectedWalletReadyOnly]: fns.isSelectedWalletReadyOnly,
+  [Actions.hasNonZeroAssetBalance]: fns.hasNonZeroAssetBalance,
+  [Actions.isAfterCampaignLaunch]: fns.isAfterCampaignLaunch,
+  [Actions.hasNonZeroTotalBalance]: fns.hasNonZeroTotalBalance,
 };
 
 /**
@@ -255,15 +182,3 @@ export const __INTERNAL_ACTION_CHECKS: { [key in Actions]: ActionFn } = {
 export const __INTERNAL_ACTION_PROPS: Partial<
   { [key in Actions]: ActionProp }
 > = {};
-
-type ActionFn = (props: any) => boolean | Promise<boolean>;
-type ActionProp = (campaign: PromoSheet, props: object) => Promise<object>;
-
-export const enum Actions {
-  hasSelectedWallet = 'hasSelectedWallet',
-  isFirstLaunch = 'isFirstLaunch',
-  isSelectedWalletReadyOnly = 'isSelectedWalletReadyOnly',
-  hasNonZeroAssetBalance = 'hasNonZeroAssetBalance',
-  isAfterCampaignLaunch = 'isAfterCampaignLaunch',
-  hasNonZeroTotalBalance = 'hasNonZeroTotalBalance',
-}

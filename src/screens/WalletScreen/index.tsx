@@ -41,6 +41,7 @@ import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
+import { useRunCampaignChecks } from '@/components/remote-promo-sheet/useRunCampaignChecks';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -68,6 +69,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   usePositions({ address: accountAddress, currency: nativeCurrency });
+
+  useRunCampaignChecks();
 
   const provider = getCachedProviderForNetwork(currentNetwork);
   const providerUrl = provider?.connection?.url;
