@@ -7,6 +7,7 @@ import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { sanitizeTypedData } from '@/utils/signingUtils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
@@ -34,7 +35,8 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
     maximumHeight = 200;
     minimumHeight = 200;
     try {
-      msg = JSON.parse(message);
+      const sanitizedMessage = sanitizeTypedData(message);
+      msg = JSON.parse(sanitizedMessage);
       // eslint-disable-next-line no-empty
     } catch (e) {}
     msg = JSON.stringify(msg, null, 4);
