@@ -49,8 +49,12 @@ export const checkForCampaign = async () => {
     return;
   }
 
-  logger.info(`Triggering campaign: ${result.campaignKey}`);
+  const isPromoCurrentlyShown = mmkv.getBoolean(
+    STORAGE_IDS.PROMO_CURRENTLY_SHOWN
+  );
 
+  // another sanity check for making sure we don't stack promo sheets
+  if (isPromoCurrentlyShown) return;
   triggerCampaign(result);
 };
 

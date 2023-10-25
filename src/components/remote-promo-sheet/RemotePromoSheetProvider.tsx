@@ -25,7 +25,6 @@ export const RemotePromoSheetContext = createContext<WalletReadyContext>({
 type WalletReadyProvider = PropsWithChildren & WalletReadyContext;
 
 const REFETCH_INTERVAL = 30_000;
-
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const timeBetweenPromoSheets = () => {
