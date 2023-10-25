@@ -82,6 +82,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -306,6 +307,11 @@ function BSNavigator() {
           />
         </>
       )}
+      <BSStack.Screen
+        component={RemotePromoSheet}
+        name={Routes.REMOTE_PROMO_SHEET}
+        options={bottomSheetPreset}
+      />
       <BSStack.Screen
         component={SwapsPromoSheet}
         name={Routes.SWAPS_PROMO_SHEET}
