@@ -87,7 +87,10 @@ export async function fetchPromoSheetCollection({
 
 export function usePromoSheetCollectionQuery(
   { skip, limit }: PromoSheetCollectionArgs = {},
-  { enabled }: { enabled?: boolean } = {}
+  {
+    enabled,
+    refetchInterval = 30_000,
+  }: { enabled?: boolean; refetchInterval?: number } = {}
 ) {
   return useQuery(
     promoSheetCollectionQueryKey({ skip, limit }),
@@ -95,6 +98,7 @@ export function usePromoSheetCollectionQuery(
     {
       enabled,
       staleTime: defaultStaleTime,
+      refetchInterval,
     }
   );
 }

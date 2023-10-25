@@ -95,8 +95,8 @@ export function RemotePromoSheet() {
         headerImageAspectRatio ?? HEADER_WIDTH / HEADER_HEIGHT
       }
       sheetHandleColor={sheetHandleColor}
-      header={header}
-      subHeader={subHeader}
+      header={header ?? ''} // TODO: Probably should have a default header here
+      subHeader={subHeader ?? ''} // TODO: Probably should have a default subHeader here
       primaryButtonProps={{
         ...primaryButtonProps,
         onPress: noop, // TODO: Primary action should be passed

@@ -23,7 +23,7 @@ const mmkv = new MMKV();
 type ActionObj = {
   fn: Actions;
   outcome: boolean;
-  props: any;
+  props: object;
 };
 type ActionFn = (props: any) => boolean | Promise<boolean>;
 type ActionProp = (campaign: PromoSheet, props: object) => Promise<object>;
@@ -62,18 +62,22 @@ export const useRunCampaignChecks = () => {
   const { data, isLoading, error } = usePromoSheetCollectionQuery(
     {},
     {
-      enabled:
-        walletReady &&
-        remotePromoSheets &&
-        !isPromoCurrentlyShown &&
-        timeBetweenPromoSheets() >= TIMEOUT_BETWEEN_PROMOS,
+      enabled: remotePromoSheets && !isPromoCurrentlyShown,
     }
   );
 
   useEffect(() => {
-    if (walletReady && remotePromoSheets && !isLoading && !error && data) {
-      runCampaignChecks(data.promoSheetCollection);
-    }
+    if (
+      !walletReady ||
+      !remotePromoSheets ||
+      isLoading ||
+      error ||
+      !data ||
+      timeBetweenPromoSheets() <= TIMEOUT_BETWEEN_PROMOS
+    )
+      return;
+
+    runCampaignChecks(data.promoSheetCollection);
 
     return () => {
       // when unloading this effect, we should reset the isPromoCurrentlyShown
@@ -141,29 +145,35 @@ export const shouldPromptCampaign = async (
   logger.info(`Is First Launch: ${firstLaunch}`);
 
   // If the campaign has been viewed already or it's the first app launch, exit early
-  if (hasViewedCampaign || firstLaunch) {
-    return;
-  }
+  // if (hasViewedCampaign || firstLaunch) {
+  //   return;
+  // }
 
-  const shouldPrompt = ((actions || []) as ActionObj[]).every(
-    async ({ fn, outcome, props = {} }) => {
-      const action = __INTERNAL_ACTION_CHECKS[fn];
-      logger.info(`Checking action: ${fn}. Typeof action: ${typeof action}`);
-      // We were passed an action we can't handle, so we return false
-      if (typeof action === 'undefined') return false;
+  const shouldPrompt = (
+    await Promise.all(
+      ((actions || []) as ActionObj[]).map(
+        async ({ fn, outcome, props = {} }) => {
+          const action = __INTERNAL_ACTION_CHECKS[fn];
+          logger.info(
+            `Checking action: ${fn}. Typeof action: ${typeof action}`
+          );
+          if (typeof action === 'undefined') return false;
 
-      const params = (await __INTERNAL_ACTION_PROPS[fn]?.(campaign, props)) || {
-        ...campaign,
-        ...props,
-      };
-      const result = await action({ ...params });
+          const params = (await __INTERNAL_ACTION_PROPS[fn]?.(
+            campaign,
+            props
+          )) || {
+            ...campaign,
+            ...props,
+          };
+          const result = await action({ ...params });
 
-      logger.info(`[${fn}]: result ${result}`);
-      return result === outcome;
-    }
-  );
-
-  console.log({ shouldPrompt, campaignKey });
+          logger.info(`[${fn}]: result: ${result}, expected: ${outcome}`);
+          return result === outcome;
+        }
+      )
+    )
+  ).every(result => result);
 
   // If any action check returns false, shouldPrompt will be false, so we won't show it.
   // Otherwise, if all action checks pass, we will show the promo to the user
