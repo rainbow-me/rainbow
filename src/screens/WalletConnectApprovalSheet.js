@@ -257,10 +257,16 @@ export default function WalletConnectApprovalSheet() {
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
-  const { data: metadata } = useDappMetadata({ url: dappUrl });
 
-  const isScam = metadata.status === DAppStatus.Scam;
-  const isVerified = metadata.status === DAppStatus.Verified;
+  const verifiedData = params?.verifiedData;
+  const { data: metadata } = useDappMetadata({
+    url: verifiedData?.verifyUrl || dappUrl,
+  });
+
+  const isScam = metadata?.status === DAppStatus.Scam;
+
+  // disabling Verified for now
+  const isVerified = false; //metadata?.status === DAppStatus.Verified;
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
 
@@ -498,9 +504,11 @@ export default function WalletConnectApprovalSheet() {
                     􀘰
                   </Text>
                 }
-                title={lang.t(lang.l.walletconnect.info_warnings.title)}
+                title={lang.t(
+                  lang.l.walletconnect.dapp_warnings.info_alert.title
+                )}
                 description={lang.t(
-                  lang.l.walletconnect.info_warnings.description
+                  lang.l.walletconnect.dapp_warnings.info_alert.description
                 )}
               />
             </Box>
