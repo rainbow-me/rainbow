@@ -5,6 +5,7 @@ import { Navigation } from '@/navigation';
 import { resolveFirstRejectLast } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
+import store from '@/redux/store';
 import {
   PromoSheetCollectionResult,
   usePromoSheetCollectionQuery,
@@ -56,10 +57,13 @@ export const useRunCampaignChecks = () => {
     STORAGE_IDS.PROMO_CURRENTLY_SHOWN
   );
 
+  const walletReady = store.getState().appState.walletReady;
+
   const { data, isLoading, error } = usePromoSheetCollectionQuery(
     {},
     {
       enabled:
+        walletReady &&
         remotePromoSheets &&
         !isPromoCurrentlyShown &&
         timeBetweenPromoSheets() >= TIMEOUT_BETWEEN_PROMOS,
@@ -67,7 +71,7 @@ export const useRunCampaignChecks = () => {
   );
 
   useEffect(() => {
-    if (!isLoading && !error && data) {
+    if (walletReady && remotePromoSheets && !isLoading && !error && data) {
       runCampaignChecks(data.promoSheetCollection);
     }
 
@@ -75,7 +79,7 @@ export const useRunCampaignChecks = () => {
       // when unloading this effect, we should reset the isPromoCurrentlyShown
       mmkv.set(STORAGE_IDS.PROMO_CURRENTLY_SHOWN, false);
     };
-  }, [data, isLoading, error]);
+  }, [data, isLoading, error, remotePromoSheets, walletReady]);
 };
 
 export const runCampaignChecks = async (
@@ -137,9 +141,9 @@ export const shouldPromptCampaign = async (
   logger.info(`Is First Launch: ${firstLaunch}`);
 
   // If the campaign has been viewed already or it's the first app launch, exit early
-  // if (hasViewedCampaign || firstLaunch) {
-  //   return;
-  // }
+  if (hasViewedCampaign || firstLaunch) {
+    return;
+  }
 
   const shouldPrompt = ((actions || []) as ActionObj[]).every(
     async ({ fn, outcome, props = {} }) => {

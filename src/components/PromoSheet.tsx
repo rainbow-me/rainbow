@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
+import {
+  ImageSourcePropType,
+  StatusBar,
+  ImageBackground,
+  ImageURISource,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
@@ -38,7 +43,7 @@ type PromoSheetProps = {
   backgroundColor: string;
   accentColor: string;
   sheetHandleColor?: string;
-  campaignKey: CampaignKey;
+  campaignKey: CampaignKey | string;
   header: string;
   subHeader: string;
   primaryButtonProps: SheetActionButtonProps;
@@ -117,7 +122,12 @@ export function PromoSheet({
           testID={campaignKey}
         >
           {/* @ts-ignore */}
-          <Box as={ImageBackground} height="full" source={backgroundImage}>
+          <Box
+            as={ImageBackground}
+            height="full"
+            src={(backgroundImage as ImageURISource).uri}
+            source={backgroundImage}
+          >
             <Rows>
               <Row>
                 <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>

@@ -9,6 +9,7 @@ import { useTheme } from '@/theme';
 import { CampaignCheckResult } from './useRunCampaignChecks';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { maybeSignUri } from '@/handlers/imgix';
 
 const HEADER_HEIGHT = 285;
 const HEADER_WIDTH = 390;
@@ -75,15 +76,23 @@ export function RemotePromoSheet() {
     (colors as { [key: string]: any })[sheetHandleColorString as string] ??
     colors.trueBlack;
 
+  const backgroundSignedImageUrl = backgroundImage?.url
+    ? maybeSignUri(backgroundImage.url)
+    : undefined;
+
+  const headerSignedImageUrl = headerImage?.url
+    ? maybeSignUri(headerImage.url)
+    : undefined;
+
   return (
     <PromoSheet
       accentColor={accentColor}
       backgroundColor={backgroundColor}
-      backgroundImage={backgroundImage?.url}
+      backgroundImage={{ uri: backgroundSignedImageUrl }}
       campaignKey={campaignKey}
-      headerImage={headerImage?.url}
+      headerImage={{ uri: headerSignedImageUrl }}
       headerImageAspectRatio={
-        headerImageAspectRatio ?? HEADER_HEIGHT / HEADER_WIDTH
+        headerImageAspectRatio ?? HEADER_WIDTH / HEADER_HEIGHT
       }
       sheetHandleColor={sheetHandleColor}
       header={header}
