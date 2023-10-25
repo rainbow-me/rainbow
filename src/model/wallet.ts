@@ -72,6 +72,7 @@ import {
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { sanitizeTypedData } from '@/utils/signingUtils';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -516,7 +517,7 @@ export const signTypedDataMessage = async (
       isHardwareWallet = true;
     }
     try {
-      let parsedData = message;
+      let parsedData = sanitizeTypedData(message);
       try {
         parsedData = typeof message === 'string' && JSON.parse(message);
         // eslint-disable-next-line no-empty
