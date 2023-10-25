@@ -18,7 +18,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { OfflineToast } from './components/toasts';
@@ -34,7 +33,7 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import {
-  runFeatureAndCampaignChecks,
+  runFeatureUnlockChecks,
   runWalletBackupStatusChecks,
 } from './handlers/walletReadyEvents';
 import {
@@ -86,6 +85,7 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -194,7 +194,7 @@ class OldApp extends Component {
           if (IS_TESTING === 'true') {
             return;
           }
-          runFeatureAndCampaignChecks();
+          runFeatureUnlockChecks();
         }, 2000);
       });
     }
@@ -285,13 +285,15 @@ class OldApp extends Component {
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
+            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
+              <InitialRouteContext.Provider value={this.state.initialRoute}>
+                <RoutesComponent
+                  onReady={this.handleSentryNavigationIntegration}
+                  ref={this.handleNavigatorRef}
+                />
+                <PortalConsumer />
+              </InitialRouteContext.Provider>
+            </RemotePromoSheetProvider>
           )}
           <OfflineToast />
         </View>
