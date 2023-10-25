@@ -1,84 +1,89 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation/Navigation';
-import { CampaignKey } from '@/campaigns/campaignChecks';
 import { PromoSheet } from '@/components/PromoSheet';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import { useSwapCurrencyHandlers } from '@/hooks';
-import SwapsPromoBackground from '@/assets/swapsPromoBackground.png';
-import SwapsPromoHeader from '@/assets/swapsPromoHeader.png';
-import { delay } from '@/helpers/utilities';
-import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import * as i18n from '@/languages';
+import { CampaignCheckResult } from './campaignChecks';
+import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
+import { noop } from 'lodash';
 
 const HEADER_HEIGHT = 285;
 const HEADER_WIDTH = 390;
 
-export default function RemotePromoSheet() {
-  const { colors } = useTheme();
-  const { goBack, navigate } = useNavigation();
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: false,
-    type: ExchangeModalTypes.swap,
-  });
-  const translations = i18n.l.promos.swaps_launch;
+type RootStackParamList = {
+  RemotePromoSheet: CampaignCheckResult;
+};
 
-  const navigateToSwaps = useCallback(() => {
-    goBack();
-    delay(300).then(() =>
-      navigate(Routes.EXCHANGE_MODAL, {
-        fromDiscover: true,
-        params: {
-          fromDiscover: true,
-          onSelectCurrency: updateInputCurrency,
-          title: i18n.t(i18n.l.swap.modal_types.swap),
-          type: CurrencySelectionTypes.input,
-        },
-        screen: Routes.CURRENCY_SELECT_SCREEN,
-      })
-    );
-  }, [goBack, navigate, updateInputCurrency]);
+export function RemotePromoSheet() {
+  const { colors } = useTheme();
+  const { goBack } = useNavigation();
+  const { params } = useRoute<
+    RouteProp<RootStackParamList, 'RemotePromoSheet'>
+  >();
+  const { campaignId, campaignKey } = params;
+
+  const { data, error } = usePromoSheetQuery(
+    {
+      id: campaignId,
+    },
+    {
+      enabled: !!campaignId,
+    }
+  );
+
+  if (!data?.promoSheet || error) {
+    return null;
+  }
+
+  const {
+    accentColor: accentColorString,
+    backgroundColor: backgroundColorString,
+    sheetHandleColor: sheetHandleColorString,
+    backgroundImage,
+    headerImage,
+    headerImageAspectRatio,
+    header,
+    items,
+    primaryButtonProps,
+    secondaryButtonProps,
+    subHeader,
+  } = data.promoSheet;
+
+  const accentColor =
+    (colors as { [key: string]: any })[accentColorString as string] ??
+    colors.whiteLabel;
+
+  const backgroundColor =
+    (colors as { [key: string]: any })[backgroundColorString as string] ??
+    colors.trueBlack;
+
+  const sheetHandleColor =
+    (colors as { [key: string]: any })[sheetHandleColorString as string] ??
+    colors.trueBlack;
 
   return (
     <PromoSheet
-      accentColor={colors.whiteLabel}
-      backgroundColor={colors.trueBlack}
-      backgroundImage={SwapsPromoBackground}
-      campaignKey={CampaignKey.swapsLaunch}
-      headerImage={SwapsPromoHeader}
-      headerImageAspectRatio={HEADER_WIDTH / HEADER_HEIGHT}
-      sheetHandleColor={colors.whiteLabel}
-      header={i18n.t(translations.header)}
-      subHeader={i18n.t(translations.subheader)}
+      accentColor={accentColor}
+      backgroundColor={backgroundColor}
+      backgroundImage={backgroundImage?.url}
+      campaignKey={campaignKey}
+      headerImage={headerImage?.url}
+      headerImageAspectRatio={
+        headerImageAspectRatio ?? HEADER_HEIGHT / HEADER_WIDTH
+      }
+      sheetHandleColor={sheetHandleColor}
+      header={header}
+      subHeader={subHeader}
       primaryButtonProps={{
-        label: i18n.t(translations.primary_button),
-        onPress: navigateToSwaps,
+        ...primaryButtonProps,
+        onPress: noop, // TODO: Primary action should be passed
       }}
       secondaryButtonProps={{
-        label: i18n.t(translations.secondary_button),
+        ...secondaryButtonProps,
         onPress: goBack,
       }}
-      items={[
-        {
-          title: i18n.t(translations.info_row_1.title),
-          description: i18n.t(translations.info_row_1.description),
-          icon: '􀖅',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
-        },
-        {
-          title: i18n.t(translations.info_row_2.title),
-          description: i18n.t(translations.info_row_2.description),
-          icon: '􀯮',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
-        },
-        {
-          title: i18n.t(translations.info_row_3.title),
-          description: i18n.t(translations.info_row_3.description),
-          icon: '􀙨',
-          gradient: colors.gradients.swapPurpleTintToSwapPurple,
-        },
-      ]}
+      items={items}
     />
   );
 }
