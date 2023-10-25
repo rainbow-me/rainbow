@@ -202,3 +202,37 @@ query getMintableCollections($walletAddress: String!) {
     }
   }
 }
+
+query getPromoSheetCollection($skip: Int, $limit: Int) {
+  promoSheetCollection(skip: $skip, limit: $limit) {
+    items {
+      sys {
+        id
+      }
+      campaignKey
+      launchDate
+      actions
+    }
+  }
+}
+
+query getPromoSheet($id: String!) {
+  promoSheet(id: $id) {
+    accentColor
+    actions
+    backgroundColor
+    backgroundImage {
+      url
+    }
+    header
+    headerImage {
+      url
+    }
+    headerImageAspectRatio
+    items
+    primaryButtonProps
+    secondaryButtonProps
+    sheetHandleColor
+    subHeader
+  }
+}
