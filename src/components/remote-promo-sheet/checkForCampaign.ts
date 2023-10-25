@@ -94,9 +94,9 @@ export const shouldPromptCampaign = async (
   logger.info(`Is First Launch: ${firstLaunch}`);
 
   // If the campaign has been viewed already or it's the first app launch, exit early
-  // if (hasViewedCampaign || firstLaunch) {
-  //   return;
-  // }
+  if (hasViewedCampaign || firstLaunch) {
+    return;
+  }
 
   const shouldPrompt = (
     await Promise.all(
