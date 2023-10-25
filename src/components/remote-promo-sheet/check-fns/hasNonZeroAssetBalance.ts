@@ -9,14 +9,12 @@ export const hasNonZeroAssetBalance = async (
   const { selected } = store.getState().wallets;
   if (!selected) return false;
 
-  const { accountAddress } = store.getState().settings;
-
   const networks = RainbowNetworks.map(network => network.value);
 
   // check native asset balances on networks
   const balancePromises = networks.map(network =>
     ethereumUtils
-      .getNativeAssetForNetwork(network, accountAddress)
+      .getNativeAssetForNetwork(network, assetAddress)
       .then(nativeAsset => Number(nativeAsset?.balance?.amount) > 0)
       .catch(() => {
         return false;
