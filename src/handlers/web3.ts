@@ -41,7 +41,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { IS_IOS } from '@/env';
+import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
 
 export enum TokenStandard {
@@ -53,7 +53,24 @@ export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
 } = {};
 
-const rpcEndpoints: { [network in Network]?: string } = {};
+/**
+ * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
+ */
+export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) =>
+  `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
+    customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
+  }`;
+
+// const rpcEndpoints: { [network in Network]?: string } = {
+//   [Network.mainnet]: proxyRpcEndpoint(getNetworkObj(Network.mainnet).id),
+//   [Network.goerli]: proxyRpcEndpoint(getNetworkObj(Network.goerli).id),
+//   [Network.optimism]: proxyRpcEndpoint(getNetworkObj(Network.optimism).id),
+//   [Network.arbitrum]: proxyRpcEndpoint(getNetworkObj(Network.arbitrum).id),
+//   [Network.polygon]: proxyRpcEndpoint(getNetworkObj(Network.polygon).id),
+//   [Network.bsc]: proxyRpcEndpoint(getNetworkObj(Network.bsc).id),
+//   [Network.zora]: proxyRpcEndpoint(getNetworkObj(Network.zora).id),
+//   [Network.base]: proxyRpcEndpoint(getNetworkObj(Network.base).id),
+// };
 
 /**
  * Gas parameter types returned by `getTransactionGasParams`.
@@ -100,21 +117,6 @@ type TransactionDetailsReturned = {
  */
 type NewTransactionNonNullable = {
   [key in keyof NewTransaction]-?: NonNullable<NewTransaction[key]>;
-};
-
-/**
- * @desc Configures `rpcEndpoints` based on a given `RainbowConfig`.
- * @param config The `RainbowConfig` to use.
- */
-export const setRpcEndpoints = (config: RainbowConfig): void => {
-  rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
-  rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
-  rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
-  rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
-  rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
-  rpcEndpoints[Network.bsc] = config.bsc_mainnet_rpc;
-  rpcEndpoints[Network.zora] = config.zora_mainnet_rpc;
-  rpcEndpoints[Network.base] = config.base_mainnet_rpc;
 };
 
 /**
@@ -203,7 +205,10 @@ export const getProviderForNetwork = async (
     return provider;
   } else {
     const chainId = getNetworkObj(network).id;
-    const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
+    const provider = new StaticJsonRpcProvider(
+      getNetworkObj(network).rpc,
+      chainId
+    );
     if (!networkProviders[network]) {
       networkProviders[network] = provider;
     }

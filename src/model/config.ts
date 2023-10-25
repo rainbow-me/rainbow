@@ -20,7 +20,7 @@ import {
   getNetwork,
   saveNetwork,
 } from '@/handlers/localstorage/globalSettings';
-import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
+import { web3SetHttpProvider } from '@/handlers/web3';
 
 import Logger from '@/utils/logger';
 
@@ -133,7 +133,6 @@ const DEFAULT_CONFIG: RainbowConfig = {
 
 // Initialize with defaults in case firebase doesn't respond
 const config: RainbowConfig = { ...DEFAULT_CONFIG };
-setRpcEndpoints(config);
 
 const init = async () => {
   try {
@@ -198,7 +197,6 @@ const init = async () => {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
     const currentNetwork = await getNetwork();
-    setRpcEndpoints(config);
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);
   }
