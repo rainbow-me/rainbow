@@ -107,7 +107,9 @@ type NewTransactionNonNullable = {
  * @param config The `RainbowConfig` to use.
  */
 export const setRpcEndpoints = (config: RainbowConfig): void => {
-  rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
+  const mainnet = `${RPC_PROXY_BASE_URL_DEV}/1/${RPC_PROXY_API_KEY_DEV}`;
+  console.log('(!!!!!!!!!!!!: -> ', mainnet);
+  rpcEndpoints[Network.mainnet] = mainnet;
   rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
   rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
   rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
@@ -141,6 +143,7 @@ export const web3SetHttpProvider = async (
   network: Network | string
 ): Promise<EthersNetwork> => {
   web3Provider = await getProviderForNetwork(network);
+  console.log('gm gm ');
   return web3Provider.ready;
 };
 
