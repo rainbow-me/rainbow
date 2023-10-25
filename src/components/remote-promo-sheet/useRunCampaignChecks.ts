@@ -13,6 +13,7 @@ import { logger } from '@/logger';
 import { PromoSheet } from '@/graphql/__generated__/arc';
 
 import * as fns from './check-fns';
+import { REMOTE_PROMO_SHEETS, useExperimentalFlag } from '@/config';
 
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
@@ -49,6 +50,8 @@ const timeBetweenPromoSheets = () => {
 };
 
 export const useRunCampaignChecks = () => {
+  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS);
+
   const isPromoCurrentlyShown = mmkv.getBoolean(
     STORAGE_IDS.PROMO_CURRENTLY_SHOWN
   );
@@ -57,6 +60,7 @@ export const useRunCampaignChecks = () => {
     {},
     {
       enabled:
+        remotePromoSheets &&
         !isPromoCurrentlyShown &&
         timeBetweenPromoSheets() >= TIMEOUT_BETWEEN_PROMOS,
     }
@@ -81,7 +85,7 @@ export const runCampaignChecks = async (
 
   const campaignPromises = (campaigns?.items || [])
     .filter((campaign): campaign is PromoSheet => campaign !== null)
-    .map(async campaign => shouldPromptCampaign(campaign));
+    .map(async campaign => await shouldPromptCampaign(campaign));
 
   // In order to save computational bandwidth, we will resolve with the first campaign that should be shown, disregarding all others
   const result = await resolveFirstRejectLast(campaignPromises);
@@ -154,6 +158,8 @@ export const shouldPromptCampaign = async (
       return result === outcome;
     }
   );
+
+  console.log({ shouldPrompt, campaignKey });
 
   // If any action check returns false, shouldPrompt will be false, so we won't show it.
   // Otherwise, if all action checks pass, we will show the promo to the user

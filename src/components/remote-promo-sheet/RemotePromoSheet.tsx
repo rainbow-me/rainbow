@@ -98,7 +98,6 @@ export function RemotePromoSheet() {
       }}
       items={items.map((item: any) => {
         if (item.gradient) {
-          console.log(item.gradient);
           if (item.gradient.includes('.')) {
             const gradient = get(colors, item.gradient);
 

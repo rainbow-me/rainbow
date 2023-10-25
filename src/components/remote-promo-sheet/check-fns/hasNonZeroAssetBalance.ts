@@ -18,8 +18,7 @@ export const hasNonZeroAssetBalance = async (
     ethereumUtils
       .getNativeAssetForNetwork(network, accountAddress)
       .then(nativeAsset => Number(nativeAsset?.balance?.amount) > 0)
-      .catch(error => {
-        console.error(`Failed to get balance for network ${network}: ${error}`);
+      .catch(() => {
         return false;
       })
   );
