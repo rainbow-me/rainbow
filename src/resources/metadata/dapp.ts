@@ -40,7 +40,7 @@ type DappMetadataQueryKey = ReturnType<typeof DappMetadataQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
-async function fetchDappMetadata({
+export async function fetchDappMetadata({
   url,
   status,
 }: {

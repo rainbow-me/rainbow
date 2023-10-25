@@ -8,6 +8,8 @@ import {
   Separator,
   BackgroundProvider,
   AccentColorProvider,
+  DebugLayout,
+  useForegroundColor,
 } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -24,13 +26,19 @@ import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { Verify } from '@walletconnect/types';
+import { useDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
+import { InfoAlert } from '@/components/info-alert/info-alert';
 
 export function AuthRequest({
   requesterMeta,
   authenticate,
+  verifiedData,
 }: {
   requesterMeta: Web3WalletTypes.AuthRequest['params']['requester']['metadata'];
   authenticate: AuthRequestAuthenticateSignature;
+  verifiedData?: Verify.Context['verified'];
 }) {
   const { accountAddress } = useSelector((state: AppState) => ({
     accountAddress: state.settings.accountAddress,
@@ -93,6 +101,13 @@ export function AuthRequest({
 
   const { icons, name, url } = requesterMeta;
 
+  const dappUrl = verifiedData?.verifyUrl || url;
+  const { data: metadata } = useDappMetadata({ url: dappUrl });
+
+  const isScam = metadata?.status === 'SCAM';
+
+  const accentColor = isScam ? 'red' : 'blue';
+
   return (
     <>
       <Box alignItems="center">
@@ -101,36 +116,47 @@ export function AuthRequest({
             {lang.t(lang.l.walletconnect.auth.signin_title)}
           </Text>
         </Box>
-
-        <Box paddingBottom="24px" alignItems="center">
-          <Box
-            width={{ custom: 54 }}
-            height={{ custom: 54 }}
-            borderRadius={14}
-            overflow="hidden"
-            justifyContent="center"
-            alignItems="center"
-            background="accent"
-          >
-            {icons[0] && !loadError ? (
-              <Box
-                as={ImgixImage}
-                onError={() => setLoadError(true)}
-                source={{
-                  uri: icons[0],
-                }}
-                size={100}
-                height={{ custom: 54 }}
-                width={{ custom: 54 }}
-                borderRadius={14}
-              />
-            ) : (
-              <Text align="center" color="label" size="20pt" weight="semibold">
-                {initials(name)}
-              </Text>
+        <AccentColorProvider color={accentColor}>
+          <BackgroundProvider color="accent">
+            {({ backgroundColor }) => (
+              <Box paddingBottom="24px" alignItems="center">
+                <Box
+                  width={{ custom: 54 }}
+                  height={{ custom: 54 }}
+                  borderRadius={14}
+                  overflow="hidden"
+                  justifyContent="center"
+                  alignItems="center"
+                  /* @ts-ignore */
+                  background={backgroundColor}
+                >
+                  {icons[0] && !loadError ? (
+                    <Box
+                      as={ImgixImage}
+                      onError={() => setLoadError(true)}
+                      source={{
+                        uri: icons[0],
+                      }}
+                      size={100}
+                      height={{ custom: 54 }}
+                      width={{ custom: 54 }}
+                      borderRadius={14}
+                    />
+                  ) : (
+                    <Text
+                      align="center"
+                      color="label"
+                      size="20pt"
+                      weight="semibold"
+                    >
+                      {initials(name)}
+                    </Text>
+                  )}
+                </Box>
+              </Box>
             )}
-          </Box>
-        </Box>
+          </BackgroundProvider>
+        </AccentColorProvider>
 
         <Box paddingBottom="16px" width={{ custom: 281 }}>
           <Text
@@ -144,12 +170,16 @@ export function AuthRequest({
         </Box>
 
         <Box paddingBottom="36px">
-          <Text color={'accent'} weight={'bold'} size={'17pt'} align="center">
+          <Text
+            color={isScam ? { custom: accentColor } : 'accent'}
+            weight={'bold'}
+            size={'17pt'}
+            align="center"
+          >
             {url}
           </Text>
         </Box>
-
-        <Box paddingBottom="36px">
+        <Box paddingBottom={isScam ? '16px' : '36px'}>
           <ButtonPressAnimation
             onPress={() => {
               navigate(Routes.CHANGE_WALLET_SHEET, {
@@ -231,12 +261,32 @@ export function AuthRequest({
           </ButtonPressAnimation>
         </Box>
 
-        <Box paddingBottom="36px" width={{ custom: 166 }}>
-          <Separator color="separatorTertiary" />
-        </Box>
+        {!isScam && (
+          <Box paddingBottom="36px" width={{ custom: 166 }}>
+            <Separator color="separatorTertiary" />
+          </Box>
+        )}
+
+        {isScam && (
+          <Box paddingHorizontal={'16px'} paddingVertical={'16px'}>
+            <InfoAlert
+              rightIcon={
+                <Text size="15pt" color={{ custom: accentColor }}>
+                  􀘰
+                </Text>
+              }
+              title={lang.t(
+                lang.l.walletconnect.dapp_warnings.info_alert.title
+              )}
+              description={lang.t(
+                lang.l.walletconnect.dapp_warnings.info_alert.description
+              )}
+            />
+          </Box>
+        )}
 
         <ButtonPressAnimation onPress={auth}>
-          <AccentColorProvider color="blue">
+          <AccentColorProvider color={accentColor}>
             <BackgroundProvider color="accent">
               {({ backgroundColor }) => (
                 <Box

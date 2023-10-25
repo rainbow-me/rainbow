@@ -53,6 +53,10 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
+import {
+  fetchDappMetadata,
+  prefetchDappMetadata,
+} from '@/resources/metadata/dapp';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
@@ -460,6 +464,7 @@ export async function onSessionProposal(
       logger.DebugContext.walletconnect
     );
 
+    const verifiedData = proposal.verifyContext.verified;
     const receivedTimestamp = Date.now();
     const {
       proposer,
@@ -490,6 +495,7 @@ export async function onSessionProposal(
         peerId: proposer.publicKey,
         isWalletConnectV2: true,
       },
+      verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         const client = await web3WalletClient;
@@ -1004,13 +1010,22 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     }
   };
 
+  // need to prefetch dapp metadata since portal is static
+  // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+  const url =
+    event?.verifyContext?.verifyUrl || event.params.requester.metadata.url;
+  const metadata = await fetchDappMetadata({ url, status: true });
+
+  const isScam = metadata.status === 'SCAM';
   portal.open(
     () =>
       AuthRequest({
         authenticate,
         requesterMeta: event.params.requester.metadata,
+        // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+        verifiedData: event?.verifyContext,
       }),
-    { sheetHeight: IS_ANDROID ? 560 : 520 }
+    { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
   );
 }
 
