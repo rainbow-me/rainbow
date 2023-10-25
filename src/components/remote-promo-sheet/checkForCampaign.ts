@@ -1,22 +1,14 @@
-import { useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import { Navigation } from '@/navigation';
 import { resolveFirstRejectLast } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
-import store from '@/redux/store';
-import {
-  PromoSheetCollectionResult,
-  usePromoSheetCollectionQuery,
-} from '@/resources/promoSheet/promoSheetCollectionQuery';
+import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
 import { PromoSheet } from '@/graphql/__generated__/arc';
 
 import * as fns from './check-fns';
-import { REMOTE_PROMO_SHEETS, useExperimentalFlag } from '@/config';
-
-const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const mmkv = new MMKV();
 
@@ -41,57 +33,12 @@ export type CampaignCheckResult = {
   campaignKey: string;
 };
 
-const timeBetweenPromoSheets = () => {
-  const lastPromoSheetShown = mmkv.getNumber(
-    STORAGE_IDS.LAST_PROMO_SHEET_TIMESTAMP
-  );
-  if (!lastPromoSheetShown) return TIMEOUT_BETWEEN_PROMOS;
-
-  return Date.now() - lastPromoSheetShown;
-};
-
-export const useRunCampaignChecks = () => {
-  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS);
-
-  const isPromoCurrentlyShown = mmkv.getBoolean(
-    STORAGE_IDS.PROMO_CURRENTLY_SHOWN
-  );
-
-  const walletReady = store.getState().appState.walletReady;
-
-  const { data, isLoading, error } = usePromoSheetCollectionQuery(
-    {},
-    {
-      enabled: remotePromoSheets && !isPromoCurrentlyShown,
-    }
-  );
-
-  useEffect(() => {
-    if (
-      !walletReady ||
-      !remotePromoSheets ||
-      isLoading ||
-      error ||
-      !data ||
-      timeBetweenPromoSheets() <= TIMEOUT_BETWEEN_PROMOS
-    )
-      return;
-
-    runCampaignChecks(data.promoSheetCollection);
-
-    return () => {
-      // when unloading this effect, we should reset the isPromoCurrentlyShown
-      mmkv.set(STORAGE_IDS.PROMO_CURRENTLY_SHOWN, false);
-    };
-  }, [data, isLoading, error, remotePromoSheets, walletReady]);
-};
-
-export const runCampaignChecks = async (
-  campaigns: PromoSheetCollectionResult['promoSheetCollection']
-) => {
+export const checkForCampaign = async () => {
   logger.log('Campaigns: Running Checks');
 
-  const campaignPromises = (campaigns?.items || [])
+  const { promoSheetCollection } = await fetchPromoSheetCollection({});
+
+  const campaignPromises = (promoSheetCollection?.items || [])
     .filter((campaign): campaign is PromoSheet => campaign !== null)
     .map(async campaign => await shouldPromptCampaign(campaign));
 
@@ -113,6 +60,8 @@ export const triggerCampaign = async ({
 }: CampaignCheckResult) => {
   logger.log(`Campaign: Showing ${campaignKey} Promo`);
   mmkv.set(campaignKey, true);
+  mmkv.set(STORAGE_IDS.PROMO_CURRENTLY_SHOWN, true);
+  mmkv.set(STORAGE_IDS.LAST_PROMO_SHEET_TIMESTAMP, Date.now());
 
   setTimeout(() => {
     InteractionManager.runAfterInteractions(() => {

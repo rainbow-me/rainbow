@@ -6,7 +6,7 @@ import { MMKV } from 'react-native-mmkv';
 import { useNavigation } from '@/navigation/Navigation';
 import { PromoSheet } from '@/components/PromoSheet';
 import { useTheme } from '@/theme';
-import { CampaignCheckResult } from './useRunCampaignChecks';
+import { CampaignCheckResult } from './checkForCampaign';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -116,7 +116,9 @@ export function RemotePromoSheet() {
             };
           }
 
-          const gradient = colors.gradients[item.gradient] ?? undefined;
+          const gradient =
+            (colors as { [key: string]: any }).gradients[item.gradient] ??
+            undefined;
 
           return {
             ...item,
