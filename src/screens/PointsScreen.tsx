@@ -17,6 +17,7 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { Box, Stack, Text } from '@/design-system';
 import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
+import { IS_TESTING } from 'react-native-dotenv';
 
 const fallConfig = {
   duration: 2000,
@@ -72,6 +73,8 @@ export default function PointsScreen() {
   });
 
   React.useEffect(() => {
+    if (IS_TESTING === 'true') return;
+
     progress.value = 0;
     progress.value = withDelay(
       500,
