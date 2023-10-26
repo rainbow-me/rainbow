@@ -203,8 +203,8 @@ query getMintableCollections($walletAddress: String!) {
   }
 }
 
-query getPromoSheetCollection($skip: Int, $limit: Int) {
-  promoSheetCollection(skip: $skip, limit: $limit) {
+query getPromoSheetCollection($order: [PromoSheetOrder]) {
+  promoSheetCollection(order: $order) {
     items {
       sys {
         id
@@ -212,6 +212,7 @@ query getPromoSheetCollection($skip: Int, $limit: Int) {
       campaignKey
       launchDate
       actions
+      priority
     }
   }
 }
