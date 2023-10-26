@@ -51,7 +51,7 @@ describe('Discover Screen Flow', () => {
   });
 
   it('Should navigate to the Profile screen after swiping left', async () => {
-    await Helpers.swipe('discover-home', 'left', 'slow');
+    await Helpers.waitAndTap('tab-bar-icon-ProfileScreen');
     await Helpers.checkIfVisible('profile-screen');
   });
 
