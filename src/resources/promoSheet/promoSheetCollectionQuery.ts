@@ -9,28 +9,21 @@ import {
 } from '@/react-query';
 
 import { arcDevClient } from '@/graphql';
+import { PromoSheetOrder } from '@/graphql/__generated__/arc';
 
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).
 const defaultStaleTime = 10_000;
 
 export type PromoSheetCollectionArgs = {
-  skip?: number;
-  limit?: number;
+  order?: PromoSheetOrder[];
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-const promoSheetCollectionQueryKey = ({
-  skip = 0,
-  limit = 100,
-}: PromoSheetCollectionArgs) =>
-  createQueryKey(
-    'promoSheetCollection',
-    { skip, limit },
-    { persisterVersion: 1 }
-  );
+const promoSheetCollectionQueryKey = ({ order }: PromoSheetCollectionArgs) =>
+  createQueryKey('promoSheetCollection', { order }, { persisterVersion: 1 });
 
 type PromoSheetCollectionQueryKey = ReturnType<
   typeof promoSheetCollectionQueryKey
@@ -40,9 +33,9 @@ type PromoSheetCollectionQueryKey = ReturnType<
 // Query Function
 
 async function promoSheetCollectionQueryFunction({
-  queryKey: [{ skip, limit }],
+  queryKey: [{ order }],
 }: QueryFunctionArgs<typeof promoSheetCollectionQueryKey>) {
-  const data = await arcDevClient.getPromoSheetCollection({ skip, limit });
+  const data = await arcDevClient.getPromoSheetCollection({ order });
   return data;
 }
 
@@ -54,7 +47,7 @@ export type PromoSheetCollectionResult = QueryFunctionResult<
 // Query Prefetcher
 
 export async function prefetchPromoSheetCollection(
-  { skip, limit }: PromoSheetCollectionArgs,
+  { order }: PromoSheetCollectionArgs,
   config: QueryConfig<
     PromoSheetCollectionResult,
     Error,
@@ -62,7 +55,7 @@ export async function prefetchPromoSheetCollection(
   > = {}
 ) {
   return await queryClient.prefetchQuery(
-    promoSheetCollectionQueryKey({ skip, limit }),
+    promoSheetCollectionQueryKey({ order }),
     promoSheetCollectionQueryFunction,
     config
   );
@@ -72,11 +65,10 @@ export async function prefetchPromoSheetCollection(
 // Query Fetcher
 
 export async function fetchPromoSheetCollection({
-  skip,
-  limit,
+  order,
 }: PromoSheetCollectionArgs) {
   return await queryClient.fetchQuery(
-    promoSheetCollectionQueryKey({ skip, limit }),
+    promoSheetCollectionQueryKey({ order }),
     promoSheetCollectionQueryFunction,
     { staleTime: defaultStaleTime }
   );
@@ -86,14 +78,14 @@ export async function fetchPromoSheetCollection({
 // Query Hook
 
 export function usePromoSheetCollectionQuery(
-  { skip, limit }: PromoSheetCollectionArgs = {},
+  { order }: PromoSheetCollectionArgs = {},
   {
     enabled,
     refetchInterval = 30_000,
   }: { enabled?: boolean; refetchInterval?: number } = {}
 ) {
   return useQuery(
-    promoSheetCollectionQueryKey({ skip, limit }),
+    promoSheetCollectionQueryKey({ order }),
     promoSheetCollectionQueryFunction,
     {
       enabled,
