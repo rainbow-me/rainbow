@@ -1,28 +1,16 @@
 import store from '@/redux/store';
-import { EthereumAddress } from '@/entities';
-import { Network } from '@/helpers/networkTypes';
-import { RainbowNetworks } from '@/networks';
-import { getAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+import { fetchUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 export const hasNonZeroTotalBalance = async (): Promise<boolean> => {
-  const {
-    accountAddress,
-  }: {
-    accountAddress: EthereumAddress;
-    network: Network;
-  } = store.getState().settings;
+  const { accountAddress, nativeCurrency } = store.getState().settings;
 
-  const networks: Network[] = RainbowNetworks.map(network => network.value);
-  const balances = await Promise.all(
-    networks.map(async network => {
-      const isAccountEmptyInStorage = getAccountEmptyState(
-        accountAddress,
-        network
-      );
+  const assets = await fetchUserAssets({
+    address: accountAddress,
+    currency: nativeCurrency,
+    connectedToHardhat: false,
+  });
 
-      return isAccountEmptyInStorage ?? true;
-    })
-  );
+  if (!assets || Object.keys(assets).length === 0) return false;
 
-  return balances.some(balance => !balance);
+  return Object.values(assets).some(asset => Number(asset.balance?.amount) > 0);
 };
