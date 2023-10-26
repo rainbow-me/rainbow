@@ -269,10 +269,14 @@ const MintSheet = () => {
           )
         )?.balance?.amount ?? 0;
       const txFee = getTotalGasPrice();
+      const txFeeWithBuffer = multiply(txFee, 1.2);
       const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
       setInsufficientEth(
-        greaterThanOrEqualTo(add(txFee, totalMintPrice), nativeBalance)
+        greaterThanOrEqualTo(
+          add(txFeeWithBuffer, totalMintPrice),
+          nativeBalance
+        )
       );
     };
     checkInsufficientEth();
