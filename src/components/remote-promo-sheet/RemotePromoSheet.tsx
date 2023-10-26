@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { noop, get } from 'lodash';
-import { MMKV } from 'react-native-mmkv';
 
 import { useNavigation } from '@/navigation/Navigation';
 import { PromoSheet } from '@/components/PromoSheet';
 import { useTheme } from '@/theme';
 import { CampaignCheckResult } from './checkForCampaign';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { maybeSignUri } from '@/handlers/imgix';
+import { campaigns } from '@/storage';
 
 const HEADER_HEIGHT = 285;
 const HEADER_WIDTH = 390;
@@ -17,8 +16,6 @@ const HEADER_WIDTH = 390;
 type RootStackParamList = {
   RemotePromoSheet: CampaignCheckResult;
 };
-
-const mmkv = new MMKV();
 
 export function RemotePromoSheet() {
   const { colors } = useTheme();
@@ -29,11 +26,8 @@ export function RemotePromoSheet() {
   const { campaignId, campaignKey } = params;
 
   useEffect(() => {
-    mmkv.set(STORAGE_IDS.PROMO_CURRENTLY_SHOWN, true);
-    mmkv.set(STORAGE_IDS.LAST_PROMO_SHEET_TIMESTAMP, Date.now());
-
     return () => {
-      mmkv.set(STORAGE_IDS.PROMO_CURRENTLY_SHOWN, false);
+      campaigns.set(['isCurrentlyShown'], false);
     };
   }, []);
 
