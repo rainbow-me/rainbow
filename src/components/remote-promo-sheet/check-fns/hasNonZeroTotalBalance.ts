@@ -19,6 +19,7 @@ export const hasNonZeroTotalBalance = async (): Promise<boolean> => {
         accountAddress,
         network
       );
+
       return isAccountEmptyInStorage ?? true;
     })
   );

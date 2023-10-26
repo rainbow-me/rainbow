@@ -1,13 +1,20 @@
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { EthereumAddress } from '@/entities';
+import { ActionFn } from '../checkForCampaign';
 
-export const hasNonZeroAssetBalance = async (
-  assetAddress: EthereumAddress
-): Promise<boolean> => {
+type props = {
+  assetAddress: EthereumAddress;
+};
+
+export const hasNonZeroAssetBalance: ActionFn<props> = async ({
+  assetAddress,
+}) => {
   const { selected } = store.getState().wallets;
   if (!selected) return false;
 
   const asset = ethereumUtils.getAccountAsset(assetAddress);
-  return Number(asset?.balance?.amount) > 0;
+  if (!asset?.balance) return false;
+
+  return Number(asset.balance.amount) > 0;
 };
