@@ -283,6 +283,7 @@ const TabBar = ({
                         width="full"
                         justifyContent="flex-start"
                         paddingTop="6px"
+                        testID={`tab-bar-icon-${route.name}`}
                       >
                         <ButtonPressAnimation
                           onPress={onPress}
