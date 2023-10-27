@@ -429,7 +429,8 @@
     "**/@types/react": "18.0.24",
     "**/socket.io-parser": "4.2.3",
     "**/get-func-name": "3.0.0",
-    "**/@babel/traverse": "7.23.2"
+    "**/@babel/traverse": "7.23.2",
+    "**/browserify-sign": "4.2.2"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
