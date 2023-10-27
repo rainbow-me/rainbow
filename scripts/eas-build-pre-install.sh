@@ -11,9 +11,9 @@ mkdir -p ~/.ssh
 # git remote set-url origin git@github.com:example/repo.git
 
 # restore private key from env variable and generate public key
-echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa
-ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/eas_internals
+chmod 600 ~/.ssh/eas_internals
+ssh-keygen -y -f ~/.ssh/eas_internals > ~/.ssh/eas_internals.pub
 
 # add your git provider to the list of known hosts
 ssh-keyscan github.com >> ~/.ssh/known_hosts
