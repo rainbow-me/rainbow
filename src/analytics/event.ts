@@ -123,10 +123,12 @@ export type EventProperties = {
     outputCurrencySymbol: string;
   };
   [event.promoSheetShown]: {
-    campaignKey: string;
+    campaign: string;
+    time_viewed: number;
   };
   [event.promoSheetDismissed]: {
-    campaignKey: string;
+    campaign: string;
+    time_viewed: number;
   };
   [event.notificationsPromoShown]: undefined;
   [event.notificationsPromoPermissionsBlocked]: undefined;

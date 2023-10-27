@@ -10,7 +10,6 @@ import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
 import { campaigns } from '@/storage';
 import { delay } from '@/utils/delay';
-import { analyticsV2 } from '@/analytics';
 import { Linking } from 'react-native';
 import Routes from '@/navigation/routesNames';
 
@@ -59,24 +58,12 @@ export function RemotePromoSheet() {
     }
   };
 
-  const dismissPromoSheet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.promoSheetDismissed, {
-      campaignKey,
-    });
-
-    goBack();
-  }, [goBack, campaignKey]);
-
   const externalNavigation = useCallback(() => {
     Linking.openURL(data?.promoSheet?.primaryButtonProps.props.url);
   }, []);
 
   const internalNavigation = useCallback(() => {
     goBack();
-
-    analyticsV2.track(analyticsV2.event.promoSheetShown, {
-      campaignKey,
-    });
 
     delay(300).then(() =>
       navigate(
@@ -86,7 +73,7 @@ export function RemotePromoSheet() {
         }
       )
     );
-  }, [goBack, navigate, data?.promoSheet, campaignKey]);
+  }, [goBack, navigate, data?.promoSheet]);
 
   if (!data?.promoSheet || error) {
     return null;
@@ -147,7 +134,7 @@ export function RemotePromoSheet() {
       }}
       secondaryButtonProps={{
         ...secondaryButtonProps,
-        onPress: dismissPromoSheet,
+        onPress: goBack,
       }}
       items={items.map((item: any) => {
         if (item.gradient) {
