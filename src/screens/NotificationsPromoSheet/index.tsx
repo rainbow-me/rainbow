@@ -3,7 +3,7 @@ import * as perms from 'react-native-permissions';
 
 import useAppState from '@/hooks/useAppState';
 import { useNavigation } from '@/navigation/Navigation';
-import { CampaignKey } from '@/campaigns/campaignChecks';
+import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { PromoSheet } from '@/components/PromoSheet';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
 import headerImageIOS from '@/assets/notificationsPromoSheetHeaderIOS.png';

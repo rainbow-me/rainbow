@@ -1,7 +1,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import { runCampaignChecks } from '@/campaigns/campaignChecks';
+import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { EthereumAddress } from '@/entities';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -17,7 +17,6 @@ import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
-import { campaigns } from '@/storage';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -119,16 +118,15 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   for (const featureUnlockCheck of featureUnlockChecks) {
     const unlockNow = await featureUnlockCheck(walletsToCheck);
     if (unlockNow) {
-      campaigns.set(['isCurrentlyShown'], true);
       return true;
     }
   }
   return false;
 };
 
-export const runFeatureAndCampaignChecks = async () => {
+export const runFeatureAndLocalCampaignChecks = async () => {
   const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
   if (!showingFeatureUnlock) {
-    await runCampaignChecks();
+    await runLocalCampaignChecks();
   }
 };

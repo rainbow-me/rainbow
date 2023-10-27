@@ -23,7 +23,6 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -310,11 +309,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={RemotePromoSheet}
         name={Routes.REMOTE_PROMO_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={SwapsPromoSheet}
-        name={Routes.SWAPS_PROMO_SHEET}
         options={bottomSheetPreset}
       />
       <BSStack.Screen

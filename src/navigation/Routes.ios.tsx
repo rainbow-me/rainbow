@@ -22,7 +22,6 @@ import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -267,11 +266,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={RemotePromoSheet}
         name={Routes.REMOTE_PROMO_SHEET}
-        {...promoSheetConfig}
-      />
-      <NativeStack.Screen
-        component={SwapsPromoSheet}
-        name={Routes.SWAPS_PROMO_SHEET}
         {...promoSheetConfig}
       />
       <NativeStack.Screen
