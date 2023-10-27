@@ -59,7 +59,6 @@ import {
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useSendSheetInputRefs,
-  useSortedAccountAssets,
   useTransactionConfirmation,
   useUserAccounts,
   useWallets,
@@ -68,6 +67,7 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -125,7 +125,7 @@ export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
-  const { sortedAssets } = useSortedAccountAssets();
+  const { data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
     gasLimit,

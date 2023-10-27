@@ -8,6 +8,8 @@ import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
 import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 export const NOE_PAGE = 30;
 
@@ -16,22 +18,29 @@ export default function useAccountTransactions(
   isFocused: boolean
 ) {
   const {
-    accountAssetsData,
+    network: currentNetwork,
+    accountAddress,
+    nativeCurrency,
+  } = useAccountSettings();
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+  const { data: userAssets } = useUserAssets({
+    address: accountAddress,
+    currency: nativeCurrency,
+    connectedToHardhat,
+  });
+
+  const {
     isLoadingTransactions,
     network,
     pendingTransactions,
     transactions,
   } = useSelector(
     ({
-      data: {
-        isLoadingTransactions,
-        pendingTransactions,
-        transactions,
-        accountAssetsData,
-      },
+      data: { isLoadingTransactions, pendingTransactions, transactions },
       settings: { network },
     }: AppState) => ({
-      accountAssetsData,
       isLoadingTransactions,
       network,
       pendingTransactions,
@@ -54,22 +63,19 @@ export default function useAccountTransactions(
 
   const mainnetAddresses = useMemo(
     () =>
-      accountAssetsData
+      userAssets
         ? slicedTransaction.reduce((acc, txn) => {
             acc[`${txn.address}_${txn.network}`] =
-              accountAssetsData[
-                `${txn.address}_${txn.network}`
-              ]?.mainnet_address;
+              userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
 
             return acc;
           }, {})
         : [],
-    [accountAssetsData, slicedTransaction]
+    [userAssets, slicedTransaction]
   );
 
   const { contacts } = useContacts();
   const { requests } = useRequests();
-  const { accountAddress } = useAccountSettings();
   const theme = useTheme();
   const { navigate } = useNavigation();
 
