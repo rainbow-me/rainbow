@@ -21,6 +21,7 @@ import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useDependencyDebugger } from '@/debugging/useDependencyDebugger';
 import {
   Box,
   ColorModeProvider,
@@ -228,18 +229,15 @@ const MintSheet = () => {
     updateTxFee,
     startPollingGasFees,
     stopPollingGasFees,
-    isSufficientGas,
-    isValidGas,
     getTotalGasPrice,
   } = useGas();
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
-
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
   const isMintingAvailable =
     !(isReadOnlyWallet || isHardwareWallet) &&
-    (mintCollection.isMintingPublicSale || price) &&
+    !!mintCollection.publicMintInfo &&
     !gasError;
 
   const imageColor =
@@ -334,18 +332,13 @@ const MintSheet = () => {
                 return;
               }
               step.items?.forEach(async item => {
-                const value = multiply(
-                  mintCollection.publicMintInfo?.price?.amount?.raw || '0',
-                  quantity
-                );
                 // could add safety here if unable to calc gas limit
                 const tx = {
                   to: item.data?.to,
                   from: item.data?.from,
                   data: item.data?.data,
-                  value,
+                  value: item.data?.value,
                 };
-
                 const gas = await estimateGas(tx, provider);
 
                 let l1GasFeeOptimism = null;
@@ -380,7 +373,6 @@ const MintSheet = () => {
     accountAddress,
     currentNetwork,
     mintCollection.id,
-    price,
     quantity,
     updateTxFee,
   ]);
