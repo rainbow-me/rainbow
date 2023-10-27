@@ -21,7 +21,6 @@ import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDependencyDebugger } from '@/debugging/useDependencyDebugger';
 import {
   Box,
   ColorModeProvider,
