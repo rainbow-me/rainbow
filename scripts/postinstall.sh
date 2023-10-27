@@ -1,5 +1,7 @@
 #!/bin/bash
-set -eo pipefail
+# set -eo pipefail
+
+echo "POST INSTALLING"
 
 # Detect the platform.
 PLATFORM=$(uname -s)
@@ -25,6 +27,11 @@ then
   echo "${GLOBAL_NPM_MISSING[@]}"
   echo ""
   yarn global add ${GLOBAL_NPM_MISSING[@]}
+fi
+
+if [ -n "$EAS_BUILD" ] && [ -n "$DOT_ENV" ]; then
+  file_path=$DOT_ENV
+  cat $file_path > .env
 fi
 
 # Set up the environment.
@@ -71,23 +78,6 @@ else
   echo "Please make sure the file exists and it's located in the root of the project"
 fi
 
-if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
-  if [ -n "$CI" ]; then
-    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK > /dev/null 2>&1;
-  else
-    eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
-    echo "✅ executed ios prebuild hook"
-  fi
-fi
-
-if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
-  if [ -n "$CI" ]; then
-    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK > /dev/null 2>&1;
-  else
-    eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
-    echo "✅ executed android prebuild hook"
-  fi
-fi
 
 # Ignore any potential tracked changes to mutable development files.
 git update-index --assume-unchanged "ios/Frameworks/GoogleService-Info.plist"
