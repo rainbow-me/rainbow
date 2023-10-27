@@ -82,7 +82,7 @@ export function RemotePromoSheet() {
       navigate(
         (Routes as any)[data?.promoSheet?.primaryButtonProps.props.route],
         {
-          ...data?.promoSheet?.primaryButtonProps.props.options,
+          ...(data?.promoSheet?.primaryButtonProps.props.options || {}),
         }
       )
     );
@@ -126,15 +126,13 @@ export function RemotePromoSheet() {
     ? maybeSignUri(headerImage.url)
     : undefined;
 
-  console.log(
-    headerImageAspectRatio ?? DEFAULT_HEADER_WIDTH / DEFAULT_HEADER_HEIGHT
-  );
-
   return (
     <PromoSheet
       accentColor={accentColor}
       backgroundColor={backgroundColor}
-      backgroundImage={{ uri: backgroundSignedImageUrl }}
+      backgroundImage={
+        backgroundSignedImageUrl ? { uri: backgroundSignedImageUrl } : undefined
+      }
       campaignKey={campaignKey}
       headerImage={{ uri: headerSignedImageUrl }}
       headerImageAspectRatio={

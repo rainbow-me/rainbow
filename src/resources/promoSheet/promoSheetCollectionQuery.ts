@@ -13,7 +13,7 @@ import { PromoSheetOrder } from '@/graphql/__generated__/arc';
 
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).
-const defaultStaleTime = 10_000;
+const defaultStaleTime = 60_000;
 
 export type PromoSheetCollectionArgs = {
   order?: PromoSheetOrder[];

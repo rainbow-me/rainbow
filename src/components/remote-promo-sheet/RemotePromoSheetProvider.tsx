@@ -59,9 +59,14 @@ export const RemotePromoSheetProvider = ({
             setHasRunFeatureUnlockChecks(true);
           }
 
-          logger.info('Campaigns: Setting campaign check interval');
-          checkForCampaign();
-          intervalRef.current = setInterval(checkForCampaign, REFETCH_INTERVAL);
+          if (!intervalRef.current) {
+            logger.info('Campaigns: Setting campaign check interval');
+            checkForCampaign();
+            intervalRef.current = setInterval(
+              checkForCampaign,
+              REFETCH_INTERVAL
+            );
+          }
         }, 2_000);
       });
     };

@@ -1,6 +1,5 @@
 import { InteractionManager } from 'react-native';
 import { Navigation } from '@/navigation';
-import { resolveFirstRejectLast } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
@@ -45,35 +44,42 @@ export const checkForCampaign = async () => {
     return;
   }
 
+  const isReturningUser = device.get(['isReturningUser']);
+
+  if (!isReturningUser) {
+    logger.info('Campaigns: First launch, not showing promo sheet');
+    return;
+  }
+
   const { promoSheetCollection } = await fetchPromoSheetCollection({
     order: [PromoSheetOrder.PriorityDesc],
   });
 
-  const campaignPromises = (promoSheetCollection?.items || [])
-    .filter((campaign): campaign is PromoSheet => campaign !== null)
-    .map(async campaign => await shouldPromptCampaign(campaign));
+  JSON.stringify(promoSheetCollection?.items, null, 2);
 
-  // In order to save computational bandwidth, we will resolve with the first campaign that should be shown, disregarding all others
-  const result = await resolveFirstRejectLast(campaignPromises);
-  if (!result) {
-    logger.info(`Campaigns: No promo to prompt user`);
-    return;
+  for (const promo of promoSheetCollection?.items || []) {
+    if (!promo) continue;
+    logger.info(`Campaigns: Checking ${promo.sys.id}`);
+    const result = await shouldPromptCampaign(promo as PromoSheet);
+
+    logger.info(`Campaigns: ${promo.sys.id} will show: ${result}`);
+    if (result) {
+      isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
+      if (!isCurrentlyShown) {
+        return triggerCampaign(promo as PromoSheet);
+      }
+    }
   }
-
-  isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
-  // another sanity check for making sure we don't stack promo sheets
-  if (isCurrentlyShown) return;
-  triggerCampaign(result);
 };
 
 export const triggerCampaign = async ({
-  campaignId,
   campaignKey,
-}: CampaignCheckResult) => {
+  sys: { id: campaignId },
+}: PromoSheet) => {
   logger.info(`Campaigns: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
-    campaigns.set([campaignKey], true);
+    campaigns.set([campaignKey as string], true);
     campaigns.set(['isCurrentlyShown'], true);
     campaigns.set(['lastShownTimestamp'], Date.now());
     InteractionManager.runAfterInteractions(() => {
@@ -87,7 +93,7 @@ export const triggerCampaign = async ({
 
 export const shouldPromptCampaign = async (
   campaign: PromoSheet
-): Promise<CampaignCheckResult | undefined> => {
+): Promise<boolean> => {
   const {
     campaignKey,
     sys: { id },
@@ -95,45 +101,45 @@ export const shouldPromptCampaign = async (
   } = campaign;
 
   // if we aren't given proper campaign data or actions to check against, exit early here
-  if (!campaignKey || !id) return;
+  if (!campaignKey || !id) return false;
 
   // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
   const hasShown = campaigns.get([campaignKey]);
-  const isReturningUser = device.get(['isReturningUser']);
 
   logger.info(
     `Campaigns: Checking if we should prompt campaign ${campaignKey}`
   );
-  logger.info(`Campaigns: viewed: ${hasShown}`);
-  logger.info(`Campaigns: first launch: ${!isReturningUser}`);
-
   // If the campaign has been viewed already or it's the first app launch, exit early
-  // if (hasShown || !isReturningUser) {
-  //   return;
-  // }
+  if (hasShown) {
+    logger.info(`Campaigns: User has already been shown ${campaignKey}`);
+    return false;
+  }
 
-  const shouldPrompt = (
-    await Promise.all(
-      ((actions || []) as ActionObj[]).map(
-        async ({ fn, outcome, props = {} }) => {
-          const action = __INTERNAL_ACTION_CHECKS[fn];
-          if (typeof action === 'undefined') return false;
+  const actionsArray = actions || ([] as ActionObj[]);
+  let shouldPrompt = true;
 
-          logger.info(`Campaigns: Checking action ${fn}`);
-          const result = await action({ ...props, ...campaign });
-          logger.info(
-            `Campaigns: [${fn}] matches desired outcome: => ${
-              result === outcome
-            }`
-          );
-          return result === outcome;
-        }
-      )
-    )
-  ).every(result => result);
+  for (const actionObj of actionsArray) {
+    const { fn, outcome, props = {} } = actionObj;
+    const action = __INTERNAL_ACTION_CHECKS[fn];
+    if (typeof action === 'undefined') {
+      shouldPrompt = false;
+      break;
+    }
+
+    logger.info(`Campaigns: Checking action ${fn}`);
+    const result = await action({ ...props, ...campaign });
+    logger.info(
+      `Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`
+    );
+
+    if (result !== outcome) {
+      shouldPrompt = false;
+      break;
+    }
+  }
 
   // if all action checks pass, we will show the promo to the user
-  return shouldPrompt ? { campaignId: id, campaignKey } : undefined;
+  return shouldPrompt;
 };
 
 export const __INTERNAL_ACTION_CHECKS: {
