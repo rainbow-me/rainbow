@@ -8,8 +8,6 @@ import {
   Separator,
   BackgroundProvider,
   AccentColorProvider,
-  DebugLayout,
-  useForegroundColor,
 } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -104,7 +102,7 @@ export function AuthRequest({
   const dappUrl = verifiedData?.verifyUrl || url;
   const { data: metadata } = useDappMetadata({ url: dappUrl });
 
-  const isScam = metadata?.status === 'SCAM';
+  const isScam = metadata?.status === DAppStatus.Scam;
 
   const accentColor = isScam ? 'red' : 'blue';
 

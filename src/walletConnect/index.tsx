@@ -53,10 +53,8 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
-import {
-  fetchDappMetadata,
-  prefetchDappMetadata,
-} from '@/resources/metadata/dapp';
+import { fetchDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
@@ -1011,12 +1009,12 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
   };
 
   // need to prefetch dapp metadata since portal is static
-  // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
   const url =
+    // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
     event?.verifyContext?.verifyUrl || event.params.requester.metadata.url;
   const metadata = await fetchDappMetadata({ url, status: true });
 
-  const isScam = metadata.status === 'SCAM';
+  const isScam = metadata.status === DAppStatus.Scam;
   portal.open(
     () =>
       AuthRequest({
