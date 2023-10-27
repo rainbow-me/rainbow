@@ -1,8 +1,16 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 1e7021c..464f13c 100644
+index 9efac96..3fa4112 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -271,6 +271,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+@@ -102,6 +102,7 @@ CFStringRef accessibleValue(NSDictionary *options)
+       @"AccessibleWhenPasscodeSetThisDeviceOnly": (__bridge NSString *)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+       @"AccessibleWhenUnlockedThisDeviceOnly": (__bridge NSString *)kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+       @"AccessibleAfterFirstUnlockThisDeviceOnly": (__bridge NSString *)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
++      @"AccessibleAlwaysThisDeviceOnly": (__bridge NSString *)kSecAttrAccessibleAlwaysThisDeviceOnly
+     };
+     NSString *result = keyMap[options[@"accessible"]];
+     if (result) {
+@@ -274,6 +275,70 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
    return SecItemDelete((__bridge CFDictionaryRef) query);
  }
  
@@ -14,43 +22,31 @@ index 1e7021c..464f13c 100644
 +    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
 +    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
 +  };
-+
 +  // Look up server in the keychain
 +  NSArray *found = nil;
 +  CFTypeRef foundTypeRef = NULL;
 +  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
-+
 +  if (osStatus != noErr && osStatus != errSecItemNotFound) {
 +    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
 +    return rejectWithError(reject, error);
 +  }
-+
 +  found = (__bridge NSArray*)(foundTypeRef);
 +  if (!found) {
 +    return resolve(@(NO));
 +  }
-+
 +  NSMutableArray *results = [@[] mutableCopy];
-+
-+
 +    for(int i=0; i< found.count; i++){
 +        NSDictionary *item  = found[i];
 +        NSString *server = (NSString *) [item objectForKey:(__bridge id)(kSecAttrServer)];
 +        NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
 +        NSString *password = [[NSString alloc] initWithData:[item objectForKey:(__bridge id)(kSecValueData)] encoding:NSUTF8StringEncoding];
-+
 +        [results addObject:@{@"username": username, @"password":password, @"server": server}];
 +  }
-+
-+
 +  CFRelease(foundTypeRef);
-+
 +  return resolve(@{
 +    @"results": results
 +  });
-+
 +}
-+
 +RCT_EXPORT_METHOD(getAllInternetCredentialsKeys:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 +{
 +  NSDictionary *query = @{
@@ -58,46 +54,35 @@ index 1e7021c..464f13c 100644
 +    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
 +    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
 +  };
-+
 +  // Look up all the keys in the keychain
 +  NSArray *found = nil;
 +  CFTypeRef foundTypeRef = NULL;
 +  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
-+
 +  if (osStatus != noErr && osStatus != errSecItemNotFound) {
 +    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
 +    return rejectWithError(reject, error);
 +  }
-+
 +  found = (__bridge NSArray*)(foundTypeRef);
 +  if (!found) {
 +    return resolve(@(NO));
 +  }
-+
 +  NSMutableArray *results = [@[] mutableCopy];
-+
-+
 +  for(int i=0; i< found.count; i++){
 +      NSDictionary *item  = found[i];
 +      NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
 +      [results addObject:username];
 +  }
-+
-+
 +  CFRelease(foundTypeRef);
-+
 +  return resolve(@{
 +    @"results": results
 +  });
-+
 +}
-+
 +
  -(NSArray<NSString*>*)getAllServicesForSecurityClasses:(NSArray *)secItemClasses
  {
    NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-index 6ca68cb..72426ca 100644
+index 9413000..7676565 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 @@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -108,10 +93,12 @@ index 6ca68cb..72426ca 100644
  import com.oblador.keychain.PrefsStorage.ResultSet;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
-@@ -149,6 +150,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+@@ -149,6 +150,13 @@ public class KeychainModule extends ReactContextBaseJavaModule {
      }
    }
  
++
++
 +  @Override
 +  public boolean canOverrideExistingModule() {
 +    return true;
@@ -120,7 +107,7 @@ index 6ca68cb..72426ca 100644
    /** Allow initialization in chain. */
    public static KeychainModule withWarming(@NonNull final ReactApplicationContext reactContext) {
      final KeychainModule instance = new KeychainModule(reactContext);
-@@ -327,6 +333,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+@@ -327,6 +335,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
      }
    }
  
@@ -158,21 +145,22 @@ index 6ca68cb..72426ca 100644
    public void getAllGenericPasswordServices(@NonNull final Promise promise) {
      try {
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-index b7ecd51..9bfa595 100644
+index b7ecd51..c9c610d 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-@@ -12,7 +12,10 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
+@@ -12,7 +12,11 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.EncryptionResult;
  
 +import java.util.ArrayList;
 +import java.util.HashMap;
  import java.util.HashSet;
++import java.util.HashSet;
 +import java.util.Map;
  import java.util.Set;
  
  @SuppressWarnings({"unused", "WeakerAccess"})
-@@ -154,4 +157,23 @@ public class PrefsStorage {
+@@ -154,4 +158,23 @@ public class PrefsStorage {
  
      return null;
    }
@@ -197,10 +185,46 @@ index b7ecd51..9bfa595 100644
 +   }
  }
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index 75c0d5c..e99d235 100644
+index 083938e..c6d052a 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -108,6 +108,14 @@ export type Result = {|
+@@ -23,6 +23,7 @@ export const ACCESSIBLE = Object.freeze({
+   WHEN_UNLOCKED_THIS_DEVICE_ONLY: 'AccessibleWhenUnlockedThisDeviceOnly',
+   AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY:
+     'AccessibleAfterFirstUnlockThisDeviceOnly',
++  ALWAYS_THIS_DEVICE_ONLY: 'AccessibleAlwaysThisDeviceOnly',
+ });
+ 
+ export const ACCESS_CONTROL = Object.freeze({
+@@ -75,14 +76,14 @@ export type SecSecurityRules = $Values<typeof SECURITY_RULES>;
+ export type SecBiometryType = $Values<typeof BIOMETRY_TYPE>;
+ 
+ export type AuthenticationPrompt = {|
+-  title?: string,
++title?: string,
+   subtitle?: string,
+   description?: string,
+   cancel?: string,
+ |};
+ 
+ type BaseOptions = {|
+-  accessControl?: SecAccessControl,
++accessControl?: SecAccessControl,
+   accessGroup?: string,
+   accessible?: SecAccessible,
+   authenticationType?: LAPolicy,
+@@ -98,8 +99,8 @@ type NormalizedOptions = {
+ };
+ 
+ export type Options = $Shape<{|
+-  authenticationPrompt?: string | AuthenticationPrompt,
+-  ...BaseOptions,
++authenticationPrompt?: string | AuthenticationPrompt,
++...BaseOptions,
+ |}>;
+ 
+ export type Result = {|
+@@ -107,15 +108,23 @@ export type Result = {|
    +storage: string,
  |};
  
@@ -215,41 +239,116 @@ index 75c0d5c..e99d235 100644
  export type UserCredentials = {|
    +username: string,
    +password: string,
-@@ -201,6 +209,32 @@ export function getGenericPassword(
+-  ...Result,
++...Result,
+ |};
+ 
+ export type SharedWebCredentials = {|
+   +server: string,
+-  ...UserCredentials,
++...UserCredentials,
+ |};
+ 
+ const AUTH_PROMPT_DEFAULTS = {
+@@ -200,6 +209,32 @@ export function getGenericPassword(
    return RNKeychainManager.getGenericPasswordForOptions(options);
  }
  
 +/**
-+* Fetches all the keychain entries for the app
-+* @param {object} options Keychain options, iOS only
-+* @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
-+*/
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
 +export function getAllInternetCredentials(
-+   options?: Options
-+  ): Promise<false | AllCredentials> {
-+   return RNKeychainManager.getAllInternetCredentialsForServer(
-+     normalizeOptions(options)
-+   );
-+  }
-+  
-+  /**
-+  * Fetches all the keychain entries for the app
-+  * @param {object} options Keychain options, iOS only
-+  * @return {Promise} Resolves to `[username]` when successful
-+  */
-+  export function getAllInternetCredentialsKeys(
-+   options?: Options
-+  ): Promise<false | AllCredentialsKeys> {
-+   return RNKeychainManager.getAllInternetCredentialsKeys(
-+     normalizeOptions(options)
-+   );
-+  }
++  options?: Options
++): Promise<false | AllCredentials> {
++  return RNKeychainManager.getAllInternetCredentialsForServer(
++    normalizeOptions(options)
++  );
++}
++
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
++export function getAllInternetCredentialsKeys(
++  options?: Options
++): Promise<false | AllCredentialsKeys> {
++  return RNKeychainManager.getAllInternetCredentialsKeys(
++    normalizeOptions(options)
++  );
++}
 +
  /**
   * Deletes all generic password keychain entries for `service`.
   * @param {object} options An Keychain options object.
+@@ -301,7 +336,7 @@ export function getSupportedBiometryType(): Promise<null | SecBiometryType> {
+  */
+ export function requestSharedWebCredentials(): Promise<
+   false | SharedWebCredentials
+-> {
++  > {
+   if (Platform.OS !== 'ios') {
+     return Promise.reject(
+       new Error(
+@@ -325,18 +360,18 @@ export function setSharedWebCredentials(
+   password?: string
+ ): Promise<void> {
+   if (Platform.OS !== 'ios') {
+-    return Promise.reject(
+-      new Error(
+-        `setSharedWebCredentials() is not supported on ${Platform.OS} yet`
+-      )
+-    );
+-  }
+-  return RNKeychainManager.setSharedWebCredentialsForServer(
+-    server,
+-    username,
+-    password
++  return Promise.reject(
++    new Error(
++      `setSharedWebCredentials() is not supported on ${Platform.OS} yet`
++    )
+   );
+ }
++return RNKeychainManager.setSharedWebCredentialsForServer(
++  server,
++  username,
++  password
++);
++}
+ 
+ /**
+  * Inquire if the type of local authentication policy (LAPolicy) is supported
+@@ -346,9 +381,9 @@ export function setSharedWebCredentials(
+  */
+ export function canImplyAuthentication(options?: Options): Promise<boolean> {
+   if (!RNKeychainManager.canCheckAuthentication) {
+-    return Promise.resolve(false);
+-  }
+-  return RNKeychainManager.canCheckAuthentication(options);
++  return Promise.resolve(false);
++}
++return RNKeychainManager.canCheckAuthentication(options);
+ }
+ 
+ //* ANDROID ONLY */
+@@ -363,9 +398,9 @@ export function getSecurityLevel(
+   options?: Options
+ ): Promise<null | SecMinimumLevel> {
+   if (!RNKeychainManager.getSecurityLevel) {
+-    return Promise.resolve(null);
+-  }
+-  return RNKeychainManager.getSecurityLevel(options);
++  return Promise.resolve(null);
++}
++return RNKeychainManager.getSecurityLevel(options);
+ }
+ 
+ /** Refs: https://www.saltycrane.com/cheat-sheets/flow-type/latest/ */
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index af2eb56..fd11459 100644
+index 6904f63..815bc50 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 @@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
@@ -259,7 +358,7 @@ index af2eb56..fd11459 100644
 +  export interface AllCredentials {
 +    results: UserCredentials[];
 +  }
-+    
++
 +  export interface AllCredentialsKeys {
 +    results: string[];
 +  }
@@ -267,7 +366,15 @@ index af2eb56..fd11459 100644
    export interface SharedWebCredentials extends UserCredentials {
      server: string;
    }
-@@ -111,6 +119,10 @@ declare module 'react-native-keychain' {
+@@ -20,6 +28,7 @@ declare module 'react-native-keychain' {
+     WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = 'AccessibleWhenPasscodeSetThisDeviceOnly',
+     WHEN_UNLOCKED_THIS_DEVICE_ONLY = 'AccessibleWhenUnlockedThisDeviceOnly',
+     AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = 'AccessibleAfterFirstUnlockThisDeviceOnly',
++    ALWAYS_THIS_DEVICE_ONLY = 'AccessibleAlwaysThisDeviceOnly',
+   }
+ 
+   export enum ACCESS_CONTROL {
+@@ -110,6 +119,10 @@ declare module 'react-native-keychain' {
      options?: Options
    ): Promise<false | SharedWebCredentials>;
  
