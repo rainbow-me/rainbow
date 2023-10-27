@@ -1,5 +1,5 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import { arrayify, BytesLike, Hexable } from '@ethersproject/bytes';
+import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
@@ -41,7 +41,6 @@ import { EthereumAddress } from '@/entities';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
-  getExistingPIN,
 } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
@@ -398,49 +397,6 @@ export const signTransaction = async ({
       Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     }
     logger.error(new RainbowError('Failed to sign transaction due to auth'), {
-      error,
-    });
-    return null;
-  }
-};
-
-export const signMessage = async (
-  message: BytesLike | Hexable | number,
-  existingWallet?: Wallet,
-  provider?: Provider
-): Promise<null | {
-  result?: string;
-  error?: any;
-}> => {
-  let isHardwareWallet = false;
-  try {
-    logger.info('wallet: signing message', { message });
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
-    // have to check inverse or we trigger unwanted BT permissions requests
-    if (!(wallet instanceof Wallet)) {
-      isHardwareWallet = true;
-    }
-    try {
-      if (!wallet) return null;
-      const result = await wallet.signMessage(arrayify(message));
-      return { result };
-    } catch (error) {
-      if (isHardwareWallet) {
-        setHardwareTXError(true);
-      } else {
-        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      }
-      logger.error(new RainbowError('Failed to sign message'), { error });
-      return { error };
-    }
-  } catch (error) {
-    if (isHardwareWallet) {
-      setHardwareTXError(true);
-    } else {
-      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    }
-    logger.error(new RainbowError('Failed to sign message due to auth'), {
       error,
     });
     return null;

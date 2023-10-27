@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { add, convertAmountToNativeDisplay } from './utilities';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
@@ -40,7 +41,7 @@ const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
-const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
+const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
 const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
@@ -54,8 +55,8 @@ const buildBriefWalletSections = (
   balanceSectionData: any,
   uniqueTokenFamiliesSection: any
 ) => {
-  const { balanceSection, isEmpty } = balanceSectionData;
-  const positionSection = withPositionsSection();
+  const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
+  const positionSection = withPositionsSection(isLoadingUserAssets);
   const sections = [
     balanceSection,
     positionSection,
@@ -72,7 +73,7 @@ const buildBriefWalletSections = (
   };
 };
 
-const withPositionsSection = () => {
+const withPositionsSection = (isLoadingUserAssets: boolean) => {
   // check if the feature is enabled
   const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
   if (!positionsEnabled) return [];
@@ -81,7 +82,6 @@ const withPositionsSection = () => {
     accountAddress: address,
     nativeCurrency: currency,
   } = store.getState().settings;
-  const { isLoadingAssets } = store.getState().data;
   const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
     positionsQueryKey({ address, currency })
   );
@@ -99,7 +99,7 @@ const withPositionsSection = () => {
     };
     result.push(listData);
   });
-  if (result.length && !isLoadingAssets) {
+  if (result.length && !isLoadingUserAssets) {
     const res = [
       {
         type: 'POSITIONS_SPACE_BEFORE',
@@ -119,10 +119,10 @@ const withPositionsSection = () => {
 };
 
 const withBriefBalanceSection = (
-  sortedAssets: any,
-  isLoadingAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
+  sortedAssets: ParsedAddressAsset[],
+  isLoadingUserAssets: boolean,
+  nativeCurrency: NativeCurrencyKey,
+  isCoinListEdited: boolean,
   pinnedCoins: any,
   hiddenCoins: any,
   collectibles: any
@@ -163,6 +163,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
       value: totalValue,
+      isLoadingUserAssets,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -184,7 +185,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingAssets
+    ...(!hasTokens && !isLoadingUserAssets
       ? []
       : [
           {
@@ -215,7 +216,7 @@ const withBriefBalanceSection = (
 
   if (hasTokens) {
     content = briefAssets;
-  } else if (isLoadingAssets) {
+  } else if (isLoadingUserAssets) {
     content = CONTENT_PLACEHOLDER;
   } else if (hasNFTsOnly) {
     content = ONLY_NFTS_CONTENT;
@@ -225,6 +226,7 @@ const withBriefBalanceSection = (
 
   return {
     balanceSection: [...header, ...content],
+    isLoadingUserAssets,
     isEmpty,
   };
 };
@@ -244,7 +246,7 @@ const briefUniqueTokenDataSelector = createSelector(
 const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
-    isLoadingAssetsSelector,
+    isLoadingUserAssetsSelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,

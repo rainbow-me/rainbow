@@ -14,7 +14,6 @@ import {
   isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
-  SIGN,
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';
@@ -53,11 +52,6 @@ export const getRequestDisplayDetails = (
       timestampInMs,
       dappNetwork
     );
-  }
-  if (payload.method === SIGN) {
-    const message = payload?.params?.find(p => !isAddress(p));
-    const result = getMessageDisplayDetails(message, timestampInMs);
-    return result;
   }
   if (payload.method === PERSONAL_SIGN) {
     let message = payload?.params?.find(p => !isAddress(p));

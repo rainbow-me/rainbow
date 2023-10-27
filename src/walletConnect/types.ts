@@ -1,5 +1,4 @@
 export enum RPCMethod {
-  Sign = 'eth_sign',
   PersonalSign = 'personal_sign',
   SignTypedData = 'eth_signTypedData',
   SignTypedDataV1 = 'eth_signTypedData_v1',
@@ -18,7 +17,7 @@ export enum RPCMethod {
 
 export type RPCPayload =
   | {
-      method: RPCMethod.Sign | RPCMethod.PersonalSign;
+      method: RPCMethod.PersonalSign;
       params: [string, string];
     }
   | {
