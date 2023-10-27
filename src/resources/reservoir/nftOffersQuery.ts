@@ -91,7 +91,7 @@ export async function fetchNftOffers({
     return null;
   }
 
-  const sortedOffers = sortNftOffers(data.nftOffers as NftOffer[], sortBy);
+  const sortedOffers = sortNftOffers(data.nftOffers, sortBy);
   return { ...data, nftOffers: sortedOffers };
 }
 

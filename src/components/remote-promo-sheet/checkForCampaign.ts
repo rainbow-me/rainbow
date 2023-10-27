@@ -55,8 +55,6 @@ export const checkForCampaign = async () => {
     order: [PromoSheetOrder.PriorityDesc],
   });
 
-  JSON.stringify(promoSheetCollection?.items, null, 2);
-
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
     logger.info(`Campaigns: Checking ${promo.sys.id}`);
