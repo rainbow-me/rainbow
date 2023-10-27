@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
-import { noop, get } from 'lodash';
+import { get } from 'lodash';
 
 import { useNavigation } from '@/navigation/Navigation';
 import { PromoSheet } from '@/components/PromoSheet';
@@ -10,6 +10,9 @@ import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
 import { campaigns } from '@/storage';
 import { delay } from '@/utils/delay';
+import { analyticsV2 } from '@/analytics';
+import { Linking } from 'react-native';
+import Routes from '@/navigation/routesNames';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;
@@ -17,6 +20,11 @@ const DEFAULT_HEADER_WIDTH = 390;
 type RootStackParamList = {
   RemotePromoSheet: CampaignCheckResult;
 };
+
+const enum ButtonType {
+  Internal = 'Internal',
+  External = 'External',
+}
 
 export function RemotePromoSheet() {
   const { colors } = useTheme();
@@ -41,15 +49,44 @@ export function RemotePromoSheet() {
     }
   );
 
+  const getButtonForType = (type: ButtonType) => {
+    switch (type) {
+      default:
+      case ButtonType.Internal:
+        return () => internalNavigation();
+      case ButtonType.External:
+        return () => externalNavigation();
+    }
+  };
+
+  const dismissPromoSheet = useCallback(() => {
+    analyticsV2.track(analyticsV2.event.promoSheetDismissed, {
+      campaignKey,
+    });
+
+    goBack();
+  }, [goBack, campaignKey]);
+
+  const externalNavigation = useCallback(() => {
+    Linking.openURL(data?.promoSheet?.primaryButtonProps.props.url);
+  }, []);
+
   const internalNavigation = useCallback(() => {
     goBack();
 
+    analyticsV2.track(analyticsV2.event.promoSheetShown, {
+      campaignKey,
+    });
+
     delay(300).then(() =>
-      navigate(data?.promoSheet?.primaryButtonProps.route, {
-        ...data?.promoSheet?.primaryButtonProps.route.options,
-      })
+      navigate(
+        (Routes as any)[data?.promoSheet?.primaryButtonProps.props.route],
+        {
+          ...data?.promoSheet?.primaryButtonProps.props.options,
+        }
+      )
     );
-  }, [goBack, navigate, data?.promoSheet]);
+  }, [goBack, navigate, data?.promoSheet, campaignKey]);
 
   if (!data?.promoSheet || error) {
     return null;
@@ -89,6 +126,10 @@ export function RemotePromoSheet() {
     ? maybeSignUri(headerImage.url)
     : undefined;
 
+  console.log(
+    headerImageAspectRatio ?? DEFAULT_HEADER_WIDTH / DEFAULT_HEADER_HEIGHT
+  );
+
   return (
     <PromoSheet
       accentColor={accentColor}
@@ -104,11 +145,11 @@ export function RemotePromoSheet() {
       subHeader={subHeader ?? ''}
       primaryButtonProps={{
         ...primaryButtonProps,
-        onPress: internalNavigation,
+        onPress: getButtonForType(data.promoSheet.primaryButtonProps.type),
       }}
       secondaryButtonProps={{
         ...secondaryButtonProps,
-        onPress: goBack,
+        onPress: dismissPromoSheet,
       }}
       items={items.map((item: any) => {
         if (item.gradient) {

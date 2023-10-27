@@ -122,12 +122,7 @@ export function PromoSheet({
           testID={campaignKey}
         >
           {/* @ts-ignore */}
-          <Box
-            as={ImageBackground}
-            height="full"
-            src={(backgroundImage as ImageURISource).uri}
-            source={backgroundImage}
-          >
+          <Box as={ImageBackground} height="full" source={backgroundImage}>
             <Rows>
               <Row>
                 <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>

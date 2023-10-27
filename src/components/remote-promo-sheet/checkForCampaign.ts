@@ -46,7 +46,7 @@ export const checkForCampaign = async () => {
   }
 
   const { promoSheetCollection } = await fetchPromoSheetCollection({
-    order: [PromoSheetOrder.PriorityAsc],
+    order: [PromoSheetOrder.PriorityDesc],
   });
 
   const campaignPromises = (promoSheetCollection?.items || [])
@@ -95,7 +95,7 @@ export const shouldPromptCampaign = async (
   } = campaign;
 
   // if we aren't given proper campaign data or actions to check against, exit early here
-  if (!campaignKey || !id || !actions.length) return;
+  if (!campaignKey || !id) return;
 
   // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
   const hasShown = campaigns.get([campaignKey]);
@@ -108,9 +108,9 @@ export const shouldPromptCampaign = async (
   logger.info(`Campaigns: first launch: ${!isReturningUser}`);
 
   // If the campaign has been viewed already or it's the first app launch, exit early
-  if (hasShown || !isReturningUser) {
-    return;
-  }
+  // if (hasShown || !isReturningUser) {
+  //   return;
+  // }
 
   const shouldPrompt = (
     await Promise.all(
