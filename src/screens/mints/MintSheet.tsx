@@ -338,18 +338,35 @@ const MintSheet = () => {
                 return;
               }
               step.items?.forEach(async item => {
+                const value = multiply(
+                  mintCollection.publicMintInfo?.price?.amount?.raw || '0',
+                  quantity
+                );
                 // could add safety here if unable to calc gas limit
                 const tx = {
                   to: item.data?.to,
                   from: item.data?.from,
                   data: item.data?.data,
-                  value: multiply(price.amount || '0', quantity),
+                  value,
                 };
 
                 const gas = await estimateGas(tx, provider);
+
+                let l1GasFeeOptimism = null;
+                // add l1Fee for OP Chains
+                if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
+                  l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+                    tx,
+                    provider
+                  );
+                }
                 if (gas) {
                   setGasError(false);
-                  updateTxFee(gas, null);
+                  if (l1GasFeeOptimism) {
+                    updateTxFee(gas, null, l1GasFeeOptimism);
+                  } else {
+                    updateTxFee(gas, null);
+                  }
                 }
               });
             });
