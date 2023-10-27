@@ -168,7 +168,7 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void stickyImmersive(Boolean enabled, Promise promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      int visibility = WindowInsets.Type.navigationBars() | WindowInsets.Type.statusBars();
+      int visibility = WindowInsets.Type.navigationBars();
       if (enabled) {
         setSystemInsetsController(visibility, INSETS_TYPE_HIDE, promise);
         setSystemInsetsController(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE, INSETS_TYPE_BEHAVIOR, promise);
