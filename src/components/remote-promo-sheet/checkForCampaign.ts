@@ -22,8 +22,28 @@ export type CampaignCheckResult = {
   campaignKey: string;
 };
 
+const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+const timeBetweenPromoSheets = () => {
+  const lastShownTimestamp = campaigns.get(['lastShownTimestamp']);
+
+  if (!lastShownTimestamp) return TIMEOUT_BETWEEN_PROMOS;
+
+  return Date.now() - lastShownTimestamp;
+};
+
 export const checkForCampaign = async () => {
   logger.info('Campaigns: Running Checks');
+  if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
+    logger.info('Campaigns: Time between promos has not exceeded timeout');
+    return;
+  }
+
+  let isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
+  if (isCurrentlyShown) {
+    logger.info('Campaigns: Promo sheet is already shown');
+    return;
+  }
 
   const { promoSheetCollection } = await fetchPromoSheetCollection({
     order: [PromoSheetOrder.PriorityAsc],
@@ -40,7 +60,7 @@ export const checkForCampaign = async () => {
     return;
   }
 
-  const isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
+  isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
   // another sanity check for making sure we don't stack promo sheets
   if (isCurrentlyShown) return;
   triggerCampaign(result);

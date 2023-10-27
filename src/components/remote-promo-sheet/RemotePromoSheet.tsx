@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { noop, get } from 'lodash';
 
@@ -9,9 +9,10 @@ import { CampaignCheckResult } from './checkForCampaign';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
 import { campaigns } from '@/storage';
+import { delay } from '@/utils/delay';
 
-const HEADER_HEIGHT = 285;
-const HEADER_WIDTH = 390;
+const DEFAULT_HEADER_HEIGHT = 285;
+const DEFAULT_HEADER_WIDTH = 390;
 
 type RootStackParamList = {
   RemotePromoSheet: CampaignCheckResult;
@@ -19,7 +20,7 @@ type RootStackParamList = {
 
 export function RemotePromoSheet() {
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { params } = useRoute<
     RouteProp<RootStackParamList, 'RemotePromoSheet'>
   >();
@@ -39,6 +40,16 @@ export function RemotePromoSheet() {
       enabled: !!campaignId,
     }
   );
+
+  const internalNavigation = useCallback(() => {
+    goBack();
+
+    delay(300).then(() =>
+      navigate(data?.promoSheet?.primaryButtonProps.route, {
+        ...data?.promoSheet?.primaryButtonProps.route.options,
+      })
+    );
+  }, [goBack, navigate, data?.promoSheet]);
 
   if (!data?.promoSheet || error) {
     return null;
@@ -86,14 +97,14 @@ export function RemotePromoSheet() {
       campaignKey={campaignKey}
       headerImage={{ uri: headerSignedImageUrl }}
       headerImageAspectRatio={
-        headerImageAspectRatio ?? HEADER_WIDTH / HEADER_HEIGHT
+        headerImageAspectRatio ?? DEFAULT_HEADER_WIDTH / DEFAULT_HEADER_HEIGHT
       }
       sheetHandleColor={sheetHandleColor}
-      header={header ?? ''} // TODO: Probably should have a default header here
-      subHeader={subHeader ?? ''} // TODO: Probably should have a default subHeader here
+      header={header ?? ''}
+      subHeader={subHeader ?? ''}
       primaryButtonProps={{
         ...primaryButtonProps,
-        onPress: noop, // TODO: Primary action should be passed
+        onPress: internalNavigation,
       }}
       secondaryButtonProps={{
         ...secondaryButtonProps,

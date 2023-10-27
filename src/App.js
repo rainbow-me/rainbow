@@ -32,10 +32,7 @@ import { Playground } from './design-system/playground/Playground';
 import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runFeatureUnlockChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import {
   getCachedProviderForNetwork,
   isHardHat,
@@ -188,15 +185,6 @@ class OldApp extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.info('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          if (IS_TESTING === 'true') {
-            return;
-          }
-          runFeatureUnlockChecks();
-        }, 2000);
-      });
     }
   }
 

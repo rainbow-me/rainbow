@@ -3,13 +3,15 @@ import React, {
   createContext,
   PropsWithChildren,
   useRef,
+  useState,
 } from 'react';
-import { checkForCampaign } from './checkForCampaign';
-import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import { InteractionManager } from 'react-native';
 import { REMOTE_PROMO_SHEETS, useExperimentalFlag } from '@/config';
 import { logger } from '@/logger';
 import { campaigns } from '@/storage';
+import { checkForCampaign } from '@/components/remote-promo-sheet/checkForCampaign';
+import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
 
 interface WalletReadyContext {
   isWalletReady: boolean;
@@ -21,54 +23,45 @@ export const RemotePromoSheetContext = createContext<WalletReadyContext>({
 
 type WalletReadyProvider = PropsWithChildren & WalletReadyContext;
 
-const REFETCH_INTERVAL = 30_000;
-const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
-
-const timeBetweenPromoSheets = () => {
-  const lastShownTimestamp = campaigns.get(['lastShownTimestamp']);
-
-  if (!lastShownTimestamp) return TIMEOUT_BETWEEN_PROMOS;
-
-  return Date.now() - lastShownTimestamp;
-};
-
+const REFETCH_INTERVAL = 60_000;
 export const RemotePromoSheetProvider = ({
   isWalletReady = false,
   children,
 }: WalletReadyProvider) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS);
+  const [hasRunFeatureUnlockChecks, setHasRunFeatureUnlockChecks] = useState(
+    false
+  );
 
   useEffect(() => {
-    const checkAndRun = async () => {
-      const isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
-      if (isCurrentlyShown || !remotePromoSheets) return;
-
-      // reset interval to be the time between promo sheets in order to save machine resources
-      if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-        intervalRef.current = setInterval(
-          checkAndRun,
-          timeBetweenPromoSheets()
-        );
-        return;
-      }
-
-      return checkForCampaign();
-    };
-
     const runChecks = async () => {
       if (!isWalletReady) return;
 
-      InteractionManager.runAfterInteractions(() => {
+      InteractionManager.runAfterInteractions(async () => {
         setTimeout(async () => {
           if (IS_TESTING === 'true') return;
 
-          logger.info('Setting campaign check interval');
-          checkAndRun();
-          intervalRef.current = setInterval(checkAndRun, REFETCH_INTERVAL);
+          // Stop checking for promo sheets if the exp. flag is toggled off
+          if (!remotePromoSheets) {
+            logger.info('Campaigns: remote promo sheets is disabled');
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
+
+            return;
+          }
+
+          // only run the check for feature unlocks once
+          if (!hasRunFeatureUnlockChecks) {
+            await runFeatureUnlockChecks();
+            setHasRunFeatureUnlockChecks(true);
+          }
+
+          logger.info('Campaigns: Setting campaign check interval');
+          checkForCampaign();
+          intervalRef.current = setInterval(checkForCampaign, REFETCH_INTERVAL);
         }, 2_000);
       });
     };
@@ -79,7 +72,7 @@ export const RemotePromoSheetProvider = ({
       campaigns.remove(['lastShownTimestamp']);
       campaigns.set(['isCurrentlyShown'], false);
     };
-  }, [isWalletReady, remotePromoSheets]);
+  }, [isWalletReady, remotePromoSheets, hasRunFeatureUnlockChecks]);
 
   return (
     <RemotePromoSheetContext.Provider value={{ isWalletReady }}>
