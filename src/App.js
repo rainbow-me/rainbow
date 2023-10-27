@@ -76,7 +76,6 @@ import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
-import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -157,11 +156,6 @@ class OldApp extends Component {
       PerformanceMetrics.loadRootAppComponent
     );
     analyticsV2.track(analyticsV2.event.applicationDidMount);
-
-    /**
-     * This must be saved in the store as early as possible
-     */
-    await saveFCMToken();
 
     /**
      * Needs to be called AFTER FCM token is loaded
