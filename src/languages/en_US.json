@@ -2243,6 +2243,7 @@
       "available_networks": "Available Networks",
       "change_network": "Change Network",
       "connected_apps": "Connected apps",
+      "no_connected_apps": "No Connected apps yet 😢",
       "disconnect": "Disconnect",
       "go_back_to_your_browser": "Go back to your browser",
       "paste_uri": {

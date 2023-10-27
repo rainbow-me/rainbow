@@ -294,7 +294,7 @@ export default function ButtonPressAnimation({
   wrapperStyle,
   hapticType = 'selection',
   enableHapticFeedback = true,
-  disallowInterruption = true,
+  disallowInterruption = false,
 }: Props) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),

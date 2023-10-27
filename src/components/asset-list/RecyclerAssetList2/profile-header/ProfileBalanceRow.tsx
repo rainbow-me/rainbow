@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Heading } from '@/design-system';
-import { AppState } from '@/redux/store';
 
 export const ProfileBalanceRowHeight = 24;
 
-export function ProfileBalanceRow({ totalValue }: { totalValue: string }) {
-  const isLoadingAssets = useSelector(
-    (state: AppState) => state.data.isLoadingAssets
-  );
-
+export function ProfileBalanceRow({
+  totalValue,
+  isLoadingUserAssets,
+}: {
+  totalValue: string;
+  isLoadingUserAssets: boolean;
+}) {
   const placeholderHeight = ProfileBalanceRowHeight;
   const placeholderWidth = 200;
 
   return (
     <>
-      {isLoadingAssets ? (
+      {isLoadingUserAssets ? (
         <Box
           height={{ custom: placeholderHeight }}
           width={{ custom: placeholderWidth }}

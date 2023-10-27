@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.7] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.7)
+
+### Added
+
+- points v0
+- prompt app reviews
+- bug fixes
+
 ## [1.9.6] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.6)
 
 ### Added

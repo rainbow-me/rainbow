@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import { compact, startCase } from 'lodash';
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { getRandomColor } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -22,6 +21,7 @@ import { isValidDomainFormat } from '@/helpers/validators';
 import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useUserAsset } from '@/resources/assets/useUserAsset';
 import {
   abbreviations,
   ethereumUtils,
@@ -202,11 +202,10 @@ export default function TransactionCoinRow({ item, ...props }) {
     }
   }, [accountAddress, contact, item, navigate]);
 
-  const mainnetAddress = useSelector(
-    state =>
-      state.data.accountAssetsData?.[`${item.address}_${item.network}`]
-        ?.mainnet_address
+  const { data: accountAsset } = useUserAsset(
+    `${item.address}_${item.network}`
   );
+  const mainnetAddress = accountAsset?.mainnetAddress;
 
   return (
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>

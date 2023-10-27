@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -35,6 +35,8 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
+import { IS_ANDROID } from '@/env';
+import ContextMenu from '@/components/context-menu/ContextMenu.android';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -44,6 +46,92 @@ enum AnotherENSEnum {
 const topPadding = android ? 29 : 19;
 
 const minHeight = 740;
+
+type ContextMenuRendererProps = {
+  children: React.ReactNode;
+  handleSelectExistingName: () => void;
+  handleNavigateToSearch: () => void;
+};
+
+const ContextMenuRenderer = ({
+  children,
+  handleSelectExistingName,
+  handleNavigateToSearch,
+}: ContextMenuRendererProps) => {
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          actionKey: AnotherENSEnum.my_ens,
+          actionTitle: lang.t('profiles.intro.my_ens_names'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'rectangle.stack.badge.person.crop',
+          },
+        },
+        {
+          actionKey: AnotherENSEnum.search,
+          actionTitle: lang.t('profiles.intro.search_new_ens'),
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'magnifyingglass',
+          },
+        },
+      ] as MenuActionConfig[],
+      menuTitle: '',
+    };
+  }, []);
+
+  const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === AnotherENSEnum.my_ens) {
+        handleSelectExistingName();
+      } else if (actionKey === AnotherENSEnum.search) {
+        handleNavigateToSearch();
+      }
+    },
+    [handleNavigateToSearch, handleSelectExistingName]
+  );
+
+  const handlePressActionSheet = useCallback(
+    (buttonIndex: number) => {
+      switch (buttonIndex) {
+        case 0:
+          handleSelectExistingName();
+          break;
+        case 1:
+          handleNavigateToSearch();
+          break;
+      }
+    },
+    [handleNavigateToSearch, handleSelectExistingName]
+  );
+
+  if (IS_ANDROID) {
+    return (
+      <ContextMenu
+        activeOpacity={0}
+        cancelButtonIndex={menuConfig.menuItems.length - 1}
+        dynamicOptions={undefined}
+        onPressActionSheet={handlePressActionSheet}
+        options={menuConfig.menuItems.map(i => i.actionTitle)}
+      >
+        <View>{children}</View>
+      </ContextMenu>
+    );
+  }
+
+  return (
+    <ContextMenuButton
+      menuConfig={menuConfig}
+      onPressMenuItem={handlePressMenuItem}
+      useActionSheetFallback={false}
+    >
+      {children}
+    </ContextMenuButton>
+  );
+};
 
 export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
@@ -63,6 +151,8 @@ export default function ENSIntroSheet() {
   const { data: ensAvatar } = useENSAvatar(uniqueDomain?.name || '', {
     enabled: Boolean(uniqueDomain?.name),
   });
+
+  console.log(nonPrimaryDomains.length);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -120,42 +210,6 @@ export default function ENSIntroSheet() {
       },
     });
   }, [navigate, navigateToAssignRecords]);
-
-  const menuConfig = useMemo(() => {
-    return {
-      menuItems: [
-        {
-          actionKey: AnotherENSEnum.my_ens,
-          actionTitle: lang.t('profiles.intro.my_ens_names'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'rectangle.stack.badge.person.crop',
-          },
-        },
-        {
-          actionKey: AnotherENSEnum.search,
-          actionTitle: lang.t('profiles.intro.search_new_ens'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'magnifyingglass',
-          },
-        },
-      ] as MenuActionConfig[],
-      menuTitle: '',
-    };
-  }, []);
-
-  const handlePressMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === AnotherENSEnum.my_ens) {
-        handleSelectExistingName();
-      } else if (actionKey === AnotherENSEnum.search) {
-        handleNavigateToSearch();
-      }
-    },
-    [handleNavigateToSearch, handleSelectExistingName]
-  );
 
   return (
     <Box
@@ -292,12 +346,11 @@ export default function ENSIntroSheet() {
                             />
                           )}
                           {nonPrimaryDomains?.length > 0 ? (
-                            <ContextMenuButton
-                              menuConfig={menuConfig}
-                              {...(android ? { handlePressMenuItem } : {})}
-                              isMenuPrimaryAction
-                              onPressMenuItem={handlePressMenuItem}
-                              useActionSheetFallback={false}
+                            <ContextMenuRenderer
+                              handleNavigateToSearch={handleNavigateToSearch}
+                              handleSelectExistingName={
+                                handleSelectExistingName
+                              }
                             >
                               <SheetActionButton
                                 color={colors.transparent}
@@ -309,7 +362,7 @@ export default function ENSIntroSheet() {
                                 textSize="lmedium"
                                 weight="bold"
                               />
-                            </ContextMenuButton>
+                            </ContextMenuRenderer>
                           ) : (
                             <SheetActionButton
                               color={colors.transparent}
