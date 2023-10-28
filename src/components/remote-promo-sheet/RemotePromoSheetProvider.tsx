@@ -7,13 +7,14 @@ import React, {
 } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { InteractionManager } from 'react-native';
+import { noop } from 'lodash';
+
 import { REMOTE_PROMO_SHEETS, useExperimentalFlag } from '@/config';
 import { logger } from '@/logger';
 import { campaigns } from '@/storage';
 import { checkForCampaign } from '@/components/remote-promo-sheet/checkForCampaign';
 import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
 import { runLocalCampaignChecks } from './localCampaignChecks';
-import { noop } from 'lodash';
 
 interface WalletReadyContext {
   isWalletReady: boolean;

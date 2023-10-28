@@ -87,6 +87,8 @@ export async function fetchNftOffers({
     sortBy: SortCriterion.TopBidValue,
   });
 
+  console.log(data);
+
   if (!data?.nftOffers) {
     return null;
   }

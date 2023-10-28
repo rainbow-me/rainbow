@@ -12,6 +12,8 @@ import { campaigns } from '@/storage';
 import { delay } from '@/utils/delay';
 import { Linking } from 'react-native';
 import Routes from '@/navigation/routesNames';
+import { Language } from '@/languages';
+import { useAccountSettings } from '@/hooks';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;
@@ -25,6 +27,10 @@ const enum ButtonType {
   External = 'External',
 }
 
+export const convertLanguageToLocale = (language: Language) => {
+  return language.replace('_', '-');
+};
+
 export function RemotePromoSheet() {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
@@ -32,6 +38,7 @@ export function RemotePromoSheet() {
     RouteProp<RootStackParamList, 'RemotePromoSheet'>
   >();
   const { campaignId, campaignKey } = params;
+  const { language } = useAccountSettings();
 
   useEffect(() => {
     return () => {
@@ -39,9 +46,12 @@ export function RemotePromoSheet() {
     };
   }, []);
 
+  console.log(language, convertLanguageToLocale(language as Language));
+
   const { data, error } = usePromoSheetQuery(
     {
       id: campaignId,
+      locale: convertLanguageToLocale(language as Language),
     },
     {
       enabled: !!campaignId,

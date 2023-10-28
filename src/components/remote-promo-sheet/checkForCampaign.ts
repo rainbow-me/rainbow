@@ -107,6 +107,7 @@ export const shouldPromptCampaign = async (
   logger.info(
     `Campaigns: Checking if we should prompt campaign ${campaignKey}`
   );
+
   // If the campaign has been viewed already or it's the first app launch, exit early
   if (hasShown) {
     logger.info(`Campaigns: User has already been shown ${campaignKey}`);
