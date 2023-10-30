@@ -1,12 +1,9 @@
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import useAccountSettings from './useAccountSettings';
 import useGenericAsset from './useGenericAsset';
 import { AssetType } from '@/entities';
 import { parseAssetNative } from '@/parsers';
-import { AppState } from '@/redux/store';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@/references';
+import { useUserAsset } from '@/resources/assets/useUserAsset';
 
 const getZeroEth = () => {
   return {
@@ -28,22 +25,6 @@ const getZeroEth = () => {
   };
 };
 
-export const accountAssetsDataSelector = (state: AppState) =>
-  state.data.accountAssetsData;
-const uniqueIdSelector = (_: AppState, uniqueId: string) => uniqueId;
-
-const accountAssetDataSelector = createSelector(
-  accountAssetsDataSelector,
-  uniqueIdSelector,
-  (accountAssetsData, uniqueId) => accountAssetsData?.[uniqueId]
-);
-
-const makeAccountAssetSelector = () =>
-  createSelector(
-    accountAssetDataSelector,
-    accountAsset => accountAsset ?? null
-  );
-
 // this is meant to be used for assets under balances
 // with a fallback for generic assets
 // and an ETH placeholder
@@ -52,10 +33,8 @@ export default function useAccountAsset(
   uniqueId: string,
   nativeCurrency: string | undefined = undefined
 ) {
-  const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
-  const accountAsset = useSelector((state: AppState) =>
-    selectAccountAsset(state, uniqueId)
-  );
+  const { data: accountAsset } = useUserAsset(uniqueId);
+
   const genericAssetBackup = useGenericAsset(uniqueId);
 
   // this is temporary for FastBalanceCoinRow to make a tiny bit faster

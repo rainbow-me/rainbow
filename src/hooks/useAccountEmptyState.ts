@@ -1,17 +1,15 @@
 import { useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import {
   getAccountEmptyState,
   saveAccountEmptyState,
 } from '../handlers/localstorage/accountLocal';
 import useAccountSettings from './useAccountSettings';
-import { AppState } from '@/redux/store';
 
-export default function useAccountEmptyState(isSectionsEmpty: boolean) {
+export default function useAccountEmptyState(
+  isSectionsEmpty: boolean,
+  isLoadingUserAssets: boolean
+) {
   const { network, accountAddress } = useAccountSettings();
-  const isLoadingAssets = useSelector(
-    (state: AppState) => state.data.isLoadingAssets
-  );
   const isAccountEmptyInStorage = useMemo(
     () => getAccountEmptyState(accountAddress, network),
     [accountAddress, network]
@@ -19,18 +17,23 @@ export default function useAccountEmptyState(isSectionsEmpty: boolean) {
   const isEmpty: { [address: string]: boolean | undefined } = useMemo(
     () => ({
       ...isEmpty,
-      [accountAddress]: isLoadingAssets
+      [accountAddress]: isLoadingUserAssets
         ? isAccountEmptyInStorage
         : isSectionsEmpty,
     }),
-    [accountAddress, isAccountEmptyInStorage, isLoadingAssets, isSectionsEmpty]
+    [
+      accountAddress,
+      isAccountEmptyInStorage,
+      isLoadingUserAssets,
+      isSectionsEmpty,
+    ]
   );
 
   useEffect(() => {
-    if (!isLoadingAssets) {
+    if (!isLoadingUserAssets) {
       saveAccountEmptyState(false, accountAddress, network);
     }
-  }, [accountAddress, isLoadingAssets, isSectionsEmpty, network]);
+  }, [accountAddress, isLoadingUserAssets, isSectionsEmpty, network]);
 
   return {
     isEmpty: isEmpty[accountAddress],

@@ -228,18 +228,15 @@ const MintSheet = () => {
     updateTxFee,
     startPollingGasFees,
     stopPollingGasFees,
-    isSufficientGas,
-    isValidGas,
     getTotalGasPrice,
   } = useGas();
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
-
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
   const isMintingAvailable =
     !(isReadOnlyWallet || isHardwareWallet) &&
-    (mintCollection.isMintingPublicSale || price) &&
+    !!mintCollection.publicMintInfo &&
     !gasError;
 
   const imageColor =
@@ -269,10 +266,14 @@ const MintSheet = () => {
           )
         )?.balance?.amount ?? 0;
       const txFee = getTotalGasPrice();
+      const txFeeWithBuffer = multiply(txFee, 1.2);
       const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
       setInsufficientEth(
-        greaterThanOrEqualTo(add(txFee, totalMintPrice), nativeBalance)
+        greaterThanOrEqualTo(
+          add(txFeeWithBuffer, totalMintPrice),
+          nativeBalance
+        )
       );
     };
     checkInsufficientEth();
@@ -339,13 +340,25 @@ const MintSheet = () => {
                   to: item.data?.to,
                   from: item.data?.from,
                   data: item.data?.data,
-                  value: multiply(price.amount || '0', quantity),
+                  value: item.data?.value,
                 };
-
                 const gas = await estimateGas(tx, provider);
+
+                let l1GasFeeOptimism = null;
+                // add l1Fee for OP Chains
+                if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
+                  l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+                    tx,
+                    provider
+                  );
+                }
                 if (gas) {
                   setGasError(false);
-                  updateTxFee(gas, null);
+                  if (l1GasFeeOptimism) {
+                    updateTxFee(gas, null, l1GasFeeOptimism);
+                  } else {
+                    updateTxFee(gas, null);
+                  }
                 }
               });
             });
@@ -363,7 +376,6 @@ const MintSheet = () => {
     accountAddress,
     currentNetwork,
     mintCollection.id,
-    price,
     quantity,
     updateTxFee,
   ]);
