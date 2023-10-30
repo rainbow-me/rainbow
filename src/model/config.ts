@@ -1,21 +1,6 @@
 import remoteConfig from '@react-native-firebase/remote-config';
 import { captureException } from '@sentry/react-native';
-import {
-  ARBITRUM_MAINNET_RPC,
-  DATA_API_KEY,
-  DATA_ENDPOINT,
-  DATA_ORIGIN,
-  ETHEREUM_GOERLI_RPC,
-  ETHEREUM_GOERLI_RPC_DEV,
-  ETHEREUM_MAINNET_RPC,
-  ETHEREUM_MAINNET_RPC_DEV,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-  BASE_MAINNET_RPC,
-  BASE_MAINNET_RPC_DEV,
-  BSC_MAINNET_RPC,
-  ZORA_MAINNET_RPC,
-} from 'react-native-dotenv';
+import { DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
 import {
   getNetwork,
   saveNetwork,
@@ -26,22 +11,14 @@ import Logger from '@/utils/logger';
 
 export interface RainbowConfig
   extends Record<string, string | boolean | number> {
-  arbitrum_mainnet_rpc: string;
-  bsc_mainnet_rpc: string;
   data_api_key: string;
   data_endpoint: string;
   data_origin: string;
   default_slippage_bips: string;
-  ethereum_goerli_rpc: string;
-  ethereum_mainnet_rpc: string;
   f2c_enabled: boolean;
   flashbots_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
-  optimism_mainnet_rpc: string;
-  polygon_mainnet_rpc: string;
-  zora_mainnet_rpc: string;
-  base_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -69,10 +46,10 @@ export interface RainbowConfig
   base_swaps_enabled: boolean;
   mints_enabled: boolean;
   points_enabled: boolean;
+  rpc_proxy_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
-  arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
@@ -85,19 +62,10 @@ const DEFAULT_CONFIG: RainbowConfig = {
     base: 200,
     zora: 200,
   }),
-  ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_mainnet_rpc: __DEV__
-    ? ETHEREUM_MAINNET_RPC_DEV
-    : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
-  optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
-  polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
-  bsc_mainnet_rpc: BSC_MAINNET_RPC,
-  zora_mainnet_rpc: ZORA_MAINNET_RPC,
-  base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
@@ -129,6 +97,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   base_swaps_enabled: false,
   mints_enabled: true,
   points_enabled: true,
+  rpc_proxy_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -182,7 +151,8 @@ const init = async () => {
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled' ||
         key === 'mints_enabled' ||
-        key === 'points_enabled'
+        key === 'points_enabled' ||
+        key === 'rpc_proxy_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

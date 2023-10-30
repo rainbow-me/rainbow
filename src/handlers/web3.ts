@@ -13,7 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { RainbowConfig } from '../model/config';
+import config from '@/model/config';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
@@ -41,8 +41,21 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { IS_DEV, IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
+import {
+  ARBITRUM_MAINNET_RPC,
+  BASE_MAINNET_RPC,
+  BASE_MAINNET_RPC_DEV,
+  BSC_MAINNET_RPC,
+  ETHEREUM_GOERLI_RPC,
+  ETHEREUM_GOERLI_RPC_DEV,
+  ETHEREUM_MAINNET_RPC,
+  ETHEREUM_MAINNET_RPC_DEV,
+  OPTIMISM_MAINNET_RPC,
+  POLYGON_MAINNET_RPC,
+  ZORA_MAINNET_RPC,
+} from 'react-native-dotenv';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -55,22 +68,38 @@ export const networkProviders: {
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
+ * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
  */
-export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) =>
-  `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
-    customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
-  }`;
-
-// const rpcEndpoints: { [network in Network]?: string } = {
-//   [Network.mainnet]: proxyRpcEndpoint(getNetworkObj(Network.mainnet).id),
-//   [Network.goerli]: proxyRpcEndpoint(getNetworkObj(Network.goerli).id),
-//   [Network.optimism]: proxyRpcEndpoint(getNetworkObj(Network.optimism).id),
-//   [Network.arbitrum]: proxyRpcEndpoint(getNetworkObj(Network.arbitrum).id),
-//   [Network.polygon]: proxyRpcEndpoint(getNetworkObj(Network.polygon).id),
-//   [Network.bsc]: proxyRpcEndpoint(getNetworkObj(Network.bsc).id),
-//   [Network.zora]: proxyRpcEndpoint(getNetworkObj(Network.zora).id),
-//   [Network.base]: proxyRpcEndpoint(getNetworkObj(Network.base).id),
-// };
+export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
+  if (config.rpc_proxy_enabled) {
+    return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
+      customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
+    }`;
+  } else {
+    if (customEndpoint) return customEndpoint;
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    switch (network) {
+      case Network.arbitrum:
+        return ARBITRUM_MAINNET_RPC;
+      case Network.goerli:
+        return IS_DEV ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC;
+      case Network.optimism:
+        return OPTIMISM_MAINNET_RPC;
+      case Network.polygon:
+        return POLYGON_MAINNET_RPC;
+      case Network.base:
+        return IS_DEV ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC;
+      case Network.bsc:
+        return BSC_MAINNET_RPC;
+      case Network.zora:
+        return ZORA_MAINNET_RPC;
+      case Network.gnosis:
+      case Network.mainnet:
+      default:
+        return IS_DEV ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC;
+    }
+  }
+};
 
 /**
  * Gas parameter types returned by `getTransactionGasParams`.
@@ -176,7 +205,10 @@ export const isTestnetNetwork = (network: Network): boolean => {
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
+    proxyRpcEndpoint(
+      1,
+      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
+    ),
     Network.mainnet
   );
 };
