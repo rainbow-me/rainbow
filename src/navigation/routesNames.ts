@@ -71,6 +71,7 @@ const Routes = {
   SEND_SHEET_NAVIGATOR: 'SendSheetNavigator',
   SETTINGS_SHEET: 'SettingsSheet',
   SHOWCASE_SHEET: 'ShowcaseSheet',
+  SIGN_TRANSACTION_SHEET: 'SignTransactionSheet',
   SPEED_UP_AND_CANCEL_BOTTOM_SHEET: 'SpeedUpAndCancelBootomSheet',
   SPEED_UP_AND_CANCEL_SHEET: 'SpeedUpAndCancelSheet',
   STACK: 'Stack',

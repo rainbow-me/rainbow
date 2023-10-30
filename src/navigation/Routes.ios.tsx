@@ -21,6 +21,7 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
+import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
@@ -57,6 +58,7 @@ import {
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
+  signTransactionSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
@@ -420,6 +422,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
+      />
+      <NativeStack.Screen
+        component={SignTransactionSheet}
+        name={Routes.SIGN_TRANSACTION_SHEET}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}

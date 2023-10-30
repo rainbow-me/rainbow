@@ -82,6 +82,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -385,6 +386,10 @@ function BSNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
+      />
+      <BSStack.Screen
+        name={Routes.SIGN_TRANSACTION_SHEET}
+        component={SignTransactionSheet}
       />
     </BSStack.Navigator>
   );

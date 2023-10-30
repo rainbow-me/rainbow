@@ -19,6 +19,10 @@ export const ChainBadgeSizeConfigs = {
     containerSize: 30,
     iconSize: 14,
   },
+  xtiny: {
+    containerSize: 26.4,
+    iconSize: 12,
+  },
 } as const;
 
 export type ChainBadgeType = keyof typeof ChainBadgeSizeConfigs;
