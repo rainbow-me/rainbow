@@ -88,7 +88,7 @@ export const updateNonce = (
     saveNonceManager(updatedNonceManager);
   }
 };
-export const resetNonce = (accountAddress: EthereumAddress) => async (
+export const resetNonces = (accountAddress: EthereumAddress) => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
