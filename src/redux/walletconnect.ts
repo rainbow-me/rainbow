@@ -30,6 +30,7 @@ import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworks } from '@/networks';
+import { Verify } from '@walletconnect/types';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -161,6 +162,7 @@ export interface WalletconnectApprovalSheetRouteParams {
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
+  verifiedData?: Verify.Context['verified'];
 }
 
 /**
