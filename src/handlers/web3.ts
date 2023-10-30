@@ -41,21 +41,8 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { IS_DEV, IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
+import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
-import {
-  ARBITRUM_MAINNET_RPC,
-  BASE_MAINNET_RPC,
-  BASE_MAINNET_RPC_DEV,
-  BSC_MAINNET_RPC,
-  ETHEREUM_GOERLI_RPC,
-  ETHEREUM_GOERLI_RPC_DEV,
-  ETHEREUM_MAINNET_RPC,
-  ETHEREUM_MAINNET_RPC_DEV,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-  ZORA_MAINNET_RPC,
-} from 'react-native-dotenv';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -80,23 +67,23 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     switch (network) {
       case Network.arbitrum:
-        return ARBITRUM_MAINNET_RPC;
+        return config.arbitrum_mainnet_rpc;
       case Network.goerli:
-        return IS_DEV ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC;
+        return config.ethereum_goerli_rpc;
       case Network.optimism:
-        return OPTIMISM_MAINNET_RPC;
+        return config.optimism_mainnet_rpc;
       case Network.polygon:
-        return POLYGON_MAINNET_RPC;
+        return config.polygon_mainnet_rpc;
       case Network.base:
-        return IS_DEV ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC;
+        return config.base_mainnet_rpc;
       case Network.bsc:
-        return BSC_MAINNET_RPC;
+        return config.bsc_mainnet_rpc;
       case Network.zora:
-        return ZORA_MAINNET_RPC;
+        return config.zora_mainnet_rpc;
       case Network.gnosis:
       case Network.mainnet:
       default:
-        return IS_DEV ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC;
+        return config.ethereum_mainnet_rpc;
     }
   }
 };
