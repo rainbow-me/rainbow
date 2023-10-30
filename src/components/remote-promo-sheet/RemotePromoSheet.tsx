@@ -28,6 +28,10 @@ const enum ButtonType {
 }
 
 export const convertLanguageToLocale = (language: Language) => {
+  if (language === Language.AR_AR) {
+    return 'ar';
+  }
+
   return language.replace('_', '-');
 };
 
@@ -45,8 +49,6 @@ export function RemotePromoSheet() {
       campaigns.set(['isCurrentlyShown'], false);
     };
   }, []);
-
-  console.log(language, convertLanguageToLocale(language as Language));
 
   const { data, error } = usePromoSheetQuery(
     {

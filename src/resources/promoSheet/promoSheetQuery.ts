@@ -23,11 +23,7 @@ export type PromoSheetArgs = {
 // Query Key
 
 const promoSheetQueryKey = ({ id, locale = 'en-US' }: PromoSheetArgs) =>
-  createQueryKey(
-    'promoSheetCollection',
-    { id, locale },
-    { persisterVersion: 1 }
-  );
+  createQueryKey('promoSheet', { id, locale }, { persisterVersion: 1 });
 
 type PromoSheetQueryKey = ReturnType<typeof promoSheetQueryKey>;
 
@@ -38,6 +34,9 @@ async function promoSheetQueryFunction({
   queryKey: [{ id, locale = 'en-US' }],
 }: QueryFunctionArgs<typeof promoSheetQueryKey>) {
   const data = await arcDevClient.getPromoSheet({ id, locale });
+
+  console.log(JSON.stringify(data, null, 2));
+  console.log(locale);
   return data;
 }
 
