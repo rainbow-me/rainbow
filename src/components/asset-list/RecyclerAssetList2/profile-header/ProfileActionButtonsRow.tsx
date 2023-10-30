@@ -273,12 +273,18 @@ export function MoreButton() {
     Clipboard.setString(accountAddress);
   }, [accountAddress, isToastActive, setToastActive]);
 
+  const { navigate } = useNavigation();
+  const navigateToSigningSheet = React.useCallback(() => {
+    navigate(Routes.SIGN_TRANSACTION_SHEET);
+  }, [navigate]);
+
   return (
     <>
       {/* @ts-expect-error JavaScript component */}
       <CopyFloatingEmojis textToCopy={accountAddress}>
         <ActionButton
-          onPress={handlePressCopy}
+          // onPress={handlePressCopy}
+          onPress={navigateToSigningSheet}
           icon="􀐅"
           testID="receive-button"
         >
