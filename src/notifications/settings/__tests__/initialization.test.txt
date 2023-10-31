@@ -360,10 +360,9 @@ describe('Notification settings initialization', () => {
         initState
       );
 
-      // changed the current type to "owned" and old to "watched" (previous state), also wallet now is not initialized since it needs to re-subscribe
+      // changed the current type to "owned", also wallet now is not initialized since it needs to re-subscribe
       const changedState = {
         type: WalletNotificationRelationship.OWNER,
-        oldType: WalletNotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
       };
 
@@ -461,8 +460,6 @@ describe('Notification settings initialization', () => {
       const stateBefore = {
         address: TEST_ADDRESS_1,
         type: WalletNotificationRelationship.OWNER,
-        // has old type as "watcher" which signifies that it was previously watched
-        oldType: WalletNotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: false,
@@ -477,7 +474,6 @@ describe('Notification settings initialization', () => {
         ...stateBefore,
         successfullyFinishedInitialSubscription: true,
         enabled: true,
-        oldType: undefined,
       };
       expect(
         JSON.parse(
@@ -532,7 +528,6 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           type: WalletNotificationRelationship.OWNER,
-          oldType: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
