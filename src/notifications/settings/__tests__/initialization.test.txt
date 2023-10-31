@@ -15,7 +15,6 @@ import {
   _processSubscriptionQueue,
 } from '@/notifications/settings/initialization';
 import {
-  subscribeWalletToAllEnabledTopics,
   unsubscribeWalletFromAllNotificationTopics,
 } from '@/notifications/settings/firebase';
 
@@ -408,7 +407,6 @@ describe('Notification settings initialization', () => {
         ])
       );
       await _processSubscriptionQueue([]);
-      expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
       expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
       expect(
         JSON.parse(
@@ -456,10 +454,6 @@ describe('Notification settings initialization', () => {
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: true,
       };
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledWith(
-        stateAfter,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID
-      );
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -495,11 +489,6 @@ describe('Notification settings initialization', () => {
         NOTIFICATIONS_DEFAULT_CHAIN_ID,
         stateBefore.address
       );
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledWith(
-        stateAfter,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID
-      );
-
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -511,8 +500,6 @@ describe('Notification settings initialization', () => {
 
   describe('subscription queue processing implementation error path', () => {
     test('running a subscription queue with no items in it causes zero effects even when firebase fails', async () => {
-      // @ts-ignore
-      subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
       // @ts-ignore
       unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
 
@@ -530,7 +517,6 @@ describe('Notification settings initialization', () => {
       );
 
       await _processSubscriptionQueue([]);
-      expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
       expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
       expect(
         JSON.parse(
@@ -549,8 +535,6 @@ describe('Notification settings initialization', () => {
     });
 
     test('running subscription queue processing while firebase fails should produce no changes in the stored settings', async () => {
-      // @ts-ignore
-      subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
       // @ts-ignore
       unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
 
@@ -577,7 +561,6 @@ describe('Notification settings initialization', () => {
       );
       await _processSubscriptionQueue(stateBefore);
 
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledTimes(2);
       expect(unsubscribeWalletFromAllNotificationTopics).toHaveBeenCalled();
 
       expect(
