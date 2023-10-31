@@ -14,6 +14,18 @@ export type GlobalNotificationTopics = {
   [key: GlobalNotificationTopicType]: boolean;
 };
 
+export type NotificationSubscriptionWalletsType = {
+  type: NotificationRelationshipType;
+  chain_id: number;
+  address: string;
+  transaction_action_types: NotificationTopicType[];
+};
+
+export type NotificationSubscriptionType = {
+  firebase_token: string;
+  wallets: NotificationSubscriptionWalletsType[];
+};
+
 export type WalletNotificationSettings = {
   address: string;
   topics: WalletNotificationTopics;

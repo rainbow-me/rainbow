@@ -160,6 +160,8 @@ export const meteorologySupportedChainIds = filterChainIdsByService(services => 
 
 export const supportedSwapChainIds = filterChainIdsByService(services => services.swap.enabled);
 
+export const supportedNotificationsChainIds = filterChainIdsByService(services => services.notifications.enabled);
+
 export const supportedApprovalsChainIds = filterChainIdsByService(services => services.addys.approvals);
 
 export const supportedTransactionsChainIds = filterChainIdsByService(services => services.addys.transactions);
