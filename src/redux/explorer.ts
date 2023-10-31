@@ -189,31 +189,6 @@ const portfolioSubscription = (
 ];
 
 /**
- * Configures a notifications subscription.
- *
- * @param address The address to subscribe to.
- * @returns Arguments for an `emit` function call.
- */
-export const notificationsSubscription = (address: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const { addressSocket } = getState().explorer;
-
-  const payload: SocketEmitArguments = [
-    'get',
-    {
-      payload: {
-        address,
-        action: 'subscribe',
-      },
-      scope: ['notifications'],
-    },
-  ];
-  addressSocket?.emit(...payload);
-};
-
-/**
  * Configures an asset price subscription.
  *
  * @param tokenAddresses The token addresses to watch.
