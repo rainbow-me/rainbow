@@ -124,7 +124,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         type: entry.relationship,
         successfullyFinishedInitialSubscription: false,
-        oldType: alreadySavedEntry.settings.type,
       };
       newSettings[alreadySavedEntry.index] = updatedSettingsEntry;
       subscriptionQueue.push(updatedSettingsEntry);
@@ -133,8 +132,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
     // or a wallet was imported after being watched previously and we haven't properly subscribed it yet
     else if (
       alreadySavedEntry !== undefined &&
-      (alreadySavedEntry.settings?.oldType !== undefined ||
-        !alreadySavedEntry.settings.successfullyFinishedInitialSubscription)
+      !alreadySavedEntry.settings.successfullyFinishedInitialSubscription
     ) {
       subscriptionQueue.push(alreadySavedEntry.settings);
     }
