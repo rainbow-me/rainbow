@@ -1,8 +1,9 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
 import { Network } from '@/helpers';
-import { useAssetsInWallet, useCoinListEditOptions } from '@/hooks';
+import { useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import {
   EthereumAddress,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
@@ -22,7 +23,8 @@ export const useSwappableUserAssets = (params: {
   outputCurrency: SwappableAsset;
 }) => {
   const { outputCurrency } = params;
-  const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
+  const { data: sortedAssets } = useSortedUserAssets();
+  const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
   const [swappableAssets, setSwappableAssets] = useState<SwappableAddresses>({
     [Network.mainnet]: [],

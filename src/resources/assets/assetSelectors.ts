@@ -1,20 +1,28 @@
+import { RainbowAddressAssets } from './types';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
-import { createSelector } from 'reselect';
+import { ParsedAddressAsset } from '@/entities';
 import { parseAssetsNative } from '@/parsers';
 
 const EMPTY_ARRAY: any = [];
 
-const accountAssetsDataSelector = (state: any) => state.data.accountAssetsData;
-const isLoadingAssetsSelector = (state: any) => state.data.isLoadingAssets;
-const nativeCurrencySelector = (state: any) => state.settings.nativeCurrency;
+export function selectUserAssetWithUniqueId(uniqueId: string) {
+  return (accountAssets: RainbowAddressAssets) => {
+    return accountAssets?.[uniqueId];
+  };
+}
+
+export function selectSortedUserAssets(nativeCurrency: string) {
+  return (accountAssets: RainbowAddressAssets) => {
+    return sortAssetsByNativeAmount(accountAssets, nativeCurrency);
+  };
+}
 
 const sortAssetsByNativeAmount = (
-  accountAssetsData: any,
-  isLoadingAssets: any,
-  nativeCurrency: any
-) => {
-  let assetsNativePrices = Object.values(accountAssetsData);
+  accountAssets: RainbowAddressAssets,
+  nativeCurrency: string
+): ParsedAddressAsset[] => {
+  let assetsNativePrices = Object.values(accountAssets);
 
   if (!isEmpty(assetsNativePrices)) {
     assetsNativePrices = parseAssetsNative(assetsNativePrices, nativeCurrency);
@@ -40,10 +48,7 @@ const sortAssetsByNativeAmount = (
 
   const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
-  return {
-    isLoadingAssets,
-    sortedAssets,
-  };
+  return sortedAssets;
 };
 
 const groupAssetsByMarketValue = (assets: any) =>
@@ -62,8 +67,3 @@ const groupAssetsByMarketValue = (assets: any) =>
       noValue: [],
     }
   );
-
-export const sortAssetsByNativeAmountSelector = createSelector(
-  [accountAssetsDataSelector, isLoadingAssetsSelector, nativeCurrencySelector],
-  sortAssetsByNativeAmount
-);

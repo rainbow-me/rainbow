@@ -33,6 +33,7 @@ import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
+const MAX_TEXT_WIDTH = 210;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -165,11 +166,13 @@ export default function SwapSettingsState({ asset }) {
                     // @ts-expect-error
                     onPress={openFlashbotsExplainer}
                     paddingVertical="12px"
+                    style={{ maxWidth: MAX_TEXT_WIDTH }}
                   >
                     <Text
                       color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
+                      numberOfLines={2}
                     >
                       {lang.t('exchange.use_flashbots')}
                       <Text
@@ -210,13 +213,18 @@ export default function SwapSettingsState({ asset }) {
               >
                 <Box
                   borderRadius={20}
-                  style={{ borderColor: colorForAsset, borderWidth: 2 }}
+                  style={{
+                    borderColor: colorForAsset,
+                    borderWidth: 2,
+                    maxWidth: 200,
+                  }}
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
                     <Text
                       color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
+                      numberOfLines={1}
                     >
                       {lang.t('exchange.use_defaults')}
                     </Text>
@@ -230,6 +238,7 @@ export default function SwapSettingsState({ asset }) {
                   ios && slippageRef?.current?.blur();
                   goBack();
                 }}
+                style={{ maxWidth: 130 }}
               >
                 <Box
                   borderRadius={20}
@@ -240,6 +249,7 @@ export default function SwapSettingsState({ asset }) {
                       color="primary (Deprecated)"
                       size="16px / 22px (Deprecated)"
                       weight="bold"
+                      numberOfLines={1}
                     >
                       {lang.t('exchange.done')}
                     </Text>

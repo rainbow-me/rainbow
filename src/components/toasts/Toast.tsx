@@ -42,7 +42,7 @@ const Container = styled(RowWithMargins).attrs({
   ...position.centeredAsObject,
   backgroundColor: color,
   borderRadius: 20,
-  bottom: (insets.bottom || 40) + 68,
+  bottom: (insets.bottom || 40) + 60,
   maxWidth: deviceWidth - 38,
   position: 'absolute',
   zIndex: 100,
@@ -62,7 +62,7 @@ type Props = PropsWithChildren<{
 export default function Toast({
   children,
   color,
-  distance = 60,
+  distance = 90,
   targetTranslate = 0,
   icon,
   isVisible,

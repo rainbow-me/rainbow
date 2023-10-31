@@ -18,7 +18,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { OfflineToast } from './components/toasts';
@@ -57,9 +56,7 @@ import {
   persistOptions,
   queryClient,
 } from './react-query';
-import { additionalDataUpdateL2AssetBalance } from './redux/additionalAssetsData';
 import store from './redux/store';
-import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -84,7 +81,9 @@ import { migrate } from '@/migrations';
 import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
-import { initializeReservoirClient } from '@/resources/nftOffers/utils';
+import { initializeReservoirClient } from '@/resources/reservoir/client';
+import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -97,7 +96,11 @@ enableScreens();
 const containerStyle = { flex: 1 };
 
 class OldApp extends Component {
-  state = { appState: AppState.currentState, initialRoute: null };
+  state = {
+    appState: AppState.currentState,
+    initialRoute: null,
+    eventSubscription: null,
+  };
 
   /**
    * There's a race condition in Branch's RN SDK. From a cold start, Branch
@@ -142,8 +145,11 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    AppState?.addEventListener('change', this?.handleAppStateChange);
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
+    const eventSub = AppState?.addEventListener(
+      'change',
+      this?.handleAppStateChange
+    );
+    this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
@@ -162,6 +168,17 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
+
+    /**
+     * Launch the review prompt after the app is launched
+     * This is to avoid the review prompt showing up when the app is
+     * launched and not shown yet.
+     */
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+      }, 10_000);
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -182,9 +199,8 @@ class OldApp extends Component {
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
-    rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
-    this.branchListener?.();
+    this.state.eventSubscription.remove();
+    this.branchListener();
   }
 
   identifyFlow = async () => {
@@ -193,10 +209,6 @@ class OldApp extends Component {
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
   };
-
-  async handleTokenListUpdate() {
-    store.dispatch(uniswapPairsInit());
-  }
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
@@ -234,9 +246,7 @@ class OldApp extends Component {
       setTimeout(() => {
         logger.debug('Reloading balances for network', network);
         if (isL2) {
-          if (tx.internalType === TransactionType.trade) {
-            store.dispatch(additionalDataUpdateL2AssetBalance(tx));
-          } else if (tx.internalType !== TransactionType.authorize) {
+          if (tx.internalType !== TransactionType.authorize) {
             // for swaps, we don't want to trigger update balances on unlock txs
             queryClient.invalidateQueries({
               queryKey: userAssetsQueryKey({
@@ -332,6 +342,21 @@ function Root() {
        * `analyticsv2` has all it needs to function.
        */
       analyticsV2.identify({});
+
+      const isReviewInitialized = ls.review.get(['initialized']);
+      if (!isReviewInitialized) {
+        ls.review.set(['hasReviewed'], false);
+        ls.review.set(
+          ['actions'],
+          Object.values(ReviewPromptAction).map(action => ({
+            id: action,
+            numOfTimesDispatched: 0,
+          }))
+        );
+
+        ls.review.set(['timeOfLastPrompt'], 0);
+        ls.review.set(['initialized'], true);
+      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to

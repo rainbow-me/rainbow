@@ -115,6 +115,9 @@ function rowRenderer(
         <ProfileRowWrapper>
           <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
+            isLoadingUserAssets={
+              (data as AssetsHeaderExtraData).isLoadingUserAssets
+            }
           />
         </ProfileRowWrapper>
       );
@@ -127,7 +130,10 @@ function rowRenderer(
     case CellType.NFTS_HEADER:
       return (
         // @ts-expect-error JavaScript component
-        <AssetListHeader title={lang.t(lang.l.account.tab_collectibles)} />
+        <AssetListHeader
+          isSticky={false}
+          title={lang.t(lang.l.account.tab_collectibles)}
+        />
       );
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;

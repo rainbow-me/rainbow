@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import lang from 'i18n-js';
 import { Linking, View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRoute } from '@react-navigation/native';
@@ -49,27 +50,13 @@ import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
-import { nftOffersQueryKey } from '@/resources/nftOffers';
+import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
+import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const RAINBOW_FEE_BIPS = 85;
 const BIPS_TO_DECIMAL_RATIO = 10000;
-const RAINBOW_FEE_ADDRESS_MAINNET =
-  '0x69d6d375de8c7ade7e44446df97f49e661fdad7d';
-const RAINBOW_FEE_ADDRESS_POLYGON =
-  '0xfb9af3db5e19c4165f413f53fe3bbe6226834548';
-
-function getRainbowFeeAddress(network: Network) {
-  switch (network) {
-    case Network.mainnet:
-      return RAINBOW_FEE_ADDRESS_MAINNET;
-    case Network.polygon:
-      return RAINBOW_FEE_ADDRESS_POLYGON;
-    default:
-      return undefined;
-  }
-}
 
 function Row({
   symbol,
@@ -824,9 +811,10 @@ export function NFTSingleOfferSheet() {
                     hideInnerBorder
                     label={
                       insufficientEth
-                        ? i18n.t(
-                            i18n.l.button.confirm_exchange.insufficient_eth
-                          )
+                        ? lang.t('button.confirm_exchange.insufficient_token', {
+                            tokenName: getNetworkObj(offer.network as Network)
+                              .nativeCurrency.symbol,
+                          })
                         : i18n.t(
                             i18n.l.nft_offers.single_offer_sheet.hold_to_sell
                           )

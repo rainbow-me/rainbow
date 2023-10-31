@@ -72,7 +72,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
   }, [navigate, position]);
 
   const depositTokens: CoinStackToken[] = useMemo(() => {
-    let tokens: CoinStackToken[] = [];
+    const tokens: CoinStackToken[] = [];
     position.deposits.forEach((deposit: RainbowDeposit) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({

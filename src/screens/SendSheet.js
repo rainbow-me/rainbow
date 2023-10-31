@@ -59,9 +59,7 @@ import {
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useSendSheetInputRefs,
-  useSortedAccountAssets,
   useTransactionConfirmation,
-  useUpdateAssetOnchainBalance,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
@@ -69,6 +67,7 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -127,8 +126,7 @@ export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
-  const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
-  const { sortedAssets } = useSortedAccountAssets();
+  const { data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -178,6 +176,7 @@ export default function SendSheet(props) {
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
   const [selected, setSelected] = useState({});
+  const [maxEnabled, setMaxEnabled] = useState(false);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
   const [debouncedInput] = useDebounce(currentInput, 500);
@@ -325,17 +324,6 @@ export default function SendSheet(props) {
     };
   }, [stopPollingGasFees]);
 
-  // Recalculate balance when gas price changes
-  useEffect(() => {
-    if (
-      selected?.isNativeAsset &&
-      (prevSelectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0) !==
-        (selectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0)
-    ) {
-      updateMaxInputBalance(selected);
-    }
-  }, [prevSelectedGasFee, selected, selectedGasFee, updateMaxInputBalance]);
-
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
       const assetNetwork = isNft
@@ -374,44 +362,12 @@ export default function SendSheet(props) {
     sendUpdateSelected,
   ]);
 
-  useEffect(() => {
-    if (isEmpty(selected)) return;
-    if (currentProvider?._network?.chainId) {
-      const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-        Number(currentProvider._network.chainId)
-      );
-
-      const assetNetwork = isNft
-        ? selected.network
-        : ethereumUtils.getNetworkFromType(selected.type);
-
-      if (
-        assetNetwork === currentNetwork &&
-        currentProviderNetwork === currentNetwork &&
-        selected.type !== AssetTypes.nft
-      ) {
-        updateAssetOnchainBalanceIfNeeded(
-          selected,
-          accountAddress,
-          currentNetwork,
-          currentProvider,
-          updatedAsset => {
-            // set selected asset with new balance
-            if (!isEqual(selected, updatedAsset)) {
-              setSelected(updatedAsset);
-              updateMaxInputBalance(updatedAsset);
-              sendUpdateAssetAmount('');
-            }
-          }
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, currentProvider, currentNetwork, selected]);
-
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
       if (!isString(newNativeAmount)) return;
+      if (maxEnabled) {
+        setMaxEnabled(false);
+      }
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
@@ -433,22 +389,35 @@ export default function SendSheet(props) {
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [maxInputBalance, selected.decimals, selected?.price?.value]
+    [maxEnabled, maxInputBalance, selected.decimals, selected?.price?.value]
   );
 
-  const sendMaxBalance = useCallback(async () => {
-    const newBalanceAmount = await updateMaxInputBalance(selected);
-    sendUpdateAssetAmount(newBalanceAmount);
-  }, [selected, sendUpdateAssetAmount, updateMaxInputBalance]);
+  useEffect(() => {
+    if (maxEnabled) {
+      const newBalanceAmount = updateMaxInputBalance(selected);
+      sendUpdateAssetAmount(newBalanceAmount);
+    }
+    // we want to listen to the gas fee and update when it changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selected,
+    sendUpdateAssetAmount,
+    updateMaxInputBalance,
+    selectedGasFee,
+    maxEnabled,
+  ]);
 
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
+        if (maxEnabled) {
+          setMaxEnabled(false);
+        }
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
     },
-    [sendUpdateAssetAmount]
+    [maxEnabled, sendUpdateAssetAmount]
   );
 
   useEffect(() => {
@@ -997,13 +966,22 @@ export default function SendSheet(props) {
           <SendAssetList
             hiddenCoins={hiddenCoinsObj}
             nativeCurrency={nativeCurrency}
-            network={network}
-            onSelectAsset={sendUpdateSelected}
-            pinnedCoins={pinnedCoinsObj}
-            savings={savings}
-            sortedAssets={sortedAssets}
-            theme={theme}
-            uniqueTokens={sendableUniqueTokens}
+            nativeCurrencyInputRef={nativeCurrencyInputRef}
+            onChangeAssetAmount={onChangeAssetAmount}
+            onChangeNativeAmount={onChangeNativeAmount}
+            onResetAssetSelection={onResetAssetSelection}
+            selected={selected}
+            sendMaxBalance={() => setMaxEnabled(true)}
+            setLastFocusedInputHandle={setLastFocusedInputHandle}
+            txSpeedRenderer={
+              <GasSpeedButton
+                asset={selected}
+                currentNetwork={currentNetwork}
+                horizontalPadding={0}
+                marginBottom={17}
+                theme={isDarkMode ? 'dark' : 'light'}
+              />
+            }
           />
         ) : (
           <View

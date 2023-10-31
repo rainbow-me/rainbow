@@ -158,7 +158,7 @@ export default function QRScannerScreen() {
                   <EmulatorPasteUriButton />
                 </ScannerHeader>
               )}
-              {true && (
+              {!isEmulator && (
                 <QRCodeScanner
                   flashEnabled={flashEnabled}
                   setFlashEnabled={setFlashEnabled}

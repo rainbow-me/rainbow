@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -81,6 +80,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
+import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
@@ -96,7 +96,11 @@ function MainNavigator() {
       {...stackNavigationConfig}
       screenOptions={defaultScreenStackOptions}
     >
-      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
+      <Stack.Screen
+        component={SwipeNavigator}
+        name={Routes.SWIPE_LAYOUT}
+        options={expandedPreset}
+      />
       <Stack.Screen
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
@@ -117,7 +121,6 @@ function MainNavigator() {
         name={Routes.POSITION_SHEET}
         options={expandedPreset}
       />
-
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -143,6 +146,16 @@ function MainNavigator() {
         options={wcPromptPreset}
       />
       <Stack.Screen
+        component={AddCashSheet}
+        name={Routes.ADD_CASH_SHEET}
+        options={addCashSheet}
+      />
+      <Stack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        options={expandedPreset}
+      />
+      <Stack.Screen
         component={RestoreSheet}
         name={Routes.RESTORE_SHEET}
         {...restoreSheetConfig}
@@ -156,7 +169,12 @@ function MainNavigator() {
       <Stack.Screen
         component={ShowSecretView}
         name="ShowSecretView"
-        //@ts-ignore
+        // @ts-ignore
+        options={bottomSheetPreset}
+      />
+      <Stack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
         options={bottomSheetPreset}
       />
     </Stack.Navigator>
@@ -206,6 +224,7 @@ function BSNavigator() {
         {...learnWebViewScreenConfig}
       />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
+      <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
       <BSStack.Screen
         component={QRScannerScreen}
         name={Routes.QR_SCANNER_SCREEN}
@@ -328,11 +347,6 @@ function BSNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={wcPromptPreset}
       />
     </BSStack.Navigator>
   );

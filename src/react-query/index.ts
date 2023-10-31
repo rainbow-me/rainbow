@@ -9,6 +9,7 @@ export type {
   MutationFunctionResult,
   QueryConfig,
   QueryConfigDeprecated,
+  QueryConfigWithSelect,
   QueryFunctionArgs,
   QueryFunctionResult,
   UseQueryData,

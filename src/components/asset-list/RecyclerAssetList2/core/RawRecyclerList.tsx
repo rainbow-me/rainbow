@@ -23,6 +23,7 @@ import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { UniqueAsset } from '@/entities';
+import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -76,9 +77,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   );
 
   const { accountAddress } = useAccountSettings();
+  const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
-
   const ref = useRef<RecyclerListViewRef>();
 
   useEffect(() => {
@@ -106,6 +107,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     ref.current?.scrollToOffset(0, 0);
     y.setValue(0);
   }, [y, accountAddress]);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    setScrollToTopRef(ref.current);
+  }, [ref, setScrollToTopRef]);
 
   const onLayout = useCallback(
     () => ({ nativeEvent }: LayoutChangeEvent) => {

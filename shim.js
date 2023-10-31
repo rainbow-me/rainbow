@@ -1,4 +1,5 @@
 import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNative from 'react-native';

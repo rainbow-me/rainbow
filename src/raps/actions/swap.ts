@@ -19,7 +19,6 @@ import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
 import { toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
-import { additionalDataUpdateL2AssetToWatch } from '@/redux/additionalAssetsData';
 import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { AllowancesCache, ethereumUtils } from '@/utils';
@@ -144,7 +143,7 @@ const swap = async (
   } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { inputCurrency, outputCurrency } = store.getState().swap;
+  const { inputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   let gasParams = parseGasParamAmounts(selectedGasFee);
 
@@ -190,15 +189,6 @@ const swap = async (
 
     // @ts-ignore
     swap = await executeSwap(swapParams);
-    dispatch(
-      additionalDataUpdateL2AssetToWatch({
-        hash: swap?.hash || '',
-        inputCurrency,
-        network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-        outputCurrency,
-        userAddress: accountAddress,
-      })
-    );
 
     if (permit) {
       const walletAddress = await wallet.getAddress();

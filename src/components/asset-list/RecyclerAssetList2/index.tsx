@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Animated as RNAnimated } from 'react-native';
+import { Animated as RNAnimated, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemoOne } from 'use-memo-one';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
@@ -13,6 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
+import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
 import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
@@ -69,7 +70,10 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
-          scrollIndicatorInsets={{ bottom: 40, top: 40 }}
+          scrollIndicatorInsets={{
+            bottom: insets.bottom + 14,
+            top: 132,
+          }}
           type={type}
         />
       </StickyHeaderManager>
@@ -118,7 +122,7 @@ function NavbarOverlay({
       shadowOpacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
-        outputRange: [0, 0, isDarkMode ? 0.2 : 0.2],
+        outputRange: [0, 0, isDarkMode ? 0.2 : 1],
       }),
     }),
     [isDarkMode, position, yOffset]
@@ -128,13 +132,22 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
+        outputRange: [0, 1, 1],
       }),
       shadowOpacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
+      transform: [
+        {
+          translateY: position!.interpolate({
+            extrapolate: 'clamp',
+            inputRange: [0, yOffset, yOffset + 38],
+            outputRange: [0, 24, 0],
+          }),
+        },
+      ],
     }),
     [isDarkMode, position, yOffset]
   );
@@ -143,7 +156,7 @@ function NavbarOverlay({
       opacity: position!.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, IS_ANDROID ? 0 : 1, 1],
+        outputRange: [0, 0, 1],
       }),
     }),
     [position, yOffset]
@@ -195,15 +208,34 @@ function NavbarOverlay({
     [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
   );
 
+  const handlePressMenuItemAndroid = React.useCallback(
+    (buttonIndex: number) => {
+      switch (buttonIndex) {
+        case 0:
+          handlePressSettings();
+          break;
+        case 1:
+          handlePressQRCode();
+          break;
+        case 2:
+          handlePressConnectedApps();
+          break;
+      }
+    },
+    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
+  );
+
   return (
     <Box
       as={RNAnimated.View}
       style={[
         {
-          shadowColor: colors.shadowBlack,
+          shadowColor: isDarkMode
+            ? colors.shadowBlack
+            : colors.rowDividerExtraLight,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          //shadowOpacity: isDarkMode ? 0.4 : 0.004,
-          shadowRadius: isDarkMode ? 20 : 3,
+          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
+          shadowRadius: isDarkMode ? 20 : 0,
           zIndex: 1,
         },
         shadowOpacityStyle,
@@ -245,14 +277,30 @@ function NavbarOverlay({
             </Navbar.Item>
           }
           rightComponent={
-            <ContextMenuButton
-              menuConfig={menuConfig}
-              onPressMenuItem={handlePressMenuItem}
-            >
-              <Navbar.Item>
-                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-              </Navbar.Item>
-            </ContextMenuButton>
+            IS_ANDROID ? (
+              <AndroidContextMenu
+                // no idea where dynamicOptions is defined as a required prop
+                dynamicOptions={undefined}
+                options={menuConfig.menuItems.map(item => item?.actionTitle)}
+                cancelButtonIndex={menuConfig.menuItems.length - 1}
+                onPressActionSheet={handlePressMenuItemAndroid}
+              >
+                <View>
+                  <Navbar.Item>
+                    <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                  </Navbar.Item>
+                </View>
+              </AndroidContextMenu>
+            ) : (
+              <ContextMenuButton
+                menuConfig={menuConfig}
+                onPressMenuItem={handlePressMenuItem}
+              >
+                <Navbar.Item>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                </Navbar.Item>
+              </ContextMenuButton>
+            )
           }
           titleComponent={
             <Box

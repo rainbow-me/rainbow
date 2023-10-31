@@ -8,16 +8,17 @@ export default function FloatingEmojisTapHandler({
   disabled = false,
   onNewEmoji,
   onPress,
+  yOffset,
   ...props
 }) {
   const handleTap = useCallback(
     ({ nativeEvent: { state, x, y } }) => {
       if (state === State.ACTIVE) {
-        onNewEmoji?.(x, y);
+        onNewEmoji?.(x, y + (yOffset || 0));
         onPress?.();
       }
     },
-    [onNewEmoji, onPress]
+    [onNewEmoji, onPress, yOffset]
   );
 
   return (

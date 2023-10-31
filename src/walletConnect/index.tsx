@@ -38,7 +38,7 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { IS_DEV, IS_ANDROID } from '@/env';
+import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
@@ -53,10 +53,14 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
+import { fetchDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
 ).map(({ id }) => id);
+
+const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
 const T = lang.l.walletconnect;
 
@@ -91,7 +95,10 @@ export function maybeGoBackAndClearHasPendingRedirect({
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
         setHasPendingDeeplinkPendingRedirect(false);
-        Minimizer.goBack();
+
+        if (!IS_IOS) {
+          Minimizer.goBack();
+        }
       }, delay);
     });
   }
@@ -133,7 +140,6 @@ export function parseRPCParams({
   message?: string;
 } {
   switch (method) {
-    case RPCMethod.Sign:
     case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
@@ -225,7 +231,6 @@ export function getApprovedNamespaces(
 }
 
 const SUPPORTED_SIGNING_METHODS = [
-  RPCMethod.Sign,
   RPCMethod.PersonalSign,
   RPCMethod.SignTypedData,
   RPCMethod.SignTypedDataV1,
@@ -455,6 +460,7 @@ export async function onSessionProposal(
       logger.DebugContext.walletconnect
     );
 
+    const verifiedData = proposal.verifyContext.verified;
     const receivedTimestamp = Date.now();
     const {
       proposer,
@@ -462,8 +468,8 @@ export async function onSessionProposal(
       optionalNamespaces,
     } = proposal.params;
 
-    const requiredChains = requiredNamespaces.eip155?.chains || [];
-    const optionalChains = optionalNamespaces.eip155?.chains || [];
+    const requiredChains = requiredNamespaces?.eip155?.chains || [];
+    const optionalChains = optionalNamespaces?.eip155?.chains || [];
 
     const chains = uniq([...requiredChains, ...optionalChains]);
 
@@ -485,6 +491,7 @@ export async function onSessionProposal(
         peerId: proposer.publicKey,
         isWalletConnectV2: true,
       },
+      verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         const client = await web3WalletClient;
@@ -502,7 +509,9 @@ export async function onSessionProposal(
           );
 
           // we only support EVM chains rn
-          const requiredNamespace = requiredNamespaces.eip155;
+          const supportedEvents =
+            requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
+
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
           const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(
             id => `eip155:${id}`
@@ -516,7 +525,7 @@ export async function onSessionProposal(
                   ...SUPPORTED_SIGNING_METHODS,
                   ...SUPPORTED_TRANSACTION_METHODS,
                 ],
-                events: requiredNamespace.events,
+                events: supportedEvents,
                 accounts: caip2ChainIds.map(id => `${id}:${accountAddress}`),
               },
             },
@@ -566,7 +575,7 @@ export async function onSessionProposal(
 
               showErrorSheet({
                 title: lang.t(T.errors.generic_title),
-                body: `${lang.t(T.errors.generic_error)} \n \n ${
+                body: `${lang.t(T.errors.namespaces_invalid)} \n \n ${
                   namespaces.error.message
                 }`,
                 sheetHeight: 400,
@@ -617,6 +626,7 @@ export async function onSessionProposal(
   }
 }
 
+// For WC v2
 export async function onSessionRequest(
   event: SignClientTypes.EventArguments['session_request']
 ) {
@@ -688,7 +698,8 @@ export async function onSessionRequest(
 
       const selectedWallet = findWalletWithAccount(allWallets, address);
 
-      if (!selectedWallet || selectedWallet?.type === WalletTypes.readOnly) {
+      const isReadOnly = selectedWallet?.type === WalletTypes.readOnly;
+      if (!selectedWallet || isReadOnly) {
         logger.error(
           new RainbowError(
             `WC v2: session_request exited, selectedWallet was falsy or read only`
@@ -698,6 +709,10 @@ export async function onSessionRequest(
           }
         );
 
+        const errorMessageBody = isReadOnly
+          ? lang.t(T.errors.read_only_wallet_on_signing_method)
+          : lang.t(T.errors.generic_error);
+
         await client.respondSessionRequest({
           topic,
           response: formatJsonRpcError(id, `Wallet is read-only`),
@@ -705,7 +720,7 @@ export async function onSessionRequest(
 
         showErrorSheet({
           title: lang.t(T.errors.generic_title),
-          body: lang.t(T.errors.request_invalid),
+          body: errorMessageBody,
           sheetHeight: 270,
           onClose: maybeGoBackAndClearHasPendingRedirect,
         });
@@ -764,7 +779,13 @@ export async function onSessionRequest(
         // @ts-ignore we assign address above
         address, // required by screen
         chainId, // required by screen
-        onComplete() {
+        onComplete(type: string) {
+          if (IS_IOS) {
+            Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+              type,
+            });
+          }
+
           maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
         },
       },
@@ -985,13 +1006,22 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     }
   };
 
+  // need to prefetch dapp metadata since portal is static
+  const url =
+    // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+    event?.verifyContext?.verifyUrl || event.params.requester.metadata.url;
+  const metadata = await fetchDappMetadata({ url, status: true });
+
+  const isScam = metadata.status === DAppStatus.Scam;
   portal.open(
     () =>
       AuthRequest({
         authenticate,
         requesterMeta: event.params.requester.metadata,
+        // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+        verifiedData: event?.verifyContext,
       }),
-    { sheetHeight: IS_ANDROID ? 560 : 520 }
+    { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
   );
 }
 

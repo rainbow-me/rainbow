@@ -65,10 +65,10 @@ function generateWCUri({ version }: { version: number }) {
 beforeEach(() => {
   jest.useFakeTimers();
 
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: false,
+    appState: {
+      walletReady: true,
     },
   });
 });
@@ -82,11 +82,11 @@ test(`runs but does nothing`, async () => {
   await handleDeepLink('https://example.com');
 });
 
-test(`waits for isLoadingAssets to be falsy`, async () => {
+test(`waits for walletReady to be truthy`, async () => {
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: true,
+    appState: {
+      walletReady: false,
     },
   });
 
@@ -95,10 +95,10 @@ test(`waits for isLoadingAssets to be falsy`, async () => {
 
   jest.advanceTimersByTime(50);
 
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: false,
+    appState: {
+      walletReady: true,
     },
   });
 
@@ -258,7 +258,7 @@ test(`handles https:// protocol for ens profiles`, async () => {
   mocked(checkIsValidAddressOrDomain).mockResolvedValueOnce(true);
   mocked(isENSAddressFormat).mockReturnValueOnce(true);
 
-  await handleDeepLink(`https://rainbow.me/estrattonbailey.eth`);
+  await handleDeepLink(`https://rainbow.me/profile/estrattonbailey.eth`);
 
   expect(fetchReverseRecordWithRetry).toHaveBeenCalledTimes(0);
   expect(Navigation.handleAction).toHaveBeenCalledTimes(1);
@@ -269,7 +269,7 @@ test(`handles https:// protocol for profile addresses`, async () => {
   mocked(isENSAddressFormat).mockReturnValueOnce(false);
   mocked(fetchReverseRecordWithRetry).mockResolvedValue('estrattonbailey.eth');
 
-  await handleDeepLink(`https://rainbow.me/0x123`);
+  await handleDeepLink(`https://rainbow.me/profile/0x123`);
 
   expect(fetchReverseRecordWithRetry).toHaveBeenCalledTimes(1);
   expect(Navigation.handleAction).toHaveBeenCalledTimes(1);

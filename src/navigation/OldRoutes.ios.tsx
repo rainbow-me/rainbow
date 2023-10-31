@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
-import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
@@ -34,7 +33,6 @@ import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
-  addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
@@ -95,6 +93,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
+import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 
 const Stack = createStackNavigator();
@@ -181,6 +180,11 @@ export default function NativeStackNavigator() {
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
+        component={MintSheet}
+        name={Routes.MINT_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
         component={PositionSheet}
         name={Routes.POSITION_SHEET}
         {...positionSheetConfig}
@@ -218,6 +222,11 @@ export default function NativeStackNavigator() {
         component={SendConfirmationSheet}
         name={Routes.SEND_CONFIRMATION_SHEET}
         {...sendConfirmationSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ExplainSheet}
+        name={Routes.EXPLAIN_SHEET}
+        {...explainSheetConfig}
       />
       <NativeStack.Screen
         component={SwapsPromoSheet}

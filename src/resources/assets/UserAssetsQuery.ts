@@ -9,18 +9,12 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import {
   createQueryKey,
   queryClient,
-  QueryConfig,
+  QueryConfigWithSelect,
   QueryFunctionArgs,
   QueryFunctionResult,
 } from '@/react-query';
-import { DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS } from '@/redux/data';
-import store from '@/redux/store';
 import { useQuery } from '@tanstack/react-query';
-import {
-  filterPositionsData,
-  hideTokensWithUrls,
-  parseAddressAsset,
-} from './assets';
+import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import {
   AddysAccountAssetsMeta,
@@ -85,15 +79,8 @@ async function userAssetsQueryFunction({
     userAssetsQueryKey({ address, currency, connectedToHardhat })
   )?.state?.data || {}) as RainbowAddressAssets;
 
-  const { dispatch } = store;
-
   if (connectedToHardhat) {
     const parsedHardhatResults = await fetchHardhatBalances(address);
-    // Temporary: update data redux with address assets
-    dispatch({
-      payload: parsedHardhatResults,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
     return parsedHardhatResults;
   }
 
@@ -135,12 +122,6 @@ async function userAssetsQueryFunction({
         erroredChainIds
       );
     }
-
-    // Temporary: update data redux with address assets
-    dispatch({
-      payload: parsedSuccessResults,
-      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-    });
 
     return parsedSuccessResults;
   } catch (e) {
@@ -190,11 +171,10 @@ const retryErroredChainIds = async (
     ...parsedSuccessResults,
   };
 
-  const { dispatch } = store;
-  dispatch({
-    payload: parsedSuccessResults,
-    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-  });
+  queryClient.setQueryData(
+    userAssetsQueryKey({ address, currency, connectedToHardhat }),
+    parsedSuccessResults
+  );
 };
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
@@ -219,9 +199,6 @@ const fetchAndParseUserAssetsForChainIds = async (
     currency,
     parsedSuccessResults
   );
-
-  // add tokens with URLs to hidden list
-  hideTokensWithUrls(parsedSuccessResults, address);
 
   // update account empty state
   if (!isEmpty(parsedSuccessResults)) {
@@ -250,9 +227,14 @@ function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
 // ///////////////////////////////////////////////
 // Query Fetcher (Optional)
 
-export async function fetchUserAssets(
+export async function fetchUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfig<UserAssetsResult, Error, UserAssetsQueryKey> = {}
+  config: QueryConfigWithSelect<
+    UserAssetsResult,
+    Error,
+    TSelectResult,
+    UserAssetsQueryKey
+  > = {}
 ) {
   return await queryClient.fetchQuery(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
@@ -264,16 +246,22 @@ export async function fetchUserAssets(
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useUserAssets(
+export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfig<UserAssetsResult, Error, UserAssetsQueryKey> = {}
+  config: QueryConfigWithSelect<
+    UserAssetsResult,
+    Error,
+    TSelectResult,
+    UserAssetsQueryKey
+  > = {}
 ) {
   return useQuery(
     userAssetsQueryKey({ address, currency, connectedToHardhat }),
     userAssetsQueryFunction,
     {
+      enabled: !!address && !!currency,
       staleTime: 60_000, // 1 minute
-      refetchInterval: 300_000, // 5 minutes
+      refetchInterval: 120_000, // 2 minutes
       ...config,
     }
   );

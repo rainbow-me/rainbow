@@ -15,6 +15,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.7] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.7)
+
+### Added
+
+- points v0
+- prompt app reviews
+- bug fixes
+
+## [1.9.6] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.6)
+
+### Added
+
+- in app mints
+- i18n support
+- Rainbow Tabs
+- OP Rewards Round 2
+- more user pain points fixes
+
+## [1.9.5] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.5)
+
+### Added
+
+- WC improvements
+- Gas improvements
+- NFT Offers networks support
+- Wallet loading state fix
+- Other bug fixes & improvements
+
+## [1.9.4] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.4)
+
+### Added
+
+- Mints feature
+- detox e2e fixes
+- WC version bumps & fixes
+- Gas fixes
+
 ## [1.9.3] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.3)
 
 ### Added

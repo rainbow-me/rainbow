@@ -9,6 +9,7 @@ import { useRecyclerListViewRef } from '../asset-list/RecyclerAssetList';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
+  useScrollToTopOnPress?: boolean;
   leftComponent?: React.ReactElement | null;
   rightComponent?: React.ReactElement | null;
   testID?: string;

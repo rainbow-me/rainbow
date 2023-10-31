@@ -135,6 +135,19 @@ const StatusProps = {
       marginTop: ios ? -3 : -5,
     },
   },
+  [TransactionStatusTypes.minted]: {
+    name: 'sunflower',
+    style: {
+      fontSize: 11,
+      left: -1.3,
+      marginRight: 1,
+      marginTop: ios ? -3 : -5,
+    },
+  },
+  [TransactionStatusTypes.minting]: {
+    marginRight: 4,
+    marginTop: ios ? 1 : 0,
+  },
 };
 
 const sx = StyleSheet.create({

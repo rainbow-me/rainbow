@@ -1,11 +1,13 @@
 import path from 'path';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import { deprecatedRemoveLocal } from '../handlers/localstorage/common';
+import {
+  deprecatedRemoveLocal,
+  getGlobal,
+} from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
@@ -52,14 +54,15 @@ import {
   savePinnedCoins,
 } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { getUserLists, saveUserLists } from '@/handlers/localstorage/userLists';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { DefaultTokenLists } from '@/references';
 import { ethereumUtils, profileUtils } from '@/utils';
-import { REVIEW_ASKED_KEY } from '@/utils/reviewAlert';
+import { review } from '@/storage';
 import logger from '@/utils/logger';
+import { queryClient } from '@/react-query';
+import { favoritesQueryKey } from '@/resources/favorites';
+import { EthereumAddress, RainbowToken } from '@/entities';
 
 export default async function runMigrations() {
   // get current version
@@ -272,22 +275,25 @@ export default async function runMigrations() {
 
   migrations.push(v5);
 
+  /**
+   * NOTICE: this migration is no longer in use. userLists has been removed.
+   */
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    try {
-      const userLists = await getUserLists();
-      const newLists = userLists.map((list: { id: string }) => {
-        if (list?.id !== 'dollars') {
-          return list;
-        }
-        return DefaultTokenLists['mainnet'].find(
-          ({ id }) => id === 'stablecoins'
-        );
-      });
-      await saveUserLists(newLists);
-    } catch (e) {
-      logger.log('ignoring lists migrations');
-    }
+    // try {
+    //   const userLists = await getUserLists();
+    //   const newLists = userLists.map((list: { id: string }) => {
+    //     if (list?.id !== 'dollars') {
+    //       return list;
+    //     }
+    //     return DefaultTokenLists['mainnet'].find(
+    //       ({ id }) => id === 'stablecoins'
+    //     );
+    //   });
+    //   await saveUserLists(newLists);
+    // } catch (e) {
+    //   logger.log('ignoring lists migrations');
+    // }
   };
 
   migrations.push(v6);
@@ -334,7 +340,7 @@ export default async function runMigrations() {
       const { selected, wallets } = store.getState().wallets;
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
-      let updatedWallets = { ...wallets };
+      const updatedWallets = { ...wallets };
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
@@ -369,7 +375,7 @@ export default async function runMigrations() {
 
       // migrate contacts to new color index
       const contacts = await getContacts();
-      let updatedContacts = { ...contacts };
+      const updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -405,7 +411,7 @@ export default async function runMigrations() {
     try {
       // migrate contacts to corresponding emoji
       const contacts = await getContacts();
-      let updatedContacts = { ...contacts };
+      const updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -452,16 +458,20 @@ export default async function runMigrations() {
    */
   const v11 = async () => {
     logger.log('Start migration v11');
-    const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
+    const hasReviewed = review.get(['hasReviewed']);
+    if (hasReviewed) {
+      return;
+    }
+
+    const reviewAsked = review.get(['timeOfLastPrompt']);
     const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
     const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
 
     if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
       return;
-    } else {
-      const twoMonthsAgo = Date.now() - TWO_MONTHS;
-      AsyncStorage.setItem(REVIEW_ASKED_KEY, twoMonthsAgo.toString());
     }
+
+    review.set(['timeOfLastPrompt'], Date.now() - TWO_MONTHS);
   };
 
   migrations.push(v11);
@@ -540,8 +550,8 @@ export default async function runMigrations() {
       // which look like'signature_0x...'
       const { wallets } = store.getState().wallets;
       if (Object.keys(wallets!).length > 0) {
-        for (let wallet of Object.values(wallets!)) {
-          for (let account of (wallet as RainbowWallet).addresses) {
+        for (const wallet of Object.values(wallets!)) {
+          for (const account of (wallet as RainbowWallet).addresses) {
             keysToMigrate.push(`signature_${account.address}`);
           }
         }
@@ -577,8 +587,8 @@ export default async function runMigrations() {
     const { network } = store.getState().settings;
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
-    for (let wallet of Object.values(wallets)) {
-      for (let account of (wallet as RainbowWallet).addresses) {
+    for (const wallet of Object.values(wallets)) {
+      for (const account of (wallet as RainbowWallet).addresses) {
         const hiddenCoins = await getHiddenCoins(account.address, network);
         const pinnedCoins = await getPinnedCoins(account.address, network);
 
@@ -640,8 +650,8 @@ export default async function runMigrations() {
   const v17 = async () => {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
-    for (let wallet of Object.values(wallets)) {
-      for (let account of (wallet as RainbowWallet).addresses) {
+    for (const wallet of Object.values(wallets)) {
+      for (const account of (wallet as RainbowWallet).addresses) {
         const pinnedCoins = JSON.parse(
           mmkv.getString('pinned-coins-' + account.address) ?? '[]'
         );
@@ -673,10 +683,36 @@ export default async function runMigrations() {
 
   migrations.push(v17);
 
+  /**
+   *************** Migration v18 ******************
+   Move favorites from local storage to react query persistent cache (AsyncStorage)
+   */
+  const v18 = async () => {
+    const favoritesMetadata = await getGlobal(
+      'uniswapFavoritesMetadata',
+      undefined,
+      '0.1.0'
+    );
+
+    if (favoritesMetadata) {
+      const lowercasedFavoritesMetadata: Record<
+        EthereumAddress,
+        RainbowToken
+      > = {};
+      Object.keys(favoritesMetadata).forEach((address: string) => {
+        lowercasedFavoritesMetadata[address.toLowerCase()] =
+          favoritesMetadata[address];
+      });
+      queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
+    }
+  };
+
+  migrations.push(v18);
+
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
-
+  // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.sentry(`Migrations: Nothing to run`);
     return;

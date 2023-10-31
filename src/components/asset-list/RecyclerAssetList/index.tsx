@@ -154,6 +154,7 @@ type RecyclerListViewRef = RecyclerListView<
 export function useRecyclerListViewRef(): {
   readonly handleRef: (ref: RecyclerListViewRef) => void;
   readonly ref: RecyclerListViewRef | undefined;
+  readonly _ref: React.MutableRefObject<RecyclerListViewRef | undefined>;
 } {
   const ref = useRef<RecyclerListViewRef>();
   const handleRef = React.useCallback(
@@ -164,7 +165,7 @@ export function useRecyclerListViewRef(): {
     [ref]
   );
 
-  return { handleRef, ref: ref.current };
+  return { handleRef, ref: ref.current, _ref: ref };
 }
 
 export type RecyclerAssetListSection = {

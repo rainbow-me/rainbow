@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -61,7 +62,6 @@ import {
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -75,7 +75,6 @@ import {
 import {
   loadWallet,
   sendTransaction,
-  signMessage,
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
@@ -101,13 +100,10 @@ import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
-  isSignFirstParamType,
-  isSignSecondParamType,
   isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
-  SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
@@ -115,6 +111,7 @@ import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
+import { IS_IOS } from '@/env';
 
 const springConfig = {
   damping: 500,
@@ -340,7 +337,7 @@ export default function TransactionConfirmationScreen() {
   const request = useMemo(() => {
     return isMessageRequest
       ? { message: displayDetails.request }
-      : { ...displayDetails.request, asset: nativeAsset };
+      : { ...displayDetails.request, nativeAsset: nativeAsset };
   }, [displayDetails.request, nativeAsset, isMessageRequest]);
 
   const openAutomatically = routeParams?.openAutomatically;
@@ -418,20 +415,21 @@ export default function TransactionConfirmationScreen() {
       if (!isMessageRequest) {
         stopPollingGasFees();
       }
+
+      let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
+      if (canceled) {
+        type = `${type}-canceled`;
+      }
+
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
-          let type = method === SEND_TRANSACTION ? 'transaction' : 'sign';
-
-          if (canceled) {
-            type = `${type}-canceled`;
-          }
           dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         });
       }
 
       if (walletConnectV2RequestValues?.onComplete) {
         InteractionManager.runAfterInteractions(() => {
-          walletConnectV2RequestValues.onComplete();
+          walletConnectV2RequestValues.onComplete(type);
         });
       }
     },
@@ -553,7 +551,7 @@ export default function TransactionConfirmationScreen() {
         'maxFeePerGas',
         'maxPriorityFeePerGas',
       ]);
-      let rawGasLimit = await estimateGas(cleanTxPayload, provider);
+      const rawGasLimit = await estimateGas(cleanTxPayload, provider);
       logger.debug(
         'WC: Estimated gas limit',
         { rawGasLimit },
@@ -818,6 +816,7 @@ export default function TransactionConfirmationScreen() {
         }
         dispatch(removeRequest(requestId));
       }
+
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
@@ -885,9 +884,6 @@ export default function TransactionConfirmationScreen() {
       provider
     );
     switch (method) {
-      case SIGN:
-        response = await signMessage(message, existingWallet);
-        break;
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
@@ -1048,7 +1044,9 @@ export default function TransactionConfirmationScreen() {
     if (isTransactionDisplayType(method) && request?.asset) {
       const amount = request?.value ?? '0.00';
       const nativeAssetPrice =
-        genericNativeAsset?.price?.value || nativeAsset?.price?.value;
+        request?.asset?.price?.value ||
+        genericNativeAsset?.price?.value ||
+        nativeAsset?.price?.value;
       const nativeAmount = multiply(nativeAssetPrice, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
@@ -1057,12 +1055,17 @@ export default function TransactionConfirmationScreen() {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          address={request?.asset?.mainnet_address || request?.asset?.address}
+          address={
+            request?.asset?.mainnet_address ||
+            request?.asset?.address ||
+            request?.nativeAsset?.mainnet_address ||
+            request?.nativeAsset?.address
+          }
           amount={amount}
           method={method}
-          name={request?.asset?.name}
+          name={request?.asset?.name || request?.nativeAsset?.name}
           nativeAmountDisplay={!nativeAssetPrice ? null : nativeAmountDisplay}
-          symbol={request?.asset?.symbol}
+          symbol={request?.asset?.symbol || request?.nativeAsset?.symbol}
         />
       );
     }
@@ -1254,7 +1257,14 @@ export default function TransactionConfirmationScreen() {
                       hideDivider
                       onPress={handleL2DisclaimerPress}
                       prominent
-                      symbol="app"
+                      customText={i18n.t(
+                        i18n.l.expanded_state.asset.l2_disclaimer_dapp,
+                        {
+                          network: getNetworkObj(
+                            ethereumUtils.getNetworkFromType(currentNetwork)
+                          ).name,
+                        }
+                      )}
                     />
                   </Column>
                 )}

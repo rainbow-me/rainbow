@@ -80,7 +80,7 @@ export interface RequestData {
     sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
     address: string;
     chainId: number;
-    onComplete(): void;
+    onComplete(type: string): void;
   };
 }
 

@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
 import { abbreviations, magicMemo, measureText } from '../../utils';
-import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
@@ -14,6 +12,7 @@ import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -112,12 +111,13 @@ const AssetListHeader = ({
   isCoinListEdited,
   title,
   totalValue,
+  isSticky = true,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
-  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+  const { isLoading: isLoadingUserAssets } = useUserAssetCount();
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -125,7 +125,7 @@ const AssetListHeader = ({
 
   const [textWidth, setTextWidth] = useState(0);
 
-  const amountWidth = isLoadingAssets
+  const amountWidth = isLoadingUserAssets
     ? placeholderWidth + 16
     : totalValue?.length * 15;
   const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
@@ -142,8 +142,8 @@ const AssetListHeader = ({
     measure();
   }, [accountName]);
 
-  return (
-    <StickyHeader name={title}>
+  const children = useMemo(() => {
+    return (
       <ListHeader
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}
@@ -162,7 +162,7 @@ const AssetListHeader = ({
             />
           </WalletSelectButtonWrapper>
         )}
-        {isLoadingAssets &&
+        {isLoadingUserAssets &&
         title !== lang.t(lang.l.account.tab_collectibles) ? (
           <TotalAmountSkeleton>
             <FakeText height={16} width={placeholderWidth} />
@@ -173,8 +173,26 @@ const AssetListHeader = ({
           </H1>
         ) : null}
       </ListHeader>
-    </StickyHeader>
-  );
+    );
+  }, [
+    accountName,
+    contextMenuOptions,
+    deviceWidth,
+    isCoinListEdited,
+    isLoadingUserAssets,
+    maxWidth,
+    onChangeWallet,
+    props,
+    textWidth,
+    title,
+    totalValue,
+  ]);
+
+  if (isSticky) {
+    return <StickyHeader name={title}>{children}</StickyHeader>;
+  }
+
+  return children;
 };
 
 export default magicMemo(AssetListHeader, [

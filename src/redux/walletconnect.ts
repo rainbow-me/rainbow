@@ -28,8 +28,9 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
-import { IS_DEV, IS_TEST } from '@/env';
+import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworks } from '@/networks';
+import { Verify } from '@walletconnect/types';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -161,6 +162,7 @@ export interface WalletconnectApprovalSheetRouteParams {
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
+  verifiedData?: Verify.Context['verified'];
 }
 
 /**
@@ -261,15 +263,19 @@ export const walletConnectRemovePendingRedirect = (
   } else if (type !== 'timedOut') {
     if (type === 'sign' || type === 'transaction') {
       showRedirectSheetThreshold += BIOMETRICS_ANIMATION_DELAY;
-      setTimeout(() => {
-        Minimizer.goBack();
-      }, BIOMETRICS_ANIMATION_DELAY);
+      if (!IS_IOS) {
+        setTimeout(() => {
+          Minimizer.goBack();
+        }, BIOMETRICS_ANIMATION_DELAY);
+      }
     } else if (type === 'sign-canceled' || type === 'transaction-canceled') {
-      setTimeout(() => {
-        Minimizer.goBack();
-      }, 300);
+      if (!IS_IOS) {
+        setTimeout(() => {
+          Minimizer.goBack();
+        }, 300);
+      }
     } else {
-      !IS_TEST && Minimizer.goBack();
+      !IS_TEST && !IS_IOS && Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect

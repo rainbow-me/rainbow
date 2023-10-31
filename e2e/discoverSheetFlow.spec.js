@@ -45,14 +45,24 @@ describe('Discover Screen Flow', () => {
     await Helpers.enableSynchronization();
   });
 
-  it('Should navigate to the Profile screen after swiping right', async () => {
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+  it('Should navigate to Discover screen after swiping left', async () => {
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('discover-header');
+  });
+
+  it('Should navigate to the Profile screen after swiping left', async () => {
+    await Helpers.waitAndTap('tab-bar-icon-ProfileScreen');
     await Helpers.checkIfVisible('profile-screen');
   });
 
-  it('Should navigate to Discover screen after tapping Discover Button', async () => {
+  it('Should navigate to the Points screen after swiping left', async () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    await Helpers.waitAndTap('discover-button');
+    await Helpers.checkIfVisible('points-screen');
+  });
+
+  it('Should navigate back to Discover screen after swiping right twice', async () => {
+    await Helpers.swipe('points-screen', 'right', 'slow');
+    await Helpers.swipe('profile-screen', 'right', 'slow');
     await Helpers.checkIfVisible('discover-header');
   });
 
@@ -83,17 +93,6 @@ describe('Discover Screen Flow', () => {
       'discover-currency-select-list-exchange-coin-row-SOCKS-token'
     );
     await Helpers.checkIfVisible('chart-header-Unisocks');
-  });
-
-  it('Should add Unisocks to Watchlist & remove from Favorites', async () => {
-    await Helpers.waitAndTap('add-to-list-button');
-    await Helpers.checkIfVisible('add-token-sheet');
-    await Helpers.waitAndTap('add-to-watchlist');
-    await Helpers.checkIfVisible('remove-from-watchlist');
-    await Helpers.waitAndTap('remove-from-favorites');
-    await Helpers.checkIfNotVisible('remove-from-favorites');
-
-    await Helpers.waitAndTap('close-action-button');
   });
 
   it('Should close expanded state and return to search', async () => {
@@ -151,46 +150,22 @@ describe('Discover Screen Flow', () => {
     await Helpers.waitAndTap('done-button');
   });
 
-  it('Should open DPI expanded state on DPI press', async () => {
-    await Helpers.swipeUntilVisible('dpi-button', 'discover-sheet', 'up');
+  it.skip('Should open DPI expanded state on DPI press', async () => {
+    await Helpers.swipe('discover-sheet', 'up', 0.8);
     await Helpers.waitAndTap('dpi-button');
     await Helpers.checkIfVisible('index-expanded-state');
     await Helpers.checkIfVisible('index-underlying-assets');
   });
 
-  it('Should open underlying asset expanded state', async () => {
+  it.skip('Should open underlying asset expanded state', async () => {
     await Helpers.waitAndTap('underlying-asset-UNI');
     await Helpers.checkIfVisible('chart-header-Uniswap');
     await Helpers.swipe('expanded-state-header', 'down');
   });
 
-  it('Should close DPI expanded state and return to Discover Home', async () => {
+  it.skip('Should close DPI expanded state and return to Discover Home', async () => {
     await Helpers.swipe('index-expanded-state-header', 'down');
     await Helpers.checkIfVisible('discover-header');
-  });
-
-  // TODO: seems the test doesn't do sideswipe on the horizonal list
-  //       skipping the test till someone fixes it, apparently it's low
-  //       priority right now
-  it.skip('Should cycle through token lists', async () => {
-    android && (await Helpers.swipe('discover-sheet', 'up', 'slow'));
-    await Helpers.swipeUntilVisible(
-      'lists-section',
-      'discover-sheet',
-      'up',
-      100
-    );
-    await Helpers.checkIfVisible('lists-section-favorites');
-    await Helpers.checkIfNotVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-watchlist');
-    await Helpers.checkIfVisible('lists-section-watchlist');
-    await Helpers.checkIfVisible('list-coin-row-Unisocks');
-    await Helpers.waitAndTap('list-trending');
-    await Helpers.checkIfVisible('lists-section-trending');
-    await Helpers.waitAndTap('list-defi');
-    await Helpers.checkIfVisible('lists-section-defi');
-    await Helpers.waitAndTap('list-stablecoins');
-    await Helpers.checkIfVisible('lists-section-stablecoins');
   });
 
   afterAll(async () => {

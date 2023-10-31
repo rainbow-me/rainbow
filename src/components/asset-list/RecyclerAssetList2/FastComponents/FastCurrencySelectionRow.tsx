@@ -70,13 +70,11 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
 interface InfoProps {
   contextMenuProps: any;
   showFavoriteButton: boolean;
-  showAddButton: boolean;
   theme: any;
 }
 
 export function Info({
   contextMenuProps,
-  showAddButton,
   showFavoriteButton,
   theme,
 }: InfoProps) {
@@ -85,7 +83,7 @@ export function Info({
     <ContextMenuButton
       onPressMenuItem={contextMenuProps.handlePressMenuItem}
       {...contextMenuProps}
-      style={(showFavoriteButton || showAddButton) && sx.info}
+      style={showFavoriteButton && sx.info}
     >
       <ButtonPressAnimation>
         <SafeRadialGradient
@@ -113,14 +111,12 @@ export default React.memo(function FastCurrencySelectionRow({
     uniqueId,
     showBalance,
     showFavoriteButton,
-    showAddButton,
     onPress,
     theme,
     nativeCurrency,
     nativeCurrencySymbol,
     favorite,
     toggleFavorite,
-    onAddPress,
     contextMenuProps,
     symbol,
     address,
@@ -139,7 +135,6 @@ export default React.memo(function FastCurrencySelectionRow({
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
   }-${type || 'token'}`;
-
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
@@ -226,7 +221,6 @@ export default React.memo(function FastCurrencySelectionRow({
           {isInfoButtonVisible && (
             <Info
               contextMenuProps={contextMenuProps}
-              showAddButton={showAddButton}
               showFavoriteButton={showFavoriteButton}
               theme={theme}
             />
@@ -264,26 +258,6 @@ export default React.memo(function FastCurrencySelectionRow({
                 toggleFavorite={toggleFavorite}
               />
             ))}
-          {showAddButton && (
-            <ButtonPressAnimation onPress={onAddPress}>
-              <SafeRadialGradient
-                center={[0, 15]}
-                colors={colors.gradients.lightestGrey}
-                style={[sx.gradient, sx.addGradient]}
-              >
-                <RNText
-                  style={[
-                    sx.addText,
-                    {
-                      color: colors.alpha(colors.blueGreyDark, 0.3),
-                    },
-                  ]}
-                >
-                  +
-                </RNText>
-              </SafeRadialGradient>
-            </ButtonPressAnimation>
-          )}
         </View>
       )}
     </View>

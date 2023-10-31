@@ -16,13 +16,14 @@ import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 
-export let discoverScrollToTopFnRef: () => void | null = () => null;
+export let discoverScrollToTopFnRef: () => number | null = () => null;
 export default function DiscoverScreen() {
   const ref = React.useRef<ScrollView>(null);
   const { navigate } = useNavigation();
   const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
+  const [scrollY, setScrollY] = React.useState(0);
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
   const onChangeWallet = React.useCallback(() => {
@@ -34,12 +35,22 @@ export default function DiscoverScreen() {
       Keyboard.dismiss();
     }
   }, [isFocused, isSearchModeEnabled]);
+
   const scrollToTop = useCallback(() => {
+    if (!ref.current) return -1;
+
+    // detect if scroll was already at top and return 0;
+    if (scrollY === 0) {
+      return 0;
+    }
+
     ref.current?.scrollTo({
       y: 0,
       animated: true,
     });
-  }, []);
+
+    return 1;
+  }, [scrollY]);
 
   useEffect(() => {
     discoverScrollToTopFnRef = scrollToTop;
@@ -81,15 +92,18 @@ export default function DiscoverScreen() {
           }
         />
         <Box
-          //@ts-expect-error
+          // @ts-expect-error
           ref={ref}
+          onScroll={e => {
+            setScrollY(e.nativeEvent.contentOffset.y);
+          }}
           as={ScrollView}
           automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews
-          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 197 }}
+          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167 }}
           testID="discover-sheet"
         >
           <DiscoverScreenContent />

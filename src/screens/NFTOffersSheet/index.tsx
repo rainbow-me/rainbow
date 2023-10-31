@@ -17,7 +17,10 @@ import { FakeOfferRow, OfferRow } from './OfferRow';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
-import { nftOffersQueryKey, useNFTOffers } from '@/resources/nftOffers';
+import {
+  nftOffersQueryKey,
+  useNFTOffers,
+} from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import * as i18n from '@/languages';

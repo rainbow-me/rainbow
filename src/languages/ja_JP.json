@@ -555,6 +555,9 @@
         "available_networks": "%{availableNetworks} ネットワークで利用可能",
         "available_network": "%{availableNetwork} ネットワークで利用可能",
         "available_networkv2": "%{availableNetwork}でも利用可能",
+        "l2_disclaimer": "この %{symbol} は %{network} ネットワーク上にあります",
+        "l2_disclaimer_send": "%{network} ネットワークで送信",
+        "l2_disclaimer_dapp": "このアプリは %{network} ネットワーク上にあります",
         "social": {
           "facebook": "Facebook",
           "homepage": "ホームページ",
@@ -1050,6 +1053,38 @@
       "web3_not_available": "MetaMask Chrome拡張機能をインストールしてください。",
       "web3_not_unlocked": "MetaMaskウォレットをアンロックしてください。",
       "web3_unknown_network": "不明なネットワークです。別のネットワークに切り替えてください。"
+    },
+    "mints": {
+      "mints_sheet": {
+        "mints": "ミント",
+        "no_data_found": "データが見つかりません。",
+        "card": {
+          "x_ago": "%{timeElapsed} 前",
+          "one_mint_past_hour": "1時間前のミント",
+          "x_mints_past_hour": "%{numMints} 時間前のミント",
+          "x_mints": "%{numMints} ミント",
+          "mint": "ミント",
+          "free": "無料"
+        }
+      },
+      "mints_card": {
+        "view_all_mints": "すべてのミントを見る",
+        "mints": "ミント",
+        "collection_cell": {
+          "free": "無料"
+        }
+      },
+      "featured_mint_card": {
+        "featured_mint": "注目のミント",
+        "one_mint": "1ミント",
+        "x_mints": "%{numMints} ミント",
+        "x_past_hour": "%{numMints} 過去の時間"
+      },
+      "filter": {
+        "all": "全て",
+        "free": "無料",
+        "paid": "有料"
+      }
     },
     "modal": {
       "approve_tx": "%{walletType}でトランザクションを承認してください。",
@@ -2141,7 +2176,7 @@
           "clear_profile_information": "プロファイル情報をクリアする",
           "point_name_to_recipient": "この名前を受取人のウォレットアドレスに指定する",
           "transfer_control": "制御を受取人に譲渡する",
-          "has_a_wallet_that_supports": "送信先は %{networkName}をサポートするウォレットを持っています",
+          "has_a_wallet_that_supports": "送信先のアドレスは %{networkName}をサポートしています",
           "im_not_sending_to_an_exchange": "取引所に送信していません"
         },
         "errors": {
@@ -2156,7 +2191,10 @@
         "placeholder_title": "プレースホルダー",
         "request": "トランザクションリクエスト",
         "send": "トランザクションを送信する",
-        "sending_title": "送信中"
+        "sending_title": "送信中",
+        "you_own_this_wallet": "このウォレットはあなたのものです",
+        "first_time_send": "初めての送信",
+        "previous_sends": "%{number} 回の前の送信"
       },
       "wallet_connect": {
         "error": "WalletConnectの初期化エラー",
@@ -2183,6 +2221,8 @@
       }
     },
     "walletconnect": {
+      "wants_to_connect": "あなたのウォレットに接続を許可します",
+      "wants_to_connect_to_network": "%{network} ネットワークに接続を許可します",
       "available_networks": "利用可能なネットワーク",
       "change_network": "ネットワークを変更する",
       "connected_apps": "接続されたアプリ",

@@ -21,11 +21,6 @@ export default function useRefreshAccountData() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const fetchAccountData = useCallback(async () => {
-    // Nothing to refresh for other testnets
-    if (network !== NetworkTypes.mainnet) {
-      return Promise.all([delay(1250)]);
-    }
-
     const provider = getCachedProviderForNetwork(network);
     const providerUrl = provider?.connection?.url;
     const connectedToHardhat = isHardHat(providerUrl);

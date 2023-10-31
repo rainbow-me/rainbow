@@ -52,6 +52,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -173,6 +175,12 @@ export default function ENSConfirmRegisterSheet() {
       setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
       }, 100);
+
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.EnsNameRegistration);
+        });
+      }, 500);
     });
   }, [goBack, navigate]);
 

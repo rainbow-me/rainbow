@@ -50,7 +50,7 @@ export default async function handleDeeplink(
   /**
    * We need to wait till the wallet is ready to handle any deeplink
    */
-  while (store.getState().data.isLoadingAssets) {
+  while (!store.getState().appState.walletReady) {
     logger.info(`handleDeeplink: Waiting for wallet to be ready`);
     await delay(50);
   }
@@ -199,7 +199,7 @@ export default async function handleDeeplink(
       }
 
       default: {
-        const addressOrENS = pathname?.split('/')?.[1];
+        const addressOrENS = pathname?.split('/profile/')?.[1];
 
         /**
          * This handles ENS profile links on mobile i.e.
