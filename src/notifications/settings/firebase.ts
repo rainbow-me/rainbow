@@ -32,29 +32,6 @@ const updateNotificationSubscription = async (
   return response.data;
 };
 
-/**
- Firebase functions for subscribing/unsubscribing to topics.
- */
-export const subscribeWalletToAllEnabledTopics = (
-  settings: WalletNotificationSettings,
-  chainId: number
-): Promise<void[]> => {
-  return Promise.all(
-    Object.entries(settings.topics).map(([topic, isEnabled]) => {
-      if (isEnabled) {
-        return subscribeWalletToSingleNotificationTopic(
-          settings.type,
-          chainId,
-          settings.address,
-          topic
-        );
-      } else {
-        return Promise.resolve();
-      }
-    })
-  );
-};
-
 export const unsubscribeWalletFromAllNotificationTopics = (
   type: string,
   chainId: number,
