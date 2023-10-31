@@ -10,8 +10,6 @@ import {
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
 } from '@/notifications/settings/storage';
-import { notificationsSubscription } from '@/redux/explorer';
-import store from '@/redux/store';
 import { InteractionManager } from 'react-native';
 
 type InitializationStateType = {
@@ -99,7 +97,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
   const { alreadySaved, newSettings } = initializationState;
   // preparing list of wallets that need to be subscribed
   addresses.forEach(entry => {
-    store.dispatch(notificationsSubscription(entry.address));
     const alreadySavedEntry = alreadySaved.get(entry.address);
     // handling a case where we import a seed phrase of a previously watched wallet
     if (alreadySavedEntry !== undefined && alreadySavedEntry.settings.type !== entry.relationship) {
