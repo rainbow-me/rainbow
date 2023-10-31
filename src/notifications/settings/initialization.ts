@@ -66,13 +66,9 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
     }
   });
 
-  const proposedSettingsWithRemovedWallets = proposedSettings.filter(
-    setting => {
-      return !removedWalletsThatWereNotUnsubscribedProperly.get(
-        setting.address
-      );
-    }
-  );
+  const proposedSettingsWithRemovedWallets = proposedSettings.filter(setting => {
+    return !removedWalletsThatWereNotUnsubscribedProperly.get(setting.address);
+  });
 
   InteractionManager.runAfterInteractions(() => {
     publishAndSaveWalletSettings(proposedSettingsWithRemovedWallets, true);
@@ -114,7 +110,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         type: entry.relationship,
         successfullyFinishedInitialSubscription: false,
-        oldType: alreadySavedEntry.settings.type,
       };
       newSettings[alreadySavedEntry.index] = updatedSettingsEntry;
     }
