@@ -4,6 +4,7 @@ import {
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
+import { getFCMToken } from '@/notifications/tokens';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import { NotificationTopic } from '@/notifications/settings/constants';
@@ -30,6 +31,35 @@ const updateNotificationSubscription = async (
   });
 
   return response.data;
+};
+
+export const updateWalletSettings = async (
+  walletSettings: WalletNotificationSettings[]
+): Promise<WalletNotificationSettings[] | undefined> => {
+  const subscriptionPayload = parseWalletSettings(walletSettings);
+  const firebaseToken = await getFCMToken();
+  if (!firebaseToken) return;
+  const newSettings = await updateNotificationSubscription(
+    firebaseToken,
+    subscriptionPayload
+  );
+  return newSettings;
+};
+
+const parseWalletSettings = (
+  walletSettings: WalletNotificationSettings[]
+): NotificationSubscriptionWalletsType[] => {
+  return walletSettings.map(setting => {
+    const topics = Object.keys(setting.topics).filter(
+      topic => !!setting.topics[topic]
+    );
+    return {
+      type: setting.type,
+      chain_id: 1,
+      address: setting.address,
+      transaction_action_types: topics,
+    };
+  });
 };
 
 export const unsubscribeWalletFromAllNotificationTopics = (
