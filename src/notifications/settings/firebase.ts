@@ -9,7 +9,7 @@ import {
 } from '@/notifications/settings/types';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
-import { GlobalNotificationTopic, WalletNotificationTopic } from '@/notifications/settings/constants';
+import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
 import { rainbowFetch } from '@/rainbow-fetch';
 
@@ -134,12 +134,6 @@ const parseWalletSettings = (walletSettings: WalletNotificationSettings[]): Noti
       };
     });
   });
-};
-
-export const unsubscribeWalletFromAllNotificationTopics = (type: string, chainId: number, address: string): Promise<void[]> => {
-  return Promise.all(
-    Object.values(WalletNotificationTopic).map(topic => unsubscribeWalletFromNotificationTopic(type, chainId, address, topic))
-  );
 };
 
 export const unsubscribeFromAllGlobalNotificationTopics = (): Promise<void[]> => {
