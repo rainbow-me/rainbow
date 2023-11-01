@@ -106,7 +106,7 @@ export const useWalletGroupNotificationSettings = () => {
   }, [notificationSettings]);
 
   const updateGroupSettingsAndSubscriptions = useCallback(
-    (type: NotificationRelationshipType, enabled: boolean) => {
+    async (type: NotificationRelationshipType, enabled: boolean) => {
       const options: GroupSettings = {
         [type]: enabled,
       };
@@ -122,17 +122,13 @@ export const useWalletGroupNotificationSettings = () => {
       };
 
       if (newOwnerEnabled !== ownerEnabled) {
-        return toggleGroupNotifications(
-          ownedWallets,
-          NotificationRelationship.OWNER,
-          newOwnerEnabled
-        ).then(updateStore);
+        return toggleGroupNotifications(ownedWallets, newOwnerEnabled).then(
+          updateStore
+        );
       } else if (newWatcherEnabled !== watcherEnabled) {
-        return toggleGroupNotifications(
-          watchedWallets,
-          NotificationRelationship.WATCHER,
-          newWatcherEnabled
-        ).then(updateStore);
+        return toggleGroupNotifications(watchedWallets, newWatcherEnabled).then(
+          updateStore
+        );
       }
       return Promise.resolve();
     },
