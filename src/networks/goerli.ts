@@ -37,6 +37,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
       walletconnect: false,
       swaps: false,
       nfts: false,
+      notifications: false,
       savings: true,
       pools: true,
       txs: config.goerli_tx_enabled,

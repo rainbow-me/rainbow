@@ -35,6 +35,7 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
       walletconnect: false,
       swaps: false,
       nfts: true,
+      notifications: false,
       savings: false,
       pools: false,
       txs: false,

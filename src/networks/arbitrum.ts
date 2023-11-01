@@ -36,6 +36,7 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
+      notifications: true,
       savings: false,
       pools: false,
       txs: config.arbitrum_tx_enabled,

@@ -35,6 +35,7 @@ export const getZoraNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
+      notifications: false,
       savings: false,
       pools: false,
       txs: config.zora_tx_enabled && config.op_chains_tx_enabled,

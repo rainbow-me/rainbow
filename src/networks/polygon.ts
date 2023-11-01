@@ -36,6 +36,7 @@ export const getPolygonNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
+      notifications: true,
       savings: false,
       pools: false,
       txs: config.polygon_tx_enabled,
