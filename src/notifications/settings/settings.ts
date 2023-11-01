@@ -10,7 +10,6 @@ import {
 } from '@/notifications/settings/storage';
 import {
   subscribeWalletToSingleNotificationTopic,
-  unsubscribeWalletFromAllNotificationTopics,
   unsubscribeWalletFromSingleNotificationTopic,
   updateWalletSettings,
 } from '@/notifications/settings/firebase';
@@ -46,11 +45,11 @@ export const removeNotificationSettingsForWallet = async (
  Also used to batch toggle notifications for a single wallet
  when using the `Allow Notifications` switch in the wallet settings view.
  */
-export function toggleGroupNotifications(
+export async function toggleGroupNotifications(
   wallets: WalletNotificationSettings[],
   relationship: NotificationRelationshipType,
   enableNotifications: boolean
-): Promise<void[][] | void[]> {
+): Promise<void[][] | void[] | undefined> {
   if (enableNotifications) {
     return Promise.all(
       // loop through all owned wallets, loop through their topics, subscribe to enabled topics
@@ -73,16 +72,21 @@ export function toggleGroupNotifications(
       })
     );
   } else {
-    // loop through all wallets, unsubscribe from all topics
-    return Promise.all(
-      wallets.map((wallet: WalletNotificationSettings) => {
-        return unsubscribeWalletFromAllNotificationTopics(
-          relationship,
-          NOTIFICATIONS_DEFAULT_CHAIN_ID,
-          wallet.address
-        );
-      })
+    // unsubscribe from all topics for all wallets passed in
+    const allSettings = getAllNotificationSettingsFromStorage();
+    const toBeRemoved = new Map<string, boolean>();
+
+    // Initialize hashmap of addresses to be removed
+    wallets.forEach((entry, _) => {
+      toBeRemoved.set(entry.address, true);
+    });
+
+    const newSettings = allSettings.filter(
+      (wallet: WalletNotificationSettings) => !toBeRemoved.get(wallet.address)
     );
+
+    updateWalletSettings(newSettings);
+    return;
   }
 }
 
