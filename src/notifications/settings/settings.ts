@@ -1,7 +1,4 @@
-import {
-  NOTIFICATIONS_DEFAULT_CHAIN_ID,
-  WALLET_TOPICS_STORAGE_KEY,
-} from '@/notifications/settings/constants';
+import { NOTIFICATIONS_DEFAULT_CHAIN_ID } from '@/notifications/settings/constants';
 import {
   NotificationRelationshipType,
   NotificationTopicType,
@@ -9,7 +6,6 @@ import {
 } from '@/notifications/settings/types';
 import {
   getAllNotificationSettingsFromStorage,
-  notificationSettingsStorage,
   setAllNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import {
@@ -23,9 +19,9 @@ import { publishWalletSettings } from '@/notifications/settings/firebase';
  1. Reads notification settings for all wallets from storage.
  2. Matches settings for the wallet with the given address.
  3. Excludes that wallet from the array and saves the new array.
- 4. Unsubscribes the wallet from all notification topics on Firebase.
+ 4. Updates the notification subscription
  */
-export const removeNotificationSettingsForWallet = (
+export const removeNotificationSettingsForWallet = async (
   address: string
 ): Promise<void> => {
   const allSettings = getAllNotificationSettingsFromStorage();
@@ -41,16 +37,7 @@ export const removeNotificationSettingsForWallet = (
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  return unsubscribeWalletFromAllNotificationTopics(
-    settingsForWallet.type,
-    NOTIFICATIONS_DEFAULT_CHAIN_ID,
-    address
-  ).then(() => {
-    notificationSettingsStorage.set(
-      WALLET_TOPICS_STORAGE_KEY,
-      JSON.stringify(newSettings)
-    );
-  });
+  publishAndSaveWalletSettings(newSettings);
 };
 
 /**
@@ -85,7 +72,7 @@ export function toggleGroupNotifications(
       })
     );
   } else {
-    // loop through all owned wallets, unsubscribe from all topics
+    // loop through all wallets, unsubscribe from all topics
     return Promise.all(
       wallets.map((wallet: WalletNotificationSettings) => {
         return unsubscribeWalletFromAllNotificationTopics(
