@@ -1,10 +1,9 @@
 import {
   DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS,
-  NOTIFICATIONS_DEFAULT_CHAIN_ID,
+  DEFAULT_ENABLED_TOPIC_SETTINGS,
 } from '@/notifications/settings/constants';
 import {
   GlobalNotificationTopicType,
-  WalletNotificationRelationshipType,
   WalletNotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -15,11 +14,8 @@ import {
 } from '@/notifications/settings/storage';
 import {
   subscribeToGlobalNotificationTopic,
-  subscribeWalletToNotificationTopic,
   unsubscribeFromAllGlobalNotificationTopics,
   unsubscribeFromGlobalNotificationTopic,
-  unsubscribeWalletFromAllNotificationTopics,
-  unsubscribeWalletFromNotificationTopic,
 } from '@/notifications/settings/firebase';
 import { publishWalletSettings } from '@/notifications/settings/firebase';
 
@@ -44,7 +40,7 @@ export const removeNotificationSettingsForWallet = async (
   );
 
   if (!settingsForWallet) {
-    return Promise.resolve();
+    return;
   }
 
   const newSettings = allSettings.filter((wallet: WalletNotificationSettings) => wallet.address !== address);
@@ -57,51 +53,54 @@ export const removeNotificationSettingsForWallet = async (
  Also used to batch toggle notifications for a single wallet
  when using the `Allow Notifications` switch in the wallet settings view.
  */
-export function toggleGroupNotifications(
+export async function toggleGroupNotifications(
   wallets: WalletNotificationSettings[],
-  relationship: WalletNotificationRelationshipType,
   enableNotifications: boolean
-): Promise<void[][] | void[]> {
-  if (enableNotifications) {
-    return Promise.all(
-      // loop through all owned wallets, loop through their topics, subscribe to enabled topics
-      wallets.flatMap((wallet: WalletNotificationSettings) => {
-        const { topics, address } = wallet;
-        // when toggling a whole group, check if notifications
-        // are specifically enabled for this wallet
-        return Object.keys(topics).map((topic: WalletNotificationTopicType) => {
-          if (topics[topic]) {
-            return subscribeWalletToNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
-          } else {
-            return Promise.resolve();
-          }
-        });
-      })
-    );
-  } else {
-    // loop through all wallets, unsubscribe from all topics
-    return Promise.all(
-      wallets.map((wallet: WalletNotificationSettings) => {
-        return unsubscribeWalletFromAllNotificationTopics(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, wallet.address);
-      })
-    );
-  }
+): Promise<boolean> {
+  const allSettings = getAllWalletNotificationSettingsFromStorage();
+  const toBeUpdated = new Map<string, boolean>();
+  wallets.forEach(entry => {
+    toBeUpdated.set(entry.address, true);
+  });
+
+  const proposedSettings = allSettings.map(walletSetting => {
+    if (toBeUpdated.get(walletSetting.address)) {
+      return {
+        ...walletSetting,
+        enabled: enableNotifications,
+        successfullyFinishedInitialSubscription: false,
+        topics: enableNotifications ? DEFAULT_ENABLED_TOPIC_SETTINGS : {},
+      };
+    }
+    return walletSetting;
+  });
+
+  return publishAndSaveWalletSettings(proposedSettings, true);
 }
 
 /**
  Function for subscribing/unsubscribing a wallet to/from a single notification topic.
  */
-export function toggleTopicForWallet(
-  relationship: WalletNotificationRelationshipType,
+export async function toggleTopicForWallet(
   address: string,
   topic: WalletNotificationTopicType,
   enableTopic: boolean
-): Promise<void> {
-  if (enableTopic) {
-    return subscribeWalletToNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
-  } else {
-    return unsubscribeWalletFromNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
-  }
+): Promise<boolean> {
+  const allSettings = getAllWalletNotificationSettingsFromStorage();
+  const newSettings = allSettings.map(walletSetting => {
+    if (walletSetting.address !== address) {
+      return walletSetting;
+    }
+    return {
+      ...walletSetting,
+      successfullyFinishedInitialSubscription: false,
+      topics: {
+        ...walletSetting.topics,
+        [topic]: enableTopic,
+      },
+    };
+  });
+  return publishAndSaveWalletSettings(newSettings, true);
 }
 
 /**
@@ -116,10 +115,16 @@ export function toggleGlobalNotificationTopic(topic: GlobalNotificationTopicType
 }
 
 export const publishAndSaveWalletSettings = async (
-  proposedSettings: WalletNotificationSettings[]
-): Promise<void> => {
+  proposedSettings: WalletNotificationSettings[],
+  skipPreSave: boolean = false
+): Promise<boolean> => {
+  if (!skipPreSave) {
+    setAllWalletNotificationSettingsToStorage(proposedSettings);
+  }
   const finalizedSettings = await publishWalletSettings(proposedSettings);
   if (finalizedSettings) {
     setAllWalletNotificationSettingsToStorage(finalizedSettings);
+    return true;
   }
+  return false;
 };
