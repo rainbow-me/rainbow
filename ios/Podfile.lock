@@ -637,6 +637,7 @@ PODS:
     - React
     - RNInputMask
   - react-native-udp (2.7.0):
+    - CocoaAsyncSocket
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -780,7 +781,7 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.11.1)
+    - SDWebImage (~> 5.12.5)
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (18.3.0):
     - Firebase/CoreOnly (= 10.12.0)
@@ -878,9 +879,9 @@ PODS:
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
+  - SDWebImage (5.12.6):
+    - SDWebImage/Core (= 5.12.6)
+  - SDWebImage/Core (5.12.6)
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -899,6 +900,7 @@ PODS:
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
+    - CocoaAsyncSocket
     - React
   - TOCropViewController (2.6.1)
   - ToolTipMenu (5.2.1):
@@ -1458,7 +1460,7 @@ SPEC CHECKSUMS:
   react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
-  react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
+  react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
@@ -1489,7 +1491,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
+  RNFastImage: 945abf54742505d790d9024d230c69b1e866bc88
   RNFBApp: 147c3274daa84d7410d457510548d5fb3b317e37
   RNFBCrashlytics: 4adc1698782408ecc0b0cf9e9b9060c82726afab
   RNFBMessaging: 0e98a1452a60e6828fcd7139b1ad45ebf4452aa8
@@ -1513,7 +1515,7 @@ SPEC CHECKSUMS:
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   segment-analytics-react-native: 2b90f606cda9234dd110d117c4ffc918d9ba29bb
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
@@ -1523,7 +1525,7 @@ SPEC CHECKSUMS:
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
-  TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
+  TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 1910a51e4c6f6b049650086d343090f267b4c260

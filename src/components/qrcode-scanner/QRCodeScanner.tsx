@@ -1,8 +1,12 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { RNCamera } from 'react-native-camera';
-import { useCameraDevice, Camera } from 'react-native-vision-camera';
+// import { RNCamera } from 'react-native-camera';
+import {
+  Camera,
+  useCameraDevice,
+  useCodeScanner,
+} from 'react-native-vision-camera';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -10,7 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import { useHardwareBack, useScanner } from '@/hooks';
+import { useAppState, useHardwareBack } from '@/hooks';
 import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
@@ -18,64 +22,50 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-
-// const { hasPermission, requestPermission } = useCameraPermission()
+import { CameraState, useCameraPermission } from './useCameraPermissions';
 
 // Display.getRealMetrics
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
 
-const CameraState = {
-  // unexpected mount error
-  Error: 'error',
-  // properly working camera, ready to scan
-  Scanning: 'scanning',
-  // we should ask user for permission
-  Unauthorized: 'unauthorized',
-  // ready to go
-  Waiting: 'waiting',
-};
-
 const androidSoftMenuHeight = getSoftMenuBarHeight();
 
-export default function QRCodeScanner({
+interface QRCodeScannerProps {
+  flashEnabled?: boolean;
+  setFlashEnabled: (value: boolean) => void;
+}
+
+export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   flashEnabled,
   setFlashEnabled,
-}: {
-  flashEnabled: boolean;
-  setFlashEnabled: (value: boolean) => void;
-}) {
-  const { colors } = useTheme();
-  const [cameraState, setCameraState] = useState(CameraState.Waiting);
+}) => {
+  const {
+    cameraState,
+    setCameraState,
+    askForPermissions,
+  } = useCameraPermission();
+  // const { colors } = useTheme();
   const isFocused = useIsFocused();
-
+  const { appState: currentAppState } = useAppState();
+  const isActive = isFocused && currentAppState === 'active';
   const [enabled, setEnabled] = useState(IS_IOS);
   const [isCameraReady, setIsCameraReady] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
-      console.warn('UE true', enabled);
       setEnabled(true);
     } else {
-      console.warn('UE false', enabled);
       setEnabled(false);
       setFlashEnabled(false);
       setIsCameraReady(false);
     }
-  }, [isFocused, setFlashEnabled, enabled]);
+  }, [isFocused, setFlashEnabled]);
 
   const hideCamera = useCallback(() => {
     setEnabled(false);
-    console.warn('hide camera', enabled);
-  }, [enabled]);
+  }, []);
 
-  const { onScan } = useScanner(
-    cameraState === CameraState.Scanning,
-    hideCamera
-  );
-
-  // handle back button press on android
   useHardwareBack(hideCamera);
 
   const cameraStyle = useAnimatedStyle(() => ({
@@ -85,16 +75,18 @@ export default function QRCodeScanner({
     }),
   }));
 
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isCameraReady ? 0 : 1, {
-      duration: 225,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    }),
-  }));
-
   const device = useCameraDevice('back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
 
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: codes => {
+      console.log(`Scanned ${codes.length} codes!`);
+    },
+  });
+
+  if (device == null)
+    return <QRCodeScannerNeedsAuthorization onGetBack={askForPermissions} />;
   return (
     <>
       <Box
@@ -102,46 +94,22 @@ export default function QRCodeScanner({
         width="full"
         height={{ custom: customHeightValue }}
       >
-        {enabled && (
-          <Box as={Animated.View} style={cameraStyle}>
-            {device && (
-              <Camera
-                style={{
-                  height: customHeightValue,
-                  width: '100%',
-                  position: 'absolute',
-                }}
-                device={device}
-                isActive={true}
-                onBarCodeRead={onScan}
-                onMountError={() => setCameraState(CameraState.Error)}
-                onCameraReady={() => setIsCameraReady(true)}
-                captureAudio={false}
-                flashMode={
-                  flashEnabled
-                    ? RNCamera.Constants.FlashMode.torch
-                    : RNCamera.Constants.FlashMode.off
-                }
-              />
-            )}
-            <Box
-              as={RNCamera}
-              captureAudio={false}
-              pendingAuthorizationView={undefined}
-            >
-              <Animated.View
-                style={[
-                  overlayStyle,
-                  {
-                    backgroundColor: colors.trueBlack,
-                    height: '100%',
-                    width: '100%',
-                  },
-                ]}
-              />
-            </Box>
-          </Box>
-        )}
+        <Box as={Animated.View} style={cameraStyle}>
+          <Camera
+            style={{
+              height: customHeightValue,
+              width: '100%',
+              position: 'absolute',
+            }}
+            device={device}
+            isActive={isActive}
+            codeScanner={codeScanner}
+            torch={!flashEnabled ? 'off' : 'on'}
+            audio={false}
+            onError={() => setCameraState(CameraState.Error)}
+          />
+        </Box>
+        )
         {cameraState === CameraState.Error ||
         cameraState === CameraState.Unauthorized ? (
           <Cover alignHorizontal="center" alignVertical="center">
@@ -194,4 +162,4 @@ export default function QRCodeScanner({
       </Box>
     </>
   );
-}
+};

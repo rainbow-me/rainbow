@@ -8,9 +8,14 @@ import {
 } from 'react-native-permissions';
 
 export enum CameraState {
-  Unauthorized = 'Unauthorized',
-  Scanning = 'Scanning',
-  Error = 'Error',
+  // unexpected mount error
+  Error = 'error',
+  // properly working camera, ready to scan
+  Scanning = 'scanning',
+  // we should ask user for permission
+  Unauthorized = 'unauthorized',
+  // ready to go
+  Waiting = 'waiting',
 }
 
 export function useCameraPermission() {
@@ -52,6 +57,7 @@ export function useCameraPermission() {
 
   return {
     cameraState,
+    setCameraState,
     askForPermissions,
   };
 }
