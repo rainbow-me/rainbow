@@ -1,4 +1,5 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
+import { RainbowNetworks } from '@/networks';
 import {
   NotificationTopicType,
   NotificationSubscriptionWalletsType,
@@ -49,17 +50,24 @@ export const updateWalletSettings = async (
 const parseWalletSettings = (
   walletSettings: WalletNotificationSettings[]
 ): NotificationSubscriptionWalletsType[] => {
-  return walletSettings.map(setting => {
+  const walletSettingsPerChainId = walletSettings.map(setting => {
     const topics = Object.keys(setting.topics).filter(
       topic => !!setting.topics[topic]
     );
-    return {
-      type: setting.type,
-      chain_id: 1,
-      address: setting.address,
-      transaction_action_types: topics,
-    };
+    const notificationChainIds = RainbowNetworks.filter(
+      network => network.enabled && network.features.notifications
+    ).map(network => network.id);
+
+    return notificationChainIds.map(chainId => {
+      return {
+        type: setting.type,
+        chain_id: chainId,
+        address: setting.address,
+        transaction_action_types: topics,
+      };
+    });
   });
+  return walletSettingsPerChainId.flat();
 };
 
 export const unsubscribeWalletFromAllNotificationTopics = (
