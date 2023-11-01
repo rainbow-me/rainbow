@@ -91,6 +91,7 @@ function generateError({
 }) {
   const message =
     responseBody?.error ||
+    responseBody?.message ||
     response?.statusText ||
     'There was an error with the request.';
 
