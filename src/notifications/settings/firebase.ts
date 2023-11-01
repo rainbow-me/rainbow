@@ -156,23 +156,6 @@ const parseWalletSettings = (
   });
 };
 
-export const unsubscribeWalletFromAllNotificationTopics = (
-  type: string,
-  chainId: number,
-  address: string
-): Promise<void[]> => {
-  return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      unsubscribeWalletFromSingleNotificationTopic(
-        type,
-        chainId,
-        address,
-        topic
-      )
-    )
-  );
-};
-
 export const subscribeWalletToSingleNotificationTopic = (
   type: string,
   chainId: number,
