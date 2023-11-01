@@ -5,7 +5,7 @@ import {
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
-import { getFCMToken } from '@/notifications/tokens';
+import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import { NotificationTopic } from '@/notifications/settings/constants';
@@ -15,23 +15,80 @@ import { rainbowFetch } from '@/rainbow-fetch';
 const NOTIFICATION_SUBSCRIPTIONS_URL =
   'https://notifications.p.rainbow.me/api/v1/subscriptions';
 
+const INVALID_FCM_TOKEN_ERROR =
+  'failed to validate FCM token: invalid or expired FCM token';
+
+type NotificationsSubscriptionResponse = {
+  error: boolean;
+  shouldRetry: boolean;
+};
+
 const updateNotificationSubscription = async (
   firebaseToken: string,
   wallets: NotificationSubscriptionWalletsType[]
-) => {
-  const options = {
-    firebase_token: firebaseToken,
-    wallets: wallets,
-  };
-  const response = await rainbowFetch(NOTIFICATION_SUBSCRIPTIONS_URL, {
-    method: 'put',
-    body: JSON.stringify(options),
-    headers: {
-      Authorization: `Bearer ${NOTIFICATIONS_API_KEY}`,
-    },
-  });
+): Promise<NotificationsSubscriptionResponse> => {
+  try {
+    const options = {
+      firebase_token: firebaseToken,
+      wallets: wallets,
+    };
+    await rainbowFetch(NOTIFICATION_SUBSCRIPTIONS_URL, {
+      method: 'put',
+      body: JSON.stringify(options),
+      headers: {
+        Authorization: `Bearer ${NOTIFICATIONS_API_KEY}`,
+      },
+    });
+    return {
+      error: false,
+      shouldRetry: false,
+    };
+  } catch (error: any) {
+    // if INVALID_FCM_TOKEN_ERROR message, retry with updated FCM token
+    if (error.message === INVALID_FCM_TOKEN_ERROR) {
+      return {
+        error: true,
+        shouldRetry: true,
+      };
+    }
 
-  return response.data;
+    // TODO JIN - sentry log this error
+    return {
+      error: true,
+      shouldRetry: false,
+    };
+  }
+};
+
+const updateNotificationSubscriptionWithRetry = async (
+  firebaseToken: string,
+  wallets: NotificationSubscriptionWalletsType[]
+): Promise<boolean> => {
+  const subscriptionResponse = await updateNotificationSubscription(
+    firebaseToken,
+    wallets
+  );
+
+  if (!subscriptionResponse.error) {
+    // success
+    return true;
+  } else if (subscriptionResponse.shouldRetry) {
+    await saveFCMToken();
+    const refreshedFirebaseToken = await getFCMToken();
+    if (!refreshedFirebaseToken) return false;
+
+    const subscriptionRetryResponse = await updateNotificationSubscription(
+      refreshedFirebaseToken,
+      wallets
+    );
+    if (!subscriptionRetryResponse.error) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
 };
 
 export const updateWalletSettings = async (
@@ -39,18 +96,29 @@ export const updateWalletSettings = async (
 ): Promise<WalletNotificationSettings[] | undefined> => {
   const subscriptionPayload = parseWalletSettings(walletSettings);
   const firebaseToken = await getFCMToken();
+
   if (!firebaseToken) return;
-  const newSettings = await updateNotificationSubscription(
+  const success = await updateNotificationSubscriptionWithRetry(
     firebaseToken,
     subscriptionPayload
   );
-  return newSettings;
+  if (success) {
+    return walletSettings.map(setting => {
+      return {
+        ...setting,
+        successfullyFinishedInitialSubscription: true,
+        enabled: true,
+      };
+    });
+  } else {
+    return;
+  }
 };
 
 const parseWalletSettings = (
   walletSettings: WalletNotificationSettings[]
 ): NotificationSubscriptionWalletsType[] => {
-  const walletSettingsPerChainId = walletSettings.map(setting => {
+  return walletSettings.flatMap(setting => {
     const topics = Object.keys(setting.topics).filter(
       topic => !!setting.topics[topic]
     );
@@ -62,12 +130,11 @@ const parseWalletSettings = (
       return {
         type: setting.type,
         chain_id: chainId,
-        address: setting.address,
+        address: setting.address.toLowerCase(),
         transaction_action_types: topics,
       };
     });
   });
-  return walletSettingsPerChainId.flat();
 };
 
 export const unsubscribeWalletFromAllNotificationTopics = (
