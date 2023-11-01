@@ -2,12 +2,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
-import {
-  check as checkForPermissions,
-  PERMISSIONS,
-  request as requestPermission,
-  RESULTS,
-} from 'react-native-permissions';
+import { useCameraDevice, Camera } from 'react-native-vision-camera';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -23,6 +18,8 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+
+// const { hasPermission, requestPermission } = useCameraPermission()
 
 // Display.getRealMetrics
 
@@ -53,22 +50,25 @@ export default function QRCodeScanner({
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
   const isFocused = useIsFocused();
 
-  const [enabled, setEnabled] = useState(ios);
+  const [enabled, setEnabled] = useState(IS_IOS);
   const [isCameraReady, setIsCameraReady] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
+      console.warn('UE true', enabled);
       setEnabled(true);
     } else {
+      console.warn('UE false', enabled);
       setEnabled(false);
       setFlashEnabled(false);
       setIsCameraReady(false);
     }
-  }, [isFocused, setFlashEnabled]);
+  }, [isFocused, setFlashEnabled, enabled]);
 
   const hideCamera = useCallback(() => {
     setEnabled(false);
-  }, []);
+    console.warn('hide camera', enabled);
+  }, [enabled]);
 
   const { onScan } = useScanner(
     cameraState === CameraState.Scanning,
@@ -77,42 +77,6 @@ export default function QRCodeScanner({
 
   // handle back button press on android
   useHardwareBack(hideCamera);
-
-  const askForPermissions = useCallback(async () => {
-    try {
-      const permission = IS_IOS
-        ? PERMISSIONS.IOS.CAMERA
-        : PERMISSIONS.ANDROID.CAMERA;
-
-      const res = await checkForPermissions(permission);
-
-      // we should ask permission natively with the native alert thing
-      if (res === RESULTS.DENIED || res === RESULTS.BLOCKED) {
-        const askResult = await requestPermission(permission);
-
-        if (askResult !== RESULTS.GRANTED) {
-          setCameraState(CameraState.Unauthorized);
-        } else {
-          setCameraState(CameraState.Scanning);
-        }
-      }
-      // we should ask for permission through the UI
-      else if (res === RESULTS.UNAVAILABLE) {
-        setCameraState(CameraState.Unauthorized);
-      }
-      // initialize the camera and celebrate
-      else if (res === RESULTS.GRANTED) {
-        setCameraState(CameraState.Scanning);
-      }
-    } catch (err) {
-      setCameraState(CameraState.Error);
-      throw err;
-    }
-  }, []);
-
-  useFocusEffect(() => {
-    setTimeout(() => askForPermissions(), 200);
-  });
 
   const cameraStyle = useAnimatedStyle(() => ({
     opacity: withTiming(isCameraReady ? 1 : 0, {
@@ -128,30 +92,42 @@ export default function QRCodeScanner({
     }),
   }));
 
+  const device = useCameraDevice('back');
+  const customHeightValue = deviceHeight + androidSoftMenuHeight;
+
   return (
     <>
       <Box
         position="absolute"
         width="full"
-        height={{ custom: deviceHeight + androidSoftMenuHeight }}
+        height={{ custom: customHeightValue }}
       >
         {enabled && (
           <Box as={Animated.View} style={cameraStyle}>
+            {device && (
+              <Camera
+                style={{
+                  height: customHeightValue,
+                  width: '100%',
+                  position: 'absolute',
+                }}
+                device={device}
+                isActive={true}
+                onBarCodeRead={onScan}
+                onMountError={() => setCameraState(CameraState.Error)}
+                onCameraReady={() => setIsCameraReady(true)}
+                captureAudio={false}
+                flashMode={
+                  flashEnabled
+                    ? RNCamera.Constants.FlashMode.torch
+                    : RNCamera.Constants.FlashMode.off
+                }
+              />
+            )}
             <Box
               as={RNCamera}
               captureAudio={false}
-              flashMode={
-                flashEnabled
-                  ? RNCamera.Constants.FlashMode.torch
-                  : RNCamera.Constants.FlashMode.off
-              }
-              onBarCodeRead={onScan}
-              onMountError={() => setCameraState(CameraState.Error)}
-              onCameraReady={() => setIsCameraReady(true)}
               pendingAuthorizationView={undefined}
-              width="full"
-              height={{ custom: deviceHeight + androidSoftMenuHeight }}
-              position="absolute"
             >
               <Animated.View
                 style={[

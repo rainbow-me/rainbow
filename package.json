@@ -274,6 +274,7 @@
     "react-native-version-number": "0.3.6",
     "react-native-video": "5.2.1",
     "react-native-video-cache": "2.0.5",
+    "react-native-vision-camera": "3.6.4",
     "react-native-webview": "13.2.3",
     "react-native-widgetkit": "1.0.9",
     "react-navigation-backhandler": "2.0.1",
