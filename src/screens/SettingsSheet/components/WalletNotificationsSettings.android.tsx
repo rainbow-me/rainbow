@@ -185,11 +185,7 @@ const WalletNotificationsSettings = () => {
       return;
     }
     setAllState(prev => ({ status: !prev.status, loading: true }));
-    toggleGroupNotifications(
-      [notifications],
-      notifications.type,
-      !notificationsEnabled
-    )
+    toggleGroupNotifications([notifications], !notificationsEnabled)
       .then(() => {
         if (
           !notificationsSectionEnabled ||
@@ -226,7 +222,6 @@ const WalletNotificationsSettings = () => {
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
       toggleTopicForWallet(
-        notifications.type,
         notifications.address,
         topic,
         !notifications?.topics[topic]
