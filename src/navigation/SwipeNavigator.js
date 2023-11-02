@@ -6,8 +6,6 @@ import Animated, {
   useSharedValue,
   interpolate,
   Extrapolate,
-  withTiming,
-  Easing,
 } from 'react-native-reanimated';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
@@ -17,12 +15,8 @@ import DiscoverScreen, {
   discoverScrollToTopFnRef,
 } from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import QRScannerScreen from '../screens/QRScannerScreen';
 import { deviceUtils } from '../utils';
-import {
-  ScrollPositionContext,
-  usePagerPosition,
-} from './ScrollPositionContext';
+import { ScrollPositionContext } from './ScrollPositionContext';
 import Routes from './routesNames';
 import {
   useAccountAccentColor,
@@ -32,8 +26,6 @@ import {
 } from '@/hooks';
 import { Box, Columns, Stack } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-
-import logger from 'logger';
 import PointsScreen from '@/screens/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import RecyclerListViewScrollToTopProvider, {
@@ -62,7 +54,7 @@ const animationConfig = {
 };
 
 const Swipe = createMaterialTopTabNavigator();
-const HEADER_HEIGHT = IS_IOS ? 82 : 62;
+export const TAB_BAR_HEIGHT = IS_IOS ? 82 : 62;
 
 const TabBar = ({
   state,
@@ -152,7 +144,7 @@ const TabBar = ({
         }}
       >
         <Box
-          height={{ custom: HEADER_HEIGHT }}
+          height={{ custom: TAB_BAR_HEIGHT }}
           position="absolute"
           style={{
             bottom: 0,
@@ -165,7 +157,7 @@ const TabBar = ({
             blurAmount={40}
             blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
             width="full"
-            height={{ custom: HEADER_HEIGHT }}
+            height={{ custom: TAB_BAR_HEIGHT }}
           >
             <Box
               height="full"
