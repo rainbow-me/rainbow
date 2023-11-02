@@ -10,4 +10,4 @@ export type {
   WalletNotificationTopicType,
   WalletNotificationSettings,
 } from './types';
-export { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage, notificationSettingsStorage, updateGroupSettings, updateSettingsForWalletsWithRelationshipType } from './storage';
+export { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage, notificationSettingsStorage, updateGroupSettings } from './storage';

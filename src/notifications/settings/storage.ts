@@ -7,7 +7,6 @@ import {
 import {
   GlobalNotificationTopics,
   GroupSettings,
-  WalletNotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { MMKV } from 'react-native-mmkv';
@@ -66,26 +65,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data) as GroupSettings;
   return {};
-};
-
-/**
- * Updates settings for all wallets with relationship type
- * @returns updated wallet settings array
- */
-export const updateSettingsForWalletsWithRelationshipType = (
-  type: WalletNotificationRelationshipType,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings[] => {
-  const data = getAllWalletNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.type === type) {
-      return { ...wallet, ...options };
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
-
-  return newSettings;
 };
 
 /**
