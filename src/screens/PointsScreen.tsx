@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React from 'react';
 import { Image, View } from 'react-native';
 import Animated, {
@@ -23,8 +22,6 @@ import { useNavigation } from '@/navigation';
 import {
   Bleed,
   Box,
-  Cover,
-  DebugLayout,
   Inline,
   Separator,
   Stack,
@@ -32,12 +29,7 @@ import {
   globalColors,
   useForegroundColor,
 } from '@/design-system';
-import {
-  useAccountAccentColor,
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@/hooks';
+import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { POINTS, useExperimentalFlag } from '@/config';
 import config from '@/model/config';
@@ -45,7 +37,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
-import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { IS_IOS, IS_TEST } from '@/env';
 import { haptics, safeAreaInsetValues } from '@/utils';
@@ -57,6 +48,20 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
+import { pointsQueryKey, usePoints } from '@/resources/points';
+import { maybeSignUri } from '@/handlers/imgix';
+import { isNil } from 'lodash';
+import { getFormattedTimeQuantity } from '@/helpers/utilities';
+import { address as formatAddress } from '@/utils/abbreviations';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import Spinner from '@/components/Spinner';
+import { queryClient } from '@/react-query';
+
+const STREAKS_ENABLED = false;
+const REFERRALS_ENABLED = false;
+const ONE_WEEK_MS = 604_800_000;
+
+const LoadingSpinner = IS_IOS ? ActivityIndicator : Spinner;
 
 const fallConfig = {
   duration: 2000,
@@ -73,8 +78,49 @@ const flyUpConfig = {
 
 const infoCircleColor = 'rgba(245, 248, 255, 0.25)';
 
-const LeaderboardRow = () => {
-  const rank: number = 1;
+const displayNextDistribution = (seconds: number) => {
+  const days = [
+    i18n.t(i18n.l.points.sunday),
+    i18n.t(i18n.l.points.monday),
+    i18n.t(i18n.l.points.tuesday),
+    i18n.t(i18n.l.points.wednesday),
+    i18n.t(i18n.l.points.thursday),
+    i18n.t(i18n.l.points.friday),
+    i18n.t(i18n.l.points.saturday),
+  ];
+
+  const ms = seconds * 1000;
+  const date = new Date(ms);
+  let hours = date.getHours();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  if (ms - Date.now() > ONE_WEEK_MS) {
+    return `${hours}${ampm} ${date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })}`;
+  } else {
+    const dayOfWeek = days[date.getDay()];
+
+    return `${hours}${ampm} ${dayOfWeek}`;
+  }
+};
+
+const LeaderboardRow = ({
+  address,
+  ens,
+  avatarURL,
+  points,
+  rank,
+}: {
+  address: string;
+  ens?: string;
+  avatarURL?: string;
+  points: number;
+  rank: number;
+}) => {
   let gradient;
   let icon;
   switch (rank) {
@@ -116,7 +162,7 @@ const LeaderboardRow = () => {
       break;
   }
 
-  const address = '0x4cefdsfdsfa8a8a8a8';
+  const formattedPoints = points.toLocaleString('en-US');
 
   return (
     <Box
@@ -126,33 +172,56 @@ const LeaderboardRow = () => {
       alignItems="center"
     >
       <Inline space="10px" alignVertical="center">
-        <Box
-          style={{ width: 36, height: 36 }}
-          borderRadius={18}
-          background="surfaceSecondaryElevated"
-          shadow="12px"
-        />
-        <Stack space="8px">
-          <Text
-            color="label"
-            weight="bold"
-            size="15pt"
-            ellipsizeMode="middle"
-            numberOfLines={1}
+        {avatarURL ? (
+          <Box
+            as={Image}
+            source={{ uri: maybeSignUri(avatarURL) }}
+            style={{ width: 36, height: 36 }}
+            borderRadius={18}
+            background="surfaceSecondaryElevated"
+            shadow="12px"
+          />
+        ) : (
+          <Box
+            style={{ width: 36, height: 36 }}
+            borderRadius={18}
+            background="surfaceSecondaryElevated"
+            shadow="12px"
+            alignItems="center"
+            justifyContent="center"
           >
-            {`${address.slice(0, 5)}…${address.slice(
-              address.length - 4,
-              address.length
-            )}`}
-          </Text>
-          <Inline space="2px" alignVertical="center">
-            <Text color="labelQuaternary" size="11pt" weight="bold">
-              􀙬
+            <Text
+              align="center"
+              weight="bold"
+              size="20pt"
+              color="labelTertiary"
+            >
+              􀉪
             </Text>
-            <Text color="labelQuaternary" size="13pt" weight="semibold">
-              {`40 ${i18n.t(i18n.l.points.days)}`}
+          </Box>
+        )}
+        <Stack space="8px">
+          <Box style={{ maxWidth: 130 }}>
+            <Text
+              color="label"
+              weight="bold"
+              size="15pt"
+              ellipsizeMode="middle"
+              numberOfLines={1}
+            >
+              {ens ? ens : formatAddress(address, 4, 5)}
             </Text>
-          </Inline>
+          </Box>
+          {STREAKS_ENABLED && (
+            <Inline space="2px" alignVertical="center">
+              <Text color="labelQuaternary" size="11pt" weight="bold">
+                􀙬
+              </Text>
+              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                {`40 ${i18n.t(i18n.l.points.days)}`}
+              </Text>
+            </Inline>
+          )}
         </Stack>
       </Inline>
       <Inline space="8px" alignVertical="center">
@@ -160,13 +229,13 @@ const LeaderboardRow = () => {
           <MaskedView
             maskElement={
               <Text align="right" weight="bold" color="label" size="15pt">
-                102,687
+                {formattedPoints}
               </Text>
             }
           >
             <Bleed vertical={{ custom: 5 }}>
               <LinearGradient
-                style={{ width: 100, height: 20 }}
+                style={{ width: 80, height: 20 }}
                 colors={gradient}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
@@ -175,7 +244,7 @@ const LeaderboardRow = () => {
           </MaskedView>
         ) : (
           <Text align="right" weight="bold" color="labelTertiary" size="15pt">
-            102,687
+            {formattedPoints}
           </Text>
         )}
         <Text
@@ -253,11 +322,15 @@ export default function PointsScreen() {
     accountImage,
     accountColor,
     accountSymbol,
+    accountENS,
   } = useAccountProfile();
   const pointsFullyEnabled =
     useExperimentalFlag(POINTS) || config.points_fully_enabled;
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
+  const { data, isFetching, dataUpdatedAt } = usePoints({
+    walletAddress: accountAddress,
+  });
 
   const iconState = useSharedValue(1);
   const progress = useSharedValue(0);
@@ -344,6 +417,8 @@ export default function PointsScreen() {
     [accountAddress, isToastActive, setClipboard, setToastActive]
   );
 
+  const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
+
   return (
     <Box as={Page} flex={1} testID="points-screen" width="full">
       <Navbar
@@ -370,283 +445,354 @@ export default function PointsScreen() {
         }
         title={i18n.t(i18n.l.account.tab_points)}
       />
+      {/* eslint-disable-next-line no-nested-ternary */}
       {pointsFullyEnabled ? (
-        <ScrollView
-          style={{
-            paddingHorizontal: 20,
-          }}
-          scrollIndicatorInsets={{
-            bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
-          }}
-          contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT + 32 }}
-        >
-          <Stack space="32px">
-            <Box flexDirection="row" alignItems="center" paddingTop="16px">
-              {/* <Box
-                width={{ custom: 36 }}
-                height={{ custom: 36 }}
-                background="blue"
-              /> */}
-
-              <MaskedView
-                style={{
-                  alignItems: 'center',
-                  height: 31,
-                  maxWidth: deviceWidth - 60 - 20 - 20,
-                }}
-                maskElement={
-                  <Text color="label" size="44pt" weight="heavy">
-                    10,428
-                  </Text>
-                }
-              >
-                <Image
-                  source={BlurredRainbow}
-                  resizeMode="stretch"
+        data?.points ? (
+          <ScrollView
+            style={{
+              paddingHorizontal: 20,
+            }}
+            scrollIndicatorInsets={{
+              bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+            }}
+            contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT + 32 }}
+          >
+            <Stack space="32px">
+              <Box flexDirection="row" alignItems="center" paddingTop="16px">
+                <MaskedView
                   style={{
-                    width: 300,
-                    height: 300,
-                    left: -100,
-                    top: -180,
+                    alignItems: 'center',
+                    height: 31,
+                    maxWidth: deviceWidth - 60 - 20 - 20,
                   }}
-                />
-              </MaskedView>
-              <Bleed vertical={{ custom: 2.5 }}>
-                <Image source={Planet} style={{ width: 60, height: 36 }} />
-              </Bleed>
-              {/* <Box
-              width={{ custom: 36 }}
-              height={{ custom: 36 }}
-              background="blue"
-            /> */}
-            </Box>
-            <Bleed space="20px">
-              <ScrollView
-                horizontal
-                contentContainerStyle={{ gap: 12, padding: 20 }}
-                showsHorizontalScrollIndicator={false}
-              >
-                <InfoCard
-                  onPress={() => {}}
-                  title={i18n.t(i18n.l.points.next_reward)}
-                  mainText="20h 19m"
-                  icon="􀉉"
-                  subtitle="12pm Monday"
-                  accentColor={labelSecondary}
-                />
-                <InfoCard
-                  onPress={() => {}}
-                  title={i18n.t(i18n.l.points.streak)}
-                  mainText={`36 ${i18n.t(i18n.l.points.days)}`}
-                  icon="􀙬"
-                  subtitle={i18n.t(i18n.l.points.longest_yet)}
-                  accentColor={pink}
-                />
-                <InfoCard
-                  onPress={() => {}}
-                  title={i18n.t(i18n.l.points.referrals)}
-                  mainText="12"
-                  icon="􀇯"
-                  subtitle="8,200"
-                  accentColor={yellow}
-                />
-              </ScrollView>
-            </Bleed>
-            <Stack space={{ custom: 14 }}>
-              <Box
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <ButtonPressAnimation>
-                  <Inline space="4px" alignVertical="center">
-                    <Text weight="bold" color="labelTertiary" size="15pt">
-                      {i18n.t(i18n.l.points.referral_link)}
+                  maskElement={
+                    <Text color="label" size="44pt" weight="heavy">
+                      {data?.points?.earnings?.total.toLocaleString('en-US')}
                     </Text>
-                    <Text
-                      weight="heavy"
-                      color={{ custom: infoCircleColor }}
-                      size="13pt"
-                    >
-                      􀅵
-                    </Text>
-                  </Inline>
-                </ButtonPressAnimation>
-                <ButtonPressAnimation>
-                  <MaskedView
+                  }
+                >
+                  <Image
+                    source={BlurredRainbow}
+                    resizeMode="stretch"
                     style={{
-                      justifyContent: 'flex-end',
-                      alignItems: 'flex-end',
+                      width: 300,
+                      height: 300,
+                      left: -100,
+                      top: -180,
                     }}
-                    maskElement={
-                      <Box
-                        alignItems="center"
-                        flexDirection="row"
-                        style={{ gap: 4 }}
-                        justifyContent="flex-end"
-                      >
+                  />
+                </MaskedView>
+                <Bleed vertical={{ custom: 2.5 }}>
+                  <Image source={Planet} style={{ width: 60, height: 36 }} />
+                </Bleed>
+              </Box>
+              <Bleed space="20px">
+                <ScrollView
+                  horizontal
+                  contentContainerStyle={{ gap: 12, padding: 20 }}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  {!isNil(nextDistributionSeconds) && (
+                    <InfoCard
+                      onPress={() => {}}
+                      title={i18n.t(i18n.l.points.next_reward)}
+                      mainText={getFormattedTimeQuantity(
+                        nextDistributionSeconds
+                      )}
+                      icon="􀉉"
+                      subtitle={displayNextDistribution(
+                        nextDistributionSeconds
+                      )}
+                      accentColor={labelSecondary}
+                    />
+                  )}
+                  {STREAKS_ENABLED && (
+                    <InfoCard
+                      onPress={() => {}}
+                      title={i18n.t(i18n.l.points.streak)}
+                      mainText={`36 ${i18n.t(i18n.l.points.days)}`}
+                      icon="􀙬"
+                      subtitle={i18n.t(i18n.l.points.longest_yet)}
+                      accentColor={pink}
+                    />
+                  )}
+                  {REFERRALS_ENABLED && (
+                    <InfoCard
+                      onPress={() => {}}
+                      title={i18n.t(i18n.l.points.referrals)}
+                      mainText="12"
+                      icon="􀇯"
+                      subtitle="8,200"
+                      accentColor={yellow}
+                    />
+                  )}
+                </ScrollView>
+              </Bleed>
+              {REFERRALS_ENABLED && (
+                <Stack space={{ custom: 14 }}>
+                  <Box
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <ButtonPressAnimation>
+                      <Inline space="4px" alignVertical="center">
+                        <Text weight="bold" color="labelTertiary" size="15pt">
+                          {i18n.t(i18n.l.points.referral_link)}
+                        </Text>
                         <Text
-                          align="right"
-                          weight="bold"
-                          color="label"
+                          weight="heavy"
+                          color={{ custom: infoCircleColor }}
                           size="13pt"
                         >
-                          􀈂
+                          􀅵
                         </Text>
-                        <Text
-                          align="right"
-                          weight="heavy"
-                          color="label"
-                          size="15pt"
+                      </Inline>
+                    </ButtonPressAnimation>
+                    <ButtonPressAnimation>
+                      <MaskedView
+                        style={{
+                          justifyContent: 'flex-end',
+                          alignItems: 'flex-end',
+                        }}
+                        maskElement={
+                          <Box
+                            alignItems="center"
+                            flexDirection="row"
+                            style={{ gap: 4 }}
+                            justifyContent="flex-end"
+                          >
+                            <Text
+                              align="right"
+                              weight="bold"
+                              color="label"
+                              size="13pt"
+                            >
+                              􀈂
+                            </Text>
+                            <Text
+                              align="right"
+                              weight="heavy"
+                              color="label"
+                              size="15pt"
+                            >
+                              {i18n.t(i18n.l.points.share)}
+                            </Text>
+                          </Box>
+                        }
+                      >
+                        <Bleed vertical={{ custom: 5 }}>
+                          <LinearGradient
+                            style={{
+                              width: 65,
+                              height: 20,
+                            }}
+                            colors={['#00E7F3', '#57EA5F']}
+                            start={{ x: 0, y: 0.5 }}
+                            end={{ x: 1, y: 0.5 }}
+                          />
+                        </Bleed>
+                      </MaskedView>
+                    </ButtonPressAnimation>
+                  </Box>
+                  {/* @ts-ignore */}
+                  <FloatingEmojis
+                    distance={250}
+                    duration={500}
+                    fadeOut={false}
+                    scaleTo={0}
+                    size={50}
+                    wiggleFactor={0}
+                  >
+                    {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                      <ButtonPressAnimation
+                        onPress={() => onPressCopy(onNewEmoji)}
+                      >
+                        <Box
+                          background="surfaceSecondaryElevated"
+                          paddingVertical="12px"
+                          paddingHorizontal="16px"
+                          shadow="12px"
+                          borderRadius={18}
+                          alignItems="center"
+                          flexDirection="row"
+                          style={{ gap: 6, height: 48 }}
                         >
-                          {i18n.t(i18n.l.points.share)}
-                        </Text>
-                      </Box>
+                          <Text color="labelTertiary" size="15pt" weight="bold">
+                            􀉣
+                          </Text>
+                          <Box paddingRight="20px">
+                            <Text
+                              color="labelTertiary"
+                              size="17pt"
+                              weight="semibold"
+                              numberOfLines={1}
+                            >
+                              rainbow.me/points?ref=0x2e6786983232jkl
+                            </Text>
+                          </Box>
+                        </Box>
+                      </ButtonPressAnimation>
+                    )}
+                  </FloatingEmojis>
+                </Stack>
+              )}
+              <Separator color="separatorTertiary" thickness={1} />
+              <Stack space="16px">
+                <Text color="label" size="20pt" weight="heavy">
+                  {i18n.t(i18n.l.points.leaderboard)}
+                </Text>
+                {data?.points?.stats?.position.current && (
+                  <View
+                    style={
+                      IS_IOS
+                        ? {
+                            shadowColor: globalColors.grey100,
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.02,
+                            shadowRadius: 3,
+                          }
+                        : {}
                     }
                   >
-                    <Bleed vertical={{ custom: 5 }}>
-                      <LinearGradient
-                        style={{
-                          width: 65,
-                          height: 20,
-                        }}
-                        colors={['#00E7F3', '#57EA5F']}
-                        start={{ x: 0, y: 0.5 }}
-                        end={{ x: 1, y: 0.5 }}
-                      />
-                    </Bleed>
-                  </MaskedView>
-                </ButtonPressAnimation>
-              </Box>
-              {/* @ts-ignore */}
-              <FloatingEmojis
-                distance={250}
-                duration={500}
-                fadeOut={false}
-                scaleTo={0}
-                size={50}
-                wiggleFactor={0}
-              >
-                {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                  <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)}>
-                    <Box
-                      background="surfaceSecondaryElevated"
-                      paddingVertical="12px"
-                      paddingHorizontal="16px"
-                      shadow="12px"
-                      borderRadius={18}
-                      alignItems="center"
-                      flexDirection="row"
-                      style={{ gap: 6, height: 48 }}
-                    >
-                      <Text color="labelTertiary" size="15pt" weight="bold">
-                        􀉣
-                      </Text>
-                      <Box paddingRight="20px">
-                        <Text
-                          color="labelTertiary"
-                          size="17pt"
-                          weight="semibold"
-                          numberOfLines={1}
-                        >
-                          rainbow.me/points?ref=0x2e6786983232jkl
-                        </Text>
-                      </Box>
-                    </Box>
-                  </ButtonPressAnimation>
-                )}
-              </FloatingEmojis>
-            </Stack>
-            <Separator color="separatorTertiary" thickness={1} />
-            <Stack space="16px">
-              <Text color="label" size="20pt" weight="heavy">
-                {i18n.t(i18n.l.points.leaderboard)}
-              </Text>
-              <View
-                style={
-                  IS_IOS
-                    ? {
-                        shadowColor: globalColors.grey100,
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.02,
-                        shadowRadius: 3,
+                    <View
+                      style={
+                        IS_IOS
+                          ? {
+                              shadowColor: globalColors.grey100,
+                              shadowOffset: { width: 0, height: 4 },
+                              shadowOpacity: 0.16,
+                              shadowRadius: 6,
+                            }
+                          : {
+                              shadowColor: globalColors.grey100,
+                              elevation: 8,
+                              opacity: 1,
+                            }
                       }
-                    : {}
-                }
-              >
-                <View
-                  style={
-                    IS_IOS
-                      ? {
-                          shadowColor: globalColors.grey100,
-                          shadowOffset: { width: 0, height: 4 },
-                          shadowOpacity: 0.16,
-                          shadowRadius: 6,
-                        }
-                      : {
-                          shadowColor: globalColors.grey100,
-                          elevation: 8,
-                          opacity: 1,
-                        }
-                  }
-                >
-                  <LinearGradient
-                    style={{ padding: 1.5, borderRadius: 18 }}
-                    colors={[
-                      '#31BCC4',
-                      '#57EA5F',
-                      '#F0D83F',
-                      '#DF5337',
-                      '#B756A7',
-                    ]}
-                    useAngle={true}
-                    angle={-15}
-                    angleCenter={{ x: 0.5, y: 0.5 }}
-                  >
-                    <Box
-                      background="surfaceSecondaryElevated"
-                      width="full"
-                      height={{ custom: 48 }}
-                      borderRadius={18}
-                      flexDirection="row"
-                      paddingHorizontal="20px"
-                      justifyContent="space-between"
-                      alignItems="center"
                     >
-                      <Text color="label" size="17pt" weight="heavy">
-                        skillet.eth
-                      </Text>
-                      <Text color="label" size="17pt" weight="heavy">
-                        #20
-                      </Text>
-                    </Box>
-                  </LinearGradient>
-                </View>
-              </View>
-              <Box
-                background="surfaceSecondaryElevated"
-                borderRadius={18}
-                paddingHorizontal="16px"
-              >
-                <Stack
-                  separator={
-                    <Separator color="separatorTertiary" thickness={1} />
-                  }
+                      <LinearGradient
+                        style={{ padding: 1.5, borderRadius: 18 }}
+                        colors={[
+                          '#31BCC4',
+                          '#57EA5F',
+                          '#F0D83F',
+                          '#DF5337',
+                          '#B756A7',
+                        ]}
+                        useAngle={true}
+                        angle={-15}
+                        angleCenter={{ x: 0.5, y: 0.5 }}
+                      >
+                        <Box
+                          background="surfaceSecondaryElevated"
+                          width="full"
+                          height={{ custom: 48 }}
+                          borderRadius={18}
+                          flexDirection="row"
+                          paddingHorizontal="20px"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Box style={{ maxWidth: 220 }}>
+                            <Text
+                              color="label"
+                              size="17pt"
+                              weight="heavy"
+                              numberOfLines={1}
+                              ellipsizeMode="middle"
+                            >
+                              {accountENS
+                                ? accountENS
+                                : formatAddress(accountAddress, 4, 5)}
+                            </Text>
+                          </Box>
+                          <Text color="label" size="17pt" weight="heavy">
+                            {`#${data?.points?.stats?.position.current.toLocaleString(
+                              'en-US'
+                            )}`}
+                          </Text>
+                        </Box>
+                      </LinearGradient>
+                    </View>
+                  </View>
+                )}
+                <Box
+                  background="surfaceSecondaryElevated"
+                  borderRadius={18}
+                  paddingHorizontal="16px"
+                  shadow="12px"
                 >
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                  <LeaderboardRow />
-                </Stack>
-              </Box>
+                  <Stack
+                    separator={
+                      <Separator color="separatorTertiary" thickness={1} />
+                    }
+                  >
+                    {data?.points?.leaderboard?.accounts?.map(
+                      (account, index) => (
+                        <LeaderboardRow
+                          address={account.address}
+                          ens={account.ens}
+                          avatarURL={account.avatarURL}
+                          points={account.earnings.total}
+                          rank={index + 1}
+                          key={account.address}
+                        />
+                      )
+                    )}
+                  </Stack>
+                </Box>
+              </Stack>
             </Stack>
-          </Stack>
-        </ScrollView>
+          </ScrollView>
+        ) : (
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            height="full"
+            position="absolute"
+            width="full"
+          >
+            {!isFetching ? (
+              <Stack space="20px">
+                <Text
+                  size="17pt"
+                  weight="bold"
+                  align="center"
+                  color="labelTertiary"
+                >
+                  {i18n.t(i18n.l.points.error)}
+                </Text>
+                <ButtonPressAnimation
+                  onPress={() => {
+                    // only allow refresh if data is at least 30 seconds old
+                    if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
+                      queryClient.invalidateQueries({
+                        queryKey: pointsQueryKey({
+                          address: accountAddress,
+                        }),
+                      });
+                    }
+                  }}
+                >
+                  <Text
+                    align="center"
+                    color="labelTertiary"
+                    size="34pt"
+                    weight="bold"
+                  >
+                    􀅈
+                  </Text>
+                </ButtonPressAnimation>
+              </Stack>
+            ) : (
+              <LoadingSpinner
+                color={isDarkMode ? 'white' : 'black'}
+                size={36}
+              />
+            )}
+          </Box>
+        )
       ) : (
         <>
           <Box

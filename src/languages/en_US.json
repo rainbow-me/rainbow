@@ -1240,7 +1240,15 @@
       "longest_yet": "Longest yet",
       "day": "day",
       "days": "days",
-      "leaderboard": "Leaderboard"
+      "leaderboard": "Leaderboard",
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "error": "Failed to fetch data"
     },
     "pools": {
       "deposit": "Deposit",

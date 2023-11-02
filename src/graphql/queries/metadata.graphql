@@ -118,3 +118,32 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
     shortName
   }
 }
+
+query getPointsDataForWallet($address: String!) {
+  points(address: $address) {
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    earnings {
+      total
+    }
+    stats {
+      position {
+        current
+      }
+    }
+  }
+}
