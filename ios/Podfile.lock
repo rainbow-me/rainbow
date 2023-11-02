@@ -25,7 +25,7 @@ PODS:
     - ExpoModulesCore
   - EXFont (11.4.0):
     - ExpoModulesCore
-  - Expo (49.0.13):
+  - Expo (49.0.16):
     - ExpoModulesCore
   - ExpoKeepAwake (12.3.0):
     - ExpoModulesCore
@@ -655,6 +655,7 @@ PODS:
     - React
     - RNInputMask
   - react-native-udp (4.1.7):
+    - CocoaAsyncSocket
     - React-Core
   - react-native-version-number (0.3.6):
     - React
@@ -1409,7 +1410,7 @@ SPEC CHECKSUMS:
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXFileSystem: 2b826a3bf1071a4b80a8457e97124783d1ac860e
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
-  Expo: e7d2116b947e2e6fdeb09ee4f2754f819426d1b6
+  Expo: fcfd60c1ed6806dee5103b210335ae0c72f675ed
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoModulesCore: 51cb2e7ab4c8da14be3f40b66d54c1781002e99d
   FBLazyVector: 4cce221dd782d3ff7c4172167bba09d58af67ccb
@@ -1498,7 +1499,7 @@ SPEC CHECKSUMS:
   react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
-  react-native-udp: 8741daa523c767d457fa449b52b09beaf07eee01
+  react-native-udp: df79c3cb72c4e71240cd3ce4687bfb8a137140d5
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
@@ -1571,4 +1572,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6ffd59123812e3a71ca0ffd3ecb555bb57c84fe3
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.12.1
