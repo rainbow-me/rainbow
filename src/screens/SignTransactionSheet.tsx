@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Easing,
   SharedValue,
   interpolate,
-  useAnimatedScrollHandler,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
   useSharedValue,
@@ -48,6 +50,7 @@ const MAX_CARD_HEIGHT = 176;
 
 const CARD_ROW_HEIGHT = 12;
 const SMALL_CARD_ROW_HEIGHT = 10;
+const CARD_BORDER_WIDTH = 1.5;
 
 const rotationConfig = {
   duration: 2100,
@@ -156,7 +159,7 @@ export const SignTransactionSheet = () => {
             </Stack>
 
             <Inset horizontal="12px">
-              <Inline alignVertical="center" space="12px">
+              <Inline alignVertical="center" space="12px" wrap={false}>
                 <ImgixImage
                   size={44}
                   source={{
@@ -170,11 +173,20 @@ export const SignTransactionSheet = () => {
                     <Text color="labelTertiary" size="15pt" weight="semibold">
                       Signing with
                     </Text>
-                    <Text color="label" size="15pt" weight="bold">
+                    <Text
+                      color="label"
+                      numberOfLines={1}
+                      size="15pt"
+                      weight="bold"
+                    >
                       rainbow.eth
                     </Text>
                   </Inline>
-                  <Inline alignVertical="center" space={{ custom: 17 }}>
+                  <Inline
+                    alignVertical="center"
+                    space={{ custom: 17 }}
+                    wrap={false}
+                  >
                     <Bleed vertical="4px">
                       <ChainBadge
                         assetType={AssetType.zora}
@@ -183,7 +195,12 @@ export const SignTransactionSheet = () => {
                         size="xtiny"
                       />
                     </Bleed>
-                    <Text color="labelTertiary" size="13pt" weight="semibold">
+                    <Text
+                      color="labelQuaternary"
+                      numberOfLines={1}
+                      size="13pt"
+                      weight="semibold"
+                    >
                       1.2025 ETH
                     </Text>
                   </Inline>
@@ -224,7 +241,7 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       cardHeight.value,
-      [COLLAPSED_CARD_HEIGHT, MAX_CARD_HEIGHT],
+      [COLLAPSED_CARD_HEIGHT, cardHeight.value],
       [0, 1]
     ),
   }));
@@ -237,7 +254,6 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
 
   useEffect(() => {
     if (simulationData) {
-      cardHeight.value = withTiming(MAX_CARD_HEIGHT, timingConfig);
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
       spinnerRotation.value = withRepeat(
@@ -246,16 +262,17 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
         false
       );
     }
-  }, [cardHeight, simulationData, spinnerRotation]);
+  }, [simulationData, spinnerRotation]);
 
   return (
-    <FadedScrollCard
-      cardHeight={cardHeight}
-      isCollapsed={!simulationData}
-      scrollEnabled={!!simulationData}
-    >
+    <FadedScrollCard cardHeight={cardHeight} isExpanded={simulationData}>
       <Stack space="24px">
-        <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
+        <Box
+          alignItems="center"
+          flexDirection="row"
+          justifyContent="space-between"
+          height={{ custom: CARD_ROW_HEIGHT }}
+        >
           <Inline alignVertical="center" space="12px">
             <IconContainer>
               <Animated.View style={spinnerStyle}>
@@ -273,6 +290,19 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
               {simulationData ? 'Simulated Result' : 'Simulating'}
             </Text>
           </Inline>
+          <Box as={Animated.View} style={listStyle}>
+            <ButtonPressAnimation disabled={!simulationData}>
+              <IconContainer hitSlop={14} size={16} opacity={0.6}>
+                <Text
+                  color="labelQuaternary"
+                  size="icon 15px"
+                  weight="semibold"
+                >
+                  􀁜
+                </Text>
+              </IconContainer>
+            </ButtonPressAnimation>
+          </Box>
         </Box>
         <Box as={Animated.View} style={listStyle}>
           <Stack space="20px">
@@ -285,46 +315,6 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
                 symbol: 'ETH',
               }}
               eventType="send"
-            />
-            <SimulatedEventRow
-              amount={0.1}
-              asset={{
-                address: 'ETH',
-                assetType: 'token',
-                name: 'Ethereum',
-                symbol: 'ETH',
-              }}
-              eventType="send"
-            />
-            <SimulatedEventRow
-              amount={0.1}
-              asset={{
-                address: 'ETH',
-                assetType: 'token',
-                name: 'Ethereum',
-                symbol: 'ETH',
-              }}
-              eventType="send"
-            />
-            <SimulatedEventRow
-              amount={180}
-              asset={{
-                address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                assetType: 'token',
-                name: 'USD Coin',
-                symbol: 'USDC',
-              }}
-              eventType="receive"
-            />
-            <SimulatedEventRow
-              amount={180}
-              asset={{
-                address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                assetType: 'token',
-                name: 'USD Coin',
-                symbol: 'USDC',
-              }}
-              eventType="receive"
             />
             <SimulatedEventRow
               amount={180}
@@ -355,27 +345,18 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
     ),
   }));
 
-  const handlePress = () => {
-    if (isExpanded) {
-      cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
-    } else {
-      cardHeight.value = withTiming(MAX_CARD_HEIGHT, timingConfig);
-    }
-    setIsExpanded(!isExpanded);
-  };
-
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
 
   return (
     <ButtonPressAnimation
       disabled={isLoading}
-      onPress={handlePress}
+      onPress={() => setIsExpanded(true)}
       scaleTo={0.96}
     >
       <FadedScrollCard
         cardHeight={cardHeight}
-        isCollapsed={!isExpanded}
-        scrollEnabled={isExpanded}
+        disableGestures={!isExpanded}
+        isExpanded={isExpanded}
       >
         <Stack space="24px">
           <Box
@@ -430,6 +411,8 @@ const SimulatedEventRow = ({
   eventType: EventType;
   imageUrl?: string;
 }) => {
+  const { colors } = useTheme();
+
   const eventInfo: EventInfo = infoForEventType[eventType];
   const { address, assetType, symbol } = asset;
 
@@ -439,17 +422,26 @@ const SimulatedEventRow = ({
 
   return (
     <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space="12px">
+      <Inline
+        alignHorizontal="justify"
+        alignVertical="center"
+        space="20px"
+        wrap={false}
+      >
+        <Inline alignVertical="center" space="12px" wrap={false}>
           <EventIcon eventType={eventType} />
           <Text color="label" size="17pt" weight="bold">
             {eventInfo.label}
           </Text>
         </Inline>
-        <Inline alignVertical="center" space={{ custom: 7 }}>
+        <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
             {assetType === 'token' ? (
-              <CoinIcon address={address} size={16} />
+              <CoinIcon
+                address={address}
+                forcedShadowColor={colors.transparent}
+                size={16}
+              />
             ) : (
               <ImgixImage
                 size={16}
@@ -461,6 +453,7 @@ const SimulatedEventRow = ({
           <Text
             align="right"
             color={eventInfo.textColor}
+            numberOfLines={1}
             size="17pt"
             weight="bold"
           >
@@ -477,17 +470,18 @@ const DetailRow = ({ detailType }: { detailType: DetailType }) => {
 
   return (
     <Box justifyContent="center" height={{ custom: SMALL_CARD_ROW_HEIGHT }}>
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space="12px">
+      <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+        <Inline alignVertical="center" space="12px" wrap={false}>
           <DetailIcon detailInfo={detailInfo} />
           <Text color="labelTertiary" size="15pt" weight="semibold">
             {detailInfo.label}
           </Text>
         </Inline>
-        <Inline alignVertical="center" space={{ custom: 7 }}>
+        <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Text
             align="right"
             color="labelSecondary"
+            numberOfLines={1}
             size="15pt"
             weight="semibold"
           >
@@ -570,26 +564,21 @@ const VerifiedBadge = () => {
 const FadedScrollCard = ({
   cardHeight,
   children,
-  isCollapsed,
-  scrollEnabled = false,
+  disableGestures,
+  isExpanded,
 }: {
   cardHeight: SharedValue<number>;
   children: React.ReactNode;
-  isCollapsed: boolean;
-  scrollEnabled?: boolean;
+  disableGestures?: boolean;
+  isExpanded: boolean;
 }) => {
   const { isDarkMode } = useTheme();
 
-  const scrollViewRef = useRef(null);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const [scrollEnabled, setScrollEnabled] = useState(false);
+
   const offset = useScrollViewOffset(scrollViewRef);
-
-  const [contentHeight, setContentHeight] = useState(COLLAPSED_CARD_HEIGHT);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      offset.value = event.contentOffset.y;
-    },
-  });
+  const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
 
   const topGradientStyle = useAnimatedStyle(() => {
     if (!scrollEnabled) {
@@ -609,26 +598,49 @@ const FadedScrollCard = ({
     }
     return {
       opacity:
-        offset.value >= contentHeight - MAX_CARD_HEIGHT
+        offset.value > contentHeight.value + CARD_BORDER_WIDTH - MAX_CARD_HEIGHT
           ? withTiming(0, timingConfig)
           : withTiming(1, timingConfig),
     };
   });
 
-  const cardstyle = useAnimatedStyle(() => {
+  const cardStyle = useAnimatedStyle(() => {
     return {
       height: cardHeight.value,
-      paddingVertical: interpolate(
-        cardHeight.value,
-        [COLLAPSED_CARD_HEIGHT, MAX_CARD_HEIGHT],
-        [0, 0]
-      ),
     };
   });
 
-  const handleContentSizeChange = useCallback((height: number) => {
-    setContentHeight(height);
-  }, []);
+  const handleContentSizeChange = useCallback(
+    (width: number, height: number) => {
+      contentHeight.value = Math.round(height);
+    },
+    [contentHeight]
+  );
+
+  useAnimatedReaction(
+    () => ({ contentHeight: contentHeight.value, isExpanded }),
+    ({ contentHeight, isExpanded }, previous) => {
+      if (
+        isExpanded !== previous?.isExpanded ||
+        contentHeight !== previous?.contentHeight
+      ) {
+        if (isExpanded) {
+          cardHeight.value = withTiming(
+            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+              ? MAX_CARD_HEIGHT
+              : contentHeight + CARD_BORDER_WIDTH * 2,
+            timingConfig
+          );
+        } else {
+          cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
+        }
+
+        const enableScroll =
+          isExpanded && contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+        runOnJS(setScrollEnabled)(enableScroll);
+      }
+    }
+  );
 
   return (
     <Box
@@ -640,22 +652,20 @@ const FadedScrollCard = ({
           borderColor: isDarkMode ? '#1F2023' : '#F5F7F8',
           borderCurve: 'continuous',
           borderRadius: 28,
-          borderStyle: 'solid',
-          borderWidth: 1.5,
-          overflow: 'scroll',
+          borderWidth: CARD_BORDER_WIDTH,
+          overflow: 'hidden',
         },
-        cardstyle,
+        cardStyle,
       ]}
     >
       <Animated.ScrollView
         contentContainerStyle={{
-          marginTop: isCollapsed ? -3 : 0,
-          paddingHorizontal: 22.5,
-          paddingVertical: 22.5,
+          marginTop: isExpanded ? 0 : -(CARD_BORDER_WIDTH * 2),
+          paddingHorizontal: 24 - CARD_BORDER_WIDTH,
+          paddingVertical: 24 - CARD_BORDER_WIDTH,
         }}
         onContentSizeChange={handleContentSizeChange}
-        onScroll={scrollHandler}
-        pointerEvents={scrollEnabled ? 'auto' : 'none'}
+        pointerEvents={disableGestures ? 'none' : 'auto'}
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
@@ -713,14 +723,29 @@ const FadeGradient = ({
   );
 };
 
-const IconContainer = ({ children }: { children: React.ReactNode }) => {
+const IconContainer = ({
+  children,
+  hitSlop,
+  opacity,
+  size = 20,
+}: {
+  children: React.ReactNode;
+  hitSlop?: number;
+  opacity?: number;
+  size?: number;
+}) => {
   return (
-    <Bleed vertical="6px">
+    <Bleed
+      vertical={hitSlop ? undefined : '6px'}
+      space={hitSlop ? { custom: hitSlop } : undefined}
+    >
       <Box
         alignItems="center"
-        height={{ custom: 20 }}
+        height={{ custom: size }}
         justifyContent="center"
-        width={{ custom: 20 }}
+        margin={hitSlop ? { custom: hitSlop } : undefined}
+        style={{ opacity }}
+        width={{ custom: size }}
       >
         {children}
       </Box>
