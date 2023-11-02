@@ -31,5 +31,4 @@ export {
   notificationSettingsStorage,
   setAllNotificationSettingsToStorage,
   updateGroupSettings,
-  updateSettingsForWalletsWithRelationshipType,
 } from './storage';
