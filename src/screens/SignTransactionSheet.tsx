@@ -988,7 +988,9 @@ export const SignTransactionSheet = () => {
                     <VerifiedBadge />
                   </Inline>
                   <Text color="labelTertiary" size="15pt" weight="bold">
-                    Transaction Request
+                    {isMessageRequest
+                      ? 'Message Request'
+                      : 'Transaction Request'}
                   </Text>
                 </Stack>
               </Inline>
