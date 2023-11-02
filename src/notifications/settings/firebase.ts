@@ -86,7 +86,7 @@ const updateNotificationSubscriptionWithRetry = async (
   }
 };
 
-export const updateWalletSettings = async (
+export const publishWalletSettings = async (
   walletSettings: WalletNotificationSettings[]
 ): Promise<WalletNotificationSettings[] | undefined> => {
   const subscriptionPayload = parseWalletSettings(walletSettings);
@@ -102,7 +102,6 @@ export const updateWalletSettings = async (
       return {
         ...setting,
         successfullyFinishedInitialSubscription: true,
-        enabled: true,
       };
     });
   } else {

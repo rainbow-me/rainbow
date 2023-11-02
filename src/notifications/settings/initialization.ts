@@ -7,6 +7,7 @@ import {
   AddressWithRelationship,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
+import { publishAndSaveWalletSettings } from './settings';
 import {
   getAllNotificationSettingsFromStorage,
   notificationSettingsStorage,
@@ -14,7 +15,6 @@ import {
 } from '@/notifications/settings/storage';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
 import { InteractionManager } from 'react-native';
-import { updateWalletSettings } from './firebase';
 
 type InitializationStateType = {
   alreadySaved: Map<
@@ -28,6 +28,7 @@ type InitializationStateType = {
  Checks if group notification settings are present in storage
  and adds default values for them if they do not exist.
  */
+// only used during migration
 export const addDefaultNotificationGroupSettings = (override = false) => {
   const data = notificationSettingsStorage.getString(WALLET_GROUPS_STORAGE_KEY);
 
@@ -47,6 +48,7 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
  * Adds fresh disabled settings for all wallets that didn't have settings
  * schedules subscribing to owned wallets that haven't been initialized yet
  * schedules removing settings for wallets that are no longer prersent but removal failed previously
+ * called from NotificationsHandler run on every cold start
  */
 export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets = (
   addresses: AddressWithRelationship[]
@@ -60,13 +62,13 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
     ...initializationState.alreadySaved.keys(),
   ].filter(address => !walletAddresses.has(address));
 
-  const newSettings = _prepareSubscriptionQueueAndCreateInitialSettings(
+  const proposedSettings = _prepareSubscriptionQueueAndCreateInitialSettings(
     addresses,
     initializationState
   );
 
   InteractionManager.runAfterInteractions(() => {
-    _processSubscriptionQueue(newSettings);
+    publishAndSaveWalletSettings(proposedSettings);
   });
 
   if (removedWalletsThatWereNotUnsubscribedProperly.length) {
@@ -80,19 +82,20 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
 
 /**
  * Adds fresh disabled settings for all wallets that didn't have settings
+ * called from createWallet and generateAccount flows
  */
 export const initializeNotificationSettingsForAddresses = (
   addresses: AddressWithRelationship[]
 ) => {
   const initializationState = _prepareInitializationState();
 
-  const newSettings = _prepareSubscriptionQueueAndCreateInitialSettings(
+  const proposedSettings = _prepareSubscriptionQueueAndCreateInitialSettings(
     addresses,
     initializationState
   );
 
   InteractionManager.runAfterInteractions(() => {
-    _processSubscriptionQueue(newSettings);
+    publishAndSaveWalletSettings(proposedSettings);
   });
 };
 
@@ -121,15 +124,15 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
       };
       newSettings[alreadySavedEntry.index] = updatedSettingsEntry;
     }
-    // case where there are no settings for the wallet and there will be subscriptions to process for imported wallets
+    // add new address flow
     else if (!alreadySaved.has(entry.address)) {
-      const isImported = entry.relationship === NotificationRelationship.OWNER;
+      const isOwned = entry.relationship === NotificationRelationship.OWNER;
       const newSettingsEntry: WalletNotificationSettings = {
         type: entry.relationship,
         address: entry.address,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-        enabled: false,
-        successfullyFinishedInitialSubscription: !isImported,
+        enabled: isOwned,
+        successfullyFinishedInitialSubscription: !isOwned,
       };
       newSettings.push(newSettingsEntry);
     }
@@ -158,16 +161,4 @@ export const _prepareInitializationState = (): InitializationStateType => {
     newSettings,
     alreadySaved,
   };
-};
-
-/**
- * exported for testing only
- */
-export const _processSubscriptionQueue = async (
-  walletSettings: WalletNotificationSettings[]
-): Promise<void> => {
-  const newSettings = await updateWalletSettings(walletSettings);
-  if (newSettings) {
-    setAllNotificationSettingsToStorage(newSettings);
-  }
 };
