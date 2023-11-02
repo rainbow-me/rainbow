@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React from 'react';
 import { Image, View } from 'react-native';
 import Animated, {
@@ -23,8 +22,6 @@ import { useNavigation } from '@/navigation';
 import {
   Bleed,
   Box,
-  Cover,
-  DebugLayout,
   Inline,
   Separator,
   Stack,
@@ -32,12 +29,7 @@ import {
   globalColors,
   useForegroundColor,
 } from '@/design-system';
-import {
-  useAccountAccentColor,
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@/hooks';
+import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { POINTS, useExperimentalFlag } from '@/config';
 import config from '@/model/config';
@@ -45,7 +37,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
-import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { IS_IOS, IS_TEST } from '@/env';
 import { haptics, safeAreaInsetValues } from '@/utils';
@@ -382,12 +373,6 @@ export default function PointsScreen() {
         >
           <Stack space="32px">
             <Box flexDirection="row" alignItems="center" paddingTop="16px">
-              {/* <Box
-                width={{ custom: 36 }}
-                height={{ custom: 36 }}
-                background="blue"
-              /> */}
-
               <MaskedView
                 style={{
                   alignItems: 'center',
@@ -653,7 +638,10 @@ export default function PointsScreen() {
             alignItems="center"
             as={Page}
             flex={1}
+            position="absolute"
             height="full"
+            width="full"
+            style={{ zIndex: -1 }}
             justifyContent="center"
           >
             <Box paddingBottom="104px" width="full">
