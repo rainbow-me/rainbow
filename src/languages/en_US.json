@@ -2298,6 +2298,12 @@
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
         "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "This app is likely malicious",
+          "description": "Signing messages or transactions from this app could result in losing your assets"
+        }
       }
     },
     "warning": {
