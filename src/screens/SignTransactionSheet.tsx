@@ -1487,7 +1487,6 @@ const SimulatedEventRow = ({
   const { colors } = useTheme();
 
   const eventInfo: EventInfo = infoForEventType[eventType];
-
   const formattedAmounts =
     asset?.decimals === 0
       ? amount
@@ -1497,7 +1496,7 @@ const SimulatedEventRow = ({
           6
         ).display;
   const formattedAmount = `${eventInfo.amountPrefix}${
-    amount === 'unlimited' ? 'Unlimited' : formattedAmounts
+    amount === 'UNLIMITED' ? `Unlimited` : formattedAmounts
   }`;
 
   const url = maybeSignUri(asset?.iconURL, { fm: 'png', w: 100 });
