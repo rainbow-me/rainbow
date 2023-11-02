@@ -45,6 +45,8 @@ type MockAsset = {
   symbol: string;
 };
 
+const IS_MESSAGE = false;
+
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
 
@@ -145,7 +147,11 @@ export const SignTransactionSheet = () => {
             <Stack space={{ custom: 14 }}>
               <SimulationCard simulationData={simulationData} />
               <Box>
-                <DetailsCard isLoading={!simulationData} />
+                {IS_MESSAGE ? (
+                  <MessageCard messageContent={exampleMessage} />
+                ) : (
+                  <DetailsCard isLoading={!simulationData} />
+                )}
                 {/* Hidden scroll view to disable sheet dismiss gestures */}
                 <Box
                   height={{ custom: 0 }}
@@ -187,21 +193,23 @@ export const SignTransactionSheet = () => {
                     space={{ custom: 17 }}
                     wrap={false}
                   >
-                    <Bleed vertical="4px">
-                      <ChainBadge
-                        assetType={AssetType.zora}
-                        badgeXPosition={0}
-                        badgeYPosition={-10}
-                        size="xtiny"
-                      />
-                    </Bleed>
+                    {!IS_MESSAGE && (
+                      <Bleed vertical="4px">
+                        <ChainBadge
+                          assetType={AssetType.zora}
+                          badgeXPosition={0}
+                          badgeYPosition={-10}
+                          size="xtiny"
+                        />
+                      </Bleed>
+                    )}
                     <Text
                       color="labelQuaternary"
                       numberOfLines={1}
                       size="13pt"
                       weight="semibold"
                     >
-                      1.2025 ETH
+                      {IS_MESSAGE ? 'Free to sign' : '1.2025 ETH'}
                     </Text>
                   </Inline>
                 </Stack>
@@ -236,12 +244,20 @@ export const SignTransactionSheet = () => {
 
 const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
   const spinnerRotation = useSharedValue(0);
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       cardHeight.value,
-      [COLLAPSED_CARD_HEIGHT, cardHeight.value],
+      [
+        COLLAPSED_CARD_HEIGHT,
+        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+          ? MAX_CARD_HEIGHT
+          : contentHeight.value + CARD_BORDER_WIDTH * 2,
+      ],
       [0, 1]
     ),
   }));
@@ -265,7 +281,11 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
   }, [simulationData, spinnerRotation]);
 
   return (
-    <FadedScrollCard cardHeight={cardHeight} isExpanded={simulationData}>
+    <FadedScrollCard
+      cardHeight={cardHeight}
+      contentHeight={contentHeight}
+      isExpanded={simulationData}
+    >
       <Stack space="24px">
         <Box
           alignItems="center"
@@ -290,7 +310,7 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
               {simulationData ? 'Simulated Result' : 'Simulating'}
             </Text>
           </Inline>
-          <Box as={Animated.View} style={listStyle}>
+          <Animated.View style={listStyle}>
             <ButtonPressAnimation disabled={!simulationData}>
               <IconContainer hitSlop={14} size={16} opacity={0.6}>
                 <Text
@@ -302,9 +322,9 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
                 </Text>
               </IconContainer>
             </ButtonPressAnimation>
-          </Box>
+          </Animated.View>
         </Box>
-        <Box as={Animated.View} style={listStyle}>
+        <Animated.View style={listStyle}>
           <Stack space="20px">
             <SimulatedEventRow
               amount={0.1}
@@ -327,7 +347,7 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
               eventType="receive"
             />
           </Stack>
-        </Box>
+        </Animated.View>
       </Stack>
     </FadedScrollCard>
   );
@@ -335,6 +355,9 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
 
 const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
   const [isExpanded, setIsExpanded] = useState(false);
 
   const listStyle = useAnimatedStyle(() => ({
@@ -355,6 +378,7 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
     >
       <FadedScrollCard
         cardHeight={cardHeight}
+        contentHeight={contentHeight}
         disableGestures={!isExpanded}
         isExpanded={isExpanded}
       >
@@ -384,7 +408,7 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
               </Text>
             </Inline>
           </Box>
-          <Box as={Animated.View} style={listStyle}>
+          <Animated.View style={listStyle}>
             <Stack space="24px">
               <DetailRow detailType="chain" />
               <DetailRow detailType="contract" />
@@ -393,10 +417,72 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
               <DetailRow detailType="sourceCodeVerification" />
               <DetailRow detailType="nonce" />
             </Stack>
-          </Box>
+          </Animated.View>
         </Stack>
       </FadedScrollCard>
     </ButtonPressAnimation>
+  );
+};
+
+const MessageCard = ({ messageContent }: { messageContent: string }) => {
+  const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
+
+  const listStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      cardHeight.value,
+      [
+        COLLAPSED_CARD_HEIGHT,
+        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+          ? MAX_CARD_HEIGHT
+          : contentHeight.value + CARD_BORDER_WIDTH * 2,
+      ],
+      [0, 1]
+    ),
+  }));
+
+  return (
+    <FadedScrollCard
+      cardHeight={cardHeight}
+      contentHeight={contentHeight}
+      isExpanded
+    >
+      <Stack space="24px">
+        <Box
+          alignItems="flex-end"
+          flexDirection="row"
+          justifyContent="space-between"
+          height={{ custom: CARD_ROW_HEIGHT }}
+        >
+          <Inline alignVertical="center" space="12px">
+            <IconContainer>
+              <Text align="center" color="label" size="icon 15px" weight="bold">
+                􀙤
+              </Text>
+            </IconContainer>
+            <Text color="label" size="17pt" weight="bold">
+              Message
+            </Text>
+          </Inline>
+          <ButtonPressAnimation>
+            <Bleed space="24px">
+              <Box style={{ margin: 24 }}>
+                <Text align="right" color="blue" size="15pt" weight="bold">
+                  Copy
+                </Text>
+              </Box>
+            </Bleed>
+          </ButtonPressAnimation>
+        </Box>
+        <Animated.View style={listStyle}>
+          <Text color="labelTertiary" size="15pt" weight="medium">
+            {messageContent}
+          </Text>
+        </Animated.View>
+      </Stack>
+    </FadedScrollCard>
   );
 };
 
@@ -564,11 +650,13 @@ const VerifiedBadge = () => {
 const FadedScrollCard = ({
   cardHeight,
   children,
+  contentHeight,
   disableGestures,
   isExpanded,
 }: {
   cardHeight: SharedValue<number>;
   children: React.ReactNode;
+  contentHeight: SharedValue<number>;
   disableGestures?: boolean;
   isExpanded: boolean;
 }) => {
@@ -578,7 +666,6 @@ const FadedScrollCard = ({
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   const offset = useScrollViewOffset(scrollViewRef);
-  const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
 
   const topGradientStyle = useAnimatedStyle(() => {
     if (!scrollEnabled) {
@@ -607,6 +694,25 @@ const FadedScrollCard = ({
   const cardStyle = useAnimatedStyle(() => {
     return {
       height: cardHeight.value,
+    };
+  });
+
+  const centerVerticallyWhenCollapsedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            cardHeight.value,
+            [
+              COLLAPSED_CARD_HEIGHT,
+              contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+                ? MAX_CARD_HEIGHT
+                : contentHeight.value + CARD_BORDER_WIDTH * 2,
+            ],
+            [-2, 0]
+          ),
+        },
+      ],
     };
   });
 
@@ -643,9 +749,7 @@ const FadedScrollCard = ({
   );
 
   return (
-    <Box
-      as={Animated.View}
-      borderRadius={28}
+    <Animated.View
       style={[
         {
           backgroundColor: isDarkMode ? globalColors.white10 : '#FBFCFD',
@@ -659,11 +763,7 @@ const FadedScrollCard = ({
       ]}
     >
       <Animated.ScrollView
-        contentContainerStyle={{
-          marginTop: isExpanded ? 0 : -(CARD_BORDER_WIDTH * 2),
-          paddingHorizontal: 24 - CARD_BORDER_WIDTH,
-          paddingVertical: 24 - CARD_BORDER_WIDTH,
-        }}
+        contentContainerStyle={{ padding: 24 - CARD_BORDER_WIDTH }}
         onContentSizeChange={handleContentSizeChange}
         pointerEvents={disableGestures ? 'none' : 'auto'}
         ref={scrollViewRef}
@@ -671,11 +771,13 @@ const FadedScrollCard = ({
         scrollEnabled={scrollEnabled}
         scrollEventThrottle={16}
       >
-        {children}
+        <Animated.View style={centerVerticallyWhenCollapsedStyle}>
+          {children}
+        </Animated.View>
       </Animated.ScrollView>
       <FadeGradient side="top" style={topGradientStyle} />
       <FadeGradient side="bottom" style={bottomGradientStyle} />
-    </Box>
+    </Animated.View>
   );
 };
 
@@ -734,9 +836,13 @@ const IconContainer = ({
   opacity?: number;
   size?: number;
 }) => {
+  // Prevent wide icons from being clipped
+  const extraHorizontalSpace = 4;
+
   return (
     <Bleed
-      vertical={hitSlop ? undefined : '6px'}
+      horizontal={{ custom: (hitSlop || 0) + extraHorizontalSpace }}
+      vertical={hitSlop ? { custom: hitSlop } : '6px'}
       space={hitSlop ? { custom: hitSlop } : undefined}
     >
       <Box
@@ -745,7 +851,7 @@ const IconContainer = ({
         justifyContent="center"
         margin={hitSlop ? { custom: hitSlop } : undefined}
         style={{ opacity }}
-        width={{ custom: size }}
+        width={{ custom: size + extraHorizontalSpace * 2 }}
       >
         {children}
       </Box>
@@ -833,3 +939,15 @@ const infoForDetailType: { [key: string]: DetailInfo } = {
     label: 'Nonce',
   },
 };
+
+const exampleMessage = `Welcome to OpenSea!
+
+Click to sign in and accept the OpenSea Terms of Service (https://opensea.io/tos) and Privacy Policy (https://opensea.io/privacy).
+
+This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours.
+
+Wallet address:
+0x80a91aeaf3e969de616eb63ea957817937b1
+
+Nonce:
+8126fea6-ef17-4c8e-aa81-281aaf96c05c`;
