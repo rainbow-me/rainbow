@@ -118,3 +118,125 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
     shortName
   }
 }
+
+fragment asset on TransactionSimulationAsset {
+  assetCode
+  decimals
+  iconURL
+  name
+  network
+  symbol
+  type
+  interface
+  tokenId
+  status
+}
+
+fragment asset on TransactionSimulationAsset {
+  assetCode
+  decimals
+  iconURL
+  name
+  network
+  symbol
+  type
+  interface
+  tokenId
+  status
+}
+fragment change on TransactionSimulationChange {
+  asset {
+    ...asset
+  }
+  quantity
+}
+fragment target on TransactionSimulationTarget {
+  address
+  name
+  iconURL
+  function
+  created
+  sourceCodeStatus
+}
+
+query simulateTransactions(
+  $chainId: Int!
+  $transactions: [Transaction!]
+  $domain: String!
+) {
+  simulateTransactions(
+    chainID: $chainId
+    transactions: $transactions
+    domain: $domain
+  ) {
+    scanning {
+      result
+      description
+    }
+    simulation {
+      in {
+        ...change
+      }
+      out {
+        ...change
+      }
+      approvals {
+        asset {
+          ...asset
+        }
+        spender {
+          ...target
+        }
+        quantityAllowed
+        quantityAtRisk
+      }
+      meta {
+        to {
+          ...target
+        }
+      }
+    }
+  }
+}
+
+query simulateMessage(
+  $address: String!
+  $chainId: Int!
+  $message: Message!
+  $domain: String!
+) {
+  simulateMessage(
+    address: $address
+    chainID: $chainId
+    message: $message
+    domain: $domain
+  ) {
+    scanning {
+      result
+      description
+    }
+    simulation {
+      in {
+        ...change
+      }
+      out {
+        ...change
+      }
+      approvals {
+        asset {
+          ...asset
+        }
+        spender {
+          ...target
+        }
+        quantityAllowed
+        quantityAtRisk
+      }
+      meta {
+        to {
+          ...target
+        }
+      }
+    }
+  }
+}

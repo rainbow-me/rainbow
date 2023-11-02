@@ -71,6 +71,7 @@ import {
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Signer } from '@ethersproject/abstract-signer';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -89,7 +90,7 @@ interface WalletInitialized {
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
-  existingWallet?: Wallet;
+  existingWallet?: Signer;
   provider?: Provider;
 }
 
@@ -405,7 +406,7 @@ export const signTransaction = async ({
 
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
@@ -455,7 +456,7 @@ export const signPersonalMessage = async (
 
 export const signTypedDataMessage = async (
   message: string | TypedData,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
