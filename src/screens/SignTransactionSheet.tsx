@@ -1579,7 +1579,7 @@ const DetailRow = ({
           <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
             <Text
               align="right"
-              color="labelSecondary"
+              color={onPress ? 'accent' : 'labelSecondary'}
               numberOfLines={1}
               size="15pt"
               weight="semibold"
