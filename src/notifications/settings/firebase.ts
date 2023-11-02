@@ -1,15 +1,10 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { RainbowNetworks } from '@/networks';
 import {
-  NotificationTopicType,
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
-import messaging from '@react-native-firebase/messaging';
-import { trackChangedNotificationSettings } from '@/notifications/analytics';
-import { NotificationTopic } from '@/notifications/settings/constants';
-import { logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 
 const NOTIFICATION_SUBSCRIPTIONS_URL =
@@ -135,42 +130,4 @@ const parseWalletSettings = (
       };
     });
   });
-};
-
-export const subscribeWalletToSingleNotificationTopic = (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-): Promise<void> => {
-  logger.debug(
-    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`,
-    {},
-    logger.DebugContext.notifications
-  );
-  return messaging()
-    .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
-    .then(() =>
-      trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
-    );
-};
-
-export const unsubscribeWalletFromSingleNotificationTopic = async (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-) => {
-  logger.debug(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`,
-    {},
-    logger.DebugContext.notifications
-  );
-  return messaging()
-    .unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    )
-    .then(() => {
-      trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
-    });
 };
