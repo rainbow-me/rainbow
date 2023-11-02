@@ -1,4 +1,5 @@
 export {
+  DEFAULT_ENABLED_TOPIC_SETTINGS,
   NotificationRelationship,
   NotificationTopic,
   WALLET_GROUPS_STORAGE_KEY,
@@ -13,6 +14,7 @@ export {
   useWalletGroupNotificationSettings,
 } from './hooks';
 export {
+  publishAndSaveWalletSettings,
   removeNotificationSettingsForWallet,
   toggleGroupNotifications,
   toggleTopicForWallet,
@@ -25,7 +27,9 @@ export type {
   WalletNotificationSettings,
 } from './types';
 export {
+  getAllNotificationSettingsFromStorage,
   notificationSettingsStorage,
+  setAllNotificationSettingsToStorage,
   updateGroupSettings,
   updateSettingsForWalletsWithRelationshipType,
 } from './storage';
