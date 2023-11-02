@@ -24,7 +24,6 @@ import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/scre
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
   WalletNotificationRelationship,
-  updateSettingsForWalletsWithRelationshipType,
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
@@ -230,10 +229,6 @@ const NotificationsSection = () => {
     updateGroupSettingsAndSubscriptions(WalletNotificationRelationship.OWNER, !storedOwnerEnabled)
       .then(() => {
         setOwnedState(prev => ({ ...prev, loading: false }));
-        updateSettingsForWalletsWithRelationshipType(WalletNotificationRelationship.OWNER, {
-          successfullyFinishedInitialSubscription: true,
-          enabled: !storedOwnerEnabled,
-        });
       })
       .catch(() => {
         showNotificationSubscriptionErrorAlert();
@@ -250,10 +245,6 @@ const NotificationsSection = () => {
     updateGroupSettingsAndSubscriptions(WalletNotificationRelationship.WATCHER, !storedWatcherEnabled)
       .then(() => {
         setWatchedState(prev => ({ ...prev, loading: false }));
-        updateSettingsForWalletsWithRelationshipType(WalletNotificationRelationship.WATCHER, {
-          successfullyFinishedInitialSubscription: true,
-          enabled: !storedWatcherEnabled,
-        });
       })
       .catch(() => {
         showNotificationSubscriptionErrorAlert();
