@@ -57,23 +57,28 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
   const initializationState = _prepareInitializationState();
   // Set of wallet addresses we have in app (unrelated to notification settings entries)
   const walletAddresses = new Set(addresses.map(addressWithRelationship => addressWithRelationship.address));
-  const removedWalletsThatWereNotUnsubscribedProperly: string[] = [...initializationState.alreadySaved.keys()].filter(
-    address => !walletAddresses.has(address)
-  );
-
   const proposedSettings = _prepareSubscriptionQueueAndCreateInitialSettings(addresses, initializationState);
 
-  InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(proposedSettings);
+  const removedWalletsThatWereNotUnsubscribedProperly = new Map<string, boolean>();
+
+  // Initialize hashmap and a set
+  initializationState.alreadySaved.forEach((_, address) => {
+    if (!walletAddresses.has(address)) {
+      removedWalletsThatWereNotUnsubscribedProperly.set(address, true);
+    }
   });
 
-  if (removedWalletsThatWereNotUnsubscribedProperly.length) {
-    InteractionManager.runAfterInteractions(() => {
-      removedWalletsThatWereNotUnsubscribedProperly.forEach(address => {
-        removeNotificationSettingsForWallet(address);
-      });
-    });
-  }
+  const proposedSettingsWithRemovedWallets = proposedSettings.filter(
+    setting => {
+      return !removedWalletsThatWereNotUnsubscribedProperly.get(
+        setting.address
+      );
+    }
+  );
+
+  InteractionManager.runAfterInteractions(() => {
+    publishAndSaveWalletSettings(proposedSettingsWithRemovedWallets, true);
+  });
 };
 
 /**
@@ -107,6 +112,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
       const oldSettingsEntry = newSettings[alreadySavedEntry.index];
       const updatedSettingsEntry = {
         ...oldSettingsEntry,
+        enabled: true,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         type: entry.relationship,
         successfullyFinishedInitialSubscription: false,
@@ -127,8 +133,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
       newSettings.push(newSettingsEntry);
     }
   });
-
-  setAllWalletNotificationSettingsToStorage(newSettings);
   return newSettings;
 };
 
