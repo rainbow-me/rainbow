@@ -7,7 +7,6 @@ import {
 } from '@/notifications/settings';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  NOTIFICATIONS_DEFAULT_CHAIN_ID,
 } from '@/notifications/settings/constants';
 import {
   _prepareInitializationState,
