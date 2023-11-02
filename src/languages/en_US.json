@@ -1231,7 +1231,16 @@
     },
     "points": {
       "coming_soon_title": "Coming Soon",
-      "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      "coming_soon_description": "Points are just around the corner.\nStart earning today.",
+      "referral_link": "Referral Link",
+      "share": "Share",
+      "next_reward": "Next Reward",
+      "referrals": "Referrals",
+      "streak": "Streak",
+      "longest_yet": "Longest yet",
+      "day": "day",
+      "days": "days",
+      "leaderboard": "Leaderboard"
     },
     "pools": {
       "deposit": "Deposit",

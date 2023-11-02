@@ -56,6 +56,7 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
+import * as i18n from '@/languages';
 
 const fallConfig = {
   duration: 2000,
@@ -115,6 +116,8 @@ const LeaderboardRow = () => {
       break;
   }
 
+  const address = '0x4cefdsfdsfa8a8a8a8';
+
   return (
     <Box
       paddingVertical="10px"
@@ -130,15 +133,24 @@ const LeaderboardRow = () => {
           shadow="12px"
         />
         <Stack space="8px">
-          <Text color="label" weight="bold" size="15pt">
-            0x4ce…a8a8
+          <Text
+            color="label"
+            weight="bold"
+            size="15pt"
+            ellipsizeMode="middle"
+            numberOfLines={1}
+          >
+            {`${address.slice(0, 5)}…${address.slice(
+              address.length - 4,
+              address.length
+            )}`}
           </Text>
           <Inline space="2px" alignVertical="center">
             <Text color="labelQuaternary" size="11pt" weight="bold">
               􀙬
             </Text>
             <Text color="labelQuaternary" size="13pt" weight="semibold">
-              40 days
+              {`40 ${i18n.t(i18n.l.points.days)}`}
             </Text>
           </Inline>
         </Stack>
@@ -356,7 +368,7 @@ export default function PointsScreen() {
             </ButtonPressAnimation>
           )
         }
-        title={lang.t('account.tab_points')}
+        title={i18n.t(i18n.l.account.tab_points)}
       />
       {pointsFullyEnabled ? (
         <ScrollView
@@ -416,7 +428,7 @@ export default function PointsScreen() {
               >
                 <InfoCard
                   onPress={() => {}}
-                  title="Next Reward"
+                  title={i18n.t(i18n.l.points.next_reward)}
                   mainText="20h 19m"
                   icon="􀉉"
                   subtitle="12pm Monday"
@@ -424,15 +436,15 @@ export default function PointsScreen() {
                 />
                 <InfoCard
                   onPress={() => {}}
-                  title="Streak"
-                  mainText="36 days"
+                  title={i18n.t(i18n.l.points.streak)}
+                  mainText={`36 ${i18n.t(i18n.l.points.days)}`}
                   icon="􀙬"
-                  subtitle="Longest yet"
+                  subtitle={i18n.t(i18n.l.points.longest_yet)}
                   accentColor={pink}
                 />
                 <InfoCard
                   onPress={() => {}}
-                  title="Referrals"
+                  title={i18n.t(i18n.l.points.referrals)}
                   mainText="12"
                   icon="􀇯"
                   subtitle="8,200"
@@ -449,7 +461,7 @@ export default function PointsScreen() {
                 <ButtonPressAnimation>
                   <Inline space="4px" alignVertical="center">
                     <Text weight="bold" color="labelTertiary" size="15pt">
-                      Referral Link
+                      {i18n.t(i18n.l.points.referral_link)}
                     </Text>
                     <Text
                       weight="heavy"
@@ -487,7 +499,7 @@ export default function PointsScreen() {
                           color="label"
                           size="15pt"
                         >
-                          Share
+                          {i18n.t(i18n.l.points.share)}
                         </Text>
                       </Box>
                     }
@@ -548,7 +560,7 @@ export default function PointsScreen() {
             <Separator color="separatorTertiary" thickness={1} />
             <Stack space="16px">
               <Text color="label" size="20pt" weight="heavy">
-                Leaderboard
+                {i18n.t(i18n.l.points.leaderboard)}
               </Text>
               <View
                 style={
@@ -670,7 +682,7 @@ export default function PointsScreen() {
                     size="26pt"
                     weight="semibold"
                   >
-                    {lang.t('points.coming_soon_title')}
+                    {i18n.t(i18n.l.points.coming_soon_title)}
                   </Text>
                   <Text
                     align="center"
@@ -678,7 +690,7 @@ export default function PointsScreen() {
                     size="15pt"
                     weight="medium"
                   >
-                    {lang.t('points.coming_soon_description')}
+                    {i18n.t(i18n.l.points.coming_soon_description)}
                   </Text>
                 </Stack>
               </Stack>
