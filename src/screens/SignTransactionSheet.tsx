@@ -17,7 +17,9 @@ import Animated, {
   Easing,
   SharedValue,
   interpolate,
-  useAnimatedScrollHandler,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
   useSharedValue,
@@ -98,6 +100,7 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
   isMessageDisplayType,
+  isSignTypedData,
 } from '@/utils/signingMethods';
 import { isEmpty, isNil } from 'lodash';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
@@ -123,12 +126,16 @@ import { TransactionMessage } from '@/components/transaction';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+
+const IS_MESSAGE = false;
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
 
 const CARD_ROW_HEIGHT = 12;
 const SMALL_CARD_ROW_HEIGHT = 10;
+const CARD_BORDER_WIDTH = 1.5;
 
 const rotationConfig = {
   duration: 2100,
@@ -148,7 +155,7 @@ export const SignTransactionSheet = () => {
   const [
     simulationData,
     setSimulationData,
-  ] = useState<TransactionSimulationResult | null>({});
+  ] = useState<TransactionSimulationResult | null>();
   const { params: routeParams } = useRoute<any>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const { callback, transactionDetails } = routeParams;
@@ -172,6 +179,7 @@ export const SignTransactionSheet = () => {
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<Network | null>();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [methodName, setMethodName] = useState<string | null>(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -218,9 +226,9 @@ export const SignTransactionSheet = () => {
 
     // sometimes provider is undefined, this is hack to ensure its defined
     const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
-      // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
       Number(
         transactionDetails?.walletConnectV2RequestValues?.chainId ||
+          // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
           walletConnector?._chainId
       )
     );
@@ -269,12 +277,13 @@ export const SignTransactionSheet = () => {
         updateTxFee(gas, null);
       }
     }
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     currentNetwork,
     req,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
     updateTxFee,
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+
     walletConnector?._chainId,
   ]);
 
@@ -350,8 +359,8 @@ export const SignTransactionSheet = () => {
   const accountInfo = useMemo(() => {
     // TODO where do we get address for sign/send transaction?
     const address =
-      // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
       transactionDetails?.walletConnectV2RequestValues?.address ||
+      // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
       walletConnector?._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets!, address);
     const profileInfo = getAccountProfileInfo(
@@ -364,9 +373,9 @@ export const SignTransactionSheet = () => {
       address,
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
-    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     transactionDetails?.walletConnectV2RequestValues?.address,
+    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
     walletConnector?._accounts,
     wallets,
     walletNames,
@@ -378,15 +387,15 @@ export const SignTransactionSheet = () => {
     setCurrentNetwork(
       ethereumUtils.getNetworkFromChainId(
         Number(
-          // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
           transactionDetails?.walletConnectV2RequestValues?.chainId ||
+            // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
             walletConnector?._chainId
         )
       )
     );
-    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     transactionDetails?.walletConnectV2RequestValues?.chainId,
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
     walletConnector?._chainId,
   ]);
 
@@ -432,13 +441,13 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     setTimeout(async () => {
       // Message Signing
-      console.log({ isMessageRequest });
       if (isMessageRequest) {
-        // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
         const simulationData = await metadataClient.simulateMessage({
           address: accountAddress,
           chainId: Number(
             transactionDetails?.walletConnectV2RequestValues?.chainId ||
+              // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+
               walletConnector?._chainId
           ),
           message: {
@@ -449,13 +458,14 @@ export const SignTransactionSheet = () => {
         });
         if (simulationData.simulateMessage?.simulation) {
           setSimulationData(simulationData.simulateMessage?.simulation);
+          setIsLoading(false);
         }
       } else {
         // TX Signing
-        // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
         const simulationData = await metadataClient.simulateTransactions({
           chainId: Number(
             transactionDetails?.walletConnectV2RequestValues?.chainId ||
+              // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
               walletConnector?._chainId
           ),
           transactions: [
@@ -469,16 +479,11 @@ export const SignTransactionSheet = () => {
           domain: transactionDetails?.dappUrl,
         });
         if (simulationData.simulateTransactions?.[0]?.simulation) {
-          console.log(
-            'setting data: ',
-            simulationData.simulateTransactions[0]?.simulation
-          );
           setSimulationData(simulationData.simulateTransactions[0]?.simulation);
+          setIsLoading(false);
         }
       }
     }, 1000);
-
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     accountAddress,
     isMessageRequest,
@@ -490,6 +495,8 @@ export const SignTransactionSheet = () => {
     transactionDetails?.dappUrl,
     transactionDetails?.payload?.method,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+
     walletConnector?._chainId,
   ]);
 
@@ -984,9 +991,17 @@ export const SignTransactionSheet = () => {
             </Inset>
 
             <Stack space={{ custom: 14 }}>
-              <SimulationCard simulation={simulationData || {}} />
+              <SimulationCard
+                simulation={simulationData || {}}
+                isLoading={isLoading}
+              />
               <Box>
-                {!isMessageRequest && (
+                {isMessageRequest ? (
+                  <MessageCard
+                    message={request.message}
+                    method={transactionDetails?.payload?.method}
+                  />
+                ) : (
                   <DetailsCard
                     isLoading={!simulationData}
                     meta={simulationData?.meta || {}}
@@ -996,12 +1011,6 @@ export const SignTransactionSheet = () => {
                       simulationData?.meta?.to?.function ||
                       'Unknown'
                     }
-                  />
-                )}
-                {isMessageRequest && (
-                  <SignatureSection
-                    message={request.message}
-                    method={transactionDetails.payload.method}
                   />
                 )}
                 {/* Hidden scroll view to disable sheet dismiss gestures */}
@@ -1017,8 +1026,9 @@ export const SignTransactionSheet = () => {
             </Stack>
 
             <Inset horizontal="12px">
-              <Inline alignVertical="center" space="12px">
+              <Inline alignVertical="center" space="12px" wrap={false}>
                 {accountInfo.accountImage ? (
+                  // size 44
                   <ImageAvatar image={accountInfo.accountImage} size="large" />
                 ) : (
                   <ContactAvatar
@@ -1036,11 +1046,20 @@ export const SignTransactionSheet = () => {
                     <Text color="labelTertiary" size="15pt" weight="semibold">
                       Signing with
                     </Text>
-                    <Text color="label" size="15pt" weight="bold">
+                    <Text
+                      color="label"
+                      size="15pt"
+                      weight="bold"
+                      numberOfLines={1}
+                    >
                       {accountInfo.accountName}
                     </Text>
                   </Inline>
-                  <Inline alignVertical="center" space={{ custom: 17 }}>
+                  <Inline
+                    alignVertical="center"
+                    space={{ custom: 17 }}
+                    wrap={false}
+                  >
                     <Bleed vertical="4px">
                       {currentNetwork !== Network.mainnet ? (
                         <ChainBadge
@@ -1059,8 +1078,10 @@ export const SignTransactionSheet = () => {
                         />
                       )}
                     </Bleed>
-                    <Text color="labelTertiary" size="13pt" weight="semibold">
-                      {walletBalance.display}
+                    <Text color="labelQuaternary" size="13pt" weight="semibold">
+                      {isMessageRequest
+                        ? 'Free to sign'
+                        : walletBalance.display}
                     </Text>
                   </Inline>
                 </Stack>
@@ -1114,33 +1135,36 @@ export const SignTransactionSheet = () => {
 
 const SimulationCard = ({
   simulation,
+  isLoading,
 }: {
   simulation: TransactionSimulationResult;
+  isLoading: boolean;
 }) => {
-  console.log('simualtion ? ', !!simulation, '    ', simulation);
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
   const spinnerRotation = useSharedValue(0);
 
   const itemCount =
     (simulation?.in?.length || 0) +
-      (simulation?.out?.length || 0) +
-      (simulation?.approvals?.length || 0) || 1;
+    (simulation?.out?.length || 0) +
+    (simulation?.approvals?.length || 0);
 
-  const noChanges = !simulation;
-  console.log({ noChanges });
+  const noChanges = simulation && itemCount === 0;
+
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       cardHeight.value,
       [
         COLLAPSED_CARD_HEIGHT,
-        itemCount < 4
-          ? COLLAPSED_CARD_HEIGHT + itemCount * 40
-          : MAX_CARD_HEIGHT,
+        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+          ? MAX_CARD_HEIGHT
+          : contentHeight.value + CARD_BORDER_WIDTH * 2,
       ],
       [0, 1]
     ),
   }));
-  const hasLoaded = !!simulation;
 
   const spinnerStyle = useAnimatedStyle(() => {
     return {
@@ -1149,13 +1173,7 @@ const SimulationCard = ({
   });
 
   useEffect(() => {
-    if (hasLoaded) {
-      cardHeight.value = withTiming(
-        itemCount < 4
-          ? COLLAPSED_CARD_HEIGHT + itemCount * 40
-          : MAX_CARD_HEIGHT,
-        timingConfig
-      );
+    if (simulation) {
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
       spinnerRotation.value = withRepeat(
@@ -1164,16 +1182,21 @@ const SimulationCard = ({
         false
       );
     }
-  }, [cardHeight, hasLoaded, itemCount, simulation, spinnerRotation]);
+  }, [simulation, spinnerRotation]);
 
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
-      isCollapsed={!hasLoaded}
-      scrollEnabled={!!hasLoaded && (!noChanges || itemCount !== 1)}
+      contentHeight={contentHeight}
+      isExpanded={!isEmpty(simulation)}
     >
       <Stack space="24px">
-        <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
+        <Box
+          alignItems="center"
+          flexDirection="row"
+          justifyContent="space-between"
+          height={{ custom: CARD_ROW_HEIGHT }}
+        >
           <Inline alignVertical="center" space="12px">
             <IconContainer>
               <Animated.View style={spinnerStyle}>
@@ -1191,8 +1214,21 @@ const SimulationCard = ({
               {simulation ? 'Simulated Result' : 'Simulating'}
             </Text>
           </Inline>
+          <Animated.View style={listStyle}>
+            <ButtonPressAnimation disabled={!simulation}>
+              <IconContainer hitSlop={14} size={16} opacity={0.6}>
+                <Text
+                  color="labelQuaternary"
+                  size="icon 15px"
+                  weight="semibold"
+                >
+                  􀁜
+                </Text>
+              </IconContainer>
+            </ButtonPressAnimation>
+          </Animated.View>
         </Box>
-        <Box as={Animated.View} style={listStyle}>
+        <Animated.View style={listStyle}>
           <Stack space="20px">
             {noChanges && (
               <Text color="labelTertiary" size="17pt" weight="bold">
@@ -1230,7 +1266,7 @@ const SimulationCard = ({
               );
             })}
           </Stack>
-        </Box>
+        </Animated.View>
       </Stack>
     </FadedScrollCard>
   );
@@ -1248,6 +1284,9 @@ const DetailsCard = ({
   methodName: string;
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
   const [isExpanded, setIsExpanded] = useState(false);
 
   const listStyle = useAnimatedStyle(() => ({
@@ -1258,26 +1297,18 @@ const DetailsCard = ({
     ),
   }));
 
-  const handlePress = () => {
-    if (isExpanded) {
-      cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
-    } else {
-      cardHeight.value = withTiming(MAX_CARD_HEIGHT, timingConfig);
-    }
-    setIsExpanded(!isExpanded);
-  };
-
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
   return (
     <ButtonPressAnimation
       disabled={isLoading}
-      onPress={handlePress}
+      onPress={() => setIsExpanded(true)}
       scaleTo={0.96}
     >
       <FadedScrollCard
         cardHeight={cardHeight}
-        isCollapsed={!isExpanded}
-        scrollEnabled={isExpanded}
+        contentHeight={contentHeight}
+        disableGestures={!isExpanded}
+        isExpanded={isExpanded}
       >
         <Stack space="24px">
           <Box
@@ -1305,7 +1336,7 @@ const DetailsCard = ({
               </Text>
             </Inline>
           </Box>
-          <Box as={Animated.View} style={listStyle}>
+          <Animated.View style={listStyle}>
             <Stack space="24px">
               {
                 <DetailRow
@@ -1345,52 +1376,90 @@ const DetailsCard = ({
               )}
               {/* <DetailRow detailType="nonce" /> */}
             </Stack>
-          </Box>
+          </Animated.View>
         </Stack>
       </FadedScrollCard>
     </ButtonPressAnimation>
   );
 };
 
-const SignatureSection = ({
+const MessageCard = ({
   message,
   method,
 }: {
   message: string;
   method: RPCMethod;
 }) => {
-  const cardHeight = useSharedValue(MAX_CARD_HEIGHT);
+  const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
+  const contentHeight = useSharedValue(
+    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
+  );
+
+  const listStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      cardHeight.value,
+      [
+        COLLAPSED_CARD_HEIGHT,
+        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+          ? MAX_CARD_HEIGHT
+          : contentHeight.value + CARD_BORDER_WIDTH * 2,
+      ],
+      [0, 1]
+    ),
+  }));
+
+  let displayMessage = message;
+  if (isSignTypedData(method)) {
+    try {
+      const parsedMessage = JSON.parse(message);
+      const sanitizedMessage = sanitizeTypedData(parsedMessage);
+      displayMessage = sanitizedMessage;
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+      console.log('parsing issue, ', e);
+    }
+
+    displayMessage = JSON.stringify(displayMessage, null, 4);
+  }
+
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
-      isCollapsed={false}
-      scrollEnabled={true}
+      contentHeight={contentHeight}
+      isExpanded
     >
       <Stack space="24px">
         <Box
-          justifyContent="center"
+          alignItems="flex-end"
+          flexDirection="row"
+          justifyContent="space-between"
           height={{ custom: CARD_ROW_HEIGHT }}
-          width="full"
         >
           <Inline alignVertical="center" space="12px">
             <IconContainer>
-              <Text
-                align="center"
-                color={'label'}
-                size="icon 15px"
-                weight="bold"
-              >
+              <Text align="center" color="label" size="icon 15px" weight="bold">
                 􀙤
               </Text>
             </IconContainer>
-            <Text color={'label'} size="17pt" weight="bold">
-              Signature
+            <Text color="label" size="17pt" weight="bold">
+              Message
             </Text>
           </Inline>
+          <ButtonPressAnimation>
+            <Bleed space="24px">
+              <Box style={{ margin: 24 }}>
+                <Text align="right" color="blue" size="15pt" weight="bold">
+                  Copy
+                </Text>
+              </Box>
+            </Bleed>
+          </ButtonPressAnimation>
         </Box>
-        <Box as={Animated.View}>
-          <TransactionMessage message={message} method={method} />
-        </Box>
+        <Animated.View style={listStyle}>
+          <Text color="labelTertiary" size="15pt" weight="medium">
+            {displayMessage}
+          </Text>
+        </Animated.View>
       </Stack>
     </FadedScrollCard>
   );
@@ -1407,6 +1476,8 @@ const SimulatedEventRow = ({
   eventType: EventType;
   imageUrl?: string;
 }) => {
+  const { colors } = useTheme();
+
   const eventInfo: EventInfo = infoForEventType[eventType];
 
   const formattedAmounts =
@@ -1430,14 +1501,19 @@ const SimulatedEventRow = ({
   }
   return (
     <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space="12px">
+      <Inline
+        alignHorizontal="justify"
+        alignVertical="center"
+        space="20px"
+        wrap={false}
+      >
+        <Inline alignVertical="center" space="12px" wrap={false}>
           <EventIcon eventType={eventType} />
           <Text color="label" size="17pt" weight="bold">
             {eventInfo.label}
           </Text>
         </Inline>
-        <Inline alignVertical="center" space={{ custom: 7 }}>
+        <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
             {asset?.type !== TransactionAssetType.Nft ? (
               <CoinIcon
@@ -1447,6 +1523,7 @@ const SimulatedEventRow = ({
                 type={ethereumUtils.getAssetTypeFromNetwork(
                   asset?.network as Network
                 )}
+                forcedShadowColor={colors.transparent}
                 ignoreBadge={true}
               />
             ) : (
@@ -1459,6 +1536,7 @@ const SimulatedEventRow = ({
           <Text
             align="right"
             color={eventInfo.textColor}
+            numberOfLines={1}
             size="17pt"
             weight="bold"
           >
@@ -1491,17 +1569,18 @@ const DetailRow = ({
       )}
     >
       <Box justifyContent="center" height={{ custom: SMALL_CARD_ROW_HEIGHT }}>
-        <Inline alignHorizontal="justify" alignVertical="center">
-          <Inline alignVertical="center" space="12px">
+        <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+          <Inline alignVertical="center" space="12px" wrap={false}>
             <DetailIcon detailInfo={detailInfo} />
             <Text color="labelTertiary" size="15pt" weight="semibold">
               {detailInfo.label}
             </Text>
           </Inline>
-          <Inline alignVertical="center" space={{ custom: 7 }}>
+          <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
             <Text
               align="right"
-              color={onPress ? 'accent' : 'labelSecondary'}
+              color="labelSecondary"
+              numberOfLines={1}
               size="15pt"
               weight="semibold"
             >
@@ -1585,26 +1664,22 @@ const VerifiedBadge = () => {
 const FadedScrollCard = ({
   cardHeight,
   children,
-  isCollapsed,
-  scrollEnabled = false,
+  contentHeight,
+  disableGestures,
+  isExpanded,
 }: {
   cardHeight: SharedValue<number>;
   children: React.ReactNode;
-  isCollapsed: boolean;
-  scrollEnabled?: boolean;
+  contentHeight: SharedValue<number>;
+  disableGestures?: boolean;
+  isExpanded: boolean;
 }) => {
   const { isDarkMode } = useTheme();
 
-  const scrollViewRef = useRef(null);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+  const [scrollEnabled, setScrollEnabled] = useState(false);
+
   const offset = useScrollViewOffset(scrollViewRef);
-
-  const [contentHeight, setContentHeight] = useState(COLLAPSED_CARD_HEIGHT);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      offset.value = event.contentOffset.y;
-    },
-  });
 
   const topGradientStyle = useAnimatedStyle(() => {
     if (!scrollEnabled) {
@@ -1624,63 +1699,99 @@ const FadedScrollCard = ({
     }
     return {
       opacity:
-        offset.value >= contentHeight - MAX_CARD_HEIGHT
+        offset.value > contentHeight.value + CARD_BORDER_WIDTH - MAX_CARD_HEIGHT
           ? withTiming(0, timingConfig)
           : withTiming(1, timingConfig),
     };
   });
 
-  const cardstyle = useAnimatedStyle(() => {
+  const cardStyle = useAnimatedStyle(() => {
     return {
       height: cardHeight.value,
-      paddingVertical: interpolate(
-        cardHeight.value,
-        [COLLAPSED_CARD_HEIGHT, MAX_CARD_HEIGHT],
-        [0, 0]
-      ),
     };
   });
 
-  const handleContentSizeChange = useCallback((height: number) => {
-    setContentHeight(height);
-  }, []);
+  const centerVerticallyWhenCollapsedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            cardHeight.value,
+            [
+              COLLAPSED_CARD_HEIGHT,
+              contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+                ? MAX_CARD_HEIGHT
+                : contentHeight.value + CARD_BORDER_WIDTH * 2,
+            ],
+            [-2, 0]
+          ),
+        },
+      ],
+    };
+  });
+
+  const handleContentSizeChange = useCallback(
+    (width: number, height: number) => {
+      contentHeight.value = Math.round(height);
+    },
+    [contentHeight]
+  );
+
+  useAnimatedReaction(
+    () => ({ contentHeight: contentHeight.value, isExpanded }),
+    ({ contentHeight, isExpanded }, previous) => {
+      if (
+        isExpanded !== previous?.isExpanded ||
+        contentHeight !== previous?.contentHeight
+      ) {
+        if (isExpanded) {
+          cardHeight.value = withTiming(
+            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
+              ? MAX_CARD_HEIGHT
+              : contentHeight + CARD_BORDER_WIDTH * 2,
+            timingConfig
+          );
+        } else {
+          cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
+        }
+
+        const enableScroll =
+          isExpanded && contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+        runOnJS(setScrollEnabled)(enableScroll);
+      }
+    }
+  );
 
   return (
-    <Box
-      as={Animated.View}
-      borderRadius={28}
+    <Animated.View
       style={[
         {
           backgroundColor: isDarkMode ? globalColors.white10 : '#FBFCFD',
           borderColor: isDarkMode ? '#1F2023' : '#F5F7F8',
           borderCurve: 'continuous',
           borderRadius: 28,
-          borderStyle: 'solid',
-          borderWidth: 1.5,
-          overflow: 'scroll',
+          borderWidth: CARD_BORDER_WIDTH,
+          overflow: 'hidden',
         },
-        cardstyle,
+        cardStyle,
       ]}
     >
       <Animated.ScrollView
-        contentContainerStyle={{
-          marginTop: isCollapsed ? -3 : 0,
-          paddingHorizontal: 22.5,
-          paddingVertical: 22.5,
-        }}
+        contentContainerStyle={{ padding: 24 - CARD_BORDER_WIDTH }}
         onContentSizeChange={handleContentSizeChange}
-        onScroll={scrollHandler}
-        pointerEvents={scrollEnabled ? 'auto' : 'none'}
+        pointerEvents={disableGestures ? 'none' : 'auto'}
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
         scrollEventThrottle={16}
       >
-        {children}
+        <Animated.View style={centerVerticallyWhenCollapsedStyle}>
+          {children}
+        </Animated.View>
       </Animated.ScrollView>
       <FadeGradient side="top" style={topGradientStyle} />
       <FadeGradient side="bottom" style={bottomGradientStyle} />
-    </Box>
+    </Animated.View>
   );
 };
 
@@ -1728,14 +1839,33 @@ const FadeGradient = ({
   );
 };
 
-const IconContainer = ({ children }: { children: React.ReactNode }) => {
+const IconContainer = ({
+  children,
+  hitSlop,
+  opacity,
+  size = 20,
+}: {
+  children: React.ReactNode;
+  hitSlop?: number;
+  opacity?: number;
+  size?: number;
+}) => {
+  // Prevent wide icons from being clipped
+  const extraHorizontalSpace = 4;
+
   return (
-    <Bleed vertical="6px">
+    <Bleed
+      horizontal={{ custom: (hitSlop || 0) + extraHorizontalSpace }}
+      vertical={hitSlop ? { custom: hitSlop } : '6px'}
+      space={hitSlop ? { custom: hitSlop } : undefined}
+    >
       <Box
         alignItems="center"
-        height={{ custom: 20 }}
+        height={{ custom: size }}
         justifyContent="center"
-        width={{ custom: 20 }}
+        margin={hitSlop ? { custom: hitSlop } : undefined}
+        style={{ opacity }}
+        width={{ custom: size + extraHorizontalSpace * 2 }}
       >
         {children}
       </Box>
@@ -1823,3 +1953,15 @@ const infoForDetailType: { [key: string]: DetailInfo } = {
     label: 'Nonce',
   },
 };
+
+const exampleMessage = `Welcome to OpenSea!
+
+Click to sign in and accept the OpenSea Terms of Service (https://opensea.io/tos) and Privacy Policy (https://opensea.io/privacy).
+
+This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours.
+
+Wallet address:
+0x80a91aeaf3e969de616eb63ea957817937b1
+
+Nonce:
+8126fea6-ef17-4c8e-aa81-281aaf96c05c`;
