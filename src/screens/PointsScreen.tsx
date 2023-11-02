@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Image, RefreshControl, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -56,6 +56,7 @@ import { address as formatAddress } from '@/utils/abbreviations';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
 import { queryClient } from '@/react-query';
+import { delay } from '@/utils/delay';
 
 const STREAKS_ENABLED = false;
 const REFERRALS_ENABLED = false;
@@ -417,6 +418,15 @@ export default function PointsScreen() {
     [accountAddress, isToastActive, setClipboard, setToastActive]
   );
 
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const refresh = React.useCallback(async () => {
+    setIsRefreshing(true);
+    await queryClient.invalidateQueries([pointsQueryKey]);
+    await delay(2000);
+    setIsRefreshing(false);
+  }, []);
+
   const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
 
   return (
@@ -445,18 +455,28 @@ export default function PointsScreen() {
         }
         title={i18n.t(i18n.l.account.tab_points)}
       />
-      {/* eslint-disable-next-line no-nested-ternary */}
       {pointsFullyEnabled ? (
-        data?.points ? (
-          <ScrollView
-            style={{
-              paddingHorizontal: 20,
-            }}
-            scrollIndicatorInsets={{
-              bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
-            }}
-            contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT + 32 }}
-          >
+        <ScrollView
+          style={{
+            paddingHorizontal: 20,
+          }}
+          scrollIndicatorInsets={{
+            bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+          }}
+          contentContainerStyle={{
+            paddingBottom: TAB_BAR_HEIGHT + 32,
+            height: data?.points ? undefined : '100%',
+          }}
+          showsVerticalScrollIndicator={!!data?.points}
+          refreshControl={
+            <RefreshControl
+              onRefresh={refresh}
+              refreshing={isRefreshing}
+              tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
+            />
+          }
+        >
+          {data?.points ? (
             <Stack space="32px">
               <Box flexDirection="row" alignItems="center" paddingTop="16px">
                 <MaskedView
@@ -744,55 +764,24 @@ export default function PointsScreen() {
                 </Box>
               </Stack>
             </Stack>
-          </ScrollView>
-        ) : (
-          <Box
-            alignItems="center"
-            justifyContent="center"
-            height="full"
-            position="absolute"
-            width="full"
-          >
-            {!isFetching ? (
-              <Stack space="20px">
-                <Text
-                  size="17pt"
-                  weight="bold"
-                  align="center"
-                  color="labelTertiary"
-                >
-                  {i18n.t(i18n.l.points.error)}
-                </Text>
-                <ButtonPressAnimation
-                  onPress={() => {
-                    // only allow refresh if data is at least 30 seconds old
-                    if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
-                      queryClient.invalidateQueries({
-                        queryKey: pointsQueryKey({
-                          address: accountAddress,
-                        }),
-                      });
-                    }
-                  }}
-                >
-                  <Text
-                    align="center"
-                    color="labelTertiary"
-                    size="34pt"
-                    weight="bold"
-                  >
-                    􀅈
-                  </Text>
-                </ButtonPressAnimation>
-              </Stack>
-            ) : (
-              <LoadingSpinner
-                color={isDarkMode ? 'white' : 'black'}
-                size={36}
-              />
-            )}
-          </Box>
-        )
+          ) : (
+            <Box
+              alignItems="center"
+              justifyContent="center"
+              height="full"
+              width="full"
+            >
+              <Text
+                size="17pt"
+                weight="bold"
+                align="center"
+                color="labelTertiary"
+              >
+                {i18n.t(i18n.l.points.error)}
+              </Text>
+            </Box>
+          )}
+        </ScrollView>
       ) : (
         <>
           <Box
@@ -800,6 +789,9 @@ export default function PointsScreen() {
             as={Page}
             flex={1}
             height="full"
+            position="absolute"
+            width="full"
+            style={{ zIndex: -1 }}
             justifyContent="center"
           >
             <Box paddingBottom="104px" width="full">
