@@ -21,3 +21,5 @@ export const isTransactionDisplayType = (method: string) =>
 
 export const isSignTypedData = (method: string) =>
   method.startsWith(SIGN_TYPED_DATA);
+
+export const isPersonalSign = (method: string) => method === PERSONAL_SIGN;

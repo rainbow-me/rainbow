@@ -100,6 +100,7 @@ import {
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
   isMessageDisplayType,
+  isPersonalSign as checkIsPersonalSign,
   isSignTypedData,
 } from '@/utils/signingMethods';
 import { isEmpty, isNil } from 'lodash';
@@ -163,6 +164,9 @@ export const SignTransactionSheet = () => {
   const isMessageRequest = isMessageDisplayType(
     transactionDetails.payload.method
   );
+
+  const isPersonalSign = checkIsPersonalSign(transactionDetails.payload.method);
+
   const [ready, setReady] = useState(isMessageRequest);
 
   const label = useForegroundColor('label');
@@ -441,7 +445,7 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     setTimeout(async () => {
       // Message Signing
-      if (isMessageRequest) {
+      if (isMessageRequest && !isPersonalSign) {
         const simulationData = await metadataClient.simulateMessage({
           address: accountAddress,
           chainId: Number(
@@ -991,10 +995,12 @@ export const SignTransactionSheet = () => {
             </Inset>
 
             <Stack space={{ custom: 14 }}>
-              <SimulationCard
-                simulation={simulationData || {}}
-                isLoading={isLoading}
-              />
+              {!isPersonalSign && (
+                <SimulationCard
+                  simulation={simulationData || {}}
+                  isLoading={isLoading}
+                />
+              )}
               <Box>
                 {isMessageRequest ? (
                   <MessageCard
