@@ -57,29 +57,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 };
 
 /**
- * Updates settings for all wallets with relationship type
- * @returns updated wallet settings array
- */
-export const updateSettingsForWalletsWithRelationshipType = (
-  type: NotificationRelationshipType,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings[] => {
-  const data = getAllNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.type === type) {
-      return { ...wallet, ...options };
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
-
-  return newSettings;
-};
-
-/**
  * Updates settings for wallet with address
  * @returns updated wallet settings object or undefined if there's no wallet with passed address
  */
