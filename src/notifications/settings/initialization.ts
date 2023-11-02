@@ -5,7 +5,6 @@ import {
   NotificationRelationship,
   notificationSettingsStorage,
   publishAndSaveWalletSettings,
-  setAllNotificationSettingsToStorage,
   WALLET_GROUPS_STORAGE_KEY,
   WalletNotificationSettings,
 } from '@/notifications/settings';
@@ -79,7 +78,7 @@ export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForR
   );
 
   InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(proposedSettingsWithRemovedWallets);
+    publishAndSaveWalletSettings(proposedSettingsWithRemovedWallets, true);
   });
 };
 
@@ -121,6 +120,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
       const oldSettingsEntry = newSettings[alreadySavedEntry.index];
       const updatedSettingsEntry = {
         ...oldSettingsEntry,
+        enabled: true,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         type: entry.relationship,
         successfullyFinishedInitialSubscription: false,
@@ -140,7 +140,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
       newSettings.push(newSettingsEntry);
     }
   });
-  setAllNotificationSettingsToStorage(newSettings);
   return newSettings;
 };
 

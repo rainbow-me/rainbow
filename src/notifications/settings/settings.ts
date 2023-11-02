@@ -1,3 +1,4 @@
+import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 import {
   NotificationTopicType,
   WalletNotificationSettings,
@@ -30,7 +31,7 @@ export const removeNotificationSettingsForWallet = async (
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  publishAndSaveWalletSettings(newSettings);
+  publishAndSaveWalletSettings(newSettings, true);
 };
 
 /**
@@ -43,39 +44,24 @@ export async function toggleGroupNotifications(
   enableNotifications: boolean
 ) {
   const allSettings = getAllNotificationSettingsFromStorage();
-  if (enableNotifications) {
-    const toBeUpdated = new Map<string, boolean>();
-    // Initialize hashmap of addresses to be enabled
-    wallets.forEach(entry => {
-      toBeUpdated.set(entry.address, true);
-    });
+  const toBeUpdated = new Map<string, boolean>();
+  wallets.forEach(entry => {
+    toBeUpdated.set(entry.address, true);
+  });
 
-    const newSettings = allSettings.map(walletSetting => {
-      if (toBeUpdated.get(walletSetting.address)) {
-        return {
-          ...walletSetting,
-          enabled: true,
-        };
-      }
-      return walletSetting;
-    });
+  const proposedSettings = allSettings.map(walletSetting => {
+    if (toBeUpdated.get(walletSetting.address)) {
+      return {
+        ...walletSetting,
+        enabled: enableNotifications,
+        successfullyFinishedInitialSubscription: false,
+        topics: enableNotifications ? DEFAULT_ENABLED_TOPIC_SETTINGS : {},
+      };
+    }
+    return walletSetting;
+  });
 
-    publishAndSaveWalletSettings(newSettings);
-  } else {
-    // unsubscribe from all topics for all wallets passed in
-    const toBeRemoved = new Map<string, boolean>();
-
-    // Initialize hashmap of addresses to be removed
-    wallets.forEach(entry => {
-      toBeRemoved.set(entry.address, true);
-    });
-
-    const newSettings = allSettings.filter(
-      (wallet: WalletNotificationSettings) => !toBeRemoved.get(wallet.address)
-    );
-
-    publishAndSaveWalletSettings(newSettings);
-  }
+  publishAndSaveWalletSettings(proposedSettings);
 }
 
 /**
@@ -93,6 +79,7 @@ export async function toggleTopicForWallet(
     }
     return {
       ...walletSetting,
+      successfullyFinishedInitialSubscription: false,
       topics: {
         ...walletSetting.topics,
         [topic]: enableTopic,
@@ -103,8 +90,12 @@ export async function toggleTopicForWallet(
 }
 
 export const publishAndSaveWalletSettings = async (
-  proposedSettings: WalletNotificationSettings[]
+  proposedSettings: WalletNotificationSettings[],
+  skipPreSave: boolean = false
 ): Promise<void> => {
+  if (!skipPreSave) {
+    setAllNotificationSettingsToStorage(proposedSettings);
+  }
   const finalizedSettings = await publishWalletSettings(proposedSettings);
   if (finalizedSettings) {
     setAllNotificationSettingsToStorage(finalizedSettings);
