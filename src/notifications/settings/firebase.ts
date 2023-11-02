@@ -3,7 +3,6 @@ import { logger, RainbowError } from '@/logger';
 import { supportedNotificationsChainIds } from '@/chains';
 import {
   GlobalNotificationTopicType,
-  WalletNotificationTopicType,
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -138,32 +137,6 @@ const parseWalletSettings = (walletSettings: WalletNotificationSettings[]): Noti
 
 export const unsubscribeFromAllGlobalNotificationTopics = (): Promise<void[]> => {
   return Promise.all(Object.values(GlobalNotificationTopic).map(topic => unsubscribeFromGlobalNotificationTopic(topic)));
-};
-
-export const subscribeWalletToNotificationTopic = async (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: WalletNotificationTopicType
-): Promise<void> => {
-  logger.debug(`[notifications]: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`, {}, logger.DebugContext.notifications);
-  return messaging()
-    .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
-    .then(() => trackChangedNotificationSettings(topic, 'subscribe', chainId, type));
-};
-
-export const unsubscribeWalletFromNotificationTopic = async (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: WalletNotificationTopicType
-) => {
-  logger.debug(`[notifications]: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`, {}, logger.DebugContext.notifications);
-  return messaging()
-    .unsubscribeFromTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
-    .then(() => {
-      trackChangedNotificationSettings(topic, 'unsubscribe', chainId, type);
-    });
 };
 
 export const subscribeToGlobalNotificationTopic = async (topic: GlobalNotificationTopicType): Promise<void> => {
