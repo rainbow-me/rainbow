@@ -12,17 +12,12 @@ const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
 
 const Container = styled(Row)({
-  maxHeight: ({ maxHeight }) => maxHeight,
   minHeight: ({ minHeight }) => minHeight,
+  overflow: 'visible',
 });
 
 const MessageWrapper = styled(ScrollView)({
-  borderColor: ({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.08),
-  borderRadius: 20,
-  borderWidth: 1,
   marginBottom: 14,
-  minWidth: deviceWidth - horizontalPadding * 2,
 });
 
 const TransactionMessage = ({ maxHeight = 150, message, method }) => {
@@ -42,15 +37,13 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
 
   return (
     <Container maxHeight={maximumHeight} minHeight={minimumHeight}>
-      <MessageWrapper>
-        <Text
-          color={colors.alpha(colors.blueGreyDark, 0.6)}
-          size="lmedium"
-          style={{ ...padding.object(12, 15) }}
-        >
-          {msg}
-        </Text>
-      </MessageWrapper>
+      <Text
+        color={colors.alpha(colors.blueGreyDark, 0.6)}
+        size="lmedium"
+        style={{ ...padding.object(12, 15) }}
+      >
+        {msg}
+      </Text>
     </Container>
   );
 };

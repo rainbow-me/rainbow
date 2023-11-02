@@ -1,5 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleProp, ViewStyle } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Image,
+  InteractionManager,
+  ScrollView,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Easing,
@@ -12,10 +24,11 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import ConditionalWrap from 'conditional-wrap';
+import { Transaction } from '@ethersproject/transactions';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainBadge, CoinIcon } from '@/components/coin-icon';
-import { ImgixImage } from '@/components/images';
 import { SheetActionButton } from '@/components/sheet';
 import {
   Bleed,
@@ -30,18 +43,86 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { AssetType } from '@/entities';
+import { ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
-import { safeAreaInsetValues } from '@/utils';
 
-type MockAsset = {
-  address: string;
-  assetType: 'token' | 'nft';
-  name: string;
-  symbol: string;
-};
+import { useTheme } from '@/theme';
+import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import { metadataClient } from '@/graphql';
+import {
+  TransactionAssetType,
+  TransactionSimulationAsset,
+  TransactionSimulationMeta,
+  TransactionSimulationResult,
+} from '@/graphql/__generated__/metadata';
+import { Network } from '@/networks/types';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import {
+  convertHexToString,
+  convertRawAmountToBalance,
+  convertRawAmountToRoundedDecimal,
+  delay,
+  greaterThan,
+  omitFlatten,
+} from '@/helpers/utilities';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/store';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import {
+  useAccountSettings,
+  useCurrentNonce,
+  useDimensions,
+  useGas,
+  useWallets,
+} from '@/hooks';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { ContactAvatar } from '@/components/contacts';
+import {
+  estimateGas,
+  estimateGasWithPadding,
+  getFlashbotsProvider,
+  getProviderForNetwork,
+  isL2Network,
+  isTestnetNetwork,
+  toHex,
+} from '@/handlers/web3';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { GasSpeedButton } from '@/components/gas';
+import { getNetworkObj } from '@/networks';
+import { RainbowError, logger } from '@/logger';
+import {
+  PERSONAL_SIGN,
+  SEND_TRANSACTION,
+  SIGN_TYPED_DATA,
+  SIGN_TYPED_DATA_V4,
+  isMessageDisplayType,
+} from '@/utils/signingMethods';
+import { isEmpty, isNil } from 'lodash';
+import { parseGasParamsForTransaction } from '@/parsers/gas';
+import {
+  loadWallet,
+  sendTransaction,
+  signPersonalMessage,
+  signTransaction,
+  signTypedDataMessage,
+} from '@/model/wallet';
+
+import { analytics } from '@/analytics';
+import { dataAddNewTransaction } from '@/redux/data';
+import { handleSessionRequestResponse } from '@/walletConnect';
+import {
+  WalletconnectResultType,
+  walletConnectRemovePendingRedirect,
+  walletConnectSendStatus,
+} from '@/redux/walletconnect';
+import { removeRequest } from '@/redux/requests';
+import { maybeSignUri } from '@/handlers/imgix';
+import { TransactionMessage } from '@/components/transaction';
+import { RPCMethod } from '@/walletConnect/types';
+import { isAddress } from '@ethersproject/address';
+import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -60,19 +141,783 @@ const timingConfig = {
 };
 
 export const SignTransactionSheet = () => {
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const [simulationData, setSimulationData] = useState(false);
+  const { width: deviceWidth } = useDimensions();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const [
+    simulationData,
+    setSimulationData,
+  ] = useState<TransactionSimulationResult | null>({});
+  const { params: routeParams } = useRoute<any>();
+  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
+  const { callback, transactionDetails } = routeParams;
+
+  const isMessageRequest = isMessageDisplayType(
+    transactionDetails.payload.method
+  );
+  const [ready, setReady] = useState(isMessageRequest);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
-  useEffect(() => {
-    setTimeout(() => {
-      setSimulationData(true);
-    }, 2000);
-  }, []);
+  const pendingRedirect = useSelector(
+    ({ walletconnect }: AppState) => walletconnect.pendingRedirect
+  );
+  const walletConnectors = useSelector(
+    ({ walletconnect }: AppState) => walletconnect.walletConnectors
+  );
+  const walletConnector = walletConnectors[transactionDetails?.peerId];
 
+  const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
+  const [currentNetwork, setCurrentNetwork] = useState<Network | null>();
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [methodName, setMethodName] = useState<string | null>(null);
+  const calculatingGasLimit = useRef(false);
+  const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
+
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(
+    null
+  );
+
+  const {
+    gasLimit,
+    isValidGas,
+    isSufficientGas,
+    startPollingGasFees,
+    stopPollingGasFees,
+    updateGasFeeOption,
+    updateTxFee,
+    selectedGasFee,
+    selectedGasFeeOption,
+    gasFeeParamsBySpeed,
+  } = useGas();
+
+  const req = transactionDetails.payload.params[0];
+  const request = useMemo(() => {
+    return isMessageRequest
+      ? { message: transactionDetails?.displayDetails.request }
+      : {
+          ...transactionDetails?.displayDetails.request,
+          nativeAsset: nativeAsset,
+        };
+  }, [
+    isMessageRequest,
+    transactionDetails?.displayDetails.request,
+    nativeAsset,
+  ]);
+
+  const calculateGasLimit = useCallback(async () => {
+    calculatingGasLimit.current = true;
+    const txPayload = req;
+    // use the default
+    let gas = txPayload.gasLimit || txPayload.gas;
+
+    // sometimes provider is undefined, this is hack to ensure its defined
+    const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
+      // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+      Number(
+        transactionDetails?.walletConnectV2RequestValues?.chainId ||
+          walletConnector?._chainId
+      )
+    );
+    const provider = await getProviderForNetwork(localCurrentNetwork);
+    try {
+      // attempt to re-run estimation
+      logger.debug(
+        'WC: Estimating gas limit',
+        { gas },
+        logger.DebugContext.walletconnect
+      );
+
+      // safety precaution: we want to ensure these properties are not used for gas estimation
+      const cleanTxPayload = omitFlatten(txPayload, [
+        'gas',
+        'gasLimit',
+        'gasPrice',
+        'maxFeePerGas',
+        'maxPriorityFeePerGas',
+      ]);
+      const rawGasLimit = await estimateGas(cleanTxPayload, provider);
+      logger.debug(
+        'WC: Estimated gas limit',
+        { rawGasLimit },
+        logger.DebugContext.walletconnect
+      );
+      if (rawGasLimit) {
+        gas = toHex(rawGasLimit);
+      }
+    } catch (error) {
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
+    } finally {
+      logger.debug(
+        'WC: Setting gas limit to',
+        { gas: convertHexToString(gas) },
+        logger.DebugContext.walletconnect
+      );
+
+      if (currentNetwork && getNetworkObj(currentNetwork).gas.OptimismTxFee) {
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+          txPayload,
+          provider
+        );
+        updateTxFee(gas, null, l1GasFeeOptimism);
+      } else {
+        updateTxFee(gas, null);
+      }
+    }
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+  }, [
+    currentNetwork,
+    req,
+    transactionDetails?.walletConnectV2RequestValues?.chainId,
+    updateTxFee,
+    walletConnector?._chainId,
+  ]);
+
+  const fetchMethodName = useCallback(
+    async (data: string) => {
+      const methodSignaturePrefix = data.substr(0, 10);
+      let fallbackHandler: NodeJS.Timeout | undefined = undefined;
+      try {
+        fallbackHandler = setTimeout(() => {
+          setMethodName(data);
+        }, 5000);
+        const { name } = await methodRegistryLookupAndParse(
+          methodSignaturePrefix
+        );
+        if (name) {
+          setMethodName(name);
+          clearTimeout(fallbackHandler);
+        }
+      } catch (e) {
+        setMethodName(data);
+        if (fallbackHandler) {
+          clearTimeout(fallbackHandler);
+        }
+      }
+    },
+    [setMethodName]
+  );
+
+  useEffect(() => {
+    // if (openAutomatically && !isEmulatorSync()) {
+    //   ReactNativeHapticFeedback.trigger('notificationSuccess');
+    // }
+    InteractionManager.runAfterInteractions(() => {
+      if (currentNetwork) {
+        if (!isMessageRequest) {
+          startPollingGasFees(currentNetwork);
+          fetchMethodName(transactionDetails?.payload?.params[0].data);
+          // fetchMethodName(params[0].data);
+        } else {
+          // setMethodName(lang.t('wallet.message_signing.request'));
+        }
+        analytics.track('Shown Walletconnect signing request');
+      }
+    });
+  }, [
+    isMessageRequest,
+    currentNetwork,
+    startPollingGasFees,
+    fetchMethodName,
+    transactionDetails?.payload?.params,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(gasFeeParamsBySpeed) &&
+      !calculatingGasLimit.current &&
+      !isMessageRequest &&
+      provider
+    ) {
+      InteractionManager.runAfterInteractions(() => {
+        calculateGasLimit();
+      });
+    }
+  }, [
+    calculateGasLimit,
+    gasLimit,
+    gasFeeParamsBySpeed,
+    isMessageRequest,
+    provider,
+    updateTxFee,
+  ]);
+
+  const accountInfo = useMemo(() => {
+    // TODO where do we get address for sign/send transaction?
+    const address =
+      // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
+      transactionDetails?.walletConnectV2RequestValues?.address ||
+      walletConnector?._accounts?.[0];
+    const selectedWallet = findWalletWithAccount(wallets!, address);
+    const profileInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      address
+    );
+    return {
+      ...profileInfo,
+      address,
+      isHardwareWallet: !!selectedWallet?.deviceId,
+    };
+    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
+  }, [
+    transactionDetails?.walletConnectV2RequestValues?.address,
+    walletConnector?._accounts,
+    wallets,
+    walletNames,
+  ]);
+
+  const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork!);
+
+  useEffect(() => {
+    setCurrentNetwork(
+      ethereumUtils.getNetworkFromChainId(
+        Number(
+          // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
+          transactionDetails?.walletConnectV2RequestValues?.chainId ||
+            walletConnector?._chainId
+        )
+      )
+    );
+    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
+  }, [
+    transactionDetails?.walletConnectV2RequestValues?.chainId,
+    walletConnector?._chainId,
+  ]);
+
+  useEffect(() => {
+    const initProvider = async () => {
+      let p;
+      if (currentNetwork === Network.mainnet) {
+        p = await getFlashbotsProvider();
+      } else {
+        p = await getProviderForNetwork(currentNetwork!);
+      }
+
+      setProvider(p);
+    };
+    currentNetwork && initProvider();
+  }, [currentNetwork, setProvider]);
+
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      const asset = await ethereumUtils.getNativeAssetForNetwork(
+        currentNetwork!,
+        accountInfo.address
+      );
+      if (asset) {
+        provider && setNativeAsset(asset);
+      }
+    };
+    currentNetwork && getNativeAsset();
+  }, [accountInfo.address, currentNetwork, provider]);
+
+  const walletBalance = useMemo(() => {
+    return {
+      amount: nativeAsset?.balance?.amount || 0,
+      display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
+      symbol: nativeAsset?.symbol || 'ETH',
+    };
+  }, [
+    nativeAsset?.balance?.amount,
+    nativeAsset?.balance?.display,
+    nativeAsset?.symbol,
+  ]);
+
+  useEffect(() => {
+    setTimeout(async () => {
+      // Message Signing
+      console.log({ isMessageRequest });
+      if (isMessageRequest) {
+        // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+        const simulationData = await metadataClient.simulateMessage({
+          address: accountAddress,
+          chainId: Number(
+            transactionDetails?.walletConnectV2RequestValues?.chainId ||
+              walletConnector?._chainId
+          ),
+          message: {
+            method: transactionDetails?.payload?.method,
+            params: request.message,
+          },
+          domain: transactionDetails?.dappUrl,
+        });
+        if (simulationData.simulateMessage?.simulation) {
+          setSimulationData(simulationData.simulateMessage?.simulation);
+        }
+      } else {
+        // TX Signing
+        // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+        const simulationData = await metadataClient.simulateTransactions({
+          chainId: Number(
+            transactionDetails?.walletConnectV2RequestValues?.chainId ||
+              walletConnector?._chainId
+          ),
+          transactions: [
+            {
+              from: req?.from,
+              to: req?.to,
+              data: req?.data,
+              value: req?.value || '0x0',
+            },
+          ],
+          domain: transactionDetails?.dappUrl,
+        });
+        if (simulationData.simulateTransactions?.[0]?.simulation) {
+          console.log(
+            'setting data: ',
+            simulationData.simulateTransactions[0]?.simulation
+          );
+          setSimulationData(simulationData.simulateTransactions[0]?.simulation);
+        }
+      }
+    }, 1000);
+
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
+  }, [
+    accountAddress,
+    isMessageRequest,
+    req?.data,
+    req?.from,
+    req?.to,
+    req?.value,
+    request.message,
+    transactionDetails?.dappUrl,
+    transactionDetails?.payload?.method,
+    transactionDetails?.walletConnectV2RequestValues?.chainId,
+    walletConnector?._chainId,
+  ]);
+
+  const closeScreen = useCallback(
+    (canceled: boolean) => {
+      // we need to close the hw navigator too
+      if (accountInfo.isHardwareWallet) {
+        delay(300);
+        goBack();
+      }
+      goBack();
+      if (!isMessageRequest) {
+        stopPollingGasFees();
+      }
+
+      let type: WalletconnectResultType =
+        transactionDetails?.method === SEND_TRANSACTION
+          ? 'transaction'
+          : 'sign';
+      if (canceled) {
+        type = `${type}-canceled`;
+      }
+
+      if (pendingRedirect) {
+        InteractionManager.runAfterInteractions(() => {
+          dispatch(
+            walletConnectRemovePendingRedirect(
+              type,
+              transactionDetails?.dappScheme
+            )
+          );
+        });
+      }
+
+      if (transactionDetails?.walletConnectV2RequestValues?.onComplete) {
+        InteractionManager.runAfterInteractions(() => {
+          transactionDetails?.walletConnectV2RequestValues.onComplete(type);
+        });
+      }
+    },
+    [
+      accountInfo.isHardwareWallet,
+      goBack,
+      isMessageRequest,
+      transactionDetails?.method,
+      transactionDetails?.walletConnectV2RequestValues,
+      transactionDetails?.dappScheme,
+      pendingRedirect,
+      stopPollingGasFees,
+      dispatch,
+    ]
+  );
+
+  const onCancel = useCallback(
+    async (error?: Error) => {
+      try {
+        if (callback) {
+          callback({ error: error || 'User cancelled the request' });
+        }
+        setTimeout(async () => {
+          if (transactionDetails?.requestId) {
+            if (transactionDetails?.walletConnectV2RequestValues) {
+              await handleSessionRequestResponse(
+                transactionDetails?.walletConnectV2RequestValues,
+                {
+                  result: 'null',
+                  error: error || 'User cancelled the request',
+                }
+              );
+            } else {
+              await dispatch(
+                walletConnectSendStatus(
+                  transactionDetails?.peerId,
+                  transactionDetails?.requestId,
+                  {
+                    error: error || 'User cancelled the request',
+                  }
+                )
+              );
+            }
+            dispatch(removeRequest(transactionDetails?.requestId));
+          }
+          const rejectionType =
+            transactionDetails?.payload?.method === SEND_TRANSACTION
+              ? 'transaction'
+              : 'signature';
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+            isHardwareWallet: accountInfo.isHardwareWallet,
+          });
+
+          closeScreen(true);
+        }, 300);
+      } catch (error) {
+        logger.error(
+          new RainbowError('WC: error while handling cancel request'),
+          { error }
+        );
+        closeScreen(true);
+      }
+    },
+    [
+      accountInfo.isHardwareWallet,
+      callback,
+      closeScreen,
+      dispatch,
+      transactionDetails?.payload?.method,
+      transactionDetails?.peerId,
+      transactionDetails?.requestId,
+      transactionDetails?.walletConnectV2RequestValues,
+    ]
+  );
+
+  const handleSignMessage = useCallback(async () => {
+    const message = transactionDetails?.payload?.params.find(
+      (p: string) => !isAddress(p)
+    );
+    let response = null;
+
+    if (!currentNetwork) {
+      console.log('NO NETWORK');
+      return;
+    }
+    console.log('new provider, ', currentNetwork);
+    const provider = await getProviderForNetwork(currentNetwork);
+    if (!provider) {
+      console.log('NO PROVIDER');
+      return;
+    }
+
+    const existingWallet = await loadWallet(
+      accountInfo.address,
+      true,
+      provider
+    );
+    if (!existingWallet) {
+      console.log('NO WALLET');
+      return;
+    }
+    switch (transactionDetails?.payload?.method) {
+      case PERSONAL_SIGN:
+        response = await signPersonalMessage(message, existingWallet);
+        break;
+      case SIGN_TYPED_DATA_V4:
+      case SIGN_TYPED_DATA:
+        response = await signTypedDataMessage(message, existingWallet);
+        break;
+      default:
+        break;
+    }
+
+    if (response?.result) {
+      analytics.track('Approved WalletConnect signature request', {
+        dappName: transactionDetails?.dappName,
+        dappUrl: transactionDetails?.dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
+      });
+      if (transactionDetails?.requestId) {
+        if (
+          transactionDetails?.walletConnectV2RequestValues &&
+          response?.result
+        ) {
+          await handleSessionRequestResponse(
+            transactionDetails?.walletConnectV2RequestValues,
+            {
+              result: response.result,
+              error: null,
+            }
+          );
+        } else {
+          await dispatch(
+            walletConnectSendStatus(
+              transactionDetails?.peerId,
+              transactionDetails?.requestId,
+              response
+            )
+          );
+        }
+        dispatch(removeRequest(transactionDetails?.requestId));
+      }
+      if (callback) {
+        callback({ sig: response.result });
+      }
+      closeScreen(false);
+    } else {
+      await onCancel(response?.error);
+    }
+  }, [
+    transactionDetails?.payload?.params,
+    transactionDetails?.payload?.method,
+    transactionDetails?.dappName,
+    transactionDetails?.dappUrl,
+    transactionDetails?.requestId,
+    transactionDetails?.walletConnectV2RequestValues,
+    transactionDetails?.peerId,
+    currentNetwork,
+    accountInfo.address,
+    accountInfo.isHardwareWallet,
+    callback,
+    closeScreen,
+    dispatch,
+    onCancel,
+  ]);
+
+  const handleConfirmTransaction = useCallback(async () => {
+    const sendInsteadOfSign =
+      transactionDetails.payload.method === SEND_TRANSACTION;
+    const txPayload = req;
+    let { gas, gasLimit: gasLimitFromPayload } = txPayload;
+
+    try {
+      logger.debug(
+        'WC: gas suggested by dapp',
+        {
+          gas: convertHexToString(gas),
+          gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
+        },
+        logger.DebugContext.walletconnect
+      );
+
+      // Estimate the tx with gas limit padding before sending
+      const rawGasLimit = await estimateGasWithPadding(
+        txPayload,
+        null,
+        null,
+        provider
+      );
+      if (!rawGasLimit) {
+        console.log('FUUUUCK NO GAS LIMIT');
+        return;
+      }
+
+      // If the estimation with padding is higher or gas limit was missing,
+      // let's use the higher value
+      if (
+        (isNil(gas) && isNil(gasLimitFromPayload)) ||
+        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+        (!isNil(gasLimitFromPayload) &&
+          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+      ) {
+        logger.debug(
+          'WC: using padded estimation!',
+          { gas: rawGasLimit.toString() },
+          logger.DebugContext.walletconnect
+        );
+        gas = toHex(rawGasLimit);
+      }
+    } catch (error) {
+      logger.error(new RainbowError('WC: error estimating gas'), { error });
+    }
+    // clean gas prices / fees sent from the dapp
+    const cleanTxPayload = omitFlatten(txPayload, [
+      'gasPrice',
+      'maxFeePerGas',
+      'maxPriorityFeePerGas',
+    ]);
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
+    const nonce = await getNextNonce();
+    let txPayloadUpdated = {
+      ...cleanTxPayload,
+      ...gasParams,
+      nonce,
+      ...(calculatedGasLimit && { gasLimit: calculatedGasLimit }),
+    };
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
+      'from',
+      'gas',
+      'chainId',
+    ]);
+
+    logger.debug(`WC: ${transactionDetails.payload.method} payload`, {
+      txPayload,
+      txPayloadUpdated,
+    });
+
+    let response = null;
+    try {
+      if (!currentNetwork) {
+        console.log('NO NETWORK');
+        return;
+      }
+      console.log('new provider, ', currentNetwork);
+      const provider = await getProviderForNetwork(currentNetwork);
+      if (!provider) {
+        console.log('NO PROVIDER');
+        return;
+      }
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
+      if (!existingWallet) {
+        console.log('NO WALLET');
+        return;
+      }
+      if (sendInsteadOfSign) {
+        response = await sendTransaction({
+          existingWallet: existingWallet,
+          provider,
+          transaction: txPayloadUpdated,
+        });
+      } else {
+        response = await signTransaction({
+          existingWallet,
+          provider,
+          transaction: txPayloadUpdated,
+        });
+      }
+    } catch (e) {
+      logger.error(
+        new RainbowError(
+          `WC: Error while ${
+            sendInsteadOfSign ? 'sending' : 'signing'
+          } transaction`
+        )
+      );
+    }
+
+    if (response?.result) {
+      const signResult = response.result as string;
+      const sendResult = response.result as Transaction;
+      if (callback) {
+        callback({ result: sendInsteadOfSign ? sendResult.hash : signResult });
+      }
+      let txSavedInCurrentWallet = false;
+      let txDetails: any = null;
+      const displayDetails = transactionDetails.displayDetails;
+      if (sendInsteadOfSign) {
+        txDetails = {
+          amount: displayDetails?.request?.value ?? 0,
+          asset: nativeAsset || displayDetails?.request?.asset,
+          dappName: displayDetails.dappName,
+          data: sendResult.data,
+          from: displayDetails?.request?.from,
+          gasLimit,
+          hash: sendResult.hash,
+          network: currentNetwork,
+          nonce: sendResult.nonce,
+          to: displayDetails?.request?.to,
+          value: sendResult.value.toString(),
+          ...gasParams,
+        };
+        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
+          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+          txSavedInCurrentWallet = true;
+        }
+      }
+      analytics.track('Approved WalletConnect transaction request', {
+        dappName: displayDetails.dappName,
+        dappUrl: displayDetails.dappUrl,
+        isHardwareWallet: accountInfo.isHardwareWallet,
+        network: currentNetwork,
+      });
+      if (isFocused && transactionDetails?.requestId) {
+        if (
+          transactionDetails?.walletConnectV2RequestValues &&
+          sendResult.hash
+        ) {
+          await handleSessionRequestResponse(
+            transactionDetails?.walletConnectV2RequestValues,
+            {
+              result: sendResult.hash,
+              error: null,
+            }
+          );
+        } else {
+          if (sendResult.hash) {
+            await dispatch(
+              walletConnectSendStatus(
+                transactionDetails?.peerId,
+                transactionDetails?.requestId,
+                { result: sendResult.hash }
+              )
+            );
+          }
+        }
+        dispatch(removeRequest(transactionDetails?.requestId));
+      }
+
+      closeScreen(false);
+      // When the tx is sent from a different wallet,
+      // we need to switch to that wallet before saving the tx
+      if (!txSavedInCurrentWallet) {
+        InteractionManager.runAfterInteractions(async () => {
+          await switchToWalletWithAddress(txDetails.from);
+          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+        });
+      }
+    } else {
+      // logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
+      //   dappName,
+      //   dappScheme,
+      //   dappUrl,
+      //   formattedDappUrl,
+      //   rpcMethod: method,
+      //   network: currentNetwork,
+      // });
+      // If the user is using a hardware wallet, we don't want to close the sheet on an error
+      // if (!accountInfo.isHardwareWallet) {
+      //   await onCancel(error);
+      // }
+    }
+  }, [
+    transactionDetails.payload.method,
+    transactionDetails.displayDetails,
+    transactionDetails?.requestId,
+    transactionDetails?.walletConnectV2RequestValues,
+    transactionDetails?.peerId,
+    req,
+    selectedGasFee,
+    gasLimit,
+    getNextNonce,
+    provider,
+    accountInfo.address,
+    accountInfo.isHardwareWallet,
+    callback,
+    currentNetwork,
+    isFocused,
+    closeScreen,
+    nativeAsset,
+    accountAddress,
+    dispatch,
+    switchToWalletWithAddress,
+  ]);
+
+  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
   return (
     <Inset bottom={{ custom: safeAreaInsetValues.bottom + 20 }}>
       <Box height="full" justifyContent="flex-end" width="full">
@@ -106,12 +951,11 @@ export const SignTransactionSheet = () => {
                   }}
                   width={{ custom: 44 }}
                 >
-                  <ImgixImage
-                    resizeMode="cover"
-                    size={44}
+                  <Image
                     source={{
-                      uri:
-                        'https://pbs.twimg.com/profile_images/1696986796478091264/79NZgGom_400x400.jpg',
+                      uri: maybeSignUri(transactionDetails.imageUrl, {
+                        w: 100,
+                      }),
                     }}
                     style={{ borderRadius: 12, height: 44, width: 44 }}
                   />
@@ -128,7 +972,7 @@ export const SignTransactionSheet = () => {
                       size="20pt"
                       weight="heavy"
                     >
-                      Uniswap
+                      {transactionDetails.dappName}
                     </Text>
                     <VerifiedBadge />
                   </Inline>
@@ -140,9 +984,26 @@ export const SignTransactionSheet = () => {
             </Inset>
 
             <Stack space={{ custom: 14 }}>
-              <SimulationCard simulationData={simulationData} />
+              <SimulationCard simulation={simulationData || {}} />
               <Box>
-                <DetailsCard isLoading={!simulationData} />
+                {!isMessageRequest && (
+                  <DetailsCard
+                    isLoading={!simulationData}
+                    meta={simulationData?.meta || {}}
+                    currentNetwork={currentNetwork!}
+                    methodName={
+                      methodName ||
+                      simulationData?.meta?.to?.function ||
+                      'Unknown'
+                    }
+                  />
+                )}
+                {isMessageRequest && (
+                  <SignatureSection
+                    message={request.message}
+                    method={transactionDetails.payload.method}
+                  />
+                )}
                 {/* Hidden scroll view to disable sheet dismiss gestures */}
                 <Box
                   height={{ custom: 0 }}
@@ -157,34 +1018,49 @@ export const SignTransactionSheet = () => {
 
             <Inset horizontal="12px">
               <Inline alignVertical="center" space="12px">
-                <ImgixImage
-                  size={44}
-                  source={{
-                    uri:
-                      'https://i.seadn.io/s/raw/files/686674dfe04398afefa5c7c954ec4cf4.png?auto=format&dpr=1&w=1000',
-                  }}
-                  style={{ borderRadius: 22, height: 44, width: 44 }}
-                />
+                {accountInfo.accountImage ? (
+                  <ImageAvatar image={accountInfo.accountImage} size="large" />
+                ) : (
+                  <ContactAvatar
+                    color={
+                      isNaN(accountInfo.accountColor)
+                        ? colors.skeleton
+                        : accountInfo.accountColor
+                    }
+                    size="large"
+                    value={accountInfo.accountSymbol}
+                  />
+                )}
                 <Stack space="10px">
                   <Inline space="3px" wrap={false}>
                     <Text color="labelTertiary" size="15pt" weight="semibold">
                       Signing with
                     </Text>
                     <Text color="label" size="15pt" weight="bold">
-                      rainbow.eth
+                      {accountInfo.accountName}
                     </Text>
                   </Inline>
                   <Inline alignVertical="center" space={{ custom: 17 }}>
                     <Bleed vertical="4px">
-                      <ChainBadge
-                        assetType={AssetType.zora}
-                        badgeXPosition={0}
-                        badgeYPosition={-10}
-                        size="xtiny"
-                      />
+                      {currentNetwork !== Network.mainnet ? (
+                        <ChainBadge
+                          assetType={ethereumUtils.getAssetTypeFromNetwork(
+                            currentNetwork!
+                          )}
+                          badgeXPosition={0}
+                          badgeYPosition={-10}
+                          size="xtiny"
+                        />
+                      ) : (
+                        <CoinIcon
+                          address={ETH_ADDRESS}
+                          size={12}
+                          symbol={ETH_SYMBOL}
+                        />
+                      )}
                     </Bleed>
                     <Text color="labelTertiary" size="13pt" weight="semibold">
-                      1.2025 ETH
+                      {walletBalance.display}
                     </Text>
                   </Inline>
                 </Stack>
@@ -197,13 +1073,16 @@ export const SignTransactionSheet = () => {
                 isTransparent
                 label="Cancel"
                 textColor={label}
-                onPress={() => {
-                  navigate(Routes.WALLET_SCREEN);
-                }}
+                onPress={onPressCancel}
                 size="big"
                 weight="bold"
               />
               <SheetActionButton
+                onPress={
+                  isMessageRequest
+                    ? handleSignMessage
+                    : handleConfirmTransaction
+                }
                 label="􀎽 Confirm"
                 nftShadows
                 size="big"
@@ -212,22 +1091,56 @@ export const SignTransactionSheet = () => {
             </Columns>
           </Stack>
         </Box>
+
+        {!isMessageRequest && (
+          <GasSpeedButton
+            marginTop={24}
+            horizontalPadding={20}
+            currentNetwork={currentNetwork}
+            theme={'dark'}
+            marginBottom={0}
+            asset={undefined}
+            fallbackColor={undefined}
+            testID={undefined}
+            showGasOptions={undefined}
+            validateGasParams={undefined}
+            crossChainServiceTime={undefined}
+          />
+        )}
       </Box>
     </Inset>
   );
 };
 
-const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
+const SimulationCard = ({
+  simulation,
+}: {
+  simulation: TransactionSimulationResult;
+}) => {
+  console.log('simualtion ? ', !!simulation, '    ', simulation);
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const spinnerRotation = useSharedValue(0);
 
+  const itemCount =
+    (simulation?.in?.length || 0) +
+      (simulation?.out?.length || 0) +
+      (simulation?.approvals?.length || 0) || 1;
+
+  const noChanges = !simulation;
+  console.log({ noChanges });
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       cardHeight.value,
-      [COLLAPSED_CARD_HEIGHT, MAX_CARD_HEIGHT],
+      [
+        COLLAPSED_CARD_HEIGHT,
+        itemCount < 4
+          ? COLLAPSED_CARD_HEIGHT + itemCount * 40
+          : MAX_CARD_HEIGHT,
+      ],
       [0, 1]
     ),
   }));
+  const hasLoaded = !!simulation;
 
   const spinnerStyle = useAnimatedStyle(() => {
     return {
@@ -236,8 +1149,13 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
   });
 
   useEffect(() => {
-    if (simulationData) {
-      cardHeight.value = withTiming(MAX_CARD_HEIGHT, timingConfig);
+    if (hasLoaded) {
+      cardHeight.value = withTiming(
+        itemCount < 4
+          ? COLLAPSED_CARD_HEIGHT + itemCount * 40
+          : MAX_CARD_HEIGHT,
+        timingConfig
+      );
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
       spinnerRotation.value = withRepeat(
@@ -246,13 +1164,13 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
         false
       );
     }
-  }, [cardHeight, simulationData, spinnerRotation]);
+  }, [cardHeight, hasLoaded, itemCount, simulation, spinnerRotation]);
 
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
-      isCollapsed={!simulationData}
-      scrollEnabled={!!simulationData}
+      isCollapsed={!hasLoaded}
+      scrollEnabled={!!hasLoaded && (!noChanges || itemCount !== 1)}
     >
       <Stack space="24px">
         <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
@@ -270,72 +1188,47 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
               </Animated.View>
             </IconContainer>
             <Text color="label" size="17pt" weight="bold">
-              {simulationData ? 'Simulated Result' : 'Simulating'}
+              {simulation ? 'Simulated Result' : 'Simulating'}
             </Text>
           </Inline>
         </Box>
         <Box as={Animated.View} style={listStyle}>
           <Stack space="20px">
-            <SimulatedEventRow
-              amount={0.1}
-              asset={{
-                address: 'ETH',
-                assetType: 'token',
-                name: 'Ethereum',
-                symbol: 'ETH',
-              }}
-              eventType="send"
-            />
-            <SimulatedEventRow
-              amount={0.1}
-              asset={{
-                address: 'ETH',
-                assetType: 'token',
-                name: 'Ethereum',
-                symbol: 'ETH',
-              }}
-              eventType="send"
-            />
-            <SimulatedEventRow
-              amount={0.1}
-              asset={{
-                address: 'ETH',
-                assetType: 'token',
-                name: 'Ethereum',
-                symbol: 'ETH',
-              }}
-              eventType="send"
-            />
-            <SimulatedEventRow
-              amount={180}
-              asset={{
-                address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                assetType: 'token',
-                name: 'USD Coin',
-                symbol: 'USDC',
-              }}
-              eventType="receive"
-            />
-            <SimulatedEventRow
-              amount={180}
-              asset={{
-                address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                assetType: 'token',
-                name: 'USD Coin',
-                symbol: 'USDC',
-              }}
-              eventType="receive"
-            />
-            <SimulatedEventRow
-              amount={180}
-              asset={{
-                address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-                assetType: 'token',
-                name: 'USD Coin',
-                symbol: 'USDC',
-              }}
-              eventType="receive"
-            />
+            {noChanges && (
+              <Text color="labelTertiary" size="17pt" weight="bold">
+                {'􀻾 No Changes Detected'}
+              </Text>
+            )}
+            {simulation?.approvals?.map(change => {
+              return (
+                <SimulatedEventRow
+                  key={`${change?.asset?.assetCode}-${change?.quantityAllowed}`}
+                  amount={change?.quantityAllowed || '10'}
+                  asset={change?.asset}
+                  eventType="approve"
+                />
+              );
+            })}
+            {simulation?.out?.map(change => {
+              return (
+                <SimulatedEventRow
+                  key={`${change?.asset?.assetCode}-${change?.quantity}`}
+                  amount={change?.quantity || '10'}
+                  asset={change?.asset}
+                  eventType="send"
+                />
+              );
+            })}
+            {simulation?.in?.map(change => {
+              return (
+                <SimulatedEventRow
+                  key={`${change?.asset?.assetCode}-${change?.quantity}`}
+                  amount={change?.quantity || '10'}
+                  asset={change?.asset}
+                  eventType="receive"
+                />
+              );
+            })}
           </Stack>
         </Box>
       </Stack>
@@ -343,7 +1236,17 @@ const SimulationCard = ({ simulationData }: { simulationData: boolean }) => {
   );
 };
 
-const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
+const DetailsCard = ({
+  isLoading,
+  meta,
+  currentNetwork,
+  methodName,
+}: {
+  isLoading: boolean;
+  meta: TransactionSimulationMeta | undefined;
+  currentNetwork: Network;
+  methodName: string;
+}) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -365,7 +1268,6 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
   };
 
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
-
   return (
     <ButtonPressAnimation
       disabled={isLoading}
@@ -405,17 +1307,92 @@ const DetailsCard = ({ isLoading }: { isLoading: boolean }) => {
           </Box>
           <Box as={Animated.View} style={listStyle}>
             <Stack space="24px">
-              <DetailRow detailType="chain" />
-              <DetailRow detailType="contract" />
-              <DetailRow detailType="dateCreated" />
-              <DetailRow detailType="function" />
-              <DetailRow detailType="sourceCodeVerification" />
-              <DetailRow detailType="nonce" />
+              {
+                <DetailRow
+                  detailType="chain"
+                  value={getNetworkObj(currentNetwork).name}
+                />
+              }
+              {meta?.to?.address && (
+                <DetailRow
+                  detailType="contract"
+                  value={
+                    abbreviations.address(meta.to.address, 4, 6) ||
+                    meta.to.address
+                  }
+                  onPress={() =>
+                    ethereumUtils.openAddressInBlockExplorer(
+                      meta?.to?.address!,
+                      currentNetwork
+                    )
+                  }
+                />
+              )}
+              {meta?.to?.created && (
+                <DetailRow
+                  detailType="dateCreated"
+                  value={new Date(meta?.to?.created).toLocaleDateString()}
+                />
+              )}
+              {methodName && (
+                <DetailRow detailType="function" value={methodName} />
+              )}
+              {meta?.to?.sourceCodeStatus && (
+                <DetailRow
+                  detailType="sourceCodeVerification"
+                  value={meta.to.sourceCodeStatus}
+                />
+              )}
+              {/* <DetailRow detailType="nonce" /> */}
             </Stack>
           </Box>
         </Stack>
       </FadedScrollCard>
     </ButtonPressAnimation>
+  );
+};
+
+const SignatureSection = ({
+  message,
+  method,
+}: {
+  message: string;
+  method: RPCMethod;
+}) => {
+  const cardHeight = useSharedValue(MAX_CARD_HEIGHT);
+  return (
+    <FadedScrollCard
+      cardHeight={cardHeight}
+      isCollapsed={false}
+      scrollEnabled={true}
+    >
+      <Stack space="24px">
+        <Box
+          justifyContent="center"
+          height={{ custom: CARD_ROW_HEIGHT }}
+          width="full"
+        >
+          <Inline alignVertical="center" space="12px">
+            <IconContainer>
+              <Text
+                align="center"
+                color={'label'}
+                size="icon 15px"
+                weight="bold"
+              >
+                􀙤
+              </Text>
+            </IconContainer>
+            <Text color={'label'} size="17pt" weight="bold">
+              Signature
+            </Text>
+          </Inline>
+        </Box>
+        <Box as={Animated.View}>
+          <TransactionMessage message={message} method={method} />
+        </Box>
+      </Stack>
+    </FadedScrollCard>
   );
 };
 
@@ -425,18 +1402,32 @@ const SimulatedEventRow = ({
   eventType,
   imageUrl,
 }: {
-  amount: number | 'unlimited';
-  asset: MockAsset;
+  amount: string | 'unlimited';
+  asset: TransactionSimulationAsset | undefined;
   eventType: EventType;
   imageUrl?: string;
 }) => {
   const eventInfo: EventInfo = infoForEventType[eventType];
-  const { address, assetType, symbol } = asset;
 
+  const formattedAmounts =
+    asset?.decimals === 0
+      ? amount
+      : convertRawAmountToBalance(
+          amount,
+          { decimals: asset?.decimals || 18, symbol: asset?.symbol },
+          6
+        ).display;
   const formattedAmount = `${eventInfo.amountPrefix}${
-    amount === 'unlimited' ? 'Unlimited' : amount
-  } ${symbol}`;
+    amount === 'unlimited' ? 'Unlimited' : formattedAmounts
+  }`;
 
+  const url = maybeSignUri(asset?.iconURL, { fm: 'png', w: 100 });
+  let assetCode = asset?.assetCode;
+
+  // this needs tweaks
+  if (asset?.type === TransactionAssetType.Native) {
+    assetCode = ETH_ADDRESS;
+  }
   return (
     <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }}>
       <Inline alignHorizontal="justify" alignVertical="center">
@@ -448,13 +1439,20 @@ const SimulatedEventRow = ({
         </Inline>
         <Inline alignVertical="center" space={{ custom: 7 }}>
           <Bleed vertical="6px">
-            {assetType === 'token' ? (
-              <CoinIcon address={address} size={16} />
-            ) : (
-              <ImgixImage
+            {asset?.type !== TransactionAssetType.Nft ? (
+              <CoinIcon
+                address={assetCode}
+                symbol={asset?.symbol}
                 size={16}
-                source={{ uri: imageUrl }}
-                style={{ borderRadius: 16 }}
+                type={ethereumUtils.getAssetTypeFromNetwork(
+                  asset?.network as Network
+                )}
+                ignoreBadge={true}
+              />
+            ) : (
+              <Image
+                source={{ uri: url }}
+                style={{ borderRadius: 4.5, width: 16, height: 16 }}
               />
             )}
           </Bleed>
@@ -472,30 +1470,47 @@ const SimulatedEventRow = ({
   );
 };
 
-const DetailRow = ({ detailType }: { detailType: DetailType }) => {
+const DetailRow = ({
+  detailType,
+  value,
+  onPress,
+}: {
+  detailType: DetailType;
+  value: string;
+  onPress?: () => void;
+}) => {
   const detailInfo: DetailInfo = infoForDetailType[detailType];
 
   return (
-    <Box justifyContent="center" height={{ custom: SMALL_CARD_ROW_HEIGHT }}>
-      <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space="12px">
-          <DetailIcon detailInfo={detailInfo} />
-          <Text color="labelTertiary" size="15pt" weight="semibold">
-            {detailInfo.label}
-          </Text>
+    <ConditionalWrap
+      condition={!!onPress}
+      wrap={(children: React.ReactNode) => (
+        <ButtonPressAnimation onPress={onPress}>
+          {children}
+        </ButtonPressAnimation>
+      )}
+    >
+      <Box justifyContent="center" height={{ custom: SMALL_CARD_ROW_HEIGHT }}>
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Inline alignVertical="center" space="12px">
+            <DetailIcon detailInfo={detailInfo} />
+            <Text color="labelTertiary" size="15pt" weight="semibold">
+              {detailInfo.label}
+            </Text>
+          </Inline>
+          <Inline alignVertical="center" space={{ custom: 7 }}>
+            <Text
+              align="right"
+              color={onPress ? 'accent' : 'labelSecondary'}
+              size="15pt"
+              weight="semibold"
+            >
+              {value}
+            </Text>
+          </Inline>
         </Inline>
-        <Inline alignVertical="center" space={{ custom: 7 }}>
-          <Text
-            align="right"
-            color="labelSecondary"
-            size="15pt"
-            weight="semibold"
-          >
-            {detailInfo.label}
-          </Text>
-        </Inline>
-      </Inline>
-    </Box>
+      </Box>
+    </ConditionalWrap>
   );
 };
 

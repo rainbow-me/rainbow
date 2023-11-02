@@ -328,7 +328,7 @@ function NativeStackNavigator() {
         {...restoreSheetConfig}
       />
       <NativeStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
         options={{
           allowsDragToDismiss: true,
