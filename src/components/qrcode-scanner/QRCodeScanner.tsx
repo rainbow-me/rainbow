@@ -85,6 +85,10 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     },
   });
 
+  useFocusEffect(() => {
+    setTimeout(() => askForPermissions(), 200);
+  });
+
   if (device == null)
     return <QRCodeScannerNeedsAuthorization onGetBack={askForPermissions} />;
   return (
