@@ -21,7 +21,6 @@ import * as i18n from '@/languages';
 import { bottomSheetPreset } from '@/navigation/effects';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
-import Routes from '@/navigation/routesNames';
 
 const Stack = createStackNavigator();
 const BStack = createBottomSheetNavigator();
