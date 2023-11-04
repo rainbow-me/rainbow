@@ -140,7 +140,6 @@ export function parseRPCParams({
   message?: string;
 } {
   switch (method) {
-    case RPCMethod.Sign:
     case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
@@ -646,6 +645,16 @@ export async function onSessionRequest(
     logger.DebugContext.walletconnect
   );
 
+  // we allow eth sign for connections but we dont want to support actual singing
+  if (method === RPCMethod.Sign) {
+    await client.respondSessionRequest({
+      topic,
+      response: formatJsonRpcError(
+        id,
+        `Rainbow does not support legacy eth_sign`
+      ),
+    });
+  }
   if (isSupportedMethod(method as RPCMethod)) {
     const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
     const { address, message } = parseRPCParams({
