@@ -140,6 +140,7 @@ export function parseRPCParams({
   message?: string;
 } {
   switch (method) {
+    case RPCMethod.Sign:
     case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
@@ -231,6 +232,7 @@ export function getApprovedNamespaces(
 }
 
 const SUPPORTED_SIGNING_METHODS = [
+  RPCMethod.Sign,
   RPCMethod.PersonalSign,
   RPCMethod.SignTypedData,
   RPCMethod.SignTypedDataV1,

@@ -104,6 +104,7 @@ import {
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
+  SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
@@ -884,6 +885,8 @@ export default function TransactionConfirmationScreen() {
       provider
     );
     switch (method) {
+      case SIGN:
+        break;
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
