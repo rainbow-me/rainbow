@@ -75,7 +75,9 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     }),
   }));
 
-  const device = useCameraDevice('back');
+  // const { device } = useCameraDevice('back');
+  const devices = Camera.getAvailableCameraDevices();
+  const device = devices.filter(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
 
   const codeScanner = useCodeScanner({
