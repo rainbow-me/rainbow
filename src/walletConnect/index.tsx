@@ -654,6 +654,13 @@ export async function onSessionRequest(
         `Rainbow does not support legacy eth_sign`
       ),
     });
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.eth_sign),
+      sheetHeight: 270,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
+    });
+    return;
   }
   if (isSupportedMethod(method as RPCMethod)) {
     const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
