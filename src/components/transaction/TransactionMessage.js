@@ -7,6 +7,8 @@ import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { RainbowError, logger } from '@/logger';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
@@ -34,9 +36,18 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
     maximumHeight = 200;
     minimumHeight = 200;
     try {
-      msg = JSON.parse(message);
+      const parsedMessage = JSON.parse(message);
+      const sanitizedMessage = sanitizeTypedData(parsedMessage);
+      msg = sanitizedMessage;
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) {
+      logger.error(
+        new RainbowError('TransactionMessage: Error parsing message ', {
+          messageType: typeof message,
+        })
+      );
+    }
+
     msg = JSON.stringify(msg, null, 4);
   }
 
