@@ -54,6 +54,7 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import { metadataClient } from '@/graphql';
 import {
   TransactionAssetType,
+  TransactionErrorType,
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
@@ -63,7 +64,6 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import {
   convertHexToString,
   convertRawAmountToBalance,
-  convertRawAmountToRoundedDecimal,
   delay,
   greaterThan,
   omitFlatten,
@@ -128,8 +128,17 @@ import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
+import { type } from 'os';
+import { colors } from '@/styles';
 
-const IS_MESSAGE = false;
+/**
+ * Simulation Error Codes
+ */
+export enum SIMULATION_ERROR_CODES {
+  REVERTED = 'REVERTED',
+  INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
+  UNSUPPORTED = 'UNSUPPORTED',
+}
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -157,6 +166,9 @@ export const SignTransactionSheet = () => {
     simulationData,
     setSimulationData,
   ] = useState<TransactionSimulationResult | null>();
+  const [simulationError, setSimulationError] = useState<
+    TransactionErrorType | undefined
+  >(undefined);
   const { params: routeParams } = useRoute<any>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const { callback, transactionDetails } = routeParams;
@@ -300,7 +312,8 @@ export const SignTransactionSheet = () => {
           setMethodName(data);
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix
+          methodSignaturePrefix,
+          getNetworkObj(currentNetwork!).id
         );
         if (name) {
           setMethodName(name);
@@ -313,7 +326,7 @@ export const SignTransactionSheet = () => {
         }
       }
     },
-    [setMethodName]
+    [currentNetwork]
   );
 
   useEffect(() => {
@@ -445,7 +458,7 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     setTimeout(async () => {
       // Message Signing
-      if (isMessageRequest && !isPersonalSign) {
+      if (isMessageRequest) {
         const simulationData = await metadataClient.simulateMessage({
           address: accountAddress,
           chainId: Number(
@@ -460,11 +473,19 @@ export const SignTransactionSheet = () => {
           },
           domain: transactionDetails?.dappUrl,
         });
+        if (simulationData?.simulateMessage?.error) {
+          console.log('fuck we have an error :', {
+            error: simulationData?.simulateMessage?.error,
+          });
+          setSimulationError(simulationData?.simulateMessage?.error?.type);
+          setIsLoading(false);
+        }
         if (simulationData.simulateMessage?.simulation) {
           setSimulationData(simulationData.simulateMessage?.simulation);
           setIsLoading(false);
         }
       } else {
+        console.log('we are simulationing this shit');
         // TX Signing
         const simulationData = await metadataClient.simulateTransactions({
           chainId: Number(
@@ -482,7 +503,21 @@ export const SignTransactionSheet = () => {
           ],
           domain: transactionDetails?.dappUrl,
         });
+        console.log({ res: simulationData?.simulateTransactions?.[0] });
+        if (simulationData?.simulateTransactions?.[0]?.error) {
+          console.log('fuck we have an error :', {
+            error: simulationData?.simulateTransactions?.[0]?.error,
+          });
+          setSimulationError(
+            simulationData?.simulateTransactions?.[0]?.error?.type
+          );
+          setIsLoading;
+        }
         if (simulationData.simulateTransactions?.[0]?.simulation) {
+          console.log(
+            'setting tx sim data : ',
+            simulationData.simulateTransactions[0]?.simulation
+          );
           setSimulationData(simulationData.simulateTransactions[0]?.simulation);
           setIsLoading(false);
         }
@@ -490,7 +525,9 @@ export const SignTransactionSheet = () => {
     }, 1000);
   }, [
     accountAddress,
+    currentNetwork,
     isMessageRequest,
+    isPersonalSign,
     req?.data,
     req?.from,
     req?.to,
@@ -499,8 +536,6 @@ export const SignTransactionSheet = () => {
     transactionDetails?.dappUrl,
     transactionDetails?.payload?.method,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-
     walletConnector?._chainId,
   ]);
 
@@ -929,6 +964,9 @@ export const SignTransactionSheet = () => {
   ]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
+
+  const simulationUnavailable =
+    isPersonalSign || currentNetwork === Network.zora;
   return (
     <Inset bottom={{ custom: safeAreaInsetValues.bottom + 20 }}>
       <Box height="full" justifyContent="flex-end" width="full">
@@ -997,12 +1035,13 @@ export const SignTransactionSheet = () => {
             </Inset>
 
             <Stack space={{ custom: 14 }}>
-              {!isPersonalSign && (
-                <SimulationCard
-                  simulation={simulationData || {}}
-                  isLoading={isLoading}
-                />
-              )}
+              <SimulationCard
+                simulation={simulationData || {}}
+                isPersonalSign={isPersonalSign}
+                currentNetwork={currentNetwork!}
+                isLoading={isLoading}
+                simulationError={simulationError}
+              />
               <Box>
                 {isMessageRequest ? (
                   <MessageCard
@@ -1012,6 +1051,8 @@ export const SignTransactionSheet = () => {
                 ) : (
                   <DetailsCard
                     isLoading={!simulationData}
+                    simulationUnavailable={simulationUnavailable}
+                    simulationError={simulationError}
                     meta={simulationData?.meta || {}}
                     currentNetwork={currentNetwork!}
                     methodName={
@@ -1116,6 +1157,7 @@ export const SignTransactionSheet = () => {
                 nftShadows
                 size="big"
                 weight="heavy"
+                {...(simulationError && { color: colors.red })}
               />
             </Columns>
           </Stack>
@@ -1144,9 +1186,15 @@ export const SignTransactionSheet = () => {
 const SimulationCard = ({
   simulation,
   isLoading,
+  isPersonalSign,
+  currentNetwork,
+  simulationError,
 }: {
   simulation: TransactionSimulationResult;
   isLoading: boolean;
+  isPersonalSign: boolean;
+  currentNetwork: Network;
+  simulationError: TransactionErrorType | undefined;
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(
@@ -1192,11 +1240,53 @@ const SimulationCard = ({
     }
   }, [simulation, spinnerRotation]);
 
+  const simulationUnavailable =
+    isPersonalSign || currentNetwork === Network.zora;
+
+  const renderSimulationEventRows = () => {
+    return (
+      <>
+        {simulation?.approvals?.map(change => {
+          return (
+            <SimulatedEventRow
+              key={`${change?.asset?.assetCode}-${change?.quantityAllowed}`}
+              amount={change?.quantityAllowed || '10'}
+              asset={change?.asset}
+              eventType="approve"
+            />
+          );
+        })}
+        {simulation?.out?.map(change => {
+          return (
+            <SimulatedEventRow
+              key={`${change?.asset?.assetCode}-${change?.quantity}`}
+              amount={change?.quantity || '10'}
+              asset={change?.asset}
+              eventType="send"
+            />
+          );
+        })}
+        {simulation?.in?.map(change => {
+          return (
+            <SimulatedEventRow
+              key={`${change?.asset?.assetCode}-${change?.quantity}`}
+              amount={change?.quantity || '10'}
+              asset={change?.asset}
+              eventType="receive"
+            />
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
       contentHeight={contentHeight}
-      isExpanded={!isEmpty(simulation)}
+      isExpanded={
+        !isEmpty(simulation) || simulationUnavailable || simulationError
+      }
     >
       <Stack space="24px">
         <Box
@@ -1210,16 +1300,38 @@ const SimulationCard = ({
               <Animated.View style={spinnerStyle}>
                 <Text
                   align="center"
-                  color="label"
+                  color={
+                    simulationError
+                      ? { custom: colors.red }
+                      : simulationUnavailable
+                      ? 'labelQuaternary'
+                      : 'label'
+                  }
                   size="icon 15px"
                   weight="bold"
                 >
-                  􀬨
+                  {simulationError ? '􀇿' : '􀬨'}
                 </Text>
               </Animated.View>
             </IconContainer>
-            <Text color="label" size="17pt" weight="bold">
-              {simulation ? 'Simulated Result' : 'Simulating'}
+            <Text
+              color={
+                simulationError
+                  ? { custom: colors.red }
+                  : simulationUnavailable
+                  ? 'labelQuaternary'
+                  : 'label'
+              }
+              size="17pt"
+              weight="bold"
+            >
+              {simulationError
+                ? 'Likely to Fail'
+                : simulationUnavailable
+                ? 'Simulation Unavailable'
+                : simulation
+                ? 'Simulated Result'
+                : 'Simulating'}
             </Text>
           </Inline>
           <Animated.View style={listStyle}>
@@ -1238,41 +1350,26 @@ const SimulationCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="20px">
-            {noChanges && (
+            {noChanges && !simulationUnavailable && !simulationError && (
               <Text color="labelTertiary" size="17pt" weight="bold">
                 {'􀻾 No Changes Detected'}
               </Text>
             )}
-            {simulation?.approvals?.map(change => {
-              return (
-                <SimulatedEventRow
-                  key={`${change?.asset?.assetCode}-${change?.quantityAllowed}`}
-                  amount={change?.quantityAllowed || '10'}
-                  asset={change?.asset}
-                  eventType="approve"
-                />
-              );
-            })}
-            {simulation?.out?.map(change => {
-              return (
-                <SimulatedEventRow
-                  key={`${change?.asset?.assetCode}-${change?.quantity}`}
-                  amount={change?.quantity || '10'}
-                  asset={change?.asset}
-                  eventType="send"
-                />
-              );
-            })}
-            {simulation?.in?.map(change => {
-              return (
-                <SimulatedEventRow
-                  key={`${change?.asset?.assetCode}-${change?.quantity}`}
-                  amount={change?.quantity || '10'}
-                  asset={change?.asset}
-                  eventType="receive"
-                />
-              );
-            })}
+            {simulationUnavailable && (
+              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                {isPersonalSign
+                  ? 'Simulation for personal signs is not yet supported'
+                  : 'Simulation on Zora is not yet supported'}
+              </Text>
+            )}
+            {simulationError && (
+              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                {
+                  'The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.'
+                }
+              </Text>
+            )}
+            {renderSimulationEventRows()}
           </Stack>
         </Animated.View>
       </Stack>
@@ -1285,11 +1382,15 @@ const DetailsCard = ({
   meta,
   currentNetwork,
   methodName,
+  simulationUnavailable,
+  simulationError,
 }: {
   isLoading: boolean;
   meta: TransactionSimulationMeta | undefined;
   currentNetwork: Network;
   methodName: string;
+  simulationUnavailable: boolean;
+  simulationError: TransactionErrorType;
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(
@@ -1306,6 +1407,11 @@ const DetailsCard = ({
   }));
 
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
+
+  // we have no details to render if simulation is unavailable
+  if (simulationUnavailable || simulationError) {
+    return <></>;
+  }
   return (
     <ButtonPressAnimation
       disabled={isLoading}
