@@ -653,6 +653,10 @@ PODS:
     - React-Core
   - react-native-widgetkit (1.0.9):
     - React
+  - react-native-worklets-core (0.2.4):
+    - React
+    - React-callinvoker
+    - React-Core
   - React-NativeModulesApple (0.72.3):
     - hermes-engine
     - React-callinvoker
@@ -909,6 +913,7 @@ PODS:
     - React
     - React-callinvoker
     - React-Core
+    - react-native-worklets-core
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -1009,6 +1014,7 @@ DEPENDENCIES:
   - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
+  - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -1245,6 +1251,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-webview"
   react-native-widgetkit:
     :path: "../node_modules/react-native-widgetkit"
+  react-native-worklets-core:
+    :path: "../node_modules/react-native-worklets-core"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -1466,6 +1474,7 @@ SPEC CHECKSUMS:
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
   react-native-webview: b85dfe0bf95bef83e82fc354d6987c80fed5e7ad
   react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
+  react-native-worklets-core: b4094f51cb2bc649e297206425cb8956f4945e3e
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -1534,4 +1543,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: fbcce4e8b00962de3fda1a95b6da41d278f831f4
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.2

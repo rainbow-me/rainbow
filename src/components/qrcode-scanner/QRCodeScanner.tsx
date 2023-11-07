@@ -1,28 +1,20 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
-// import { RNCamera } from 'react-native-camera';
-import {
-  Camera,
-  useCameraDevice,
-  useCodeScanner,
-} from 'react-native-vision-camera';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { Camera, useCodeScanner } from 'react-native-vision-camera';
+import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import { useAppState, useHardwareBack } from '@/hooks';
+import { useAppState } from '@/hooks';
 import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
+import { IS_ANDROID } from '@/env';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { CameraState, useCameraPermission } from './useCameraPermissions';
+import { colors } from '@/styles';
+import { Alert } from 'react-native';
 
 // Display.getRealMetrics
 
@@ -45,45 +37,29 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     setCameraState,
     askForPermissions,
   } = useCameraPermission();
-  // const { colors } = useTheme();
   const isFocused = useIsFocused();
   const { appState: currentAppState } = useAppState();
   const isActive = isFocused && currentAppState === 'active';
-  const [enabled, setEnabled] = useState(IS_IOS);
-  const [isCameraReady, setIsCameraReady] = useState(false);
 
   useEffect(() => {
-    if (isFocused) {
-      setEnabled(true);
-    } else {
-      setEnabled(false);
+    if (!isFocused) {
       setFlashEnabled(false);
-      setIsCameraReady(false);
     }
   }, [isFocused, setFlashEnabled]);
 
-  const hideCamera = useCallback(() => {
-    setEnabled(false);
-  }, []);
-
-  useHardwareBack(hideCamera);
-
-  const cameraStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isCameraReady ? 1 : 0, {
-      duration: 225,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    }),
-  }));
-
-  // const { device } = useCameraDevice('back');
   const devices = Camera.getAvailableCameraDevices();
-  const device = devices.filter(d => d.position === 'back');
+  const device = devices.find(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
 
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
     onCodeScanned: codes => {
-      console.log(`Scanned ${codes.length} codes!`);
+      Alert.alert(
+        'Scan Complete',
+        `Scanned ${codes.length} codes!`,
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
+      );
     },
   });
 
@@ -91,8 +67,9 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
     setTimeout(() => askForPermissions(), 200);
   });
 
-  if (device == null)
+  if (!device) {
     return <QRCodeScannerNeedsAuthorization onGetBack={askForPermissions} />;
+  }
   return (
     <>
       <Box
@@ -100,7 +77,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
         width="full"
         height={{ custom: customHeightValue }}
       >
-        <Box as={Animated.View} style={cameraStyle}>
+        <Box as={Animated.View} style={{ opacity: 1 }}>
           <Camera
             style={{
               height: customHeightValue,
@@ -112,10 +89,22 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
             codeScanner={codeScanner}
             torch={!flashEnabled ? 'off' : 'on'}
             audio={false}
+            video={false}
+            photo={false}
             onError={() => setCameraState(CameraState.Error)}
-          />
+          >
+            <Animated.View
+              style={[
+                {
+                  opacity: 0,
+                  backgroundColor: colors.trueBlack,
+                  height: '100%',
+                  width: '100%',
+                },
+              ]}
+            />
+          </Camera>
         </Box>
-        )
         {cameraState === CameraState.Error ||
         cameraState === CameraState.Unauthorized ? (
           <Cover alignHorizontal="center" alignVertical="center">

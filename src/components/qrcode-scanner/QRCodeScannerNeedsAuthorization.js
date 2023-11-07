@@ -5,7 +5,6 @@ import { AppState, Linking } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 import { Text } from '../text';
 import { delay } from '@/helpers/utilities';
 import styled from '@/styled-thing';
@@ -63,7 +62,7 @@ export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
       <Title>{lang.t('wallet.qr.scan_to_pay_or_connect')}</Title>
       <Subtitle>{lang.t('wallet.qr.camera_access_needed')}</Subtitle>
       <Button onPress={handlePressSettings}>
-        <ButtonLabel>{lang.t('wallet.qr.enable_camera_access')} 􀄫</ButtonLabel>
+        <ButtonLabel>{lang.t('wallet.qr.enable_camera_access')}</ButtonLabel>
       </Button>
     </Box>
   );
