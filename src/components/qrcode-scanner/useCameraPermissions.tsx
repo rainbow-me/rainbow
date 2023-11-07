@@ -8,51 +8,52 @@ import {
 } from 'react-native-permissions';
 
 export enum CameraState {
+  // unexpected mount error
   Error = 'error',
+  // properly working camera, ready to scan
   Scanning = 'scanning',
+  // we should ask user for permission
   Unauthorized = 'unauthorized',
+  // ready to go
   Waiting = 'waiting',
 }
 
-const cameraPermission =
-  Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
-
 export function useCameraPermission() {
   const [cameraState, setCameraState] = useState<CameraState>(
-    CameraState.Waiting
+    CameraState.Scanning
   );
-  const [hasPermission, setHasPermission] = useState(false);
-
-  const checkPermissions = useCallback(async () => {
-    return await checkForPermissions(cameraPermission);
-  }, []);
 
   const askForPermissions = useCallback(async () => {
     try {
-      const res = await checkPermissions();
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.CAMERA
+          : PERMISSIONS.ANDROID.CAMERA;
+
+      const res = await checkForPermissions(permission);
 
       if (res === RESULTS.DENIED || res === RESULTS.BLOCKED) {
-        const askResult = await requestPermission(cameraPermission);
-        setHasPermission(askResult === RESULTS.GRANTED);
+        const askResult = await requestPermission(permission);
+
+        if (askResult !== RESULTS.GRANTED) {
+          setCameraState(CameraState.Unauthorized);
+        } else {
+          setCameraState(CameraState.Scanning);
+        }
       } else if (res === RESULTS.UNAVAILABLE) {
-        setHasPermission(false);
+        setCameraState(CameraState.Unauthorized);
       } else if (res === RESULTS.GRANTED) {
-        setHasPermission(true);
+        setCameraState(CameraState.Scanning);
       }
     } catch (err) {
-      console.error('Error checking permissions:', err);
-      setHasPermission(false);
+      setCameraState(CameraState.Error);
+      throw err;
     }
-  }, [checkPermissions]);
+  }, []);
 
   useEffect(() => {
-    // Effect to handle the camera state based on permission
-    if (hasPermission) {
-      setCameraState(CameraState.Scanning);
-    } else {
-      setCameraState(CameraState.Unauthorized);
-    }
-  }, [hasPermission]);
+    askForPermissions();
+  }, [askForPermissions]);
 
   return {
     cameraState,
