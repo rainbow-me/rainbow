@@ -364,7 +364,8 @@ export default function TransactionConfirmationScreen() {
           setMethodName(lang.t('wallet.transaction.request'));
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix
+          methodSignaturePrefix,
+          getNetworkObj(currentNetwork).id
         );
         if (name) {
           setMethodName(name);
@@ -375,7 +376,7 @@ export default function TransactionConfirmationScreen() {
         clearTimeout(fallbackHandler);
       }
     },
-    [setMethodName]
+    [setMethodName, currentNetwork]
   );
 
   useEffect(() => {
