@@ -231,6 +231,7 @@ export function getApprovedNamespaces(
 }
 
 const SUPPORTED_SIGNING_METHODS = [
+  RPCMethod.Sign,
   RPCMethod.PersonalSign,
   RPCMethod.SignTypedData,
   RPCMethod.SignTypedDataV1,
@@ -644,6 +645,23 @@ export async function onSessionRequest(
     logger.DebugContext.walletconnect
   );
 
+  // we allow eth sign for connections but we dont want to support actual singing
+  if (method === RPCMethod.Sign) {
+    await client.respondSessionRequest({
+      topic,
+      response: formatJsonRpcError(
+        id,
+        `Rainbow does not support legacy eth_sign`
+      ),
+    });
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.eth_sign),
+      sheetHeight: 270,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
+    });
+    return;
+  }
   if (isSupportedMethod(method as RPCMethod)) {
     const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
     const { address, message } = parseRPCParams({
