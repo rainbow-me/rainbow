@@ -35,15 +35,13 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const enableScanning = useCallback(() => {
     logger.log('📠✅ Enabling QR Code Scanner');
-    console.warn('enable', enabled);
     enabledVar.current = true;
-  }, [enabledVar, enabled]);
+  }, [enabledVar]);
 
   const disableScanning = useCallback(() => {
     logger.log('📠🚫 Disabling QR Code Scanner');
-    console.warn('disable', enabled);
     enabledVar.current = false;
-  }, [enabledVar, enabled]);
+  }, [enabledVar]);
 
   useEffect(() => {
     if (enabled) {
@@ -154,15 +152,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
   const onScan = useCallback(
     async ({ data }: { data: string }) => {
-      console.warn('onScan 1', enabled);
       if (!data || !enabledVar.current) return null;
 
       disableScanning();
-      console.warn('onScan 2', enabled);
 
       // EIP 681 / 831
       if (data.startsWith('ethereum:')) {
-        console.warn('onScan 3', enabled);
         onSuccess();
 
         return handleScanEthereumUrl(data);
@@ -174,12 +169,10 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         address !== null &&
         isValidAddress(address)
       ) {
-        console.warn('onScan 4', enabled);
         return handleScanAddress(address);
       }
       // Walletconnect QR Code
       if (data.startsWith('wc:')) {
-        console.warn('onScan 5', enabled);
         return handleScanWalletConnect(data);
       }
       // Walletconnect via universal link
@@ -188,7 +181,6 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         urlObj?.protocol === 'https:' &&
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
-        console.warn('onScan 5', enabled);
         // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri, connector } = qs.parse(urlObj.query.substring(1));
         onSuccess();
@@ -244,7 +236,6 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       return handleScanInvalid(data);
     },
     [
-      enabled,
       disableScanning,
       handleScanInvalid,
       onSuccess,
