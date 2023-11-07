@@ -1248,7 +1248,8 @@
       "thursday": "Thursday",
       "friday": "Friday",
       "saturday": "Saturday",
-      "error": "Oops!\nPlease pull to refresh."
+      "error": "Oops!\nPlease pull to refresh.",
+      "points": "points"
     },
     "pools": {
       "deposit": "Deposit",
