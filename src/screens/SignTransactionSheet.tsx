@@ -30,7 +30,8 @@ import ConditionalWrap from 'conditional-wrap';
 import { Transaction } from '@ethersproject/transactions';
 
 import { ButtonPressAnimation } from '@/components/animations';
-import { ChainBadge, CoinIcon } from '@/components/coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { CoinIcon } from '@/components/coin-icon';
 import { SheetActionButton } from '@/components/sheet';
 import {
   Bleed,
@@ -1110,22 +1111,7 @@ export const SignTransactionSheet = () => {
                     wrap={false}
                   >
                     <Bleed vertical="4px">
-                      {currentNetwork !== Network.mainnet ? (
-                        <ChainBadge
-                          assetType={ethereumUtils.getAssetTypeFromNetwork(
-                            currentNetwork!
-                          )}
-                          badgeXPosition={0}
-                          badgeYPosition={-10}
-                          size="xtiny"
-                        />
-                      ) : (
-                        <CoinIcon
-                          address={ETH_ADDRESS}
-                          size={12}
-                          symbol={ETH_SYMBOL}
-                        />
-                      )}
+                      <ChainImage chain={currentNetwork} size={12} />
                     </Bleed>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                       {isMessageRequest

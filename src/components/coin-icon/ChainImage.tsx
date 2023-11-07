@@ -1,0 +1,54 @@
+import React, { useMemo } from 'react';
+import { Source } from 'react-native-fast-image';
+
+import { IS_IOS } from '@/env';
+import { Network } from '@/helpers';
+
+import ArbitrumBadge from '../../assets/badges/arbitrum.png';
+import BaseBadge from '../../assets/badges/base.png';
+import BscBadge from '../../assets/badges/bsc.png';
+import EthereumBadge from '../../assets/badges/ethereum.png';
+import OptimismBadge from '../../assets/badges/optimism.png';
+import PolygonBadge from '../../assets/badges/polygon.png';
+import ZoraBadge from '../../assets/badges/zora.png';
+import { ImgixImage } from '../images';
+
+export function ChainImage({
+  borderRadius = 20,
+  chain,
+  size = 20,
+}: {
+  borderRadius?: number;
+  chain: Network | null | undefined;
+  size?: number;
+}) {
+  const source = useMemo(() => {
+    let val = null;
+    if (chain === Network.arbitrum) {
+      val = IS_IOS ? { uri: 'arbitrum' } : ArbitrumBadge;
+    } else if (chain === Network.base) {
+      val = IS_IOS ? { uri: 'base' } : BaseBadge;
+    } else if (chain === Network.bsc) {
+      val = IS_IOS ? { uri: 'bsc' } : BscBadge;
+    } else if (chain === Network.mainnet) {
+      val = IS_IOS ? { uri: 'ethereum' } : EthereumBadge;
+    } else if (chain === Network.optimism) {
+      val = IS_IOS ? { uri: 'optimism' } : OptimismBadge;
+    } else if (chain === Network.polygon) {
+      val = IS_IOS ? { uri: 'polygon' } : PolygonBadge;
+    } else if (chain === Network.zora) {
+      val = IS_IOS ? { uri: 'zora' } : ZoraBadge;
+    }
+    return val as Source;
+  }, [chain]);
+
+  if (!chain) return null;
+
+  return (
+    <ImgixImage
+      size={size}
+      source={source}
+      style={{ borderRadius, height: size, width: size }}
+    />
+  );
+}
