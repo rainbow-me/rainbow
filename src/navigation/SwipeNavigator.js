@@ -62,7 +62,7 @@ const animationConfig = {
 };
 
 const Swipe = createMaterialTopTabNavigator();
-const HEADER_HEIGHT = IS_IOS ? 82 : 62;
+const HEADER_HEIGHT = 82;
 
 const TabBar = ({
   state,

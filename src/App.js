@@ -9,7 +9,6 @@ import {
   Linking,
   LogBox,
   View,
-  NativeModules,
 } from 'react-native';
 
 // eslint-disable-next-line import/default
@@ -87,9 +86,6 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { IS_ANDROID } from './env';
-
-const { NavigationBar } = NativeModules;
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -402,9 +398,6 @@ function Root() {
     initializeApplication()
       .then(() => {
         logger.debug(`Application initialized with Sentry and Segment`);
-        if (IS_ANDROID) {
-          NavigationBar.stickyImmersive(true);
-        }
 
         // init complete, load the rest of the app
         setInitializing(false);

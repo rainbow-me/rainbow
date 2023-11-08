@@ -104,14 +104,10 @@ export function PromoSheet({
   const contentHeight =
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
-  const screenHeight = Dimensions.get('screen').height;
-  const windowHeight = Dimensions.get('window').height;
-  const navbarHeight = screenHeight - windowHeight;
-
   return (
     // @ts-ignore
     <SlackSheet
-      additionalTopPadding={IS_ANDROID ? navbarHeight : false}
+      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
       contentHeight={contentHeight}
       height="100%"
       hideHandle
