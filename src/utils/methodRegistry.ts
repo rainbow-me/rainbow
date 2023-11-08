@@ -8,7 +8,8 @@ import { CONTRACT_FUNCTION } from '@/apollo/queries';
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
 export const methodRegistryLookupAndParse = async (
-  methodSignatureBytes: any
+  methodSignatureBytes: any,
+  chainId: number
 ) => {
   let signature = '';
 
@@ -16,7 +17,7 @@ export const methodRegistryLookupAndParse = async (
     {
       query: CONTRACT_FUNCTION,
       variables: {
-        chainID: 1,
+        chainID: chainId,
         hex: methodSignatureBytes,
       },
     },

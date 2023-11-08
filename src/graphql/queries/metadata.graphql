@@ -102,3 +102,19 @@ query reverseResolveENSProfile(
     }
   }
 }
+
+query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
+  dApp(shortName: $shortName, url: $url) {
+    name
+    status @include(if: $status)
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    iconURL
+    url
+    description
+    shortName
+  }
+}

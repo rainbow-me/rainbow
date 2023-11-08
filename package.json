@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.8-1",
+  "version": "1.9.9-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -270,6 +270,7 @@
     "react-native-tooltip": "rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590",
     "react-native-tooltips": "rainbow-me/react-native-tooltips#d278f506782d3f39d68ae830c92b8afe670f0e3b",
     "react-native-udp": "2.7.0",
+    "react-native-url-polyfill": "2.0.0",
     "react-native-version-number": "0.3.6",
     "react-native-video": "5.2.1",
     "react-native-video-cache": "2.0.5",
