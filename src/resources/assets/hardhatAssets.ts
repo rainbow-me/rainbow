@@ -54,7 +54,7 @@ const fetchHardhatBalancesWithBalanceChecker = async (
 export const fetchHardhatBalances = async (
   accountAddress: string,
   network: Network = Network.mainnet
-): Promise<RainbowAddressAssets | null> => {
+): Promise<RainbowAddressAssets> => {
   const chainAssetsMap = keyBy(
     chainAssets[network as keyof typeof chainAssets],
     'asset.asset_code'
@@ -72,7 +72,7 @@ export const fetchHardhatBalances = async (
     accountAddress,
     network
   );
-  if (!balances) return null;
+  if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
     const assetCode = chainAsset.asset.asset_code.toLowerCase();

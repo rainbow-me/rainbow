@@ -92,7 +92,7 @@ export async function runMigrations(migrations: Migration[]) {
   const ranMigrations = [];
 
   for (const migration of migrations) {
-    const migratedAt = false;
+    const migratedAt = storage.get([migration.name]);
     const isDeferable = Boolean(migration.defer);
 
     if (!migratedAt) {

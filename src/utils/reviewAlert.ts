@@ -5,6 +5,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { IS_IOS } from '@/env';
 import { logger } from '@/logger';
+import { IS_TESTING } from 'react-native-dotenv';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
@@ -25,12 +26,16 @@ export const numberOfTimesBeforePrompt: {
   AddingContact: 1,
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
-  WatchWallet: 1,
+  WatchWallet: 2,
   NftFloorPriceVisit: 3,
 };
 
 export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
   logger.info(`handleReviewPromptAction: ${action}`);
+
+  if (IS_TESTING === 'true') {
+    return;
+  }
 
   if (action === ReviewPromptAction.UserPrompt) {
     promptForReview();

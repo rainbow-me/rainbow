@@ -103,7 +103,7 @@ export default function DiscoverScreen() {
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews
-          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 197 }}
+          scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167 }}
           testID="discover-sheet"
         >
           <DiscoverScreenContent />

@@ -62,7 +62,6 @@ import {
 import { Network } from '@/helpers';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import networkTypes from '@/helpers/networkTypes';
 import {
   useAccountSettings,
   useCurrentNonce,
@@ -76,7 +75,6 @@ import {
 import {
   loadWallet,
   sendTransaction,
-  signMessage,
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
@@ -102,8 +100,6 @@ import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import {
   isMessageDisplayType,
-  isSignFirstParamType,
-  isSignSecondParamType,
   isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,
@@ -369,7 +365,8 @@ export default function TransactionConfirmationScreen() {
           setMethodName(lang.t('wallet.transaction.request'));
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix
+          methodSignaturePrefix,
+          getNetworkObj(currentNetwork).id
         );
         if (name) {
           setMethodName(name);
@@ -380,7 +377,7 @@ export default function TransactionConfirmationScreen() {
         clearTimeout(fallbackHandler);
       }
     },
-    [setMethodName]
+    [setMethodName, currentNetwork]
   );
 
   useEffect(() => {
@@ -890,7 +887,6 @@ export default function TransactionConfirmationScreen() {
     );
     switch (method) {
       case SIGN:
-        response = await signMessage(message, existingWallet);
         break;
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);

@@ -38,7 +38,6 @@ import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
-  useAssetsInWallet,
   useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
@@ -58,6 +57,7 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
@@ -146,7 +146,8 @@ export default function CurrencySelectModal() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const assetsInWallet = useAssetsInWallet() as SwappableAsset[];
+  const { data: sortedAssets } = useSortedUserAssets();
+  const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
