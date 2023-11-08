@@ -27,8 +27,6 @@ import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { IS_ANDROID } from '@/env';
-import { SheetHandleFixedToTop } from '@/components/sheet';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
