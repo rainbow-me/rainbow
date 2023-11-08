@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, {
@@ -20,13 +20,19 @@ import {
   ColorModeProvider,
   Text,
 } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsForeground } from '@/hooks/useIsForeground';
+import {
+  useCameraPermission,
+  useCodeScanner,
+} from 'react-native-vision-camera';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -57,8 +63,42 @@ export default function QRScannerScreen() {
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
+  const [isLeaving, setIsLeaving] = React.useState(false);
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const isFocused = useIsFocused();
+  const isForeground = useIsForeground();
+  const isActive = isFocused && isForeground && hasPermission;
 
   const [flashEnabled, setFlashEnabled] = React.useState(false);
+  const torchRef = useRef(flashEnabled);
+
+  useEffect(() => {
+    torchRef.current = flashEnabled;
+  }, [flashEnabled]);
+
+  const hideCamera = useCallback(() => {
+    setFlashEnabled(false);
+  }, [setFlashEnabled]);
+
+  const { onScan } = useScanner(hasPermission, hideCamera);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: codes => {
+      if (codes[0].value) {
+        onScan({ data: codes[0].value });
+      }
+    },
+  });
+  useHardwareBack(hideCamera);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsLeaving(true);
+      };
+    }, [])
+  );
 
   const handleCloseScanner = React.useCallback(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -162,6 +202,11 @@ export default function QRScannerScreen() {
                 <QRCodeScanner
                   flashEnabled={flashEnabled}
                   setFlashEnabled={setFlashEnabled}
+                  isLeaving={isLeaving}
+                  codeScanner={codeScanner}
+                  hasPermission={hasPermission}
+                  requestPermission={requestPermission}
+                  isActive={isActive}
                 />
               )}
             </CameraDimmer>

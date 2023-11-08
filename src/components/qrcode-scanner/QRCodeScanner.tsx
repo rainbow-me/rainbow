@@ -1,18 +1,15 @@
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Camera, useCodeScanner } from 'react-native-vision-camera';
-import Animated, { red } from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { Camera } from 'react-native-vision-camera';
+import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-import { useAppState, useHardwareBack, useScanner } from '@/hooks';
 import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { IS_ANDROID } from '@/env';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { CameraState, useCameraPermission } from './useCameraPermissions';
 
 // Display.getRealMetrics
 
@@ -24,65 +21,31 @@ const androidSoftMenuHeight = getSoftMenuBarHeight();
 interface QRCodeScannerProps {
   flashEnabled?: boolean;
   setFlashEnabled: (value: boolean) => void;
+  isLeaving: boolean;
+  isActive: boolean;
+  codeScanner: any;
+  hasPermission: boolean;
+  requestPermission: any;
 }
 
 export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   flashEnabled,
   setFlashEnabled,
+  isLeaving,
+  isActive,
+  codeScanner,
+  hasPermission,
+  requestPermission,
 }) => {
-  const {
-    cameraState,
-    setCameraState,
-    askForPermissions,
-  } = useCameraPermission();
-  const isFocused = useIsFocused();
-  const { appState: currentAppState } = useAppState();
-  const isActive =
-    isFocused &&
-    currentAppState === 'active' &&
-    cameraState === CameraState.Scanning;
-
-  useFocusEffect(
-    React.useCallback(() => {
-      setCameraState(CameraState.Scanning);
-      return () => {
-        setFlashEnabled(false);
-        setCameraState(CameraState.Waiting);
-        console.log(
-          'useFocus cleanup ran, cameraState set to:',
-          CameraState.Waiting
-        );
-      };
-    }, [setCameraState, setFlashEnabled])
-  );
-
   useEffect(() => {
-    console.log('Camera State changed:', cameraState);
-  }, [cameraState]);
+    if (isLeaving) {
+      setFlashEnabled(false);
+    }
+  }, [isLeaving, setFlashEnabled]);
 
   const devices = Camera.getAvailableCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
-
-  const hideCamera = useCallback(() => {
-    setCameraState(CameraState.Waiting);
-  }, [setCameraState]);
-
-  const { onScan } = useScanner(
-    cameraState === CameraState.Scanning,
-    hideCamera
-  );
-
-  useHardwareBack(hideCamera);
-
-  const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
-    onCodeScanned: codes => {
-      if (codes[0].value) {
-        onScan({ data: codes[0].value });
-      }
-    },
-  });
 
   const cameraUI = (
     <>
@@ -111,7 +74,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
               audio={false}
               video={false}
               photo={false}
-              onError={() => setCameraState(CameraState.Error)}
+              // onError={() => setCameraState(CameraState.Error)}
             />
           </Box>
           <Rows>
@@ -157,15 +120,9 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
 
   return (
     <>
-      {console.log('Render, cameraState is:', cameraState)}
-      {cameraState === CameraState.Scanning ? cameraUI : null}
-      {cameraState === CameraState.Error && (
-        <ErrorText
-          color={red}
-          error={lang.t('wallet.qr.error_mounting_camera')}
-        />
-      )}
-      {cameraState === CameraState.Unauthorized && (
+      {hasPermission ? (
+        cameraUI
+      ) : (
         <Box
           position="absolute"
           width="full"
@@ -173,7 +130,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
           alignItems="center"
           justifyContent="center"
         >
-          <QRCodeScannerNeedsAuthorization onGetBack={askForPermissions} />
+          <QRCodeScannerNeedsAuthorization onGetBack={requestPermission} />
         </Box>
       )}
     </>
