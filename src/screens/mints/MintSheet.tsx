@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking, StatusBar, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
@@ -77,6 +77,7 @@ import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { IS_ANDROID } from '@/env';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -595,6 +596,7 @@ const MintSheet = () => {
         height={'100%'}
         ref={sheetRef}
         scrollEnabled
+        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
         testID="nft-mint-sheet"
         yPosition={yPosition}
       >
