@@ -104,6 +104,7 @@ import {
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
+  SIGN,
   SIGN_TYPED_DATA,
   SIGN_TYPED_DATA_V4,
 } from '@/utils/signingMethods';
@@ -364,7 +365,8 @@ export default function TransactionConfirmationScreen() {
           setMethodName(lang.t('wallet.transaction.request'));
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix
+          methodSignaturePrefix,
+          getNetworkObj(currentNetwork).id
         );
         if (name) {
           setMethodName(name);
@@ -375,7 +377,7 @@ export default function TransactionConfirmationScreen() {
         clearTimeout(fallbackHandler);
       }
     },
-    [setMethodName]
+    [setMethodName, currentNetwork]
   );
 
   useEffect(() => {
@@ -884,6 +886,8 @@ export default function TransactionConfirmationScreen() {
       provider
     );
     switch (method) {
+      case SIGN:
+        break;
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
