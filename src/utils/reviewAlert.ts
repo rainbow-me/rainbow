@@ -26,7 +26,7 @@ export const numberOfTimesBeforePrompt: {
   AddingContact: 1,
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
-  WatchWallet: 1,
+  WatchWallet: 2,
   NftFloorPriceVisit: 3,
 };
 
