@@ -42,7 +42,7 @@ import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { IS_TEST } from '@/env';
-import { haptics, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import {
@@ -472,7 +472,6 @@ export default function PointsScreen() {
           setToastActive(false);
         }, 2000);
       }
-      haptics.notificationSuccess();
       onNewEmoji();
       setClipboard(accountAddress);
     },
@@ -484,11 +483,13 @@ export default function PointsScreen() {
   const refresh = React.useCallback(async () => {
     setIsRefreshing(true);
     if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
-      await queryClient.invalidateQueries([pointsQueryKey]);
+      await queryClient.invalidateQueries(
+        pointsQueryKey({ address: accountAddress })
+      );
     }
     await delay(2000);
     setIsRefreshing(false);
-  }, [dataUpdatedAt]);
+  }, [accountAddress, dataUpdatedAt]);
 
   const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
   const totalPointsString = data?.points?.earnings?.total.toLocaleString(
