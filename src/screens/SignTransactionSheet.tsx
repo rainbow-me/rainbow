@@ -124,12 +124,10 @@ import {
 } from '@/redux/walletconnect';
 import { removeRequest } from '@/redux/requests';
 import { maybeSignUri } from '@/handlers/imgix';
-import { TransactionMessage } from '@/components/transaction';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
-import { type } from 'os';
 import { colors } from '@/styles';
 
 /**
@@ -159,14 +157,12 @@ const timingConfig = {
 };
 
 export const SignTransactionSheet = () => {
-  const { navigate, goBack } = useNavigation();
+  const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { width: deviceWidth } = useDimensions();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
-  const [
-    simulationData,
-    setSimulationData,
-  ] = useState<TransactionSimulationResult | null>();
+  const { accountAddress } = useAccountSettings();
+  const [simulationData, setSimulationData] = useState<
+    TransactionSimulationResult | undefined
+  >();
   const [simulationError, setSimulationError] = useState<
     TransactionErrorType | undefined
   >(undefined);
@@ -179,8 +175,6 @@ export const SignTransactionSheet = () => {
   );
 
   const isPersonalSign = checkIsPersonalSign(transactionDetails.payload.method);
-
-  const [ready, setReady] = useState(isMessageRequest);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
@@ -1037,7 +1031,7 @@ export const SignTransactionSheet = () => {
 
             <Stack space={{ custom: 14 }}>
               <SimulationCard
-                simulation={simulationData || {}}
+                simulation={simulationData}
                 isPersonalSign={isPersonalSign}
                 currentNetwork={currentNetwork!}
                 isLoading={isLoading}
@@ -1105,11 +1099,7 @@ export const SignTransactionSheet = () => {
                       {accountInfo.accountName}
                     </Text>
                   </Inline>
-                  <Inline
-                    alignVertical="center"
-                    space={{ custom: 17 }}
-                    wrap={false}
-                  >
+                  <Inline alignVertical="center" space="4px" wrap={false}>
                     <Bleed vertical="4px">
                       <ChainImage chain={currentNetwork} size={12} />
                     </Bleed>
@@ -1176,7 +1166,7 @@ const SimulationCard = ({
   currentNetwork,
   simulationError,
 }: {
-  simulation: TransactionSimulationResult;
+  simulation: TransactionSimulationResult | undefined;
   isLoading: boolean;
   isPersonalSign: boolean;
   currentNetwork: Network;
@@ -1215,7 +1205,7 @@ const SimulationCard = ({
   });
 
   useEffect(() => {
-    if (simulation) {
+    if (!isNil(simulation)) {
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
       spinnerRotation.value = withRepeat(
@@ -1271,7 +1261,7 @@ const SimulationCard = ({
       cardHeight={cardHeight}
       contentHeight={contentHeight}
       isExpanded={
-        !isEmpty(simulation) || simulationUnavailable || simulationError
+        !isEmpty(simulation) || simulationUnavailable || !!simulationError
       }
     >
       <Stack space="24px">
@@ -1315,7 +1305,7 @@ const SimulationCard = ({
                 ? 'Likely to Fail'
                 : simulationUnavailable
                 ? 'Simulation Unavailable'
-                : simulation
+                : !isNil(simulation)
                 ? 'Simulated Result'
                 : 'Simulating'}
             </Text>
@@ -1376,7 +1366,7 @@ const DetailsCard = ({
   currentNetwork: Network;
   methodName: string;
   simulationUnavailable: boolean;
-  simulationError: TransactionErrorType;
+  simulationError: TransactionErrorType | undefined;
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(
@@ -1399,10 +1389,17 @@ const DetailsCard = ({
     return <></>;
   }
   return (
-    <ButtonPressAnimation
-      disabled={isLoading}
-      onPress={() => setIsExpanded(true)}
-      scaleTo={0.96}
+    <ConditionalWrap
+      condition={!isExpanded}
+      wrap={children => (
+        <ButtonPressAnimation
+          disabled={isLoading}
+          onPress={() => setIsExpanded(true)}
+          scaleTo={0.96}
+        >
+          {children}
+        </ButtonPressAnimation>
+      )}
     >
       <FadedScrollCard
         cardHeight={cardHeight}
@@ -1479,7 +1476,7 @@ const DetailsCard = ({
           </Animated.View>
         </Stack>
       </FadedScrollCard>
-    </ButtonPressAnimation>
+    </ConditionalWrap>
   );
 };
 

@@ -383,7 +383,7 @@ function BSNavigator() {
       />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
       />

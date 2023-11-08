@@ -35,6 +35,7 @@ const BottomSheetRoute = ({
     snapPoints = ['100%'],
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
+    backdropPressBehavior = 'close',
     height = DEFAULT_HEIGHT,
     offsetY = android ? 20 : 3,
   } = options || {};
@@ -138,6 +139,7 @@ const BottomSheetRoute = ({
         disappearsOnIndex={-1}
         opacity={backdropOpacity}
         style={backdropStyle}
+        pressBehavior={backdropPressBehavior}
         {...props}
       />
     ),
@@ -157,7 +159,6 @@ const BottomSheetRoute = ({
         enablePanDownToClose
         handleComponent={null}
         index={index}
-        onClose={handleOnClose}
         ref={ref}
         simultaneousHandlers={[]}
         snapPoints={snapPoints}

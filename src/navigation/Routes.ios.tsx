@@ -331,7 +331,8 @@ function NativeStackNavigator() {
         component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
         options={{
-          allowsDragToDismiss: true,
+          allowsDragToDismiss: false,
+          allowsTapToDismiss: false,
           backgroundOpacity: 1,
           customStack: true,
           headerHeight: 0,
