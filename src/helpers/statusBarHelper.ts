@@ -1,4 +1,9 @@
-import { ColorValue, StatusBar, StatusBarAnimation } from 'react-native';
+import {
+  ColorValue,
+  StatusBar,
+  StatusBarAnimation,
+  Dimensions,
+} from 'react-native';
 
 export const setTranslucent = (translucent: boolean): void => {
   StatusBar.setTranslucent(translucent);
@@ -34,4 +39,11 @@ export const setDarkContent = (isAnimated = true) => {
     animated: isAnimated,
     barStyle: 'dark-content',
   });
+};
+
+export const isUsingButtonNavigation = () => {
+  const deviceHeight = Dimensions.get('screen').height;
+  const windowHeight = Dimensions.get('window').height;
+  const bottomNavBarHeight = deviceHeight - windowHeight;
+  return bottomNavBarHeight > 80;
 };

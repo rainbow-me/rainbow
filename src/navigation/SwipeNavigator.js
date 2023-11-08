@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -46,6 +46,7 @@ import config from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
+import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -62,7 +63,18 @@ const animationConfig = {
 };
 
 const Swipe = createMaterialTopTabNavigator();
-const HEADER_HEIGHT = 82;
+
+const getHeaderHeight = () => {
+  if (IS_IOS) {
+    return 82;
+  }
+
+  if (!isUsingButtonNavigation()) {
+    return 72;
+  }
+
+  return 48;
+};
 
 const TabBar = ({
   state,
@@ -76,6 +88,7 @@ const TabBar = ({
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
+  const HEADER_HEIGHT = useMemo(() => getHeaderHeight(), []);
   const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
 
