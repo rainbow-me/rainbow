@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
+import {
+  ImageSourcePropType,
+  Dimensions,
+  StatusBar,
+  ImageBackground,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
@@ -99,10 +104,14 @@ export function PromoSheet({
   const contentHeight =
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
+  const screenHeight = Dimensions.get('screen').height;
+  const windowHeight = Dimensions.get('window').height;
+  const navbarHeight = screenHeight - windowHeight;
+
   return (
     // @ts-ignore
     <SlackSheet
-      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+      additionalTopPadding={IS_ANDROID ? navbarHeight : false}
       contentHeight={contentHeight}
       height="100%"
       hideHandle
