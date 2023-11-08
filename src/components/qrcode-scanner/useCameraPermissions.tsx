@@ -1,3 +1,8 @@
+// UNUSED AT THE MOMENT.
+// USING REACT-NATIVE-VISION-CAMERA PERMISSIONS HOOK INSTEAD.
+// WILL DELETE THIS LATER.
+// KEEPING FOR REFERENCE ATM.
+
 import { useState, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import {
