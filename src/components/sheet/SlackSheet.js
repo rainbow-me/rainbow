@@ -125,7 +125,7 @@ export default forwardRef(function SlackSheet(
   const { colors } = useTheme();
   const contentContainerStyle = useMemo(
     () => ({
-      paddingBottom: bottomInset + 128,
+      paddingBottom: bottomInset,
     }),
     [bottomInset]
   );
