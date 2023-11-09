@@ -68,7 +68,9 @@ const Content = styled.ScrollView.attrs(({ limitScrollViewContent }) => ({
   scrollEventThrottle: 16,
 }))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }) => ({
   backgroundColor: backgroundColor,
-  ...(contentHeight ? { height: deviceHeight + contentHeight } : {}),
+  ...(contentHeight
+    ? { height: deviceHeight + contentHeight }
+    : { height: '100%' }),
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
   width: '100%',
 }));
@@ -123,7 +125,7 @@ export default forwardRef(function SlackSheet(
   const { colors } = useTheme();
   const contentContainerStyle = useMemo(
     () => ({
-      paddingBottom: bottomInset,
+      paddingBottom: bottomInset + 128,
     }),
     [bottomInset]
   );

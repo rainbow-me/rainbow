@@ -77,7 +77,7 @@ import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -593,7 +593,7 @@ const MintSheet = () => {
             ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
             : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
-        height={'100%'}
+        {...(IS_IOS ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
         additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
