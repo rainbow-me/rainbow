@@ -1,7 +1,7 @@
 import store from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
 
-export const isSelectedWalletReadyOnly = (): boolean => {
+export const isSelectedWalletReadOnly = (): boolean => {
   const { selected } = store.getState().wallets;
 
   // if no selected wallet, we will treat it as a read-only wallet

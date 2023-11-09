@@ -391,7 +391,7 @@ export function NFTSingleOfferSheet() {
 
               // remove offer from cache
               queryClient.setQueryData(
-                nftOffersQueryKey({ address: accountAddress }),
+                nftOffersQueryKey({ walletAddress: accountAddress }),
                 (
                   cachedData: { nftOffers: NftOffer[] | undefined } | undefined
                 ) => {

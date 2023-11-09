@@ -3,7 +3,7 @@ import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
-import { CampaignKey } from '@/campaigns/campaignChecks';
+import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analyticsV2 } from '@/analytics';
 import {
   AccentColorProvider,
