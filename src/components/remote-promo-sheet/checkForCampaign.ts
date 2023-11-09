@@ -109,10 +109,10 @@ export const shouldPromptCampaign = async (
   );
 
   // If the campaign has been viewed already or it's the first app launch, exit early
-  if (hasShown) {
-    logger.info(`Campaigns: User has already been shown ${campaignKey}`);
-    return false;
-  }
+  // if (hasShown) {
+  //   logger.info(`Campaigns: User has already been shown ${campaignKey}`);
+  //   return false;
+  // }
 
   const actionsArray = actions || ([] as ActionObj[]);
   let shouldPrompt = true;
@@ -121,8 +121,7 @@ export const shouldPromptCampaign = async (
     const { fn, outcome, props = {} } = actionObj;
     const action = __INTERNAL_ACTION_CHECKS[fn];
     if (typeof action === 'undefined') {
-      shouldPrompt = false;
-      break;
+      continue;
     }
 
     logger.info(`Campaigns: Checking action ${fn}`);

@@ -217,8 +217,8 @@ query getPromoSheetCollection($order: [PromoSheetOrder]) {
   }
 }
 
-query getPromoSheet($id: String!, $locale: String!) {
-  promoSheet(id: $id, locale: $locale) {
+query getPromoSheet($id: String!) {
+  promoSheet(id: $id) {
     accentColor
     actions
     backgroundColor

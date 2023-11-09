@@ -16,14 +16,13 @@ const defaultStaleTime = 60_000;
 
 export type PromoSheetArgs = {
   id: string;
-  locale?: string;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-const promoSheetQueryKey = ({ id, locale = 'en-US' }: PromoSheetArgs) =>
-  createQueryKey('promoSheet', { id, locale }, { persisterVersion: 1 });
+const promoSheetQueryKey = ({ id }: PromoSheetArgs) =>
+  createQueryKey('promoSheet', { id }, { persisterVersion: 1 });
 
 type PromoSheetQueryKey = ReturnType<typeof promoSheetQueryKey>;
 
@@ -31,12 +30,9 @@ type PromoSheetQueryKey = ReturnType<typeof promoSheetQueryKey>;
 // Query Function
 
 async function promoSheetQueryFunction({
-  queryKey: [{ id, locale = 'en-US' }],
+  queryKey: [{ id }],
 }: QueryFunctionArgs<typeof promoSheetQueryKey>) {
-  const data = await arcDevClient.getPromoSheet({ id, locale });
-
-  console.log(JSON.stringify(data, null, 2));
-  console.log(locale);
+  const data = await arcDevClient.getPromoSheet({ id });
   return data;
 }
 
@@ -48,11 +44,11 @@ export type PromoSheetResult = QueryFunctionResult<
 // Query Prefetcher
 
 export async function prefetchPromoSheet(
-  { id, locale = 'en-US' }: PromoSheetArgs,
+  { id }: PromoSheetArgs,
   config: QueryConfig<PromoSheetResult, Error, PromoSheetQueryKey> = {}
 ) {
   return await queryClient.prefetchQuery(
-    promoSheetQueryKey({ id, locale }),
+    promoSheetQueryKey({ id }),
     promoSheetQueryFunction,
     config
   );
@@ -61,12 +57,9 @@ export async function prefetchPromoSheet(
 // ///////////////////////////////////////////////
 // Query Fetcher
 
-export async function fetchPromoSheet({
-  id,
-  locale = 'en-US',
-}: PromoSheetArgs) {
+export async function fetchPromoSheet({ id }: PromoSheetArgs) {
   return await queryClient.fetchQuery(
-    promoSheetQueryKey({ id, locale }),
+    promoSheetQueryKey({ id }),
     promoSheetQueryFunction,
     { staleTime: defaultStaleTime }
   );
@@ -76,10 +69,10 @@ export async function fetchPromoSheet({
 // Query Hook
 
 export function usePromoSheetQuery(
-  { id, locale = 'en-US' }: PromoSheetArgs,
+  { id }: PromoSheetArgs,
   { enabled }: { enabled?: boolean } = {}
 ) {
-  return useQuery(promoSheetQueryKey({ id, locale }), promoSheetQueryFunction, {
+  return useQuery(promoSheetQueryKey({ id }), promoSheetQueryFunction, {
     enabled,
     staleTime: defaultStaleTime,
   });

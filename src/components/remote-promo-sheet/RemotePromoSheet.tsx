@@ -22,17 +22,37 @@ type RootStackParamList = {
   RemotePromoSheet: CampaignCheckResult;
 };
 
+type Item = {
+  title: Record<keyof Language, string>;
+  description: Record<keyof Language, string>;
+  icon: string;
+  gradient?: string;
+};
+
 const enum ButtonType {
   Internal = 'Internal',
   External = 'External',
 }
 
-export const convertLanguageToLocale = (language: Language) => {
-  if (language === Language.AR_AR) {
-    return 'ar';
+const getKeyForLanguage = (
+  key: string,
+  promoSheet: any,
+  language: Language
+) => {
+  if (!promoSheet) {
+    return '';
   }
 
-  return language.replace('_', '-');
+  const objectOrPrimitive = get(promoSheet, key);
+  if (typeof objectOrPrimitive === 'undefined') {
+    return '';
+  }
+
+  if (objectOrPrimitive[language]) {
+    return objectOrPrimitive[language];
+  }
+
+  return objectOrPrimitive[Language.EN_US] ?? '';
 };
 
 export function RemotePromoSheet() {
@@ -53,7 +73,6 @@ export function RemotePromoSheet() {
   const { data, error } = usePromoSheetQuery(
     {
       id: campaignId,
-      locale: convertLanguageToLocale(language as Language),
     },
     {
       enabled: !!campaignId,
@@ -98,11 +117,9 @@ export function RemotePromoSheet() {
     backgroundImage,
     headerImage,
     headerImageAspectRatio,
-    header,
     items,
     primaryButtonProps,
     secondaryButtonProps,
-    subHeader,
   } = data.promoSheet;
 
   const accentColor =
@@ -138,38 +155,53 @@ export function RemotePromoSheet() {
         headerImageAspectRatio ?? DEFAULT_HEADER_WIDTH / DEFAULT_HEADER_HEIGHT
       }
       sheetHandleColor={sheetHandleColor}
-      header={header ?? ''}
-      subHeader={subHeader ?? ''}
+      header={getKeyForLanguage(
+        'header',
+        data.promoSheet,
+        language as Language
+      )}
+      subHeader={getKeyForLanguage(
+        'subHeader',
+        data.promoSheet,
+        language as Language
+      )}
       primaryButtonProps={{
         ...primaryButtonProps,
+        label: getKeyForLanguage(
+          'primaryButtonProps.label',
+          data.promoSheet,
+          language as Language
+        ),
         onPress: getButtonForType(data.promoSheet.primaryButtonProps.type),
       }}
       secondaryButtonProps={{
         ...secondaryButtonProps,
+        label: getKeyForLanguage(
+          'secondaryButtonProps.label',
+          data.promoSheet,
+          language as Language
+        ),
         onPress: goBack,
       }}
-      items={items.map((item: any) => {
+      items={items.map((item: Item) => {
+        const title = getKeyForLanguage('title', item, language as Language);
+        const description = getKeyForLanguage(
+          'description',
+          item,
+          language as Language
+        );
+
+        let gradient = undefined;
         if (item.gradient) {
-          if (item.gradient.includes('.')) {
-            const gradient = get(colors, item.gradient);
-
-            return {
-              ...item,
-              gradient,
-            };
-          }
-
-          const gradient =
-            (colors as { [key: string]: any }).gradients[item.gradient] ??
-            undefined;
-
-          return {
-            ...item,
-            gradient,
-          };
+          gradient = get(colors.gradients, item.gradient);
         }
 
-        return item;
+        return {
+          ...item,
+          title,
+          description,
+          gradient,
+        };
       })}
     />
   );
