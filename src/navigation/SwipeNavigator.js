@@ -26,7 +26,7 @@ import {
 } from '@/hooks';
 import { Box, Columns, Stack } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import PointsScreen from '@/screens/PointsScreen';
+import PointsScreen from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
