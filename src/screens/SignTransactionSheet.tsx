@@ -531,6 +531,7 @@ export const SignTransactionSheet = () => {
     transactionDetails?.dappUrl,
     transactionDetails?.payload?.method,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
     walletConnector?._chainId,
   ]);
 
