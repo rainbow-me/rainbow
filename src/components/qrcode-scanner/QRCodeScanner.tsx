@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
@@ -20,8 +20,6 @@ const androidSoftMenuHeight = getSoftMenuBarHeight();
 
 interface QRCodeScannerProps {
   flashEnabled?: boolean;
-  setFlashEnabled: (value: boolean) => void;
-  isLeaving: boolean;
   isActive: boolean;
   codeScanner: any;
   hasPermission: boolean;
@@ -30,19 +28,11 @@ interface QRCodeScannerProps {
 
 export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   flashEnabled,
-  setFlashEnabled,
-  isLeaving,
   isActive,
   codeScanner,
   hasPermission,
   requestPermission,
 }) => {
-  useEffect(() => {
-    if (isLeaving) {
-      setFlashEnabled(false);
-    }
-  }, [isLeaving, setFlashEnabled]);
-
   const devices = Camera.getAvailableCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;

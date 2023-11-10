@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, {
@@ -27,7 +27,7 @@ import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import {
   useCameraPermission,
@@ -63,18 +63,13 @@ export default function QRScannerScreen() {
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
-  const [isLeaving, setIsLeaving] = React.useState(false);
   const { hasPermission, requestPermission } = useCameraPermission();
   const isFocused = useIsFocused();
   const isForeground = useIsForeground();
+  const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
 
   const [flashEnabled, setFlashEnabled] = React.useState(false);
-  const torchRef = useRef(flashEnabled);
-
-  useEffect(() => {
-    torchRef.current = flashEnabled;
-  }, [flashEnabled]);
 
   const hideCamera = useCallback(() => {
     setFlashEnabled(false);
@@ -90,18 +85,15 @@ export default function QRScannerScreen() {
       }
     },
   });
+
   useHardwareBack(hideCamera);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        setIsLeaving(true);
-      };
-    }, [])
-  );
-
-  const handleCloseScanner = React.useCallback(() => {
-    navigate(Routes.WALLET_SCREEN);
+  const handleCloseScanner = useCallback(() => {
+    setFlashEnabled(false);
+    setCameraActive(false);
+    setTimeout(() => {
+      navigate(Routes.WALLET_SCREEN);
+    }, 0);
   }, [navigate]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -201,12 +193,10 @@ export default function QRScannerScreen() {
               {!isEmulator && (
                 <QRCodeScanner
                   flashEnabled={flashEnabled}
-                  setFlashEnabled={setFlashEnabled}
-                  isLeaving={isLeaving}
                   codeScanner={codeScanner}
                   hasPermission={hasPermission}
                   requestPermission={requestPermission}
-                  isActive={isActive}
+                  isActive={isActive && cameraActive}
                 />
               )}
             </CameraDimmer>
