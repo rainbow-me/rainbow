@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { Camera } from 'react-native-vision-camera';
+import { Camera, CodeScanner } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
@@ -8,10 +8,9 @@ import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { IS_ANDROID } from '@/env';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-
-// Display.getRealMetrics
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
@@ -21,9 +20,9 @@ const androidSoftMenuHeight = getSoftMenuBarHeight();
 interface QRCodeScannerProps {
   flashEnabled?: boolean;
   isActive: boolean;
-  codeScanner: any;
+  codeScanner: CodeScanner;
   hasPermission: boolean;
-  requestPermission: any;
+  requestPermission: () => Promise<boolean>;
 }
 
 export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
@@ -64,7 +63,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
               audio={false}
               video={false}
               photo={false}
-              // onError={() => setCameraState(CameraState.Error)}
+              onError={() => requestPermission}
             />
           </Box>
           <Rows>

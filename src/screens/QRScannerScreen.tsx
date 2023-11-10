@@ -27,13 +27,13 @@ import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import { addActionAfterClosingSheet } from '@/navigation/Navigation';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -71,7 +71,7 @@ export default function QRScannerScreen() {
   const isActive = isFocused && isForeground && hasPermission;
   const navigation = useNavigation();
 
-  const [flashEnabled, setFlashEnabled] = React.useState(false);
+  const [flashEnabled, setFlashEnabled] = useState(false);
 
   const hideCamera = useCallback(() => {
     setFlashEnabled(false);
@@ -111,7 +111,6 @@ export default function QRScannerScreen() {
   const handleCloseScanner = useCallback(() => {
     setFlashEnabled(false);
     setCameraActive(false);
-    console.log('rannnnnnnn caslkdl;asdjf;ja');
     setTimeout(() => {
       navigate(Routes.WALLET_SCREEN);
     }, 0);
@@ -206,7 +205,7 @@ export default function QRScannerScreen() {
           <ScannerContainer>
             <Background />
             <CameraDimmer cameraVisible={true}>
-              {android && (
+              {IS_ANDROID && (
                 <ScannerHeader>
                   <EmulatorPasteUriButton />
                 </ScannerHeader>
@@ -221,7 +220,7 @@ export default function QRScannerScreen() {
                 />
               )}
             </CameraDimmer>
-            {ios && (
+            {IS_IOS && (
               <ScannerHeader>
                 <EmulatorPasteUriButton />
               </ScannerHeader>
