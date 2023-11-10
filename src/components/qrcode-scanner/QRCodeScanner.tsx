@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Camera } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';

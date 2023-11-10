@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, {
@@ -27,12 +27,13 @@ import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
+import { addActionAfterClosingSheet } from '@/navigation/Navigation';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -68,6 +69,7 @@ export default function QRScannerScreen() {
   const isForeground = useIsForeground();
   const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
+  const navigation = useNavigation();
 
   const [flashEnabled, setFlashEnabled] = React.useState(false);
 
@@ -88,9 +90,28 @@ export default function QRScannerScreen() {
 
   useHardwareBack(hideCamera);
 
+  // cleanup for swiping away
+  useEffect(() => {
+    const unsubscribeBeforeRemove = navigation.addListener(
+      'beforeRemove',
+      e => {
+        e.preventDefault();
+        setCameraActive(false);
+        setFlashEnabled(false);
+        setTimeout(() => {
+          navigation.dispatch(e.data.action);
+        }, 0);
+      }
+    );
+
+    return unsubscribeBeforeRemove;
+  }, [navigation]);
+
+  // cleanup for using the back button
   const handleCloseScanner = useCallback(() => {
     setFlashEnabled(false);
     setCameraActive(false);
+    console.log('rannnnnnnn caslkdl;asdjf;ja');
     setTimeout(() => {
       navigate(Routes.WALLET_SCREEN);
     }, 0);
