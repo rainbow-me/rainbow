@@ -277,9 +277,6 @@ export const SendConfirmationSheet = () => {
       let sends = 0;
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
-        if (tx.type === 'send') {
-          console.log(tx);
-        }
         if (
           tx.to?.toLowerCase() === toAddress?.toLowerCase() &&
           tx.from?.toLowerCase() === accountAddress
