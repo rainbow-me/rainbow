@@ -9,5 +9,8 @@ export const ensClient = getEnsSdk(getFetchRequester(config.ens));
 export const metadataClient = getMetadataSdk(
   getFetchRequester(config.metadata)
 );
+export const simulationClient = getMetadataSdk(
+  getFetchRequester(config.metadata)
+);
 export const arcClient = getArcSdk(getFetchRequester(config.arc));
 export const arcDevClient = getArcDevSdk(getFetchRequester(config.arcDev));
