@@ -124,15 +124,15 @@ export function RemotePromoSheet() {
 
   const accentColor =
     (colors as { [key: string]: any })[accentColorString as string] ??
-    colors.whiteLabel;
+    accentColorString;
 
   const backgroundColor =
     (colors as { [key: string]: any })[backgroundColorString as string] ??
-    colors.trueBlack;
+    backgroundColorString;
 
   const sheetHandleColor =
     (colors as { [key: string]: any })[sheetHandleColorString as string] ??
-    colors.trueBlack;
+    sheetHandleColorString;
 
   const backgroundSignedImageUrl = backgroundImage?.url
     ? maybeSignUri(backgroundImage.url)
