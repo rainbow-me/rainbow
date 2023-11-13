@@ -235,9 +235,7 @@ const MintSheet = () => {
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
   const isMintingAvailable =
-    !(isReadOnlyWallet || isHardwareWallet) &&
-    !!mintCollection.publicMintInfo &&
-    !gasError;
+    !!mintCollection.publicMintInfo && (!gasError || insufficientEth);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -265,9 +263,14 @@ const MintSheet = () => {
             accountAddress
           )
         )?.balance?.amount ?? 0;
+
+      const totalMintPrice = multiply(price.amount, quantity);
+      if (greaterThanOrEqualTo(totalMintPrice, nativeBalance)) {
+        setInsufficientEth(true);
+        return;
+      }
       const txFee = getTotalGasPrice();
       const txFeeWithBuffer = multiply(txFee, 1.2);
-      const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
       setInsufficientEth(
         greaterThanOrEqualTo(
@@ -343,7 +346,6 @@ const MintSheet = () => {
                   value: item.data?.value,
                 };
                 const gas = await estimateGas(tx, provider);
-
                 let l1GasFeeOptimism = null;
                 // add l1Fee for OP Chains
                 if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
@@ -724,7 +726,6 @@ const MintSheet = () => {
                           plusAction={() => setQuantity(1)}
                           minusAction={() => setQuantity(-1)}
                           buttonColor={imageColor}
-                          disabled={!isMintingAvailable}
                           maxValue={Number(maxMintsPerWallet)}
                         />
                       </Stack>
