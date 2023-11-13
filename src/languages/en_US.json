@@ -2304,6 +2304,64 @@
           "title": "This app is likely malicious",
           "description": "Signing messages or transactions from this app could result in losing your assets"
         }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Message Request",
+          "transaction_request": "Transaction Request"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Not Enough %{symbol}",
+            "likely_to_fail": "Likely to Fail",
+            "simulation_unavailable": "Simulation Unavailable",
+            "simulation_result": "Simulated Result",
+            "simulating": "Simulating"
+          },
+          "messages": {
+            "no_changes": "􀻾 No Changes Detected",
+            "need_more_native": "You’ll need more ETH on %{network} to pay for this transaction. Get some ETH below to continue with this request.",
+            "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
+            "unavailable_zora_network": "Simulation on Zora is not yet supported",
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using."
+          },
+          "event_row": {
+            "unlimited": "Unlimited",
+            "types": {
+              "send": "Send",
+              "receive": "Receive",
+              "approve": "Approve",
+              "revoke": "Revoke"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Details",
+          "types": {
+            "chain": "Network",
+            "contract": "Contract",
+            "contract_created": "Contact Created",
+            "function": "Function",
+            "source_code": "Source Code",
+            "nonce": "Nonce"
+          },
+          "unknown": "Unknown"
+        },
+        "message_card": {
+          "title": "Message",
+          "copy": "Copy"
+        },
+        "profile_section": {
+          "signing_with": "Signing with",
+          "free_to_sign": "Free to sign",
+          "no_native_balance": "No %{symbol}",
+          "on_network": "on %{network}"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "confirm": "􀎽 Confirm",
+          "get_native_token": "Get %{symbol}"
+        }
       }
     },
     "warning": {

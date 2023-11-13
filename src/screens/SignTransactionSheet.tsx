@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import BigNumber from 'bignumber.js';
+import * as i18n from '@/languages';
 import {
   Image,
   InteractionManager,
@@ -14,6 +16,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
+  AnimatedStyle,
   Easing,
   SharedValue,
   interpolate,
@@ -52,7 +55,7 @@ import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { metadataClient } from '@/graphql';
+import { simulationClient } from '@/graphql';
 import {
   TransactionAssetType,
   TransactionErrorType,
@@ -61,12 +64,15 @@ import {
   TransactionSimulationResult,
 } from '@/graphql/__generated__/metadata';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertHexToString,
   convertRawAmountToBalance,
   delay,
+  fromWei,
   greaterThan,
+  greaterThanOrEqualTo,
+  isZero,
   omitFlatten,
 } from '@/helpers/utilities';
 import { useDispatch, useSelector } from 'react-redux';
@@ -76,7 +82,6 @@ import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import {
   useAccountSettings,
   useCurrentNonce,
-  useDimensions,
   useGas,
   useWallets,
 } from '@/hooks';
@@ -87,8 +92,6 @@ import {
   estimateGasWithPadding,
   getFlashbotsProvider,
   getProviderForNetwork,
-  isL2Network,
-  isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -105,6 +108,8 @@ import {
   isSignTypedData,
 } from '@/utils/signingMethods';
 import { isEmpty, isNil } from 'lodash';
+import Routes from '@/navigation/routesNames';
+
 import { parseGasParamsForTransaction } from '@/parsers/gas';
 import {
   loadWallet,
@@ -157,7 +162,7 @@ const timingConfig = {
 };
 
 export const SignTransactionSheet = () => {
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { accountAddress } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<
@@ -190,32 +195,33 @@ export const SignTransactionSheet = () => {
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<Network | null>();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [methodName, setMethodName] = useState<string | null>(null);
   const calculatingGasLimit = useRef(false);
-  const [isBalanceEnough, setIsBalanceEnough] = useState(true);
-  const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
+  const [isBalanceEnough, setIsBalanceEnough] = useState(false);
+
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(
     null
   );
+  const formattedDappUrl = useMemo(() => {
+    const { hostname } = new URL(transactionDetails?.dappUrl);
+    return hostname;
+  }, [transactionDetails?.dappUrl]);
 
   const {
     gasLimit,
     isValidGas,
-    isSufficientGas,
     startPollingGasFees,
     stopPollingGasFees,
-    updateGasFeeOption,
+    isSufficientGas,
     updateTxFee,
     selectedGasFee,
-    selectedGasFeeOption,
     gasFeeParamsBySpeed,
   } = useGas();
 
-  const req = transactionDetails.payload.params[0];
+  const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
     return isMessageRequest
       ? { message: transactionDetails?.displayDetails.request }
@@ -324,10 +330,8 @@ export const SignTransactionSheet = () => {
     [currentNetwork]
   );
 
+  // start polling for gas and get fn name
   useEffect(() => {
-    // if (openAutomatically && !isEmulatorSync()) {
-    //   ReactNativeHapticFeedback.trigger('notificationSuccess');
-    // }
     InteractionManager.runAfterInteractions(() => {
       if (currentNetwork) {
         if (!isMessageRequest) {
@@ -348,6 +352,7 @@ export const SignTransactionSheet = () => {
     transactionDetails?.payload?.params,
   ]);
 
+  // get gas limit
   useEffect(() => {
     if (
       !isEmpty(gasFeeParamsBySpeed) &&
@@ -366,6 +371,60 @@ export const SignTransactionSheet = () => {
     isMessageRequest,
     provider,
     updateTxFee,
+  ]);
+
+  const walletBalance = useMemo(() => {
+    return {
+      amount: nativeAsset?.balance?.amount || 0,
+      display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
+      symbol: nativeAsset?.symbol || 'ETH',
+    };
+  }, [
+    nativeAsset?.balance?.amount,
+    nativeAsset?.balance?.display,
+    nativeAsset?.symbol,
+  ]);
+
+  // check native balance is sufficient
+  useEffect(() => {
+    if (isMessageRequest) {
+      setIsBalanceEnough(true);
+      return;
+    }
+
+    if (!isSufficientGas) {
+      setIsBalanceEnough(false);
+      return;
+    }
+
+    const { gasFee } = selectedGasFee;
+    if (!gasFee?.estimatedFee) {
+      setIsBalanceEnough(false);
+      return;
+    }
+    // Get the TX fee Amount
+    const txFeeAmount = fromWei(gasFee?.maxFee?.value?.amount ?? 0);
+
+    // Get the ETH balance
+    const balanceAmount = walletBalance?.amount ?? 0;
+
+    // Get the TX value
+    const txPayload = req;
+    const value = txPayload?.value ?? 0;
+
+    // Check that there's enough ETH to pay for everything!
+    const totalAmount = new BigNumber(fromWei(value)).plus(txFeeAmount);
+    const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
+
+    setIsBalanceEnough(isEnough);
+  }, [
+    isBalanceEnough,
+    isMessageRequest,
+    isSufficientGas,
+    currentNetwork,
+    selectedGasFee,
+    walletBalance?.amount,
+    req,
   ]);
 
   const accountInfo = useMemo(() => {
@@ -438,23 +497,11 @@ export const SignTransactionSheet = () => {
     currentNetwork && getNativeAsset();
   }, [accountInfo.address, currentNetwork, provider]);
 
-  const walletBalance = useMemo(() => {
-    return {
-      amount: nativeAsset?.balance?.amount || 0,
-      display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
-      symbol: nativeAsset?.symbol || 'ETH',
-    };
-  }, [
-    nativeAsset?.balance?.amount,
-    nativeAsset?.balance?.display,
-    nativeAsset?.symbol,
-  ]);
-
   useEffect(() => {
     setTimeout(async () => {
       // Message Signing
       if (isMessageRequest) {
-        const simulationData = await metadataClient.simulateMessage({
+        const simulationData = await simulationClient.simulateMessage({
           address: accountAddress,
           chainId: Number(
             transactionDetails?.walletConnectV2RequestValues?.chainId ||
@@ -469,20 +516,18 @@ export const SignTransactionSheet = () => {
           domain: transactionDetails?.dappUrl,
         });
         if (simulationData?.simulateMessage?.error) {
-          console.log('fuck we have an error :', {
+          console.log('we have an error :', {
             error: simulationData?.simulateMessage?.error,
           });
           setSimulationError(simulationData?.simulateMessage?.error?.type);
-          setIsLoading(false);
         }
         if (simulationData.simulateMessage?.simulation) {
           setSimulationData(simulationData.simulateMessage?.simulation);
-          setIsLoading(false);
         }
       } else {
         console.log('we are simulationing this shit');
         // TX Signing
-        const simulationData = await metadataClient.simulateTransactions({
+        const simulationData = await simulationClient.simulateTransactions({
           chainId: Number(
             transactionDetails?.walletConnectV2RequestValues?.chainId ||
               // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
@@ -500,13 +545,12 @@ export const SignTransactionSheet = () => {
         });
         console.log({ res: simulationData?.simulateTransactions?.[0] });
         if (simulationData?.simulateTransactions?.[0]?.error) {
-          console.log('fuck we have an error :', {
+          console.log('we have an error :', {
             error: simulationData?.simulateTransactions?.[0]?.error,
           });
           setSimulationError(
             simulationData?.simulateTransactions?.[0]?.error?.type
           );
-          setIsLoading;
         }
         if (simulationData.simulateTransactions?.[0]?.simulation) {
           console.log(
@@ -514,7 +558,6 @@ export const SignTransactionSheet = () => {
             simulationData.simulateTransactions[0]?.simulation
           );
           setSimulationData(simulationData.simulateTransactions[0]?.simulation);
-          setIsLoading(false);
         }
       }
     }, 1000);
@@ -811,13 +854,10 @@ export const SignTransactionSheet = () => {
     let response = null;
     try {
       if (!currentNetwork) {
-        console.log('NO NETWORK');
         return;
       }
-      console.log('new provider, ', currentNetwork);
       const provider = await getProviderForNetwork(currentNetwork);
       if (!provider) {
-        console.log('NO PROVIDER');
         return;
       }
       const existingWallet = await loadWallet(
@@ -826,7 +866,6 @@ export const SignTransactionSheet = () => {
         provider
       );
       if (!existingWallet) {
-        console.log('NO WALLET');
         return;
       }
       if (sendInsteadOfSign) {
@@ -923,18 +962,18 @@ export const SignTransactionSheet = () => {
         });
       }
     } else {
-      // logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
-      //   dappName,
-      //   dappScheme,
-      //   dappUrl,
-      //   formattedDappUrl,
-      //   rpcMethod: method,
-      //   network: currentNetwork,
-      // });
+      logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
+        dappName: transactionDetails?.dappName,
+        dappScheme: transactionDetails?.dappScheme,
+        dappUrl: transactionDetails?.dappUrl,
+        formattedDappUrl,
+        rpcMethod: req?.method,
+        network: currentNetwork,
+      });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
-      // if (!accountInfo.isHardwareWallet) {
-      //   await onCancel(error);
-      // }
+      if (!accountInfo.isHardwareWallet) {
+        await onCancel(response?.error);
+      }
     }
   }, [
     transactionDetails.payload.method,
@@ -942,22 +981,60 @@ export const SignTransactionSheet = () => {
     transactionDetails?.requestId,
     transactionDetails?.walletConnectV2RequestValues,
     transactionDetails?.peerId,
+    transactionDetails?.dappName,
+    transactionDetails?.dappScheme,
+    transactionDetails?.dappUrl,
     req,
     selectedGasFee,
     gasLimit,
     getNextNonce,
     provider,
+    currentNetwork,
     accountInfo.address,
     accountInfo.isHardwareWallet,
     callback,
-    currentNetwork,
     isFocused,
     closeScreen,
     nativeAsset,
     accountAddress,
     dispatch,
     switchToWalletWithAddress,
+    formattedDappUrl,
+    onCancel,
   ]);
+
+  const onConfirm = useCallback(async () => {
+    if (isMessageRequest) {
+      return handleSignMessage();
+    }
+    if (!isBalanceEnough || !isValidGas) return;
+    return handleConfirmTransaction();
+  }, [
+    handleConfirmTransaction,
+    handleSignMessage,
+    isBalanceEnough,
+    isMessageRequest,
+    isValidGas,
+  ]);
+
+  const onPressSend = useCallback(async () => {
+    if (isAuthorizing) return;
+    setIsAuthorizing(true);
+    try {
+      await onConfirm();
+      setIsAuthorizing(false);
+    } catch (error) {
+      setIsAuthorizing(false);
+    }
+  }, [isAuthorizing, onConfirm]);
+
+  const submitFn = useCallback(async () => {
+    if (accountInfo.isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+    } else {
+      await onPressSend();
+    }
+  }, [accountInfo.isHardwareWallet, navigate, onPressSend]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
@@ -1019,12 +1096,17 @@ export const SignTransactionSheet = () => {
                     >
                       {transactionDetails.dappName}
                     </Text>
-                    <VerifiedBadge />
+                    {false && <VerifiedBadge />}
                   </Inline>
                   <Text color="labelTertiary" size="15pt" weight="bold">
                     {isMessageRequest
-                      ? 'Message Request'
-                      : 'Transaction Request'}
+                      ? i18n.t(
+                          i18n.l.walletconnect.simulation.titles.message_request
+                        )
+                      : i18n.t(
+                          i18n.l.walletconnect.simulation.titles
+                            .transaction_request
+                        )}
                   </Text>
                 </Stack>
               </Inline>
@@ -1035,8 +1117,9 @@ export const SignTransactionSheet = () => {
                 simulation={simulationData}
                 isPersonalSign={isPersonalSign}
                 currentNetwork={currentNetwork!}
-                isLoading={isLoading}
                 simulationError={simulationError}
+                isBalanceEnough={isBalanceEnough}
+                walletBalance={walletBalance}
               />
               <Box>
                 {isMessageRequest ? (
@@ -1054,8 +1137,11 @@ export const SignTransactionSheet = () => {
                     methodName={
                       methodName ||
                       simulationData?.meta?.to?.function ||
-                      'Unknown'
+                      i18n.t(
+                        i18n.l.walletconnect.simulation.details_card.unknown
+                      )
                     }
+                    isBalanceEnough={isBalanceEnough}
                   />
                 )}
                 {/* Hidden scroll view to disable sheet dismiss gestures */}
@@ -1089,7 +1175,10 @@ export const SignTransactionSheet = () => {
                 <Stack space="10px">
                   <Inline space="3px" wrap={false}>
                     <Text color="labelTertiary" size="15pt" weight="semibold">
-                      Signing with
+                      {i18n.t(
+                        i18n.l.walletconnect.simulation.profile_section
+                          .signing_with
+                      )}
                     </Text>
                     <Text
                       color="label"
@@ -1104,11 +1193,41 @@ export const SignTransactionSheet = () => {
                     <Bleed vertical="4px">
                       <ChainImage chain={currentNetwork} size={12} />
                     </Bleed>
-                    <Text color="labelQuaternary" size="13pt" weight="semibold">
+                    <Text
+                      color={
+                        isBalanceEnough
+                          ? 'labelQuaternary'
+                          : { custom: colors.red }
+                      }
+                      size="13pt"
+                      weight="semibold"
+                    >
                       {isMessageRequest
-                        ? 'Free to sign'
+                        ? i18n.t(
+                            i18n.l.walletconnect.simulation.profile_section
+                              .free_to_sign
+                          )
+                        : isZero(walletBalance?.amount)
+                        ? i18n.t(
+                            i18n.l.walletconnect.simulation.profile_section
+                              .no_native_balance,
+                            { symbol: walletBalance?.display }
+                          )
                         : walletBalance.display}
                     </Text>
+                    {!isBalanceEnough && (
+                      <Text
+                        color="labelQuaternary"
+                        size="13pt"
+                        weight="semibold"
+                      >
+                        {i18n.t(
+                          i18n.l.walletconnect.simulation.profile_section
+                            .on_network,
+                          { network: getNetworkObj(currentNetwork!)?.name }
+                        )}
+                      </Text>
+                    )}
                   </Inline>
                 </Stack>
               </Inline>
@@ -1125,11 +1244,7 @@ export const SignTransactionSheet = () => {
                 weight="bold"
               />
               <SheetActionButton
-                onPress={
-                  isMessageRequest
-                    ? handleSignMessage
-                    : handleConfirmTransaction
-                }
+                onPress={submitFn}
                 label="􀎽 Confirm"
                 nftShadows
                 size="big"
@@ -1162,16 +1277,22 @@ export const SignTransactionSheet = () => {
 
 const SimulationCard = ({
   simulation,
-  isLoading,
   isPersonalSign,
   currentNetwork,
   simulationError,
+  isBalanceEnough,
+  walletBalance,
 }: {
   simulation: TransactionSimulationResult | undefined;
-  isLoading: boolean;
   isPersonalSign: boolean;
   currentNetwork: Network;
   simulationError: TransactionErrorType | undefined;
+  isBalanceEnough: boolean;
+  walletBalance: {
+    amount: string | number;
+    display: string;
+    symbol: string;
+  };
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(
@@ -1206,6 +1327,7 @@ const SimulationCard = ({
   });
 
   useEffect(() => {
+    if (!isBalanceEnough) return;
     if (!isNil(simulation)) {
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
@@ -1215,7 +1337,7 @@ const SimulationCard = ({
         false
       );
     }
-  }, [simulation, spinnerRotation]);
+  }, [isBalanceEnough, simulation, spinnerRotation]);
 
   const simulationUnavailable =
     isPersonalSign || currentNetwork === Network.zora;
@@ -1257,12 +1379,68 @@ const SimulationCard = ({
     );
   };
 
+  const titleColor = useMemo(() => {
+    if (!isBalanceEnough) {
+      return 'accent';
+    }
+
+    if (simulationError) {
+      return { custom: colors.red };
+    }
+
+    if (simulationUnavailable) {
+      return 'labelQuaternary';
+    }
+
+    return 'label';
+  }, [isBalanceEnough, simulationError, simulationUnavailable]);
+
+  const titleText = useMemo(() => {
+    if (!isBalanceEnough) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles
+          .not_enough_native_balance,
+        { symbol: walletBalance?.symbol }
+      );
+    }
+    if (simulationError) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail
+      );
+    }
+    if (simulationUnavailable) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles
+          .simulation_unavailable
+      );
+    }
+
+    // is not laoding check
+    if (!isNil(simulation)) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result
+      );
+    }
+    return i18n.t(
+      i18n.l.walletconnect.simulation.simulation_card.titles.simulating
+    );
+  }, [
+    isBalanceEnough,
+    simulation,
+    simulationError,
+    simulationUnavailable,
+    walletBalance?.symbol,
+  ]);
+
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
       contentHeight={contentHeight}
       isExpanded={
-        !isEmpty(simulation) || simulationUnavailable || !!simulationError
+        !isEmpty(simulation) ||
+        simulationUnavailable ||
+        !!simulationError ||
+        !isBalanceEnough
       }
     >
       <Stack space="24px">
@@ -1277,38 +1455,16 @@ const SimulationCard = ({
               <Animated.View style={spinnerStyle}>
                 <Text
                   align="center"
-                  color={
-                    simulationError
-                      ? { custom: colors.red }
-                      : simulationUnavailable
-                      ? 'labelQuaternary'
-                      : 'label'
-                  }
+                  color={titleColor}
                   size="icon 15px"
                   weight="bold"
                 >
-                  {simulationError ? '􀇿' : '􀬨'}
+                  {simulationError || !isBalanceEnough ? '􀇿' : '􀬨'}
                 </Text>
               </Animated.View>
             </IconContainer>
-            <Text
-              color={
-                simulationError
-                  ? { custom: colors.red }
-                  : simulationUnavailable
-                  ? 'labelQuaternary'
-                  : 'label'
-              }
-              size="17pt"
-              weight="bold"
-            >
-              {simulationError
-                ? 'Likely to Fail'
-                : simulationUnavailable
-                ? 'Simulation Unavailable'
-                : !isNil(simulation)
-                ? 'Simulated Result'
-                : 'Simulating'}
+            <Text color={titleColor} size="17pt" weight="bold">
+              {titleText}
             </Text>
           </Inline>
           <Animated.View style={listStyle}>
@@ -1327,26 +1483,48 @@ const SimulationCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="20px">
-            {noChanges && !simulationUnavailable && !simulationError && (
-              <Text color="labelTertiary" size="17pt" weight="bold">
-                {'􀻾 No Changes Detected'}
+            {noChanges &&
+              !simulationUnavailable &&
+              !simulationError &&
+              !isBalanceEnough && (
+                <Text color="labelTertiary" size="17pt" weight="bold">
+                  {i18n.t(
+                    i18n.l.walletconnect.simulation.simulation_card.messages
+                      .no_changes
+                  )}
+                </Text>
+              )}
+            {!isBalanceEnough && (
+              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                {i18n.t(
+                  i18n.l.walletconnect.simulation.simulation_card.messages
+                    .need_more_native,
+                  { symbol: getNetworkObj(currentNetwork!)?.name }
+                )}
               </Text>
             )}
             {simulationUnavailable && (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {isPersonalSign
-                  ? 'Simulation for personal signs is not yet supported'
-                  : 'Simulation on Zora is not yet supported'}
+                  ? i18n.t(
+                      i18n.l.walletconnect.simulation.simulation_card.messages
+                        .unavailable_personal_sign
+                    )
+                  : i18n.t(
+                      i18n.l.walletconnect.simulation.simulation_card.messages
+                        .unavailable_zora_network
+                    )}
               </Text>
             )}
             {simulationError && (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
-                {
-                  'The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.'
-                }
+                {i18n.t(
+                  i18n.l.walletconnect.simulation.simulation_card.messages
+                    .failed_to_simulate
+                )}
               </Text>
             )}
-            {renderSimulationEventRows()}
+            {isBalanceEnough && renderSimulationEventRows()}
           </Stack>
         </Animated.View>
       </Stack>
@@ -1359,8 +1537,7 @@ const DetailsCard = ({
   meta,
   currentNetwork,
   methodName,
-  simulationUnavailable,
-  simulationError,
+  isBalanceEnough,
 }: {
   isLoading: boolean;
   meta: TransactionSimulationMeta | undefined;
@@ -1368,6 +1545,7 @@ const DetailsCard = ({
   methodName: string;
   simulationUnavailable: boolean;
   simulationError: TransactionErrorType | undefined;
+  isBalanceEnough: boolean;
 }) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(
@@ -1386,7 +1564,7 @@ const DetailsCard = ({
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
 
   // we have no details to render if simulation is unavailable
-  if (simulationUnavailable || simulationError) {
+  if (!isBalanceEnough) {
     return <></>;
   }
   return (
@@ -1430,7 +1608,7 @@ const DetailsCard = ({
                 size="17pt"
                 weight="bold"
               >
-                Details
+                {i18n.t(i18n.l.walletconnect.simulation.details_card.title)}
               </Text>
             </Inline>
           </Box>
@@ -1540,14 +1718,14 @@ const MessageCard = ({
               </Text>
             </IconContainer>
             <Text color="label" size="17pt" weight="bold">
-              Message
+              {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
             </Text>
           </Inline>
           <ButtonPressAnimation>
             <Bleed space="24px">
               <Box style={{ margin: 24 }}>
                 <Text align="right" color="blue" size="15pt" weight="bold">
-                  Copy
+                  {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
                 </Text>
               </Box>
             </Bleed>
@@ -1567,12 +1745,10 @@ const SimulatedEventRow = ({
   amount,
   asset,
   eventType,
-  imageUrl,
 }: {
   amount: string | 'unlimited';
   asset: TransactionSimulationAsset | undefined;
   eventType: EventType;
-  imageUrl?: string;
 }) => {
   const { colors } = useTheme();
 
@@ -1586,7 +1762,11 @@ const SimulatedEventRow = ({
           6
         ).display;
   const formattedAmount = `${eventInfo.amountPrefix}${
-    amount === 'UNLIMITED' ? `Unlimited` : formattedAmounts
+    amount === 'UNLIMITED'
+      ? i18n.t(
+          i18n.l.walletconnect.simulation.simulation_card.event_row.unlimited
+        )
+      : formattedAmounts
   }`;
 
   const url = maybeSignUri(asset?.iconURL, { fm: 'png', w: 100 });
@@ -1897,7 +2077,7 @@ const FadeGradient = ({
   style,
 }: {
   side: 'top' | 'bottom';
-  style: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>>;
+  style: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
 }) => {
   const { colors, isDarkMode } = useTheme();
 
@@ -1985,28 +2165,36 @@ const infoForEventType: { [key: string]: EventInfo } = {
     amountPrefix: '- ',
     icon: '􀁷',
     iconColor: 'red',
-    label: 'Send',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.simulation_card.event_row.types.send
+    ),
     textColor: 'red',
   },
   receive: {
     amountPrefix: '+ ',
     icon: '􀁹',
     iconColor: 'green',
-    label: 'Receive',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.simulation_card.event_row.types.receive
+    ),
     textColor: 'green',
   },
   approve: {
     amountPrefix: '',
     icon: '􀎤',
     iconColor: 'green',
-    label: 'Approve',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.simulation_card.event_row.types.approve
+    ),
     textColor: 'label',
   },
   revoke: {
     amountPrefix: '',
     icon: '􀎠',
     iconColor: 'red',
-    label: 'Revoke',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.simulation_card.event_row.types.revoke
+    ),
     textColor: 'label',
   },
 };
@@ -2027,38 +2215,30 @@ type DetailInfo = {
 const infoForDetailType: { [key: string]: DetailInfo } = {
   chain: {
     icon: '􀤆',
-    label: 'Chain',
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.chain),
   },
   contract: {
     icon: '􀉆',
-    label: 'Contract',
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract),
   },
   dateCreated: {
     icon: '􀉉',
-    label: 'Contract Created',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.details_card.types.contract_created
+    ),
   },
   function: {
     icon: '􀡅',
-    label: 'Function',
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.function),
   },
   sourceCodeVerification: {
     icon: '􀕹',
-    label: 'Source Code',
+    label: i18n.t(
+      i18n.l.walletconnect.simulation.details_card.types.source_code
+    ),
   },
   nonce: {
     icon: '􀆃',
-    label: 'Nonce',
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.nonce),
   },
 };
-
-const exampleMessage = `Welcome to OpenSea!
-
-Click to sign in and accept the OpenSea Terms of Service (https://opensea.io/tos) and Privacy Policy (https://opensea.io/privacy).
-
-This request will not trigger a blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours.
-
-Wallet address:
-0x80a91aeaf3e969de616eb63ea957817937b1
-
-Nonce:
-8126fea6-ef17-4c8e-aa81-281aaf96c05c`;
