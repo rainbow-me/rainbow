@@ -235,7 +235,9 @@ const MintSheet = () => {
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
   const isMintingAvailable =
-    !!mintCollection.publicMintInfo && (!gasError || insufficientEth);
+    !(isReadOnlyWallet || isHardwareWallet) &&
+    !!mintCollection.publicMintInfo &&
+    (!gasError || insufficientEth);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
