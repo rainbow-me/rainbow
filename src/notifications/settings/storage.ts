@@ -4,7 +4,6 @@ import {
 } from '@/notifications/settings/constants';
 import {
   GroupSettings,
-  NotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { MMKV } from 'react-native-mmkv';
@@ -54,31 +53,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data) as GroupSettings;
   return {};
-};
-
-/**
- * Updates settings for wallet with address
- * @returns updated wallet settings object or undefined if there's no wallet with passed address
- */
-export const updateSettingsForWalletWithAddress = (
-  address: string,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings | undefined => {
-  let updatedSettings: WalletNotificationSettings | undefined = undefined;
-  const data = getAllNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.address === address) {
-      updatedSettings = { ...wallet, ...options };
-      return updatedSettings;
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
-
-  return updatedSettings;
 };
 
 /**

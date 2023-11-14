@@ -1,3 +1,4 @@
+// TODO JIN - remove this file
 export {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
   NotificationRelationship,
@@ -16,8 +17,6 @@ export {
 export {
   publishAndSaveWalletSettings,
   removeNotificationSettingsForWallet,
-  toggleGroupNotifications,
-  toggleTopicForWallet,
 } from './settings';
 export type {
   AddressWithRelationship,
