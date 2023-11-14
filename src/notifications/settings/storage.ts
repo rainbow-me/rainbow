@@ -68,28 +68,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 };
 
 /**
- * Updates settings for wallet with address
- * @returns updated wallet settings object or undefined if there's no wallet with passed address
- */
-export const updateSettingsForWalletWithAddress = (
-  address: string,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings | undefined => {
-  let updatedSettings: WalletNotificationSettings | undefined = undefined;
-  const data = getAllWalletNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.address === address) {
-      updatedSettings = { ...wallet, ...options };
-      return updatedSettings;
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
-
-  return updatedSettings;
-};
-
-/**
  * Updates group settings by passing full or partial group settings object
  * @returns updated group settings object
  */
