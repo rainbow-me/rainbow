@@ -2233,8 +2233,9 @@
       "wallet_alert": {
         "message_support": "Message Support",
         "close": "Close",
-        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
-        "title": "An error occured"
+        "learn_more": "Learn More",
+        "message": "If you've recently swapped phones, you may need to reimport your wallets. For all other help, please reach out to support! \n\nWe'll get back to you soon!",
+        "title": "An error occurred"
       }
     },
     "walletconnect": {
