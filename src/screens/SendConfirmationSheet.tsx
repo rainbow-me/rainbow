@@ -279,7 +279,7 @@ export const SendConfirmationSheet = () => {
       transactions.forEach(tx => {
         if (
           tx.to?.toLowerCase() === toAddress?.toLowerCase() &&
-          tx.from?.toLowerCase() === accountAddress
+          tx.from?.toLowerCase() === accountAddress?.toLowerCase()
         ) {
           sends += 1;
           if (tx.network === network) {
