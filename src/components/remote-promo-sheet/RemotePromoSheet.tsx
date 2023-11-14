@@ -167,6 +167,12 @@ export function RemotePromoSheet() {
       )}
       primaryButtonProps={{
         ...primaryButtonProps,
+        ...(primaryButtonProps.color
+          ? { color: get(colors, primaryButtonProps.color) }
+          : {}),
+        ...(primaryButtonProps.textColor
+          ? { textColor: get(colors, primaryButtonProps.textColor) }
+          : {}),
         label: getKeyForLanguage(
           'primaryButtonProps.label',
           data.promoSheet,
