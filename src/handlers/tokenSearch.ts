@@ -8,6 +8,11 @@ import {
 } from '@/entities';
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
+import { TokenSearchToken } from '@/entities/tokens';
+
+type TokenSearchApiResponse = {
+  data: TokenSearchToken[];
+};
 
 const tokenSearchApi = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v2',
@@ -38,16 +43,14 @@ export const tokenSearch = async (searchParams: {
     threshold: searchParams.threshold,
     query: searchParams.query,
   };
-  if (searchParams.fromChainId) {
-    queryParams.fromChainId = searchParams.fromChainId;
-  }
+
   try {
     if (isAddress(searchParams.query) && !searchParams.fromChainId) {
       // @ts-ignore
       params.keys = `networks.${params.chainId}.address`;
     }
-    const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
-    const tokenSearch = await tokenSearchApi.get(url);
+    const url = `/?${qs.stringify(queryParams)}`;
+    const tokenSearch = await tokenSearchApi.get<TokenSearchApiResponse>(url);
     return tokenSearch.data?.data;
   } catch (e: any) {
     logger.error(

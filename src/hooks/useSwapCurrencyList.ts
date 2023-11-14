@@ -456,6 +456,7 @@ const useSwapCurrencyList = (
 
   const currencyList = useMemo(() => {
     const list = [];
+
     let bridgeAsset = isCrosschainSearch
       ? verifiedAssets.find(
           asset =>
