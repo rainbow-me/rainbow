@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.9] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.9)
+
+### Added
+
+- Bug fixes
+- WC improvements
+
 ## [1.9.8] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.8)
 
 ### Added

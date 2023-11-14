@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { useSharedValue, SharedValue } from 'react-native-reanimated';
 import { useCoinListEdited } from '@/hooks';
 
@@ -21,8 +21,4 @@ export function SharedValuesProvider({ children }: PropsWithChildren) {
     [isCoinListEdited]
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
-}
-
-export function useIsCoinListEditedSharedValue() {
-  return useContext(Context)!.isCoinListEdited;
 }
