@@ -481,14 +481,14 @@ const MintSheet = () => {
             }
             step.items?.forEach(item => {
               if (
-                item.txHash &&
-                txRef.current !== item.txHash &&
+                item.txHashes?.[0] &&
+                txRef.current !== item.txHashes?.[0] &&
                 item.status === 'incomplete'
               ) {
                 const tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: currentNetwork,
                   amount: mintPriceAmount,
                   asset: {
