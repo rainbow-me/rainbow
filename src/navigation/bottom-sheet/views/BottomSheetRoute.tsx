@@ -159,6 +159,7 @@ const BottomSheetRoute = ({
         enablePanDownToClose
         handleComponent={null}
         index={index}
+        onClose={handleOnClose}
         ref={ref}
         simultaneousHandlers={[]}
         snapPoints={snapPoints}

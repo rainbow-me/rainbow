@@ -135,15 +135,6 @@ import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { colors } from '@/styles';
 
-/**
- * Simulation Error Codes
- */
-export enum SIMULATION_ERROR_CODES {
-  REVERTED = 'REVERTED',
-  INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
-  UNSUPPORTED = 'UNSUPPORTED',
-}
-
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
 
@@ -337,9 +328,8 @@ export const SignTransactionSheet = () => {
         if (!isMessageRequest) {
           startPollingGasFees(currentNetwork);
           fetchMethodName(transactionDetails?.payload?.params[0].data);
-          // fetchMethodName(params[0].data);
         } else {
-          // setMethodName(lang.t('wallet.message_signing.request'));
+          setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
         analytics.track('Shown Walletconnect signing request');
       }
@@ -516,16 +506,12 @@ export const SignTransactionSheet = () => {
           domain: transactionDetails?.dappUrl,
         });
         if (simulationData?.simulateMessage?.error) {
-          console.log('we have an error :', {
-            error: simulationData?.simulateMessage?.error,
-          });
           setSimulationError(simulationData?.simulateMessage?.error?.type);
         }
         if (simulationData.simulateMessage?.simulation) {
           setSimulationData(simulationData.simulateMessage?.simulation);
         }
       } else {
-        console.log('we are simulationing this shit');
         // TX Signing
         const simulationData = await simulationClient.simulateTransactions({
           chainId: Number(
@@ -543,20 +529,12 @@ export const SignTransactionSheet = () => {
           ],
           domain: transactionDetails?.dappUrl,
         });
-        console.log({ res: simulationData?.simulateTransactions?.[0] });
         if (simulationData?.simulateTransactions?.[0]?.error) {
-          console.log('we have an error :', {
-            error: simulationData?.simulateTransactions?.[0]?.error,
-          });
           setSimulationError(
             simulationData?.simulateTransactions?.[0]?.error?.type
           );
         }
         if (simulationData.simulateTransactions?.[0]?.simulation) {
-          console.log(
-            'setting tx sim data : ',
-            simulationData.simulateTransactions[0]?.simulation
-          );
           setSimulationData(simulationData.simulateTransactions[0]?.simulation);
         }
       }
@@ -694,13 +672,10 @@ export const SignTransactionSheet = () => {
     let response = null;
 
     if (!currentNetwork) {
-      console.log('NO NETWORK');
       return;
     }
-    console.log('new provider, ', currentNetwork);
     const provider = await getProviderForNetwork(currentNetwork);
     if (!provider) {
-      console.log('NO PROVIDER');
       return;
     }
 
@@ -710,7 +685,6 @@ export const SignTransactionSheet = () => {
       provider
     );
     if (!existingWallet) {
-      console.log('NO WALLET');
       return;
     }
     switch (transactionDetails?.payload?.method) {
@@ -803,7 +777,6 @@ export const SignTransactionSheet = () => {
         provider
       );
       if (!rawGasLimit) {
-        console.log('FUUUUCK NO GAS LIMIT');
         return;
       }
 
@@ -1692,7 +1665,7 @@ const MessageCard = ({
       displayMessage = sanitizedMessage;
       // eslint-disable-next-line no-empty
     } catch (e) {
-      console.log('parsing issue, ', e);
+      logger.warn('');
     }
 
     displayMessage = JSON.stringify(displayMessage, null, 4);
