@@ -108,8 +108,12 @@ export const shouldPromptCampaign = async (
     `Campaigns: Checking if we should prompt campaign ${campaignKey}`
   );
 
+  const isPreviewing = actions.some(
+    (action: ActionObj) => action.fn === 'isPreviewing'
+  );
+
   // If the campaign has been viewed already or it's the first app launch, exit early
-  if (hasShown) {
+  if (hasShown && !isPreviewing) {
     logger.info(`Campaigns: User has already been shown ${campaignKey}`);
     return false;
   }
