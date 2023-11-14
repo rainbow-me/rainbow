@@ -3,6 +3,5 @@ export * from './hasNonZeroAssetBalance';
 export * from './hasNonZeroTotalBalance';
 export * from './hasSwapTxn';
 export * from './isAfterCampaignLaunch';
-export * from './isOnMainnet';
 export * from './isSelectedWalletReadOnly';
 export * from './isSpecificAddress';
