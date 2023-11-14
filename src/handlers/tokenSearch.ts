@@ -25,7 +25,6 @@ const tokenSearchApi = new RainbowFetchClient({
 
 export const tokenSearch = async (searchParams: {
   chainId: number;
-  fromChainId?: number | '';
   keys: TokenSearchUniswapAssetKey[];
   list: TokenSearchTokenListId;
   threshold: TokenSearchThreshold;
@@ -45,7 +44,7 @@ export const tokenSearch = async (searchParams: {
   };
 
   try {
-    if (isAddress(searchParams.query) && !searchParams.fromChainId) {
+    if (isAddress(searchParams.query)) {
       // @ts-ignore
       params.keys = `networks.${params.chainId}.address`;
     }

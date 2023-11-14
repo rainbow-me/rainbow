@@ -469,11 +469,11 @@ const useSwapCurrencyList = (
       let verifiedAssetsWithImport = verifiedAssets;
       let highLiquidityAssetsWithImport = highLiquidityAssets;
       let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
-      const verifiedAddresses = verifiedAssets.map(({ address }) =>
-        address.toLowerCase()
+      const verifiedAddresses = verifiedAssets.map(({ uniqueId }) =>
+        uniqueId.toLowerCase()
       );
-      const highLiquidityAddresses = verifiedAssets.map(({ address }) =>
-        address.toLowerCase()
+      const highLiquidityAddresses = verifiedAssets.map(({ uniqueId }) =>
+        uniqueId.toLowerCase()
       );
       // this conditional prevents the imported token from jumping
       // sections if verified/highliquidity search responds later
