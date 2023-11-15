@@ -492,19 +492,21 @@ export default function PointsScreen() {
   }, [accountAddress, dataUpdatedAt]);
 
   const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
-  const totalPointsString = data?.points?.earnings?.total.toLocaleString(
+  const totalPointsString = data?.points?.user?.earnings?.total.toLocaleString(
     'en-US'
   );
   const totalPointsMaskSize = 50 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const canDisplayTotalPoints = !isNil(data?.points?.earnings?.total);
+  const canDisplayTotalPoints = !isNil(data?.points?.user?.earnings?.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayStreakCard = STREAKS_ENABLED;
   const canDisplayReferralsCard = REFERRALS_ENABLED;
   const canDisplayCards =
     canDisplayNextRewardCard || canDisplayStreakCard || canDisplayReferralsCard;
   const canDisplayReferralLink = REFERRALS_ENABLED;
-  const canDisplayCurrentRank = !isNil(data?.points?.stats?.position.current);
+  const canDisplayCurrentRank = !isNil(
+    data?.points?.user?.stats?.position.current
+  );
   const canDisplayLeaderboard = !!data?.points?.leaderboard?.accounts;
 
   const shouldDisplayError = !isFetching && !data?.points;
@@ -840,7 +842,7 @@ export default function PointsScreen() {
                           </Text>
                         </Box>
                         <Text color="label" size="17pt" weight="heavy">
-                          {`#${data?.points?.stats?.position.current.toLocaleString(
+                          {`#${data?.points?.user?.stats?.position.current.toLocaleString(
                             'en-US'
                           )}`}
                         </Text>
