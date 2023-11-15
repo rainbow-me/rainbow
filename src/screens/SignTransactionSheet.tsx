@@ -505,10 +505,13 @@ export const SignTransactionSheet = () => {
           },
           domain: transactionDetails?.dappUrl,
         });
-        if (simulationData?.simulateMessage?.error) {
+        if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
           setSimulationError(simulationData?.simulateMessage?.error?.type);
         }
-        if (simulationData.simulateMessage?.simulation) {
+        if (
+          simulationData.simulateMessage?.simulation &&
+          !simulationUnavailable
+        ) {
           setSimulationData(simulationData.simulateMessage?.simulation);
         }
       } else {
@@ -1102,11 +1105,12 @@ export const SignTransactionSheet = () => {
                   />
                 ) : (
                   <DetailsCard
-                    isLoading={!simulationData}
+                    isLoading={false}
                     simulationUnavailable={simulationUnavailable}
                     simulationError={simulationError}
                     meta={simulationData?.meta || {}}
                     currentNetwork={currentNetwork!}
+                    toAddress={transactionDetails?.payload?.params?.[0]?.to}
                     methodName={
                       methodName ||
                       simulationData?.meta?.to?.function ||
@@ -1293,6 +1297,9 @@ const SimulationCard = ({
     ),
   }));
 
+  const simulationUnavailable =
+    isPersonalSign || currentNetwork === Network.zora;
+
   const spinnerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ rotate: `${spinnerRotation.value}deg` }],
@@ -1300,7 +1307,7 @@ const SimulationCard = ({
   });
 
   useEffect(() => {
-    if (!isBalanceEnough) return;
+    if (!isBalanceEnough || simulationUnavailable) return;
     if (!isNil(simulation)) {
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
@@ -1310,10 +1317,7 @@ const SimulationCard = ({
         false
       );
     }
-  }, [isBalanceEnough, simulation, spinnerRotation]);
-
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
+  }, [isBalanceEnough, simulation, simulationUnavailable, spinnerRotation]);
 
   const renderSimulationEventRows = () => {
     return (
@@ -1510,12 +1514,14 @@ const DetailsCard = ({
   meta,
   currentNetwork,
   methodName,
+  toAddress,
   isBalanceEnough,
 }: {
   isLoading: boolean;
   meta: TransactionSimulationMeta | undefined;
   currentNetwork: Network;
   methodName: string;
+  toAddress: string;
   simulationUnavailable: boolean;
   simulationError: TransactionErrorType | undefined;
   isBalanceEnough: boolean;
@@ -1593,12 +1599,17 @@ const DetailsCard = ({
                   value={getNetworkObj(currentNetwork).name}
                 />
               }
-              {meta?.to?.address && (
+              {(meta?.to?.address || toAddress) && (
                 <DetailRow
                   detailType="contract"
                   value={
-                    abbreviations.address(meta.to.address, 4, 6) ||
-                    meta.to.address
+                    abbreviations.address(
+                      meta?.to?.address || toAddress,
+                      4,
+                      6
+                    ) ||
+                    meta?.to?.address ||
+                    toAddress
                   }
                   onPress={() =>
                     ethereumUtils.openAddressInBlockExplorer(
@@ -1614,7 +1625,7 @@ const DetailsCard = ({
                   value={new Date(meta?.to?.created).toLocaleDateString()}
                 />
               )}
-              {methodName && (
+              {methodName.substring(0, 2) !== '0x' && (
                 <DetailRow detailType="function" value={methodName} />
               )}
               {meta?.to?.sourceCodeStatus && (
