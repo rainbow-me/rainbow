@@ -63,6 +63,7 @@ const Routes = {
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
+  REMOTE_PROMO_SHEET: 'RemotePromoSheet',
   RESTORE_SHEET: 'RestoreSheet',
   SELECT_ENS_SHEET: 'SelectENSSheet',
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',

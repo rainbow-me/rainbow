@@ -66,3 +66,14 @@ export type Review = {
   timeOfLastPrompt: number;
   actions: Action[];
 };
+
+type CampaignKeys = {
+  [campaignKey: string]: boolean;
+};
+
+type CampaignMetadata = {
+  isCurrentlyShown: boolean;
+  lastShownTimestamp: number;
+};
+
+export type Campaigns = CampaignKeys & CampaignMetadata;

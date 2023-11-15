@@ -1453,6 +1453,27 @@
         "subheader": "INTRODUCING"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "View Offers",
+        "not_has_offers": "Close"
+      },
+      "secondary_button": "Maybe Later",
+      "info_row_1": {
+        "title": "All your offers in one place",
+        "description": "View your offers across all NFT marketplaces."
+      },
+      "info_row_2": {
+        "title": "Accept from Rainbow",
+        "description": "Accept offers in a single tap and swap to the token of your choosing."
+      },
+      "info_row_3": {
+        "title": "Smart sort modes",
+        "description": "Compare to floor prices, or view your highest or most recent offers."
+      },
+      "header": "Offers",
+      "subheader": "INTRODUCING"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",
@@ -2233,8 +2254,9 @@
       "wallet_alert": {
         "message_support": "Message Support",
         "close": "Close",
-        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
-        "title": "An error occured"
+        "learn_more": "Learn More",
+        "message": "If you've recently swapped phones, you may need to reimport your wallets. For all other help, please reach out to support! \n\nWe'll get back to you soon!",
+        "title": "An error occurred"
       }
     },
     "walletconnect": {
@@ -2296,6 +2318,7 @@
         "read_only_wallet_on_signing_method": "It looks like you're using a read-only wallet, which is not allowed for this request.",
         "namespaces_invalid": "There was an issue with the namespaces requested by the dapp. Please try again or contact Rainbow and/or dapp support teams.",
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
+        "eth_sign": "Rainbow does not support legacy eth_sign due to security concerns.  \n Please contact Rainbow and/or dapp support teams if you have any questions.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
         "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
       },

@@ -277,7 +277,10 @@ export const SendConfirmationSheet = () => {
       let sends = 0;
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
-        if (tx.to?.toLowerCase() === toAddress?.toLowerCase()) {
+        if (
+          tx.to?.toLowerCase() === toAddress?.toLowerCase() &&
+          tx.from?.toLowerCase() === accountAddress?.toLowerCase()
+        ) {
           sends += 1;
           if (tx.network === network) {
             sendsCurrentNetwork += 1;
@@ -291,7 +294,13 @@ export const SendConfirmationSheet = () => {
         }
       }
     }
-  }, [isSendingToUserAccount, network, toAddress, transactions]);
+  }, [
+    accountAddress,
+    isSendingToUserAccount,
+    network,
+    toAddress,
+    transactions,
+  ]);
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];

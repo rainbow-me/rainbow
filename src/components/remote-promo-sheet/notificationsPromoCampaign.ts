@@ -4,7 +4,7 @@ import {
   CampaignCheckType,
   CampaignKey,
   GenericCampaignCheckResponse,
-} from './campaignChecks';
+} from './localCampaignChecks';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { logger } from '@/logger';
