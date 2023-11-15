@@ -1,13 +1,8 @@
-import {
-  SwapsPromoCampaign,
-  SwapsPromoCampaignExclusion,
-} from './swapsPromoCampaign';
 import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
 import { analytics } from '@/analytics';
 import { logger } from '@/utils';
 
 export enum CampaignKey {
-  swapsLaunch = 'swaps_launch',
   notificationsLaunch = 'notifications_launch',
 }
 
@@ -22,9 +17,7 @@ export enum GenericCampaignCheckResponse {
   nonstarter = 'nonstarter',
 }
 
-export type CampaignCheckResponse =
-  | GenericCampaignCheckResponse
-  | SwapsPromoCampaignExclusion;
+export type CampaignCheckResponse = GenericCampaignCheckResponse;
 
 export interface Campaign {
   action(): Promise<void>; // Function to call on activating the campaign
@@ -34,12 +27,9 @@ export interface Campaign {
 }
 
 // the ordering of this list is IMPORTANT, this is the order that campaigns will be run
-export const activeCampaigns: Campaign[] = [
-  SwapsPromoCampaign,
-  NotificationsPromoCampaign,
-];
+export const activeCampaigns: Campaign[] = [NotificationsPromoCampaign];
 
-export const runCampaignChecks = async (): Promise<boolean> => {
+export const runLocalCampaignChecks = async (): Promise<boolean> => {
   logger.log('Campaigns: Running Checks');
   for (const campaign of activeCampaigns) {
     const response = await campaign.check();

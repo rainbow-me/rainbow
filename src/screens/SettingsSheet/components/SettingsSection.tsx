@@ -40,7 +40,6 @@ import {
 } from '@/utils/buildRainbowUrl';
 import { getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import * as ls from '@/storage';
 import { ReviewPromptAction } from '@/storage/schema';
 
 const SettingsExternalURLs = {

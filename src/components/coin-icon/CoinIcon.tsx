@@ -1,16 +1,15 @@
-import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View, ViewProps } from 'react-native';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../theme/ThemeContext';
 import ChainBadge from './ChainBadge';
 import { CoinIconFallback } from './CoinIconFallback';
-import { AssetTypes } from '@/entities';
+import { Network } from '@/networks/types';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import {
-  getTokenMetadata,
+  ethereumUtils,
   isETH,
   magicMemo,
   CoinIcon as ReactCoinIcon,
@@ -59,7 +58,6 @@ const CoinIcon: React.FC<Props> = ({
 }) => {
   const color = useColorForAsset({
     address: mainnet_address || address,
-    type: mainnet_address ? AssetTypes.token : type,
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback = !isETH(mainnet_address || address);
@@ -68,6 +66,12 @@ const CoinIcon: React.FC<Props> = ({
   ]);
 
   const theme = useTheme();
+
+  const network = mainnet_address
+    ? Network.mainnet
+    : type
+    ? ethereumUtils.getNetworkFromType(type)
+    : Network.mainnet;
 
   return (
     <View>
@@ -85,8 +89,7 @@ const CoinIcon: React.FC<Props> = ({
           }
           size={size}
           symbol={symbol}
-          type={mainnet_address ? AssetTypes.token : type}
-          assetType={mainnet_address ? AssetTypes.token : type}
+          network={network}
           theme={theme}
         />
       ) : (

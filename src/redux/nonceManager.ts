@@ -88,7 +88,25 @@ export const updateNonce = (
     saveNonceManager(updatedNonceManager);
   }
 };
+export const resetNonces = (accountAddress: EthereumAddress) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { nonceManager: currentNonceData } = getState();
 
+  const currentAccountAddress = accountAddress.toLowerCase();
+
+  const updatedNonceManager: NonceManager = {
+    ...currentNonceData,
+    [currentAccountAddress]: {},
+  };
+
+  dispatch({
+    payload: updatedNonceManager,
+    type: NONCE_MANAGER_UPDATE_NONCE,
+  });
+  saveNonceManager(updatedNonceManager);
+};
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: NonceManager = {};
 
