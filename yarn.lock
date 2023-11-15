@@ -15127,13 +15127,6 @@ react-native-branch@5.3.1:
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.3.1.tgz#872bb3500a6756e9e59883bd03fd8f9aab4857c6"
   integrity sha512-d7gaQQg43bS57O4j8V07s7lqD5gu3G4Vrf23bS/RnxTmQMKcifVFpUCSyUYuiUyL4H58D7pL2GgsujP2TRuhkw==
 
-react-native-camera@4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-4.2.1.tgz#caf74081f055e89d7e9b0cd5108965d808c60e90"
-  integrity sha512-+Vkql24PFYQfsPRznJCvPwJQfyzCnjlcww/iZ4Ej80bgivKjL9eU0IMQIXp4yi6XCrKi4voWXxIDPMupQZKeIQ==
-  dependencies:
-    prop-types "^15.6.2"
-
 react-native-change-icon@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-native-change-icon/-/react-native-change-icon-4.0.0.tgz#7d398dcf17f67f7301cc408d06cb075473605416"
