@@ -212,6 +212,9 @@ export const SignTransactionSheet = () => {
     gasFeeParamsBySpeed,
   } = useGas();
 
+  const simulationUnavailable =
+    isPersonalSign || currentNetwork === Network.zora;
+
   const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
     return isMessageRequest
@@ -542,6 +545,7 @@ export const SignTransactionSheet = () => {
         }
       }
     }, 1000);
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     accountAddress,
     currentNetwork,
@@ -552,10 +556,10 @@ export const SignTransactionSheet = () => {
     req?.to,
     req?.value,
     request.message,
+    simulationUnavailable,
     transactionDetails?.dappUrl,
     transactionDetails?.payload?.method,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
     walletConnector?._chainId,
   ]);
 
@@ -1005,17 +1009,19 @@ export const SignTransactionSheet = () => {
   }, [isAuthorizing, onConfirm]);
 
   const submitFn = useCallback(async () => {
+    if (!isBalanceEnough) {
+      navigate(Routes.ADD_CASH_SHEET);
+      return;
+    }
     if (accountInfo.isHardwareWallet) {
       navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
     } else {
       await onPressSend();
     }
-  }, [accountInfo.isHardwareWallet, navigate, onPressSend]);
+  }, [accountInfo.isHardwareWallet, isBalanceEnough, navigate, onPressSend]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
   return (
     <Inset bottom={{ custom: safeAreaInsetValues.bottom + 20 }}>
       <Box height="full" justifyContent="flex-end" width="full">
@@ -1137,7 +1143,7 @@ export const SignTransactionSheet = () => {
               <Inline alignVertical="center" space="12px" wrap={false}>
                 {accountInfo.accountImage ? (
                   // size 44
-                  <ImageAvatar image={accountInfo.accountImage} size="large" />
+                  <ImageAvatar image={accountInfo.accountImage} size="sim" />
                 ) : (
                   <ContactAvatar
                     color={
@@ -1145,7 +1151,7 @@ export const SignTransactionSheet = () => {
                         ? colors.skeleton
                         : accountInfo.accountColor
                     }
-                    size="large"
+                    size="sim"
                     value={accountInfo.accountSymbol}
                   />
                 )}
@@ -1188,7 +1194,7 @@ export const SignTransactionSheet = () => {
                         ? i18n.t(
                             i18n.l.walletconnect.simulation.profile_section
                               .no_native_balance,
-                            { symbol: walletBalance?.display }
+                            { symbol: walletBalance?.symbol }
                           )
                         : walletBalance.display}
                     </Text>
@@ -1214,7 +1220,7 @@ export const SignTransactionSheet = () => {
               <SheetActionButton
                 color={isDarkMode ? globalColors.blueGrey100 : '#F5F5F7'}
                 isTransparent
-                label="Cancel"
+                label={i18n.t(i18n.l.walletconnect.simulation.buttons.cancel)}
                 textColor={label}
                 onPress={onPressCancel}
                 size="big"
@@ -1222,7 +1228,15 @@ export const SignTransactionSheet = () => {
               />
               <SheetActionButton
                 onPress={submitFn}
-                label="􀎽 Confirm"
+                label={
+                  !isBalanceEnough
+                    ? i18n.t(
+                        i18n.l.walletconnect.simulation.buttons
+                          .buy_native_token,
+                        { symbol: walletBalance?.symbol }
+                      )
+                    : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
+                }
                 nftShadows
                 size="big"
                 weight="heavy"
