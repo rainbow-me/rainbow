@@ -288,7 +288,7 @@ const useSwapCurrencyList = (
       });
       setCrosschainVerifiedAssets(state => ({
         ...state,
-        [network]: handleSearchResponse(results, network),
+        [network]: handleSearchResponse(results || [], network),
       }));
     },
     [handleSearchResponse, inputChainId]
