@@ -137,12 +137,15 @@ query getPointsDataForWallet($address: String!) {
         avatarURL
       }
     }
-    earnings {
-      total
-    }
-    stats {
-      position {
-        current
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
       }
     }
   }

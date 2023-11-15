@@ -34,8 +34,8 @@ export default function TestContent() {
         <ButtonPressAnimation
           onPress={async () => {
             const x = await metadataClient.getPointsOnboardChallenge({
-              address: '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266',
-              referral: 'a',
+              address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+              referral: 'TBDTBDTBDTBD',
             });
             console.log(x);
             setChallenge(x?.pointsOnboardChallenge);
