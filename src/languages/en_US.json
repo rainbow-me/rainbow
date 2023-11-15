@@ -1453,6 +1453,27 @@
         "subheader": "INTRODUCING"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "View Offers",
+        "not_has_offers": "Close"
+      },
+      "secondary_button": "Maybe Later",
+      "info_row_1": {
+        "title": "All your offers in one place",
+        "description": "View your offers across all NFT marketplaces."
+      },
+      "info_row_2": {
+        "title": "Accept from Rainbow",
+        "description": "Accept offers in a single tap and swap to the token of your choosing."
+      },
+      "info_row_3": {
+        "title": "Smart sort modes",
+        "description": "Compare to floor prices, or view your highest or most recent offers."
+      },
+      "header": "Offers",
+      "subheader": "INTRODUCING"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",
